@@ -7,7 +7,7 @@ const cases: Array<{ filename: string; encoding: string }> = [];
 
 test('base64 encode', () => {
   let strData = '';
-  const bin = fs.readFileSync('test/shiftjis_sample.txt');
+  const bin = fs.readFileSync('tests/shiftjis_sample.txt');
   const utf8 = iconv.decode(bin, 'shiftjis');
   const encoded = string2Base64String(utf8);
 

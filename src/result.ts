@@ -1,4 +1,7 @@
+import { BaseError } from './errors';
+
 export type Result<T, E extends Error> = Success<T> | Failure<E>;
+export type PromiseResult<T, E extends Error> = Promise<Result<T, E>>;
 
 class Success<T> {
   readonly value: T;
@@ -11,12 +14,12 @@ class Success<T> {
     return true;
   }
 
-  isFailure(): this is Failure<Error> {
+  isFailure(): this is Failure<BaseError> {
     return false;
   }
 }
 
-class Failure<E extends Error> {
+export class Failure<E extends BaseError> {
   readonly error: E;
 
   constructor(error: E) {
@@ -32,7 +35,12 @@ class Failure<E extends Error> {
   }
 }
 
-export function fail<E extends Error>(
+interface failOption {
+  internalError?: Error;
+  message?: string;
+}
+
+export function fail<E extends BaseError>(
   message: string,
   type: { new (message: string): E }
 ): Failure<E> {

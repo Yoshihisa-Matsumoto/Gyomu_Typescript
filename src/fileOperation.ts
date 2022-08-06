@@ -1,0 +1,247 @@
+import * as fs from 'fs';
+import path from 'path';
+import { Configurator } from './configurator';
+import {
+  FileArchiveType,
+  FileCompareType,
+  FileFilterInfo,
+  FileInfo,
+  FileTransportInfo,
+  FilterType,
+} from './fileModel';
+import compareAsc from 'date-fns/compareAsc';
+import { fail, Result, success } from './result';
+import { ArchiveError } from './errors';
+import { fi } from 'date-fns/locale';
+import { ZipArchive } from './archive/zip';
+
+export class FileOperation {
+  static canAccess(fileName: string, readOnly: boolean = false): boolean {
+    if (!fs.existsSync(fileName)) return false;
+    const specialExtension = ['xls', 'xlsm', 'xlsx', 'zip'];
+    const stat = fs.statSync(fileName);
+
+    if (specialExtension.includes(path.extname(fileName)) && stat.size === 0)
+      return false;
+
+    try {
+      const fileHandle = fs.openSync(
+        fileName,
+        readOnly ? 'r' : 'r+',
+        readOnly
+          ? fs.constants.O_RDONLY
+          : fs.constants.O_RDWR | fs.constants.O_EXCL
+      );
+      fs.closeSync(fileHandle);
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  static search(
+    parentDirectory: string,
+    filterConditions: FileFilterInfo[],
+    isRecursive: boolean = false
+  ): FileInfo[] {
+    const fileInfoList = new Array<FileInfo>();
+    if (!fs.existsSync(parentDirectory)) return fileInfoList;
+
+    fs.readdirSync(parentDirectory, { withFileTypes: true }).forEach(
+      (dirent) => {
+        if (dirent.isFile()) {
+          const fullPath = path.join(
+            path.resolve(parentDirectory),
+            dirent.name
+          );
+          const [result, fileInfo] = this.#isFileValid(
+            fullPath,
+            filterConditions
+          );
+          if (result) {
+            fileInfoList.push(fileInfo);
+          }
+        } else if (dirent.isDirectory()) {
+          const fullPath = path.join(
+            path.resolve(parentDirectory),
+            dirent.name
+          );
+          const childInfoList = FileOperation.search(
+            fullPath,
+            filterConditions,
+            isRecursive
+          );
+          fileInfoList.push(...childInfoList);
+        }
+        // const fullPath = path.join(path.resolve(parentDirectory), file);
+        // console.log(fullPath);
+        // const [result, fileInfo] = this.#isFileValid(fullPath, filterConditions);
+        // if (result) fileInfoList.push(fileInfo);
+        // if (!fileInfo.isFile && isRecursive) {
+        //   const childInfoList = FileOperation.search(
+        //     fileInfo.directoryPath,
+        //     filterConditions,
+        //     isRecursive
+        //   );
+        //   fileInfoList.push(...childInfoList);
+        // }
+      }
+    );
+    return fileInfoList;
+  }
+
+  static #isFileValid(
+    fileFullPath: string,
+    filterConditions: FileFilterInfo[]
+  ): [boolean, FileInfo] {
+    let isMatch = true;
+    const fileInformation = new FileInfo(fileFullPath);
+
+    if (!fileInformation.isFile) return [false, fileInformation];
+
+    if (!filterConditions || filterConditions.length === 0)
+      return [true, fileInformation];
+
+    for (var filterInfo of filterConditions) {
+      isMatch = this.#isFileValidForFileter(fileInformation, filterInfo);
+      if (!isMatch) break;
+    }
+    return [isMatch, fileInformation];
+  }
+  static #isFileValidForFileter(
+    fileInformation: FileInfo,
+    filterInformation: FileFilterInfo
+  ): boolean {
+    switch (filterInformation.kind) {
+      case FilterType.FileName:
+        return this.#isFileNameMatch(
+          fileInformation.fileName,
+          filterInformation.nameFilter,
+          filterInformation.operator
+        );
+      case FilterType.CreateTime:
+        return this.#isFileDateMatch(
+          fileInformation.createTime,
+          filterInformation.targetDate,
+          filterInformation.operator
+        );
+      case FilterType.LastAccessTime:
+        return this.#isFileDateMatch(
+          fileInformation.lastAccessTime,
+          filterInformation.targetDate,
+          filterInformation.operator
+        );
+      case FilterType.LastModifiedTime:
+        return this.#isFileDateMatch(
+          fileInformation.updateTime,
+          filterInformation.targetDate,
+          filterInformation.operator
+        );
+    }
+  }
+  static #isFileNameMatch(
+    fileName: string,
+    targetFilter: string,
+    compareType: FileCompareType
+  ): boolean {
+    switch (compareType) {
+      case FileCompareType.Equal:
+        const match = fileName.match(targetFilter);
+        return !!match && match.length > 0;
+      case FileCompareType.Larger:
+        return fileName > targetFilter;
+      case FileCompareType.LargerOrEqual:
+        return fileName >= targetFilter;
+      case FileCompareType.Less:
+        return fileName < targetFilter;
+      case FileCompareType.LessOrEqual:
+        return fileName <= targetFilter;
+    }
+  }
+  static #isFileDateMatch(
+    fileDate: Date,
+    targetFilter: Date,
+    compareType: FileCompareType
+  ): boolean {
+    const result = compareAsc(fileDate, targetFilter);
+    switch (compareType) {
+      case FileCompareType.Equal:
+        return result === 0;
+      case FileCompareType.Larger:
+        return result > 0;
+      case FileCompareType.LargerOrEqual:
+        return result >= 0;
+      case FileCompareType.Less:
+        return result < 0;
+      case FileCompareType.LessOrEqual:
+        return result <= 0;
+    }
+  }
+
+  static async archive(
+    archiveFileName: string,
+    archiveType: FileArchiveType,
+    sourceFileList: FileTransportInfo[],
+    config: Configurator,
+    applicationId: number,
+    password: string = ''
+  ): Promise<Result<boolean, ArchiveError>> {
+    if (!sourceFileList || sourceFileList.length === 0)
+      return fail('Source File Not Specified to archive', ArchiveError);
+
+    const archiveInformation = new FileInfo(archiveFileName);
+    if (archiveType == FileArchiveType.GuessFromFileName) {
+      const extension = archiveInformation.extension.toLowerCase();
+      switch (extension) {
+        case 'zip':
+          archiveType = FileArchiveType.Zip;
+          break;
+        case 'tgz':
+          archiveType = FileArchiveType.Tgz;
+          break;
+        case 'bz2':
+          archiveType = FileArchiveType.BZip2;
+          break;
+        case 'gz':
+          archiveType = FileArchiveType.GZip;
+          break;
+        case 'tar':
+          archiveType = FileArchiveType.Tar;
+          break;
+        default:
+          return fail(
+            'File Extension Not supported for archiving ' + extension,
+            ArchiveError
+          );
+      }
+    }
+    if (
+      archiveType == FileArchiveType.BZip2 ||
+      archiveType == FileArchiveType.GZip
+    ) {
+      if (sourceFileList.length > 1 || sourceFileList[0].isSourceDirectory)
+        return fail(
+          'Multiple files are not supported in this compression type: ' +
+            archiveType,
+          ArchiveError
+        );
+    }
+
+    if (archiveType !== FileArchiveType.Zip && password !== '')
+      return fail(
+        'password is not supported on other than zip format',
+        ArchiveError
+      );
+
+    switch (archiveType) {
+      case FileArchiveType.Zip:
+        return ZipArchive.create(
+          archiveInformation.fullPath,
+          sourceFileList,
+          password
+        );
+    }
+
+    return success(true);
+  }
+}
