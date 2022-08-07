@@ -2,9 +2,23 @@ export class BaseError extends Error {
   innerError?: Error;
 
   constructor(message: string, innerError?: Error) {
-    super();
+    super(message);
     this.innerError = innerError;
   }
 }
-export class ValueError extends BaseError {}
-export class ArchiveError extends BaseError {}
+export class ValueError extends BaseError {
+  constructor(message: string, innerError?: Error) {
+    super(message, innerError);
+  }
+}
+export class ArchiveError extends BaseError {
+  constructor(message: string, innerError?: Error) {
+    super(message, innerError);
+  }
+}
+
+export class TimeoutError extends BaseError {
+  constructor(message: string, innerError?: Error) {
+    super(message, innerError);
+  }
+}

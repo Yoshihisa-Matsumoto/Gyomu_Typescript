@@ -4,6 +4,9 @@ import os, { tmpdir } from 'os';
 import path from 'path';
 import { FileTransportInfo } from '../../fileModel';
 import fs from 'fs';
+import { compareFiles, validateFolders } from '../../__tests__/baseClass';
+import { ArchiveError } from '../../errors';
+import { PromiseResult, Result } from '../../result';
 
 let compressDirectory: string;
 let extractDirectory: string;
@@ -25,13 +28,25 @@ beforeAll(() => {
 //   fse.removeSync(destinationDirectory);
 // });
 
-const getBufferFromFilenames = (
-  sourceFilename: string,
-  destinationFilename: string
-): [Buffer, Buffer] => {
-  const sourceBuffer = fs.readFileSync(sourceFilename);
-  const destinationBuffer = fs.readFileSync(destinationFilename);
-  return [sourceBuffer, destinationBuffer];
+const validateFileExistence = async (
+  archive: ZipArchive,
+  entryName: string,
+  expected_result: boolean
+) => {
+  let result = await archive.fileExists(entryName);
+  if (result.isSuccess()) {
+    if (result.value !== expected_result) {
+      console.log(
+        entryName,
+        'Different from expected result:',
+        expected_result
+      );
+    }
+    expect(result.value).toBe(expected_result);
+  } else {
+    console.log(result.error);
+    expect(false).toBeTruthy();
+  }
 };
 test('Zip Creation Test', async () => {
   //const extractDirectory = path.join(compressDirectory,'extracted');
@@ -51,61 +66,127 @@ test('Zip Creation Test', async () => {
   const checkFilename = path.join(sourceDirectory, 'README.md');
   //const [sourceBuffer,destinationBuffer] = getBufferFromFilenames()
   let archive: ZipArchive = new ZipArchive({ zipFilename });
-  let isExist = await archive.fileExists('README.md');
-  expect(isExist).toBeTruthy();
-  isExist = await archive.fileExists('README1.md');
-  expect(isExist).toBeFalsy();
-  isExist = await archive.fileExists('folder1/folder 2/aes_encryption.py');
+  //let isExist = await archive.fileExists('README.md');
+  await validateFileExistence(archive, 'README.md', true);
+  //isExist = await archive.fileExists('README1.md');
+  await validateFileExistence(archive, 'README1.md', false);
+  //isExist = await archive.fileExists('folder1/folder 2/aes_encryption.py');
+  await validateFileExistence(
+    archive,
+    'folder1/folder 2/aes_encryption.py',
+    true
+  );
+  //isExist = await archive.fileExists('folder1\\folder 2\\aes_encryption.py');
+  await validateFileExistence(
+    archive,
+    'folder1\\folder 2\\aes_encryption.py',
+    true
+  );
 
-  expect(isExist).toBeTruthy();
-  isExist = await archive.fileExists('folder1\\folder 2\\aes_encryption.py');
-  expect(isExist).toBeTruthy();
+  //isExist = await archive.fileExists('folder1\\folder 3\\aes_encryption.py');
+  await validateFileExistence(
+    archive,
+    'folder1\\folder 3\\aes_encryption.py',
+    false
+  );
 
-  isExist = await archive.fileExists('folder1\\folder 3\\aes_encryption.py');
-  expect(isExist).toBeFalsy();
+  //isExist = await archive.fileExists('ユーザー噂.py');
+  await validateFileExistence(archive, 'ユーザー噂.py', true);
 
-  isExist = await archive.fileExists('ユーザー噂.py');
-  expect(isExist).toBeTruthy();
+  let destinationRoot = path.join(extractDirectory, 'fullZipCreate');
+
+  result = await archive.extractAll(destinationRoot);
+  expect(result.isSuccess()).toBeTruthy();
+  validateFolders(path.join(compressDirectory, 'source'), destinationRoot);
 });
 
-// test('Zip Creation with password Test', async () => {
-//   //const extractDirectory = path.join(compressDirectory,'extracted');
-//   const sourceDirectory = path.join(compressDirectory, 'source');
-//   const zipFilename = path.join(
-//     compressDirectory,
-//     'test_zip_create_password.zip'
-//   );
-//   const transferInformation = new FileTransportInfo({
-//     basePath: sourceDirectory,
-//   });
-//   const transferInformationList = [transferInformation];
+test('Zip Creation with password Test', async () => {
+  //const extractDirectory = path.join(compressDirectory,'extracted');
+  const sourceDirectory = path.join(compressDirectory, 'source');
+  const zipFilename = path.join(
+    compressDirectory,
+    'test_zip_create_password.zip'
+  );
+  const transferInformation = new FileTransportInfo({
+    basePath: sourceDirectory,
+  });
+  const transferInformationList = [transferInformation];
+  const password = 'SimplePassword';
+  let result;
 
-//   let result = await ZipArchive.create(
-//     zipFilename,
-//     transferInformationList,
-//     'SimplePassword'
-//   );
+  result = await ZipArchive.create(
+    zipFilename,
+    transferInformationList,
+    password
+  );
 
-//   expect(result.isSuccess()).toBeTruthy();
-//   if (result.isSuccess()) {
-//     Promise.allSettled([result.value]);
-//   }
-//   const checkFilename = path.join(sourceDirectory, 'README.md');
-//   //const [sourceBuffer,destinationBuffer] = getBufferFromFilenames()
-//   const archive: ZipArchive = new ZipArchive(zipFilename, 'SimplePassword');
-//   let isExist = await archive.fileExists('README.md');
-//   expect(isExist).toBeTruthy();
-//   isExist = await archive.fileExists('README1.md');
-//   expect(isExist).toBeFalsy();
-//   isExist = await archive.fileExists('folder1/folder 2/aes_encryption.py');
+  expect(result.isSuccess()).toBeTruthy();
 
-//   expect(isExist).toBeTruthy();
-//   isExist = await archive.fileExists('folder1\\folder 2\\aes_encryption.py');
-//   expect(isExist).toBeTruthy();
+  console.log('Create with Password completed', new Date());
+  //const [sourceBuffer,destinationBuffer] = getBufferFromFilenames()
+  const archive: ZipArchive = new ZipArchive({
+    zipFilename,
+    password: password,
+  });
 
-//   isExist = await archive.fileExists('folder1\\folder 3\\aes_encryption.py');
-//   expect(isExist).toBeFalsy();
-// });
+  let isExist = await archive.fileExists('README.md');
+  let isSuccess = isExist.isSuccess();
+  if (isExist.isSuccess()) {
+    expect(isExist.value).toBeTruthy();
+  } else {
+    console.log(isExist.error);
+    expect(isExist.isSuccess()).toBeTruthy();
+  }
+
+  isExist = await archive.fileExists('README1.md');
+  isSuccess = isExist.isSuccess();
+  if (isExist.isSuccess()) {
+    expect(isExist.value).toBeFalsy();
+  } else {
+    console.log(isExist.error);
+    expect(isExist.isSuccess()).toBeTruthy();
+  }
+  isExist = await archive.fileExists('folder1/folder 2/aes_encryption.py');
+  isSuccess = isExist.isSuccess();
+  if (isExist.isSuccess()) {
+    expect(isExist.value).toBeTruthy();
+  } else {
+    console.log(isExist.error);
+    expect(isExist.isSuccess()).toBeTruthy();
+  }
+  isExist = await archive.fileExists('folder1\\folder 2\\aes_encryption.py');
+  isSuccess = isExist.isSuccess();
+  if (isExist.isSuccess()) {
+    expect(isExist.value).toBeTruthy();
+  } else {
+    console.log(isExist.error);
+    expect(isExist.isSuccess()).toBeTruthy();
+  }
+
+  isExist = await archive.fileExists('folder1\\folder 3\\aes_encryption.py');
+  isSuccess = isExist.isSuccess();
+  if (isExist.isSuccess()) {
+    expect(isExist.value).toBeFalsy();
+  } else {
+    console.log(isExist.error);
+    expect(isExist.isSuccess()).toBeTruthy();
+  }
+
+  isExist = await archive.fileExists('ユーザー噂.py');
+  isSuccess = isExist.isSuccess();
+  if (isExist.isSuccess()) {
+    expect(isExist.value).toBeTruthy();
+  } else {
+    console.log(isExist.error);
+    expect(isExist.isSuccess()).toBeTruthy();
+  }
+
+  let destinationRoot = path.join(extractDirectory, 'fullZipCreatePassword');
+
+  result = await archive.extractAll(destinationRoot);
+  expect(result.isSuccess()).toBeTruthy();
+  validateFolders(path.join(compressDirectory, 'source'), destinationRoot);
+});
 
 test('Zip Unarchive Test', async () => {
   let transferInformation: FileTransportInfo;
@@ -119,7 +200,6 @@ test('Zip Unarchive Test', async () => {
     zipFilename: path.join(compressDirectory, 'compress/temp.zip'),
   });
   const result = await archive.extract(transferInformation);
-
   extractedFile = path.join(extractDirectory, 'outputREADME.md');
   expect(
     compareFiles(
@@ -142,15 +222,15 @@ test('Zip Unarchive Test', async () => {
     )
   ).toBeTruthy();
 
-  let isExist = await archive.fileExists('ユーザー噂.py');
-  expect(isExist).toBeFalsy();
+  //let isExist = await archive.fileExists('ユーザー噂.py');
+  await validateFileExistence(archive, 'ユーザー噂.py', false);
 
   archive = new ZipArchive({
     zipFilename: path.join(compressDirectory, 'compress/temp.zip'),
     encoding: 'Shift_JIS',
   });
-  isExist = await archive.fileExists('ユーザー噂.py');
-  expect(isExist).toBeTruthy();
+  //isExist = await archive.fileExists('ユーザー噂.py');
+  await validateFileExistence(archive, 'ユーザー噂.py', true);
 
   transferInformation = new FileTransportInfo({
     sourceFilename: 'ユーザー噂.py',
@@ -178,78 +258,14 @@ test('Zip Unarchive Folder Test', async () => {
   });
   let result = await archive.extract(transferInformation);
   expect(result.isSuccess()).toBeTruthy();
-  expect(
-    compareFolders(
-      path.join(compressDirectory, 'source/folder1/folder 2'),
-      path.join(extractDirectory, 'folder 2')
-    )
-  ).toBeTruthy();
-  expect(
-    compareFoldersFromDest(
-      path.join(compressDirectory, 'source/folder1/folder 2'),
-      path.join(extractDirectory, 'folder 2')
-    )
-  ).toBeTruthy();
+  validateFolders(
+    path.join(compressDirectory, 'source/folder1/folder 2'),
+    path.join(extractDirectory, 'folder 2')
+  );
 
-  let destinationRoot = path.join(extractDirectory, 'full');
+  let destinationRoot = path.join(extractDirectory, 'fullZipExtract');
 
   result = await archive.extractAll(destinationRoot);
   expect(result.isSuccess()).toBeTruthy();
-  expect(
-    compareFolders(path.join(compressDirectory, 'source'), destinationRoot)
-  ).toBeTruthy();
-  expect(
-    compareFoldersFromDest(
-      path.join(compressDirectory, 'source'),
-      destinationRoot
-    )
-  ).toBeTruthy();
+  validateFolders(path.join(compressDirectory, 'source'), destinationRoot);
 });
-
-const compareFiles = (srcFile: string, destFile: string): boolean => {
-  const result = fs.readFileSync(srcFile).equals(fs.readFileSync(destFile));
-  if (!result) {
-    console.log(srcFile, destFile);
-  }
-  return result;
-};
-
-const compareFolders = (srcFolder: string, destFolder: string): boolean => {
-  fs.readdirSync(srcFolder, { withFileTypes: true }).forEach((dirent) => {
-    const sourceFullPath = path.join(path.resolve(srcFolder), dirent.name);
-    const targetDestFullPath = path.join(path.resolve(destFolder), dirent.name);
-    if (dirent.isFile()) {
-      expect(fs.existsSync(targetDestFullPath)).toBeTruthy();
-      expect(compareFiles(sourceFullPath, targetDestFullPath)).toBeTruthy();
-    } else {
-      console.log(targetDestFullPath);
-      expect(fs.existsSync(targetDestFullPath)).toBeTruthy();
-      return compareFolders(sourceFullPath, targetDestFullPath);
-    }
-  });
-
-  return true;
-};
-const compareFoldersFromDest = (
-  srcFolder: string,
-  destFolder: string
-): boolean => {
-  fs.readdirSync(destFolder, { withFileTypes: true }).forEach((dirent) => {
-    const destinationFullPath = path.join(
-      path.resolve(destFolder),
-      dirent.name
-    );
-    const targetSourceFullPath = path.join(
-      path.resolve(srcFolder),
-      dirent.name
-    );
-    if (dirent.isFile()) {
-      expect(fs.existsSync(targetSourceFullPath)).toBeTruthy();
-    } else {
-      expect(fs.existsSync(targetSourceFullPath)).toBeTruthy();
-      return compareFoldersFromDest(targetSourceFullPath, destinationFullPath);
-    }
-  });
-
-  return true;
-};

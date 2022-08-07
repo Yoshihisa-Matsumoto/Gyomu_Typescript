@@ -10,10 +10,11 @@ import {
   FilterType,
 } from './fileModel';
 import compareAsc from 'date-fns/compareAsc';
-import { fail, Result, success } from './result';
-import { ArchiveError } from './errors';
+import { fail, PromiseResult, Result, success } from './result';
+import { ArchiveError, TimeoutError } from './errors';
 import { fi } from 'date-fns/locale';
 import { ZipArchive } from './archive/zip';
+import { TarArchive } from './archive/tar';
 
 export class FileOperation {
   static canAccess(fileName: string, readOnly: boolean = false): boolean {
@@ -37,6 +38,34 @@ export class FileOperation {
     } catch (err) {
       return false;
     }
+  }
+
+  static async waitTillExclusiveAccess(
+    fileName: string,
+    timeoutSeconds: number
+  ): PromiseResult<boolean, TimeoutError> {
+    const timeoutTime = new Date().getTime() + timeoutSeconds * 1000;
+    const nextIntervalMilliSecond = 500;
+    // return await this.__timeoutCallback(
+    //   timeoutTime,
+    //   fileName,
+    //   nextIntervalMilliSecond
+    // );
+    return new Promise((resolve, reject) => {
+      const timerId = setInterval(() => {
+        const accessible = this.canAccess(fileName, false);
+        if (accessible) {
+          clearInterval(timerId);
+          return resolve(success(accessible));
+        }
+        if (new Date().getTime() > timeoutTime) {
+          clearInterval(timerId);
+          return resolve(
+            fail(`Timeout happen to access ${fileName}`, TimeoutError)
+          );
+        }
+      }, nextIntervalMilliSecond);
+    });
   }
 
   static search(
@@ -232,13 +261,26 @@ export class FileOperation {
         'password is not supported on other than zip format',
         ArchiveError
       );
+    if (archiveType === FileArchiveType.Tar) {
+      if (sourceFileList.length > 1 || !sourceFileList[0].isSourceDirectory)
+        return fail(
+          'single file or multiple directory is not supported in this compression type: ' +
+            archiveType,
+          ArchiveError
+        );
+    }
 
     switch (archiveType) {
       case FileArchiveType.Zip:
-        return ZipArchive.create(
+        return await ZipArchive.create(
           archiveInformation.fullPath,
           sourceFileList,
           password
+        );
+      case FileArchiveType.Tar:
+        return await TarArchive.create(
+          archiveInformation.fullPath,
+          sourceFileList[0]
         );
     }
 

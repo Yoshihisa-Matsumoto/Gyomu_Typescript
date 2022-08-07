@@ -8,11 +8,13 @@ import archiver from 'archiver';
 import unzipper, { Entry, File } from 'unzipper';
 import stream from 'stream';
 import il from 'iconv-lite';
+import { AbstractBaseArchive } from './abstract';
 /**
  * @remarks
  * This class (extract side) doesn't support stream based retrieval yet
+ * This class  doesn't support AES decryption yet
  */
-export class ZipArchive {
+export class ZipArchive extends AbstractBaseArchive {
   static _initialize() {
     archiver.registerFormat('zip-encrypted', require('archiver-zip-encrypted'));
   }
@@ -20,14 +22,14 @@ export class ZipArchive {
     zipFileName: string,
     transferInformationList: FileTransportInfo[],
     password: string = ''
-  ): Promise<Result<boolean, ArchiveError>> {
+  ): PromiseResult<boolean, ArchiveError> {
     const archive =
       password === ''
         ? archiver.create('zip', { forceZip64: true })
         : archiver.create('zip-encrypted', {
             forceZip64: true,
-            encryptionMethod: 'aes256',
-            password: '123',
+            encryptionMethod: 'zip20',
+            password,
           });
 
     //outputStream.on('close',()=>)
@@ -40,6 +42,15 @@ export class ZipArchive {
     });
     archive.on('error', (err) => {
       return new Failure(new ArchiveError('Unknown Error on Archive', err));
+    });
+    archive.on('close', () => {
+      //console.log('close');
+    });
+    archive.on('end', function () {
+      //console.log('Data has been drained');
+    });
+    archive.on('finish', function () {
+      //console.log('finish');
     });
     const outputStream = fs.createWriteStream(zipFileName);
     archive.pipe(outputStream);
@@ -62,11 +73,22 @@ export class ZipArchive {
         //this.#buildZipArchiveInternal(sourcePath, sourcePath, archive);
       }
     }
-    await archive.finalize();
-    return success(true);
+    return new Promise(async (resolve, reject) => {
+      await archive
+        .finalize()
+        .then(() => {
+          return resolve(success(true));
+        })
+        .catch((err: Error) => {
+          return resolve(
+            new Failure(new ArchiveError('Fail to zip archive', err))
+          );
+        });
+      // console.log('final');
+      return resolve(success(true));
+    });
   }
 
-  readonly zipFilename: string;
   readonly password: string;
   readonly isAesEncrypted: boolean;
   readonly encoding: string;
@@ -81,24 +103,35 @@ export class ZipArchive {
     encoding?: string;
     isAesEncrypted?: boolean;
   }) {
-    this.zipFilename = zipFilename;
+    super(zipFilename);
     this.password = password;
     this.isAesEncrypted = isAesEncrypted;
     this.encoding = encoding;
   }
 
-  #massageEntryPath(fileName: string) {
-    return fileName.replace(/\\/g, '/');
-  }
-  async fileExists(fileName: string) {
-    fileName = this.#massageEntryPath(fileName);
-    return unzipper.Open.file(this.zipFilename).then((directory) => {
-      const targetFile = directory.files.find((f) => {
-        return (
-          f.type === 'File' && this.#massageFileEntryFullPath(f) === fileName
-        );
-      });
-      return !!targetFile;
+  async fileExists(fileName: string): PromiseResult<boolean, ArchiveError> {
+    fileName = this.__massageEntryPath(fileName);
+    return new Promise((resolve, reject) => {
+      return unzipper.Open.file(this.archiveFileName)
+        .then((directory) => {
+          const targetFile = directory.files.find((f) => {
+            return (
+              f.type === 'File' &&
+              this.#massageFileEntryFullPath(f) === fileName
+            );
+          });
+          return resolve(success(!!targetFile));
+        })
+        .catch((err: Error) => {
+          return resolve(
+            new Failure(
+              new ArchiveError(
+                `Fail to check file existence of ${this.archiveFileName}->${fileName}`,
+                err
+              )
+            )
+          );
+        });
     });
   }
   #unicode: number = 0x800;
@@ -113,27 +146,27 @@ export class ZipArchive {
     // console.log(decoded);
     return decoded;
   }
-  #createDirectoryFromFileNameIfNotExist(destinationFilename: string) {
-    let directoryName = path.dirname(destinationFilename);
+  // #createDirectoryFromFileNameIfNotExist(destinationFilename: string) {
+  //   let directoryName = path.dirname(destinationFilename);
 
-    if (destinationFilename.endsWith(path.sep))
-      directoryName = destinationFilename;
-    return this.#createDirectoryIfNotExist(directoryName);
-  }
-  #createDirectoryIfNotExist(destinationPath: string) {
-    let directoryName = destinationPath;
+  //   if (destinationFilename.endsWith(path.sep))
+  //     directoryName = destinationFilename;
+  //   return this.#createDirectoryIfNotExist(directoryName);
+  // }
+  // #createDirectoryIfNotExist(destinationPath: string) {
+  //   let directoryName = destinationPath;
 
-    if (!fs.existsSync(directoryName)) {
-      console.log(directoryName + ' to be created');
-      fs.mkdirSync(directoryName);
-    }
-  }
+  //   if (!fs.existsSync(directoryName)) {
+  //     console.log(directoryName + ' to be created');
+  //     fs.mkdirSync(directoryName);
+  //   }
+  // }
   async extractSingileFile(
     sourceEntryFullName: string,
     destinationFullName: string
   ): PromiseResult<boolean, ArchiveError> {
-    const targetEntryName = this.#massageEntryPath(sourceEntryFullName);
-    return unzipper.Open.file(this.zipFilename).then((directory) => {
+    const targetEntryName = this.__massageEntryPath(sourceEntryFullName);
+    return unzipper.Open.file(this.archiveFileName).then((directory) => {
       const targetFile = directory.files.find((f) => {
         return (
           f.type === 'File' &&
@@ -145,7 +178,7 @@ export class ZipArchive {
         return fail(`File not found :${targetEntryName}`, ArchiveError);
       }
 
-      this.#createDirectoryFromFileNameIfNotExist(destinationFullName);
+      this.__createDirectoryFromFileNameIfNotExist(destinationFullName);
       return new Promise((resolve, reject) => {
         targetFile
           .stream(this.password)
@@ -172,8 +205,8 @@ export class ZipArchive {
     sourceDirectory: string,
     destinationDirectory: string
   ): PromiseResult<boolean, ArchiveError> {
-    const targetEntryName = this.#massageEntryPath(sourceDirectory);
-    const result = unzipper.Open.file(this.zipFilename).then(
+    const targetEntryName = this.__massageEntryPath(sourceDirectory);
+    const result = unzipper.Open.file(this.archiveFileName).then(
       async (directory) => {
         const targetFileList = directory.files.filter((f) =>
           this.#massageFileEntryFullPath(f).startsWith(targetEntryName)
@@ -181,7 +214,7 @@ export class ZipArchive {
         if (!targetFileList || targetFileList.length === 0) {
           return fail(`Folder not found : ${targetEntryName}`, ArchiveError);
         }
-        this.#createDirectoryIfNotExist(destinationDirectory);
+        this.__createDirectoryIfNotExist(destinationDirectory);
         targetFileList
           .filter((file) => file.type === 'Directory')
           .forEach((file) => {
@@ -192,7 +225,7 @@ export class ZipArchive {
                 .substring(targetEntryName.length)
                 .replace('/', path.sep)
             );
-            this.#createDirectoryFromFileNameIfNotExist(destinationPath);
+            this.__createDirectoryFromFileNameIfNotExist(destinationPath);
           });
         const resultPromiseList = await targetFileList
           .filter((file) => file.type === 'File')
@@ -204,7 +237,7 @@ export class ZipArchive {
                 .substring(targetEntryName.length)
                 .replace('/', path.sep)
             );
-            this.#createDirectoryFromFileNameIfNotExist(destinationPath);
+            this.__createDirectoryFromFileNameIfNotExist(destinationPath);
 
             return new Promise<void>((resolve, reject) => {
               file
@@ -237,28 +270,30 @@ export class ZipArchive {
     );
     return result;
   }
-  async extractAll(destinationDirectory: string) {
+  async extractAll(
+    destinationDirectory: string
+  ): PromiseResult<boolean, ArchiveError> {
     return this.extractDirectory('', destinationDirectory);
   }
   async extract(
     //zipFilename: string,
     transferInformation: FileTransportInfo
-  ) {
+  ): PromiseResult<boolean, ArchiveError> {
     //console.log('directory', directory);
-    const targetEntryName = this.#massageEntryPath(
+    const targetEntryName = this.__massageEntryPath(
       transferInformation.sourceFullName
     );
-    console.log('targetEntryName:', targetEntryName, ':');
+    //console.log('targetEntryName:', targetEntryName, ':');
 
     //const directory = await unzipper.Open.file(this.zipFilename);
 
     if (!transferInformation.isSourceDirectory) {
-      return this.extractSingileFile(
+      return await this.extractSingileFile(
         transferInformation.sourceFullName,
         transferInformation.destinationFullName
       );
     } else {
-      return this.extractDirectory(
+      return await this.extractDirectory(
         transferInformation.sourceFullName,
         transferInformation.destinationFullName
       );
