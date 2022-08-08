@@ -15,87 +15,10 @@ import { AbstractBaseArchive } from './abstract';
  * This class (extract side) doesn't support stream based retrieval yet
  */
 export class TarArchive extends AbstractBaseArchive {
-  // static async create(
-  //   tarFileName: string,
-  //   transferInformationList: FileTransportInfo[]
-  // ): Promise<Result<boolean, ArchiveError>> {
-  //   const archive = archiver.create('tar');
-
-  //   //outputStream.on('close',()=>)
-  //   archive.on('warning', (err) => {
-  //     if (err.code === 'ENOENT') {
-  //       console.log(err.message);
-  //     } else {
-  //       return new Failure(
-  //         new ArchiveError('Unknown Warning on Tar Archive', err)
-  //       );
-  //     }
-  //   });
-  //   archive.on('error', (err) => {
-  //     return new Failure(new ArchiveError('Unknown Error on Tar Archive', err));
-  //   });
-  //   const outputStream = fs.createWriteStream(tarFileName);
-  //   archive.pipe(outputStream);
-
-  //   for (const transferInformation of transferInformationList) {
-  //     const sourcePath = transferInformation.sourceFullNameWithBasePath;
-  //     if (!fs.existsSync(sourcePath))
-  //       return fail(`File Not Found: ${sourcePath}`, ArchiveError);
-  //     if (!transferInformation.isSourceDirectory) {
-  //       let destinationEntryName =
-  //         transferInformation.destinationFullName.replace(path.sep, '/');
-  //       archive.file(sourcePath, { name: destinationEntryName });
-  //     } else {
-  //       archive.directory(
-  //         sourcePath,
-  //         transferInformation.destinationPath
-  //           ? transferInformation.destinationPath
-  //           : false
-  //       );
-  //       //this.#buildZipArchiveInternal(sourcePath, sourcePath, archive);
-  //     }
-  //   }
-  //   await archive.finalize();
-  //   return success(true);
-  // }
-  // static async create(
-  //   tarFileName: string,
-  //   transferInformation: FileTransportInfo
-  // ): PromiseResult<boolean, ArchiveError> {
-  //   let rootPack: tarStream.Pack;
-
-  //   const sourcePath = transferInformation.sourceFullNameWithBasePath;
-  //   if (!fs.existsSync(sourcePath))
-  //     return fail(`File Not Found: ${sourcePath}`, ArchiveError);
-  //   if (!transferInformation.isSourceDirectory)
-  //     return fail('Single File packing is not supported now', ArchiveError);
-
-  //   let destinationEntryName = transferInformation.destinationFullName.replace(
-  //     path.sep,
-  //     '/'
-  //   );
-
-  //   rootPack = tar.pack(sourcePath);
-
-  //   return new Promise((resolve, reject) => {
-  //     rootPack
-  //       .pipe(fs.createWriteStream(tarFileName))
-  //       .on('error', (err) => {
-  //         return resolve(
-  //           new Failure(
-  //             new ArchiveError(`Unknown Error on create ${tarFileName}`, err)
-  //           )
-  //         );
-  //       })
-  //       .on('finish', () => {
-  //         resolve(success(true));
-  //       });
-  //   });
-  // }
-
   static async create(
     tarFileName: string,
-    transferInformation: FileTransportInfo
+    transferInformation: FileTransportInfo,
+    needGZipCompression: boolean = false
   ): PromiseResult<boolean, ArchiveError> {
     let currentDirectory = path.dirname(
       transferInformation.sourceFullNameWithBasePath
@@ -109,15 +32,40 @@ export class TarArchive extends AbstractBaseArchive {
     if (!transferInformation.isSourceDirectory) {
       return fail('Single File is not supported', ArchiveError);
     }
+    let tarOptions: tar.CreateOptions & tar.FileOptions;
+    tarOptions = {
+      file: tarFileName,
+      cwd: transferInformation.sourceFullNameWithBasePath,
+    };
+    if (needGZipCompression) {
+      tarOptions = {
+        file: tarFileName,
+        cwd: transferInformation.sourceFullNameWithBasePath,
+        gzip: true,
+      };
+    }
     return new Promise((resolve, reject) => {
-      tar
-        .create(
+      let result: Promise<void>;
+      if (!needGZipCompression) {
+        result = tar.create(
           {
             file: tarFileName,
             cwd: transferInformation.sourceFullNameWithBasePath,
           },
           ['']
-        )
+        );
+      } else {
+        result = tar.create(
+          {
+            file: tarFileName,
+            cwd: transferInformation.sourceFullNameWithBasePath,
+            gzip: true,
+          },
+          ['']
+        );
+      }
+
+      result
         .then(() => {
           return resolve(success(true));
         })

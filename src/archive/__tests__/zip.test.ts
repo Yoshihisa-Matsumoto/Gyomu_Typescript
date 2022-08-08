@@ -7,6 +7,7 @@ import fs from 'fs';
 import { compareFiles, validateFolders } from '../../__tests__/baseClass';
 import { ArchiveError } from '../../errors';
 import { PromiseResult, Result } from '../../result';
+import { FileOperation } from '../../fileOperation';
 
 let compressDirectory: string;
 let extractDirectory: string;
@@ -129,57 +130,25 @@ test('Zip Creation with password Test', async () => {
     password: password,
   });
 
-  let isExist = await archive.fileExists('README.md');
-  let isSuccess = isExist.isSuccess();
-  if (isExist.isSuccess()) {
-    expect(isExist.value).toBeTruthy();
-  } else {
-    console.log(isExist.error);
-    expect(isExist.isSuccess()).toBeTruthy();
-  }
+  await validateFileExistence(archive, 'README.md', true);
 
-  isExist = await archive.fileExists('README1.md');
-  isSuccess = isExist.isSuccess();
-  if (isExist.isSuccess()) {
-    expect(isExist.value).toBeFalsy();
-  } else {
-    console.log(isExist.error);
-    expect(isExist.isSuccess()).toBeTruthy();
-  }
-  isExist = await archive.fileExists('folder1/folder 2/aes_encryption.py');
-  isSuccess = isExist.isSuccess();
-  if (isExist.isSuccess()) {
-    expect(isExist.value).toBeTruthy();
-  } else {
-    console.log(isExist.error);
-    expect(isExist.isSuccess()).toBeTruthy();
-  }
-  isExist = await archive.fileExists('folder1\\folder 2\\aes_encryption.py');
-  isSuccess = isExist.isSuccess();
-  if (isExist.isSuccess()) {
-    expect(isExist.value).toBeTruthy();
-  } else {
-    console.log(isExist.error);
-    expect(isExist.isSuccess()).toBeTruthy();
-  }
-
-  isExist = await archive.fileExists('folder1\\folder 3\\aes_encryption.py');
-  isSuccess = isExist.isSuccess();
-  if (isExist.isSuccess()) {
-    expect(isExist.value).toBeFalsy();
-  } else {
-    console.log(isExist.error);
-    expect(isExist.isSuccess()).toBeTruthy();
-  }
-
-  isExist = await archive.fileExists('ユーザー噂.py');
-  isSuccess = isExist.isSuccess();
-  if (isExist.isSuccess()) {
-    expect(isExist.value).toBeTruthy();
-  } else {
-    console.log(isExist.error);
-    expect(isExist.isSuccess()).toBeTruthy();
-  }
+  await validateFileExistence(archive, 'README1.md', false);
+  await validateFileExistence(
+    archive,
+    'folder1/folder 2/aes_encryption.py',
+    true
+  );
+  await validateFileExistence(
+    archive,
+    'folder1\\folder 2\\aes_encryption.py',
+    true
+  );
+  await validateFileExistence(
+    archive,
+    'folder1\\folder 3\\aes_encryption.py',
+    false
+  );
+  await validateFileExistence(archive, 'ユーザー噂.py', true);
 
   let destinationRoot = path.join(extractDirectory, 'fullZipCreatePassword');
 

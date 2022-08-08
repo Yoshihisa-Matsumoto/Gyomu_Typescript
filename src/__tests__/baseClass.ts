@@ -1,7 +1,6 @@
 import path from 'path';
 import fs from 'fs';
 
-test('', () => {});
 export const compareFiles = (srcFile: string, destFile: string): boolean => {
   const result = fs.readFileSync(srcFile).equals(fs.readFileSync(destFile));
   if (!result) {

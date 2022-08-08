@@ -109,6 +109,7 @@ export class FileTransportInfo {
   readonly isDestinationDirectory: boolean;
 
   readonly isDestinationRoot: boolean;
+  readonly filterConditions?: FileFilterInfo[];
 
   /**
    * Base	Sdir	Sname	Ddir	Dname		(S)full+base	    (S)Full	    (S)path (S)name (D)full	    (D)path (D)name
@@ -144,6 +145,16 @@ export class FileTransportInfo {
     destinationFolderName = '',
     deleteSourceFileAfterCompletion = false,
     overwriteDestination = false,
+    filterConditions = undefined,
+  }: {
+    basePath?: string;
+    sourceFilename?: string;
+    sourceFolderName?: string;
+    destinationFileName?: string;
+    destinationFolderName?: string;
+    deleteSourceFileAfterCompletion?: boolean;
+    overwriteDestination?: boolean;
+    filterConditions?: FileFilterInfo[];
   }) {
     this.basePath = basePath;
     this.sourceFileName = sourceFilename;
@@ -152,6 +163,7 @@ export class FileTransportInfo {
     this.#destinationFolderName = destinationFolderName;
     this.deleteSourceFileAfterCompletion = deleteSourceFileAfterCompletion;
     this.overwriteDestination = overwriteDestination;
+    this.filterConditions = filterConditions;
 
     this.isSourceDirectory = !this.sourceFileName;
     this.isDestinationDirectory = !this.destinationFileName;

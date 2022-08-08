@@ -11,33 +11,59 @@ import {
 } from './fileModel';
 import compareAsc from 'date-fns/compareAsc';
 import { fail, PromiseResult, Result, success } from './result';
-import { ArchiveError, TimeoutError } from './errors';
+import { AccessError, ArchiveError, TimeoutError } from './errors';
 import { fi } from 'date-fns/locale';
 import { ZipArchive } from './archive/zip';
 import { TarArchive } from './archive/tar';
+import { isEqual } from 'date-fns';
+import tmp from 'tmp';
+import { GzipArchive } from './archive/gz';
 
 export class FileOperation {
-  static canAccess(fileName: string, readOnly: boolean = false): boolean {
-    if (!fs.existsSync(fileName)) return false;
-    const specialExtension = ['xls', 'xlsm', 'xlsx', 'zip'];
-    const stat = fs.statSync(fileName);
+  static async canAccess(
+    fileName: string,
+    readOnly: boolean = false
+  ): PromiseResult<boolean, AccessError> {
+    return new Promise(async (resolve, reject) => {
+      if (!fs.existsSync(fileName))
+        return resolve(fail(`File Not exist: ${fileName}`, AccessError));
+      const specialExtension = ['xls', 'xlsm', 'xlsx', 'zip'];
+      const stat = fs.statSync(fileName);
 
-    if (specialExtension.includes(path.extname(fileName)) && stat.size === 0)
-      return false;
+      if (specialExtension.includes(path.extname(fileName)) && stat.size === 0)
+        return resolve(fail(`File is invalid: ${fileName}`, AccessError));
+      if (readOnly) return resolve(success(true));
+      await setTimeout(() => {
+        const stat2 = fs.statSync(fileName);
+        if (
+          !isEqual(stat.ctime, stat2.ctime) ||
+          !isEqual(stat.mtime, stat2.mtime)
+        ) {
+          // console.log(stat.ctime, stat2.ctime);
+          // console.log(stat.mtime, stat2.mtime);
+          return resolve(
+            fail(`File is under operation: ${fileName}`, AccessError)
+          );
+        }
+        return resolve(success(true));
+      }, 100);
 
-    try {
-      const fileHandle = fs.openSync(
-        fileName,
-        readOnly ? 'r' : 'r+',
-        readOnly
-          ? fs.constants.O_RDONLY
-          : fs.constants.O_RDWR | fs.constants.O_EXCL
-      );
-      fs.closeSync(fileHandle);
-      return true;
-    } catch (err) {
       return false;
-    }
+    });
+
+    // try {
+    //   const fileHandle = fs.openSync(
+    //     fileName,
+    //     readOnly ? 'r' : 'r+',
+    //     readOnly
+    //       ? fs.constants.O_RDONLY
+    //       : fs.constants.O_RDWR | fs.constants.O_EXCL
+    //   );
+    //   fs.closeSync(fileHandle);
+    //   return true;
+    // } catch (err) {
+    //   return false;
+    // }
   }
 
   static async waitTillExclusiveAccess(
@@ -46,24 +72,30 @@ export class FileOperation {
   ): PromiseResult<boolean, TimeoutError> {
     const timeoutTime = new Date().getTime() + timeoutSeconds * 1000;
     const nextIntervalMilliSecond = 500;
-    // return await this.__timeoutCallback(
-    //   timeoutTime,
-    //   fileName,
-    //   nextIntervalMilliSecond
-    // );
-    return new Promise((resolve, reject) => {
-      const timerId = setInterval(() => {
-        const accessible = this.canAccess(fileName, false);
-        if (accessible) {
+
+    const accessible = await this.canAccess(fileName, false);
+    if (accessible.isSuccess() && accessible.value) {
+      return success(accessible.value);
+    }
+    if (new Date().getTime() > timeoutTime) {
+      return fail(`Timeout happen to access ${fileName}`, TimeoutError);
+    }
+
+    return new Promise(async (resolve, reject) => {
+      const timerId = await setInterval(async () => {
+        const accessible = await this.canAccess(fileName, false);
+        if (accessible.isSuccess() && accessible.value) {
           clearInterval(timerId);
-          return resolve(success(accessible));
+          return resolve(success(accessible.value));
         }
         if (new Date().getTime() > timeoutTime) {
+          //console.log('Timeout');
           clearInterval(timerId);
           return resolve(
             fail(`Timeout happen to access ${fileName}`, TimeoutError)
           );
         }
+        //console.log('wait next', new Date().getTime(), timeoutTime);
       }, nextIntervalMilliSecond);
     });
   }
@@ -261,7 +293,10 @@ export class FileOperation {
         'password is not supported on other than zip format',
         ArchiveError
       );
-    if (archiveType === FileArchiveType.Tar) {
+    if (
+      archiveType === FileArchiveType.Tar ||
+      archiveType === FileArchiveType.Tgz
+    ) {
       if (sourceFileList.length > 1 || !sourceFileList[0].isSourceDirectory)
         return fail(
           'single file or multiple directory is not supported in this compression type: ' +
@@ -281,6 +316,17 @@ export class FileOperation {
         return await TarArchive.create(
           archiveInformation.fullPath,
           sourceFileList[0]
+        );
+      case FileArchiveType.GZip:
+        return await GzipArchive.create(
+          archiveInformation.fullPath,
+          sourceFileList[0].sourceFullName
+        );
+      case FileArchiveType.Tgz:
+        return await TarArchive.create(
+          archiveInformation.fullPath,
+          sourceFileList[0],
+          true
         );
     }
 

@@ -20,6 +20,27 @@ beforeAll(() => {
   fse.emptyDirSync(extractDirectory);
 });
 
+const validateFileExistence = async (
+  archive: TarArchive,
+  entryName: string,
+  expected_result: boolean
+) => {
+  let result = await archive.fileExists(entryName);
+  if (result.isSuccess()) {
+    if (result.value !== expected_result) {
+      console.log(
+        entryName,
+        'Different from expected result:',
+        expected_result
+      );
+    }
+    expect(result.value).toBe(expected_result);
+  } else {
+    console.log(result.error);
+    expect(false).toBeTruthy();
+  }
+};
+
 test('Tar Creation Test', async () => {
   //const extractDirectory = path.join(compressDirectory,'extracted');
   const sourceDirectory = path.join(compressDirectory, 'source');
@@ -36,47 +57,28 @@ test('Tar Creation Test', async () => {
   // const checkFilename = path.join(sourceDirectory, 'README.md');
   // //const [sourceBuffer,destinationBuffer] = getBufferFromFilenames()
   let archive: TarArchive = new TarArchive(tarFileName);
-  let isExist = await archive.fileExists('README.md');
-  let isSuccess = isExist.isSuccess();
-  if (isExist.isSuccess()) {
-    expect(isExist.value).toBeTruthy();
-  }
-  expect(isSuccess).toBeTruthy();
 
-  isExist = await archive.fileExists('README1.md');
-  isSuccess = isExist.isSuccess();
-  if (isExist.isSuccess()) {
-    expect(isExist.value).toBeFalsy();
-  }
-  expect(isSuccess).toBeTruthy();
+  await validateFileExistence(archive, 'README.md', true);
+  await validateFileExistence(archive, 'README1.md', false);
 
-  isExist = await archive.fileExists('folder1/folder 2/aes_encryption.py');
-  isSuccess = isExist.isSuccess();
-  if (isExist.isSuccess()) {
-    expect(isExist.value).toBeTruthy();
-  }
-  expect(isSuccess).toBeTruthy();
+  await validateFileExistence(
+    archive,
+    'folder1/folder 2/aes_encryption.py',
+    true
+  );
 
-  isExist = await archive.fileExists('folder1\\folder 2\\aes_encryption.py');
-  isSuccess = isExist.isSuccess();
-  if (isExist.isSuccess()) {
-    expect(isExist.value).toBeTruthy();
-  }
-  expect(isSuccess).toBeTruthy();
+  await validateFileExistence(
+    archive,
+    'folder1\\folder 2\\aes_encryption.py',
+    true
+  );
 
-  isExist = await archive.fileExists('folder1\\folder 3\\aes_encryption.py');
-  isSuccess = isExist.isSuccess();
-  if (isExist.isSuccess()) {
-    expect(isExist.value).toBeFalsy();
-  }
-  expect(isSuccess).toBeTruthy();
-
-  isExist = await archive.fileExists('ユーザー噂.py');
-  isSuccess = isExist.isSuccess();
-  if (isExist.isSuccess()) {
-    expect(isExist.value).toBeTruthy();
-  }
-  expect(isSuccess).toBeTruthy();
+  await validateFileExistence(
+    archive,
+    'folder1\\folder 3\\aes_encryption.py',
+    false
+  );
+  await validateFileExistence(archive, 'ユーザー噂.py', true);
 
   let destinationRoot = path.join(extractDirectory, 'fullTarCreate');
   result = await archive.extractAll(destinationRoot);
@@ -117,8 +119,7 @@ test('Tar Unarchive Test', async () => {
     )
   ).toBeTruthy();
 
-  let isExist = await archive.fileExists('ユーザー噂.py');
-  expect(isExist).toBeTruthy();
+  await validateFileExistence(archive, 'ユーザー噂.py', true);
 
   transferInformation = new FileTransportInfo({
     sourceFilename: 'ユーザー噂.py',

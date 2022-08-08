@@ -9,6 +9,7 @@ import unzipper, { Entry, File } from 'unzipper';
 import stream from 'stream';
 import il from 'iconv-lite';
 import { AbstractBaseArchive } from './abstract';
+import { FileOperation } from '../fileOperation';
 /**
  * @remarks
  * This class (extract side) doesn't support stream based retrieval yet
@@ -76,7 +77,10 @@ export class ZipArchive extends AbstractBaseArchive {
     return new Promise(async (resolve, reject) => {
       await archive
         .finalize()
-        .then(() => {
+        .then(async () => {
+          if (!!password) {
+            await FileOperation.waitTillExclusiveAccess(zipFileName, 1);
+          }
           return resolve(success(true));
         })
         .catch((err: Error) => {

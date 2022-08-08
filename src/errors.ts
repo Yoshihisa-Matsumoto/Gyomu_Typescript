@@ -22,3 +22,9 @@ export class TimeoutError extends BaseError {
     super(message, innerError);
   }
 }
+
+export class AccessError extends BaseError {
+  constructor(message: string, innerError?: Error) {
+    super(message, innerError);
+  }
+}

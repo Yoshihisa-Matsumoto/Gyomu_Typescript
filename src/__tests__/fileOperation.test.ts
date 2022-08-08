@@ -1,6 +1,8 @@
 import { FileOperation } from '../fileOperation';
 import path from 'path';
 import { FileCompareType, FileFilterInfo, FilterType } from '../fileModel';
+import fs from 'fs';
+import tmp from 'tmp';
 
 test('File Whole Search Test', () => {
   const baseDir = path.resolve('.');
@@ -180,3 +182,53 @@ test('File Name NoExact Search Test', () => {
   expect(fullPathList).toEqual(expect.arrayContaining(expected));
   expect(expected).toEqual(expect.arrayContaining(fullPathList));
 });
+
+test('File Exclusive Access Test', async () => {
+  //const sourceDirectory = path.resolve('./tests');
+  let targetFilename = tmp.tmpNameSync();
+
+  let fileHandle = fs.openSync(
+    targetFilename,
+    'w',
+    fs.constants.O_RDWR | fs.constants.O_EXCL
+  );
+
+  let currentDate = new Date().getTime();
+  let targetDate = currentDate + 2000;
+
+  let timerId = setInterval(() => {
+    fs.writeSync(fileHandle, 'a');
+    if (targetDate < new Date().getTime()) {
+      clearInterval(timerId);
+      fs.closeSync(fileHandle);
+    }
+  }, 100);
+
+  let result = await FileOperation.waitTillExclusiveAccess(targetFilename, 3);
+  let finishDate = new Date().getTime();
+  expect(result.isSuccess()).toBeTruthy();
+  let duration = finishDate - currentDate;
+  expect(duration).toBeGreaterThan(1500);
+  expect(duration).toBeLessThan(2500);
+
+  targetFilename = tmp.tmpNameSync();
+
+  fileHandle = fs.openSync(
+    targetFilename,
+    'w',
+    fs.constants.O_RDWR | fs.constants.O_EXCL
+  );
+
+  currentDate = new Date().getTime();
+  targetDate = currentDate + 3000;
+  timerId = setInterval(() => {
+    fs.writeSync(fileHandle, 'a');
+    if (targetDate < new Date().getTime()) {
+      clearInterval(timerId);
+      fs.closeSync(fileHandle);
+    }
+  }, 100);
+  result = await FileOperation.waitTillExclusiveAccess(targetFilename, 2);
+  clearInterval(timerId);
+  expect(result.isSuccess()).toBeFalsy();
+}, 10000);
