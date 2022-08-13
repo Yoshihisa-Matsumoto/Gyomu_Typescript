@@ -194,7 +194,7 @@ test('File Exclusive Access Test', async () => {
   );
 
   let currentDate = new Date().getTime();
-  let targetDate = currentDate + 2000;
+  let targetDate = currentDate + 1000;
 
   let timerId = setInterval(() => {
     fs.writeSync(fileHandle, 'a');
@@ -204,12 +204,12 @@ test('File Exclusive Access Test', async () => {
     }
   }, 100);
 
-  let result = await FileOperation.waitTillExclusiveAccess(targetFilename, 3);
+  let result = await FileOperation.waitTillExclusiveAccess(targetFilename, 2);
   let finishDate = new Date().getTime();
   expect(result.isSuccess()).toBeTruthy();
   let duration = finishDate - currentDate;
-  expect(duration).toBeGreaterThan(1500);
-  expect(duration).toBeLessThan(2500);
+  expect(duration).toBeGreaterThan(500);
+  expect(duration).toBeLessThan(1500);
 
   targetFilename = tmp.tmpNameSync();
 
@@ -220,7 +220,7 @@ test('File Exclusive Access Test', async () => {
   );
 
   currentDate = new Date().getTime();
-  targetDate = currentDate + 3000;
+  targetDate = currentDate + 2000;
   timerId = setInterval(() => {
     fs.writeSync(fileHandle, 'a');
     if (targetDate < new Date().getTime()) {
@@ -228,7 +228,7 @@ test('File Exclusive Access Test', async () => {
       fs.closeSync(fileHandle);
     }
   }, 100);
-  result = await FileOperation.waitTillExclusiveAccess(targetFilename, 2);
+  result = await FileOperation.waitTillExclusiveAccess(targetFilename, 1);
   clearInterval(timerId);
   expect(result.isSuccess()).toBeFalsy();
 }, 10000);
