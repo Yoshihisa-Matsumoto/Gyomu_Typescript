@@ -1,13 +1,15 @@
 import { AxiosResponse } from 'axios';
 import xmlser from 'xmlserializer';
 import xdom from 'xmldom';
-import { tmpNameSync } from 'tmp';
-import { writeFileSync } from 'fs';
+// import { tmpNameSync } from 'tmp';
+// import { writeFileSync } from 'fs';
 import { DOMElement, GenericElement } from './element';
 import { parse } from 'parse5';
 import { Table, TableOption } from './table';
 import { TableRow } from './tableRow';
 import { TableColumn, TableColumnOption } from './tableColumn';
+import xpath from 'xpath';
+import { parseXPathResultValidValue, parseXPathResultValue } from './util';
 
 export type PageResponseOption = {
   kind: 'response';
@@ -68,7 +70,18 @@ export class Page {
     return this.#htmlString;
   }
 
-  save(directoryName: string) {
+  searchByXPath(path: string) {
+    return xpath.select(path, this.#xdoc).map((v) => {
+      return parseXPathResultValidValue(v);
+    });
+  }
+
+  searchOneByXPath(path: string) {
+    const searchValue = xpath.select(path, this.#xdoc, true);
+    return parseXPathResultValue(searchValue);
+  }
+
+  get title() {
     let fileName;
     if (!!this.#response) {
       if ('Content-Disposition' in this.#response.headers) {
@@ -85,14 +98,33 @@ export class Page {
         fileName = titleElement.innerText;
       }
     }
+    return fileName;
+  }
+  // save(directoryName: string) {
+  //   let fileName;
+  //   if (!!this.#response) {
+  //     if ('Content-Disposition' in this.#response.headers) {
+  //       const headerValue = this.#response.headers['Content-Disposition'];
+  //       fileName = decodeURI(
+  //         headerValue.substring(headerValue.indexOf('filename=') + 9)
+  //       );
+  //     }
+  //   }
+  //   if (!fileName) {
+  //     const titleElements = this.#xdoc.getElementsByTagName('title');
+  //     if (titleElements.length > 0) {
+  //       const titleElement = titleElements.item(0) as HTMLTitleElement;
+  //       fileName = titleElement.innerText;
+  //     }
+  //   }
 
-    fileName = tmpNameSync({
-      dir: directoryName,
-      template: fileName ?? 'unknownFile' + '-XXXXXX.html',
-    });
-    this.saveas(fileName);
-  }
-  saveas(fileName: string) {
-    writeFileSync(fileName, this.html);
-  }
+  //   fileName = tmpNameSync({
+  //     dir: directoryName,
+  //     template: fileName ?? 'unknownFile' + '-XXXXXX.html',
+  //   });
+  //   this.saveas(fileName);
+  // }
+  // saveas(fileName: string) {
+  //   writeFileSync(fileName, this.html);
+  // }
 }

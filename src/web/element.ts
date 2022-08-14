@@ -1,4 +1,7 @@
 import { Attribute } from './attribute';
+import xpath from 'xpath';
+import { WebParseError } from '../errors';
+import { parseXPathResultValidValue, parseXPathResultValue } from './util';
 
 export class DOMElement {
   protected __node: HTMLElement;
@@ -67,6 +70,16 @@ export class DOMElement {
         return new GenericElement<HTMLElementTagNameMap[K]>(element);
       }
     );
+  }
+  searchByXPath(path: string) {
+    return xpath.select(path, this.__node).map((v) => {
+      return parseXPathResultValidValue(v);
+    });
+  }
+
+  searchOneByXPath(path: string) {
+    const searchValue = xpath.select(path, this.__node, true);
+    return parseXPathResultValue(searchValue);
   }
 }
 

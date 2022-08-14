@@ -42,6 +42,7 @@
     "unzipper": "^0.10.11",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.18.10/xlsx-0.18.10.tgz",
     "xmldom": "^0.6.0",
-    "xmlserializer": "^0.6.1"
+    "xmlserializer": "^0.6.1",
+    "xpath": "^0.0.32"
   }
 }
