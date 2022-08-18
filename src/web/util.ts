@@ -46,32 +46,3 @@ export function convertGenericElementByTagName<
   }
   throw new Error('Unknown Error');
 }
-
-export function parseXPathResultValue(
-  searchValue: xpath.SelectedValue | undefined
-) {
-  if (!searchValue) return undefined;
-  return parseXPathResultValidValue(searchValue);
-}
-export function parseXPathResultValidValue(searchValue: xpath.SelectedValue) {
-  switch (typeof searchValue) {
-    case 'string':
-      return searchValue as string;
-    case 'number':
-      return searchValue as number;
-    case 'boolean':
-      return searchValue as boolean;
-    default:
-      if (searchValue instanceof Attr) {
-        return new Attribute(searchValue);
-      } else {
-        if (searchValue instanceof HTMLElement) {
-          return new GenericElement<HTMLElement>(searchValue);
-        } else {
-          throw new WebParseError(
-            `Unsupported Value: ${JSON.stringify(searchValue)}`
-          );
-        }
-      }
-  }
-}

@@ -50,3 +50,19 @@ export function fail<E extends BaseError>(
 export function success<T>(object: T) {
   return new Success(object);
 }
+
+export function promiseSuccess<T, E extends BaseError>(
+  val: T
+): PromiseResult<T, E> {
+  return new Promise((resolve) => {
+    resolve(success(val));
+  });
+}
+export function promiseFail<T, E extends BaseError>(
+  message: string,
+  type: { new (message: string): E }
+): PromiseResult<T, E> {
+  return new Promise((resolve) => {
+    resolve(new Failure(new type(message)));
+  });
+}

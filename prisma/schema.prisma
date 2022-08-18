@@ -1,0 +1,185 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model gyomu_apps_info_cdtbl {
+  application_id    Int     @id(map: "PK_gyomu_apps_info_cdtbl") @db.SmallInt
+  description       String? @db.VarChar(50)
+  mail_from_address String? @db.VarChar(200)
+  mail_from_name    String? @db.VarChar(200)
+}
+
+model gyomu_market_holiday {
+  market  String @db.VarChar(10)
+  year    Int    @db.SmallInt
+  holiday String @db.Char(8)
+
+  @@id([market, holiday], map: "PK_gyomu_market_holiday")
+  @@index([market, year], map: "IX_gyomu_market_holiday")
+}
+
+model gyomu_milestone_daily {
+  target_date  String @db.VarChar(8)
+  milestone_id String @db.VarChar(200)
+  update_time  BigInt
+
+  @@id([target_date, milestone_id], map: "PK_gyomu_milestone_daily")
+  @@index([milestone_id], map: "IX_gyomu_milestone_daily")
+}
+
+model gyomu_param_master {
+  item_key      String @db.VarChar(50)
+  item_value    String @db.NText
+  item_fromdate String @db.VarChar(8)
+
+  @@id([item_key, item_fromdate], map: "PK_gyomu_param_master")
+}
+
+model gyomu_service_cdtbl {
+  id              Int     @id(map: "PK_gyomu_server_service_cdtbl") @db.SmallInt
+  description     String  @db.VarChar(100)
+  service_type_id Int     @db.SmallInt
+  parameter       String? @db.NText
+}
+
+model gyomu_service_type_cdtbl {
+  id            Int     @id(map: "PK_gyomu_service_type_cdtbl") @db.SmallInt
+  description   String  @db.VarChar(100)
+  assembly_name String? @db.VarChar(100)
+  class_name    String? @db.VarChar(100)
+}
+
+model gyomu_status_handler {
+  id                Int     @id(map: "PK_gyomu_status_handler_cdtbl") @default(autoincrement())
+  application_id    Int     @db.SmallInt
+  region            String? @db.VarChar(3)
+  status_type       Int?    @db.SmallInt
+  recipient_address String? @db.VarChar(200)
+  recipient_type    String? @db.VarChar(3)
+}
+
+model gyomu_status_info {
+  id             BigInt  @id(map: "PK_gyomu_status_info", clustered: false) @default(autoincrement())
+  application_id Int     @db.SmallInt
+  entry_date     BigInt
+  entry_author   String  @db.VarChar(30)
+  status_type    Int     @db.SmallInt
+  error_id       Int     @db.SmallInt
+  instance_id    Int
+  hostname       String? @db.VarChar(50)
+  summary        String? @db.NVarChar(400)
+  description    String?
+  developer_info String? @db.NText
+
+  @@index([entry_date], map: "CX_gyomu_status_info", clustered: true)
+}
+
+model gyomu_status_type_cdtbl {
+  status_type Int     @id(map: "PK_gyomu_status_type_cdtbl") @db.SmallInt
+  description String? @db.VarChar(15)
+}
+
+model gyomu_task_data {
+  id                  BigInt  @id(map: "PK_gyomu_task_data", clustered: false) @default(autoincrement())
+  application_id      Int     @db.SmallInt
+  task_info_id        Int     @db.SmallInt
+  entry_date          BigInt
+  entry_author        String  @db.VarChar(30)
+  parent_task_data_id BigInt?
+  parameter           String? @db.NText
+
+  @@index([entry_date], map: "CX_gyomu_task_data", clustered: true)
+  @@index([application_id], map: "IX_gyomu_task_data1")
+  @@index([task_info_id], map: "IX_gyomu_task_data2")
+  @@index([entry_author], map: "IX_gyomu_task_data3")
+}
+
+model gyomu_task_data_log {
+  id           BigInt @id(map: "PK_gyomu_task_data_log", clustered: false) @default(autoincrement())
+  task_data_id BigInt
+  log_time     BigInt
+  log          String @db.NText
+
+  @@index([task_data_id, log_time], map: "CX_gyomu_task_data_log", clustered: true)
+}
+
+model gyomu_task_data_status {
+  task_data_id            BigInt  @id(map: "PK_gyomu_task_data_status")
+  task_status             String? @db.VarChar(10)
+  latest_update_date      BigInt
+  latest_task_instance_id BigInt
+}
+
+model gyomu_task_info_access_list {
+  id             BigInt  @id(map: "PK_gyomu_task_info_access_list", clustered: false) @default(autoincrement())
+  application_id Int     @db.SmallInt
+  task_info_id   Int     @db.SmallInt
+  account_name   String  @db.VarChar(100)
+  can_access     Boolean
+  forbidden      Boolean
+
+  @@index([application_id, task_info_id, account_name], map: "CX_gyomu_task_info_access_list", clustered: true)
+}
+
+model gyomu_task_info_cdtbl {
+  application_id Int     @db.SmallInt
+  task_id        Int     @db.SmallInt
+  description    String  @db.VarChar(100)
+  language       String  @db.VarChar(10)
+  location       String  @db.Text
+  class_name     String  @db.VarChar(100)
+  restartable    Boolean
+
+  @@id([application_id, task_id], map: "PK_gyomu_task_info_cdtbl")
+}
+
+model gyomu_task_instance {
+  id             BigInt  @id(map: "PK_gyomu_task_instance", clustered: false) @default(autoincrement())
+  task_data_id   BigInt
+  entry_date     BigInt
+  entry_author   String  @db.VarChar(30)
+  task_status    String? @db.VarChar(10)
+  is_done        Boolean
+  status_info_id BigInt?
+  parameter      String? @db.NText
+  comment        String? @db.NText
+
+  @@index([entry_date], map: "CX_gyomu_task_instance", clustered: true)
+  @@index([task_data_id], map: "IX_gyomu_task_instance1")
+  @@index([task_status], map: "IX_gyomu_task_instance2")
+}
+
+model gyomu_task_instance_submit_information {
+  id               BigInt  @id(map: "PK_gyomu_task_instance_submit_information", clustered: false) @default(autoincrement())
+  task_instance_id BigInt
+  submit_to        String? @db.VarChar(30)
+
+  @@index([task_instance_id, submit_to], map: "CX_gyomu_task_instance_submit_information", clustered: true)
+}
+
+model gyomu_task_scheduler_config {
+  id                BigInt  @id(map: "PK_gyomu_task_scheduler_config") @default(autoincrement())
+  service_id        Int     @db.SmallInt
+  description       String  @db.VarChar(200)
+  application_id    Int     @db.SmallInt
+  task_id           Int     @db.SmallInt
+  monitor_parameter String  @db.NText
+  next_trigger_time BigInt
+  task_parameter    String? @db.NText
+  is_enabled        Boolean
+
+  @@index([description], map: "IX_gyomu_task_scheduler_config")
+  @@index([service_id], map: "IX_gyomu_task_scheduler_config2")
+  @@index([application_id, task_id], map: "IX_gyomu_task_scheduler_config3")
+  @@index([is_enabled], map: "IX_gyomu_task_scheduler_config4")
+}
+
+model gyomu_variable_parameter {
+  variable_key String @id(map: "PK_gyomu_variable_parameter") @db.VarChar(20)
+  description  String @db.VarChar(200)
+}

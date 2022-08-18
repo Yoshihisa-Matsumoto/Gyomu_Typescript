@@ -9,7 +9,6 @@ import { Table, TableOption } from './table';
 import { TableRow } from './tableRow';
 import { TableColumn, TableColumnOption } from './tableColumn';
 import xpath from 'xpath';
-import { parseXPathResultValidValue, parseXPathResultValue } from './util';
 
 export type PageResponseOption = {
   kind: 'response';
@@ -72,13 +71,13 @@ export class Page {
 
   searchByXPath(path: string) {
     return xpath.select(path, this.#xdoc).map((v) => {
-      return parseXPathResultValidValue(v);
+      return DOMElement.parseXPathResultValidValue(v);
     });
   }
 
   searchOneByXPath(path: string) {
     const searchValue = xpath.select(path, this.#xdoc, true);
-    return parseXPathResultValue(searchValue);
+    return DOMElement.parseXPathResultValue(searchValue);
   }
 
   get title() {

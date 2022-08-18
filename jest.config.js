@@ -8,4 +8,6 @@ module.exports = {
     '^.+\\.(ts|tsx)$': 'ts-jest',
   },
   moduleFileExtensions: ['js', 'tsx', 'ts', 'd.ts'],
+  clearMocks: true,
+  setupFilesAfterEnv: ['<rootDir>/src/__tests__/baseDBClass.ts'],
 };

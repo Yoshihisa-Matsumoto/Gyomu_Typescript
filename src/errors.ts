@@ -34,3 +34,21 @@ export class WebParseError extends BaseError {
     super(message, innerError);
   }
 }
+
+export class ParseError extends BaseError {
+  constructor(message: string, innerError?: Error) {
+    super(message, innerError);
+  }
+}
+
+export class DBError extends BaseError {
+  constructor(message: string, innerError?: Error) {
+    super(message, innerError);
+  }
+}
+
+export class CriticalError extends BaseError {
+  constructor(message: string, innerError?: Error) {
+    super(message, innerError);
+  }
+}

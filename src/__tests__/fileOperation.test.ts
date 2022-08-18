@@ -31,9 +31,16 @@ test('File Whole Search Test', () => {
     'tests\\source\\setup.cfg',
     'tests\\source\\ユーザー噂.py',
     'tests\\utf8_sample.txt',
+    'tests\\test.html',
+    'tests\\key-256.key',
+    'tests\\rsa4096',
+    'tests\\rsa4096.pem',
+    'tests\\rsa4096.pub',
+    'tests\\rsa4096.pub.pem',
   ];
-  expect(fullPathList).toEqual(expect.arrayContaining(expected));
-  expect(expected).toEqual(expect.arrayContaining(fullPathList));
+  expect(fullPathList.sort()).toEqual(expected.sort());
+  // expect(fullPathList).toEqual(expect.arrayContaining(expected));
+  // expect(expected).toEqual(expect.arrayContaining(fullPathList));
 });
 
 test('File Name Exact Search Test', () => {
@@ -108,9 +115,16 @@ test('File Name NoExact Search Test', () => {
     'tests\\source\\setup.cfg',
     'tests\\source\\ユーザー噂.py',
     'tests\\utf8_sample.txt',
+    'tests\\key-256.key',
+    'tests\\rsa4096',
+    'tests\\rsa4096.pem',
+    'tests\\rsa4096.pub',
+    'tests\\rsa4096.pub.pem',
+    'tests\\test.html',
   ];
-  expect(fullPathList).toEqual(expect.arrayContaining(expected));
-  expect(expected).toEqual(expect.arrayContaining(fullPathList));
+  expect(fullPathList.sort()).toEqual(expected.sort());
+  // expect(fullPathList).toEqual(expect.arrayContaining(expected));
+  // expect(expected).toEqual(expect.arrayContaining(fullPathList));
 
   fileInfoList = FileOperation.search(
     'tests',

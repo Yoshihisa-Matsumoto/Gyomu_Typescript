@@ -1,7 +1,6 @@
 import { Attribute } from './attribute';
 import xpath from 'xpath';
 import { WebParseError } from '../errors';
-import { parseXPathResultValidValue, parseXPathResultValue } from './util';
 
 export class DOMElement {
   protected __node: HTMLElement;
@@ -62,24 +61,43 @@ export class DOMElement {
     if (!nodeAttribute) return undefined;
     else return new Attribute(nodeAttribute);
   }
-  getGenericElementsByTagName<K extends keyof HTMLElementTagNameMap>(
-    qualifiedName: K
-  ) {
-    return Array.from(this.__node.getElementsByTagName<K>(qualifiedName)).map(
-      (element) => {
-        return new GenericElement<HTMLElementTagNameMap[K]>(element);
-      }
-    );
-  }
+
   searchByXPath(path: string) {
     return xpath.select(path, this.__node).map((v) => {
-      return parseXPathResultValidValue(v);
+      return DOMElement.parseXPathResultValidValue(v);
     });
   }
 
   searchOneByXPath(path: string) {
     const searchValue = xpath.select(path, this.__node, true);
-    return parseXPathResultValue(searchValue);
+    return DOMElement.parseXPathResultValue(searchValue);
+  }
+
+  static parseXPathResultValue(searchValue: xpath.SelectedValue | undefined) {
+    if (!searchValue) return undefined;
+    return DOMElement.parseXPathResultValidValue(searchValue);
+  }
+  static parseXPathResultValidValue(searchValue: xpath.SelectedValue) {
+    switch (typeof searchValue) {
+      case 'string':
+        return searchValue as string;
+      case 'number':
+        return searchValue as number;
+      case 'boolean':
+        return searchValue as boolean;
+      default:
+        if (searchValue instanceof Attr) {
+          return new Attribute(searchValue);
+        } else {
+          if (searchValue instanceof HTMLElement) {
+            return new GenericElement<HTMLElement>(searchValue);
+          } else {
+            throw new WebParseError(
+              `Unsupported Value: ${JSON.stringify(searchValue)}`
+            );
+          }
+        }
+    }
   }
 }
 
@@ -89,5 +107,14 @@ export class GenericElement<T extends HTMLElement> extends DOMElement {
   }
   get node(): T {
     return this.__node as T;
+  }
+  getGenericElementsByTagName<K extends keyof HTMLElementTagNameMap>(
+    qualifiedName: K
+  ) {
+    return Array.from(this.__node.getElementsByTagName<K>(qualifiedName)).map(
+      (element) => {
+        return new GenericElement<HTMLElementTagNameMap[K]>(element);
+      }
+    );
   }
 }
