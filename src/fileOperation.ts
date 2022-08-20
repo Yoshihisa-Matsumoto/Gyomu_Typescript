@@ -18,6 +18,7 @@ import { TarArchive } from './archive/tar';
 import { isEqual } from 'date-fns';
 import tmp from 'tmp';
 import { GzipArchive } from './archive/gz';
+import { polling } from './timer';
 
 export class FileOperation {
   static async canAccess(
@@ -45,6 +46,7 @@ export class FileOperation {
             fail(`File is under operation: ${fileName}`, AccessError)
           );
         }
+        //console.log('Accessible', stat2.mtime);
         return resolve(success(true));
       }, 100);
 
@@ -70,34 +72,48 @@ export class FileOperation {
     fileName: string,
     timeoutSeconds: number
   ): PromiseResult<boolean, TimeoutError> {
-    const timeoutTime = new Date().getTime() + timeoutSeconds * 1000;
-    const nextIntervalMilliSecond = 500;
-
-    const accessible = await this.canAccess(fileName, false);
-    if (accessible.isSuccess() && accessible.value) {
-      return success(accessible.value);
-    }
-    if (new Date().getTime() > timeoutTime) {
-      return fail(`Timeout happen to access ${fileName}`, TimeoutError);
-    }
-
-    return new Promise(async (resolve, reject) => {
-      const timerId = await setInterval(async () => {
+    return await polling<AccessError>(
+      `File Access check ${fileName}`,
+      timeoutSeconds,
+      0.5,
+      async (fileName) => {
         const accessible = await this.canAccess(fileName, false);
-        if (accessible.isSuccess() && accessible.value) {
-          clearInterval(timerId);
-          return resolve(success(accessible.value));
-        }
-        if (new Date().getTime() > timeoutTime) {
-          //console.log('Timeout');
-          clearInterval(timerId);
-          return resolve(
-            fail(`Timeout happen to access ${fileName}`, TimeoutError)
-          );
-        }
-        //console.log('wait next', new Date().getTime(), timeoutTime);
-      }, nextIntervalMilliSecond);
-    });
+        if (accessible.isSuccess()) {
+          //console.log('accessible', accessible.value);
+          return success(accessible.value);
+        } else return success(false);
+      },
+      fileName
+    );
+
+    // const timeoutTime = new Date().getTime() + timeoutSeconds * 1000;
+    // const nextIntervalMilliSecond = 500;
+
+    // const accessible = await this.canAccess(fileName, false);
+    // if (accessible.isSuccess() && accessible.value) {
+    //   return success(accessible.value);
+    // }
+    // if (new Date().getTime() > timeoutTime) {
+    //   return fail(`Timeout happen to access ${fileName}`, TimeoutError);
+    // }
+
+    // return new Promise(async (resolve, reject) => {
+    //   const timerId = await setInterval(async () => {
+    //     const accessible = await this.canAccess(fileName, false);
+    //     if (accessible.isSuccess() && accessible.value) {
+    //       clearInterval(timerId);
+    //       return resolve(success(accessible.value));
+    //     }
+    //     if (new Date().getTime() > timeoutTime) {
+    //       //console.log('Timeout');
+    //       clearInterval(timerId);
+    //       return resolve(
+    //         fail(`Timeout happen to access ${fileName}`, TimeoutError)
+    //       );
+    //     }
+    //     //console.log('wait next', new Date().getTime(), timeoutTime);
+    //   }, nextIntervalMilliSecond);
+    // });
   }
 
   static search(

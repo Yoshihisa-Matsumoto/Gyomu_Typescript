@@ -225,6 +225,7 @@ test('File Exclusive Access Test', async () => {
   expect(duration).toBeGreaterThan(500);
   expect(duration).toBeLessThan(1500);
 
+  //console.log('test2');
   targetFilename = tmp.tmpNameSync();
 
   fileHandle = fs.openSync(
@@ -235,14 +236,20 @@ test('File Exclusive Access Test', async () => {
 
   currentDate = new Date().getTime();
   targetDate = currentDate + 2000;
+  fs.writeSync(fileHandle, 'a');
   timerId = setInterval(() => {
     fs.writeSync(fileHandle, 'a');
     if (targetDate < new Date().getTime()) {
       clearInterval(timerId);
       fs.closeSync(fileHandle);
     }
-  }, 100);
+    //console.log('written', new Date());
+  }, 50);
   result = await FileOperation.waitTillExclusiveAccess(targetFilename, 1);
   clearInterval(timerId);
-  expect(result.isSuccess()).toBeFalsy();
+  if (!result.isSuccess()) console.log(result.error);
+  expect(result.isSuccess()).toBeTruthy();
+  if (result.isSuccess()) {
+    expect(result.value).toBeFalsy();
+  }
 }, 10000);

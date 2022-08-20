@@ -28,38 +28,48 @@ const testCases = [
 ];
 
 test('variables parse', async () => {
-  const translator = await VariableTranslator.getTranslator('JP');
-  const targetDate = createDateOnly(1984, 5, 2);
+  const result = await VariableTranslator.getTranslator('JP');
+  if (result.isFailure()) {
+    expect(result.isSuccess()).toBeTruthy();
+  } else {
+    const translator = result.value;
+    const targetDate = createDateOnly(1984, 5, 2);
 
-  testCases.forEach(async (c) => {
-    let result = await translator.parse(c.parameter, targetDate);
-    let isSuccess = result.isSuccess();
-    if (!result.isSuccess()) {
-      console.log(c.parameter);
-      console.log(result.error);
-      expect(isSuccess).toBeTruthy();
-    } else {
-      if (result.value !== c.expected) console.log(c.parameter);
-      expect(result.value).toEqual(c.expected);
-    }
-  });
+    testCases.forEach(async (c) => {
+      let result = await translator.parse(c.parameter, targetDate);
+      let isSuccess = result.isSuccess();
+      if (!result.isSuccess()) {
+        console.log(c.parameter);
+        console.log(result.error);
+        expect(isSuccess).toBeTruthy();
+      } else {
+        if (result.value !== c.expected) console.log(c.parameter);
+        expect(result.value).toEqual(c.expected);
+      }
+    });
+  }
 });
 
 test('variables parseDate', async () => {
-  const translator = await VariableTranslator.getTranslator('JP');
-  const targetDate = createDateOnly(1984, 5, 2);
+  const result = await VariableTranslator.getTranslator('JP');
+  if (result.isFailure()) {
+    expect(result.isSuccess()).toBeTruthy();
+  } else {
+    const translator = result.value;
+    const targetDate = createDateOnly(1984, 5, 2);
 
-  testCases.forEach(async (c) => {
-    let result = await translator.parseDate(c.parameter, targetDate);
-    let isSuccess = result.isSuccess();
-    if (!result.isSuccess()) {
-      console.log(c.parameter);
-      console.log(result.error);
-      expect(isSuccess).toBeTruthy();
-    } else {
-      let expectedDate = createDateFromYYYYMMDD(c.expected);
-      if (!isEqual(result.value, expectedDate)) console.log(c.parameter);
-      expect(result.value).toEqual(expectedDate);
-    }
-  });
+    testCases.forEach(async (c) => {
+      let result = await translator.parseDate(c.parameter, targetDate);
+      let isSuccess = result.isSuccess();
+      if (!result.isSuccess()) {
+        console.log(c.parameter);
+        console.log(result.error);
+        expect(isSuccess).toBeTruthy();
+      } else {
+        let expectedDate = createDateFromYYYYMMDD(c.expected);
+        if (!isEqual(result.value, expectedDate)) console.log(c.parameter);
+        expect(result.value).toEqual(expectedDate);
+      }
+    });
+  }
 });

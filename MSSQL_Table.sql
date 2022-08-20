@@ -141,7 +141,7 @@ GO
 CREATE TABLE [dbo].[gyomu_milestone_daily](
 	[target_date] [varchar](8) NOT NULL,
 	[milestone_id] varchar(200) NOT NULL,
-	[update_time] [bigint] NOT NULL DEFAULT DATEDIFF_BIG(millisecond,'1970-01-01',SYSUTCDATETIME()),
+	[update_time] [bigint]  DEFAULT DATEDIFF_BIG(millisecond,'1970-01-01',SYSUTCDATETIME()),
  CONSTRAINT [PK_gyomu_milestone_daily] PRIMARY KEY CLUSTERED 
 (
 	[target_date] ASC,[milestone_id]

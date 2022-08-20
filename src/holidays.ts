@@ -1,10 +1,14 @@
-import { Context } from './dbclient';
+import { Context } from './dbsingleton';
 import format from 'date-fns/format';
 import addDays from 'date-fns/addDays';
 import subDays from 'date-fns/subDays';
 import { addMonths, isAfter, isBefore, isEqual } from 'date-fns';
 import { createDateOnly } from './dateOperation';
-import prisma from './dbclient';
+import prisma from './dbsingleton';
+import { genericDBFunction } from './dbutil';
+import { gyomu_market_holiday } from '@prisma/client';
+import { success, PromiseResult } from './result';
+import { DBError } from './errors';
 export default class MarketDateAccess {
   private static __marketHolidays: {
     [market: string]: string[];
@@ -14,35 +18,47 @@ export default class MarketDateAccess {
   #holidays: string[] = new Array<string>();
   private constructor(market: string) {
     this.#market = market;
-    console.log('__marketHolidays', MarketDateAccess.__marketHolidays);
+    //console.log('__marketHolidays', MarketDateAccess.__marketHolidays);
     if (market in MarketDateAccess.__marketHolidays) {
       this.#holidays = MarketDateAccess.__marketHolidays[market];
       return;
     }
   }
   //static async getMarketAccess(market: string, ctx: Context) {
-  static async getMarketAccess(market: string) {
+  static async getMarketAccess(
+    market: string
+  ): PromiseResult<MarketDateAccess, DBError> {
     const access = new MarketDateAccess(market);
-    await access.#initDataLoad();
-    return access;
+    const result = await access.#initDataLoad();
+    if (result.isFailure()) return result;
+    return success(access);
   }
 
   //async #initDataLoad(ctx: Context) {
-  async #initDataLoad() {
-    if (this.#holidays.length > 0) return;
+  async #initDataLoad(): PromiseResult<boolean, DBError> {
+    if (this.#holidays.length > 0) return success(true);
     this.#holidays = new Array<string>();
-
-    const holidays = await prisma.gyomu_market_holiday.findMany({
-      where: {
-        market: this.#market,
+    const result = await genericDBFunction<gyomu_market_holiday[]>(
+      'load gyomu_market_holiday',
+      async () => {
+        //console.log('loading');
+        const item_values = await prisma.gyomu_market_holiday.findMany({
+          where: { market: this.#market },
+        });
+        //console.log('loaded');
+        return success(item_values);
       },
-    });
-    console.log('holidays', holidays);
+      []
+    );
+    if (result.isFailure()) return result;
+    const holidays = result.value;
+    //console.log('holidays', holidays);
     holidays.forEach((row) => {
       this.#holidays.push(row.holiday);
     });
     //console.log('#holidays', this.#holidays);
     MarketDateAccess.__marketHolidays[this.#market] = this.#holidays;
+    return success(true);
   }
 
   isBusinessDay(targetDate: Date): boolean {

@@ -1,7 +1,7 @@
 import { gyomu_market_holiday } from '@prisma/client';
 import MarketDateAccess from '../holidays';
 
-import { MockContext, Context, createMockContext } from '../dbclient';
+import { MockContext, Context, createMockContext } from '../dbsingleton';
 //import { prismaMock } from './baseDBClass';
 
 // let mockCtx: MockContext;
@@ -15,8 +15,10 @@ beforeEach(async () => {
   //   dummy_holidays
   // );
   //access = await MarketDateAccess.getMarketAccess('JP');
-  console.log('beforeEach');
-  access = await MarketDateAccess.getMarketAccess('JP');
+  //console.log('beforeEach');
+  const result = await MarketDateAccess.getMarketAccess('JP');
+  if (result.isFailure()) expect(result.isSuccess()).toBeTruthy();
+  else access = result.value;
 });
 
 test('Construction Test', () => {

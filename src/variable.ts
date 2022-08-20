@@ -1,9 +1,9 @@
 import { isNumberObject } from 'util/types';
 import { createDateOnly } from './dateOperation';
-import prisma, { Context } from './dbclient';
+import prisma, { Context } from './dbsingleton';
 import MarketDateAccess from './holidays';
 import { addDays, addMonths, format, subDays } from 'date-fns';
-import { ParseError } from './errors';
+import { DBError, ParseError } from './errors';
 import {
   PromiseResult,
   success,
@@ -13,6 +13,7 @@ import {
   promiseSuccess,
   Result,
 } from './result';
+import { Parse } from 'unzipper';
 
 const VariableType = {
   Date: 'Date',
@@ -54,11 +55,15 @@ export class VariableTranslator {
     this.#marketAccess = marketAccess;
     //this.#ctx = ctx;
   }
-  static async getTranslator(market: string) {
-    const access = await MarketDateAccess.getMarketAccess(market);
+  static async getTranslator(
+    market: string
+  ): PromiseResult<VariableTranslator, DBError> {
+    const result = await MarketDateAccess.getMarketAccess(market);
+    if (result.isFailure()) return result;
+    const access = result.value;
     const translator = new VariableTranslator(access);
     await translator.init();
-    return translator;
+    return success(translator);
   }
 
   async init() {
@@ -99,7 +104,12 @@ export class VariableTranslator {
       if (!isNaN(parseInt(item))) {
         factorIndex = parseInt(item);
       } else if (this.__supportedMarkets.includes(item)) {
-        translateMarketAccess = await MarketDateAccess.getMarketAccess(item);
+        const result = await MarketDateAccess.getMarketAccess(item);
+        if (result.isFailure())
+          return new Failure(
+            new ParseError(`Fail to retrieve market data ${item}`, result.error)
+          );
+        translateMarketAccess = result.value;
       } else if (item in VariableDateKeyword) {
         return this.#translateDate(
           translateMarketAccess,
@@ -257,7 +267,12 @@ export class VariableTranslator {
         factorIndex = parseInt(item);
       } else if (this.__supportedMarkets.includes(item)) {
         // console.log('Market', item);
-        translateMarketAccess = await MarketDateAccess.getMarketAccess(item);
+        const result = await MarketDateAccess.getMarketAccess(item);
+        if (result.isFailure())
+          return new Failure(
+            new ParseError(`Fail to retrieve market data ${item}`, result.error)
+          );
+        translateMarketAccess = result.value;
       } else if (item in VariableDateKeyword) {
         // console.log('internal keyword', item);
         dateParameter = await this.#translateDate(

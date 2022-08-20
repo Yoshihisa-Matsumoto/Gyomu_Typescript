@@ -146,10 +146,10 @@ export class TarArchive extends AbstractBaseArchive {
           strip: numPathElementToSkip,
         })
         .then(() => {
-          return resolve(success(true));
+          resolve(success(true));
         })
         .catch((reason: Error) => {
-          return resolve(
+          resolve(
             new Failure(
               new ArchiveError(
                 `Fail to untar ${this.archiveFileName} -> ${targetEntryName}`,

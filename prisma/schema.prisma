@@ -24,9 +24,9 @@ model gyomu_market_holiday {
 }
 
 model gyomu_milestone_daily {
-  target_date  String @db.VarChar(8)
-  milestone_id String @db.VarChar(200)
-  update_time  BigInt
+  target_date  String  @db.VarChar(8)
+  milestone_id String  @db.VarChar(200)
+  update_time  BigInt?
 
   @@id([target_date, milestone_id], map: "PK_gyomu_milestone_daily")
   @@index([milestone_id], map: "IX_gyomu_milestone_daily")
