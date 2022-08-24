@@ -52,3 +52,9 @@ export class CriticalError extends BaseError {
     super(message, innerError);
   }
 }
+
+export class NetworkError extends BaseError {
+  constructor(message: string, innerError?: Error) {
+    super(message, innerError);
+  }
+}

@@ -9,6 +9,8 @@ DROP TABLE if exists gyomu_status_type_cdtbl;
 
 DROP TABLE if exists gyomu_market_holiday;
 
+DROP TABLE if exists gyomu_milestone_cdtbl;
+
 DROP TABLE IF EXISTS gyomu_milestone_daily;
 
 DROP TABLE IF EXISTS gyomu_variable_parameter;
@@ -69,7 +71,7 @@ CREATE TABLE gyomu_status_handler(
 
 CREATE TABLE gyomu_status_info(
 	application_id smallint NOT NULL,
-	entry_date DATETIME UNIQUE NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+	entry_date  bigint UNIQUE DEFAULT (floor(UNIX_TIMESTAMP(now(3))*1000)) ,
 	id bigint UNIQUE AUTO_INCREMENT,
 	entry_author varchar(30) NOT NULL,
 	status_type SMALLINT NOT NULL,
@@ -98,11 +100,15 @@ CREATE TABLE gyomu_market_holiday(
 CREATE INDEX IX_gyomu_market_holiday ON gyomu_market_holiday
 (market ASC,year ASC);
 
+CREATE TABLE gyomu_milestone_cdtbl(
+	milestone_id varchar(200) PRIMARY KEY,
+	description nvarchar(1000) NOT NULL
+	);
 
 CREATE TABLE gyomu_milestone_daily(
 	target_date varchar(8) NOT NULL,
 	milestone_id varchar(200) NOT NULL,
-  update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP  ,
+  update_time bigint DEFAULT (floor(UNIX_TIMESTAMP(now(3))*1000))  ,
  PRIMARY KEY (target_date,	milestone_id )
 );
 
@@ -166,7 +172,7 @@ CREATE TABLE gyomu_task_info_access_list(
 CREATE TABLE gyomu_task_data(
 	application_id smallint NOT NULL,
 	task_info_id smallint NOT NULL,
-	entry_date DATETIME UNIQUE NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+	entry_date bigint unique DEFAULT (floor(UNIX_TIMESTAMP(now(3))*1000)) ,
 	id bigint UNIQUE AUTO_INCREMENT,
 	entry_author varchar(30) NOT NULL,
 	parent_task_data_id bigint NULL,
@@ -199,7 +205,7 @@ CREATE INDEX IX_gyomu_task_data3 ON gyomu_task_data
 
 CREATE TABLE gyomu_task_instance(
 	task_data_id bigint NOT NULL,
-	entry_date DATETIME UNIQUE NOT NULL DEFAULT CURRENT_TIMESTAMP  ,
+	entry_date bigint unique DEFAULT (floor(UNIX_TIMESTAMP(now(3))*1000))  ,
 	id bigint UNIQUE AUTO_INCREMENT,
 	entry_author varchar(30) NOT NULL,
 	task_status varchar(10) NULL,
@@ -238,7 +244,7 @@ CREATE TABLE gyomu_task_instance_submit_information(
 CREATE TABLE gyomu_task_data_status(
 	task_data_id bigint PRIMARY KEY,
 	task_status varchar(10) NULL,
-	latest_update_date DATETIME NOT NULL  ,
+	latest_update_date bigint NOT NULL  ,
 	latest_task_instance_id bigint NOT NULL
 );
 
@@ -247,7 +253,7 @@ CREATE TABLE gyomu_task_data_status(
 
 CREATE TABLE gyomu_task_data_log(
 	task_data_id bigint NOT NULL,
-	log_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ,    
+	log_time  bigint unique DEFAULT (floor(UNIX_TIMESTAMP(now(3))*1000)) ,    
 	UNIQUE CX_gyomu_task_data_log ( task_data_id ASC, log_time ASC ),    
 	id bigint UNIQUE AUTO_INCREMENT,
 	log text NOT NULL
@@ -280,7 +286,7 @@ CREATE TABLE gyomu_task_scheduler_config(
 	application_id smallint NOT NULL,
 	task_id smallint NOT NULL,
 	monitor_parameter text NOT NULL,
-	next_trigger_time DATETIME NOT NULL,
+	next_trigger_time bigint NOT NULL,
 	task_parameter text NULL,
 	is_enabled boolean NOT NULL
 );

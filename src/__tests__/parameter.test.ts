@@ -4,6 +4,7 @@ import { gyomu_param_master } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 
 import { CriticalError, DBError } from '../errors';
+import { createDateFromYYYYMMDD } from '../dateOperation';
 
 beforeEach(() => {});
 test('parameter parse', async () => {
@@ -45,6 +46,71 @@ test('db error test', async () => {
       CriticalError
     );
   });
+});
+
+test('multiple parameter with different value test', async () => {
+  let itemKey = 'ITEM_KEY_Test$$';
+  let records: gyomu_param_master[] = [
+    {
+      item_key: itemKey,
+      item_value: 'oldest',
+      item_fromdate: '',
+    },
+    {
+      item_key: itemKey,
+      item_value: 'old',
+      item_fromdate: '19841001',
+    },
+    {
+      item_key: itemKey,
+      item_value: 'current',
+      item_fromdate: '20210101',
+    },
+  ];
+  prismaMock.gyomu_param_master.findMany.mockResolvedValue(records);
+  let result = await ParameterAccess.value(
+    itemKey,
+    undefined,
+    createDateFromYYYYMMDD('19800401')
+  );
+  if (result.isFailure()) {
+    expect(result.isFailure()).toBeFalsy();
+    return;
+  }
+  expect(result.value).toEqual('oldest');
+
+  result = await ParameterAccess.value(
+    itemKey,
+    undefined,
+    createDateFromYYYYMMDD('19850401')
+  );
+  if (result.isFailure()) {
+    expect(result.isFailure()).toBeFalsy();
+    return;
+  }
+  expect(result.value).toEqual('old');
+
+  result = await ParameterAccess.value(
+    itemKey,
+    undefined,
+    createDateFromYYYYMMDD('20220401')
+  );
+  if (result.isFailure()) {
+    expect(result.isFailure()).toBeFalsy();
+    return;
+  }
+  expect(result.value).toEqual('current');
+
+  result = await ParameterAccess.value(
+    itemKey,
+    undefined,
+    createDateFromYYYYMMDD('20210101')
+  );
+  if (result.isFailure()) {
+    expect(result.isFailure()).toBeFalsy();
+    return;
+  }
+  expect(result.value).toEqual('current');
 });
 
 async function setValueTest<T extends string | boolean | number>(itemValue: T) {

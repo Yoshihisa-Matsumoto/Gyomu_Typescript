@@ -2,6 +2,14 @@ import { resolve } from 'path';
 import { BaseError, TimeoutError } from './errors';
 import { Failure, PromiseResult, Result, success } from './result';
 
+/**
+ *
+ * @param pollingActionName
+ * explanation of this aciton during polling
+ * @returns
+ * Return success(true) when it's good result in polling. Otherwise return success(false)
+ * Return Failure with TimeoutError if there is any unexpected error
+ */
 export async function polling<E extends BaseError>(
   pollingActionName: string,
   timeoutSeconds: number,

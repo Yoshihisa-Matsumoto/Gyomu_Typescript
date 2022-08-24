@@ -3,7 +3,7 @@ import { BaseError } from './errors';
 export type Result<T, E extends Error> = Success<T> | Failure<E>;
 export type PromiseResult<T, E extends Error> = Promise<Result<T, E>>;
 
-class Success<T> {
+export class Success<T> {
   readonly value: T;
 
   constructor(value: T) {

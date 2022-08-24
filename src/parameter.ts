@@ -1,5 +1,5 @@
 import { gyomu_param_master, Prisma } from '@prisma/client';
-import { format } from 'util';
+import { format } from 'date-fns';
 import prisma from './dbsingleton';
 import { CriticalError, DBError } from './errors';
 import { Failure, PromiseResult, fail, success } from './result';
@@ -84,6 +84,7 @@ export class ParameterAccess {
           : -1;
       });
       for (var row of sortedArray) {
+        //console.log(row.item_fromdate, targetDateYYYYMMDD);
         if (!row.item_value) continue;
         if (!row.item_fromdate || !row.item_fromdate.trim())
           itemValue = row.item_value;

@@ -1,4 +1,8 @@
-import { gyomu_milestone_daily, Prisma } from '@prisma/client';
+import {
+  gyomu_milestone_daily,
+  gyomu_milestone_cdtbl,
+  Prisma,
+} from '@prisma/client';
 import { format } from 'date-fns';
 import { DateNFOption } from 'xlsx';
 import prisma from './dbsingleton';
@@ -6,6 +10,7 @@ import { CriticalError, DBError } from './errors';
 import { Failure, PromiseResult, success } from './result';
 import { polling } from './timer';
 import { genericDBFunction } from './dbutil';
+import internal from 'stream';
 
 interface MilestoneExistResultType {
   exists: boolean;
@@ -17,10 +22,7 @@ export class Milestone {
     targetDate: Date,
     isMonthly = false
   ): PromiseResult<MilestoneExistResultType, DBError> {
-    let targetDateYYYYMMDD = format(targetDate, 'yyyyMMdd');
-    if (isMonthly) {
-      targetDateYYYYMMDD = format(targetDate, 'yyyyMM') + '**';
-    }
+    let targetDateYYYYMMDD = this.#convertTargetDate(targetDate, isMonthly);
     return await genericDBFunction<MilestoneExistResultType>(
       'check gyomu_milestone_daily existence',
       async (milestoneId, targetDate, isMonthly) => {
@@ -41,43 +43,6 @@ export class Milestone {
       },
       [milestoneId, targetDate, isMonthly]
     );
-    // try {
-    //   let targetDateYYYYMMDD = format(targetDate, 'yyyyMMdd');
-    //   if (isMonthly) {
-    //     targetDateYYYYMMDD = format(targetDate, 'yyyyMM') + '**';
-    //   }
-    //   const record = await prisma.gyomu_milestone_daily.findUnique({
-    //     where: {
-    //       target_date_milestone_id: {
-    //         milestone_id: milestoneId,
-    //         target_date: targetDateYYYYMMDD,
-    //       },
-    //     },
-    //   });
-    //   return success(!!record);
-    // } catch (e) {
-    //   if (
-    //     e instanceof Prisma.PrismaClientKnownRequestError ||
-    //     e instanceof Prisma.PrismaClientUnknownRequestError ||
-    //     e instanceof Prisma.PrismaClientValidationError
-    //   ) {
-    //     return new Failure(
-    //       new DBError('Fail to get data on gyomu_milestone_daily', e)
-    //     );
-    //   } else if (e instanceof Prisma.PrismaClientRustPanicError) {
-    //     throw new CriticalError(
-    //       'Critical error on Prisma. Need to terminate the application',
-    //       e
-    //     );
-    //   } else {
-    //     return new Failure(
-    //       new DBError(
-    //         'Unknown failure to get data on gyomu_milestone_daily',
-    //         e as Error
-    //       )
-    //     );
-    //   }
-    // }
   }
 
   static async register(
@@ -90,10 +55,7 @@ export class Milestone {
     if (existsResult.value.exists)
       return success(new Date(Number(existsResult.value.updateTime)));
 
-    let targetDateYYYYMMDD = format(targetDate, 'yyyyMMdd');
-    if (isMonthly) {
-      targetDateYYYYMMDD = format(targetDate, 'yyyyMM') + '**';
-    }
+    let targetDateYYYYMMDD = this.#convertTargetDate(targetDate, isMonthly);
     return await genericDBFunction<Date>(
       'register gyomu_milestone_daily record',
       async (milestoneId, targetDate, isMonthly) => {
@@ -106,18 +68,28 @@ export class Milestone {
     );
   }
 
+  static #convertTargetDate(targetDate: Date, isMonthly: boolean) {
+    let targetDateYYYYMMDD = format(targetDate, 'yyyyMMdd');
+    if (isMonthly) {
+      targetDateYYYYMMDD = format(targetDate, 'yyyyMM') + '**';
+    }
+    return targetDateYYYYMMDD;
+  }
+
   static async wait(
     milestoneId: string,
     targetDate: Date,
-    timeoutMinute: number
+    timeoutSecond: number
   ) {
+    let interval: number = 5;
+    if (timeoutSecond < 60) interval = 1;
     return await polling<DBError>(
       `Wait for milestone ${milestoneId} on ${format(
         targetDate,
         'yyyyMMdd'
       )} to be on`,
-      timeoutMinute * 60,
-      5,
+      timeoutSecond,
+      interval,
       async (milestoneId, targetDate) => {
         const existsResult = await this.exists(milestoneId, targetDate);
         if (existsResult.isFailure()) return existsResult;
@@ -126,6 +98,117 @@ export class Milestone {
       },
       milestoneId,
       targetDate
+    );
+  }
+
+  static async retrieveMilestoneDailyList(targetDateYYYYMMDD: string) {
+    const targetDateMonthly = targetDateYYYYMMDD.substring(0, 6) + '**';
+    return genericDBFunction(
+      'search milestone_daily',
+      async (targetDateYYYYMMDD: string, targetDateMonthly: string) => {
+        const records = await prisma.gyomu_milestone_daily.findMany({
+          where: {
+            OR: [
+              {
+                target_date: targetDateYYYYMMDD,
+              },
+              { target_date: targetDateMonthly },
+            ],
+          },
+        });
+        return success(records);
+      },
+      [targetDateYYYYMMDD, targetDateMonthly]
+    );
+  }
+
+  static async deleteMilestoneDaily(
+    milestoneId: string,
+    targetDateYYYYMMDD: string
+  ) {
+    return await genericDBFunction(
+      'delete gyomu_milestone_daily',
+      async (milestoneId: string, targetDateYYYYMMDD: string) => {
+        const deletedRecord = await prisma.gyomu_milestone_daily.delete({
+          where: {
+            target_date_milestone_id: {
+              milestone_id: milestoneId,
+              target_date: targetDateYYYYMMDD,
+            },
+          },
+        });
+        return success(deletedRecord);
+      },
+      [milestoneId, targetDateYYYYMMDD]
+    );
+  }
+
+  static async milestoneList() {
+    return await genericDBFunction<gyomu_milestone_cdtbl[]>(
+      'retrieve gyomu_milestone_cdtbl records',
+      async () => {
+        const records = await prisma.gyomu_milestone_cdtbl.findMany();
+        return success(records);
+      },
+      []
+    );
+  }
+
+  static async upsertMilestoneCode(
+    record: gyomu_milestone_cdtbl,
+    milestoneId?: string
+  ) {
+    let needCreate: boolean = true;
+    if (!!milestoneId) {
+      const result = await genericDBFunction<boolean>(
+        'check existence of gyomu_milestone_cdtbl record',
+        async (milestoneId: string) => {
+          const record = await prisma.gyomu_milestone_cdtbl.findUnique({
+            where: { milestone_id: milestoneId },
+          });
+          return success(!!record);
+        },
+        [milestoneId]
+      );
+      if (result.isFailure()) return result;
+      needCreate = !result.value;
+    }
+
+    return await genericDBFunction<gyomu_milestone_cdtbl>(
+      'Insert gyomu_milestone_cdtbl record',
+      async (
+        record: gyomu_milestone_cdtbl,
+        needCreate: boolean,
+        milestoneId?: string
+      ) => {
+        let result: gyomu_milestone_cdtbl;
+        if (needCreate) {
+          result = await prisma.gyomu_milestone_cdtbl.create({
+            data: record,
+          });
+        } else {
+          result = await prisma.gyomu_milestone_cdtbl.update({
+            data: record,
+            where: { milestone_id: milestoneId },
+          });
+        }
+
+        return success(result);
+      },
+      [record, needCreate, milestoneId]
+    );
+  }
+
+  static async deleteMilestoneCode(milestoneId: string) {
+    return await genericDBFunction<gyomu_milestone_cdtbl>(
+      'delete gyomu_milestone_cdtbl record',
+      async (milestoneId: string) => {
+        const result = await prisma.gyomu_milestone_cdtbl.delete({
+          where: { milestone_id: milestoneId },
+        });
+        return success(result);
+      },
+      [milestoneId]
     );
   }
 }

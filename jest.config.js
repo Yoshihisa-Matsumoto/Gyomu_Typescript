@@ -10,4 +10,5 @@ module.exports = {
   moduleFileExtensions: ['js', 'tsx', 'ts', 'd.ts'],
   clearMocks: true,
   setupFilesAfterEnv: ['<rootDir>/src/__tests__/baseDBClass.ts'],
+  preset: 'ts-jest',
 };

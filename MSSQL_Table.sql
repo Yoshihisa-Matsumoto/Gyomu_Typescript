@@ -9,6 +9,8 @@ DROP TABLE if exists gyomu_apps_info_cdtbl;
 
 DROP TABLE if exists gyomu_status_type_cdtbl;
 
+DROP TABLE if exists gyomu_milestone_cdtbl;
+
 DROP TABLE if exists gyomu_market_holiday;
 
 DROP TABLE IF EXISTS gyomu_milestone_daily;
@@ -137,6 +139,15 @@ GO
 CREATE INDEX IX_gyomu_market_holiday ON gyomu_market_holiday
 (market ASC,year ASC)
 GO
+
+CREATE TABLE [dbo].[gyomu_milestone_cdtbl](
+	[milestone_id] varchar(200) NOT NULL,
+	[description] nvarchar(1000) NOT NULL,
+	 CONSTRAINT [PK_gyomu_milestone_cdtbl] PRIMARY KEY CLUSTERED 
+(
+	[milestone_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+)
 
 CREATE TABLE [dbo].[gyomu_milestone_daily](
 	[target_date] [varchar](8) NOT NULL,

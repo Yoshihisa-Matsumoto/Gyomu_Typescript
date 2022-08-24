@@ -183,3 +183,8 @@ model gyomu_variable_parameter {
   variable_key String @id(map: "PK_gyomu_variable_parameter") @db.VarChar(20)
   description  String @db.VarChar(200)
 }
+
+model gyomu_milestone_cdtbl {
+  milestone_id String @id(map: "PK_gyomu_milestone_cdtbl") @db.VarChar(200)
+  description  String
+}
