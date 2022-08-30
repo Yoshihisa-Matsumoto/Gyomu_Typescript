@@ -111,54 +111,6 @@ sftpMock.mockImplementation(() => {
     //closed: !status.access,
   };
 });
-// jest.mock('ssh2-sftp-client', () => {
-//   return {
-//     default: jest.fn().mockImplementation(() => {
-//       return {
-//         connect: async (options: sftp.ConnectOptions) => {
-//           initializeStatus();
-//           status.access = true;
-//         },
-//         get: async (
-//           path: string,
-//           dst?: string | NodeJS.WritableStream,
-//           options?: sftp.TransferOptions
-//         ) => {
-//           status.downloadTo = true;
-//         },
-//         downloadDir: async (
-//           srcDir: string,
-//           destDir: string,
-//           filter?: string | RegExp
-//         ) => {
-//           status.downloadToDir = true;
-//         },
-//         put: async (
-//           input: string | Buffer | NodeJS.ReadableStream,
-//           remoteFilePath: string,
-//           options?: sftp.TransferOptions
-//         ) => {
-//           status.uploadFrom = true;
-//         },
-//         uploadDir: async (localDirPath: string, remoteDirPath?: string) => {
-//           status.uploadFromDir = true;
-//         },
-//         stat: async (remotePath: string) => {
-//           status.stat = true;
-//           return fileStat;
-//         },
-//         list: async (path?: string) => {
-//           status.list = true;
-//           return fileInfoList;
-//         },
-//         close: () => {
-//           status.access = false;
-//         },
-//         //closed: !status.access,
-//       };
-//     }),
-//   };
-// });
 
 beforeEach(() => {
   initializeStatus();
@@ -169,7 +121,7 @@ const dummyOption: RemoteConnection = new RemoteConnection();
 describe('SFTP Test', () => {
   // console.log(baseFtp.Client);
 
-  test('ftp download test', async () => {
+  test('sftp download test', async () => {
     console.log(sftp);
     const client: Sftp = new Sftp(dummyOption);
     // jest.spyOn(client, 'connected', 'get').mockImplementation(() => {
@@ -205,7 +157,7 @@ describe('SFTP Test', () => {
     expect(status.downloadToDir).toBeTruthy();
   });
 
-  test('ftp upload test', async () => {
+  test('sftp upload test', async () => {
     const client: Sftp = new Sftp(dummyOption);
     // jest.spyOn(client, 'connected', 'get').mockImplementation(() => {
     //   return status.access;

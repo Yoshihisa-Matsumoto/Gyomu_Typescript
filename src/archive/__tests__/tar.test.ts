@@ -11,7 +11,7 @@ let extractDirectory: string;
 beforeAll(() => {
   const tmpPath = os.tmpdir();
   const sourceDirectory = path.resolve('./tests');
-  const destinationDirectory = path.join(tmpPath, 'compress');
+  const destinationDirectory = path.join(tmpPath, 'compressTar');
 
   fse.emptydirSync(destinationDirectory);
   fse.copySync(sourceDirectory, destinationDirectory);
