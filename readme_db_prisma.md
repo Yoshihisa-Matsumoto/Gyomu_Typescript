@@ -13,4 +13,5 @@
 
 1. Change env file through dotenv-cli
 2. Update client module through npx prisma generate command
-3. Initialize DB status if you launch Docker DB
+3. Initialize DB status if you launch Docker DB,etc ->How?
+   => DML setup, initial record setup, etc
