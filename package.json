@@ -19,6 +19,7 @@
   "author": "",
   "license": "ISC",
   "files": [
+    "index.js",
     "lib",
     "!**/__tests__"
   ],

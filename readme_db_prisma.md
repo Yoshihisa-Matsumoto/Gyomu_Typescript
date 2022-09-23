@@ -15,3 +15,9 @@
 2. Update client module through npx prisma generate command
 3. Initialize DB status if you launch Docker DB,etc ->How?
    => DML setup, initial record setup, etc
+
+# notes for SIT
+
+prisma generate --schema .\prisma\schema.prisma.postgre
+--inject docker run + initialization
+dotenv -e .env.sit -- -- jest --config=./jest.sit.config.js
