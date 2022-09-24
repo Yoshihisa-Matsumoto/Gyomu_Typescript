@@ -21,3 +21,4 @@
 prisma generate --schema .\prisma\schema.prisma.postgre
 --inject docker run + initialization
 dotenv -e .env.sit -- -- jest --config=./jest.sit.config.js
+docker-compose -f .\test-docker\docker-compose.yml up -d

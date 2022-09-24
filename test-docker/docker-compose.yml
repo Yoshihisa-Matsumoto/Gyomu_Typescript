@@ -13,3 +13,15 @@ services:
       POSTGRES_USER: prisma
       POSTGRES_PASSWORD: prisma
       POSTGRES_DB: tests
+
+    volumes:
+      - type: tmpfs
+        target: /var/lib/postgresql/data
+
+      - type: bind
+        source: ./initial_script
+        target: /docker-entrypoint-initdb.d
+
+      - type: bind
+        source: ./sql
+        target: /usr/sql
