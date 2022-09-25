@@ -1,7 +1,7 @@
 import { gyomu_market_holiday } from '@prisma/client';
 import MarketDateAccess from '../holidays';
 
-import { MockContext, Context, createMockContext } from '../dbsingleton';
+import { Context } from '../dbsingleton';
 //import { prismaMock } from './baseDBClass';
 
 // let mockCtx: MockContext;
