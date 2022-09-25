@@ -1,13 +1,8 @@
 import { AxiosResponse } from 'axios';
 import xmlser from 'xmlserializer';
 import xdom from '@xmldom/xmldom';
-// import { tmpNameSync } from 'tmp';
-// import { writeFileSync } from 'fs';
 import { DOMElement, GenericElement } from './element';
 import { parse } from 'parse5';
-import { Table, TableOption } from './table';
-import { TableRow } from './tableRow';
-import { TableColumn, TableColumnOption } from './tableColumn';
 import xpath from 'xpath';
 
 export type PageResponseOption = {

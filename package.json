@@ -13,7 +13,11 @@
     "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
     "prepare": "npm run build",
     "version": "git add -A src",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "postgre:setup": "prisma generate --schema ./prisma/schema.prisma.postgre",
+    "sit:docker": "docker-compose -f ./test-docker/docker-compose.yml up -d",
+    "sit:docker_down": "docker-compose -f ./test-docker/docker-compose.yml down",
+    "sit": "npm run postgre:setup && npm run sit:docker && dotenv -e .env.sit -- jest --config=./jest.sit.config.js "
   },
   "keywords": [],
   "author": "",
@@ -21,7 +25,8 @@
   "files": [
     "index.js",
     "lib",
-    "!**/__tests__"
+    "!**/__tests__",
+    "!**/__sit__"
   ],
   "devDependencies": {
     "@types/crypto-js": "^4.1.1",
