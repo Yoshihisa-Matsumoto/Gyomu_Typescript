@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
 import xmlser from 'xmlserializer';
-import xdom from 'xmldom';
+import xdom from '@xmldom/xmldom';
 // import { tmpNameSync } from 'tmp';
 // import { writeFileSync } from 'fs';
 import { DOMElement, GenericElement } from './element';
