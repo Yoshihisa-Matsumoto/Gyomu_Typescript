@@ -196,12 +196,7 @@ const fixKeylength = (key: string): string => {
 export const pkiEncrypt = (publicKey: Buffer, data: Buffer): Buffer => {
   return crypto.publicEncrypt(publicKey, data);
 };
-// export const keyAESEncrypt2Base64 = (key: Buffer, data: Buffer): string => {
-//   return buffer2Base64String(keyAESEncrypt(key, data));
-// };
-// export const keyAESEncryptString = (key: Buffer, data: string): string => {
-//   return keyAESEncrypt2Base64(key, Buffer.from(data));
-// };
+
 export const pkiFileEncrypt = (
   publicKeyFilename: string,
   data: Buffer
@@ -234,12 +229,7 @@ export const pkiFileEncryptToFile = (
 export const pkiDecrypt = (privateKey: Buffer, data: Buffer): Buffer => {
   return crypto.privateDecrypt(privateKey, data);
 };
-// export const keyAESDecrypt2Base64 = (key: Buffer, data: Buffer): string => {
-//   return buffer2Base64String(keyAESDecrypt(key, data));
-// };
-// export const keyAESDeccryptString = (key: Buffer, data: string): string => {
-//   return keyAESDecrypt2Base64(key, Buffer.from(data));
-// };
+
 export const pkiFileDecrypt = (
   privateKeyFilename: string,
   data: Buffer
@@ -268,25 +258,3 @@ export const pkiFileDecryptFile = (
     pkiFileDecrypt(privateKeyFilename, readFileSync(encryptedFilename))
   );
 };
-
-// export const aesDecryptOld = (encrypted: string, key: string): string => {
-//   const encryptedBuffer = base64String2Buffer(encrypted);
-//   const iv = encryptedBuffer.subarray(0, 16); //Nonce
-//   const tag = encryptedBuffer.subarray(encryptedBuffer.length - 16); //Tag
-//   const encryptedData = encryptedBuffer.subarray(
-//     16,
-//     encryptedBuffer.length - 16
-//   );
-//   // console.log('Total', encryptedBuffer.byteLength);
-//   // console.log('iv', iv.byteLength);
-//   // console.log('tag', tag.byteLength);
-//   // console.log('encryptedData', encryptedData.byteLength);
-//   const encryptionKey = getKeyOld(key);
-
-//   const decipher = crypto.createDecipheriv('aes-128-gcm', encryptionKey, iv);
-//   const chunks: Buffer[] = [];
-//   chunks.push(decipher.update(encryptedData));
-//   decipher.setAuthTag(tag);
-//   chunks.push(decipher.final());
-//   return arrayBufferToString(Buffer.concat(chunks));
-// };
