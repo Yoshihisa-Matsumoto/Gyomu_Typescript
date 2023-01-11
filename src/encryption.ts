@@ -1,17 +1,12 @@
 import crypto from 'crypto';
-import { buffer } from 'stream/consumers';
-import {
-  base64String2Buffer,
-  base64String2String,
-  buffer2Base64String,
-} from './base64';
+import { base64String2Buffer, buffer2Base64String } from './base64';
 import {
   arrayBufferToString,
   bufferToArrayBuffer,
   stringToArrayBuffer,
 } from './buffer';
-import { readFile, readFileSync, writeFileSync } from 'fs';
-import { enc } from 'crypto-js';
+import { readFileSync, writeFileSync } from 'fs';
+import forge from 'node-forge';
 
 export const aesEncryptBufferByKeyFile = (
   plainBuffer: ArrayBuffer,
@@ -27,13 +22,49 @@ export const aesEncrypt = (plain: string, key: string): string => {
   const encryptedBuffer = aesEncryptBuffer(originalBuffer, getKey(key));
   return buffer2Base64String(encryptedBuffer);
 };
+const getStringByteLength = (stringValue: string): number => {
+  return encodeURIComponent(stringValue).replace(/%../g, 'x').length;
+};
+/**
+ * AES Encryption using forge. No dependency on browser or nodejs
+ * @param plain
+ * @param keyWithExpected16Or32Length  to support AES 128/256. If length is not proper, then put space afterwards
+ * @returns encrypted string with Base64 encoding
+ */
+export const aesEncrypt2 = (
+  plain: string,
+  keyWithExpected16Or32Length: string
+): string => {
+  const normalizedKey = fixKeylength(keyWithExpected16Or32Length);
+  const keyLength = getStringByteLength(normalizedKey);
+  console.log('KeyLength', keyLength);
+  if (keyLength !== 16 && keyLength !== 32)
+    throw new Error('Invalid Key Length');
+
+  const iv = forge.random.getBytesSync(16);
+
+  const cipher = forge.cipher.createCipher(
+    'AES-GCM',
+    forge.util.createBuffer(normalizedKey)
+  );
+  cipher.start({ iv: forge.util.createBuffer(iv) });
+  cipher.update(forge.util.createBuffer(plain));
+  const pass = cipher.finish();
+  if (pass) {
+    return forge.util.encode64(
+      iv + cipher.output.getBytes() + cipher.mode.tag.getBytes()
+    );
+  } else {
+    throw new Error('Fail to Encrypt');
+  }
+};
 
 export const aesEncryptBuffer = (
   plainBuffer: ArrayBuffer,
   keyBuffer: ArrayBuffer
 ): Buffer => {
   const keyLength = keyBuffer.byteLength;
-  console.log('KeyLength', keyLength);
+  //console.log('KeyLength', keyLength);
   if (keyLength !== 16 && keyLength !== 32)
     throw new Error('Invalid Key Length');
 
@@ -83,6 +114,7 @@ export const aesDecryptBuffer = (
   chunks.push(decipher.final());
   return Buffer.concat(chunks);
 };
+
 export const aesDecryptBufferByKeyFile = (
   encryptedBuffer: Buffer,
   keyFilename: string
@@ -95,25 +127,44 @@ export const aesDecrypt = (encrypted: string, key: string): string => {
   const encryptedBuffer = base64String2Buffer(encrypted);
   const decryptedBuffer = aesDecryptBuffer(encryptedBuffer, getKey(key));
   return arrayBufferToString(decryptedBuffer);
-  // const encryptedBuffer = base64String2Buffer(encrypted);
-  // const iv = encryptedBuffer.subarray(0, 16); //Nonce
-  // const tag = encryptedBuffer.subarray(encryptedBuffer.length - 16); //Tag
-  // const encryptedData = encryptedBuffer.subarray(
-  //   16,
-  //   encryptedBuffer.length - 16
-  // );
-  // // console.log('Total', encryptedBuffer.byteLength);
-  // // console.log('iv', iv.byteLength);
-  // // console.log('tag', tag.byteLength);
-  // // console.log('encryptedData', encryptedData.byteLength);
-  // const encryptionKey = getKey(key);
+};
 
-  // const decipher = crypto.createDecipheriv('aes-128-gcm', encryptionKey, iv);
-  // const chunks: Buffer[] = [];
-  // chunks.push(decipher.update(encryptedData));
-  // decipher.setAuthTag(tag);
-  // chunks.push(decipher.final());
-  // return bufferToString(Buffer.concat(chunks));
+/**
+ * AES Encryption using Forge
+ * No dependency on browser/nodejs
+ * @param base64EncodedEncryptionData encrypted string with Base64 Encryption
+ * @param keyWithExpected16Or32Length to support AES 128/256. If length is not proper, then put space afterwards
+ * @returns
+ */
+export const aesDecrypt2 = (
+  base64EncodedEncryptionData: string,
+  keyWithExpected16Or32Length: string
+): string => {
+  const encryptedBuffer = forge.util.decode64(base64EncodedEncryptionData); // base64String2Buffer(encrypted);
+  const normalizedKey = fixKeylength(keyWithExpected16Or32Length);
+
+  const iv = encryptedBuffer.substring(0, 16);
+  const tag = encryptedBuffer.substring(encryptedBuffer.length - 16); //Tag
+  const encryptedData = encryptedBuffer.substring(
+    16,
+    encryptedBuffer.length - 16
+  );
+
+  const encryptionKey = forge.util.createBuffer(normalizedKey);
+  const decipher = forge.cipher.createDecipher('AES-GCM', encryptionKey);
+  //console.log('tag length:' + getStringByteLength(tag));
+  decipher.start({
+    iv: forge.util.createBuffer(iv),
+    tag: forge.util.createBuffer(tag),
+  });
+
+  decipher.update(forge.util.createBuffer(encryptedData));
+  const pass = decipher.finish();
+  if (pass) {
+    return decipher.output.toString();
+  } else {
+    throw new Error('Fail to Decrypt');
+  }
 };
 
 const getKey = (key: string): ArrayBuffer => {
@@ -126,20 +177,6 @@ const getKeyOld = (key: string): DataView => {
   //console.log(arrayBuffer.byteLength);
   return new DataView(arrayBuffer);
 };
-// const getKey = async (key: string): Promise<CryptoKey> => {
-//   const cryptoKey = await crypto.subtle.importKey(
-//     'raw',
-//     stringToBuffer(fixKeylength(key)),
-//     {
-//       //this is the algorithm options
-//       name: 'AES-GCM',
-//       length: 16,
-//     },
-//     true, // whether the key is extractable
-//     ['encrypt', 'decrypt'] // usages
-//   );
-//   return cryptoKey;
-// };
 
 const fixKeylength = (key: string): string => {
   const keyLength = key.length;
