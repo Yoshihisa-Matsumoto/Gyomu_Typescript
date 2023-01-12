@@ -22,42 +22,6 @@ export const aesEncrypt = (plain: string, key: string): string => {
   const encryptedBuffer = aesEncryptBuffer(originalBuffer, getKey(key));
   return buffer2Base64String(encryptedBuffer);
 };
-const getStringByteLength = (stringValue: string): number => {
-  return encodeURIComponent(stringValue).replace(/%../g, 'x').length;
-};
-/**
- * AES Encryption using forge. No dependency on browser or nodejs
- * @param plain
- * @param keyWithExpected16Or32Length  to support AES 128/256. If length is not proper, then put space afterwards
- * @returns encrypted string with Base64 encoding
- */
-export const aesEncrypt2 = (
-  plain: string,
-  keyWithExpected16Or32Length: string
-): string => {
-  const normalizedKey = fixKeylength(keyWithExpected16Or32Length);
-  const keyLength = getStringByteLength(normalizedKey);
-  console.log('KeyLength', keyLength);
-  if (keyLength !== 16 && keyLength !== 32)
-    throw new Error('Invalid Key Length');
-
-  const iv = forge.random.getBytesSync(16);
-
-  const cipher = forge.cipher.createCipher(
-    'AES-GCM',
-    forge.util.createBuffer(normalizedKey)
-  );
-  cipher.start({ iv: forge.util.createBuffer(iv) });
-  cipher.update(forge.util.createBuffer(plain));
-  const pass = cipher.finish();
-  if (pass) {
-    return forge.util.encode64(
-      iv + cipher.output.getBytes() + cipher.mode.tag.getBytes()
-    );
-  } else {
-    throw new Error('Fail to Encrypt');
-  }
-};
 
 export const aesEncryptBuffer = (
   plainBuffer: ArrayBuffer,
@@ -129,12 +93,54 @@ export const aesDecrypt = (encrypted: string, key: string): string => {
   return arrayBufferToString(decryptedBuffer);
 };
 
+const getStringByteLength = (stringValue: string): number => {
+  //return encodeURIComponent(stringValue).replace(/%../g, 'x').length;
+  //
+  return new TextEncoder().encode(stringValue).length;
+};
+
 /**
- * AES Encryption using Forge
+ * AES Encryption using forge. No dependency on browser or nodejs
+ * @param plain
+ * @param keyWithExpected16Or32Length  to support AES 128/256. If length is not proper, then put space afterwards
+ * @returns encrypted string with Base64 encoding
+ */
+export const aesEncrypt2 = (
+  plain: string,
+  keyWithExpected16Or32Length: string
+): string => {
+  const normalizedKey = fixKeylength(keyWithExpected16Or32Length);
+  const keyLength = getStringByteLength(normalizedKey);
+  console.log('KeyLength', keyLength);
+  if (keyLength !== 16 && keyLength !== 32)
+    throw new Error('Invalid Key Length');
+
+  const iv = forge.random.getBytesSync(16);
+
+  const cipher = forge.cipher.createCipher(
+    'AES-GCM',
+    forge.util.createBuffer(normalizedKey)
+  );
+  cipher.start({ iv: forge.util.createBuffer(iv) });
+  //const buffer = new forge.util.ByteStringBuffer(forge.util.encodeUtf8(plain));
+  const buffer = forge.util.createBuffer(plain);
+  cipher.update(buffer);
+  const pass = cipher.finish();
+  if (pass) {
+    return forge.util.encode64(
+      iv + cipher.output.getBytes() + cipher.mode.tag.getBytes()
+    );
+  } else {
+    throw new Error('Fail to Encrypt');
+  }
+};
+
+/**
+ * AES Decryption using Forge
  * No dependency on browser/nodejs
- * @param base64EncodedEncryptionData encrypted string with Base64 Encryption
+ * @param base64EncodedEncryptionData encrypted string with Base64 Encoding
  * @param keyWithExpected16Or32Length to support AES 128/256. If length is not proper, then put space afterwards
- * @returns
+ * @returns decrypted string
  */
 export const aesDecrypt2 = (
   base64EncodedEncryptionData: string,

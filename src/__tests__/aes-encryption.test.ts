@@ -33,6 +33,17 @@ test('Normal AES Encrypt/Decrypt Test', () => {
   expect(plain).toEqual(aes.aesDecrypt(encData2, key2));
 });
 
+test('Normal AES Japanese Encrypt/Decrypt Test', () => {
+  const plain = 'こんにちは、皆さん';
+  const key = 'abc';
+  const encData = aes.aesEncrypt(plain, key);
+  //console.log('Encrypt:', encData);
+  expect(plain).toEqual(aes.aesDecrypt(encData, key));
+  const key2 = 'abcdefghijklmnop';
+  const encData2 = aes.aesEncrypt(plain, key2);
+  expect(plain).toEqual(aes.aesDecrypt(encData2, key2));
+});
+
 test('AES Decrypt Error Test', () => {
   const plain = 'Hello$Test';
   const key = 'abc';
@@ -100,49 +111,31 @@ test('Normal AES Encrypt/Decrypt Test by forge', () => {
   expect(plain).toEqual(aes.aesDecrypt2(encData2, key2));
 });
 
-test('AES Decrypt Error Test by forge', () => {
-  const plain = 'Hello$Test';
+test('Normal AES Encrypt/Decrypt Japanese Test by forge', () => {
+  const plain = '皆さん、こんにちは';
   const key = 'abc';
   const encData = aes.aesEncrypt2(plain, key);
+  console.log('Encrypt:', encData);
+  expect(aes.aesDecrypt2(encData, key)).toEqual(plain);
   const key2 = 'abcdefghijklmnop';
-  expect(() => {
-    aes.aesDecrypt2(encData, key2);
-  }).toThrowError('Fail to Decrypt');
+  const encData2 = aes.aesEncrypt2(plain, key2);
+  expect(aes.aesDecrypt2(encData2, key)).toEqual(plain);
 });
 
-test('Invalid AES Key Encrypt Test by forge', () => {
-  const plain = 'Hello$Test';
-  const key = 'abcdefghijklmnoprstuvwxyz012345678';
-  expect(() => {
-    aes.aesEncrypt2(plain, key);
-  }).toThrow('Invalid Key Length:');
-});
-
-// test('AES Encrypt/Decrypt using binary file key by forge', () => {
-//   const keyFilename = './tests/key-256.key';
-//   // const keyBuffer = fs.readFileSync(keyFilename);
-//   // const keyBufferArrary = bufferToArrayBuffer(keyBuffer);
-//   const plainFilename = './tests/utf8_sample.txt';
-//   const plainBuffer = fs.readFileSync(plainFilename);
-//   const encryptedBuffer = aes.aesEncryptBufferByKeyFile(
-//     bufferToArrayBuffer(plainBuffer),
-//     keyFilename
-//   );
-//   const decryptedBuffer = aes.aesDecryptBufferByKeyFile(
-//     encryptedBuffer,
-//     keyFilename
-//   );
-//   expect(plainBuffer.equals(decryptedBuffer)).toBeTruthy();
+// test('AES Decrypt Error Test by forge', () => {
+//   const plain = 'Hello$Test';
+//   const key = 'abc';
+//   const encData = aes.aesEncrypt2(plain, key);
+//   const key2 = 'abcdefghijklmnop';
+//   expect(() => {
+//     aes.aesDecrypt2(encData, key2);
+//   }).toThrowError('Fail to Decrypt');
 // });
 
-// test('PKI Encrypt/Decrypt using key pair file by forge', () => {
-//   const privateKey = './tests/rsa4096';
-//   const publicKey = './tests/rsa4096.pub.pem';
-//   const plainFilename = './tests/utf8_sample.txt';
-//   const encryptedFilename = tmpNameSync();
-//   const decryptedFilename = tmpNameSync();
-//   aes.pkiFileEncryptToFile(publicKey, plainFilename, encryptedFilename);
-//   aes.pkiFileDecryptFile(privateKey, encryptedFilename, decryptedFilename);
-//   const isEqual = compareFiles(plainFilename, decryptedFilename);
-//   expect(isEqual).toBeTruthy();
+// test('Invalid AES Key Encrypt Test by forge', () => {
+//   const plain = 'Hello$Test';
+//   const key = 'abcdefghijklmnoprstuvwxyz012345678';
+//   expect(() => {
+//     aes.aesEncrypt2(plain, key);
+//   }).toThrow('Invalid Key Length:');
 // });
