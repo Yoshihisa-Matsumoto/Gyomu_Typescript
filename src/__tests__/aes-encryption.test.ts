@@ -119,7 +119,7 @@ test('Normal AES Encrypt/Decrypt Japanese Test by forge', () => {
   expect(aes.aesDecrypt2(encData, key)).toEqual(plain);
   const key2 = 'abcdefghijklmnop';
   const encData2 = aes.aesEncrypt2(plain, key2);
-  expect(aes.aesDecrypt2(encData2, key)).toEqual(plain);
+  expect(aes.aesDecrypt2(encData2, key2)).toEqual(plain);
 });
 
 // test('AES Decrypt Error Test by forge', () => {

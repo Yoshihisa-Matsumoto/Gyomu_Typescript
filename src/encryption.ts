@@ -117,18 +117,16 @@ export const aesEncrypt2 = (
 
   const iv = forge.random.getBytesSync(16);
 
-  const cipher = forge.cipher.createCipher(
-    'AES-GCM',
-    forge.util.createBuffer(normalizedKey)
-  );
-  cipher.start({ iv: forge.util.createBuffer(iv) });
-  //const buffer = new forge.util.ByteStringBuffer(forge.util.encodeUtf8(plain));
-  const buffer = forge.util.createBuffer(plain);
+  const cipher = forge.cipher.createCipher('AES-GCM', normalizedKey);
+  cipher.start({ iv: iv });
+
+  const buffer = new forge.util.ByteStringBuffer(forge.util.encodeUtf8(plain));
+  //const buffer = forge.util.createBuffer(plain);
   cipher.update(buffer);
   const pass = cipher.finish();
   if (pass) {
     return forge.util.encode64(
-      iv + cipher.output.getBytes() + cipher.mode.tag.getBytes()
+      iv + cipher.output.data + cipher.mode.tag.getBytes()
     );
   } else {
     throw new Error('Fail to Encrypt');
@@ -160,14 +158,15 @@ export const aesDecrypt2 = (
   const decipher = forge.cipher.createDecipher('AES-GCM', encryptionKey);
   //console.log('tag length:' + getStringByteLength(tag));
   decipher.start({
-    iv: forge.util.createBuffer(iv),
+    iv: iv,
     tag: forge.util.createBuffer(tag),
   });
 
   decipher.update(forge.util.createBuffer(encryptedData));
   const pass = decipher.finish();
   if (pass) {
-    return decipher.output.toString();
+    //return decipher.output.toString();
+    return forge.util.decodeUtf8(decipher.output.data);
   } else {
     throw new Error('Fail to Decrypt');
   }
