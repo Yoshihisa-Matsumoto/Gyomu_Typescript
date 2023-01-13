@@ -122,20 +122,20 @@ test('Normal AES Encrypt/Decrypt Japanese Test by forge', () => {
   expect(aes.aesDecrypt2(encData2, key2)).toEqual(plain);
 });
 
-// test('AES Decrypt Error Test by forge', () => {
-//   const plain = 'Hello$Test';
-//   const key = 'abc';
-//   const encData = aes.aesEncrypt2(plain, key);
-//   const key2 = 'abcdefghijklmnop';
-//   expect(() => {
-//     aes.aesDecrypt2(encData, key2);
-//   }).toThrowError('Fail to Decrypt');
-// });
+test('AES Decrypt Error Test by forge', () => {
+  const plain = 'Hello$Test';
+  const key = 'abc';
+  const encData = aes.aesEncrypt2(plain, key);
+  const key2 = 'abcdefghijklmnop';
+  expect(() => {
+    aes.aesDecrypt2(encData, key2);
+  }).toThrowError('Fail to Decrypt');
+});
 
-// test('Invalid AES Key Encrypt Test by forge', () => {
-//   const plain = 'Hello$Test';
-//   const key = 'abcdefghijklmnoprstuvwxyz012345678';
-//   expect(() => {
-//     aes.aesEncrypt2(plain, key);
-//   }).toThrow('Invalid Key Length:');
-// });
+test('Invalid AES Key Encrypt Test by forge', () => {
+  const plain = 'Hello$Test';
+  const key = 'abcdefghijklmnoprstuvwxyz012345678';
+  expect(() => {
+    aes.aesEncrypt2(plain, key);
+  }).toThrow('Invalid Key Length:');
+});
