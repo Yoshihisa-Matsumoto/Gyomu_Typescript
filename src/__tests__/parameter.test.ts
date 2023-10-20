@@ -15,9 +15,14 @@ test('parameter parse', async () => {
 
 test('db error test', async () => {
   const expectedErrors = [
-    new Prisma.PrismaClientKnownRequestError('test', 'c010', '1.2.3'),
-    new Prisma.PrismaClientUnknownRequestError('test', '1.2.3'),
-    new Prisma.PrismaClientValidationError('test'),
+    new Prisma.PrismaClientKnownRequestError('test', {
+      code: 'c010',
+      clientVersion: '1.2.3',
+    }),
+    new Prisma.PrismaClientUnknownRequestError('test', {
+      clientVersion: '1.2.3',
+    }),
+    new Prisma.PrismaClientValidationError('test', { clientVersion: '1.2.3' }),
     new Error('test'),
   ];
   expectedErrors.forEach(async (err) => {

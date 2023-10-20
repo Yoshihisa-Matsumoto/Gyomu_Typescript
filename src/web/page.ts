@@ -65,7 +65,10 @@ export class Page {
   }
 
   searchByXPath(path: string) {
-    return xpath.select(path, this.#xdoc).map((v) => {
+    const searchValue = xpath.select(path, this.#xdoc, false);
+    if (!Array.isArray(searchValue)) return searchValue;
+
+    return searchValue.map((v) => {
       return DOMElement.parseXPathResultValidValue(v);
     });
   }

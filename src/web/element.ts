@@ -63,7 +63,9 @@ export class DOMElement {
   }
 
   searchByXPath(path: string) {
-    return xpath.select(path, this.__node).map((v) => {
+    const selectedValue = xpath.select(path, this.__node);
+    if (!Array.isArray(selectedValue)) return selectedValue;
+    return selectedValue.map((v) => {
       return DOMElement.parseXPathResultValidValue(v);
     });
   }

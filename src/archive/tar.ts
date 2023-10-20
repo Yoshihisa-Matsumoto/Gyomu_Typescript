@@ -85,7 +85,7 @@ export class TarArchive extends AbstractBaseArchive {
     const extract = await tar.list({
       file: this.archiveFileName,
       onentry: (entry) => {
-        if (entry.header.path === fileName) isExist = true;
+        if (entry.path === fileName) isExist = true;
       },
     });
     return success(isExist);
