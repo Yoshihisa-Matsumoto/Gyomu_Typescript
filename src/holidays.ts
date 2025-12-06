@@ -1,7 +1,5 @@
 import { Context } from './dbsingleton';
-import format from 'date-fns/format';
-import addDays from 'date-fns/addDays';
-import subDays from 'date-fns/subDays';
+import { format, addDays, subDays } from 'date-fns';
 import { addMonths, isAfter, isBefore, isEqual } from 'date-fns';
 import { createDateOnly } from './dateOperation';
 import prisma from './dbsingleton';

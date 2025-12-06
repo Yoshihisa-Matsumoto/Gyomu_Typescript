@@ -51,7 +51,7 @@ test('AES Decrypt Error Test', () => {
   const key2 = 'abcdefghijklmnop';
   expect(() => {
     aes.aesDecrypt(encData, key2);
-  }).toThrowError('Unsupported state or unable to authenticate data');
+  }).toThrow('Unsupported state or unable to authenticate data');
 });
 
 test('Invalid AES Key Encrypt Test', () => {
@@ -129,7 +129,7 @@ test('AES Decrypt Error Test by forge', () => {
   const key2 = 'abcdefghijklmnop';
   expect(() => {
     aes.aesDecrypt2(encData, key2);
-  }).toThrowError('Fail to Decrypt');
+  }).toThrow('Fail to Decrypt');
 });
 
 test('Invalid AES Key Encrypt Test by forge', () => {

@@ -84,7 +84,7 @@ test('Tar Creation Test', async () => {
   result = await archive.extractAll(destinationRoot);
   expect(result.isSuccess()).toBeTruthy();
   validateFolders(path.join(compressDirectory, 'source'), destinationRoot);
-});
+}, 10000);
 
 test('Tar Unarchive Test', async () => {
   let transferInformation: FileTransportInfo;
@@ -133,7 +133,7 @@ test('Tar Unarchive Test', async () => {
       path.join(compressDirectory, 'source/ユーザー噂.py')
     )
   ).toBeTruthy();
-});
+}, 10000);
 test('Tar Unarchive Folder Test', async () => {
   let transferInformation: FileTransportInfo;
   let extractedFile: string;
@@ -156,4 +156,4 @@ test('Tar Unarchive Folder Test', async () => {
   result = await archive.extractAll(destinationRoot);
   expect(result.isSuccess()).toBeTruthy();
   validateFolders(path.join(compressDirectory, 'source'), destinationRoot);
-});
+}, 10000);

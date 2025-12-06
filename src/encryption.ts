@@ -57,7 +57,7 @@ export const aesEncryptBuffer = (
 
 export const aesDecryptBuffer = (
   encryptedBuffer: Buffer,
-  keyBuffer: ArrayBuffer
+  keyBuffer: ArrayBufferLike
 ): Buffer => {
   const iv = encryptedBuffer.subarray(0, 16); //Nonce
   const tag = encryptedBuffer.subarray(encryptedBuffer.length - 16); //Tag
@@ -90,7 +90,8 @@ export const aesDecryptBufferByKeyFile = (
 export const aesDecrypt = (encrypted: string, key: string): string => {
   const encryptedBuffer = base64String2Buffer(encrypted);
   const decryptedBuffer = aesDecryptBuffer(encryptedBuffer, getKey(key));
-  return arrayBufferToString(decryptedBuffer);
+  //return arrayBufferToString(decryptedBuffer);
+  return decryptedBuffer.toString();
 };
 
 const getStringByteLength = (stringValue: string): number => {

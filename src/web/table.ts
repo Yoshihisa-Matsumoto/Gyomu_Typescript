@@ -1,7 +1,5 @@
 import { GenericElement } from './element';
 import { TableRow } from './tableRow';
-import * as Excel from '../excel';
-import { numeric } from 'tar';
 
 export type TableOption = {
   headerExist: boolean;

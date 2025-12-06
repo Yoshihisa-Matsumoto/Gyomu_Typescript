@@ -1,9 +1,11 @@
 import { AxiosResponse } from 'axios';
-import xmlser from 'xmlserializer';
+import { convert } from 'xmlbuilder2';
 import xdom from '@xmldom/xmldom';
 import { DOMElement, GenericElement } from './element';
-import { parse } from 'parse5';
+//import { parse } from 'parse5';
 import xpath from 'xpath';
+
+//const parse5 = require('parse5');
 
 export type PageResponseOption = {
   kind: 'response';
@@ -28,9 +30,9 @@ export class Page {
     } else {
       this.#htmlString = option.htmlText;
     }
-    const document = parse(this.#htmlString);
-    const xhtml = xmlser.serializeToString(document);
-    this.#xdoc = new xdom.DOMParser().parseFromString(xhtml);
+    // const document = parse5.parse(this.#htmlString);
+    // const xhtml = convert(document);
+    this.#xdoc = new xdom.DOMParser().parseFromString(this.#htmlString);
     // this.#dom = new JSDOM(response.data as string);
     // this.#dom.window.document.evaluate;
   }

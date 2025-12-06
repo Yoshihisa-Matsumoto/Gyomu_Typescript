@@ -7,7 +7,7 @@ import { fail, Result, success, PromiseResult, Failure } from '../result';
 import archiver from 'archiver';
 // import tarStream from 'tar-stream';
 // import tar from 'tar-fs';
-import tar from 'tar';
+import * as tar from 'tar';
 import { AbstractBaseArchive } from './abstract';
 
 /**
@@ -20,30 +20,30 @@ export class TarArchive extends AbstractBaseArchive {
     transferInformation: FileTransportInfo,
     needGZipCompression: boolean = false
   ): PromiseResult<boolean, ArchiveError> {
-    let currentDirectory = path.dirname(
-      transferInformation.sourceFullNameWithBasePath
-    );
-    let targetPathForTar =
-      transferInformation.sourceFullNameWithBasePath.substring(
-        currentDirectory.length + path.sep.length
-      );
+    // let currentDirectory = path.dirname(
+    //   transferInformation.sourceFullNameWithBasePath
+    // );
+    // let targetPathForTar =
+    //   transferInformation.sourceFullNameWithBasePath.substring(
+    //     currentDirectory.length + path.sep.length
+    //   );
     // console.log('current', currentDirectory);
     // console.log('target', targetPathForTar);
     if (!transferInformation.isSourceDirectory) {
       return fail('Single File is not supported', ArchiveError);
     }
-    let tarOptions: tar.CreateOptions & tar.FileOptions;
-    tarOptions = {
-      file: tarFileName,
-      cwd: transferInformation.sourceFullNameWithBasePath,
-    };
-    if (needGZipCompression) {
-      tarOptions = {
-        file: tarFileName,
-        cwd: transferInformation.sourceFullNameWithBasePath,
-        gzip: true,
-      };
-    }
+    // let tarOptions: tar.CreateOptions & tar.FileOptions;
+    // tarOptions = {
+    //   file: tarFileName,
+    //   cwd: transferInformation.sourceFullNameWithBasePath,
+    // };
+    // if (needGZipCompression) {
+    //   tarOptions = {
+    //     file: tarFileName,
+    //     cwd: transferInformation.sourceFullNameWithBasePath,
+    //     gzip: true,
+    //   };
+    // }
     return new Promise((resolve, reject) => {
       let result: Promise<void>;
       if (!needGZipCompression) {

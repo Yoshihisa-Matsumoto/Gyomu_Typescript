@@ -9,7 +9,7 @@ import {
   FileTransportInfo,
   FilterType,
 } from './fileModel';
-import compareAsc from 'date-fns/compareAsc';
+import { compareAsc } from 'date-fns';
 import { fail, PromiseResult, Result, success } from './result';
 import { AccessError, ArchiveError, TimeoutError } from './errors';
 import { fi } from 'date-fns/locale';
