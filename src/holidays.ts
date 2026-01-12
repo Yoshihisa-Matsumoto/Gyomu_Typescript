@@ -4,7 +4,7 @@ import { addMonths, isAfter, isBefore, isEqual } from 'date-fns';
 import { createDateOnly } from './dateOperation';
 import prisma from './dbsingleton';
 import { genericDBFunction } from './dbutil';
-import { gyomu_market_holiday } from '@prisma/client';
+import { gyomu_market_holiday } from './generated/prisma/client';
 import { success, PromiseResult } from './result';
 import { DBError } from './errors';
 export default class MarketDateAccess {

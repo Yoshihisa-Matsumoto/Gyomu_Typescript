@@ -2,8 +2,13 @@ import { beforeEach, vi, describe, test, expect } from 'vitest';
 import { createDateFromYYYYMMDD } from '../../dateOperation';
 import { FileTransportInfo } from '../../fileModel';
 import { Sftp } from '../sftp';
-import sftp = require('ssh2-sftp-client');
 import { RemoteConnection } from '../remoteConnection';
+import {
+  FileStats,
+  FileInfo,
+  ConnectOptions,
+  TransferOptions,
+} from 'ssh2-sftp-client';
 
 let status = {
   access: false,
@@ -25,7 +30,7 @@ const initializeStatus = () => {
     list: false,
   };
 };
-let fileStat: sftp.FileStats = {
+let fileStat: FileStats = {
   accessTime: 1,
   gid: 1,
   isBlockDevice: false,
@@ -40,7 +45,7 @@ let fileStat: sftp.FileStats = {
   size: 5,
   uid: 1,
 };
-let fileInfoList: sftp.FileInfo[] = [
+let fileInfoList: FileInfo[] = [
   {
     name: '1',
     size: 2,
@@ -62,51 +67,38 @@ let fileInfoList: sftp.FileInfo[] = [
     type: '-',
   },
 ];
-vi.mock('ssh2-sftp-client'),
-  () => {
-    return {
-      connect: async (options: sftp.ConnectOptions) => {
-        initializeStatus();
-        status.access = true;
-      },
-      get: async (
-        path: string,
-        dst?: string | NodeJS.WritableStream,
-        options?: sftp.TransferOptions
-      ) => {
-        status.downloadTo = true;
-      },
-      downloadDir: async (
-        srcDir: string,
-        destDir: string,
-        filter?: string | RegExp
-      ) => {
-        status.downloadToDir = true;
-      },
-      put: async (
-        input: string | Buffer | NodeJS.ReadableStream,
-        remoteFilePath: string,
-        options?: sftp.TransferOptions
-      ) => {
-        status.uploadFrom = true;
-      },
-      uploadDir: async (localDirPath: string, remoteDirPath?: string) => {
-        status.uploadFromDir = true;
-      },
-      stat: async (remotePath: string) => {
-        status.stat = true;
-        return fileStat;
-      },
-      list: async (path?: string) => {
-        status.list = true;
-        return fileInfoList;
-      },
-      end: async () => {
-        status.access = false;
-      },
-      //closed: !status.access,
+vi.mock('ssh2-sftp-client', async () => {
+  class mockClient {
+    connect = async () => {
+      initializeStatus();
+      status.access = true;
     };
-  };
+    get = async () => {
+      status.downloadTo = true;
+    };
+    downloadDir = async () => {
+      status.downloadToDir = true;
+    };
+    put = async () => {
+      status.uploadFrom = true;
+    };
+    uploadDir = async () => {
+      status.uploadFromDir = true;
+    };
+    stat = async () => {
+      status.stat = true;
+      return fileStat;
+    };
+    list = async () => {
+      status.list = true;
+      return fileInfoList;
+    };
+    end = async () => {
+      status.access = false;
+    };
+  }
+  return { default: mockClient };
+});
 // const sftpMock = sftp as jest.Mock;
 // sftpMock.mockImplementation(() => {
 //   return {
@@ -163,7 +155,7 @@ describe('SFTP Test', () => {
   // console.log(baseFtp.Client);
 
   test('sftp download test', async () => {
-    console.log(sftp);
+    //console.log(sftp);
     const client: Sftp = new Sftp(dummyOption);
     // jest.spyOn(client, 'connected', 'get').mockImplementation(() => {
     //   return status.access;

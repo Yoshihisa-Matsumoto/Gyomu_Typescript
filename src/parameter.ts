@@ -1,4 +1,4 @@
-import { gyomu_param_master, Prisma } from '@prisma/client';
+import { gyomu_param_master, Prisma } from './generated/prisma/client';
 import { format } from 'date-fns';
 import prisma from './dbsingleton';
 import { CriticalError, DBError } from './errors';

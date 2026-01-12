@@ -1,5 +1,3 @@
-import * as fs from 'fs';
-import path from 'path';
 import { Configurator } from './configurator';
 import {
   FileArchiveType,
@@ -16,9 +14,9 @@ import { fi } from 'date-fns/locale';
 import { ZipArchive } from './archive/zip';
 import { TarArchive } from './archive/tar';
 import { isEqual } from 'date-fns';
-import tmp from 'tmp';
 import { GzipArchive } from './archive/gz';
 import { polling } from './timer';
+import { platform } from './platform';
 
 export class FileOperation {
   static async canAccess(
@@ -26,16 +24,19 @@ export class FileOperation {
     readOnly: boolean = false
   ): PromiseResult<boolean, AccessError> {
     return new Promise(async (resolve, reject) => {
-      if (!fs.existsSync(fileName))
+      if (!platform.existsSync(fileName))
         return resolve(fail(`File Not exist: ${fileName}`, AccessError));
       const specialExtension = ['xls', 'xlsm', 'xlsx', 'zip'];
-      const stat = fs.statSync(fileName);
+      const stat = platform.statSync(fileName);
 
-      if (specialExtension.includes(path.extname(fileName)) && stat.size === 0)
+      if (
+        specialExtension.includes(platform.extname(fileName)) &&
+        stat.size === 0
+      )
         return resolve(fail(`File is invalid: ${fileName}`, AccessError));
       if (readOnly) return resolve(success(true));
       await setTimeout(() => {
-        const stat2 = fs.statSync(fileName);
+        const stat2 = platform.statSync(fileName);
         if (
           !isEqual(stat.ctime, stat2.ctime) ||
           !isEqual(stat.mtime, stat2.mtime)
@@ -54,14 +55,14 @@ export class FileOperation {
     });
 
     // try {
-    //   const fileHandle = fs.openSync(
+    //   const fileHandle = platform.openSync(
     //     fileName,
     //     readOnly ? 'r' : 'r+',
     //     readOnly
-    //       ? fs.constants.O_RDONLY
-    //       : fs.constants.O_RDWR | fs.constants.O_EXCL
+    //       ? platform.constants.O_RDONLY
+    //       : platform.constants.O_RDWR | platform.constants.O_EXCL
     //   );
-    //   fs.closeSync(fileHandle);
+    //   platform.closeSync(fileHandle);
     //   return true;
     // } catch (err) {
     //   return false;
@@ -122,13 +123,14 @@ export class FileOperation {
     isRecursive: boolean = false
   ): FileInfo[] {
     const fileInfoList = new Array<FileInfo>();
-    if (!fs.existsSync(parentDirectory)) return fileInfoList;
+    if (!platform.existsSync(parentDirectory)) return fileInfoList;
 
-    fs.readdirSync(parentDirectory, { withFileTypes: true }).forEach(
-      (dirent) => {
+    platform
+      .readdirSync(parentDirectory, { withFileTypes: true })
+      .forEach((dirent) => {
         if (dirent.isFile()) {
-          const fullPath = path.join(
-            path.resolve(parentDirectory),
+          const fullPath = platform.join(
+            platform.resolve(parentDirectory),
             dirent.name
           );
           const [result, fileInfo] = this.#isFileValid(
@@ -139,8 +141,8 @@ export class FileOperation {
             fileInfoList.push(fileInfo);
           }
         } else if (dirent.isDirectory()) {
-          const fullPath = path.join(
-            path.resolve(parentDirectory),
+          const fullPath = platform.join(
+            platform.resolve(parentDirectory),
             dirent.name
           );
           const childInfoList = FileOperation.search(
@@ -150,7 +152,7 @@ export class FileOperation {
           );
           fileInfoList.push(...childInfoList);
         }
-        // const fullPath = path.join(path.resolve(parentDirectory), file);
+        // const fullPath = platform.join(platform.resolve(parentDirectory), file);
         // console.log(fullPath);
         // const [result, fileInfo] = this.#isFileValid(fullPath, filterConditions);
         // if (result) fileInfoList.push(fileInfo);
@@ -162,8 +164,7 @@ export class FileOperation {
         //   );
         //   fileInfoList.push(...childInfoList);
         // }
-      }
-    );
+      });
     return fileInfoList;
   }
 

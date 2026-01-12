@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma } from './generated/prisma/client';
 import { CriticalError, DBError } from './errors';
 import { Failure, PromiseResult } from './result';
 
@@ -19,14 +19,14 @@ export async function genericDBFunction<T>(
         e instanceof Prisma.PrismaClientUnknownRequestError ||
         e instanceof Prisma.PrismaClientValidationError
       ) {
-        resolve(new Failure(new DBError(`Fail: ${actionName}`, e)));
+        resolve(new Failure(new DBError(`Fail: ${actionName}`, e as Error)));
       } else if (e instanceof CriticalError) {
         reject(e);
       } else if (e instanceof Prisma.PrismaClientRustPanicError) {
         reject(
           new CriticalError(
             'Critical error on Prisma. Need to terminate the application',
-            e
+            e as Error
           )
         );
       } else {

@@ -2,7 +2,7 @@ import {
   gyomu_milestone_daily,
   gyomu_milestone_cdtbl,
   Prisma,
-} from '@prisma/client';
+} from './generated/prisma/client';
 import { format } from 'date-fns';
 import { DateNFOption } from 'xlsx';
 import prisma from './dbsingleton';
@@ -10,7 +10,6 @@ import { CriticalError, DBError } from './errors';
 import { Failure, PromiseResult, success } from './result';
 import { polling } from './timer';
 import { genericDBFunction } from './dbutil';
-import internal from 'stream';
 
 interface MilestoneExistResultType {
   exists: boolean;

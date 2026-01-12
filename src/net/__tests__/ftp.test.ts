@@ -2,7 +2,8 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { createDateFromYYYYMMDD } from '../../dateOperation';
 import { FileTransportInfo } from '../../fileModel';
 import { Ftp } from '../ftp';
-import baseFtp = require('basic-ftp');
+import { AccessOptions, FileInfo, UploadOptions } from 'basic-ftp';
+
 import { RemoteConnection } from '../remoteConnection';
 import { Readable, Writable } from 'stream';
 
@@ -28,7 +29,8 @@ const initializeStatus = () => {
     list: false,
   };
 };
-let fileInfoList: baseFtp.FileInfo[] = [
+
+let fileInfoList: FileInfo[] = [
   {
     name: '1',
     type: 1,
@@ -50,55 +52,61 @@ let fileInfoList: baseFtp.FileInfo[] = [
     rawModifiedAt: '',
   },
 ];
-vi.mock('basic-ftp', () => {
+
+vi.mock('basic-ftp', async () => {
+  const actual = await vi.importActual<typeof import('basic-ftp')>('basic-ftp');
+  class mockClient {
+    ftp = {
+      verbose: true,
+    };
+    access = async (options?: AccessOptions) => {
+      initializeStatus();
+      status.access = true;
+    };
+    downloadTo = async (
+      destination: Writable | string,
+      fromRemotePath: string,
+      startAt?: number
+    ) => {
+      status.downloadTo = true;
+    };
+    downloadToDir = async (localDirPath: string, remoteDirPath?: string) => {
+      status.downloadToDir = true;
+    };
+    uploadFrom = async (
+      source: Readable | string,
+      toRemotePath: string,
+      options?: UploadOptions
+    ) => {
+      status.uploadFrom = true;
+    };
+    uploadFromDir = async (localDirPath: string, remoteDirPath?: string) => {
+      status.uploadFromDir = true;
+    };
+    size = async (path: string) => {
+      status.size = true;
+      return 21;
+    };
+    lastMod = async (path: string) => {
+      status.lastMod = true;
+      return createDateFromYYYYMMDD('19840301');
+    };
+    list = async (path?: string) => {
+      status.list = true;
+      return fileInfoList;
+    };
+    close = () => {
+      status.access = false;
+    };
+    //closed: !status.access,
+  }
   return {
-    Client: vi.fn().mockImplementation(() => {
-      return {
-        ftp: {
-          verbose: true,
-        },
-        access: async (options?: baseFtp.AccessOptions) => {
-          initializeStatus();
-          status.access = true;
-        },
-        downloadTo: async (
-          destination: Writable | string,
-          fromRemotePath: string,
-          startAt?: number
-        ) => {
-          status.downloadTo = true;
-        },
-        downloadToDir: async (localDirPath: string, remoteDirPath?: string) => {
-          status.downloadToDir = true;
-        },
-        uploadFrom: async (
-          source: Readable | string,
-          toRemotePath: string,
-          options?: baseFtp.UploadOptions
-        ) => {
-          status.uploadFrom = true;
-        },
-        uploadFromDir: async (localDirPath: string, remoteDirPath?: string) => {
-          status.uploadFromDir = true;
-        },
-        size: async (path: string) => {
-          status.size = true;
-          return 21;
-        },
-        lastMod: async (path: string) => {
-          status.lastMod = true;
-          return createDateFromYYYYMMDD('19840301');
-        },
-        list: async (path?: string) => {
-          status.list = true;
-          return fileInfoList;
-        },
-        close: () => {
-          status.access = false;
-        },
-        //closed: !status.access,
-      };
-    }),
+    ...actual,
+    Client: mockClient,
+    default: {
+      ...actual,
+      Client: mockClient,
+    },
   };
 });
 

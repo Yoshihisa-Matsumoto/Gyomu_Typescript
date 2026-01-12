@@ -1,5 +1,6 @@
-import { PrismaClient } from '@prisma/client';
-import { mockDeep, DeepMockProxy } from 'vitest-mock-extended';
+import 'dotenv/config';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from './generated/prisma/client';
 
 export type Context = {
   prisma: PrismaClient;
@@ -14,6 +15,8 @@ export type Context = {
 //     prisma: mockDeep<PrismaClient>(),
 //   };
 // };
+const connectionString = `${process.env.DATABASE_URL}`;
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({ connectionString });
+const prisma = new PrismaClient({ adapter });
 export default prisma;

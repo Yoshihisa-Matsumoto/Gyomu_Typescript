@@ -1,4 +1,4 @@
-import ftp from 'basic-ftp';
+import { Client } from 'basic-ftp';
 import { PeerCertificate } from 'tls';
 import { NetworkError } from '../errors';
 import { FileTransportInfo } from '../fileModel';
@@ -10,9 +10,9 @@ export class Ftp {
   #connectionInformation: RemoteConnection;
   constructor(connectionConfig: RemoteConnection) {
     this.#connectionInformation = connectionConfig;
-    this.client = new ftp.Client();
+    this.client = new Client();
   }
-  client: ftp.Client;
+  client: Client;
   get connected() {
     return !this.client.closed;
   }

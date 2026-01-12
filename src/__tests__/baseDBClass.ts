@@ -1,4 +1,4 @@
-import { gyomu_market_holiday, PrismaClient } from '@prisma/client';
+import { gyomu_market_holiday, PrismaClient } from '../generated/prisma/client';
 import { mockDeep, mockReset, DeepMockProxy } from 'vitest-mock-extended';
 
 import prisma from '../dbsingleton';

@@ -1,4 +1,4 @@
-import { gyomu_market_holiday } from '@prisma/client';
+//import { gyomu_market_holiday } from '@prisma/client';
 import MarketDateAccess from '../holidays';
 
 import { Context } from '../dbsingleton';

@@ -1,7 +1,6 @@
 import { prismaMock } from './baseDBClass';
 import { ParameterAccess } from '../parameter';
-import { gyomu_param_master } from '@prisma/client';
-import { Prisma } from '@prisma/client';
+import { gyomu_param_master, Prisma } from '../generated/prisma/client';
 
 import { CriticalError, DBError } from '../errors';
 import { createDateFromYYYYMMDD } from '../dateOperation';

@@ -1,5 +1,4 @@
-import { Stats, statSync } from 'fs';
-import path from 'path';
+import { platform } from './platform';
 import { parse } from 'date-fns';
 import { ValueError } from './errors';
 
@@ -17,20 +16,20 @@ export class FileInfo {
 
   constructor(filePath: string) {
     //console.log('FileInfo', filePath);
-    const stats = statSync(filePath);
+    const stats = platform.statSync(filePath);
     this.isFile = stats.isFile();
     if (this.isFile) {
-      this.fileName = path.basename(filePath);
-      this.fullPath = path.resolve(filePath);
-      this.directoryName = path.basename(path.dirname(filePath));
-      this.directoryPath = path.dirname(path.resolve(filePath));
-      this.extension = path.extname(filePath);
+      this.fileName = platform.basename(filePath);
+      this.fullPath = platform.resolve(filePath);
+      this.directoryName = platform.basename(platform.dirname(filePath));
+      this.directoryPath = platform.dirname(platform.resolve(filePath));
+      this.extension = platform.extname(filePath);
     } else {
       this.fileName = '';
       this.extension = '';
-      this.fullPath = path.resolve(filePath);
-      this.directoryName = path.basename(path.dirname(filePath));
-      this.directoryPath = path.dirname(path.resolve(filePath));
+      this.fullPath = platform.resolve(filePath);
+      this.directoryName = platform.basename(platform.dirname(filePath));
+      this.directoryPath = platform.dirname(platform.resolve(filePath));
     }
     this.size = stats.size;
     this.createTime = stats.birthtime;
@@ -179,12 +178,12 @@ export class FileTransportInfo {
   get sourceFullName(): string {
     if (!this.sourceFolderName) return this.sourceFileName;
     if (!this.sourceFileName) return this.sourceFolderName;
-    return path.join(this.sourceFolderName, this.sourceFileName);
+    return platform.join(this.sourceFolderName, this.sourceFileName);
   }
 
   get sourceFullNameWithBasePath(): string {
     if (!this.sourceFullName) return this.basePath;
-    if (!!this.basePath) return path.join(this.basePath, this.sourceFullName);
+    if (!!this.basePath) return platform.join(this.basePath, this.sourceFullName);
     return this.sourceFullName;
   }
 
@@ -201,6 +200,6 @@ export class FileTransportInfo {
   get destinationFullName(): string {
     if (!this.destinationPath) return this.destinationFileName;
     if (!this.destinationFileName) return this.destinationPath;
-    return path.join(this.destinationPath, this.destinationFileName);
+    return platform.join(this.destinationPath, this.destinationFileName);
   }
 }

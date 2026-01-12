@@ -1,5 +1,5 @@
 import { prismaMock } from './baseDBClass';
-import { gyomu_milestone_daily } from '@prisma/client';
+import { gyomu_milestone_daily } from '../generated/prisma/client';
 import { DBError, TimeoutError } from '../errors';
 import { PromiseResult } from '../result';
 import { Milestone } from '../milestone';
