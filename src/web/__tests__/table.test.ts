@@ -1,12 +1,14 @@
-import { readFileSync } from 'fs';
-import path from 'path';
+import { platform } from '../../platform';
 import { Page } from '../page';
 import { convertGenericElementByTagName } from '../util';
+import { expect, test } from 'vitest';
 
 test('Table initialization', () => {
   const page = new Page({
     kind: 'html',
-    htmlText: readFileSync(path.join('tests', 'test.html')).toString(),
+    htmlText: platform
+      .readFileSync(platform.join('tests', 'test.html'))
+      .toString(),
   });
   const tablesDiv = page.getElementsByClassName<HTMLDivElement>(
     'component-normal-table'

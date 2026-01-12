@@ -1,23 +1,23 @@
 import { TarArchive } from '../tar';
-import fse from 'fs-extra';
-import os, { tmpdir } from 'os';
-import path from 'path';
+
 import { FileTransportInfo } from '../../fileModel';
 import fs from 'fs';
 import { compareFiles, validateFolders } from '../../__tests__/baseClass';
+import { beforeAll, expect, test } from 'vitest';
+import { platform } from '../../platform';
 
 let compressDirectory: string;
 let extractDirectory: string;
 beforeAll(() => {
-  const tmpPath = os.tmpdir();
-  const sourceDirectory = path.resolve('./tests');
-  const destinationDirectory = path.join(tmpPath, 'compressTar');
+  const tmpPath = platform.tmpdir();
+  const sourceDirectory = platform.resolve('./tests');
+  const destinationDirectory = platform.join(tmpPath, 'compressTar');
 
-  fse.emptydirSync(destinationDirectory);
-  fse.copySync(sourceDirectory, destinationDirectory);
+  platform.emptyDirSync(destinationDirectory);
+  platform.copySync(sourceDirectory, destinationDirectory);
   compressDirectory = destinationDirectory;
-  extractDirectory = path.join(destinationDirectory, 'extract');
-  fse.emptyDirSync(extractDirectory);
+  extractDirectory = platform.join(destinationDirectory, 'extract');
+  platform.emptyDirSync(extractDirectory);
 });
 
 const validateFileExistence = async (
@@ -42,9 +42,9 @@ const validateFileExistence = async (
 };
 
 test('Tar Creation Test', async () => {
-  //const extractDirectory = path.join(compressDirectory,'extracted');
-  const sourceDirectory = path.join(compressDirectory, 'source');
-  const tarFileName = path.join(compressDirectory, 'test_tar_create.tar');
+  //const extractDirectory = platform.join(compressDirectory,'extracted');
+  const sourceDirectory = platform.join(compressDirectory, 'source');
+  const tarFileName = platform.join(compressDirectory, 'test_tar_create.tar');
   const transferInformation = new FileTransportInfo({
     basePath: sourceDirectory,
   });
@@ -54,7 +54,7 @@ test('Tar Creation Test', async () => {
 
   expect(result.isSuccess()).toBeTruthy();
 
-  // const checkFilename = path.join(sourceDirectory, 'README.md');
+  // const checkFilename = platform.join(sourceDirectory, 'README.md');
   // //const [sourceBuffer,destinationBuffer] = getBufferFromFilenames()
   let archive: TarArchive = new TarArchive(tarFileName);
 
@@ -80,10 +80,10 @@ test('Tar Creation Test', async () => {
   );
   await validateFileExistence(archive, 'ユーザー噂.py', true);
 
-  let destinationRoot = path.join(extractDirectory, 'fullTarCreate');
+  let destinationRoot = platform.join(extractDirectory, 'fullTarCreate');
   result = await archive.extractAll(destinationRoot);
   expect(result.isSuccess()).toBeTruthy();
-  validateFolders(path.join(compressDirectory, 'source'), destinationRoot);
+  validateFolders(platform.join(compressDirectory, 'source'), destinationRoot);
 }, 10000);
 
 test('Tar Unarchive Test', async () => {
@@ -94,14 +94,14 @@ test('Tar Unarchive Test', async () => {
     destinationFolderName: extractDirectory,
   });
   let archive: TarArchive = new TarArchive(
-    path.join(compressDirectory, 'compress/temp.tar')
+    platform.join(compressDirectory, 'compress/temp.tar')
   );
   const result = await archive.extract(transferInformation);
-  extractedFile = path.join(extractDirectory, 'README.md');
+  extractedFile = platform.join(extractDirectory, 'README.md');
   expect(
     compareFiles(
       extractedFile,
-      path.join(compressDirectory, 'source/README.md')
+      platform.join(compressDirectory, 'source/README.md')
     )
   ).toBeTruthy();
 
@@ -111,11 +111,11 @@ test('Tar Unarchive Test', async () => {
     destinationFolderName: extractDirectory,
   });
   await archive.extract(transferInformation);
-  extractedFile = path.join(extractDirectory, 'email_sender.py');
+  extractedFile = platform.join(extractDirectory, 'email_sender.py');
   expect(
     compareFiles(
       extractedFile,
-      path.join(compressDirectory, 'source/folder1/email_sender.py')
+      platform.join(compressDirectory, 'source/folder1/email_sender.py')
     )
   ).toBeTruthy();
 
@@ -126,11 +126,11 @@ test('Tar Unarchive Test', async () => {
     destinationFolderName: extractDirectory,
   });
   await archive.extract(transferInformation);
-  extractedFile = path.join(extractDirectory, 'ユーザー噂.py');
+  extractedFile = platform.join(extractDirectory, 'ユーザー噂.py');
   expect(
     compareFiles(
       extractedFile,
-      path.join(compressDirectory, 'source/ユーザー噂.py')
+      platform.join(compressDirectory, 'source/ユーザー噂.py')
     )
   ).toBeTruthy();
 }, 10000);
@@ -139,21 +139,21 @@ test('Tar Unarchive Folder Test', async () => {
   let extractedFile: string;
   transferInformation = new FileTransportInfo({
     sourceFolderName: 'folder1/folder 2',
-    destinationFolderName: path.join(extractDirectory, 'folder 2'),
+    destinationFolderName: platform.join(extractDirectory, 'folder 2'),
   });
   let archive: TarArchive = new TarArchive(
-    path.join(compressDirectory, 'compress/temp.tar')
+    platform.join(compressDirectory, 'compress/temp.tar')
   );
   let result = await archive.extract(transferInformation);
   expect(result.isSuccess()).toBeTruthy();
   validateFolders(
-    path.join(compressDirectory, 'source/folder1/folder 2'),
-    path.join(extractDirectory, 'folder 2')
+    platform.join(compressDirectory, 'source/folder1/folder 2'),
+    platform.join(extractDirectory, 'folder 2')
   );
 
-  let destinationRoot = path.join(extractDirectory, 'fullTarExtract');
+  let destinationRoot = platform.join(extractDirectory, 'fullTarExtract');
 
   result = await archive.extractAll(destinationRoot);
   expect(result.isSuccess()).toBeTruthy();
-  validateFolders(path.join(compressDirectory, 'source'), destinationRoot);
+  validateFolders(platform.join(compressDirectory, 'source'), destinationRoot);
 }, 10000);

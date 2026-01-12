@@ -1,15 +1,18 @@
 import { FileOperation } from '../fileOperation';
-import path from 'path';
+
 import { FileCompareType, FileFilterInfo, FilterType } from '../fileModel';
-import fs from 'fs';
+
 import tmp from 'tmp';
+import { expect, test } from 'vitest';
+import { platform } from '../platform';
+import { platformConstants } from '../platform/common';
 
 test('File Whole Search Test', () => {
-  const baseDir = path.resolve('.');
+  const baseDir = platform.resolve('.');
   const fileInfoList = FileOperation.search('tests', [], true);
   const fullPathList = new Array<string>();
   fileInfoList.forEach((fileInfo) => {
-    fullPathList.push(path.relative(baseDir, fileInfo.fullPath));
+    fullPathList.push(platform.relative(baseDir, fileInfo.fullPath));
   });
   let expected = [
     'tests\\compress\\README.md.bz2',
@@ -44,7 +47,7 @@ test('File Whole Search Test', () => {
 });
 
 test('File Name Exact Search Test', () => {
-  const baseDir = path.resolve('.');
+  const baseDir = platform.resolve('.');
   let fileInfoList = FileOperation.search(
     'tests',
     [
@@ -58,7 +61,7 @@ test('File Name Exact Search Test', () => {
   );
   let fullPathList = new Array<string>();
   fileInfoList.forEach((fileInfo) => {
-    fullPathList.push(path.relative(baseDir, fileInfo.fullPath));
+    fullPathList.push(platform.relative(baseDir, fileInfo.fullPath));
   });
   let expected = ['tests\\compress\\README.md.gz'];
   expect(fullPathList).toEqual(expect.arrayContaining(expected));
@@ -71,7 +74,7 @@ test('File Name Exact Search Test', () => {
   );
   fullPathList = new Array<string>();
   fileInfoList.forEach((fileInfo) => {
-    fullPathList.push(path.relative(baseDir, fileInfo.fullPath));
+    fullPathList.push(platform.relative(baseDir, fileInfo.fullPath));
   });
   expected = [
     'tests\\compress\\README_aes_password.zip',
@@ -82,7 +85,7 @@ test('File Name Exact Search Test', () => {
 });
 
 test('File Name NoExact Search Test', () => {
-  const baseDir = path.resolve('.');
+  const baseDir = platform.resolve('.');
   let fileInfoList = FileOperation.search(
     'tests',
     [
@@ -96,7 +99,7 @@ test('File Name NoExact Search Test', () => {
   );
   let fullPathList = new Array<string>();
   fileInfoList.forEach((fileInfo) => {
-    fullPathList.push(path.relative(baseDir, fileInfo.fullPath));
+    fullPathList.push(platform.relative(baseDir, fileInfo.fullPath));
   });
   let expected = [
     'tests\\compress\\README_aes_password.zip',
@@ -139,7 +142,7 @@ test('File Name NoExact Search Test', () => {
   );
   fullPathList = new Array<string>();
   fileInfoList.forEach((fileInfo) => {
-    fullPathList.push(path.relative(baseDir, fileInfo.fullPath));
+    fullPathList.push(platform.relative(baseDir, fileInfo.fullPath));
   });
   expected = [
     'tests\\compress\\ユーザー噂.py.bz2',
@@ -162,7 +165,7 @@ test('File Name NoExact Search Test', () => {
   );
   fullPathList = new Array<string>();
   fileInfoList.forEach((fileInfo) => {
-    fullPathList.push(path.relative(baseDir, fileInfo.fullPath));
+    fullPathList.push(platform.relative(baseDir, fileInfo.fullPath));
   });
   expected = [
     'tests\\compress\\README.md.bz2',
@@ -185,7 +188,7 @@ test('File Name NoExact Search Test', () => {
   );
   fullPathList = new Array<string>();
   fileInfoList.forEach((fileInfo) => {
-    fullPathList.push(path.relative(baseDir, fileInfo.fullPath));
+    fullPathList.push(platform.relative(baseDir, fileInfo.fullPath));
   });
   expected = [
     'tests\\compress\\README.md.bz2',
@@ -198,23 +201,23 @@ test('File Name NoExact Search Test', () => {
 });
 
 test('File Exclusive Access Test', async () => {
-  //const sourceDirectory = path.resolve('./tests');
+  //const sourceDirectory = platform.resolve('./tests');
   let targetFilename = tmp.tmpNameSync();
 
-  let fileHandle = fs.openSync(
+  let fileHandle = platform.openSync(
     targetFilename,
     'w',
-    fs.constants.O_RDWR | fs.constants.O_EXCL
+    platformConstants.O_RDWR | platformConstants.O_EXCL
   );
 
   let currentDate = new Date().getTime();
   let targetDate = currentDate + 1000;
 
   let timerId = setInterval(() => {
-    fs.writeSync(fileHandle, 'a');
+    platform.writeSync(fileHandle, 'a');
     if (targetDate < new Date().getTime()) {
       clearInterval(timerId);
-      fs.closeSync(fileHandle);
+      platform.closeSync(fileHandle);
     }
   }, 100);
 
@@ -228,20 +231,20 @@ test('File Exclusive Access Test', async () => {
   //console.log('test2');
   targetFilename = tmp.tmpNameSync();
 
-  fileHandle = fs.openSync(
+  fileHandle = platform.openSync(
     targetFilename,
     'w',
-    fs.constants.O_RDWR | fs.constants.O_EXCL
+    platformConstants.O_RDWR | platformConstants.O_EXCL
   );
 
   currentDate = new Date().getTime();
   targetDate = currentDate + 2000;
-  fs.writeSync(fileHandle, 'a');
+  platform.writeSync(fileHandle, 'a');
   timerId = setInterval(() => {
-    fs.writeSync(fileHandle, 'a');
+    platform.writeSync(fileHandle, 'a');
     if (targetDate < new Date().getTime()) {
       clearInterval(timerId);
-      fs.closeSync(fileHandle);
+      platform.closeSync(fileHandle);
     }
     //console.log('written', new Date());
   }, 50);

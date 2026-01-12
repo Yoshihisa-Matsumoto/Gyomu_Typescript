@@ -6,6 +6,7 @@ import { Milestone } from '../milestone';
 import { createDateFromYYYYMMDD } from '../dateOperation';
 import { format } from 'date-fns';
 import { notDeepEqual } from 'assert';
+import { beforeEach, expect, test } from 'vitest';
 
 beforeEach(() => {});
 test('Milestone access check', async () => {

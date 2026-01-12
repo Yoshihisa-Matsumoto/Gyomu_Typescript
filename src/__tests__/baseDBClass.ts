@@ -1,9 +1,10 @@
 import { gyomu_market_holiday, PrismaClient } from '@prisma/client';
-import { mockDeep, mockReset, DeepMockProxy } from 'jest-mock-extended';
+import { mockDeep, mockReset, DeepMockProxy } from 'vitest-mock-extended';
 
 import prisma from '../dbsingleton';
+import { beforeEach, vi } from 'vitest';
 
-jest.mock('../dbsingleton', () => ({
+vi.mock('../dbsingleton', () => ({
   __esModule: true,
   default: mockDeep<PrismaClient>(),
 }));

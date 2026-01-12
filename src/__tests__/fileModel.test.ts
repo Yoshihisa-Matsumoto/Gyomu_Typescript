@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest';
 import { FileTransportInfo } from '../fileModel';
 
 class TransportResult {

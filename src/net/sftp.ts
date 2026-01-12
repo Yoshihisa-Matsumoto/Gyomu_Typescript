@@ -1,11 +1,10 @@
-import { fstat } from 'fs';
 import sftp from 'ssh2-sftp-client';
 import { RemoteConnection } from './remoteConnection';
-import fs from 'fs';
+
 import { Failure, Result, success } from '../result';
 import { NetworkError } from '../errors';
 import { FileTransportInfo } from '../fileModel';
-import path from 'path';
+import { platform } from '../platform';
 
 export class Sftp {
   #config: RemoteConnection;
@@ -27,7 +26,7 @@ export class Sftp {
           ? undefined
           : this.#config.password,
         privateKey: !!this.#config.privateKeyFilename
-          ? fs.readFileSync(this.#config.privateKeyFilename)
+          ? platform.readFileSync(this.#config.privateKeyFilename)
           : undefined,
         passphrase: !!this.#config.privateKeyFilename
           ? this.#config.password
@@ -51,12 +50,12 @@ export class Sftp {
     try {
       if (!transportInformation.isSourceDirectory)
         await this.client.get(
-          transportInformation.sourceFullName.replace(path.sep, '/'),
+          transportInformation.sourceFullName.replace(platform.sep, '/'),
           transportInformation.destinationFullName
         );
       else
         await this.client.downloadDir(
-          transportInformation.sourceFolderName.replace(path.sep, '/'),
+          transportInformation.sourceFolderName.replace(platform.sep, '/'),
           transportInformation.destinationPath
         );
       return success(true);
@@ -77,12 +76,12 @@ export class Sftp {
       if (!transportInformation.isSourceDirectory)
         await this.client.put(
           transportInformation.sourceFullName,
-          transportInformation.destinationFullName.replace(path.sep, '/')
+          transportInformation.destinationFullName.replace(platform.sep, '/')
         );
       else
         await this.client.uploadDir(
           transportInformation.sourceFullName,
-          transportInformation.destinationFullName.replace(path.sep, '/')
+          transportInformation.destinationFullName.replace(platform.sep, '/')
         );
       return success(true);
     } catch (err) {
@@ -98,7 +97,7 @@ export class Sftp {
       if (result.isFailure()) return result;
     }
     const fullPath =
-      transportInformation.sourceFullName ?? ''.replace(path.sep, '/');
+      transportInformation.sourceFullName ?? ''.replace(platform.sep, '/');
     try {
       const stat = await this.client.stat(fullPath);
       return success({ size: stat.size, date: new Date(stat.modifyTime) });
@@ -115,7 +114,7 @@ export class Sftp {
       if (result.isFailure()) return result;
     }
     const fullPath =
-      transportInformation.sourceFullName ?? ''.replace(path.sep, '/');
+      transportInformation.sourceFullName ?? ''.replace(platform.sep, '/');
     try {
       const fileInfoList = await this.client.list(fullPath);
       return success(fileInfoList.map((f) => f.name));

@@ -1,6 +1,5 @@
-import path from 'path';
-import fs from 'fs';
 import { ArchiveError } from '../errors';
+import { platform } from '../platform';
 import { PromiseResult } from '../result';
 
 export abstract class AbstractBaseArchive {
@@ -15,18 +14,18 @@ export abstract class AbstractBaseArchive {
   protected __createDirectoryFromFileNameIfNotExist(
     destinationFilename: string
   ) {
-    let directoryName = path.dirname(destinationFilename);
+    let directoryName = platform.dirname(destinationFilename);
 
-    if (destinationFilename.endsWith(path.sep))
+    if (destinationFilename.endsWith(platform.sep))
       directoryName = destinationFilename;
     return this.__createDirectoryIfNotExist(directoryName);
   }
   protected __createDirectoryIfNotExist(destinationPath: string) {
     let directoryName = destinationPath;
 
-    if (!fs.existsSync(directoryName)) {
+    if (!platform.existsSync(directoryName)) {
       //console.log(directoryName + ' to be created');
-      fs.mkdirSync(directoryName);
+      platform.mkdirSync(directoryName);
     }
   }
 }

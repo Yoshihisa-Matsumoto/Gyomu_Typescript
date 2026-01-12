@@ -1,12 +1,9 @@
-import { jest } from '@jest/globals';
+import { beforeEach, vi, describe, test, expect } from 'vitest';
 import { createDateFromYYYYMMDD } from '../../dateOperation';
 import { FileTransportInfo } from '../../fileModel';
 import { Sftp } from '../sftp';
 import sftp = require('ssh2-sftp-client');
 import { RemoteConnection } from '../remoteConnection';
-import { JSON2SheetOpts } from 'xlsx';
-import { PromiseResult, success } from '../../result';
-import { NetworkError } from '../../errors';
 
 let status = {
   access: false,
@@ -65,52 +62,96 @@ let fileInfoList: sftp.FileInfo[] = [
     type: '-',
   },
 ];
-jest.mock('ssh2-sftp-client');
-const sftpMock = sftp as jest.Mock;
-sftpMock.mockImplementation(() => {
-  return {
-    connect: async (options: sftp.ConnectOptions) => {
-      initializeStatus();
-      status.access = true;
-    },
-    get: async (
-      path: string,
-      dst?: string | NodeJS.WritableStream,
-      options?: sftp.TransferOptions
-    ) => {
-      status.downloadTo = true;
-    },
-    downloadDir: async (
-      srcDir: string,
-      destDir: string,
-      filter?: string | RegExp
-    ) => {
-      status.downloadToDir = true;
-    },
-    put: async (
-      input: string | Buffer | NodeJS.ReadableStream,
-      remoteFilePath: string,
-      options?: sftp.TransferOptions
-    ) => {
-      status.uploadFrom = true;
-    },
-    uploadDir: async (localDirPath: string, remoteDirPath?: string) => {
-      status.uploadFromDir = true;
-    },
-    stat: async (remotePath: string) => {
-      status.stat = true;
-      return fileStat;
-    },
-    list: async (path?: string) => {
-      status.list = true;
-      return fileInfoList;
-    },
-    end: async () => {
-      status.access = false;
-    },
-    //closed: !status.access,
+vi.mock('ssh2-sftp-client'),
+  () => {
+    return {
+      connect: async (options: sftp.ConnectOptions) => {
+        initializeStatus();
+        status.access = true;
+      },
+      get: async (
+        path: string,
+        dst?: string | NodeJS.WritableStream,
+        options?: sftp.TransferOptions
+      ) => {
+        status.downloadTo = true;
+      },
+      downloadDir: async (
+        srcDir: string,
+        destDir: string,
+        filter?: string | RegExp
+      ) => {
+        status.downloadToDir = true;
+      },
+      put: async (
+        input: string | Buffer | NodeJS.ReadableStream,
+        remoteFilePath: string,
+        options?: sftp.TransferOptions
+      ) => {
+        status.uploadFrom = true;
+      },
+      uploadDir: async (localDirPath: string, remoteDirPath?: string) => {
+        status.uploadFromDir = true;
+      },
+      stat: async (remotePath: string) => {
+        status.stat = true;
+        return fileStat;
+      },
+      list: async (path?: string) => {
+        status.list = true;
+        return fileInfoList;
+      },
+      end: async () => {
+        status.access = false;
+      },
+      //closed: !status.access,
+    };
   };
-});
+// const sftpMock = sftp as jest.Mock;
+// sftpMock.mockImplementation(() => {
+//   return {
+//     connect: async (options: sftp.ConnectOptions) => {
+//       initializeStatus();
+//       status.access = true;
+//     },
+//     get: async (
+//       path: string,
+//       dst?: string | NodeJS.WritableStream,
+//       options?: sftp.TransferOptions
+//     ) => {
+//       status.downloadTo = true;
+//     },
+//     downloadDir: async (
+//       srcDir: string,
+//       destDir: string,
+//       filter?: string | RegExp
+//     ) => {
+//       status.downloadToDir = true;
+//     },
+//     put: async (
+//       input: string | Buffer | NodeJS.ReadableStream,
+//       remoteFilePath: string,
+//       options?: sftp.TransferOptions
+//     ) => {
+//       status.uploadFrom = true;
+//     },
+//     uploadDir: async (localDirPath: string, remoteDirPath?: string) => {
+//       status.uploadFromDir = true;
+//     },
+//     stat: async (remotePath: string) => {
+//       status.stat = true;
+//       return fileStat;
+//     },
+//     list: async (path?: string) => {
+//       status.list = true;
+//       return fileInfoList;
+//     },
+//     end: async () => {
+//       status.access = false;
+//     },
+//     //closed: !status.access,
+//   };
+// });
 
 beforeEach(() => {
   initializeStatus();

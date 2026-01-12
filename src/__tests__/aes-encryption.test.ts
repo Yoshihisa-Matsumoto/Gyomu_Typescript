@@ -1,8 +1,9 @@
 import * as aes from '../encryption';
-import fs, { readFileSync } from 'fs';
 import { bufferToArrayBuffer } from '../buffer';
 import { tmpName, tmpNameSync } from 'tmp';
 import { compareFiles } from './baseClass';
+import { expect, test } from 'vitest';
+import { platform } from '../platform';
 
 test('aes gcm decode compatibility with other library encoded data', () => {
   const csharp_result =
@@ -67,7 +68,7 @@ test('AES Encrypt/Decrypt using binary file key', () => {
   // const keyBuffer = fs.readFileSync(keyFilename);
   // const keyBufferArrary = bufferToArrayBuffer(keyBuffer);
   const plainFilename = './tests/utf8_sample.txt';
-  const plainBuffer = fs.readFileSync(plainFilename);
+  const plainBuffer = platform.readFileSync(plainFilename);
   const encryptedBuffer = aes.aesEncryptBufferByKeyFile(
     bufferToArrayBuffer(plainBuffer),
     keyFilename

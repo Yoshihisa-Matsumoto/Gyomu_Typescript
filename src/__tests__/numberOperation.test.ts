@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest';
 import * as num from '../numberOperation';
 
 const testNumber = 12345.678901234;

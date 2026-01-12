@@ -1,4 +1,4 @@
-import { jest } from '@jest/globals';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { createDateFromYYYYMMDD } from '../../dateOperation';
 import { FileTransportInfo } from '../../fileModel';
 import { Ftp } from '../ftp';
@@ -50,9 +50,9 @@ let fileInfoList: baseFtp.FileInfo[] = [
     rawModifiedAt: '',
   },
 ];
-jest.mock('basic-ftp', () => {
+vi.mock('basic-ftp', () => {
   return {
-    Client: jest.fn().mockImplementation(() => {
+    Client: vi.fn().mockImplementation(() => {
       return {
         ftp: {
           verbose: true,
@@ -111,7 +111,7 @@ describe('FTP Test', () => {
   // console.log(baseFtp.Client);
   test('ftp download test', async () => {
     const client: Ftp = new Ftp(dummyOption);
-    jest.spyOn(client, 'connected', 'get').mockImplementation(() => {
+    vi.spyOn(client, 'connected', 'get').mockImplementation(() => {
       return status.access;
     });
     //jest.spyOn(client, 'connected', 'get').mjest.spyOn(client, 'connected', 'get').mockReturnValue(status.access);
@@ -146,7 +146,7 @@ describe('FTP Test', () => {
 
   test('ftp upload test', async () => {
     const client: Ftp = new Ftp(dummyOption);
-    jest.spyOn(client, 'connected', 'get').mockImplementation(() => {
+    vi.spyOn(client, 'connected', 'get').mockImplementation(() => {
       return status.access;
     });
     let result = await client.upload(
@@ -180,7 +180,7 @@ describe('FTP Test', () => {
 
   test('fileInfo test', async () => {
     const client: Ftp = new Ftp(dummyOption);
-    jest.spyOn(client, 'connected', 'get').mockImplementation(() => {
+    vi.spyOn(client, 'connected', 'get').mockImplementation(() => {
       return status.access;
     });
 
@@ -201,7 +201,7 @@ describe('FTP Test', () => {
 
   test('list file test', async () => {
     const client: Ftp = new Ftp(dummyOption);
-    jest.spyOn(client, 'connected', 'get').mockImplementation(() => {
+    vi.spyOn(client, 'connected', 'get').mockImplementation(() => {
       return status.access;
     });
 

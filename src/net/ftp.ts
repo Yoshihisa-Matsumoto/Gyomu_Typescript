@@ -4,7 +4,7 @@ import { NetworkError } from '../errors';
 import { FileTransportInfo } from '../fileModel';
 import { success, fail, Failure, PromiseResult, Result } from '../result';
 import { RemoteConnection } from './remoteConnection';
-import path from 'path';
+import { platform } from '../platform';
 
 export class Ftp {
   #connectionInformation: RemoteConnection;
@@ -60,12 +60,12 @@ export class Ftp {
       if (!transportInformation.isSourceDirectory)
         await this.client.downloadTo(
           transportInformation.destinationFullName,
-          transportInformation.sourceFullName.replace(path.sep, '/')
+          transportInformation.sourceFullName.replace(platform.sep, '/')
         );
       else
         await this.client.downloadToDir(
           transportInformation.destinationPath,
-          transportInformation.sourceFolderName.replace(path.sep, '/')
+          transportInformation.sourceFolderName.replace(platform.sep, '/')
         );
       return success(true);
     } catch (err) {
@@ -85,12 +85,12 @@ export class Ftp {
       if (!transportInformation.isSourceDirectory)
         await this.client.uploadFrom(
           transportInformation.sourceFullName,
-          transportInformation.destinationFullName.replace(path.sep, '/')
+          transportInformation.destinationFullName.replace(platform.sep, '/')
         );
       else
         await this.client.uploadFromDir(
           transportInformation.sourceFullName,
-          transportInformation.destinationFullName.replace(path.sep, '/')
+          transportInformation.destinationFullName.replace(platform.sep, '/')
         );
       return success(true);
     } catch (err) {
@@ -106,7 +106,7 @@ export class Ftp {
       if (result.isFailure()) return result;
     }
     const fullPath =
-      transportInformation.sourceFullName ?? ''.replace(path.sep, '/');
+      transportInformation.sourceFullName ?? ''.replace(platform.sep, '/');
     try {
       const size = await this.client.size(fullPath);
       const lastModifiedDate = await this.client.lastMod(fullPath);
@@ -124,7 +124,7 @@ export class Ftp {
       if (result.isFailure()) return result;
     }
     const fullPath =
-      transportInformation.sourceFullName ?? ''.replace(path.sep, '/');
+      transportInformation.sourceFullName ?? ''.replace(platform.sep, '/');
     try {
       const fileInfoList = await this.client.list(fullPath);
       return success(fileInfoList.map((f) => f.name));

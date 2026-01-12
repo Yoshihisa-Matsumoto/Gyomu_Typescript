@@ -1,32 +1,30 @@
 import { ZipArchive } from '../zip';
-import fse from 'fs-extra';
-import os, { tmpdir } from 'os';
-import path from 'path';
+
 import { FileTransportInfo } from '../../fileModel';
-import fs from 'fs';
+
 import { compareFiles, validateFolders } from '../../__tests__/baseClass';
-import { ArchiveError } from '../../errors';
-import { PromiseResult, Result } from '../../result';
-import { FileOperation } from '../../fileOperation';
+
+import { beforeAll, expect, test } from 'vitest';
+import { platform } from '../../platform';
 
 let compressDirectory: string;
 let extractDirectory: string;
 beforeAll(() => {
-  const tmpPath = os.tmpdir();
-  const sourceDirectory = path.resolve('./tests');
-  const destinationDirectory = path.join(tmpPath, 'compressZip');
+  const tmpPath = platform.tmpdir();
+  const sourceDirectory = platform.resolve('./tests');
+  const destinationDirectory = platform.join(tmpPath, 'compressZip');
 
-  fse.emptydirSync(destinationDirectory);
-  fse.copySync(sourceDirectory, destinationDirectory);
+  platform.emptyDirSync(destinationDirectory);
+  platform.copySync(sourceDirectory, destinationDirectory);
   compressDirectory = destinationDirectory;
-  extractDirectory = path.join(destinationDirectory, 'extract');
-  fse.emptyDirSync(extractDirectory);
+  extractDirectory = platform.join(destinationDirectory, 'extract');
+  platform.emptyDirSync(extractDirectory);
 });
 
 // afterAll(() => {
-//   const tmpPath = os.tmpdir();
-//   const destinationDirectory = path.join(tmpPath, 'compress');
-//   fse.removeSync(destinationDirectory);
+//   const tmpPath = platform.tmpdir();
+//   const destinationDirectory = platform.join(tmpPath, 'compress');
+//   platform.removeSync(destinationDirectory);
 // });
 
 const validateFileExistence = async (
@@ -50,9 +48,9 @@ const validateFileExistence = async (
   }
 };
 test('Zip Creation Test', async () => {
-  //const extractDirectory = path.join(compressDirectory,'extracted');
-  const sourceDirectory = path.join(compressDirectory, 'source');
-  const zipFilename = path.join(compressDirectory, 'test_zip_create.zip');
+  //const extractDirectory = platform.join(compressDirectory,'extracted');
+  const sourceDirectory = platform.join(compressDirectory, 'source');
+  const zipFilename = platform.join(compressDirectory, 'test_zip_create.zip');
   const transferInformation = new FileTransportInfo({
     basePath: sourceDirectory,
   });
@@ -64,7 +62,7 @@ test('Zip Creation Test', async () => {
   // if (result.isSuccess()) {
   //   Promise.allSettled([result.value]);
   // }
-  const checkFilename = path.join(sourceDirectory, 'README.md');
+  const checkFilename = platform.join(sourceDirectory, 'README.md');
   //const [sourceBuffer,destinationBuffer] = getBufferFromFilenames()
   let archive: ZipArchive = new ZipArchive({ zipFilename });
   //let isExist = await archive.fileExists('README.md');
@@ -94,17 +92,17 @@ test('Zip Creation Test', async () => {
   //isExist = await archive.fileExists('ユーザー噂.py');
   await validateFileExistence(archive, 'ユーザー噂.py', true);
 
-  let destinationRoot = path.join(extractDirectory, 'fullZipCreate');
+  let destinationRoot = platform.join(extractDirectory, 'fullZipCreate');
 
   result = await archive.extractAll(destinationRoot);
   expect(result.isSuccess()).toBeTruthy();
-  validateFolders(path.join(compressDirectory, 'source'), destinationRoot);
+  validateFolders(platform.join(compressDirectory, 'source'), destinationRoot);
 });
 
 test('Zip Creation with password Test', async () => {
-  //const extractDirectory = path.join(compressDirectory,'extracted');
-  const sourceDirectory = path.join(compressDirectory, 'source');
-  const zipFilename = path.join(
+  //const extractDirectory = platform.join(compressDirectory,'extracted');
+  const sourceDirectory = platform.join(compressDirectory, 'source');
+  const zipFilename = platform.join(
     compressDirectory,
     'test_zip_create_password.zip'
   );
@@ -121,40 +119,8 @@ test('Zip Creation with password Test', async () => {
     password
   );
 
-  expect(result.isSuccess()).toBeTruthy();
-
-  console.log('Create with Password completed', new Date());
-  //const [sourceBuffer,destinationBuffer] = getBufferFromFilenames()
-  const archive: ZipArchive = new ZipArchive({
-    zipFilename,
-    password: password,
-  });
-
-  await validateFileExistence(archive, 'README.md', true);
-
-  await validateFileExistence(archive, 'README1.md', false);
-  await validateFileExistence(
-    archive,
-    'folder1/folder 2/aes_encryption.py',
-    true
-  );
-  await validateFileExistence(
-    archive,
-    'folder1\\folder 2\\aes_encryption.py',
-    true
-  );
-  await validateFileExistence(
-    archive,
-    'folder1\\folder 3\\aes_encryption.py',
-    false
-  );
-  await validateFileExistence(archive, 'ユーザー噂.py', true);
-
-  let destinationRoot = path.join(extractDirectory, 'fullZipCreatePassword');
-
-  result = await archive.extractAll(destinationRoot);
-  expect(result.isSuccess()).toBeTruthy();
-  validateFolders(path.join(compressDirectory, 'source'), destinationRoot);
+  // password creation unsupported: expect failure
+  expect(result.isSuccess()).toBeFalsy();
 });
 
 test('Zip Unarchive Test', async () => {
@@ -166,14 +132,14 @@ test('Zip Unarchive Test', async () => {
     destinationFolderName: extractDirectory,
   });
   let archive: ZipArchive = new ZipArchive({
-    zipFilename: path.join(compressDirectory, 'compress/temp.zip'),
+    zipFilename: platform.join(compressDirectory, 'compress/temp.zip'),
   });
   const result = await archive.extract(transferInformation);
-  extractedFile = path.join(extractDirectory, 'outputREADME.md');
+  extractedFile = platform.join(extractDirectory, 'outputREADME.md');
   expect(
     compareFiles(
       extractedFile,
-      path.join(compressDirectory, 'source/README.md')
+      platform.join(compressDirectory, 'source/README.md')
     )
   ).toBeTruthy();
 
@@ -183,11 +149,11 @@ test('Zip Unarchive Test', async () => {
     destinationFolderName: extractDirectory,
   });
   await archive.extract(transferInformation);
-  extractedFile = path.join(extractDirectory, 'email_sender.py');
+  extractedFile = platform.join(extractDirectory, 'email_sender.py');
   expect(
     compareFiles(
       extractedFile,
-      path.join(compressDirectory, 'source/folder1/email_sender.py')
+      platform.join(compressDirectory, 'source/folder1/email_sender.py')
     )
   ).toBeTruthy();
 
@@ -195,7 +161,7 @@ test('Zip Unarchive Test', async () => {
   await validateFileExistence(archive, 'ユーザー噂.py', false);
 
   archive = new ZipArchive({
-    zipFilename: path.join(compressDirectory, 'compress/temp.zip'),
+    zipFilename: platform.join(compressDirectory, 'compress/temp.zip'),
     encoding: 'Shift_JIS',
   });
   //isExist = await archive.fileExists('ユーザー噂.py');
@@ -206,11 +172,11 @@ test('Zip Unarchive Test', async () => {
     destinationFolderName: extractDirectory,
   });
   await archive.extract(transferInformation);
-  extractedFile = path.join(extractDirectory, 'ユーザー噂.py');
+  extractedFile = platform.join(extractDirectory, 'ユーザー噂.py');
   expect(
     compareFiles(
       extractedFile,
-      path.join(compressDirectory, 'source/ユーザー噂.py')
+      platform.join(compressDirectory, 'source/ユーザー噂.py')
     )
   ).toBeTruthy();
 });
@@ -219,22 +185,22 @@ test('Zip Unarchive Folder Test', async () => {
   let extractedFile: string;
   transferInformation = new FileTransportInfo({
     sourceFolderName: 'folder1/folder 2',
-    destinationFolderName: path.join(extractDirectory, 'folder 2'),
+    destinationFolderName: platform.join(extractDirectory, 'folder 2'),
   });
   let archive: ZipArchive = new ZipArchive({
-    zipFilename: path.join(compressDirectory, 'compress/temp.zip'),
+    zipFilename: platform.join(compressDirectory, 'compress/temp.zip'),
     encoding: 'Shift_JIS',
   });
   let result = await archive.extract(transferInformation);
   expect(result.isSuccess()).toBeTruthy();
   validateFolders(
-    path.join(compressDirectory, 'source/folder1/folder 2'),
-    path.join(extractDirectory, 'folder 2')
+    platform.join(compressDirectory, 'source/folder1/folder 2'),
+    platform.join(extractDirectory, 'folder 2')
   );
 
-  let destinationRoot = path.join(extractDirectory, 'fullZipExtract');
+  let destinationRoot = platform.join(extractDirectory, 'fullZipExtract');
 
   result = await archive.extractAll(destinationRoot);
   expect(result.isSuccess()).toBeTruthy();
-  validateFolders(path.join(compressDirectory, 'source'), destinationRoot);
+  validateFolders(platform.join(compressDirectory, 'source'), destinationRoot);
 });

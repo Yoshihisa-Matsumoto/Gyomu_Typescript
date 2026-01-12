@@ -1,10 +1,7 @@
 import { FileTransportInfo } from '../fileModel';
 
-import fs from 'fs';
-import path, { resolve } from 'path';
 import { ArchiveError } from '../errors';
 import { fail, Result, success, PromiseResult, Failure } from '../result';
-import archiver from 'archiver';
 // import tarStream from 'tar-stream';
 // import tar from 'tar-fs';
 import * as tar from 'tar';
