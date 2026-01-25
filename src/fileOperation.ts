@@ -8,7 +8,7 @@ import {
   FilterType,
 } from './fileModel';
 import { compareAsc } from 'date-fns';
-import { fail, PromiseResult, Result, success } from './result';
+import { ResultAsync,errAsync, ok, okAsync} from './result';
 import { AccessError, ArchiveError, TimeoutError } from './errors';
 import { fi } from 'date-fns/locale';
 import { ZipArchive } from './archive/zip';
@@ -17,42 +17,43 @@ import { isEqual } from 'date-fns';
 import { GzipArchive } from './archive/gz';
 import { polling } from './timer';
 import { platform } from './platform';
+import { error } from 'console';
 
 export class FileOperation {
-  static async canAccess(
+  static canAccess(
     fileName: string,
     readOnly: boolean = false
-  ): PromiseResult<boolean, AccessError> {
-    return new Promise(async (resolve, reject) => {
-      if (!platform.existsSync(fileName))
-        return resolve(fail(`File Not exist: ${fileName}`, AccessError));
-      const specialExtension = ['xls', 'xlsm', 'xlsx', 'zip'];
-      const stat = platform.statSync(fileName);
+  ): ResultAsync<boolean, AccessError> {
+    if (!platform.existsSync(fileName))
+        return errAsync(new AccessError(`File Not exist: ${fileName}`));
+    const specialExtension = ['xls', 'xlsm', 'xlsx', 'zip'];
+    const stat = platform.statSync(fileName);
 
-      if (
-        specialExtension.includes(platform.extname(fileName)) &&
-        stat.size === 0
-      )
-        return resolve(fail(`File is invalid: ${fileName}`, AccessError));
-      if (readOnly) return resolve(success(true));
+    if (
+      specialExtension.includes(platform.extname(fileName)) &&
+      stat.size === 0
+    )
+      return errAsync(new AccessError(`File is invalid: ${fileName}`));
+    if (readOnly) return okAsync(true);
+    return ResultAsync.fromSafePromise( new Promise(async (resolve, reject) => {
+      
+
       await setTimeout(() => {
         const stat2 = platform.statSync(fileName);
         if (
           !isEqual(stat.ctime, stat2.ctime) ||
           !isEqual(stat.mtime, stat2.mtime)
         ) {
-          // console.log(stat.ctime, stat2.ctime);
+          //console.log(fileName,stat.ctime, stat2.ctime);
           // console.log(stat.mtime, stat2.mtime);
-          return resolve(
-            fail(`File is under operation: ${fileName}`, AccessError)
-          );
+          return reject(new AccessError(`File is under operation: ${fileName}`));              
         }
         //console.log('Accessible', stat2.mtime);
-        return resolve(success(true));
+        return resolve(true);
       }, 100);
-
-      return false;
-    });
+      return resolve(false);
+      //return resolve(false);
+    }));
 
     // try {
     //   const fileHandle = platform.openSync(
@@ -69,52 +70,22 @@ export class FileOperation {
     // }
   }
 
-  static async waitTillExclusiveAccess(
+  static waitTillExclusiveAccess(
     fileName: string,
     timeoutSeconds: number
-  ): PromiseResult<boolean, TimeoutError> {
-    return await polling<AccessError>(
+  ): ResultAsync<boolean, TimeoutError> {
+    return polling<AccessError>(
       `File Access check ${fileName}`,
       timeoutSeconds,
       0.5,
-      async (fileName) => {
-        const accessible = await this.canAccess(fileName, false);
-        if (accessible.isSuccess()) {
-          //console.log('accessible', accessible.value);
-          return success(accessible.value);
-        } else return success(false);
+      (_): ResultAsync<boolean, AccessError> => {
+        const accessible = this.canAccess(fileName, false);
+        return accessible.orElse((error)=>okAsync(false));
       },
       fileName
-    );
+    ).mapErr((error) => new TimeoutError(`Timeout on waiting file access: ${fileName}`, error));
 
-    // const timeoutTime = new Date().getTime() + timeoutSeconds * 1000;
-    // const nextIntervalMilliSecond = 500;
 
-    // const accessible = await this.canAccess(fileName, false);
-    // if (accessible.isSuccess() && accessible.value) {
-    //   return success(accessible.value);
-    // }
-    // if (new Date().getTime() > timeoutTime) {
-    //   return fail(`Timeout happen to access ${fileName}`, TimeoutError);
-    // }
-
-    // return new Promise(async (resolve, reject) => {
-    //   const timerId = await setInterval(async () => {
-    //     const accessible = await this.canAccess(fileName, false);
-    //     if (accessible.isSuccess() && accessible.value) {
-    //       clearInterval(timerId);
-    //       return resolve(success(accessible.value));
-    //     }
-    //     if (new Date().getTime() > timeoutTime) {
-    //       //console.log('Timeout');
-    //       clearInterval(timerId);
-    //       return resolve(
-    //         fail(`Timeout happen to access ${fileName}`, TimeoutError)
-    //       );
-    //     }
-    //     //console.log('wait next', new Date().getTime(), timeoutTime);
-    //   }, nextIntervalMilliSecond);
-    // });
   }
 
   static search(
@@ -256,16 +227,16 @@ export class FileOperation {
     }
   }
 
-  static async archive(
+  static archive(
     archiveFileName: string,
     archiveType: FileArchiveType,
     sourceFileList: FileTransportInfo[],
     config: Configurator,
     applicationId: number,
     password: string = ''
-  ): Promise<Result<boolean, ArchiveError>> {
+  ): ResultAsync<boolean, ArchiveError> {
     if (!sourceFileList || sourceFileList.length === 0)
-      return fail('Source File Not Specified to archive', ArchiveError);
+      return errAsync(new ArchiveError('Source File Not Specified to archive'));
 
     const archiveInformation = new FileInfo(archiveFileName);
     if (archiveType == FileArchiveType.GuessFromFileName) {
@@ -287,9 +258,8 @@ export class FileOperation {
           archiveType = FileArchiveType.Tar;
           break;
         default:
-          return fail(
-            'File Extension Not supported for archiving ' + extension,
-            ArchiveError
+          return errAsync(
+            new ArchiveError('File Extension Not supported for archiving ' + extension)
           );
       }
     }
@@ -298,55 +268,52 @@ export class FileOperation {
       archiveType == FileArchiveType.GZip
     ) {
       if (sourceFileList.length > 1 || sourceFileList[0].isSourceDirectory)
-        return fail(
-          'Multiple files are not supported in this compression type: ' +
-            archiveType,
-          ArchiveError
+        return errAsync(
+          new ArchiveError('Multiple files are not supported in this compression type: ' +
+            archiveType)
         );
     }
 
     if (archiveType !== FileArchiveType.Zip && password !== '')
-      return fail(
-        'password is not supported on other than zip format',
-        ArchiveError
+      return errAsync(
+        new ArchiveError('password is not supported on other than zip format')
       );
     if (
       archiveType === FileArchiveType.Tar ||
       archiveType === FileArchiveType.Tgz
     ) {
       if (sourceFileList.length > 1 || !sourceFileList[0].isSourceDirectory)
-        return fail(
-          'single file or multiple directory is not supported in this compression type: ' +
-            archiveType,
-          ArchiveError
+        return errAsync(
+          new ArchiveError('single file or multiple directory is not supported in this compression type: ' +
+            archiveType)
         );
     }
 
     switch (archiveType) {
       case FileArchiveType.Zip:
-        return await ZipArchive.create(
+        return ZipArchive.create(
           archiveInformation.fullPath,
           sourceFileList,
           password
         );
       case FileArchiveType.Tar:
-        return await TarArchive.create(
+        return TarArchive.create(
           archiveInformation.fullPath,
           sourceFileList[0]
         );
       case FileArchiveType.GZip:
-        return await GzipArchive.create(
+        return GzipArchive.create(
           archiveInformation.fullPath,
           sourceFileList[0].sourceFullName
         );
       case FileArchiveType.Tgz:
-        return await TarArchive.create(
+        return TarArchive.create(
           archiveInformation.fullPath,
           sourceFileList[0],
           true
         );
     }
 
-    return success(true);
+    return okAsync(true);
   }
 }

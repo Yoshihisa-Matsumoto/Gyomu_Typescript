@@ -1,68 +1,25 @@
-import { BaseError } from './errors';
+import { errAsync, okAsync, Result, ResultAsync } from 'neverthrow';
 
-export type Result<T, E extends Error> = Success<T> | Failure<E>;
-export type PromiseResult<T, E extends Error> = Promise<Result<T, E>>;
+export {
+  ok,
+  Ok,
+  err,
+  Err,
+  Result,
+  okAsync,
+  errAsync,
+  ResultAsync,
+  fromAsyncThrowable,
+  fromThrowable,
+  fromPromise,
+  fromSafePromise,
+  safeTry,
+} from 'neverthrow';
 
-export class Success<T> {
-  readonly value: T;
-
-  constructor(value: T) {
-    this.value = value;
-  }
-
-  isSuccess(): this is Success<T> {
-    return true;
-  }
-
-  isFailure(): this is Failure<BaseError> {
-    return false;
-  }
-}
-
-export class Failure<E extends BaseError> {
-  readonly error: E;
-
-  constructor(error: E) {
-    this.error = error;
-  }
-
-  isSuccess(): this is Success<unknown> {
-    return false;
-  }
-
-  isFailure(): this is Failure<E> {
-    return true;
-  }
-}
-
-interface failOption {
-  internalError?: Error;
-  message?: string;
-}
-
-export function fail<E extends BaseError>(
-  message: string,
-  type: { new (message: string): E }
-): Failure<E> {
-  return new Failure(new type(message));
-}
-
-export function success<T>(object: T) {
-  return new Success(object);
-}
-
-export function promiseSuccess<T, E extends BaseError>(
-  val: T
-): PromiseResult<T, E> {
-  return new Promise((resolve) => {
-    resolve(success(val));
-  });
-}
-export function promiseFail<T, E extends BaseError>(
-  message: string,
-  type: { new (message: string): E }
-): PromiseResult<T, E> {
-  return new Promise((resolve) => {
-    resolve(new Failure(new type(message)));
-  });
+export function result2Async<T, E>(
+  r: Result<T, E>
+): ResultAsync<T, E> {
+  return r.isOk()
+    ? okAsync(r.value)
+    : errAsync(r.error);
 }

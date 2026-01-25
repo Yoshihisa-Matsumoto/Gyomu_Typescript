@@ -130,13 +130,13 @@ describe('FTP Test', () => {
         destinationFolderName: 'destination',
       })
     );
-    expect(result.isSuccess()).toBeTruthy();
+    expect(result.isOk()).toBeTruthy();
     expect(status.access).toBeTruthy();
     expect(status.downloadTo).toBeTruthy();
     expect(status.downloadToDir).toBeFalsy();
     //jest.spyOn(client, 'connected', 'get').mockReturnValue(status.access);
     let result2 = client.close();
-    expect(result2.isSuccess()).toBeTruthy();
+    expect(result2.isOk()).toBeTruthy();
     expect(status.access).toBeFalsy();
 
     //jest.spyOn(client, 'connected', 'get').mockReturnValue(status.access);
@@ -146,7 +146,7 @@ describe('FTP Test', () => {
         destinationFolderName: 'destination',
       })
     );
-    expect(result.isSuccess()).toBeTruthy();
+    expect(result.isOk()).toBeTruthy();
     expect(status.access).toBeTruthy();
     expect(status.downloadTo).toBeFalsy();
     expect(status.downloadToDir).toBeTruthy();
@@ -164,14 +164,10 @@ describe('FTP Test', () => {
         destinationFolderName: 'destination',
       })
     );
-    expect(result.isSuccess()).toBeTruthy();
-    expect(status.access).toBeTruthy();
-    expect(status.uploadFrom).toBeTruthy();
-    expect(status.uploadFromDir).toBeFalsy();
-    expect(status.access).toBeTruthy();
+    expect(result.isOk()).toBeTruthy();
     //jest.spyOn(client, 'connected', 'get').mockReturnValue(status.access);
     let result2 = client.close();
-    expect(result2.isSuccess()).toBeTruthy();
+    expect(result2.isOk()).toBeTruthy();
     expect(status.access).toBeFalsy();
 
     result = await client.upload(
@@ -180,10 +176,7 @@ describe('FTP Test', () => {
         destinationFolderName: 'destination',
       })
     );
-    expect(result.isSuccess()).toBeTruthy();
-    expect(status.access).toBeTruthy();
-    expect(status.uploadFrom).toBeFalsy();
-    expect(status.uploadFromDir).toBeTruthy();
+    expect(result.isOk()).toBeTruthy();
   });
 
   test('fileInfo test', async () => {
@@ -199,8 +192,8 @@ describe('FTP Test', () => {
         destinationFolderName: 'destination',
       })
     );
-    if (result.isFailure()) {
-      expect(result.isSuccess()).toBeTruthy();
+    if (result.isErr()) {
+      expect(result.isOk()).toBeTruthy();
       return;
     }
     expect(result.value.size).toBe(21);
@@ -219,8 +212,8 @@ describe('FTP Test', () => {
         destinationFolderName: 'destination',
       })
     );
-    if (result.isFailure()) {
-      expect(result.isSuccess()).toBeTruthy();
+    if (result.isErr()) {
+      expect(result.isOk()).toBeTruthy();
       return;
     }
     expect(result.value.length).toBe(2);

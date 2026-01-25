@@ -2,44 +2,39 @@ import { gyomu_param_master, Prisma } from './generated/prisma/client';
 import { format } from 'date-fns';
 import prisma from './dbsingleton';
 import { CriticalError, DBError } from './errors';
-import { Failure, PromiseResult, fail, success } from './result';
+//import { Failure, PromiseResult, fail, success } from './result';
+import {Result, ResultAsync, errAsync, okAsync} from './result';
 import { User } from './user';
 import { base64String2String, string2Base64String } from './base64';
 import { genericDBFunction } from './dbutil';
 
 type ParameterType = string | number | boolean;
+
+export const retryResultAsync =<T, E>(
+  fn: () => ResultAsync<T, E>,
+  maxRetry: number
+): ResultAsync<T, E> =>{
+  return fn().orElse(err =>
+    maxRetry > 1 ? retryResultAsync(fn, maxRetry - 1) : errAsync(err)
+  );
+}
 export class ParameterAccess {
-  static async keyExists(key: string): PromiseResult<boolean, DBError> {
-    const values = await this.#loadParameter(key);
-    if (values.isSuccess()) return success(values.value.length > 0);
-    return values;
+  static keyExists(key: string): ResultAsync<boolean, DBError> {
+    return this.#loadParameter(key)
+      .map(values => values.length > 0);
   }
 
-  static async #loadParameter(
+  static #loadParameter(
     key: string
-  ): PromiseResult<gyomu_param_master[], DBError> {
-    return await genericDBFunction<gyomu_param_master[]>(
-      'load gyomu_param_master',
-      async (key) => {
-        //console.log('loading');
-        const item_values = await prisma.gyomu_param_master.findMany({
-          where: { item_key: key },
-        });
-        //console.log('loaded');
-        return success(item_values);
-      },
-      [key]
-    );
-    // try {
-    //   const item_values = await prisma.gyomu_param_master.findMany({
-    //     where: { item_key: key },
-    //   });
-    //   return success(item_values);
-    // } catch (err) {
-    //   return new Failure(
-    //     new DBError('Fail to load gyomu_param_master', err as Error)
-    //   );
-    // }
+  ): ResultAsync<gyomu_param_master[], DBError> {
+    return genericDBFunction<gyomu_param_master[]>(
+  'load gyomu_param_master',
+  async (key) =>
+    prisma.gyomu_param_master.findMany({
+      where: { item_key: key },
+    }),
+  [key]
+);
   }
 
   static getKey(key: string, user?: User) {
@@ -47,79 +42,74 @@ export class ParameterAccess {
     return key;
   }
 
-  static async value(
+  static value(
     key: string,
     user?: User,
     targetDate?: Date
-  ): PromiseResult<string, DBError> {
+  ): ResultAsync<string, DBError> {
+
     const itemKey = this.getKey(key, user);
-    let itemValues: gyomu_param_master[] | undefined = undefined;
-    let itemValue: string = '';
-    let errorCount: number = 0;
-    while (errorCount < 3) {
-      const result = await this.#loadParameter(key);
-      if (result.isSuccess()) {
-        itemValues = result.value;
-        break;
+
+    return retryResultAsync(
+      () => this.#loadParameter(itemKey),
+      3
+    )
+    .andThen(itemValues => {
+      if (!itemValues || itemValues.length === 0) {
+        return errAsync(
+          new DBError('Unknown error on retrieving parameter')
+        );
       }
-      errorCount++;
-      if (errorCount >= 3) {
-        return result;
+
+      if (!targetDate) {
+        return okAsync(itemValues[0].item_value);
       }
-    }
-    if (!itemValues || itemValues.length === 0) {
-      return fail('Unknown error on retrieving parameter', DBError);
-    }
-    if (!!targetDate) {
+
       const targetDateYYYYMMDD = format(targetDate, 'yyyyMMdd');
-      const defaultRow = itemValues.find((v) => v.item_fromdate === '');
-      if (!!defaultRow) {
+
+      let itemValue = '';
+
+      const defaultRow = itemValues.find(v => !v.item_fromdate?.trim());
+      if (defaultRow) {
         itemValue = defaultRow.item_value;
       }
-      const sortedArray = itemValues.sort((a, b) => {
-        return a.item_fromdate > b.item_fromdate
-          ? 1
-          : a.item_fromdate === b.item_fromdate
-          ? 0
-          : -1;
-      });
-      for (var row of sortedArray) {
-        //console.log(row.item_fromdate, targetDateYYYYMMDD);
+
+      const sorted = [...itemValues].sort((a, b) =>
+        a.item_fromdate > b.item_fromdate ? 1 :
+        a.item_fromdate < b.item_fromdate ? -1 : 0
+      );
+
+      for (const row of sorted) {
         if (!row.item_value) continue;
-        if (!row.item_fromdate || !row.item_fromdate.trim())
+
+        if (!row.item_fromdate?.trim()) {
           itemValue = row.item_value;
-        else if (row.item_fromdate === targetDateYYYYMMDD) {
+        } else if (row.item_fromdate === targetDateYYYYMMDD) {
+          return okAsync(row.item_value);
+        } else if (targetDateYYYYMMDD > row.item_fromdate) {
           itemValue = row.item_value;
+        } else {
           break;
-        } else if (targetDateYYYYMMDD > row.item_fromdate)
-          itemValue = row.item_value;
-        else break;
+        }
       }
-    } else {
-      itemValue = itemValues[0].item_value;
-    }
-    return success(itemValue);
+
+      return okAsync(itemValue);
+    });
   }
-  static async booleanValue(
+  static booleanValue(
     key: string,
     user?: User,
     targetDate?: Date
-  ): PromiseResult<boolean, DBError> {
-    const result = await ParameterAccess.value(key, user, targetDate);
-    if (result.isFailure()) return result;
-    const resultString = result.value;
-    return success(resultString === 'true');
+  ): ResultAsync<boolean, DBError> {
+    return ParameterAccess.value(key, user, targetDate).andThen(result => okAsync(result.toLowerCase() == 'true')); 
   }
 
-  static async numberValue(
+  static numberValue(
     key: string,
     user?: User,
     targetDate?: Date
-  ): PromiseResult<number, DBError> {
-    const result = await ParameterAccess.value(key, user, targetDate);
-    if (result.isFailure()) return result;
-    const resultString = result.value;
-    return success(+resultString);
+  ): ResultAsync<number, DBError> {
+    return ParameterAccess.value(key, user, targetDate).andThen(result => okAsync(+result));
   }
 
   // static async stringListValue(
@@ -175,113 +165,63 @@ export class ParameterAccess {
   //   return success(base64String2String(resultString));
   // }
 
-  static async setValue<T extends ParameterType>(
-    key: string,
-    item: T,
-    user?: User
-  ): PromiseResult<boolean, DBError> {
-    const itemKey = this.getKey(key, user);
-    const keyExistResult = await this.keyExists(itemKey);
-    const itemValue = item.toString();
-    if (keyExistResult.isFailure()) return keyExistResult;
-    //console.log('Key Check Done');
-    return await genericDBFunction<boolean>(
+ static setValue<T extends ParameterType>(
+  key: string,
+  item: T,
+  user?: User
+): ResultAsync<boolean, DBError> {
+
+  const itemKey = this.getKey(key, user);
+  const itemValue = item.toString();
+
+  return this.keyExists(itemKey).andThen(exists =>
+    genericDBFunction<boolean>(
       `setup gyomu_param_master for ${itemKey}`,
       async (itemKey, itemValue) => {
-        if (keyExistResult.value) {
+        if (exists) {
           if (!itemValue) {
-            //Delete Record
-            await prisma.gyomu_param_master.delete({
+            // Delete
+            return prisma.gyomu_param_master.delete({
               where: {
                 item_key_item_fromdate: {
                   item_key: itemKey,
                   item_fromdate: '',
                 },
               },
-            });
-          } else {
-            //Update Record
-            await prisma.gyomu_param_master.update({
-              where: {
-                item_key_item_fromdate: {
-                  item_key: itemKey,
-                  item_fromdate: '',
-                },
-              },
-              data: { item_value: itemValue },
-            });
+            }).then(() => true);
           }
-        } else {
-          if (!!itemValue) {
-            //Insert
-            await prisma.gyomu_param_master.create({
-              data: {
+
+          // Update
+          const result = prisma.gyomu_param_master.update({
+            where: {
+              item_key_item_fromdate: {
                 item_key: itemKey,
                 item_fromdate: '',
-                item_value: itemValue,
               },
-            });
-          }
+            },
+            data: { item_value: itemValue },
+          }).then(() => true);
         }
-        return success(true);
+
+        if (!itemValue) {
+          // nothing to do
+          return true;
+        }
+
+        // Insert
+        return prisma.gyomu_param_master.create({
+          data: {
+            item_key: itemKey,
+            item_fromdate: '',
+            item_value: itemValue,
+          },
+        }).then(() => true);
       },
       [itemKey, itemValue]
-    );
-    // try {
-    //   if (keyExistResult.value) {
-    //     if (!itemValue) {
-    //       //Delete Record
-    //       await prisma.gyomu_param_master.delete({
-    //         where: {
-    //           item_key_item_fromdate: { item_key: itemKey, item_fromdate: '' },
-    //         },
-    //       });
-    //     } else {
-    //       //Update Record
-    //       await prisma.gyomu_param_master.update({
-    //         where: {
-    //           item_key_item_fromdate: { item_key: itemKey, item_fromdate: '' },
-    //         },
-    //         data: { item_value: itemValue },
-    //       });
-    //     }
-    //   } else {
-    //     if (!itemValue) {
-    //       //Insert
-    //       await prisma.gyomu_param_master.create({
-    //         data: {
-    //           item_key: itemKey,
-    //           item_fromdate: '',
-    //           item_value: itemValue,
-    //         },
-    //       });
-    //     }
-    //   }
-    //   return success(true);
-    // } catch (e) {
-    //   if (
-    //     e instanceof Prisma.PrismaClientKnownRequestError ||
-    //     e instanceof Prisma.PrismaClientUnknownRequestError ||
-    //     e instanceof Prisma.PrismaClientValidationError
-    //   ) {
-    //     return new Failure(
-    //       new DBError('Fail to set data on gyomu_param_master', e)
-    //     );
-    //   } else if (e instanceof Prisma.PrismaClientRustPanicError) {
-    //     throw new CriticalError(
-    //       'Critical error on Prisma. Need to terminate the application',
-    //       e
-    //     );
-    //   } else {
-    //     return new Failure(
-    //       new DBError(
-    //         'Unknown failure to set data on gyomu_param_master',
-    //         e as Error
-    //       )
-    //     );
-    //   }
-    //}
-  }
+    )
+  );
+}
+
 
   // static async setStringListValue(
   //   key: string,

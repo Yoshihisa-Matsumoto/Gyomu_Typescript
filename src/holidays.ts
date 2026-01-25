@@ -5,7 +5,8 @@ import { createDateOnly } from './dateOperation';
 import prisma from './dbsingleton';
 import { genericDBFunction } from './dbutil';
 import { gyomu_market_holiday } from './generated/prisma/client';
-import { success, PromiseResult } from './result';
+//import { success, PromiseResult } from './result';
+import {okAsync, ResultAsync} from './result';
 import { DBError } from './errors';
 export default class MarketDateAccess {
   private static __marketHolidays: {
@@ -23,40 +24,32 @@ export default class MarketDateAccess {
     }
   }
   //static async getMarketAccess(market: string, ctx: Context) {
-  static async getMarketAccess(
+  static getMarketAccess(
     market: string
-  ): PromiseResult<MarketDateAccess, DBError> {
+  ): ResultAsync<MarketDateAccess, DBError> {
     const access = new MarketDateAccess(market);
-    const result = await access.#initDataLoad();
-    if (result.isFailure()) return result;
-    return success(access);
+    return access.#initDataLoad().map(() => access);
   }
 
   //async #initDataLoad(ctx: Context) {
-  async #initDataLoad(): PromiseResult<boolean, DBError> {
-    if (this.#holidays.length > 0) return success(true);
+  #initDataLoad(): ResultAsync<boolean, DBError> {
+    if (this.#holidays.length > 0) return okAsync(true);
     this.#holidays = new Array<string>();
-    const result = await genericDBFunction<gyomu_market_holiday[]>(
+    return genericDBFunction<gyomu_market_holiday[]>(
       'load gyomu_market_holiday',
-      async () => {
-        //console.log('loading');
-        const item_values = await prisma.gyomu_market_holiday.findMany({
+      () =>
+        prisma.gyomu_market_holiday.findMany({
           where: { market: this.#market },
-        });
-        //console.log('loaded');
-        return success(item_values);
-      },
+        }),
       []
-    );
-    if (result.isFailure()) return result;
-    const holidays = result.value;
-    //console.log('holidays', holidays);
-    holidays.forEach((row) => {
-      this.#holidays.push(row.holiday);
+    ).map(holidays => {
+      holidays.forEach(row => {
+        this.#holidays.push(row.holiday);
+      });
+
+      MarketDateAccess.__marketHolidays[this.#market] = this.#holidays;
+      return true;
     });
-    //console.log('#holidays', this.#holidays);
-    MarketDateAccess.__marketHolidays[this.#market] = this.#holidays;
-    return success(true);
   }
 
   isBusinessDay(targetDate: Date): boolean {

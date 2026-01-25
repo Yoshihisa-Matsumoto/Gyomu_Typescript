@@ -1,11 +1,7 @@
 import { prismaMock } from './baseDBClass';
-import { gyomu_milestone_daily } from '../generated/prisma/client';
-import { DBError, TimeoutError } from '../errors';
-import { PromiseResult } from '../result';
 import { Milestone } from '../milestone';
 import { createDateFromYYYYMMDD } from '../dateOperation';
 import { format } from 'date-fns';
-import { notDeepEqual } from 'assert';
 import { beforeEach, expect, test } from 'vitest';
 
 beforeEach(() => {});
@@ -14,8 +10,8 @@ test('Milestone access check', async () => {
   const targetDate = createDateFromYYYYMMDD('20010101');
   prismaMock.gyomu_milestone_daily.findUnique.mockResolvedValue(null);
   let result = await Milestone.exists(milestoneId, targetDate);
-  if (result.isFailure()) {
-    expect(result.isFailure()).toBeFalsy();
+  if (result.isErr()) {
+    expect(result.isErr()).toBeFalsy();
     return;
   }
   expect(result.value.exists).toBeFalsy();
@@ -27,8 +23,8 @@ test('Milestone access check', async () => {
     update_time: BigInt(1),
   });
   result = await Milestone.exists(milestoneId, targetDate);
-  if (result.isFailure()) {
-    expect(result.isFailure()).toBeFalsy();
+  if (result.isErr()) {
+    expect(result.isErr()).toBeFalsy();
     return;
   }
   expect(result.value.exists).toBeTruthy();
@@ -40,8 +36,8 @@ test('Milestone access check', async () => {
     update_time: BigInt(1),
   });
   result = await Milestone.exists(milestoneId, targetDate, true);
-  if (result.isFailure()) {
-    expect(result.isFailure()).toBeFalsy();
+  if (result.isErr()) {
+    expect(result.isErr()).toBeFalsy();
     return;
   }
   expect(result.value.exists).toBeTruthy();
@@ -58,8 +54,8 @@ test('Milestone register test', async () => {
     update_time: BigInt(1),
   });
   let result = await Milestone.register(milestoneId, targetDate);
-  if (result.isFailure()) {
-    expect(result.isFailure()).toBeFalsy();
+  if (result.isErr()) {
+    expect(result.isErr()).toBeFalsy();
     return;
   }
   expect(result.value).not.toBeUndefined();
@@ -70,8 +66,8 @@ test('Milestone wait test', async () => {
   const targetDate = createDateFromYYYYMMDD('20010101');
 
   let result = await Milestone.wait(milestoneId, targetDate, 1);
-  if (result.isFailure()) {
-    expect(result.isFailure()).toBeFalsy();
+  if (result.isErr()) {
+    expect(result.isErr()).toBeFalsy();
     return;
   }
   expect(result.value).toBeFalsy();
@@ -84,8 +80,8 @@ test('Milestone wait test', async () => {
     });
   }, 1000);
   let result2 = await Milestone.wait(milestoneId, targetDate, 5);
-  if (result2.isFailure()) {
-    expect(result2.isFailure()).toBeFalsy();
+  if (result2.isErr()) {
+    expect(result2.isErr()).toBeFalsy();
     return;
   }
   expect(result2.value).toBeTruthy();

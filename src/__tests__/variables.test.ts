@@ -30,16 +30,16 @@ const testCases = [
 
 test('variables parse', async () => {
   const result = await VariableTranslator.getTranslator('JP');
-  if (result.isFailure()) {
-    expect(result.isSuccess()).toBeTruthy();
+  if (result.isErr()) {
+    expect(result.isOk()).toBeTruthy();
   } else {
     const translator = result.value;
     const targetDate = createDateOnly(1984, 5, 2);
 
     testCases.forEach(async (c) => {
       let result = await translator.parse(c.parameter, targetDate);
-      let isSuccess = result.isSuccess();
-      if (!result.isSuccess()) {
+      let isSuccess = result.isOk();
+      if (!result.isOk()) {
         console.log(c.parameter);
         console.log(result.error);
         expect(isSuccess).toBeTruthy();
@@ -53,16 +53,16 @@ test('variables parse', async () => {
 
 test('variables parseDate', async () => {
   const result = await VariableTranslator.getTranslator('JP');
-  if (result.isFailure()) {
-    expect(result.isSuccess()).toBeTruthy();
+  if (result.isErr()) {
+    expect(result.isOk()).toBeTruthy();
   } else {
     const translator = result.value;
     const targetDate = createDateOnly(1984, 5, 2);
 
     testCases.forEach(async (c) => {
       let result = await translator.parseDate(c.parameter, targetDate);
-      let isSuccess = result.isSuccess();
-      if (!result.isSuccess()) {
+      let isSuccess = result.isOk();
+      if (!result.isOk()) {
         console.log(c.parameter);
         console.log(result.error);
         expect(isSuccess).toBeTruthy();

@@ -2,9 +2,10 @@ import { Client } from 'basic-ftp';
 import { PeerCertificate } from 'tls';
 import { NetworkError } from '../errors';
 import { FileTransportInfo } from '../fileModel';
-import { success, fail, Failure, PromiseResult, Result } from '../result';
+import {  okAsync, Result, ResultAsync ,ok,err} from '../result';
 import { RemoteConnection } from './remoteConnection';
 import { platform } from '../platform';
+
 
 export class Ftp {
   #connectionInformation: RemoteConnection;
@@ -16,10 +17,10 @@ export class Ftp {
   get connected() {
     return !this.client.closed;
   }
-  async #init() {
+  #init() {
     this.client.ftp.verbose = true;
-    try {
-      const ftpResponse = await this.client.access({
+     return ResultAsync.fromPromise(
+      this.client.access({
         host: this.#connectionInformation.serverURL,
         user: this.#connectionInformation.userId,
         password: this.#connectionInformation.password,
@@ -41,108 +42,100 @@ export class Ftp {
                 return undefined;
               },
             },
-      });
-      return success(true);
-    } catch (err) {
-      return new Failure(
-        new NetworkError('Fail to do ftp conneciton', err as Error)
-      );
-    }
+      }),
+      (err) => new NetworkError('Fail to do ftp connection', err as Error)
+    ).map(() => true);
+    
   }
 
-  async download(transportInformation: FileTransportInfo) {
-    if (!this.connected) {
-      const result = await this.#init();
-      if (result.isFailure()) return result;
-    }
+  download(
+    transportInformation: FileTransportInfo
+  ): ResultAsync<boolean, NetworkError> {
+    // #init() が必要な場合は ResultAsync チェーンに含める
+    const initResult: ResultAsync<boolean, NetworkError> = this.connected
+      ? okAsync<boolean, NetworkError>(true)
+      : this.#init(); // #init() は ResultAsync<boolean, NetworkError>
 
-    try {
-      if (!transportInformation.isSourceDirectory)
-        await this.client.downloadTo(
-          transportInformation.destinationFullName,
-          transportInformation.sourceFullName.replace(platform.sep, '/')
-        );
-      else
-        await this.client.downloadToDir(
-          transportInformation.destinationPath,
-          transportInformation.sourceFolderName.replace(platform.sep, '/')
-        );
-      return success(true);
-    } catch (err) {
-      return new Failure(
-        new NetworkError('Fail to do ftp download', err as Error)
-      );
-    }
+    return initResult.andThen(() => {
+      const promise = transportInformation.isSourceDirectory
+        ? this.client.downloadToDir(
+            transportInformation.destinationPath,
+            transportInformation.sourceFolderName.replace(platform.sep, '/')
+          )
+        : this.client.downloadTo(
+            transportInformation.destinationFullName,
+            transportInformation.sourceFullName.replace(platform.sep, '/')
+          ).then(() => undefined);
+
+      return ResultAsync.fromPromise(
+        promise,
+        (err) => new NetworkError('Fail to do ftp download', err as Error)
+      ).map(() => true);
+    });
+  }
+  upload(transportInformation: FileTransportInfo) {
+    const initResult: ResultAsync<boolean, NetworkError> = this.connected
+      ? okAsync<boolean, NetworkError>(true)
+      : this.#init(); // #init() は ResultAsync<boolean, NetworkError>
+    
+    return initResult.andThen(() => {
+      const promise = transportInformation.isSourceDirectory
+        ? this.client.uploadFrom(
+           transportInformation.sourceFullName,
+           transportInformation.destinationFullName.replace(platform.sep, '/')
+          ).then(() => undefined)
+        : this.client.uploadFromDir(
+            transportInformation.sourceFullName,
+            transportInformation.destinationFullName.replace(platform.sep, '/')
+          );
+
+      return ResultAsync.fromPromise(
+        promise,
+        (err) => new NetworkError('Fail to do ftp upload', err as Error)
+      ).map(() => true);
+    });
   }
 
-  async upload(transportInformation: FileTransportInfo) {
-    if (!this.connected) {
-      const result = await this.#init();
-      if (result.isFailure()) return result;
-    }
+  getFileInfo(transportInformation: FileTransportInfo) {
+    const initResult: ResultAsync<boolean, NetworkError> = this.connected
+      ? okAsync<boolean, NetworkError>(true)
+      : this.#init(); // #init() は ResultAsync<boolean, NetworkError>
 
-    try {
-      if (!transportInformation.isSourceDirectory)
-        await this.client.uploadFrom(
-          transportInformation.sourceFullName,
-          transportInformation.destinationFullName.replace(platform.sep, '/')
-        );
-      else
-        await this.client.uploadFromDir(
-          transportInformation.sourceFullName,
-          transportInformation.destinationFullName.replace(platform.sep, '/')
-        );
-      return success(true);
-    } catch (err) {
-      return new Failure(
-        new NetworkError('Fail to do ftp upload', err as Error)
-      );
-    }
-  }
-
-  async getFileInfo(transportInformation: FileTransportInfo) {
-    if (!this.connected) {
-      const result = await this.#init();
-      if (result.isFailure()) return result;
-    }
     const fullPath =
       transportInformation.sourceFullName ?? ''.replace(platform.sep, '/');
-    try {
-      const size = await this.client.size(fullPath);
-      const lastModifiedDate = await this.client.lastMod(fullPath);
-      return success({ size: size, date: lastModifiedDate });
-    } catch (err) {
-      return new Failure(
-        new NetworkError('Fail to get ftp file information', err as Error)
-      );
-    }
+    
+    const sizePromise = this.client.size(fullPath);
+    const lastModPromise = this.client.lastMod(fullPath);
+
+    return ResultAsync.fromPromise(
+      Promise.all([sizePromise, lastModPromise]),
+      (err) => new NetworkError('Fail to get ftp file information', err as Error)
+    ).map(([size, date]) => ({ size, date }));
   }
 
-  async listFiles(transportInformation: FileTransportInfo) {
-    if (!this.connected) {
-      const result = await this.#init();
-      if (result.isFailure()) return result;
-    }
+  listFiles(transportInformation: FileTransportInfo) {
+    const initResult: ResultAsync<boolean, NetworkError> = this.connected
+      ? okAsync<boolean, NetworkError>(true)
+      : this.#init(); // #init() は ResultAsync<boolean, NetworkError>
+
     const fullPath =
       transportInformation.sourceFullName ?? ''.replace(platform.sep, '/');
-    try {
-      const fileInfoList = await this.client.list(fullPath);
-      return success(fileInfoList.map((f) => f.name));
-    } catch (err) {
-      return new Failure(
-        new NetworkError('Fail to retrieve ftp folders', err as Error)
-      );
-    }
+
+    const fileInfoListPromise = this.client.list(fullPath);
+    return ResultAsync.fromPromise(
+      fileInfoListPromise,
+      (err) => new NetworkError('Fail to retrieve ftp folders', err as Error)
+    ).map((fileInfoList) => fileInfoList.map((f) => f.name));
   }
 
   close(): Result<boolean, NetworkError> {
-    if (!this.connected) return success(true);
+    if (!this.connected) return ok(true);
     try {
       this.client.close();
-      return success(true);
-    } catch (err) {
-      return new Failure(
-        new NetworkError('Fail to close ftp connection', err as Error)
+      return ok(true);
+    } catch (error) {
+      return err(
+        new NetworkError('Fail to close ftp connection', error as Error)
       );
     }
   }

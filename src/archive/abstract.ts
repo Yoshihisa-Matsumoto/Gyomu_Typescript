@@ -1,6 +1,5 @@
 import { ArchiveError } from '../errors';
 import { platform } from '../platform';
-import { PromiseResult } from '../result';
 
 export abstract class AbstractBaseArchive {
   readonly archiveFileName: string;

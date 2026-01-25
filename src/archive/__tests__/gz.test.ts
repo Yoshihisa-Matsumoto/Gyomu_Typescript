@@ -28,7 +28,7 @@ test('GZ Creation Test', async () => {
 
   let result = await GzipArchive.create(gzFilename, targetSourceFilename);
 
-  expect(result.isSuccess()).toBeTruthy();
+  expect(result.isOk()).toBeTruthy();
 
   let isSame: boolean = true;
   // let isSame = compareFiles(
@@ -41,7 +41,7 @@ test('GZ Creation Test', async () => {
   // //const [sourceBuffer,destinationBuffer] = getBufferG
   const extractedFilename = platform.join(extractDirectory, 'README.md');
   result = await GzipArchive.extract(gzFilename, extractedFilename);
-  expect(result.isSuccess()).toBeTruthy();
+  expect(result.isOk()).toBeTruthy();
 
   isSame = compareFiles(
     extractedFilename,

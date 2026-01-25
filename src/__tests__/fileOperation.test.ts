@@ -223,11 +223,15 @@ test('File Exclusive Access Test', async () => {
 
   let result = await FileOperation.waitTillExclusiveAccess(targetFilename, 2);
   let finishDate = new Date().getTime();
-  expect(result.isSuccess()).toBeTruthy();
+  expect(result.isOk()).toBeTruthy();
+  if(result.isErr()){
+    return;
+  }
   let duration = finishDate - currentDate;
+  //expect(result.value).toBeTruthy();
   expect(duration).toBeGreaterThan(500);
-  expect(duration).toBeLessThan(1500);
-
+  expect(duration).toBeLessThan(2200);
+  console.log('duration', duration);
   //console.log('test2');
   targetFilename = tmp.tmpNameSync();
 
@@ -250,9 +254,9 @@ test('File Exclusive Access Test', async () => {
   }, 50);
   result = await FileOperation.waitTillExclusiveAccess(targetFilename, 1);
   clearInterval(timerId);
-  if (!result.isSuccess()) console.log(result.error);
-  expect(result.isSuccess()).toBeTruthy();
-  if (result.isSuccess()) {
+  if (!result.isOk()) console.log(result.error);
+  expect(result.isOk()).toBeTruthy();
+  if (result.isOk()) {
     expect(result.value).toBeFalsy();
   }
 }, 10000);

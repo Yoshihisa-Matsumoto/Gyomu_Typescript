@@ -1,8 +1,9 @@
 import { FileTransportInfo } from '../fileModel';
 
 import { ArchiveError } from '../errors';
-import { fail, Result, success, PromiseResult, Failure } from '../result';
-const JSZip = require('jszip');
+//import { fail, Result, success, PromiseResult, Failure } from '../result';
+import {ResultAsync,errAsync, okAsync} from '../result';
+import JSZip from 'jszip';
 import unzipper, { File } from 'unzipper';
 import il from 'iconv-lite';
 import { AbstractBaseArchive } from './abstract';
@@ -14,32 +15,21 @@ import { platform } from '../platform';
  * This class  doesn't support AES decryption yet
  */
 export class ZipArchive extends AbstractBaseArchive {
-  static async create(
+  static create(
     zipFileName: string,
     transferInformationList: FileTransportInfo[],
     password: string = ''
-  ): PromiseResult<boolean, ArchiveError> {
-    if (!!password) {
-      return fail(
-        'Password protected zip creation is not supported',
-        ArchiveError
-      );
+  ): ResultAsync<boolean, ArchiveError> {
+    if (password) {
+      return errAsync(
+      new ArchiveError('Password protected zip creation is not supported')
+    );
     }
     const zip = new JSZip();
 
-    for (const transferInformation of transferInformationList) {
-      const sourcePath = transferInformation.sourceFullNameWithBasePath;
-      if (!platform.existsSync(sourcePath))
-        return fail(`File Not Found: ${sourcePath}`, ArchiveError);
-      if (!transferInformation.isSourceDirectory) {
-        let destinationEntryName =
-          transferInformation.destinationFullName.replace(platform.sep, '/');
-        zip.file(destinationEntryName, platform.readFileSync(sourcePath));
-      } else {
-        const destRoot = transferInformation.destinationPath
-          ? transferInformation.destinationPath.replace(platform.sep, '/')
-          : '';
-        const addDirectory = async (fsPath: string, relativeTo: string) => {
+    const addDirectory = (fsPath: string, relativeTo: string):ResultAsync<void, ArchiveError> => 
+      ResultAsync.fromPromise(
+        (async () => {
           const items = platform.readdirSync(fsPath, { withFileTypes: true });
           for (const item of items) {
             const itemPath = platform.join(fsPath, item.name);
@@ -51,22 +41,61 @@ export class ZipArchive extends AbstractBaseArchive {
               zip.file(zipPath, platform.readFileSync(itemPath));
             }
           }
-        };
-        await addDirectory(sourcePath, destRoot);
-        //this.#buildZipArchiveInternal(sourcePath, sourcePath, archive);
-      }
-    }
-    try {
-      const buffer = await zip.generateAsync({
-        type: 'nodebuffer',
-        compression: 'DEFLATE',
-      });
-      await platform.writeFile(zipFileName, buffer);
-      await FileOperation.waitTillExclusiveAccess(zipFileName, 1);
-      return success(true);
-    } catch (err) {
-      return new Failure(new ArchiveError('Fail to zip archive', err as Error));
-    }
+        })(),
+        (e) => new ArchiveError('Fail to add directory', e as Error)
+      );
+    // transferInformation を直列処理
+    const processTransfers = transferInformationList.reduce(
+      (acc, info) =>
+        acc.andThen(() => {
+          const sourcePath = info.sourceFullNameWithBasePath;
+
+          if (!platform.existsSync(sourcePath)) {
+            return errAsync(
+              new ArchiveError(`File Not Found: ${sourcePath}`)
+            );
+          }
+
+          if (!info.isSourceDirectory) {
+            const destinationEntryName =
+              info.destinationFullName.replace(platform.sep, '/');
+            zip.file(destinationEntryName, platform.readFileSync(sourcePath));
+            return okAsync(undefined);
+          }
+
+          const destRoot = info.destinationPath
+            ? info.destinationPath.replace(platform.sep, '/')
+            : '';
+
+          return addDirectory(sourcePath, destRoot);
+        }),
+      okAsync<void, ArchiveError>(undefined)
+    );
+    
+    // ZIP生成 + 書き込み
+    return processTransfers
+    .andThen(() =>
+      ResultAsync.fromPromise(
+        zip.generateAsync({
+          type: 'nodebuffer',
+          compression: 'DEFLATE',
+        }),
+        (e) => new ArchiveError('Fail to zip archive', e as Error)
+      )
+    )
+    .andThen((buffer) =>
+      ResultAsync.fromPromise(
+        platform.writeFile(zipFileName, buffer),
+        (e) => new ArchiveError('Fail to write zip file', e as Error)
+      )
+    )
+    .andThen(() =>
+      ResultAsync.fromPromise(
+        FileOperation.waitTillExclusiveAccess(zipFileName, 1),
+        (e) => new ArchiveError('Fail to get exclusive access', e as Error)
+      )
+    )
+    .map(() => true);
   }
 
   readonly password: string;
@@ -89,9 +118,9 @@ export class ZipArchive extends AbstractBaseArchive {
     this.encoding = encoding;
   }
 
-  async fileExists(fileName: string): PromiseResult<boolean, ArchiveError> {
+  fileExists(fileName: string): ResultAsync<boolean, ArchiveError> {
     fileName = this.__massageEntryPath(fileName);
-    return new Promise((resolve, reject) => {
+    return ResultAsync.fromSafePromise(new Promise((resolve, reject) => {
       return unzipper.Open.file(this.archiveFileName)
         .then((directory) => {
           const targetFile = directory.files.find((f) => {
@@ -100,19 +129,17 @@ export class ZipArchive extends AbstractBaseArchive {
               this.#massageFileEntryFullPath(f) === fileName
             );
           });
-          return resolve(success(!!targetFile));
+          return resolve((!!targetFile));
         })
         .catch((err: Error) => {
-          return resolve(
-            new Failure(
+          return reject(
               new ArchiveError(
                 `Fail to check file existence of ${this.archiveFileName}->${fileName}`,
                 err
               )
-            )
           );
         });
-    });
+    }));
   }
   #unicode: number = 0x800;
   #massageFileEntryFullPath(file: File) {
@@ -141,134 +168,187 @@ export class ZipArchive extends AbstractBaseArchive {
   //     platform.mkdirSync(directoryName);
   //   }
   // }
-  async extractSingileFile(
+  extractSingileFile(
     sourceEntryFullName: string,
     destinationFullName: string
-  ): PromiseResult<boolean, ArchiveError> {
-    if (!!this.password)
-      return fail(
-        'Password protected zip extraction is not supported',
-        ArchiveError
+  ): ResultAsync<boolean, ArchiveError> {
+
+    if (this.password) {
+      return errAsync(
+        new ArchiveError(
+          'Password protected zip extraction is not supported'
+        )
       );
-    const targetEntryName = this.__massageEntryPath(sourceEntryFullName);
-    return unzipper.Open.file(this.archiveFileName).then((directory) => {
-      const targetFile = directory.files.find((f) => {
-        return (
-          f.type === 'File' &&
-          this.#massageFileEntryFullPath(f) === targetEntryName
+    }
+
+    const targetEntryName =
+      this.__massageEntryPath(sourceEntryFullName);
+
+    // ① zip ファイルを開く
+    return ResultAsync.fromPromise(
+      unzipper.Open.file(this.archiveFileName),
+      (e) => new ArchiveError('Fail to open zip file', e as Error)
+    )
+      // ② 対象ファイル検索
+      .andThen((directory) => {
+        const targetFile = directory.files.find(
+          (f) =>
+            f.type === 'File' &&
+            this.#massageFileEntryFullPath(f) === targetEntryName
         );
-      });
-      if (!targetFile) {
-        console.log(`File not found :${targetEntryName}`);
-        return fail(`File not found :${targetEntryName}`, ArchiveError);
+
+        if (!targetFile) {
+          return errAsync(
+            new ArchiveError(`File not found :${targetEntryName}`)
+          );
+        }
+
+        return okAsync(targetFile);
+      })
+      // ③ 書き出し（stream → Promise → ResultAsync）
+      .andThen((targetFile) => {
+        this.__createDirectoryFromFileNameIfNotExist(
+          destinationFullName
+        );
+
+        return ResultAsync.fromPromise(
+          new Promise<void>((resolve, reject) => {
+            targetFile
+              .stream()
+              .pipe(platform.createWriteStream(destinationFullName))
+              .on('error', (err) => {
+                reject(
+                  new ArchiveError(
+                    `Unknown Error on extract ${this.#massageFileEntryFullPath(
+                      targetFile
+                    )}`,
+                    err
+                  )
+                );
+              })
+              .on('finish', () => {
+                resolve();
+              });
+          }),
+          (e) =>
+            e instanceof ArchiveError
+              ? e
+              : new ArchiveError(
+                  'Fail to extract file',
+                  e as Error
+                )
+        );
+      })
+      // ④ 最終結果
+      .map(() => true);
+  }
+extractDirectory(
+  sourceDirectory: string,
+  destinationDirectory: string
+): ResultAsync<boolean, ArchiveError> {
+
+  if (this.password) {
+    return errAsync(
+      new ArchiveError(
+        'Password protected zip extraction is not supported'
+      )
+    );
+  }
+
+  const targetEntryName =
+    this.__massageEntryPath(sourceDirectory);
+
+  // ① zip を開く
+  return ResultAsync.fromPromise(
+    unzipper.Open.file(this.archiveFileName),
+    (e) => new ArchiveError('Fail to open zip file', e as Error)
+  )
+    // ② 対象エントリ抽出
+    .andThen((directory) => {
+      const targetFileList = directory.files.filter((f) =>
+        this.#massageFileEntryFullPath(f).startsWith(targetEntryName)
+      );
+
+      if (targetFileList.length === 0) {
+        return errAsync(
+          new ArchiveError(`Folder not found : ${targetEntryName}`)
+        );
       }
 
-      this.__createDirectoryFromFileNameIfNotExist(destinationFullName);
-      return new Promise((resolve, reject) => {
-        targetFile
-          .stream()
-          .pipe(platform.createWriteStream(destinationFullName))
-          .on('error', (err) => {
-            return resolve(
-              new Failure(
-                new ArchiveError(
-                  `Unknown Error on extract ${this.#massageFileEntryFullPath(
-                    targetFile
-                  )}`,
-                  err
-                )
-              )
-            );
-          })
-          .on('finish', () => {
-            resolve(success(true));
-          });
-      });
-    });
-  }
-  async extractDirectory(
-    sourceDirectory: string,
-    destinationDirectory: string
-  ): PromiseResult<boolean, ArchiveError> {
-    if (!!this.password)
-      return fail(
-        'Password protected zip extraction is not supported',
-        ArchiveError
-      );
-    const targetEntryName = this.__massageEntryPath(sourceDirectory);
-    const result = unzipper.Open.file(this.archiveFileName).then(
-      async (directory) => {
-        const targetFileList = directory.files.filter((f) =>
-          this.#massageFileEntryFullPath(f).startsWith(targetEntryName)
-        );
-        if (!targetFileList || targetFileList.length === 0) {
-          return fail(`Folder not found : ${targetEntryName}`, ArchiveError);
-        }
-        this.__createDirectoryIfNotExist(destinationDirectory);
-        targetFileList
-          .filter((file) => file.type === 'Directory')
-          .forEach((file) => {
-            const entryFullPath = this.#massageFileEntryFullPath(file);
-            let destinationPath = platform.join(
-              destinationDirectory,
-              entryFullPath
-                .substring(targetEntryName.length)
-                .replace('/', platform.sep)
-            );
-            this.__createDirectoryFromFileNameIfNotExist(destinationPath);
-          });
-        const resultPromiseList = await targetFileList
-          .filter((file) => file.type === 'File')
-          .map(async (file) => {
-            const entryFullPath = this.#massageFileEntryFullPath(file);
-            let destinationPath = platform.join(
-              destinationDirectory,
-              entryFullPath
-                .substring(targetEntryName.length)
-                .replace('/', platform.sep)
-            );
-            this.__createDirectoryFromFileNameIfNotExist(destinationPath);
+      this.__createDirectoryIfNotExist(destinationDirectory);
 
-            return new Promise<void>((resolve, reject) => {
+      // ディレクトリ作成（同期）
+      targetFileList
+        .filter((f) => f.type === 'Directory')
+        .forEach((file) => {
+          const entryFullPath =
+            this.#massageFileEntryFullPath(file);
+          const destinationPath = platform.join(
+            destinationDirectory,
+            entryFullPath
+              .substring(targetEntryName.length)
+              .replace('/', platform.sep)
+          );
+          this.__createDirectoryFromFileNameIfNotExist(destinationPath);
+        });
+
+      return okAsync(
+        targetFileList.filter((f) => f.type === 'File')
+      );
+    })
+    // ③ ファイル展開（並列）
+    .andThen((files) =>
+      ResultAsync.combine(
+        files.map((file) => {
+          const entryFullPath =
+            this.#massageFileEntryFullPath(file);
+          const destinationPath = platform.join(
+            destinationDirectory,
+            entryFullPath
+              .substring(targetEntryName.length)
+              .replace('/', platform.sep)
+          );
+
+          this.__createDirectoryFromFileNameIfNotExist(destinationPath);
+
+          return ResultAsync.fromPromise(
+            new Promise<void>((resolve, reject) => {
               file
                 .stream()
                 .pipe(platform.createWriteStream(destinationPath))
-                .on('error', (err) => {
-                  reject({
-                    err: err,
-                    fileName: this.#massageFileEntryFullPath(file),
-                  });
-                })
+                .on('error', (err) =>
+                  reject(
+                    new ArchiveError(
+                      `Error on unarchive ${entryFullPath}`,
+                      err
+                    )
+                  )
+                )
                 .on('finish', resolve);
-            });
-          });
-        const result = await Promise.all(resultPromiseList)
-          .then((results) => {
-            //return new Promise<void>((resolve,reject)=>{resolve();})
-            return success(true);
-          })
-          .catch((reason: { err: Error; fileName: string }) => {
-            return new Failure(
-              new ArchiveError(
-                `Error on unarchive ${reason.fileName}`,
-                reason.err
-              )
-            );
-          });
-        return result;
-      }
-    );
-    return result;
-  }
-  async extractAll(
+            }),
+            (e) =>
+              e instanceof ArchiveError
+                ? e
+                : new ArchiveError(
+                    `Error on unarchive ${entryFullPath}`,
+                    e as Error
+                  )
+          );
+        })
+      )
+    )
+    // ④ 最終結果
+    .map(() => true);
+}
+  extractAll(
     destinationDirectory: string
-  ): PromiseResult<boolean, ArchiveError> {
+  ): ResultAsync<boolean, ArchiveError> {
     return this.extractDirectory('', destinationDirectory);
   }
-  async extract(
+  extract(
     //zipFilename: string,
     transferInformation: FileTransportInfo
-  ): PromiseResult<boolean, ArchiveError> {
+  ): ResultAsync<boolean, ArchiveError> {
     //console.log('directory', directory);
     const targetEntryName = this.__massageEntryPath(
       transferInformation.sourceFullName
@@ -278,12 +358,12 @@ export class ZipArchive extends AbstractBaseArchive {
     //const directory = await unzipper.Open.file(this.zipFilename);
 
     if (!transferInformation.isSourceDirectory) {
-      return await this.extractSingileFile(
+      return this.extractSingileFile(
         transferInformation.sourceFullName,
         transferInformation.destinationFullName
       );
     } else {
-      return await this.extractDirectory(
+      return this.extractDirectory(
         transferInformation.sourceFullName,
         transferInformation.destinationFullName
       );

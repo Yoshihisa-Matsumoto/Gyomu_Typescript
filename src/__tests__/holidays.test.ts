@@ -18,7 +18,7 @@ beforeEach(async () => {
   //access = await MarketDateAccess.getMarketAccess('JP');
   //console.log('beforeEach');
   const result = await MarketDateAccess.getMarketAccess('JP');
-  if (result.isFailure()) expect(result.isSuccess()).toBeTruthy();
+  if (result.isErr()) expect(result.isOk()).toBeTruthy();
   else access = result.value;
 });
 

@@ -1,7 +1,8 @@
 import { FileTransportInfo } from '../fileModel';
 
 import { ArchiveError } from '../errors';
-import { fail, Result, success, PromiseResult, Failure } from '../result';
+//import { fail, Result, success, PromiseResult, Failure } from '../result';
+import {ResultAsync,errAsync, okAsync} from '../result';
 // import tarStream from 'tar-stream';
 // import tar from 'tar-fs';
 import * as tar from 'tar';
@@ -12,11 +13,11 @@ import { AbstractBaseArchive } from './abstract';
  * This class (extract side) doesn't support stream based retrieval yet
  */
 export class TarArchive extends AbstractBaseArchive {
-  static async create(
+  static create(
     tarFileName: string,
     transferInformation: FileTransportInfo,
     needGZipCompression: boolean = false
-  ): PromiseResult<boolean, ArchiveError> {
+  ): ResultAsync<boolean, ArchiveError> {
     // let currentDirectory = path.dirname(
     //   transferInformation.sourceFullNameWithBasePath
     // );
@@ -27,7 +28,7 @@ export class TarArchive extends AbstractBaseArchive {
     // console.log('current', currentDirectory);
     // console.log('target', targetPathForTar);
     if (!transferInformation.isSourceDirectory) {
-      return fail('Single File is not supported', ArchiveError);
+      return errAsync(new ArchiveError('Single File is not supported'));
     }
     // let tarOptions: tar.CreateOptions & tar.FileOptions;
     // tarOptions = {
@@ -41,7 +42,7 @@ export class TarArchive extends AbstractBaseArchive {
     //     gzip: true,
     //   };
     // }
-    return new Promise((resolve, reject) => {
+    return ResultAsync.fromSafePromise(new Promise((resolve, reject) => {
       let result: Promise<void>;
       if (!needGZipCompression) {
         result = tar.create(
@@ -64,38 +65,38 @@ export class TarArchive extends AbstractBaseArchive {
 
       result
         .then(() => {
-          return resolve(success(true));
+          return resolve(true);
         })
         .catch((err: Error) => {
-          return resolve(fail('Fail to Tar archive', ArchiveError));
+          return reject(new ArchiveError('Fail to Tar archive',err));
         });
-    });
+    }));
   }
   constructor(tarFilename: string) {
     super(tarFilename);
   }
 
-  async fileExists(fileName: string): PromiseResult<boolean, ArchiveError> {
+  fileExists(fileName: string): ResultAsync<boolean, ArchiveError> {
     fileName = this.__massageEntryPath(fileName);
 
     let isExist = false;
-    const extract = await tar.list({
+    return ResultAsync.fromPromise(tar.list({
       file: this.archiveFileName,
       onentry: (entry) => {
         if (entry.path === fileName) isExist = true;
       },
-    });
-    return success(isExist);
+    }),(e)=>new ArchiveError('Fail to list tar archive'))
+    .andThen(()=>okAsync(isExist));
   }
 
-  async extractSingileFile(
+  extractSingileFile(
     sourceEntryFullName: string,
     destinationFolderName: string
-  ): PromiseResult<boolean, ArchiveError> {
+  ): ResultAsync<boolean, ArchiveError> {
     const targetEntryName = this.__massageEntryPath(sourceEntryFullName);
     const numPathElementToSkip = (targetEntryName.match(/\//g) || []).length;
     this.__createDirectoryIfNotExist(destinationFolderName);
-    return new Promise(async (resolve, reject) => {
+    return ResultAsync.fromSafePromise(new Promise(async (resolve, reject) => {
       await tar
         .extract({
           cwd: destinationFolderName,
@@ -106,25 +107,24 @@ export class TarArchive extends AbstractBaseArchive {
           strip: numPathElementToSkip,
         })
         .then(() => {
-          return resolve(success(true));
+          return resolve(true);
         })
         .catch((reason: Error) => {
-          return resolve(
-            new Failure(
+          return reject(
               new ArchiveError(
                 `Fail to untar ${this.archiveFileName} -> ${targetEntryName}`,
                 reason
               )
-            )
+            
           );
         });
-    });
+    }));
   }
 
-  async extractDirectory(
+  extractDirectory(
     sourceDirectory: string,
     destinationDirectory: string
-  ): PromiseResult<boolean, ArchiveError> {
+  ): ResultAsync<boolean, ArchiveError> {
     const targetEntryName = this.__massageEntryPath(sourceDirectory);
     const numPathElementToSkip = !sourceDirectory
       ? 0
@@ -132,7 +132,7 @@ export class TarArchive extends AbstractBaseArchive {
 
     //let directoryName = path.dirname(destinationDirectory);
     this.__createDirectoryIfNotExist(destinationDirectory);
-    return new Promise(async (resolve, reject) => {
+    return ResultAsync.fromSafePromise( new Promise(async (resolve, reject) => {
       await tar
         .extract({
           cwd: destinationDirectory,
@@ -143,29 +143,28 @@ export class TarArchive extends AbstractBaseArchive {
           strip: numPathElementToSkip,
         })
         .then(() => {
-          resolve(success(true));
+          resolve(true);
         })
         .catch((reason: Error) => {
-          resolve(
-            new Failure(
-              new ArchiveError(
-                `Fail to untar ${this.archiveFileName} -> ${targetEntryName}`,
-                reason
-              )
+          reject(
+            new ArchiveError(
+              `Fail to untar ${this.archiveFileName} -> ${targetEntryName}`,
+              reason
             )
           );
         });
-    });
+    }));
   }
 
-  async extractAll(
+
+  extractAll(
     destinationDirectory: string
-  ): PromiseResult<boolean, ArchiveError> {
+  ): ResultAsync<boolean, ArchiveError> {
     return this.extractDirectory('', destinationDirectory);
   }
-  async extract(
+  extract(
     transferInformation: FileTransportInfo
-  ): PromiseResult<boolean, ArchiveError> {
+  ): ResultAsync<boolean, ArchiveError> {
     //console.log('directory', directory);
     const targetEntryName = this.__massageEntryPath(
       transferInformation.sourceFullName
@@ -174,21 +173,20 @@ export class TarArchive extends AbstractBaseArchive {
       transferInformation.sourceFileName !==
       transferInformation.destinationFileName
     )
-      return fail(
-        'Destination filename must be same as original filename',
-        ArchiveError
-      );
+      return errAsync(new ArchiveError(
+        'Destination filename must be same as original filename'
+      ));
     //console.log('targetEntryName:', targetEntryName, ':');
 
     //const directory = await unzipper.Open.file(this.zipFilename);
 
     if (!transferInformation.isSourceDirectory) {
-      return await this.extractSingileFile(
+      return this.extractSingileFile(
         transferInformation.sourceFullName,
         transferInformation.destinationPath
       );
     } else {
-      return await this.extractDirectory(
+      return this.extractDirectory(
         transferInformation.sourceFullName,
         transferInformation.destinationFullName
       );

@@ -1,39 +1,40 @@
 import { Prisma } from './generated/prisma/client';
 import { CriticalError, DBError } from './errors';
-import { Failure, PromiseResult } from './result';
+//import { Failure, PromiseResult } from './result';
+import {ResultAsync} from './result';
 
-export async function genericDBFunction<T>(
+export function genericDBFunction<T>(
   actionName: string,
-  dbFunc: (...args: any) => PromiseResult<T, DBError>,
+  dbFunc: (...args: any[]) => Promise<T>,
   args: any[]
-): PromiseResult<T, DBError> {
-  return new Promise(async (resolve, reject) => {
-    try {
-      //console.log('calling');
-      const result = await dbFunc(...args);
-      //console.log('called');
-      resolve(result);
-    } catch (e) {
+): ResultAsync<T, DBError> {
+
+  return ResultAsync.fromPromise(
+    dbFunc(...args),
+    (e) => {
+      // Prisma 系
       if (
         e instanceof Prisma.PrismaClientKnownRequestError ||
         e instanceof Prisma.PrismaClientUnknownRequestError ||
         e instanceof Prisma.PrismaClientValidationError
       ) {
-        resolve(new Failure(new DBError(`Fail: ${actionName}`, e as Error)));
-      } else if (e instanceof CriticalError) {
-        reject(e);
-      } else if (e instanceof Prisma.PrismaClientRustPanicError) {
-        reject(
-          new CriticalError(
-            'Critical error on Prisma. Need to terminate the application',
-            e as Error
-          )
-        );
-      } else {
-        resolve(
-          new Failure(new DBError(`Unknown Failure: ${actionName}`, e as Error))
+        return new DBError(`Fail: ${actionName}`, e as Error);
+      }
+
+      // 致命的エラー → 再 throw（ResultAsync にしない）
+      if (e instanceof Prisma.PrismaClientRustPanicError) {
+        throw new CriticalError(
+          'Critical error on Prisma. Need to terminate the application',
+          e as Error
         );
       }
+
+      if (e instanceof CriticalError) {
+        throw e;
+      }
+
+      // その他
+      return new DBError(`Unknown Failure: ${actionName}`, e as Error);
     }
-  });
+  );
 }

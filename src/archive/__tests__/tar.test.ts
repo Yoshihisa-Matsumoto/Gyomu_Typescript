@@ -26,7 +26,7 @@ const validateFileExistence = async (
   expected_result: boolean
 ) => {
   let result = await archive.fileExists(entryName);
-  if (result.isSuccess()) {
+  if (result.isOk()) {
     if (result.value !== expected_result) {
       console.log(
         entryName,
@@ -52,7 +52,7 @@ test('Tar Creation Test', async () => {
 
   let result = await TarArchive.create(tarFileName, transferInformation);
 
-  expect(result.isSuccess()).toBeTruthy();
+  expect(result.isOk()).toBeTruthy();
 
   // const checkFilename = platform.join(sourceDirectory, 'README.md');
   // //const [sourceBuffer,destinationBuffer] = getBufferFromFilenames()
@@ -82,7 +82,7 @@ test('Tar Creation Test', async () => {
 
   let destinationRoot = platform.join(extractDirectory, 'fullTarCreate');
   result = await archive.extractAll(destinationRoot);
-  expect(result.isSuccess()).toBeTruthy();
+  expect(result.isOk()).toBeTruthy();
   validateFolders(platform.join(compressDirectory, 'source'), destinationRoot);
 }, 10000);
 
@@ -145,7 +145,7 @@ test('Tar Unarchive Folder Test', async () => {
     platform.join(compressDirectory, 'compress/temp.tar')
   );
   let result = await archive.extract(transferInformation);
-  expect(result.isSuccess()).toBeTruthy();
+  expect(result.isOk()).toBeTruthy();
   validateFolders(
     platform.join(compressDirectory, 'source/folder1/folder 2'),
     platform.join(extractDirectory, 'folder 2')
@@ -154,6 +154,6 @@ test('Tar Unarchive Folder Test', async () => {
   let destinationRoot = platform.join(extractDirectory, 'fullTarExtract');
 
   result = await archive.extractAll(destinationRoot);
-  expect(result.isSuccess()).toBeTruthy();
+  expect(result.isOk()).toBeTruthy();
   validateFolders(platform.join(compressDirectory, 'source'), destinationRoot);
 }, 10000);

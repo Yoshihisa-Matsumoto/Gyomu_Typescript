@@ -5,6 +5,7 @@ import { gyomu_param_master, Prisma } from '../generated/prisma/client';
 import { CriticalError, DBError } from '../errors';
 import { createDateFromYYYYMMDD } from '../dateOperation';
 import { beforeEach, expect, test } from 'vitest';
+import prisma from '../dbsingleton';
 
 beforeEach(() => {});
 test('parameter parse', async () => {
@@ -29,8 +30,8 @@ test('db error test', async () => {
     prismaMock.gyomu_param_master.findMany.mockRejectedValue(err);
     let itemKey = 'ITEM_KEY_Test$$';
     let result = await ParameterAccess.keyExists(itemKey);
-    if (result.isSuccess()) {
-      expect(result.isSuccess()).toBeFalsy();
+    if (result.isOk()) {
+      expect(result.isOk()).toBeFalsy();
     } else {
       const dbError = result.error;
       expect(dbError.message).toContain('load gyomu_param_master');
@@ -78,8 +79,8 @@ test('multiple parameter with different value test', async () => {
     undefined,
     createDateFromYYYYMMDD('19800401')
   );
-  if (result.isFailure()) {
-    expect(result.isFailure()).toBeFalsy();
+  if (result.isErr()) {
+    expect(result.isErr()).toBeFalsy();
     return;
   }
   expect(result.value).toEqual('oldest');
@@ -89,8 +90,8 @@ test('multiple parameter with different value test', async () => {
     undefined,
     createDateFromYYYYMMDD('19850401')
   );
-  if (result.isFailure()) {
-    expect(result.isFailure()).toBeFalsy();
+  if (result.isErr()) {
+    expect(result.isErr()).toBeFalsy();
     return;
   }
   expect(result.value).toEqual('old');
@@ -100,8 +101,8 @@ test('multiple parameter with different value test', async () => {
     undefined,
     createDateFromYYYYMMDD('20220401')
   );
-  if (result.isFailure()) {
-    expect(result.isFailure()).toBeFalsy();
+  if (result.isErr()) {
+    expect(result.isErr()).toBeFalsy();
     return;
   }
   expect(result.value).toEqual('current');
@@ -111,8 +112,8 @@ test('multiple parameter with different value test', async () => {
     undefined,
     createDateFromYYYYMMDD('20210101')
   );
-  if (result.isFailure()) {
-    expect(result.isFailure()).toBeFalsy();
+  if (result.isErr()) {
+    expect(result.isErr()).toBeFalsy();
     return;
   }
   expect(result.value).toEqual('current');
@@ -129,7 +130,7 @@ async function setValueTest<T extends string | boolean | number>(itemValue: T) {
   prismaMock.gyomu_param_master.create.mockResolvedValue(record);
   prismaMock.gyomu_param_master.findMany.mockResolvedValue([]);
   let result = await ParameterAccess.setValue(itemKey, itemValue);
-  expect(result.isSuccess()).toBeTruthy();
+  expect(result.isOk()).toBeTruthy();
   let resultValue: any;
   if (typeof itemValue === 'string') {
     resultValue = await ParameterAccess.value(itemKey);
@@ -139,8 +140,12 @@ async function setValueTest<T extends string | boolean | number>(itemValue: T) {
     resultValue = await ParameterAccess.numberValue(itemKey);
   }
   prismaMock.gyomu_param_master.findMany.mockResolvedValue([record]);
+  prismaMock.gyomu_param_master.update.mockResolvedValue(record);
   result = await ParameterAccess.setValue(itemKey, itemValue);
-  expect(result.isSuccess()).toBeTruthy();
+  if(result.isErr()) {
+    console.log(result.error);
+  }
+  expect(result.isOk()).toBeTruthy();
 
   if (typeof itemValue === 'string') {
     resultValue = await ParameterAccess.value(itemKey);
@@ -150,17 +155,17 @@ async function setValueTest<T extends string | boolean | number>(itemValue: T) {
     resultValue = await ParameterAccess.numberValue(itemKey);
   }
 
-  expect(resultValue.isSuccess()).toBeTruthy();
-  if (resultValue.isFailure()) expect(resultValue.error).toBeNull();
+  expect(resultValue.isOk()).toBeTruthy();
+  if (resultValue.isErr()) expect(resultValue.error).toBeNull();
   else {
     expect(resultValue.value).toEqual(itemValue);
   }
 
   prismaMock.gyomu_param_master.delete.mockResolvedValue(record);
   result = await ParameterAccess.setValue(itemKey, '');
-  expect(result.isSuccess()).toBeTruthy();
+  expect(result.isOk()).toBeTruthy();
   prismaMock.gyomu_param_master.findMany.mockResolvedValue([]);
   result = await ParameterAccess.keyExists(itemKey);
-  expect(result.isSuccess()).toBeTruthy();
-  if (result.isSuccess()) expect(result.value).toBeFalsy();
+  expect(result.isOk()).toBeTruthy();
+  if (result.isOk()) expect(result.value).toBeFalsy();
 }

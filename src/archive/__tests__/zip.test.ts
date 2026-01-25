@@ -33,7 +33,7 @@ const validateFileExistence = async (
   expected_result: boolean
 ) => {
   let result = await archive.fileExists(entryName);
-  if (result.isSuccess()) {
+  if (result.isOk()) {
     if (result.value !== expected_result) {
       console.log(
         entryName,
@@ -58,7 +58,7 @@ test('Zip Creation Test', async () => {
 
   let result = await ZipArchive.create(zipFilename, transferInformationList);
 
-  expect(result.isSuccess()).toBeTruthy();
+  expect(result.isOk()).toBeTruthy();
   // if (result.isSuccess()) {
   //   Promise.allSettled([result.value]);
   // }
@@ -95,7 +95,7 @@ test('Zip Creation Test', async () => {
   let destinationRoot = platform.join(extractDirectory, 'fullZipCreate');
 
   result = await archive.extractAll(destinationRoot);
-  expect(result.isSuccess()).toBeTruthy();
+  expect(result.isOk()).toBeTruthy();
   validateFolders(platform.join(compressDirectory, 'source'), destinationRoot);
 });
 
@@ -120,7 +120,7 @@ test('Zip Creation with password Test', async () => {
   );
 
   // password creation unsupported: expect failure
-  expect(result.isSuccess()).toBeFalsy();
+  expect(result.isOk()).toBeFalsy();
 });
 
 test('Zip Unarchive Test', async () => {
@@ -192,7 +192,7 @@ test('Zip Unarchive Folder Test', async () => {
     encoding: 'Shift_JIS',
   });
   let result = await archive.extract(transferInformation);
-  expect(result.isSuccess()).toBeTruthy();
+  expect(result.isOk()).toBeTruthy();
   validateFolders(
     platform.join(compressDirectory, 'source/folder1/folder 2'),
     platform.join(extractDirectory, 'folder 2')
@@ -201,6 +201,6 @@ test('Zip Unarchive Folder Test', async () => {
   let destinationRoot = platform.join(extractDirectory, 'fullZipExtract');
 
   result = await archive.extractAll(destinationRoot);
-  expect(result.isSuccess()).toBeTruthy();
+  expect(result.isOk()).toBeTruthy();
   validateFolders(platform.join(compressDirectory, 'source'), destinationRoot);
 });
