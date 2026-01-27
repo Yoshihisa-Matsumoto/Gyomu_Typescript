@@ -33,25 +33,26 @@ export class FileOperation {
     )
       return errAsync(new AccessError(`File is invalid: ${fileName}`));
     if (readOnly) return okAsync(true);
-    return ResultAsync.fromSafePromise( new Promise(async (resolve, reject) => {
-      
+    
+    return ResultAsync.fromPromise(
+      (async () => {
+        await new Promise(resolve => setTimeout(resolve, 100));
 
-      await setTimeout(() => {
         const stat2 = platform.statSync(fileName);
         if (
           !isEqual(stat.ctime, stat2.ctime) ||
           !isEqual(stat.mtime, stat2.mtime)
         ) {
-          //console.log(fileName,stat.ctime, stat2.ctime);
-          // console.log(stat.mtime, stat2.mtime);
-          return reject(new AccessError(`File is under operation: ${fileName}`));              
+          throw new AccessError(`File is under operation: ${fileName}`);
         }
-        //console.log('Accessible', stat2.mtime);
-        return resolve(true);
-      }, 100);
-      return resolve(false);
-      //return resolve(false);
-    }));
+
+        return true;
+      })(),
+      e =>
+        e instanceof AccessError
+          ? e
+          : new AccessError(`File check failed: ${fileName}`, e)
+    );
 
     // try {
     //   const fileHandle = platform.openSync(

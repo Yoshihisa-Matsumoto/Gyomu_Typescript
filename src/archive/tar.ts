@@ -96,29 +96,21 @@ export class TarArchive extends AbstractBaseArchive {
     const targetEntryName = this.__massageEntryPath(sourceEntryFullName);
     const numPathElementToSkip = (targetEntryName.match(/\//g) || []).length;
     this.__createDirectoryIfNotExist(destinationFolderName);
-    return ResultAsync.fromSafePromise(new Promise(async (resolve, reject) => {
-      await tar
-        .extract({
-          cwd: destinationFolderName,
-          file: this.archiveFileName,
-          filter: (path, stat) => {
-            return path === targetEntryName;
-          },
-          strip: numPathElementToSkip,
-        })
-        .then(() => {
-          return resolve(true);
-        })
-        .catch((reason: Error) => {
-          return reject(
-              new ArchiveError(
-                `Fail to untar ${this.archiveFileName} -> ${targetEntryName}`,
-                reason
-              )
-            
-          );
-        });
-    }));
+    return ResultAsync.fromSafePromise(
+      tar.extract({
+        cwd: destinationFolderName,
+        file: this.archiveFileName,
+        filter: (path) => path === targetEntryName,
+        strip: numPathElementToSkip,
+      })
+      .then(() => true)
+      .catch((reason: Error) => {
+        throw new ArchiveError(
+          `Fail to untar ${this.archiveFileName} -> ${targetEntryName}`,
+          reason
+        );
+      })
+    );
   }
 
   extractDirectory(
@@ -132,28 +124,20 @@ export class TarArchive extends AbstractBaseArchive {
 
     //let directoryName = path.dirname(destinationDirectory);
     this.__createDirectoryIfNotExist(destinationDirectory);
-    return ResultAsync.fromSafePromise( new Promise(async (resolve, reject) => {
-      await tar
-        .extract({
-          cwd: destinationDirectory,
-          file: this.archiveFileName,
-          filter: (path, _) => {
-            return !targetEntryName || path.startsWith(targetEntryName);
-          },
-          strip: numPathElementToSkip,
-        })
-        .then(() => {
-          resolve(true);
-        })
-        .catch((reason: Error) => {
-          reject(
-            new ArchiveError(
-              `Fail to untar ${this.archiveFileName} -> ${targetEntryName}`,
-              reason
-            )
-          );
-        });
-    }));
+    return ResultAsync.fromPromise(
+      tar.extract({
+        cwd: destinationDirectory,
+        file: this.archiveFileName,
+        filter: (path) =>
+          !targetEntryName || path.startsWith(targetEntryName),
+        strip: numPathElementToSkip,
+      }).then(() => true),
+      (reason: unknown) =>
+        new ArchiveError(
+          `Fail to untar ${this.archiveFileName} -> ${targetEntryName}`,
+          reason
+        )
+    );
   }
 
 

@@ -21,8 +21,8 @@ export function convertHTMLElementByTagName<
 ): ElementTagNameMap[K] {
   switch (qualifiedName) {
     case 'table':
-      const tableOption = option as ElementOptionTagNameMap[K];
-      return new Table(element, tableOption);
+      //const tableOption = option as ElementOptionTagNameMap[K];
+      return new Table(element, option as ElementOptionTagNameMap[K]);
   }
   throw new Error('Unknown Error');
 }
@@ -38,8 +38,8 @@ export function convertGenericElementByTagName<
 ): ElementTagNameMap[K] {
   switch (qualifiedName) {
     case 'table':
-      const tableOption = option as ElementOptionTagNameMap[K];
-      return new Table(genericElement.node, tableOption);
+      //const tableOption = option as ElementOptionTagNameMap[K];
+      return new Table(genericElement.node, option as ElementOptionTagNameMap[K]);
   }
   throw new Error('Unknown Error');
 }

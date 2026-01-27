@@ -191,7 +191,7 @@ export class ParameterAccess {
           }
 
           // Update
-          const result = prisma.gyomu_param_master.update({
+          return prisma.gyomu_param_master.update({
             where: {
               item_key_item_fromdate: {
                 item_key: itemKey,

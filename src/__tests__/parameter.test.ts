@@ -46,7 +46,7 @@ test('db error test', async () => {
   ];
   criticalErrors.forEach(async (err) => {
     prismaMock.gyomu_param_master.findMany.mockRejectedValue(err);
-    let itemKey = 'ITEM_KEY_Test$$';
+    const itemKey = 'ITEM_KEY_Test$$';
     await expect(ParameterAccess.keyExists(itemKey)).rejects.toBeInstanceOf(
       CriticalError
     );

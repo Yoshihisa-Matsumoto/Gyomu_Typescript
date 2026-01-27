@@ -81,7 +81,7 @@ export class Page {
 
   get title() {
     let fileName;
-    if (!!this.#response) {
+    if (this.#response) {
       if ('Content-Disposition' in this.#response.headers) {
         const headerValue = this.#response.headers['Content-Disposition'];
         fileName = decodeURI(

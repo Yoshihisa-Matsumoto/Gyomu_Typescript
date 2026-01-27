@@ -51,3 +51,7 @@ export function polling<E extends BaseError>(
         : new TimeoutError(`Fail on polling: ${pollingActionName}`, e)
   );
 }
+
+export const sleep = (ms: number) => {
+  return new Promise<void>(resolve => setTimeout(resolve, ms));
+};

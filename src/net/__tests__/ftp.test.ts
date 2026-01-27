@@ -30,7 +30,7 @@ const initializeStatus = () => {
   };
 };
 
-let fileInfoList: FileInfo[] = [
+const fileInfoList: FileInfo[] = [
   {
     name: '1',
     type: 1,
