@@ -1,12 +1,10 @@
 import {
   gyomu_milestone_daily,
   gyomu_milestone_cdtbl,
-  Prisma,
 } from './generated/prisma/client';
 import { format } from 'date-fns';
-import { DateNFOption } from 'xlsx';
 import prisma from './dbsingleton';
-import { CriticalError, DBError } from './errors';
+import {  DBError } from './errors';
 //import { Failure, PromiseResult, success } from './result';
 import {okAsync, ResultAsync} from './result';
 import { polling } from './timer';
@@ -22,7 +20,7 @@ export class Milestone {
     targetDate: Date,
     isMonthly = false
   ): ResultAsync<MilestoneExistResultType, DBError> {
-    let targetDateYYYYMMDD = this.#convertTargetDate(targetDate, isMonthly);
+    const targetDateYYYYMMDD = this.#convertTargetDate(targetDate, isMonthly);
     return genericDBFunction(
       'check gyomu_milestone_daily existence',
        async (milestoneId: string, targetDateYYYYMMDD: string) => {
@@ -97,7 +95,7 @@ export class Milestone {
     targetDate: Date,
     timeoutSecond: number
   ) {
-    let interval = timeoutSecond < 60 ? 1 : 5;
+    const interval = timeoutSecond < 60 ? 1 : 5;
 
     return polling<DBError>(
       `Wait for milestone ${milestoneId} on ${format(

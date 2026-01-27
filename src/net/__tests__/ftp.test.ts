@@ -64,34 +64,34 @@ vi.mock('basic-ftp', async () => {
       status.access = true;
     };
     downloadTo = async (
-      destination: Writable | string,
-      fromRemotePath: string,
-      startAt?: number
+      _: Writable | string,
+      __: string,
+      ___?: number
     ) => {
       status.downloadTo = true;
     };
-    downloadToDir = async (localDirPath: string, remoteDirPath?: string) => {
+    downloadToDir = async (_: string, __?: string) => {
       status.downloadToDir = true;
     };
     uploadFrom = async (
-      source: Readable | string,
-      toRemotePath: string,
-      options?: UploadOptions
+      _: Readable | string,
+      __: string,
+      ___?: UploadOptions
     ) => {
       status.uploadFrom = true;
     };
-    uploadFromDir = async (localDirPath: string, remoteDirPath?: string) => {
+    uploadFromDir = async (_: string, __?: string) => {
       status.uploadFromDir = true;
     };
-    size = async (path: string) => {
+    size = async (_: string) => {
       status.size = true;
       return 21;
     };
-    lastMod = async (path: string) => {
+    lastMod = async (_: string) => {
       status.lastMod = true;
       return createDateFromYYYYMMDD('19840301');
     };
-    list = async (path?: string) => {
+    list = async (_?: string) => {
       status.list = true;
       return fileInfoList;
     };
@@ -135,7 +135,7 @@ describe('FTP Test', () => {
     expect(status.downloadTo).toBeTruthy();
     expect(status.downloadToDir).toBeFalsy();
     //jest.spyOn(client, 'connected', 'get').mockReturnValue(status.access);
-    let result2 = client.close();
+    const result2 = client.close();
     expect(result2.isOk()).toBeTruthy();
     expect(status.access).toBeFalsy();
 
@@ -166,7 +166,7 @@ describe('FTP Test', () => {
     );
     expect(result.isOk()).toBeTruthy();
     //jest.spyOn(client, 'connected', 'get').mockReturnValue(status.access);
-    let result2 = client.close();
+    const result2 = client.close();
     expect(result2.isOk()).toBeTruthy();
     expect(status.access).toBeFalsy();
 

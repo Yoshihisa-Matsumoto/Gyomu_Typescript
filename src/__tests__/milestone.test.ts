@@ -53,7 +53,7 @@ test('Milestone register test', async () => {
     target_date: format(targetDate, 'yyyyMMdd'),
     update_time: BigInt(1),
   });
-  let result = await Milestone.register(milestoneId, targetDate);
+  const result = await Milestone.register(milestoneId, targetDate);
   if (result.isErr()) {
     expect(result.isErr()).toBeFalsy();
     return;
@@ -65,7 +65,7 @@ test('Milestone wait test', async () => {
   const milestoneId: string = 'TestMilestone';
   const targetDate = createDateFromYYYYMMDD('20010101');
 
-  let result = await Milestone.wait(milestoneId, targetDate, 1);
+  const result = await Milestone.wait(milestoneId, targetDate, 1);
   if (result.isErr()) {
     expect(result.isErr()).toBeFalsy();
     return;
@@ -79,7 +79,7 @@ test('Milestone wait test', async () => {
       update_time: BigInt(1),
     });
   }, 1000);
-  let result2 = await Milestone.wait(milestoneId, targetDate, 5);
+  const result2 = await Milestone.wait(milestoneId, targetDate, 5);
   if (result2.isErr()) {
     expect(result2.isErr()).toBeFalsy();
     return;

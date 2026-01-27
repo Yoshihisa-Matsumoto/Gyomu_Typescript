@@ -257,29 +257,27 @@ export class VariableTranslator {
         );
       case VariableDateKeyword.NEXTBEOM:
         // Business Day of End of Next Month
-        const twoMonthAfter = addMonths(targetDate, 2);
         return ok(
           targetMarketAccess.businessDayOfBeginningMonthWithOffset(
-            twoMonthAfter,
+            addMonths(targetDate, 2),
             -factorIndex
           )
         );
       case VariableDateKeyword.PREVBEOM:
         // Business Day of End of Previous Month
-        const bom = createDateOnly(
+
+        return ok(targetMarketAccess.businessDay(createDateOnly(
           targetDate.getFullYear(),
           targetDate.getMonth() + 1,
           1
-        );
-        return ok(targetMarketAccess.businessDay(bom, -factorIndex));
+        ), -factorIndex));
       case VariableDateKeyword.EOM:
         // End Of Month
-        const nextMonth = addMonths(targetDate, 1);
         return ok(
           subDays(
             createDateOnly(
-              nextMonth.getFullYear(),
-              nextMonth.getMonth() + 1,
+              addMonths(targetDate, 1).getFullYear(),
+              addMonths(targetDate, 1).getMonth() + 1,
               1
             ),
             factorIndex
@@ -301,25 +299,21 @@ export class VariableTranslator {
         return ok(subDays(targetDate, factorIndex));
       case VariableDateKeyword.EOY:
         // End of Year
-        const nextYear = createDateOnly(targetDate.getFullYear() + 1, 1, 1);
-        return ok(subDays(nextYear, factorIndex));
+        return ok(subDays(createDateOnly(targetDate.getFullYear() + 1, 1, 1), factorIndex));
       case VariableDateKeyword.BEOY:
         // Business Day of End of Year
-        const nextYear2 = createDateOnly(targetDate.getFullYear() + 1, 1, 1);
-        return ok(targetMarketAccess.businessDay(nextYear2, -factorIndex));
+        return ok(targetMarketAccess.businessDay(createDateOnly(targetDate.getFullYear() + 1, 1, 1), -factorIndex));
       case VariableDateKeyword.BBOY:
         // Business Day Of Beginning of Year
-        const thisYear = createDateOnly(targetDate.getFullYear(), 1, 1);
         return ok(
           targetMarketAccess.businessDay(
-            thisYear,
-            factorIndex - (targetMarketAccess.isBusinessDay(thisYear) ? 1 : 0)
+            createDateOnly(targetDate.getFullYear(), 1, 1),
+            factorIndex - (targetMarketAccess.isBusinessDay(createDateOnly(targetDate.getFullYear(), 1, 1)) ? 1 : 0)
           )
         );
       case VariableDateKeyword.BOY:
         // Beginning of Year
-        const thisYear2 = createDateOnly(targetDate.getFullYear(), 1, 1);
-        return ok(addDays(thisYear2, factorIndex - 1));
+        return ok(addDays(createDateOnly(targetDate.getFullYear(), 1, 1), factorIndex - 1));
       default:
         return err(new ParseError(
           `${dateParameter} is not supported`

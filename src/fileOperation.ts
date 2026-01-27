@@ -10,14 +10,12 @@ import {
 import { compareAsc } from 'date-fns';
 import { ResultAsync,errAsync, ok, okAsync} from './result';
 import { AccessError, ArchiveError, TimeoutError } from './errors';
-import { fi } from 'date-fns/locale';
 import { ZipArchive } from './archive/zip';
 import { TarArchive } from './archive/tar';
 import { isEqual } from 'date-fns';
 import { GzipArchive } from './archive/gz';
 import { polling } from './timer';
 import { platform } from './platform';
-import { error } from 'console';
 
 export class FileOperation {
   static canAccess(
@@ -80,7 +78,7 @@ export class FileOperation {
       0.5,
       (_): ResultAsync<boolean, AccessError> => {
         const accessible = this.canAccess(fileName, false);
-        return accessible.orElse((error)=>okAsync(false));
+        return accessible.orElse((_)=>okAsync(false));
       },
       fileName
     ).mapErr((error) => new TimeoutError(`Timeout on waiting file access: ${fileName}`, error));
@@ -151,7 +149,7 @@ export class FileOperation {
     if (!filterConditions || filterConditions.length === 0)
       return [true, fileInformation];
 
-    for (var filterInfo of filterConditions) {
+    for (const filterInfo of filterConditions) {
       isMatch = this.#isFileValidForFileter(fileInformation, filterInfo);
       if (!isMatch) break;
     }

@@ -1,4 +1,3 @@
-import { FileTransportInfo } from '../fileModel';
 
 import { ArchiveError } from '../errors';
 // import { fail, Result, success, PromiseResult, Failure } from '../result';

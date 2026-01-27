@@ -11,7 +11,7 @@ export class DOMElement {
 
   get childElements(): Array<DOMElement> {
     const children = new Array<DOMElement>();
-    for (var child of Array.from(this.__node.childNodes)) {
+    for (const child of Array.from(this.__node.childNodes)) {
       if (child instanceof HTMLElement) {
         const childElement = new DOMElement(child);
         children.push(childElement);
@@ -38,7 +38,7 @@ export class DOMElement {
     return cnodes.length > 0 ? cnodes.item(0).nodeValue ?? '' : '';
   }
   get classList(): string[] {
-    let classArray = new Array<string>();
+    const classArray = new Array<string>();
     this.__node.classList.forEach((val) => {
       classArray.push(val);
     });
@@ -49,7 +49,7 @@ export class DOMElement {
     const nodeAttributes = this.__node.attributes;
     for (let i = 0; i < nodeAttributes.length; i++) {
       const nodeAttribute = nodeAttributes.item(i);
-      if (!!nodeAttribute) {
+      if (nodeAttribute) {
         const attribute: Attribute = new Attribute(nodeAttribute);
         attributeArray.push(attribute);
       }

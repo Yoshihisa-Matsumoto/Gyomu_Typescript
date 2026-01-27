@@ -1,6 +1,6 @@
 import * as aes from '../encryption';
 import { bufferToArrayBuffer } from '../buffer';
-import { tmpName, tmpNameSync } from 'tmp';
+import {  tmpNameSync } from 'tmp';
 import { compareFiles } from './baseClass';
 import { expect, test } from 'vitest';
 import { platform } from '../platform';

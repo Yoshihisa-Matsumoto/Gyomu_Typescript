@@ -1,7 +1,6 @@
 //import { gyomu_market_holiday } from '@prisma/client';
 import MarketDateAccess from '../holidays';
 
-import { Context } from '../dbsingleton';
 import { beforeEach, expect, test } from 'vitest';
 //import { prismaMock } from './baseDBClass';
 
@@ -70,7 +69,7 @@ test('Business Day Test', () => {
 });
 
 test('BusinessDay of Beginning Month', () => {
-  let testCases = [
+  const testCases = [
     {
       targetDate: new Date('1984-05-01'),
       offset: 1,
@@ -121,7 +120,7 @@ test('BusinessDay of Beginning Month', () => {
 });
 
 test('BusinessDay of Next Beginning Month', () => {
-  let testCases = [
+  const testCases = [
     {
       targetDate: new Date('1984-05-01'),
       offset: 1,
@@ -172,7 +171,7 @@ test('BusinessDay of Next Beginning Month', () => {
 });
 
 test('BusinessDay of Previous Beginning Month', () => {
-  let testCases = [
+  const testCases = [
     {
       targetDate: new Date('1984-05-01'),
       offset: 1,
@@ -221,7 +220,7 @@ test('BusinessDay of Previous Beginning Month', () => {
 });
 
 test('BusinessDay of End Of Month', () => {
-  let testCases = [
+  const testCases = [
     {
       targetDate: new Date('1984-05-01'),
       offset: 1,
@@ -267,7 +266,7 @@ test('BusinessDay of End Of Month', () => {
 });
 
 test('BusinessDay of End Of Next Month', () => {
-  let testCases = [
+  const testCases = [
     {
       targetDate: new Date('1984-05-01'),
       offset: 1,
@@ -313,7 +312,7 @@ test('BusinessDay of End Of Next Month', () => {
 });
 
 test('BusinessDay of End Of Previous Month', () => {
-  let testCases = [
+  const testCases = [
     {
       targetDate: new Date('1984-05-01'),
       offset: 1,
@@ -359,7 +358,7 @@ test('BusinessDay of End Of Previous Month', () => {
 });
 
 test('BusinessDay of Beginning of Year', () => {
-  let testCases = [
+  const testCases = [
     {
       targetDate: new Date('1984-05-01'),
       offset: 1,
@@ -390,7 +389,7 @@ test('BusinessDay of Beginning of Year', () => {
 });
 
 test('BusinessDay of End of Year', () => {
-  let testCases = [
+  const testCases = [
     {
       targetDate: new Date('1984-05-01'),
       offset: 1,

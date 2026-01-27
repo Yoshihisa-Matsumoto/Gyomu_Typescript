@@ -2,7 +2,7 @@ import { hostname, networkInterfaces } from 'os';
 import { pid, env } from 'process';
 import { UserFactory, User } from './user';
 
-const GYOMU_COMMON_MODE: string = 'GYOMU_COMMON_MODE';
+//const GYOMU_COMMON_MODE: string = 'GYOMU_COMMON_MODE';
 export interface Configurator {
   readonly machineName: string;
   readonly address: string;
@@ -32,7 +32,7 @@ class BaseConfigurator implements Configurator {
 
     const nets = networkInterfaces();
     const net = nets['en0']?.find((v) => v.family === 'IPv4');
-    this.address = !!net ? net.address : '';
+    this.address = net ? net.address : '';
     this.#applicationId = applicationId;
     this.uniqueInstanceIdPerMachine = pid;
     this.region = this.user.region;

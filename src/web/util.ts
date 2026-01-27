@@ -1,8 +1,5 @@
 import { GenericElement } from './element';
 import { Table, TableOption } from './table';
-import xpath from 'xpath';
-import { Attribute } from './attribute';
-import { WebParseError } from '../errors';
 
 export type ElementGenerationOption = TableOption;
 

@@ -1,7 +1,6 @@
 import crypto from 'crypto';
 import { base64String2Buffer, buffer2Base64String } from './base64';
 import {
-  arrayBufferToString,
   bufferToArrayBuffer,
   stringToArrayBuffer,
 } from './buffer';
@@ -178,11 +177,11 @@ const getKey = (key: string): ArrayBuffer => {
   //console.log(arrayBuffer.byteLength);
   return arrayBuffer;
 };
-const getKeyOld = (key: string): DataView => {
-  const arrayBuffer: ArrayBuffer = stringToArrayBuffer(fixKeylength(key));
-  //console.log(arrayBuffer.byteLength);
-  return new DataView(arrayBuffer);
-};
+// const getKeyOld = (key: string): DataView => {
+//   const arrayBuffer: ArrayBuffer = stringToArrayBuffer(fixKeylength(key));
+//   //console.log(arrayBuffer.byteLength);
+//   return new DataView(arrayBuffer);
+// };
 
 const fixKeylength = (key: string): string => {
   const keyLength = key.length;

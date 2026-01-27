@@ -6,8 +6,6 @@ import { RemoteConnection } from '../remoteConnection';
 import {
   FileStats,
   FileInfo,
-  ConnectOptions,
-  TransferOptions,
 } from 'ssh2-sftp-client';
 
 let status = {
@@ -30,7 +28,7 @@ const initializeStatus = () => {
     list: false,
   };
 };
-let fileStat: FileStats = {
+const fileStat: FileStats = {
   accessTime: 1,
   gid: 1,
   isBlockDevice: false,
@@ -45,7 +43,7 @@ let fileStat: FileStats = {
   size: 5,
   uid: 1,
 };
-let fileInfoList: FileInfo[] = [
+const fileInfoList: FileInfo[] = [
   {
     name: '1',
     size: 2,
@@ -173,7 +171,7 @@ describe('SFTP Test', () => {
     expect(status.downloadTo).toBeTruthy();
     expect(status.downloadToDir).toBeFalsy();
     //jest.spyOn(client, 'connected', 'get').mockReturnValue(status.access);
-    let result2 = await client.close();
+    const result2 = await client.close();
     expect(result2.isOk()).toBeTruthy();
     expect(status.access).toBeFalsy();
 
@@ -208,7 +206,7 @@ describe('SFTP Test', () => {
     expect(status.uploadFromDir).toBeFalsy();
     expect(status.access).toBeTruthy();
     //jest.spyOn(client, 'connected', 'get').mockReturnValue(status.access);
-    let result2 = await client.close();
+    const result2 = await client.close();
     expect(result2.isOk()).toBeTruthy();
     expect(status.access).toBeFalsy();
 

@@ -183,7 +183,7 @@ export class FileTransportInfo {
 
   get sourceFullNameWithBasePath(): string {
     if (!this.sourceFullName) return this.basePath;
-    if (!!this.basePath) return platform.join(this.basePath, this.sourceFullName);
+    if (this.basePath) return platform.join(this.basePath, this.sourceFullName);
     return this.sourceFullName;
   }
 

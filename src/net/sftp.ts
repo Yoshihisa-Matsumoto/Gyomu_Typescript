@@ -1,7 +1,7 @@
 import sftp from 'ssh2-sftp-client';
 import { RemoteConnection } from './remoteConnection';
 
-import {  okAsync, Result, ResultAsync ,ok,err} from '../result';
+import {  okAsync,  ResultAsync } from '../result';
 import { NetworkError } from '../errors';
 import { FileTransportInfo } from '../fileModel';
 import { platform } from '../platform';
@@ -23,13 +23,13 @@ export class Sftp {
           host: this.#config.serverURL,
           username: this.#config.userId,
           port: this.#config.port,
-          password: !!this.#config.privateKeyFilename
+          password: this.#config.privateKeyFilename
             ? undefined
             : this.#config.password,
-          privateKey: !!this.#config.privateKeyFilename
+          privateKey: this.#config.privateKeyFilename
             ? platform.readFileSync(this.#config.privateKeyFilename)
             : undefined,
-          passphrase: !!this.#config.privateKeyFilename
+          passphrase: this.#config.privateKeyFilename
             ? this.#config.password
             : undefined,
         });
@@ -59,7 +59,7 @@ export class Sftp {
         : this.client.get(
             transportInformation.sourceFullName.replace(platform.sep, '/'),
             transportInformation.destinationFullName
-          ).then((stream) =>undefined);
+          ).then((_) =>undefined);
 
       return ResultAsync.fromPromise(
         promise.then(() => true),

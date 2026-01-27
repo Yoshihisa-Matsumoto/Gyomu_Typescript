@@ -137,7 +137,7 @@ export class TarArchive extends AbstractBaseArchive {
         .extract({
           cwd: destinationDirectory,
           file: this.archiveFileName,
-          filter: (path, stat) => {
+          filter: (path, _) => {
             return !targetEntryName || path.startsWith(targetEntryName);
           },
           strip: numPathElementToSkip,
@@ -166,9 +166,9 @@ export class TarArchive extends AbstractBaseArchive {
     transferInformation: FileTransportInfo
   ): ResultAsync<boolean, ArchiveError> {
     //console.log('directory', directory);
-    const targetEntryName = this.__massageEntryPath(
-      transferInformation.sourceFullName
-    );
+    // const targetEntryName = this.__massageEntryPath(
+    //   transferInformation.sourceFullName
+    // );
     if (
       transferInformation.sourceFileName !==
       transferInformation.destinationFileName

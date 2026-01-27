@@ -1,4 +1,3 @@
-import iconv from 'iconv-lite';
 
 export type SupportEncoding = 'shiftjis' | 'utf8';
 

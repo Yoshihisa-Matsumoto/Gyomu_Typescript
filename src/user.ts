@@ -18,7 +18,7 @@ class DummyUser implements User {
   isEqual = (other: User) => {
     return this.userId === other.userId;
   };
-  isInMember = (groupUser: User) => {
+  isInMember = (_: User) => {
     return false;
   };
   region: string = '';

@@ -32,7 +32,7 @@ const validateFileExistence = async (
   entryName: string,
   expected_result: boolean
 ) => {
-  let result = await archive.fileExists(entryName);
+  const result = await archive.fileExists(entryName);
   if (result.isOk()) {
     if (result.value !== expected_result) {
       console.log(
@@ -62,9 +62,9 @@ test('Zip Creation Test', async () => {
   // if (result.isSuccess()) {
   //   Promise.allSettled([result.value]);
   // }
-  const checkFilename = platform.join(sourceDirectory, 'README.md');
+  //const checkFilename = platform.join(sourceDirectory, 'README.md');
   //const [sourceBuffer,destinationBuffer] = getBufferFromFilenames()
-  let archive: ZipArchive = new ZipArchive({ zipFilename });
+  const archive: ZipArchive = new ZipArchive({ zipFilename });
   //let isExist = await archive.fileExists('README.md');
   await validateFileExistence(archive, 'README.md', true);
   //isExist = await archive.fileExists('README1.md');
@@ -92,7 +92,7 @@ test('Zip Creation Test', async () => {
   //isExist = await archive.fileExists('ユーザー噂.py');
   await validateFileExistence(archive, 'ユーザー噂.py', true);
 
-  let destinationRoot = platform.join(extractDirectory, 'fullZipCreate');
+  const destinationRoot = platform.join(extractDirectory, 'fullZipCreate');
 
   result = await archive.extractAll(destinationRoot);
   expect(result.isOk()).toBeTruthy();
@@ -111,9 +111,7 @@ test('Zip Creation with password Test', async () => {
   });
   const transferInformationList = [transferInformation];
   const password = 'SimplePassword';
-  let result;
-
-  result = await ZipArchive.create(
+  const result = await ZipArchive.create(
     zipFilename,
     transferInformationList,
     password
@@ -181,13 +179,11 @@ test('Zip Unarchive Test', async () => {
   ).toBeTruthy();
 });
 test('Zip Unarchive Folder Test', async () => {
-  let transferInformation: FileTransportInfo;
-  let extractedFile: string;
-  transferInformation = new FileTransportInfo({
+  const transferInformation = new FileTransportInfo({
     sourceFolderName: 'folder1/folder 2',
     destinationFolderName: platform.join(extractDirectory, 'folder 2'),
   });
-  let archive: ZipArchive = new ZipArchive({
+  const archive: ZipArchive = new ZipArchive({
     zipFilename: platform.join(compressDirectory, 'compress/temp.zip'),
     encoding: 'Shift_JIS',
   });
@@ -198,7 +194,7 @@ test('Zip Unarchive Folder Test', async () => {
     platform.join(extractDirectory, 'folder 2')
   );
 
-  let destinationRoot = platform.join(extractDirectory, 'fullZipExtract');
+  const destinationRoot = platform.join(extractDirectory, 'fullZipExtract');
 
   result = await archive.extractAll(destinationRoot);
   expect(result.isOk()).toBeTruthy();

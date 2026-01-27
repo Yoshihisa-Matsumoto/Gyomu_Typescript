@@ -1,5 +1,4 @@
 import { AxiosResponse } from 'axios';
-import { convert } from 'xmlbuilder2';
 import xdom from '@xmldom/xmldom';
 import { DOMElement, GenericElement } from './element';
 //import { parse } from 'parse5';

@@ -1,4 +1,3 @@
-import { ArchiveError } from '../errors';
 import { platform } from '../platform';
 
 export abstract class AbstractBaseArchive {
@@ -20,7 +19,7 @@ export abstract class AbstractBaseArchive {
     return this.__createDirectoryIfNotExist(directoryName);
   }
   protected __createDirectoryIfNotExist(destinationPath: string) {
-    let directoryName = destinationPath;
+    const directoryName = destinationPath;
 
     if (!platform.existsSync(directoryName)) {
       //console.log(directoryName + ' to be created');

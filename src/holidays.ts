@@ -1,6 +1,5 @@
-import { Context } from './dbsingleton';
 import { format, addDays, subDays } from 'date-fns';
-import { addMonths, isAfter, isBefore, isEqual } from 'date-fns';
+import { addMonths,  isBefore, isEqual } from 'date-fns';
 import { createDateOnly } from './dateOperation';
 import prisma from './dbsingleton';
 import { genericDBFunction } from './dbutil';
@@ -90,7 +89,7 @@ export default class MarketDateAccess {
     targetDate: Date,
     dayOffset: number = 1
   ) {
-    let businessDay = createDateOnly(
+    const businessDay = createDateOnly(
       targetDate.getFullYear(),
       targetDate.getMonth() + 1,
       1
@@ -106,7 +105,7 @@ export default class MarketDateAccess {
     targetDate: Date,
     dayOffset: number = 1
   ) {
-    let businessDay = createDateOnly(
+    const businessDay = createDateOnly(
       targetDate.getFullYear() + (targetDate.getMonth() === 11 ? 1 : 0),
       targetDate.getMonth() + 2 + (targetDate.getMonth() === 11 ? -11 : 0),
       1
@@ -133,7 +132,7 @@ export default class MarketDateAccess {
     targetDate: Date,
     dayOffset: number = 1
   ) {
-    let businessDay = createDateOnly(
+    const businessDay = createDateOnly(
       targetDate.getFullYear() + (targetDate.getMonth() === 0 ? -1 : 0),
       targetDate.getMonth() + 1 + (targetDate.getMonth() === 0 ? 11 : -1),
       1
@@ -155,7 +154,7 @@ export default class MarketDateAccess {
   }
 
   businessDayOfEndMonthWithOffset(targetDate: Date, dayOffset: number) {
-    let businessDay = createDateOnly(
+    const businessDay = createDateOnly(
       targetDate.getFullYear() + (targetDate.getMonth() === 11 ? 1 : 0),
       targetDate.getMonth() + 1 + (targetDate.getMonth() === 11 ? -11 : 1),
       1

@@ -92,13 +92,14 @@ export class Table extends GenericElement<HTMLTableElement> {
     }>();
     this.__records.forEach((row) => {
       if (isHeaderExistInRecord && index == 0) {
+        //
       } else {
         const dictionary: { [key: string]: string } = {};
-        let index = 0;
+        //let index = 0;
         columnIndex.forEach((columnName, key) => {
           dictionary[columnName] = row.columns[key].textValue;
         });
-        index++;
+        //index++;
         records.push(dictionary);
       }
     });

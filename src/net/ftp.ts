@@ -36,8 +36,8 @@ export class Ftp {
               host: this.#connectionInformation.serverURL,
               port: this.#connectionInformation.port,
               checkServerIdentity: (
-                hostname: string,
-                cert: PeerCertificate
+                _: string,
+                __: PeerCertificate
               ) => {
                 return undefined;
               },
@@ -101,16 +101,18 @@ export class Ftp {
       ? okAsync<boolean, NetworkError>(true)
       : this.#init(); // #init() は ResultAsync<boolean, NetworkError>
 
-    const fullPath =
-      transportInformation.sourceFullName ?? ''.replace(platform.sep, '/');
-    
-    const sizePromise = this.client.size(fullPath);
-    const lastModPromise = this.client.lastMod(fullPath);
+    return initResult.andThen(() => {
+      const fullPath =
+        transportInformation.sourceFullName ?? ''.replace(platform.sep, '/');
+      
+      const sizePromise = this.client.size(fullPath);
+      const lastModPromise = this.client.lastMod(fullPath);
 
-    return ResultAsync.fromPromise(
-      Promise.all([sizePromise, lastModPromise]),
-      (err) => new NetworkError('Fail to get ftp file information', err as Error)
-    ).map(([size, date]) => ({ size, date }));
+      return ResultAsync.fromPromise(
+        Promise.all([sizePromise, lastModPromise]),
+        (err) => new NetworkError('Fail to get ftp file information', err as Error)
+      ).map(([size, date]) => ({ size, date }));
+    });
   }
 
   listFiles(transportInformation: FileTransportInfo) {
@@ -118,14 +120,16 @@ export class Ftp {
       ? okAsync<boolean, NetworkError>(true)
       : this.#init(); // #init() は ResultAsync<boolean, NetworkError>
 
-    const fullPath =
-      transportInformation.sourceFullName ?? ''.replace(platform.sep, '/');
+    return initResult.andThen(() => {
+      const fullPath =
+        transportInformation.sourceFullName ?? ''.replace(platform.sep, '/');
 
-    const fileInfoListPromise = this.client.list(fullPath);
-    return ResultAsync.fromPromise(
-      fileInfoListPromise,
-      (err) => new NetworkError('Fail to retrieve ftp folders', err as Error)
-    ).map((fileInfoList) => fileInfoList.map((f) => f.name));
+      const fileInfoListPromise = this.client.list(fullPath);
+      return ResultAsync.fromPromise(
+        fileInfoListPromise,
+        (err) => new NetworkError('Fail to retrieve ftp folders', err as Error)
+      ).map((fileInfoList) => fileInfoList.map((f) => f.name));
+    });
   }
 
   close(): Result<boolean, NetworkError> {

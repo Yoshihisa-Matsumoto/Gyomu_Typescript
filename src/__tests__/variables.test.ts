@@ -1,8 +1,6 @@
-import * as tet from './holidays.test';
-import { prismaMock } from './baseDBClass';
 import { VariableTranslator } from '../variable';
 import { createDateFromYYYYMMDD, createDateOnly } from '../dateOperation';
-import { format, isEqual } from 'date-fns';
+import {  isEqual } from 'date-fns';
 import { beforeEach, expect, test } from 'vitest';
 
 beforeEach(async () => {});
@@ -37,8 +35,8 @@ test('variables parse', async () => {
     const targetDate = createDateOnly(1984, 5, 2);
 
     testCases.forEach(async (c) => {
-      let result = await translator.parse(c.parameter, targetDate);
-      let isSuccess = result.isOk();
+      const result = await translator.parse(c.parameter, targetDate);
+      const isSuccess = result.isOk();
       if (!result.isOk()) {
         console.log(c.parameter);
         console.log(result.error);
@@ -60,14 +58,14 @@ test('variables parseDate', async () => {
     const targetDate = createDateOnly(1984, 5, 2);
 
     testCases.forEach(async (c) => {
-      let result = await translator.parseDate(c.parameter, targetDate);
-      let isSuccess = result.isOk();
+      const result = await translator.parseDate(c.parameter, targetDate);
+      const isSuccess = result.isOk();
       if (!result.isOk()) {
         console.log(c.parameter);
         console.log(result.error);
         expect(isSuccess).toBeTruthy();
       } else {
-        let expectedDate = createDateFromYYYYMMDD(c.expected);
+        const expectedDate = createDateFromYYYYMMDD(c.expected);
         if (!isEqual(result.value, expectedDate)) console.log(c.parameter);
         expect(result.value).toEqual(expectedDate);
       }

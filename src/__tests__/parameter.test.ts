@@ -2,10 +2,9 @@ import { prismaMock } from './baseDBClass';
 import { ParameterAccess } from '../parameter';
 import { gyomu_param_master, Prisma } from '../generated/prisma/client';
 
-import { CriticalError, DBError } from '../errors';
+import { CriticalError } from '../errors';
 import { createDateFromYYYYMMDD } from '../dateOperation';
 import { beforeEach, expect, test } from 'vitest';
-import prisma from '../dbsingleton';
 
 beforeEach(() => {});
 test('parameter parse', async () => {
@@ -28,8 +27,8 @@ test('db error test', async () => {
   ];
   expectedErrors.forEach(async (err) => {
     prismaMock.gyomu_param_master.findMany.mockRejectedValue(err);
-    let itemKey = 'ITEM_KEY_Test$$';
-    let result = await ParameterAccess.keyExists(itemKey);
+    const itemKey = 'ITEM_KEY_Test$$';
+    const result = await ParameterAccess.keyExists(itemKey);
     if (result.isOk()) {
       expect(result.isOk()).toBeFalsy();
     } else {
@@ -55,8 +54,8 @@ test('db error test', async () => {
 });
 
 test('multiple parameter with different value test', async () => {
-  let itemKey = 'ITEM_KEY_Test$$';
-  let records: gyomu_param_master[] = [
+  const itemKey = 'ITEM_KEY_Test$$';
+  const records: gyomu_param_master[] = [
     {
       item_key: itemKey,
       item_value: 'oldest',
@@ -120,8 +119,8 @@ test('multiple parameter with different value test', async () => {
 });
 
 async function setValueTest<T extends string | boolean | number>(itemValue: T) {
-  let itemKey = 'ITEM_KEY_Test$$';
-  let record: gyomu_param_master = {
+  const itemKey = 'ITEM_KEY_Test$$';
+  const record: gyomu_param_master = {
     item_key: itemKey,
     item_value: itemValue.toString(),
     item_fromdate: '',

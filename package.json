@@ -7,6 +7,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
+    "lint": "eslint src/**/*.{ts,d.ts}",
     "unittest": "dotenv -e .env.unittest vitest -i",
     "test": "vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json",
     "start": "pnpm run build:live",
@@ -31,6 +32,7 @@
     "!**/__sit__"
   ],
   "devDependencies": {
+    "@eslint/js": "^9.39.2",
     "@types/fs-extra": "^11.0.3",
     "@types/node": "^24.10.1",
     "@types/node-forge": "^1.3.8",
@@ -40,10 +42,18 @@
     "@types/tmp": "^0.2.6",
     "@types/unzipper": "^0.10.8",
     "@types/xlsx": "^0.0.35",
+    "@typescript-eslint/eslint-plugin": "^8.53.1",
+    "@typescript-eslint/parser": "^8.53.1",
     "dotenv-cli": "^11.0.0",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-neverthrow": "^1.1.4",
+    "eslint-plugin-prettier": "^5.5.5",
+    "globals": "^17.1.0",
+    "prettier": "^3.8.1",
     "prisma": "^7.3.0",
     "tmp": "^0.2.5",
+    "typescript-eslint": "^8.53.1",
     "vitest": "^4.0.18",
     "vitest-mock-extended": "^3.1.0"
   },

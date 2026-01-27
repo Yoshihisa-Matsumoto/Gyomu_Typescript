@@ -1,7 +1,5 @@
 import { GzipArchive } from '../gz';
 
-import { FileTransportInfo } from '../../fileModel';
-
 import { compareFiles } from '../../__tests__/baseClass';
 import { beforeAll, expect, test } from 'vitest';
 import { platform } from '../../platform';

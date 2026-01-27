@@ -18,8 +18,8 @@ export class TableRow extends GenericElement<HTMLTableRowElement> {
     this.overrideColumnRange.clear();
     this.columns = new Array<TableColumn>();
     const copyingIndexList = new Array<number>();
-    if (!!this.previousRow) {
-      for (var key of this.previousRow.overrideColumnRange.keys()) {
+    if (this.previousRow) {
+      for (const key of this.previousRow.overrideColumnRange.keys()) {
         copyingIndexList.push(key);
         const range =
           (this.previousRow.overrideColumnRange.get(key) as number) - 1;
@@ -30,11 +30,11 @@ export class TableRow extends GenericElement<HTMLTableRowElement> {
     const columnList = this.getGenericElementsByTagName('td');
     //const isHeader = columnList.length > 0 ;
     if (columnList.length > 0) {
-      for (let columnNode of columnList) {
+      for (const columnNode of columnList) {
         index = this.#buildHeader(copyingIndexList, columnNode, index);
       }
       while (copyingIndexList.includes(index)) {
-        if (!!this.previousRow)
+        if (this.previousRow)
           this.columns.push(this.previousRow.columns[index].fakeCopy());
         index++;
       }
@@ -47,7 +47,7 @@ export class TableRow extends GenericElement<HTMLTableRowElement> {
     currentIndex: number
   ): number {
     while (copyingIndexList.includes(currentIndex)) {
-      if (!!this.previousRow) {
+      if (this.previousRow) {
         this.columns.push(this.previousRow.columns[currentIndex].fakeCopy());
       }
       currentIndex++;

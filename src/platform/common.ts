@@ -1,4 +1,4 @@
-import fs, { closeSync, openSync } from 'fs';
+import fs from 'fs';
 import path from 'path';
 import fse from 'fs-extra';
 import os from 'os';

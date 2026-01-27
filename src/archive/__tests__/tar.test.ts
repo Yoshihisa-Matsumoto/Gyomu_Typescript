@@ -1,7 +1,6 @@
 import { TarArchive } from '../tar';
 
 import { FileTransportInfo } from '../../fileModel';
-import fs from 'fs';
 import { compareFiles, validateFolders } from '../../__tests__/baseClass';
 import { beforeAll, expect, test } from 'vitest';
 import { platform } from '../../platform';
@@ -25,7 +24,7 @@ const validateFileExistence = async (
   entryName: string,
   expected_result: boolean
 ) => {
-  let result = await archive.fileExists(entryName);
+  const result = await archive.fileExists(entryName);
   if (result.isOk()) {
     if (result.value !== expected_result) {
       console.log(
@@ -48,7 +47,7 @@ test('Tar Creation Test', async () => {
   const transferInformation = new FileTransportInfo({
     basePath: sourceDirectory,
   });
-  const transferInformationList = [transferInformation];
+  //const transferInformationList = [transferInformation];
 
   let result = await TarArchive.create(tarFileName, transferInformation);
 
@@ -56,7 +55,7 @@ test('Tar Creation Test', async () => {
 
   // const checkFilename = platform.join(sourceDirectory, 'README.md');
   // //const [sourceBuffer,destinationBuffer] = getBufferFromFilenames()
-  let archive: TarArchive = new TarArchive(tarFileName);
+  const archive: TarArchive = new TarArchive(tarFileName);
 
   await validateFileExistence(archive, 'README.md', true);
   await validateFileExistence(archive, 'README1.md', false);
@@ -80,7 +79,7 @@ test('Tar Creation Test', async () => {
   );
   await validateFileExistence(archive, 'ユーザー噂.py', true);
 
-  let destinationRoot = platform.join(extractDirectory, 'fullTarCreate');
+  const destinationRoot = platform.join(extractDirectory, 'fullTarCreate');
   result = await archive.extractAll(destinationRoot);
   expect(result.isOk()).toBeTruthy();
   validateFolders(platform.join(compressDirectory, 'source'), destinationRoot);
@@ -93,7 +92,7 @@ test('Tar Unarchive Test', async () => {
     sourceFilename: 'README.md',
     destinationFolderName: extractDirectory,
   });
-  let archive: TarArchive = new TarArchive(
+  const archive: TarArchive = new TarArchive(
     platform.join(compressDirectory, 'compress/temp.tar')
   );
   const result = await archive.extract(transferInformation);
@@ -135,13 +134,11 @@ test('Tar Unarchive Test', async () => {
   ).toBeTruthy();
 }, 10000);
 test('Tar Unarchive Folder Test', async () => {
-  let transferInformation: FileTransportInfo;
-  let extractedFile: string;
-  transferInformation = new FileTransportInfo({
+  const transferInformation = new FileTransportInfo({
     sourceFolderName: 'folder1/folder 2',
     destinationFolderName: platform.join(extractDirectory, 'folder 2'),
   });
-  let archive: TarArchive = new TarArchive(
+  const archive: TarArchive = new TarArchive(
     platform.join(compressDirectory, 'compress/temp.tar')
   );
   let result = await archive.extract(transferInformation);
@@ -151,7 +148,7 @@ test('Tar Unarchive Folder Test', async () => {
     platform.join(extractDirectory, 'folder 2')
   );
 
-  let destinationRoot = platform.join(extractDirectory, 'fullTarExtract');
+  const destinationRoot = platform.join(extractDirectory, 'fullTarExtract');
 
   result = await archive.extractAll(destinationRoot);
   expect(result.isOk()).toBeTruthy();

@@ -350,9 +350,9 @@ extractDirectory(
     transferInformation: FileTransportInfo
   ): ResultAsync<boolean, ArchiveError> {
     //console.log('directory', directory);
-    const targetEntryName = this.__massageEntryPath(
-      transferInformation.sourceFullName
-    );
+    // const targetEntryName = this.__massageEntryPath(
+    //   transferInformation.sourceFullName
+    // );
     //console.log('targetEntryName:', targetEntryName, ':');
 
     //const directory = await unzipper.Open.file(this.zipFilename);

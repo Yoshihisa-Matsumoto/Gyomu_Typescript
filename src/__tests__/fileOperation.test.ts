@@ -14,7 +14,7 @@ test('File Whole Search Test', () => {
   fileInfoList.forEach((fileInfo) => {
     fullPathList.push(platform.relative(baseDir, fileInfo.fullPath));
   });
-  let expected = [
+  const expected = [
     'tests\\compress\\README.md.bz2',
     'tests\\compress\\README.md.gz',
     'tests\\compress\\README_aes_password.zip',
@@ -222,12 +222,12 @@ test('File Exclusive Access Test', async () => {
   }, 100);
 
   let result = await FileOperation.waitTillExclusiveAccess(targetFilename, 2);
-  let finishDate = new Date().getTime();
+  const finishDate = new Date().getTime();
   expect(result.isOk()).toBeTruthy();
   if(result.isErr()){
     return;
   }
-  let duration = finishDate - currentDate;
+  const duration = finishDate - currentDate;
   //expect(result.value).toBeTruthy();
   expect(duration).toBeGreaterThan(500);
   expect(duration).toBeLessThan(2200);

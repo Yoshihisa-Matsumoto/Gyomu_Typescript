@@ -1,11 +1,10 @@
-import { gyomu_param_master, Prisma } from './generated/prisma/client';
+import { gyomu_param_master } from './generated/prisma/client';
 import { format } from 'date-fns';
 import prisma from './dbsingleton';
-import { CriticalError, DBError } from './errors';
+import {  DBError } from './errors';
 //import { Failure, PromiseResult, fail, success } from './result';
-import {Result, ResultAsync, errAsync, okAsync} from './result';
+import { ResultAsync, errAsync, okAsync} from './result';
 import { User } from './user';
-import { base64String2String, string2Base64String } from './base64';
 import { genericDBFunction } from './dbutil';
 
 type ParameterType = string | number | boolean;
@@ -38,7 +37,7 @@ export class ParameterAccess {
   }
 
   static getKey(key: string, user?: User) {
-    if (!!user) return user.userId + '_' + key;
+    if (user) return user.userId + '_' + key;
     return key;
   }
 
