@@ -6,7 +6,7 @@ export class TableRow extends GenericElement<HTMLTableRowElement> {
   columns: Array<TableColumn> = new Array<TableColumn>();
   constructor(
     node: HTMLTableRowElement,
-    previousRow: TableRow | undefined = undefined
+    previousRow: TableRow | undefined = undefined,
   ) {
     super(node);
     this.previousRow = previousRow;
@@ -44,7 +44,7 @@ export class TableRow extends GenericElement<HTMLTableRowElement> {
   #buildHeader(
     copyingIndexList: Array<number>,
     column: GenericElement<HTMLTableCellElement>,
-    currentIndex: number
+    currentIndex: number,
   ): number {
     while (copyingIndexList.includes(currentIndex)) {
       if (this.previousRow) {
@@ -56,13 +56,13 @@ export class TableRow extends GenericElement<HTMLTableRowElement> {
     const columnElement = new TableColumn(column.node, true);
     const columnAttributes = columnElement.attributes;
     const rowSpans = columnAttributes.filter(
-      (a) => a.name.toLowerCase() === 'rowspan'
+      (a) => a.name.toLowerCase() === 'rowspan',
     );
     if (rowSpans.length > 0) {
       this.overrideColumnRange.set(currentIndex, Number(rowSpans[0].value) - 1);
     }
     const colSpans = columnAttributes.filter(
-      (a) => a.name.toLowerCase() === 'colspan'
+      (a) => a.name.toLowerCase() === 'colspan',
     );
     let columnCount = 1;
     if (colSpans.length > 0) {

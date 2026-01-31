@@ -54,10 +54,10 @@ test('File Name Exact Search Test', () => {
       new FileFilterInfo(
         FilterType.FileName,
         FileCompareType.Equal,
-        'README.md.gz'
+        'README.md.gz',
       ),
     ],
-    true
+    true,
   );
   let fullPathList = new Array<string>();
   fileInfoList.forEach((fileInfo) => {
@@ -70,7 +70,7 @@ test('File Name Exact Search Test', () => {
   fileInfoList = FileOperation.search(
     'tests',
     [new FileFilterInfo(FilterType.FileName, FileCompareType.Equal, '.*aes.*')],
-    true
+    true,
   );
   fullPathList = new Array<string>();
   fileInfoList.forEach((fileInfo) => {
@@ -92,10 +92,10 @@ test('File Name NoExact Search Test', () => {
       new FileFilterInfo(
         FilterType.FileName,
         FileCompareType.Larger,
-        'README.md.gz'
+        'README.md.gz',
       ),
     ],
-    true
+    true,
   );
   let fullPathList = new Array<string>();
   fileInfoList.forEach((fileInfo) => {
@@ -135,10 +135,10 @@ test('File Name NoExact Search Test', () => {
       new FileFilterInfo(
         FilterType.FileName,
         FileCompareType.LargerOrEqual,
-        'ユーザー噂.py.bz2'
+        'ユーザー噂.py.bz2',
       ),
     ],
-    true
+    true,
   );
   fullPathList = new Array<string>();
   fileInfoList.forEach((fileInfo) => {
@@ -158,10 +158,10 @@ test('File Name NoExact Search Test', () => {
       new FileFilterInfo(
         FilterType.FileName,
         FileCompareType.Less,
-        'README_aes_password.zip'
+        'README_aes_password.zip',
       ),
     ],
-    true
+    true,
   );
   fullPathList = new Array<string>();
   fileInfoList.forEach((fileInfo) => {
@@ -181,10 +181,10 @@ test('File Name NoExact Search Test', () => {
       new FileFilterInfo(
         FilterType.FileName,
         FileCompareType.LessOrEqual,
-        'README_aes_password.zip'
+        'README_aes_password.zip',
       ),
     ],
-    true
+    true,
   );
   fullPathList = new Array<string>();
   fileInfoList.forEach((fileInfo) => {
@@ -207,7 +207,7 @@ test('File Exclusive Access Test', async () => {
   let fileHandle = platform.openSync(
     targetFilename,
     'w',
-    platformConstants.O_RDWR | platformConstants.O_EXCL
+    platformConstants.O_RDWR | platformConstants.O_EXCL,
   );
 
   let currentDate = new Date().getTime();
@@ -224,7 +224,7 @@ test('File Exclusive Access Test', async () => {
   let result = await FileOperation.waitTillExclusiveAccess(targetFilename, 2);
   const finishDate = new Date().getTime();
   expect(result.isOk()).toBeTruthy();
-  if(result.isErr()){
+  if (result.isErr()) {
     return;
   }
   const duration = finishDate - currentDate;
@@ -238,7 +238,7 @@ test('File Exclusive Access Test', async () => {
   fileHandle = platform.openSync(
     targetFilename,
     'w',
-    platformConstants.O_RDWR | platformConstants.O_EXCL
+    platformConstants.O_RDWR | platformConstants.O_EXCL,
   );
 
   currentDate = new Date().getTime();

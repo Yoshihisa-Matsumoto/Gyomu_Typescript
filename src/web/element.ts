@@ -35,7 +35,7 @@ export class DOMElement {
   }
   get childNodeValue(): string {
     const cnodes = this.__node.childNodes;
-    return cnodes.length > 0 ? cnodes.item(0).nodeValue ?? '' : '';
+    return cnodes.length > 0 ? (cnodes.item(0).nodeValue ?? '') : '';
   }
   get classList(): string[] {
     const classArray = new Array<string>();
@@ -95,7 +95,7 @@ export class DOMElement {
             return new GenericElement<HTMLElement>(searchValue);
           } else {
             throw new WebParseError(
-              `Unsupported Value: ${JSON.stringify(searchValue)}`
+              `Unsupported Value: ${JSON.stringify(searchValue)}`,
             );
           }
         }
@@ -111,12 +111,12 @@ export class GenericElement<T extends HTMLElement> extends DOMElement {
     return this.__node as T;
   }
   getGenericElementsByTagName<K extends keyof HTMLElementTagNameMap>(
-    qualifiedName: K
+    qualifiedName: K,
   ) {
     return Array.from(this.__node.getElementsByTagName<K>(qualifiedName)).map(
       (element) => {
         return new GenericElement<HTMLElementTagNameMap[K]>(element);
-      }
+      },
     );
   }
 }

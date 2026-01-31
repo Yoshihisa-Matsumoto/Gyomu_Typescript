@@ -53,7 +53,7 @@ export class ConfigurationFactory {
   static getInstance = (): Configurator => {
     if (!ConfigurationFactory.#config) {
       ConfigurationFactory.#config = new BaseConfigurator(
-        UserFactory.getCurrentUser()
+        UserFactory.getCurrentUser(),
       );
     }
     return ConfigurationFactory.#config;

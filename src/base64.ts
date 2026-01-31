@@ -1,4 +1,3 @@
-
 export type SupportEncoding = 'shiftjis' | 'utf8';
 
 export const string2Base64String = (plainString: string): string => {

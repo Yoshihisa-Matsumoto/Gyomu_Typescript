@@ -48,7 +48,7 @@ test('db error test', async () => {
     prismaMock.gyomu_param_master.findMany.mockRejectedValue(err);
     const itemKey = 'ITEM_KEY_Test$$';
     await expect(ParameterAccess.keyExists(itemKey)).rejects.toBeInstanceOf(
-      CriticalError
+      CriticalError,
     );
   });
 });
@@ -76,7 +76,7 @@ test('multiple parameter with different value test', async () => {
   let result = await ParameterAccess.value(
     itemKey,
     undefined,
-    createDateFromYYYYMMDD('19800401')
+    createDateFromYYYYMMDD('19800401'),
   );
   if (result.isErr()) {
     expect(result.isErr()).toBeFalsy();
@@ -87,7 +87,7 @@ test('multiple parameter with different value test', async () => {
   result = await ParameterAccess.value(
     itemKey,
     undefined,
-    createDateFromYYYYMMDD('19850401')
+    createDateFromYYYYMMDD('19850401'),
   );
   if (result.isErr()) {
     expect(result.isErr()).toBeFalsy();
@@ -98,7 +98,7 @@ test('multiple parameter with different value test', async () => {
   result = await ParameterAccess.value(
     itemKey,
     undefined,
-    createDateFromYYYYMMDD('20220401')
+    createDateFromYYYYMMDD('20220401'),
   );
   if (result.isErr()) {
     expect(result.isErr()).toBeFalsy();
@@ -109,7 +109,7 @@ test('multiple parameter with different value test', async () => {
   result = await ParameterAccess.value(
     itemKey,
     undefined,
-    createDateFromYYYYMMDD('20210101')
+    createDateFromYYYYMMDD('20210101'),
   );
   if (result.isErr()) {
     expect(result.isErr()).toBeFalsy();
@@ -141,7 +141,7 @@ async function setValueTest<T extends string | boolean | number>(itemValue: T) {
   prismaMock.gyomu_param_master.findMany.mockResolvedValue([record]);
   prismaMock.gyomu_param_master.update.mockResolvedValue(record);
   result = await ParameterAccess.setValue(itemKey, itemValue);
-  if(result.isErr()) {
+  if (result.isErr()) {
     console.log(result.error);
   }
   expect(result.isOk()).toBeTruthy();

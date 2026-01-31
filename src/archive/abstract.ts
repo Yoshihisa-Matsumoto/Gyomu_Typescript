@@ -10,7 +10,7 @@ export abstract class AbstractBaseArchive {
   }
 
   protected __createDirectoryFromFileNameIfNotExist(
-    destinationFilename: string
+    destinationFilename: string,
   ) {
     let directoryName = platform.dirname(destinationFilename);
 

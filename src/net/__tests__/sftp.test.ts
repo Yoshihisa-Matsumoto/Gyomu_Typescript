@@ -3,10 +3,7 @@ import { createDateFromYYYYMMDD } from '../../dateOperation';
 import { FileTransportInfo } from '../../fileModel';
 import { Sftp } from '../sftp';
 import { RemoteConnection } from '../remoteConnection';
-import {
-  FileStats,
-  FileInfo,
-} from 'ssh2-sftp-client';
+import { FileStats, FileInfo } from 'ssh2-sftp-client';
 
 let status = {
   access: false,
@@ -164,7 +161,7 @@ describe('SFTP Test', () => {
         sourceFolderName: 'test',
         sourceFilename: 'file',
         destinationFolderName: 'destination',
-      })
+      }),
     );
     expect(result.isOk()).toBeTruthy();
     expect(status.access).toBeTruthy();
@@ -180,7 +177,7 @@ describe('SFTP Test', () => {
       new FileTransportInfo({
         sourceFolderName: 'test',
         destinationFolderName: 'destination',
-      })
+      }),
     );
     expect(result.isOk()).toBeTruthy();
     expect(status.access).toBeTruthy();
@@ -198,7 +195,7 @@ describe('SFTP Test', () => {
         sourceFolderName: 'test',
         sourceFilename: 'file',
         destinationFolderName: 'destination',
-      })
+      }),
     );
     expect(result.isOk()).toBeTruthy();
     expect(status.access).toBeTruthy();
@@ -214,7 +211,7 @@ describe('SFTP Test', () => {
       new FileTransportInfo({
         sourceFolderName: 'test',
         destinationFolderName: 'destination',
-      })
+      }),
     );
     expect(result.isOk()).toBeTruthy();
     expect(status.access).toBeTruthy();
@@ -233,7 +230,7 @@ describe('SFTP Test', () => {
         sourceFolderName: 'test',
         sourceFilename: 'file',
         destinationFolderName: 'destination',
-      })
+      }),
     );
     if (result.isErr()) {
       expect(result.isOk()).toBeTruthy();
@@ -253,7 +250,7 @@ describe('SFTP Test', () => {
       new FileTransportInfo({
         sourceFolderName: 'test',
         destinationFolderName: 'destination',
-      })
+      }),
     );
     if (result.isErr()) {
       expect(result.isOk()).toBeTruthy();

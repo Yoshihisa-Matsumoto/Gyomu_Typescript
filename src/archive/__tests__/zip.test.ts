@@ -30,7 +30,7 @@ beforeAll(() => {
 const validateFileExistence = async (
   archive: ZipArchive,
   entryName: string,
-  expected_result: boolean
+  expected_result: boolean,
 ) => {
   const result = await archive.fileExists(entryName);
   if (result.isOk()) {
@@ -38,7 +38,7 @@ const validateFileExistence = async (
       console.log(
         entryName,
         'Different from expected result:',
-        expected_result
+        expected_result,
       );
     }
     expect(result.value).toBe(expected_result);
@@ -73,20 +73,20 @@ test('Zip Creation Test', async () => {
   await validateFileExistence(
     archive,
     'folder1/folder 2/aes_encryption.py',
-    true
+    true,
   );
   //isExist = await archive.fileExists('folder1\\folder 2\\aes_encryption.py');
   await validateFileExistence(
     archive,
     'folder1\\folder 2\\aes_encryption.py',
-    true
+    true,
   );
 
   //isExist = await archive.fileExists('folder1\\folder 3\\aes_encryption.py');
   await validateFileExistence(
     archive,
     'folder1\\folder 3\\aes_encryption.py',
-    false
+    false,
   );
 
   //isExist = await archive.fileExists('ユーザー噂.py');
@@ -104,7 +104,7 @@ test('Zip Creation with password Test', async () => {
   const sourceDirectory = platform.join(compressDirectory, 'source');
   const zipFilename = platform.join(
     compressDirectory,
-    'test_zip_create_password.zip'
+    'test_zip_create_password.zip',
   );
   const transferInformation = new FileTransportInfo({
     basePath: sourceDirectory,
@@ -114,7 +114,7 @@ test('Zip Creation with password Test', async () => {
   const result = await ZipArchive.create(
     zipFilename,
     transferInformationList,
-    password
+    password,
   );
 
   // password creation unsupported: expect failure
@@ -132,13 +132,13 @@ test('Zip Unarchive Test', async () => {
   let archive: ZipArchive = new ZipArchive({
     zipFilename: platform.join(compressDirectory, 'compress/temp.zip'),
   });
-  const result = await archive.extract(transferInformation);
+  await archive.extract(transferInformation);
   extractedFile = platform.join(extractDirectory, 'outputREADME.md');
   expect(
     compareFiles(
       extractedFile,
-      platform.join(compressDirectory, 'source/README.md')
-    )
+      platform.join(compressDirectory, 'source/README.md'),
+    ),
   ).toBeTruthy();
 
   transferInformation = new FileTransportInfo({
@@ -151,8 +151,8 @@ test('Zip Unarchive Test', async () => {
   expect(
     compareFiles(
       extractedFile,
-      platform.join(compressDirectory, 'source/folder1/email_sender.py')
-    )
+      platform.join(compressDirectory, 'source/folder1/email_sender.py'),
+    ),
   ).toBeTruthy();
 
   //let isExist = await archive.fileExists('ユーザー噂.py');
@@ -174,8 +174,8 @@ test('Zip Unarchive Test', async () => {
   expect(
     compareFiles(
       extractedFile,
-      platform.join(compressDirectory, 'source/ユーザー噂.py')
-    )
+      platform.join(compressDirectory, 'source/ユーザー噂.py'),
+    ),
   ).toBeTruthy();
 });
 test('Zip Unarchive Folder Test', async () => {
@@ -191,7 +191,7 @@ test('Zip Unarchive Folder Test', async () => {
   expect(result.isOk()).toBeTruthy();
   validateFolders(
     platform.join(compressDirectory, 'source/folder1/folder 2'),
-    platform.join(extractDirectory, 'folder 2')
+    platform.join(extractDirectory, 'folder 2'),
   );
 
   const destinationRoot = platform.join(extractDirectory, 'fullZipExtract');

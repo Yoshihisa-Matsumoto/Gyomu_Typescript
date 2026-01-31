@@ -2,10 +2,9 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { createDateFromYYYYMMDD } from '../../dateOperation';
 import { FileTransportInfo } from '../../fileModel';
 import { Ftp } from '../ftp';
-import { AccessOptions, FileInfo, UploadOptions } from 'basic-ftp';
+import { FileInfo } from 'basic-ftp';
 
 import { RemoteConnection } from '../remoteConnection';
-import { Readable, Writable } from 'stream';
 
 let status = {
   access: false,
@@ -59,39 +58,31 @@ vi.mock('basic-ftp', async () => {
     ftp = {
       verbose: true,
     };
-    access = async (options?: AccessOptions) => {
+    access = async () => {
       initializeStatus();
       status.access = true;
     };
-    downloadTo = async (
-      _: Writable | string,
-      __: string,
-      ___?: number
-    ) => {
+    downloadTo = async () => {
       status.downloadTo = true;
     };
-    downloadToDir = async (_: string, __?: string) => {
+    downloadToDir = async () => {
       status.downloadToDir = true;
     };
-    uploadFrom = async (
-      _: Readable | string,
-      __: string,
-      ___?: UploadOptions
-    ) => {
+    uploadFrom = async () => {
       status.uploadFrom = true;
     };
-    uploadFromDir = async (_: string, __?: string) => {
+    uploadFromDir = async () => {
       status.uploadFromDir = true;
     };
-    size = async (_: string) => {
+    size = async () => {
       status.size = true;
       return 21;
     };
-    lastMod = async (_: string) => {
+    lastMod = async () => {
       status.lastMod = true;
       return createDateFromYYYYMMDD('19840301');
     };
-    list = async (_?: string) => {
+    list = async () => {
       status.list = true;
       return fileInfoList;
     };
@@ -128,7 +119,7 @@ describe('FTP Test', () => {
         sourceFolderName: 'test',
         sourceFilename: 'file',
         destinationFolderName: 'destination',
-      })
+      }),
     );
     expect(result.isOk()).toBeTruthy();
     expect(status.access).toBeTruthy();
@@ -144,7 +135,7 @@ describe('FTP Test', () => {
       new FileTransportInfo({
         sourceFolderName: 'test',
         destinationFolderName: 'destination',
-      })
+      }),
     );
     expect(result.isOk()).toBeTruthy();
     expect(status.access).toBeTruthy();
@@ -162,7 +153,7 @@ describe('FTP Test', () => {
         sourceFolderName: 'test',
         sourceFilename: 'file',
         destinationFolderName: 'destination',
-      })
+      }),
     );
     expect(result.isOk()).toBeTruthy();
     //jest.spyOn(client, 'connected', 'get').mockReturnValue(status.access);
@@ -174,7 +165,7 @@ describe('FTP Test', () => {
       new FileTransportInfo({
         sourceFolderName: 'test',
         destinationFolderName: 'destination',
-      })
+      }),
     );
     expect(result.isOk()).toBeTruthy();
   });
@@ -190,7 +181,7 @@ describe('FTP Test', () => {
         sourceFolderName: 'test',
         sourceFilename: 'file',
         destinationFolderName: 'destination',
-      })
+      }),
     );
     if (result.isErr()) {
       expect(result.isOk()).toBeTruthy();
@@ -210,7 +201,7 @@ describe('FTP Test', () => {
       new FileTransportInfo({
         sourceFolderName: 'test',
         destinationFolderName: 'destination',
-      })
+      }),
     );
     if (result.isErr()) {
       expect(result.isOk()).toBeTruthy();

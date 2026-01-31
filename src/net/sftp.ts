@@ -1,7 +1,7 @@
 import sftp from 'ssh2-sftp-client';
 import { RemoteConnection } from './remoteConnection';
 
-import {  okAsync,  ResultAsync } from '../result';
+import { okAsync, ResultAsync } from '../result';
 import { NetworkError } from '../errors';
 import { FileTransportInfo } from '../fileModel';
 import { platform } from '../platform';
@@ -39,82 +39,83 @@ export class Sftp {
       (err) =>
         err instanceof NetworkError
           ? err
-          : new NetworkError('Fail to do SFTP connection', err as Error)
+          : new NetworkError('Fail to do SFTP connection', err as Error),
     );
   }
 
   download(
-    transportInformation: FileTransportInfo
+    transportInformation: FileTransportInfo,
   ): ResultAsync<boolean, NetworkError> {
-    const initResult = this.connected
-      ? okAsync(true)
-      : this.#init(); // ResultAsync<boolean, NetworkError>
+    const initResult = this.connected ? okAsync(true) : this.#init(); // ResultAsync<boolean, NetworkError>
 
     return initResult.andThen(() => {
       const promise: Promise<void> = transportInformation.isSourceDirectory
-        ? this.client.downloadDir(
-            transportInformation.sourceFolderName.replace(platform.sep, '/'),
-            transportInformation.destinationPath
-          ).then(() =>undefined)
-        : this.client.get(
-            transportInformation.sourceFullName.replace(platform.sep, '/'),
-            transportInformation.destinationFullName
-          ).then((_) =>undefined);
+        ? this.client
+            .downloadDir(
+              transportInformation.sourceFolderName.replace(platform.sep, '/'),
+              transportInformation.destinationPath,
+            )
+            .then(() => undefined)
+        : this.client
+            .get(
+              transportInformation.sourceFullName.replace(platform.sep, '/'),
+              transportInformation.destinationFullName,
+            )
+            .then(() => undefined);
 
       return ResultAsync.fromPromise(
         promise.then(() => true),
-        (err) => new NetworkError('Fail to do SFTP download', err as Error)
+        (err) => new NetworkError('Fail to do SFTP download', err as Error),
       );
     });
   }
 
   upload(
-    transportInformation: FileTransportInfo
+    transportInformation: FileTransportInfo,
   ): ResultAsync<boolean, NetworkError> {
-    const initResult = this.connected
-      ? okAsync(true)
-      : this.#init(); // ResultAsync<boolean, NetworkError>
+    const initResult = this.connected ? okAsync(true) : this.#init(); // ResultAsync<boolean, NetworkError>
 
     return initResult.andThen(() => {
       const promise: Promise<string> = transportInformation.isSourceDirectory
         ? this.client.uploadDir(
             transportInformation.sourceFullName,
-            transportInformation.destinationFullName.replace(platform.sep, '/')
+            transportInformation.destinationFullName.replace(platform.sep, '/'),
           )
         : this.client.put(
             transportInformation.sourceFullName,
-            transportInformation.destinationFullName.replace(platform.sep, '/')
+            transportInformation.destinationFullName.replace(platform.sep, '/'),
           );
 
       return ResultAsync.fromPromise(
         promise.then(() => true),
-        (err) => new NetworkError('Fail to do SFTP upload', err as Error)
+        (err) => new NetworkError('Fail to do SFTP upload', err as Error),
       );
     });
   }
 
   getFileInfo(
-    transportInformation: FileTransportInfo
+    transportInformation: FileTransportInfo,
   ): ResultAsync<{ size: number; date: Date }, NetworkError> {
-    const initResult = this.connected
-      ? okAsync(true)
-      : this.#init(); // ResultAsync<boolean, NetworkError>
+    const initResult = this.connected ? okAsync(true) : this.#init(); // ResultAsync<boolean, NetworkError>
 
     return initResult.andThen(() => {
-      const fullPath =
-        (transportInformation.sourceFullName ?? '').replace(platform.sep, '/');
+      const fullPath = (transportInformation.sourceFullName ?? '').replace(
+        platform.sep,
+        '/',
+      );
 
       return ResultAsync.fromPromise(
         this.client.stat(fullPath).then((stat) => ({
           size: stat.size,
           date: new Date(stat.modifyTime),
         })),
-        (err) => new NetworkError('Fail to get SFTP file information', err as Error)
+        (err) =>
+          new NetworkError('Fail to get SFTP file information', err as Error),
       );
     });
   }
   listFiles(
-    transportInformation: FileTransportInfo
+    transportInformation: FileTransportInfo,
   ): ResultAsync<string[], NetworkError> {
     // 接続済みなら okAsync(true)、未接続なら #init()
     const initResult = this.connected ? okAsync(true) : this.#init();
@@ -122,15 +123,15 @@ export class Sftp {
     return initResult.andThen(() => {
       const fullPath = (transportInformation.sourceFullName ?? '').replace(
         platform.sep,
-        '/'
+        '/',
       );
 
       return ResultAsync.fromPromise(
-        this.client.list(fullPath).then((fileInfoList) =>
-          fileInfoList.map((f) => f.name)
-        ),
+        this.client
+          .list(fullPath)
+          .then((fileInfoList) => fileInfoList.map((f) => f.name)),
         (err) =>
-          new NetworkError('Fail to retrieve SFTP folders', err as Error)
+          new NetworkError('Fail to retrieve SFTP folders', err as Error),
       );
     });
   }
@@ -143,8 +144,7 @@ export class Sftp {
         this.connected = false;
         return true;
       }),
-      (err) =>
-        new NetworkError('Fail to close SFTP connection', err as Error)
+      (err) => new NetworkError('Fail to close SFTP connection', err as Error),
     );
   }
 }

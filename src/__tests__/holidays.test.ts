@@ -114,7 +114,7 @@ test('BusinessDay of Beginning Month', () => {
 
   testCases.forEach((c) => {
     expect(
-      access.businessDayOfBeginningMonthWithOffset(c.targetDate, c.offset)
+      access.businessDayOfBeginningMonthWithOffset(c.targetDate, c.offset),
     ).toEqual(c.result);
   });
 });
@@ -165,7 +165,10 @@ test('BusinessDay of Next Beginning Month', () => {
 
   testCases.forEach((c) => {
     expect(
-      access.businessDayOfBeginningOfNextMonthWithOffset(c.targetDate, c.offset)
+      access.businessDayOfBeginningOfNextMonthWithOffset(
+        c.targetDate,
+        c.offset,
+      ),
     ).toEqual(c.result);
   });
 });
@@ -213,8 +216,8 @@ test('BusinessDay of Previous Beginning Month', () => {
     expect(
       access.businessDayOfBeginningOfPreviousMonthWithOffset(
         c.targetDate,
-        c.offset
-      )
+        c.offset,
+      ),
     ).toEqual(c.result);
   });
 });
@@ -260,7 +263,7 @@ test('BusinessDay of End Of Month', () => {
 
   testCases.forEach((c) => {
     expect(
-      access.businessDayOfEndMonthWithOffset(c.targetDate, c.offset)
+      access.businessDayOfEndMonthWithOffset(c.targetDate, c.offset),
     ).toEqual(c.result);
   });
 });
@@ -306,7 +309,7 @@ test('BusinessDay of End Of Next Month', () => {
 
   testCases.forEach((c) => {
     expect(
-      access.businessDayOfEndOfNextMonthWithOffset(c.targetDate, c.offset)
+      access.businessDayOfEndOfNextMonthWithOffset(c.targetDate, c.offset),
     ).toEqual(c.result);
   });
 });
@@ -352,7 +355,7 @@ test('BusinessDay of End Of Previous Month', () => {
 
   testCases.forEach((c) => {
     expect(
-      access.businessDayOfEndOfPreviousMonthWithOffset(c.targetDate, c.offset)
+      access.businessDayOfEndOfPreviousMonthWithOffset(c.targetDate, c.offset),
     ).toEqual(c.result);
   });
 });
@@ -383,7 +386,7 @@ test('BusinessDay of Beginning of Year', () => {
 
   testCases.forEach((c) => {
     expect(access.businessDayOfBeginningOfYear(c.targetDate, c.offset)).toEqual(
-      c.result
+      c.result,
     );
   });
 });
@@ -409,7 +412,7 @@ test('BusinessDay of End of Year', () => {
 
   testCases.forEach((c) => {
     expect(access.businessDayOfEndOfYear(c.targetDate, c.offset)).toEqual(
-      c.result
+      c.result,
     );
   });
 });

@@ -1,6 +1,6 @@
 import * as aes from '../encryption';
 import { bufferToArrayBuffer } from '../buffer';
-import {  tmpNameSync } from 'tmp';
+import { tmpNameSync } from 'tmp';
 import { compareFiles } from './baseClass';
 import { expect, test } from 'vitest';
 import { platform } from '../platform';
@@ -71,11 +71,11 @@ test('AES Encrypt/Decrypt using binary file key', () => {
   const plainBuffer = platform.readFileSync(plainFilename);
   const encryptedBuffer = aes.aesEncryptBufferByKeyFile(
     bufferToArrayBuffer(plainBuffer),
-    keyFilename
+    keyFilename,
   );
   const decryptedBuffer = aes.aesDecryptBufferByKeyFile(
     encryptedBuffer,
-    keyFilename
+    keyFilename,
   );
   expect(plainBuffer.equals(decryptedBuffer)).toBeTruthy();
 });

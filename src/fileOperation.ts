@@ -8,7 +8,7 @@ import {
   FilterType,
 } from './fileModel';
 import { compareAsc } from 'date-fns';
-import { ResultAsync,errAsync, ok, okAsync} from './result';
+import { ResultAsync, errAsync, okAsync } from './result';
 import { AccessError, ArchiveError, TimeoutError } from './errors';
 import { ZipArchive } from './archive/zip';
 import { TarArchive } from './archive/tar';
@@ -20,10 +20,10 @@ import { platform } from './platform';
 export class FileOperation {
   static canAccess(
     fileName: string,
-    readOnly: boolean = false
+    readOnly: boolean = false,
   ): ResultAsync<boolean, AccessError> {
     if (!platform.existsSync(fileName))
-        return errAsync(new AccessError(`File Not exist: ${fileName}`));
+      return errAsync(new AccessError(`File Not exist: ${fileName}`));
     const specialExtension = ['xls', 'xlsm', 'xlsx', 'zip'];
     const stat = platform.statSync(fileName);
 
@@ -33,10 +33,10 @@ export class FileOperation {
     )
       return errAsync(new AccessError(`File is invalid: ${fileName}`));
     if (readOnly) return okAsync(true);
-    
+
     return ResultAsync.fromPromise(
       (async () => {
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
 
         const stat2 = platform.statSync(fileName);
         if (
@@ -48,10 +48,10 @@ export class FileOperation {
 
         return true;
       })(),
-      e =>
+      (e) =>
         e instanceof AccessError
           ? e
-          : new AccessError(`File check failed: ${fileName}`, e)
+          : new AccessError(`File check failed: ${fileName}`, e),
     );
 
     // try {
@@ -71,26 +71,27 @@ export class FileOperation {
 
   static waitTillExclusiveAccess(
     fileName: string,
-    timeoutSeconds: number
+    timeoutSeconds: number,
   ): ResultAsync<boolean, TimeoutError> {
     return polling<AccessError>(
       `File Access check ${fileName}`,
       timeoutSeconds,
       0.5,
-      (_): ResultAsync<boolean, AccessError> => {
+      (): ResultAsync<boolean, AccessError> => {
         const accessible = this.canAccess(fileName, false);
-        return accessible.orElse((_)=>okAsync(false));
+        return accessible.orElse(() => okAsync(false));
       },
-      fileName
-    ).mapErr((error) => new TimeoutError(`Timeout on waiting file access: ${fileName}`, error));
-
-
+      fileName,
+    ).mapErr(
+      (error) =>
+        new TimeoutError(`Timeout on waiting file access: ${fileName}`, error),
+    );
   }
 
   static search(
     parentDirectory: string,
     filterConditions: FileFilterInfo[],
-    isRecursive: boolean = false
+    isRecursive: boolean = false,
   ): FileInfo[] {
     const fileInfoList = new Array<FileInfo>();
     if (!platform.existsSync(parentDirectory)) return fileInfoList;
@@ -101,11 +102,11 @@ export class FileOperation {
         if (dirent.isFile()) {
           const fullPath = platform.join(
             platform.resolve(parentDirectory),
-            dirent.name
+            dirent.name,
           );
           const [result, fileInfo] = this.#isFileValid(
             fullPath,
-            filterConditions
+            filterConditions,
           );
           if (result) {
             fileInfoList.push(fileInfo);
@@ -113,12 +114,12 @@ export class FileOperation {
         } else if (dirent.isDirectory()) {
           const fullPath = platform.join(
             platform.resolve(parentDirectory),
-            dirent.name
+            dirent.name,
           );
           const childInfoList = FileOperation.search(
             fullPath,
             filterConditions,
-            isRecursive
+            isRecursive,
           );
           fileInfoList.push(...childInfoList);
         }
@@ -140,7 +141,7 @@ export class FileOperation {
 
   static #isFileValid(
     fileFullPath: string,
-    filterConditions: FileFilterInfo[]
+    filterConditions: FileFilterInfo[],
   ): [boolean, FileInfo] {
     let isMatch = true;
     const fileInformation = new FileInfo(fileFullPath);
@@ -158,44 +159,45 @@ export class FileOperation {
   }
   static #isFileValidForFileter(
     fileInformation: FileInfo,
-    filterInformation: FileFilterInfo
+    filterInformation: FileFilterInfo,
   ): boolean {
     switch (filterInformation.kind) {
       case FilterType.FileName:
         return this.#isFileNameMatch(
           fileInformation.fileName,
           filterInformation.nameFilter,
-          filterInformation.operator
+          filterInformation.operator,
         );
       case FilterType.CreateTime:
         return this.#isFileDateMatch(
           fileInformation.createTime,
           filterInformation.targetDate,
-          filterInformation.operator
+          filterInformation.operator,
         );
       case FilterType.LastAccessTime:
         return this.#isFileDateMatch(
           fileInformation.lastAccessTime,
           filterInformation.targetDate,
-          filterInformation.operator
+          filterInformation.operator,
         );
       case FilterType.LastModifiedTime:
         return this.#isFileDateMatch(
           fileInformation.updateTime,
           filterInformation.targetDate,
-          filterInformation.operator
+          filterInformation.operator,
         );
     }
   }
   static #isFileNameMatch(
     fileName: string,
     targetFilter: string,
-    compareType: FileCompareType
+    compareType: FileCompareType,
   ): boolean {
     switch (compareType) {
-      case FileCompareType.Equal:
+      case FileCompareType.Equal: {
         const match = fileName.match(targetFilter);
         return !!match && match.length > 0;
+      }
       case FileCompareType.Larger:
         return fileName > targetFilter;
       case FileCompareType.LargerOrEqual:
@@ -209,7 +211,7 @@ export class FileOperation {
   static #isFileDateMatch(
     fileDate: Date,
     targetFilter: Date,
-    compareType: FileCompareType
+    compareType: FileCompareType,
   ): boolean {
     const result = compareAsc(fileDate, targetFilter);
     switch (compareType) {
@@ -232,7 +234,7 @@ export class FileOperation {
     sourceFileList: FileTransportInfo[],
     config: Configurator,
     applicationId: number,
-    password: string = ''
+    password: string = '',
   ): ResultAsync<boolean, ArchiveError> {
     if (!sourceFileList || sourceFileList.length === 0)
       return errAsync(new ArchiveError('Source File Not Specified to archive'));
@@ -258,7 +260,9 @@ export class FileOperation {
           break;
         default:
           return errAsync(
-            new ArchiveError('File Extension Not supported for archiving ' + extension)
+            new ArchiveError(
+              'File Extension Not supported for archiving ' + extension,
+            ),
           );
       }
     }
@@ -268,14 +272,16 @@ export class FileOperation {
     ) {
       if (sourceFileList.length > 1 || sourceFileList[0].isSourceDirectory)
         return errAsync(
-          new ArchiveError('Multiple files are not supported in this compression type: ' +
-            archiveType)
+          new ArchiveError(
+            'Multiple files are not supported in this compression type: ' +
+              archiveType,
+          ),
         );
     }
 
     if (archiveType !== FileArchiveType.Zip && password !== '')
       return errAsync(
-        new ArchiveError('password is not supported on other than zip format')
+        new ArchiveError('password is not supported on other than zip format'),
       );
     if (
       archiveType === FileArchiveType.Tar ||
@@ -283,8 +289,10 @@ export class FileOperation {
     ) {
       if (sourceFileList.length > 1 || !sourceFileList[0].isSourceDirectory)
         return errAsync(
-          new ArchiveError('single file or multiple directory is not supported in this compression type: ' +
-            archiveType)
+          new ArchiveError(
+            'single file or multiple directory is not supported in this compression type: ' +
+              archiveType,
+          ),
         );
     }
 
@@ -293,23 +301,23 @@ export class FileOperation {
         return ZipArchive.create(
           archiveInformation.fullPath,
           sourceFileList,
-          password
+          password,
         );
       case FileArchiveType.Tar:
         return TarArchive.create(
           archiveInformation.fullPath,
-          sourceFileList[0]
+          sourceFileList[0],
         );
       case FileArchiveType.GZip:
         return GzipArchive.create(
           archiveInformation.fullPath,
-          sourceFileList[0].sourceFullName
+          sourceFileList[0].sourceFullName,
         );
       case FileArchiveType.Tgz:
         return TarArchive.create(
           archiveInformation.fullPath,
           sourceFileList[0],
-          true
+          true,
         );
     }
 

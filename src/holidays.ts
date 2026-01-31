@@ -1,11 +1,11 @@
 import { format, addDays, subDays } from 'date-fns';
-import { addMonths,  isBefore, isEqual } from 'date-fns';
+import { addMonths, isBefore, isEqual } from 'date-fns';
 import { createDateOnly } from './dateOperation';
 import prisma from './dbsingleton';
 import { genericDBFunction } from './dbutil';
 import { gyomu_market_holiday } from './generated/prisma/client';
 //import { success, PromiseResult } from './result';
-import {okAsync, ResultAsync} from './result';
+import { okAsync, ResultAsync } from './result';
 import { DBError } from './errors';
 export default class MarketDateAccess {
   private static __marketHolidays: {
@@ -24,7 +24,7 @@ export default class MarketDateAccess {
   }
   //static async getMarketAccess(market: string, ctx: Context) {
   static getMarketAccess(
-    market: string
+    market: string,
   ): ResultAsync<MarketDateAccess, DBError> {
     const access = new MarketDateAccess(market);
     return access.#initDataLoad().map(() => access);
@@ -40,9 +40,9 @@ export default class MarketDateAccess {
         prisma.gyomu_market_holiday.findMany({
           where: { market: this.#market },
         }),
-      []
-    ).map(holidays => {
-      holidays.forEach(row => {
+      [],
+    ).map((holidays) => {
+      holidays.forEach((row) => {
         this.#holidays.push(row.holiday);
       });
 
@@ -63,7 +63,7 @@ export default class MarketDateAccess {
     if (dayOffset === 0)
       return this.__getNextBusinessDay(
         this.__getPreviousBusinessDay(targetDate, 1),
-        1
+        1,
       );
     if (dayOffset > 0) return this.__getNextBusinessDay(targetDate, dayOffset);
     return this.__getPreviousBusinessDay(targetDate, -dayOffset);
@@ -87,12 +87,12 @@ export default class MarketDateAccess {
   }
   businessDayOfBeginningMonthWithOffset(
     targetDate: Date,
-    dayOffset: number = 1
+    dayOffset: number = 1,
   ) {
     const businessDay = createDateOnly(
       targetDate.getFullYear(),
       targetDate.getMonth() + 1,
-      1
+      1,
     );
 
     if (this.isBusinessDay(businessDay)) {
@@ -103,12 +103,12 @@ export default class MarketDateAccess {
   }
   businessDayOfBeginningOfNextMonthWithOffset(
     targetDate: Date,
-    dayOffset: number = 1
+    dayOffset: number = 1,
   ) {
     const businessDay = createDateOnly(
       targetDate.getFullYear() + (targetDate.getMonth() === 11 ? 1 : 0),
       targetDate.getMonth() + 2 + (targetDate.getMonth() === 11 ? -11 : 0),
-      1
+      1,
     );
     let result = businessDay;
     if (dayOffset === 0) dayOffset = 1;
@@ -130,12 +130,12 @@ export default class MarketDateAccess {
 
   businessDayOfBeginningOfPreviousMonthWithOffset(
     targetDate: Date,
-    dayOffset: number = 1
+    dayOffset: number = 1,
   ) {
     const businessDay = createDateOnly(
       targetDate.getFullYear() + (targetDate.getMonth() === 0 ? -1 : 0),
       targetDate.getMonth() + 1 + (targetDate.getMonth() === 0 ? 11 : -1),
-      1
+      1,
     );
     let result = businessDay;
     if (this.isBusinessDay(businessDay)) {
@@ -157,7 +157,7 @@ export default class MarketDateAccess {
     const businessDay = createDateOnly(
       targetDate.getFullYear() + (targetDate.getMonth() === 11 ? 1 : 0),
       targetDate.getMonth() + 1 + (targetDate.getMonth() === 11 ? -11 : 1),
-      1
+      1,
     );
     if (dayOffset === 0) dayOffset = 1;
     return this.businessDay(businessDay, -dayOffset);
@@ -166,7 +166,7 @@ export default class MarketDateAccess {
     let businessDay = createDateOnly(
       targetDate.getFullYear() + (targetDate.getMonth() === 11 ? 1 : 0),
       targetDate.getMonth() + 1 + (targetDate.getMonth() === 11 ? -11 : 1),
-      1
+      1,
     );
     if (dayOffset === 0) dayOffset = 1;
     let result = this.businessDay(businessDay, -dayOffset);
@@ -179,12 +179,12 @@ export default class MarketDateAccess {
 
   businessDayOfEndOfPreviousMonthWithOffset(
     targetDate: Date,
-    dayOffset: number
+    dayOffset: number,
   ) {
     const businessDay = createDateOnly(
       targetDate.getFullYear(),
       targetDate.getMonth() + 1,
-      1
+      1,
     );
     if (dayOffset === 0) dayOffset = 1;
     return this.businessDay(businessDay, -dayOffset);

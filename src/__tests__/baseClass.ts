@@ -17,16 +17,16 @@ export const validateFolders = (srcFolder: string, destFolder: string) => {
 };
 const compareFoldersFromSource = (
   srcFolder: string,
-  destFolder: string
+  destFolder: string,
 ): boolean => {
   platform.readdirSync(srcFolder, { withFileTypes: true }).forEach((dirent) => {
     const sourceFullPath = platform.join(
       platform.resolve(srcFolder),
-      dirent.name
+      dirent.name,
     );
     const targetDestFullPath = platform.join(
       platform.resolve(destFolder),
-      dirent.name
+      dirent.name,
     );
     if (dirent.isFile()) {
       expect(platform.existsSync(targetDestFullPath)).toBeTruthy();
@@ -42,18 +42,18 @@ const compareFoldersFromSource = (
 };
 const compareFoldersFromDest = (
   srcFolder: string,
-  destFolder: string
+  destFolder: string,
 ): boolean => {
   platform
     .readdirSync(destFolder, { withFileTypes: true })
     .forEach((dirent) => {
       const destinationFullPath = platform.join(
         platform.resolve(destFolder),
-        dirent.name
+        dirent.name,
       );
       const targetSourceFullPath = platform.join(
         platform.resolve(srcFolder),
-        dirent.name
+        dirent.name,
       );
       if (dirent.isFile()) {
         expect(platform.existsSync(targetSourceFullPath)).toBeTruthy();
@@ -61,7 +61,7 @@ const compareFoldersFromDest = (
         expect(platform.existsSync(targetSourceFullPath)).toBeTruthy();
         return compareFoldersFromDest(
           targetSourceFullPath,
-          destinationFullPath
+          destinationFullPath,
         );
       }
     });

@@ -1,5 +1,5 @@
 import { BaseError, TimeoutError } from './errors';
-import {ResultAsync} from './result'
+import { ResultAsync } from './result';
 /**
  *
  * @param pollingActionName
@@ -15,7 +15,6 @@ export function polling<E extends BaseError>(
   timerFunc: (...args: any[]) => ResultAsync<boolean, E>,
   ...args: any[]
 ): ResultAsync<boolean, TimeoutError> {
-
   const timeoutTime = Date.now() + timeoutSeconds * 1000;
 
   const poll = async (): Promise<boolean> => {
@@ -24,7 +23,7 @@ export function polling<E extends BaseError>(
     if (result.isErr()) {
       throw new TimeoutError(
         `Fail on polling: ${pollingActionName}`,
-        result.error
+        result.error,
       );
     }
 
@@ -36,22 +35,18 @@ export function polling<E extends BaseError>(
       return false;
     }
 
-    await new Promise(resolve =>
-      setTimeout(resolve, intervalSeconds * 1000)
-    );
+    await new Promise((resolve) => setTimeout(resolve, intervalSeconds * 1000));
 
     return poll();
   };
 
-  return ResultAsync.fromPromise(
-    poll(),
-    (e) =>
-      e instanceof TimeoutError
-        ? e
-        : new TimeoutError(`Fail on polling: ${pollingActionName}`, e)
+  return ResultAsync.fromPromise(poll(), (e) =>
+    e instanceof TimeoutError
+      ? e
+      : new TimeoutError(`Fail on polling: ${pollingActionName}`, e),
   );
 }
 
 export const sleep = (ms: number) => {
-  return new Promise<void>(resolve => setTimeout(resolve, ms));
+  return new Promise<void>((resolve) => setTimeout(resolve, ms));
 };

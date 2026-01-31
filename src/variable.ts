@@ -3,7 +3,15 @@ import prisma from './dbsingleton';
 import MarketDateAccess from './holidays';
 import { addDays, addMonths, format, subDays } from 'date-fns';
 import { DBError, ParseError } from './errors';
-import { okAsync, ResultAsync ,Result, ok, err, result2Async, errAsync} from './result';
+import {
+  okAsync,
+  ResultAsync,
+  Result,
+  ok,
+  err,
+  result2Async,
+  errAsync,
+} from './result';
 import { genericDBFunction } from './dbutil';
 
 const VariableType = {
@@ -14,7 +22,7 @@ const VariableType = {
   ArgumentFile: 'File',
 } as const;
 
-type VariableType = typeof VariableType[keyof typeof VariableType];
+type VariableType = (typeof VariableType)[keyof typeof VariableType];
 
 const VariableDateKeyword = {
   TODAY: 'TODAY',
@@ -35,7 +43,7 @@ const VariableDateKeyword = {
   BOY: 'BOY',
 };
 type VariableDateKeyword =
-  typeof VariableDateKeyword[keyof typeof VariableDateKeyword];
+  (typeof VariableDateKeyword)[keyof typeof VariableDateKeyword];
 // type TranslateContext = {
 //   factorIndex: number;
 //   variableType: VariableType;
@@ -43,17 +51,15 @@ type VariableDateKeyword =
 //   date?: Date;
 //   output: string[];
 // };
-type TranslateState = 
-  | { kind: 'Normal' }
-  | { kind: 'DatePending'; date: Date };
+type TranslateState = { kind: 'Normal' } | { kind: 'DatePending'; date: Date };
 
 type TranslateContext = {
-      factorIndex: number;
-      variableType: VariableType;
-      marketAccess: MarketDateAccess;
-      state: TranslateState;
-      output: string[];
-    };
+  factorIndex: number;
+  variableType: VariableType;
+  marketAccess: MarketDateAccess;
+  state: TranslateState;
+  output: string[];
+};
 
 type ParseDateContext =
   | {
@@ -75,50 +81,42 @@ export class VariableTranslator {
     //this.#ctx = ctx;
   }
   static getTranslator(
-    market: string
+    market: string,
   ): ResultAsync<VariableTranslator, DBError> {
     return MarketDateAccess.getMarketAccess(market)
-    .map((access) => new VariableTranslator(access))
-    .andThen((translator) =>
-      translator.init().map(() => translator)
-    );
+      .map((access) => new VariableTranslator(access))
+      .andThen((translator) => translator.init().map(() => translator));
   }
 
-  init() : ResultAsync<void, DBError> {
-    return this.#getSupportedMarket()
-      .map(markets => {
-        this.__supportedMarkets = markets;
-      });
+  init(): ResultAsync<void, DBError> {
+    return this.#getSupportedMarket().map((markets) => {
+      this.__supportedMarkets = markets;
+    });
   }
   parse(
     inputString: string,
-    targetDate: Date
+    targetDate: Date,
   ): ResultAsync<string, ParseError> {
     const startIndex = inputString.indexOf('{%');
     const endIndex = inputString.indexOf('%}');
 
-    if (
-      startIndex !== -1 &&
-      endIndex !== -1 &&
-      endIndex > startIndex
-    ) {
+    if (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {
       const prefix = inputString.substring(0, startIndex);
       const keyword = inputString.substring(startIndex + 2, endIndex);
       const suffix = inputString.substring(endIndex + 2);
 
-      return this.#translate(keyword, targetDate).andThen(
-        (translated) =>
-          this.parse(prefix + translated + suffix, targetDate)
+      return this.#translate(keyword, targetDate).andThen((translated) =>
+        this.parse(prefix + translated + suffix, targetDate),
       );
     }
 
     return okAsync(inputString);
   }
-  
+
   #handleParseDatePart(
     ctx: ParseDateContext,
     part: string,
-    targetDate: Date
+    targetDate: Date,
   ): ResultAsync<ParseDateContext, ParseError> {
     // すでに結果が出ているなら何もしない（reduce 停止相当）
     if (ctx.kind === 'done') {
@@ -147,7 +145,7 @@ export class VariableTranslator {
         ctx.marketAccess,
         targetDate,
         part,
-        ctx.factorIndex
+        ctx.factorIndex,
       );
 
       return dateResult.isErr()
@@ -158,46 +156,41 @@ export class VariableTranslator {
           });
     }
 
-      // if (dateResult.isErr()) {
-      //   return errAsync(dateResult.error);
-      // }
+    // if (dateResult.isErr()) {
+    //   return errAsync(dateResult.error);
+    // }
 
-      // return okAsync({
-      //   ...ctx,
-      //   result: dateResult.value,
-      // });
+    // return okAsync({
+    //   ...ctx,
+    //   result: dateResult.value,
+    // });
     //}
 
     // その他は無視
     return okAsync(ctx);
   }
 
-
-  parseDate(
-    keyword: string,
-    targetDate: Date
-  ): ResultAsync<Date, ParseError> {
+  parseDate(keyword: string, targetDate: Date): ResultAsync<Date, ParseError> {
     const parts = keyword.split('$');
 
-    const initial: ResultAsync<ParseDateContext, ParseError> =
-      okAsync({
-        kind: 'processing',
-        factorIndex: 1,
-        marketAccess: this.#marketAccess,
-      });
+    const initial: ResultAsync<ParseDateContext, ParseError> = okAsync({
+      kind: 'processing',
+      factorIndex: 1,
+      marketAccess: this.#marketAccess,
+    });
 
     return parts
       .reduce(
         (ctxR, part) =>
           ctxR.andThen((ctx) =>
-            this.#handleParseDatePart(ctx, part, targetDate)
+            this.#handleParseDatePart(ctx, part, targetDate),
           ),
-        initial
+        initial,
       )
       .andThen((ctx) =>
         ctx.kind === 'done'
           ? okAsync(ctx.result)
-          : errAsync(new ParseError('No keyword: Not supported'))
+          : errAsync(new ParseError('No keyword: Not supported')),
       );
   }
   // #returnPromiseSuccess<T>(val: T): PromiseResult<T, ParseError> {
@@ -214,7 +207,7 @@ export class VariableTranslator {
     targetMarketAccess: MarketDateAccess,
     targetDate: Date,
     dateParameter: VariableDateKeyword,
-    factorIndex: number
+    factorIndex: number,
   ): Result<Date, ParseError> {
     switch (dateParameter) {
       case VariableDateKeyword.TODAY:
@@ -224,16 +217,16 @@ export class VariableTranslator {
         return ok(
           targetMarketAccess.businessDayOfBeginningMonthWithOffset(
             targetDate,
-            factorIndex
-          )
+            factorIndex,
+          ),
         );
       case VariableDateKeyword.NEXTBBOM:
         // Business Day of Beginning of Next Month
         return ok(
           targetMarketAccess.businessDayOfBeginningOfNextMonthWithOffset(
             targetDate,
-            factorIndex
-          )
+            factorIndex,
+          ),
         );
       case VariableDateKeyword.BOM:
         // Beginning of Month
@@ -242,35 +235,40 @@ export class VariableTranslator {
             createDateOnly(
               targetDate.getFullYear(),
               targetDate.getMonth() + 1,
-              1
+              1,
             ),
-            factorIndex - 1
-          )
+            factorIndex - 1,
+          ),
         );
       case VariableDateKeyword.BEOM:
         // Business Day of End Of Month
         return ok(
           targetMarketAccess.businessDayOfEndMonthWithOffset(
             targetDate,
-            factorIndex
-          )
+            factorIndex,
+          ),
         );
       case VariableDateKeyword.NEXTBEOM:
         // Business Day of End of Next Month
         return ok(
           targetMarketAccess.businessDayOfBeginningMonthWithOffset(
             addMonths(targetDate, 2),
-            -factorIndex
-          )
+            -factorIndex,
+          ),
         );
       case VariableDateKeyword.PREVBEOM:
         // Business Day of End of Previous Month
 
-        return ok(targetMarketAccess.businessDay(createDateOnly(
-          targetDate.getFullYear(),
-          targetDate.getMonth() + 1,
-          1
-        ), -factorIndex));
+        return ok(
+          targetMarketAccess.businessDay(
+            createDateOnly(
+              targetDate.getFullYear(),
+              targetDate.getMonth() + 1,
+              1,
+            ),
+            -factorIndex,
+          ),
+        );
       case VariableDateKeyword.EOM:
         // End Of Month
         return ok(
@@ -278,10 +276,10 @@ export class VariableTranslator {
             createDateOnly(
               addMonths(targetDate, 1).getFullYear(),
               addMonths(targetDate, 1).getMonth() + 1,
-              1
+              1,
             ),
-            factorIndex
-          )
+            factorIndex,
+          ),
         );
       case VariableDateKeyword.NEXTBUS:
         // Next Business Day
@@ -291,33 +289,49 @@ export class VariableTranslator {
         return ok(addDays(targetDate, factorIndex));
       case VariableDateKeyword.PREVBUS:
         // Previous Business Day
-        return ok(
-          targetMarketAccess.businessDay(targetDate, -factorIndex)
-        );
+        return ok(targetMarketAccess.businessDay(targetDate, -factorIndex));
       case VariableDateKeyword.PREVDAY:
         // Previous Day
         return ok(subDays(targetDate, factorIndex));
       case VariableDateKeyword.EOY:
         // End of Year
-        return ok(subDays(createDateOnly(targetDate.getFullYear() + 1, 1, 1), factorIndex));
+        return ok(
+          subDays(
+            createDateOnly(targetDate.getFullYear() + 1, 1, 1),
+            factorIndex,
+          ),
+        );
       case VariableDateKeyword.BEOY:
         // Business Day of End of Year
-        return ok(targetMarketAccess.businessDay(createDateOnly(targetDate.getFullYear() + 1, 1, 1), -factorIndex));
+        return ok(
+          targetMarketAccess.businessDay(
+            createDateOnly(targetDate.getFullYear() + 1, 1, 1),
+            -factorIndex,
+          ),
+        );
       case VariableDateKeyword.BBOY:
         // Business Day Of Beginning of Year
         return ok(
           targetMarketAccess.businessDay(
             createDateOnly(targetDate.getFullYear(), 1, 1),
-            factorIndex - (targetMarketAccess.isBusinessDay(createDateOnly(targetDate.getFullYear(), 1, 1)) ? 1 : 0)
-          )
+            factorIndex -
+              (targetMarketAccess.isBusinessDay(
+                createDateOnly(targetDate.getFullYear(), 1, 1),
+              )
+                ? 1
+                : 0),
+          ),
         );
       case VariableDateKeyword.BOY:
         // Beginning of Year
-        return ok(addDays(createDateOnly(targetDate.getFullYear(), 1, 1), factorIndex - 1));
+        return ok(
+          addDays(
+            createDateOnly(targetDate.getFullYear(), 1, 1),
+            factorIndex - 1,
+          ),
+        );
       default:
-        return err(new ParseError(
-          `${dateParameter} is not supported`
-        ));
+        return err(new ParseError(`${dateParameter} is not supported`));
     }
   }
   #initialTranslateContext(): TranslateContext {
@@ -420,12 +434,11 @@ export class VariableTranslator {
   //       return okAsync(ctx);
   //   }
   // }
- #handlePart(
+  #handlePart(
     ctx: TranslateContext,
     part: string,
-    targetDate: Date
+    targetDate: Date,
   ): ResultAsync<TranslateContext, ParseError> {
-
     /* number */
     if (!isNaN(Number(part))) {
       return okAsync({
@@ -437,8 +450,10 @@ export class VariableTranslator {
     /* market */
     if (this.__supportedMarkets.includes(part)) {
       return MarketDateAccess.getMarketAccess(part)
-        .mapErr(e => new ParseError(`Fail to retrieve market data ${part}`, e))
-        .map(access => ({
+        .mapErr(
+          (e) => new ParseError(`Fail to retrieve market data ${part}`, e),
+        )
+        .map((access) => ({
           ...ctx,
           marketAccess: access,
         }));
@@ -446,9 +461,9 @@ export class VariableTranslator {
 
     /* date keyword (TODAY, YESTERDAY, etc) */
     if (part in VariableDateKeyword) {
-      if(ctx.state.kind === 'DatePending') {
+      if (ctx.state.kind === 'DatePending') {
         return errAsync(
-          new ParseError(`Date keyword repeated before format: ${part}`)
+          new ParseError(`Date keyword repeated before format: ${part}`),
         );
       }
       return result2Async(
@@ -456,15 +471,13 @@ export class VariableTranslator {
           ctx.marketAccess,
           targetDate,
           part,
-          ctx.factorIndex
-        )
-      ).map(date => ({
+          ctx.factorIndex,
+        ),
+      ).map((date) => ({
         ...ctx,
         state: { kind: 'DatePending', date },
       }));
     }
-
-
 
     /* variable switch */
     switch (part) {
@@ -491,10 +504,9 @@ export class VariableTranslator {
   #render(
     ctx: TranslateContext,
     part: string,
-    targetDate: Date
+    targetDate: Date,
   ): ResultAsync<TranslateContext, ParseError> {
-
-    if(ctx.state.kind === 'DatePending') {
+    if (ctx.state.kind === 'DatePending') {
       const formatted = format(ctx.state.date, part);
 
       return okAsync({
@@ -511,7 +523,7 @@ export class VariableTranslator {
           ctx.marketAccess,
           targetDate,
           VariableDateKeyword.TODAY, // ← 直前状態から決まるなら state 化
-          ctx.factorIndex
+          ctx.factorIndex,
         );
 
         if (dateResult.isErr()) {
@@ -541,22 +553,24 @@ export class VariableTranslator {
 
       default:
         return errAsync(
-          new ParseError(`Unsupported variable type: ${ctx.variableType}`)
+          new ParseError(`Unsupported variable type: ${ctx.variableType}`),
         );
     }
   }
 
-  #translate(keyword: string, targetDate: Date): ResultAsync<string, ParseError> {
+  #translate(
+    keyword: string,
+    targetDate: Date,
+  ): ResultAsync<string, ParseError> {
     const parts = keyword.split('$');
-    const initial: ResultAsync<TranslateContext, ParseError> =
-      okAsync(this.#initialTranslateContext());
+    const initial: ResultAsync<TranslateContext, ParseError> = okAsync(
+      this.#initialTranslateContext(),
+    );
     return parts
       .reduce(
         (ctxR, part) =>
-          ctxR.andThen((ctx) =>
-            this.#handlePart(ctx, part, targetDate)
-          ),
-        initial
+          ctxR.andThen((ctx) => this.#handlePart(ctx, part, targetDate)),
+        initial,
       )
       .map((ctx) => ctx.output.join(''));
   }
@@ -578,7 +592,7 @@ export class VariableTranslator {
           select: { market: true },
           distinct: ['market'],
         }),
-      []
-    ).map(rows => rows.map(r => r.market));
+      [],
+    ).map((rows) => rows.map((r) => r.market));
   }
 }

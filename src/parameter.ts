@@ -1,39 +1,38 @@
 import { gyomu_param_master } from './generated/prisma/client';
 import { format } from 'date-fns';
 import prisma from './dbsingleton';
-import {  DBError } from './errors';
+import { DBError } from './errors';
 //import { Failure, PromiseResult, fail, success } from './result';
-import { ResultAsync, errAsync, okAsync} from './result';
+import { ResultAsync, errAsync, okAsync } from './result';
 import { User } from './user';
 import { genericDBFunction } from './dbutil';
 
 type ParameterType = string | number | boolean;
 
-export const retryResultAsync =<T, E>(
+export const retryResultAsync = <T, E>(
   fn: () => ResultAsync<T, E>,
-  maxRetry: number
-): ResultAsync<T, E> =>{
-  return fn().orElse(err =>
-    maxRetry > 1 ? retryResultAsync(fn, maxRetry - 1) : errAsync(err)
+  maxRetry: number,
+): ResultAsync<T, E> => {
+  return fn().orElse((err) =>
+    maxRetry > 1 ? retryResultAsync(fn, maxRetry - 1) : errAsync(err),
   );
-}
+};
 export class ParameterAccess {
   static keyExists(key: string): ResultAsync<boolean, DBError> {
-    return this.#loadParameter(key)
-      .map(values => values.length > 0);
+    return this.#loadParameter(key).map((values) => values.length > 0);
   }
 
   static #loadParameter(
-    key: string
+    key: string,
   ): ResultAsync<gyomu_param_master[], DBError> {
     return genericDBFunction<gyomu_param_master[]>(
-  'load gyomu_param_master',
-  async (key) =>
-    prisma.gyomu_param_master.findMany({
-      where: { item_key: key },
-    }),
-  [key]
-);
+      'load gyomu_param_master',
+      async (key) =>
+        prisma.gyomu_param_master.findMany({
+          where: { item_key: key },
+        }),
+      [key],
+    );
   }
 
   static getKey(key: string, user?: User) {
@@ -44,71 +43,73 @@ export class ParameterAccess {
   static value(
     key: string,
     user?: User,
-    targetDate?: Date
+    targetDate?: Date,
   ): ResultAsync<string, DBError> {
-
     const itemKey = this.getKey(key, user);
 
-    return retryResultAsync(
-      () => this.#loadParameter(itemKey),
-      3
-    )
-    .andThen(itemValues => {
-      if (!itemValues || itemValues.length === 0) {
-        return errAsync(
-          new DBError('Unknown error on retrieving parameter')
-        );
-      }
-
-      if (!targetDate) {
-        return okAsync(itemValues[0].item_value);
-      }
-
-      const targetDateYYYYMMDD = format(targetDate, 'yyyyMMdd');
-
-      let itemValue = '';
-
-      const defaultRow = itemValues.find(v => !v.item_fromdate?.trim());
-      if (defaultRow) {
-        itemValue = defaultRow.item_value;
-      }
-
-      const sorted = [...itemValues].sort((a, b) =>
-        a.item_fromdate > b.item_fromdate ? 1 :
-        a.item_fromdate < b.item_fromdate ? -1 : 0
-      );
-
-      for (const row of sorted) {
-        if (!row.item_value) continue;
-
-        if (!row.item_fromdate?.trim()) {
-          itemValue = row.item_value;
-        } else if (row.item_fromdate === targetDateYYYYMMDD) {
-          return okAsync(row.item_value);
-        } else if (targetDateYYYYMMDD > row.item_fromdate) {
-          itemValue = row.item_value;
-        } else {
-          break;
+    return retryResultAsync(() => this.#loadParameter(itemKey), 3).andThen(
+      (itemValues) => {
+        if (!itemValues || itemValues.length === 0) {
+          return errAsync(new DBError('Unknown error on retrieving parameter'));
         }
-      }
 
-      return okAsync(itemValue);
-    });
+        if (!targetDate) {
+          return okAsync(itemValues[0].item_value);
+        }
+
+        const targetDateYYYYMMDD = format(targetDate, 'yyyyMMdd');
+
+        let itemValue = '';
+
+        const defaultRow = itemValues.find((v) => !v.item_fromdate?.trim());
+        if (defaultRow) {
+          itemValue = defaultRow.item_value;
+        }
+
+        const sorted = [...itemValues].sort((a, b) =>
+          a.item_fromdate > b.item_fromdate
+            ? 1
+            : a.item_fromdate < b.item_fromdate
+              ? -1
+              : 0,
+        );
+
+        for (const row of sorted) {
+          if (!row.item_value) continue;
+
+          if (!row.item_fromdate?.trim()) {
+            itemValue = row.item_value;
+          } else if (row.item_fromdate === targetDateYYYYMMDD) {
+            return okAsync(row.item_value);
+          } else if (targetDateYYYYMMDD > row.item_fromdate) {
+            itemValue = row.item_value;
+          } else {
+            break;
+          }
+        }
+
+        return okAsync(itemValue);
+      },
+    );
   }
   static booleanValue(
     key: string,
     user?: User,
-    targetDate?: Date
+    targetDate?: Date,
   ): ResultAsync<boolean, DBError> {
-    return ParameterAccess.value(key, user, targetDate).andThen(result => okAsync(result.toLowerCase() == 'true')); 
+    return ParameterAccess.value(key, user, targetDate).andThen((result) =>
+      okAsync(result.toLowerCase() == 'true'),
+    );
   }
 
   static numberValue(
     key: string,
     user?: User,
-    targetDate?: Date
+    targetDate?: Date,
   ): ResultAsync<number, DBError> {
-    return ParameterAccess.value(key, user, targetDate).andThen(result => okAsync(+result));
+    return ParameterAccess.value(key, user, targetDate).andThen((result) =>
+      okAsync(+result),
+    );
   }
 
   // static async stringListValue(
@@ -164,63 +165,67 @@ export class ParameterAccess {
   //   return success(base64String2String(resultString));
   // }
 
- static setValue<T extends ParameterType>(
-  key: string,
-  item: T,
-  user?: User
-): ResultAsync<boolean, DBError> {
+  static setValue<T extends ParameterType>(
+    key: string,
+    item: T,
+    user?: User,
+  ): ResultAsync<boolean, DBError> {
+    const itemKey = this.getKey(key, user);
+    const itemValue = item.toString();
 
-  const itemKey = this.getKey(key, user);
-  const itemValue = item.toString();
+    return this.keyExists(itemKey).andThen((exists) =>
+      genericDBFunction<boolean>(
+        `setup gyomu_param_master for ${itemKey}`,
+        async (itemKey, itemValue) => {
+          if (exists) {
+            if (!itemValue) {
+              // Delete
+              return prisma.gyomu_param_master
+                .delete({
+                  where: {
+                    item_key_item_fromdate: {
+                      item_key: itemKey,
+                      item_fromdate: '',
+                    },
+                  },
+                })
+                .then(() => true);
+            }
 
-  return this.keyExists(itemKey).andThen(exists =>
-    genericDBFunction<boolean>(
-      `setup gyomu_param_master for ${itemKey}`,
-      async (itemKey, itemValue) => {
-        if (exists) {
-          if (!itemValue) {
-            // Delete
-            return prisma.gyomu_param_master.delete({
-              where: {
-                item_key_item_fromdate: {
-                  item_key: itemKey,
-                  item_fromdate: '',
+            // Update
+            return prisma.gyomu_param_master
+              .update({
+                where: {
+                  item_key_item_fromdate: {
+                    item_key: itemKey,
+                    item_fromdate: '',
+                  },
                 },
-              },
-            }).then(() => true);
+                data: { item_value: itemValue },
+              })
+              .then(() => true);
           }
 
-          // Update
-          return prisma.gyomu_param_master.update({
-            where: {
-              item_key_item_fromdate: {
+          if (!itemValue) {
+            // nothing to do
+            return true;
+          }
+
+          // Insert
+          return prisma.gyomu_param_master
+            .create({
+              data: {
                 item_key: itemKey,
                 item_fromdate: '',
+                item_value: itemValue,
               },
-            },
-            data: { item_value: itemValue },
-          }).then(() => true);
-        }
-
-        if (!itemValue) {
-          // nothing to do
-          return true;
-        }
-
-        // Insert
-        return prisma.gyomu_param_master.create({
-          data: {
-            item_key: itemKey,
-            item_fromdate: '',
-            item_value: itemValue,
-          },
-        }).then(() => true);
-      },
-      [itemKey, itemValue]
-    )
-  );
-}
-
+            })
+            .then(() => true);
+        },
+        [itemKey, itemValue],
+      ),
+    );
+  }
 
   // static async setStringListValue(
   //   key: string,

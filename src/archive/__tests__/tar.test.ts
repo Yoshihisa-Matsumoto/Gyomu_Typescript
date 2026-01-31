@@ -22,7 +22,7 @@ beforeAll(() => {
 const validateFileExistence = async (
   archive: TarArchive,
   entryName: string,
-  expected_result: boolean
+  expected_result: boolean,
 ) => {
   const result = await archive.fileExists(entryName);
   if (result.isOk()) {
@@ -30,7 +30,7 @@ const validateFileExistence = async (
       console.log(
         entryName,
         'Different from expected result:',
-        expected_result
+        expected_result,
       );
     }
     expect(result.value).toBe(expected_result);
@@ -63,19 +63,19 @@ test('Tar Creation Test', async () => {
   await validateFileExistence(
     archive,
     'folder1/folder 2/aes_encryption.py',
-    true
+    true,
   );
 
   await validateFileExistence(
     archive,
     'folder1\\folder 2\\aes_encryption.py',
-    true
+    true,
   );
 
   await validateFileExistence(
     archive,
     'folder1\\folder 3\\aes_encryption.py',
-    false
+    false,
   );
   await validateFileExistence(archive, 'ユーザー噂.py', true);
 
@@ -93,15 +93,15 @@ test('Tar Unarchive Test', async () => {
     destinationFolderName: extractDirectory,
   });
   const archive: TarArchive = new TarArchive(
-    platform.join(compressDirectory, 'compress/temp.tar')
+    platform.join(compressDirectory, 'compress/temp.tar'),
   );
-  const result = await archive.extract(transferInformation);
+  await archive.extract(transferInformation);
   extractedFile = platform.join(extractDirectory, 'README.md');
   expect(
     compareFiles(
       extractedFile,
-      platform.join(compressDirectory, 'source/README.md')
-    )
+      platform.join(compressDirectory, 'source/README.md'),
+    ),
   ).toBeTruthy();
 
   transferInformation = new FileTransportInfo({
@@ -114,8 +114,8 @@ test('Tar Unarchive Test', async () => {
   expect(
     compareFiles(
       extractedFile,
-      platform.join(compressDirectory, 'source/folder1/email_sender.py')
-    )
+      platform.join(compressDirectory, 'source/folder1/email_sender.py'),
+    ),
   ).toBeTruthy();
 
   await validateFileExistence(archive, 'ユーザー噂.py', true);
@@ -129,8 +129,8 @@ test('Tar Unarchive Test', async () => {
   expect(
     compareFiles(
       extractedFile,
-      platform.join(compressDirectory, 'source/ユーザー噂.py')
-    )
+      platform.join(compressDirectory, 'source/ユーザー噂.py'),
+    ),
   ).toBeTruthy();
 }, 10000);
 test('Tar Unarchive Folder Test', async () => {
@@ -139,13 +139,13 @@ test('Tar Unarchive Folder Test', async () => {
     destinationFolderName: platform.join(extractDirectory, 'folder 2'),
   });
   const archive: TarArchive = new TarArchive(
-    platform.join(compressDirectory, 'compress/temp.tar')
+    platform.join(compressDirectory, 'compress/temp.tar'),
   );
   let result = await archive.extract(transferInformation);
   expect(result.isOk()).toBeTruthy();
   validateFolders(
     platform.join(compressDirectory, 'source/folder1/folder 2'),
-    platform.join(extractDirectory, 'folder 2')
+    platform.join(extractDirectory, 'folder 2'),
   );
 
   const destinationRoot = platform.join(extractDirectory, 'fullTarExtract');

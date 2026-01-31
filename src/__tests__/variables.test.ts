@@ -1,6 +1,6 @@
 import { VariableTranslator } from '../variable';
 import { createDateFromYYYYMMDD, createDateOnly } from '../dateOperation';
-import {  isEqual } from 'date-fns';
+import { isEqual } from 'date-fns';
 import { beforeEach, expect, test } from 'vitest';
 
 beforeEach(async () => {});

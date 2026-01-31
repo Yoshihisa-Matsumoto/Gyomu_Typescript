@@ -8,7 +8,7 @@ export class Table extends GenericElement<HTMLTableElement> {
   #headerExist: boolean;
   constructor(
     node: HTMLTableElement,
-    { headerExist }: TableOption = { headerExist: true }
+    { headerExist }: TableOption = { headerExist: true },
   ) {
     super(node);
     this.#headerExist = headerExist;

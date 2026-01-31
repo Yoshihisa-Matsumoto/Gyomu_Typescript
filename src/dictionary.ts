@@ -11,7 +11,7 @@ export class DictionaryAccess {
     key1: K1,
     key2: K2,
     record: R,
-    data: Map<K1, Map<K2, Array<R>>>
+    data: Map<K1, Map<K2, Array<R>>>,
   ) {
     let values = data.get(key1);
     if (!values) {
@@ -25,7 +25,7 @@ export class DictionaryAccess {
     key2: K2,
     key3: K3,
     record: R,
-    data: Map<K1, Map<K2, Map<K3, Array<R>>>>
+    data: Map<K1, Map<K2, Map<K3, Array<R>>>>,
   ) {
     let values = data.get(key1);
     if (!values) {
@@ -36,7 +36,7 @@ export class DictionaryAccess {
       key2,
       key3,
       record,
-      values as Map<K2, Map<K3, Array<R>>>
+      values as Map<K2, Map<K3, Array<R>>>,
     );
   }
   static build4<K1, K2, K3, K4, R>(
@@ -45,7 +45,7 @@ export class DictionaryAccess {
     key3: K3,
     key4: K4,
     record: R,
-    data: Map<K1, Map<K2, Map<K3, Map<K4, Array<R>>>>>
+    data: Map<K1, Map<K2, Map<K3, Map<K4, Array<R>>>>>,
   ) {
     let values = data.get(key1);
     if (!values) {
@@ -57,7 +57,7 @@ export class DictionaryAccess {
       key3,
       key4,
       record,
-      values as Map<K2, Map<K3, Map<K4, Array<R>>>>
+      values as Map<K2, Map<K3, Map<K4, Array<R>>>>,
     );
   }
   static build5<K1, K2, K3, K4, K5, R>(
@@ -67,7 +67,7 @@ export class DictionaryAccess {
     key4: K4,
     key5: K5,
     record: R,
-    data: Map<K1, Map<K2, Map<K3, Map<K4, Map<K5, Array<R>>>>>>
+    data: Map<K1, Map<K2, Map<K3, Map<K4, Map<K5, Array<R>>>>>>,
   ) {
     let values = data.get(key1);
     if (!values) {
@@ -80,7 +80,7 @@ export class DictionaryAccess {
       key4,
       key5,
       record,
-      values as Map<K2, Map<K3, Map<K4, Map<K5, Array<R>>>>>
+      values as Map<K2, Map<K3, Map<K4, Map<K5, Array<R>>>>>,
     );
   }
   static build6<K1, K2, K3, K4, K5, K6, R>(
@@ -91,13 +91,13 @@ export class DictionaryAccess {
     key5: K5,
     key6: K6,
     record: R,
-    data: Map<K1, Map<K2, Map<K3, Map<K4, Map<K5, Map<K6, Array<R>>>>>>>
+    data: Map<K1, Map<K2, Map<K3, Map<K4, Map<K5, Map<K6, Array<R>>>>>>>,
   ) {
     let values = data.get(key1);
     if (!values) {
       data.set(
         key1,
-        new Map<K2, Map<K3, Map<K4, Map<K5, Map<K6, Array<R>>>>>>()
+        new Map<K2, Map<K3, Map<K4, Map<K5, Map<K6, Array<R>>>>>>(),
       );
       values = data.get(key1);
     }
@@ -108,7 +108,7 @@ export class DictionaryAccess {
       key5,
       key6,
       record,
-      values as Map<K2, Map<K3, Map<K4, Map<K5, Map<K6, Array<R>>>>>>
+      values as Map<K2, Map<K3, Map<K4, Map<K5, Map<K6, Array<R>>>>>>,
     );
   }
 }

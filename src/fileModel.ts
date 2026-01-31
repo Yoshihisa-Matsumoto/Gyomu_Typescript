@@ -45,7 +45,7 @@ export const FilterType = {
   LastModifiedTime: 'Last Modified Time',
 } as const;
 
-export type FilterType = typeof FilterType[keyof typeof FilterType];
+export type FilterType = (typeof FilterType)[keyof typeof FilterType];
 
 export const FileCompareType = {
   Equal: 'Equal',
@@ -56,7 +56,7 @@ export const FileCompareType = {
 } as const;
 
 export type FileCompareType =
-  typeof FileCompareType[keyof typeof FileCompareType];
+  (typeof FileCompareType)[keyof typeof FileCompareType];
 
 export const FileArchiveType = {
   Zip: 'zip',
@@ -67,7 +67,7 @@ export const FileArchiveType = {
   GuessFromFileName: 'unknown',
 } as const;
 export type FileArchiveType =
-  typeof FileArchiveType[keyof typeof FileArchiveType];
+  (typeof FileArchiveType)[keyof typeof FileArchiveType];
 
 export class FileFilterInfo {
   readonly kind: FilterType;
@@ -77,7 +77,7 @@ export class FileFilterInfo {
   constructor(
     kind: FilterType,
     operator: FileCompareType,
-    filter: string | Date
+    filter: string | Date,
   ) {
     this.kind = kind;
     this.operator = operator;

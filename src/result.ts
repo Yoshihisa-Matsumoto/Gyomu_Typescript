@@ -16,10 +16,6 @@ export {
   safeTry,
 } from 'neverthrow';
 
-export function result2Async<T, E>(
-  r: Result<T, E>
-): ResultAsync<T, E> {
-  return r.isOk()
-    ? okAsync(r.value)
-    : errAsync(r.error);
+export function result2Async<T, E>(r: Result<T, E>): ResultAsync<T, E> {
+  return r.isOk() ? okAsync(r.value) : errAsync(r.error);
 }

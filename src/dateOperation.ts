@@ -1,7 +1,7 @@
 export const createDateOnly = (
   year: number,
   one_base_month: number,
-  day: number
+  day: number,
 ) => {
   const dateString = `${year}-${('00' + one_base_month).slice(-2)}-${(
     '00' + day

@@ -43,7 +43,7 @@ test('GZ Creation Test', async () => {
 
   isSame = compareFiles(
     extractedFilename,
-    platform.join(sourceDirectory, 'README.md')
+    platform.join(sourceDirectory, 'README.md'),
   );
   expect(isSame).toBeTruthy();
 });

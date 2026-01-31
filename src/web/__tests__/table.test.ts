@@ -11,12 +11,12 @@ test('Table initialization', () => {
       .toString(),
   });
   const tablesDiv = page.getElementsByClassName<HTMLDivElement>(
-    'component-normal-table'
+    'component-normal-table',
   );
   const table = convertGenericElementByTagName(
     'table',
     tablesDiv[0].getGenericElementsByTagName('table')[0],
-    { headerExist: false }
+    { headerExist: false },
   );
 
   const dictionaryArray = table.toDictionaryArray();

@@ -28,7 +28,7 @@ class TransportResult {
     sourceName: string,
     destinationFull: string,
     destinationDirectory: string,
-    destinationName: string
+    destinationName: string,
   ) {
     this.index = index;
     this.inputBase = inputBase;
@@ -60,7 +60,7 @@ const inputData: TransportResult[] = [
     'Sname',
     'Ddir\\Dname',
     'Ddir',
-    'Dname'
+    'Dname',
   ),
   new TransportResult(
     2,
@@ -75,7 +75,7 @@ const inputData: TransportResult[] = [
     'Sname',
     'Ddir\\Sname',
     'Ddir',
-    'Sname'
+    'Sname',
   ),
   new TransportResult(
     3,
@@ -90,7 +90,7 @@ const inputData: TransportResult[] = [
     'Sname',
     'SDir\\Dname',
     'SDir',
-    'Dname'
+    'Dname',
   ),
   new TransportResult(
     4,
@@ -105,7 +105,7 @@ const inputData: TransportResult[] = [
     'Sname',
     'SDir\\Sname',
     'SDir',
-    'Sname'
+    'Sname',
   ),
   new TransportResult(
     5,
@@ -120,7 +120,7 @@ const inputData: TransportResult[] = [
     '',
     'Ddir',
     'Ddir',
-    ''
+    '',
   ),
   new TransportResult(
     6,
@@ -135,7 +135,7 @@ const inputData: TransportResult[] = [
     '',
     'SDir',
     'SDir',
-    ''
+    '',
   ),
   new TransportResult(
     7,
@@ -150,7 +150,7 @@ const inputData: TransportResult[] = [
     '',
     '',
     '',
-    ''
+    '',
   ),
   new TransportResult(
     8,
@@ -165,7 +165,7 @@ const inputData: TransportResult[] = [
     '',
     'Ddir',
     'Ddir',
-    ''
+    '',
   ),
   new TransportResult(
     9,
@@ -180,7 +180,7 @@ const inputData: TransportResult[] = [
     'Sname',
     'Ddir\\Dname',
     'Ddir',
-    'Dname'
+    'Dname',
   ),
   new TransportResult(
     10,
@@ -195,7 +195,7 @@ const inputData: TransportResult[] = [
     'Sname',
     'Ddir\\Sname',
     'Ddir',
-    'Sname'
+    'Sname',
   ),
   new TransportResult(
     11,
@@ -210,7 +210,7 @@ const inputData: TransportResult[] = [
     'Sname',
     'Dname',
     '',
-    'Dname'
+    'Dname',
   ),
   new TransportResult(
     12,
@@ -225,7 +225,7 @@ const inputData: TransportResult[] = [
     'Sname',
     'Sname',
     '',
-    'Sname'
+    'Sname',
   ),
   new TransportResult(
     13,
@@ -240,7 +240,7 @@ const inputData: TransportResult[] = [
     'Sname',
     'Ddir\\Dname',
     'Ddir',
-    'Dname'
+    'Dname',
   ),
   new TransportResult(
     14,
@@ -255,7 +255,7 @@ const inputData: TransportResult[] = [
     'Sname',
     'Ddir\\Sname',
     'Ddir',
-    'Sname'
+    'Sname',
   ),
   new TransportResult(
     15,
@@ -270,7 +270,7 @@ const inputData: TransportResult[] = [
     'Sname',
     'SDir\\Dname',
     'SDir',
-    'Dname'
+    'Dname',
   ),
   new TransportResult(
     16,
@@ -285,7 +285,7 @@ const inputData: TransportResult[] = [
     'Sname',
     'SDir\\Sname',
     'SDir',
-    'Sname'
+    'Sname',
   ),
   new TransportResult(
     17,
@@ -300,7 +300,7 @@ const inputData: TransportResult[] = [
     '',
     'Ddir',
     'Ddir',
-    ''
+    '',
   ),
   new TransportResult(
     18,
@@ -315,7 +315,7 @@ const inputData: TransportResult[] = [
     '',
     'SDir',
     'SDir',
-    ''
+    '',
   ),
   new TransportResult(
     19,
@@ -330,7 +330,7 @@ const inputData: TransportResult[] = [
     'Sname',
     'Ddir\\Dname',
     'Ddir',
-    'Dname'
+    'Dname',
   ),
   new TransportResult(
     20,
@@ -345,7 +345,7 @@ const inputData: TransportResult[] = [
     'Sname',
     'Ddir\\Sname',
     'Ddir',
-    'Sname'
+    'Sname',
   ),
   new TransportResult(
     21,
@@ -360,7 +360,7 @@ const inputData: TransportResult[] = [
     'Sname',
     'Dname',
     '',
-    'Dname'
+    'Dname',
   ),
   new TransportResult(
     22,
@@ -375,7 +375,7 @@ const inputData: TransportResult[] = [
     'Sname',
     'Sname',
     '',
-    'Sname'
+    'Sname',
   ),
 ];
 
@@ -416,7 +416,7 @@ const invalidInputdata: TransportResult[] = [
     '',
     '',
     '',
-    ''
+    '',
   ),
   new TransportResult(
     2,
@@ -431,7 +431,7 @@ const invalidInputdata: TransportResult[] = [
     '',
     '',
     '',
-    ''
+    '',
   ),
   new TransportResult(
     3,
@@ -446,7 +446,7 @@ const invalidInputdata: TransportResult[] = [
     '',
     '',
     '',
-    ''
+    '',
   ),
   new TransportResult(
     4,
@@ -461,7 +461,7 @@ const invalidInputdata: TransportResult[] = [
     '',
     '',
     '',
-    ''
+    '',
   ),
   new TransportResult(
     5,
@@ -476,7 +476,7 @@ const invalidInputdata: TransportResult[] = [
     '',
     '',
     '',
-    ''
+    '',
   ),
   new TransportResult(
     6,
@@ -491,7 +491,7 @@ const invalidInputdata: TransportResult[] = [
     '',
     '',
     '',
-    ''
+    '',
   ),
   new TransportResult(
     7,
@@ -506,7 +506,7 @@ const invalidInputdata: TransportResult[] = [
     '',
     '',
     '',
-    ''
+    '',
   ),
   new TransportResult(8, '', '', '', 'Ddir', '', '', '', '', '', '', '', ''),
   new TransportResult(9, '', '', '', '', 'Dname', '', '', '', '', '', '', ''),

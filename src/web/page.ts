@@ -85,7 +85,7 @@ export class Page {
       if ('Content-Disposition' in this.#response.headers) {
         const headerValue = this.#response.headers['Content-Disposition'];
         fileName = decodeURI(
-          headerValue.substring(headerValue.indexOf('filename=') + 9)
+          headerValue.substring(headerValue.indexOf('filename=') + 9),
         );
       }
     }
