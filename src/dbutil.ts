@@ -1,7 +1,7 @@
-import { Prisma } from './generated/prisma/client';
-import { CriticalError, DBError } from './errors';
+import { Prisma } from "./generated/prisma/client";
+import { CriticalError, DBError } from "./errors";
 //import { Failure, PromiseResult } from './result';
-import { ResultAsync } from './result';
+import { ResultAsync } from "./result";
 
 export function genericDBFunction<T>(
   actionName: string,
@@ -21,7 +21,7 @@ export function genericDBFunction<T>(
     // 致命的エラー → 再 throw（ResultAsync にしない）
     if (e instanceof Prisma.PrismaClientRustPanicError) {
       throw new CriticalError(
-        'Critical error on Prisma. Need to terminate the application',
+        "Critical error on Prisma. Need to terminate the application",
         e as Error,
       );
     }
