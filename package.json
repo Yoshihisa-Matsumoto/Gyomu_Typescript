@@ -3,8 +3,6 @@
   "version": "0.2.0",
   "description": "",
   "type": "module",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
   "exports": {
     ".": {
       "import": "./lib/index.js",
