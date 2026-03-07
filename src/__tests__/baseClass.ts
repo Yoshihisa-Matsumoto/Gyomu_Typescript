@@ -1,14 +1,33 @@
-import { expect } from 'vitest';
 import { platform } from '../platform';
+import { expect } from 'vitest';
+
+export const tmpDir = () => {
+  return platform.tmpdir() + platform.sep;
+};
 
 export const compareFiles = (srcFile: string, destFile: string): boolean => {
-  const result = platform
-    .readFileSync(srcFile)
-    .equals(platform.readFileSync(destFile));
+  const source: Buffer = platform.readFileSync(srcFile);
+  const destination: Buffer = platform.readFileSync(destFile);
+  const result = source.equals(
+    destination as any as Uint8Array<ArrayBufferLike>,
+  );
   if (!result) {
     console.log(srcFile, destFile);
   }
   return result;
+};
+
+export const validateTextFiles = (srcFile: string, destFile: string) => {
+  const srcData = platform
+    .readFileSync(srcFile)
+    .toString()
+    .replace(/\r\n|\r/g, '\n');
+  const destData = platform
+    .readFileSync(destFile)
+    .toString()
+    .replace(/\r\n|\r/g, '\n');
+
+  expect(srcData).toBe(destData);
 };
 
 export const validateFolders = (srcFolder: string, destFolder: string) => {

@@ -34,8 +34,8 @@ test('db error test', async () => {
     } else {
       const dbError = result.error;
       expect(dbError.message).toContain('load gyomu_param_master');
-      expect(dbError.innerError).not.toBeUndefined();
-      const innerError = dbError.innerError as Error;
+      expect(dbError.message).not.toBeUndefined();
+      const innerError = dbError.cause as Error;
       expect(innerError).toEqual(err);
     }
   });
@@ -47,9 +47,7 @@ test('db error test', async () => {
   criticalErrors.forEach(async (err) => {
     prismaMock.gyomu_param_master.findMany.mockRejectedValue(err);
     const itemKey = 'ITEM_KEY_Test$$';
-    await expect(ParameterAccess.keyExists(itemKey)).rejects.toBeInstanceOf(
-      CriticalError,
-    );
+    await expect((await ParameterAccess.keyExists(itemKey)).isErr()).toBe(true);
   });
 });
 

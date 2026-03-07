@@ -1,12 +1,16 @@
 import { FileTransportInfo } from '../fileModel';
 
-import { ArchiveError } from '../errors';
-//import { fail, Result, success, PromiseResult, Failure } from '../result';
-import { ResultAsync, errAsync, okAsync } from '../result';
-// import tarStream from 'tar-stream';
-// import tar from 'tar-fs';
-import * as tar from 'tar';
+import {
+  runAsync,
+  GyomuResultAsync,
+  simpleErrAsync,
+  okAsync,
+  toPromiseFromEmitter,
+} from '../result';
+
+import { create, list, extract } from 'tar';
 import { AbstractBaseArchive } from './abstract';
+import { IOError } from '../errors';
 
 /**
  * @remarks
@@ -17,18 +21,18 @@ export class TarArchive extends AbstractBaseArchive {
     tarFileName: string,
     transferInformation: FileTransportInfo,
     needGZipCompression: boolean = false,
-  ): ResultAsync<boolean, ArchiveError> {
-    // let currentDirectory = path.dirname(
-    //   transferInformation.sourceFullNameWithBasePath
+  ): GyomuResultAsync<boolean> {
+    // const currentDirectory = path.dirname(
+    //   transferInformation.sourceFullNameWithBasePath,
     // );
-    // let targetPathForTar =
+    // const targetPathForTar =
     //   transferInformation.sourceFullNameWithBasePath.substring(
-    //     currentDirectory.length + path.sep.length
+    //     currentDirectory.length + path.sep.length,
     //   );
     // console.log('current', currentDirectory);
     // console.log('target', targetPathForTar);
     if (!transferInformation.isSourceDirectory) {
-      return errAsync(new ArchiveError('Single File is not supported'));
+      return simpleErrAsync(IOError, 'Single File is not supported');
     }
     // let tarOptions: tar.CreateOptions & tar.FileOptions;
     // tarOptions = {
@@ -42,86 +46,112 @@ export class TarArchive extends AbstractBaseArchive {
     //     gzip: true,
     //   };
     // }
-    return ResultAsync.fromSafePromise(
-      new Promise((resolve, reject) => {
-        let result: Promise<void>;
-        if (!needGZipCompression) {
-          result = tar.create(
-            {
-              file: tarFileName,
-              cwd: transferInformation.sourceFullNameWithBasePath,
-            },
-            [''],
-          );
-        } else {
-          result = tar.create(
-            {
-              file: tarFileName,
-              cwd: transferInformation.sourceFullNameWithBasePath,
-              gzip: true,
-            },
-            [''],
-          );
-        }
+    return runAsync(
+      () =>
+        new Promise((resolve, reject) => {
+          let result: Promise<void>;
+          if (!needGZipCompression) {
+            result = create(
+              {
+                file: tarFileName,
+                cwd: transferInformation.sourceFullNameWithBasePath,
+              },
+              [''],
+            );
+          } else {
+            result = create(
+              {
+                file: tarFileName,
+                cwd: transferInformation.sourceFullNameWithBasePath,
+                gzip: true,
+              },
+              [''],
+            );
+          }
 
-        result
-          .then(() => {
-            return resolve(true);
-          })
-          .catch((err: Error) => {
-            return reject(new ArchiveError('Fail to Tar archive', err));
-          });
-      }),
+          result
+            .then(() => {
+              return resolve(true);
+            })
+            .catch((err: Error) => {
+              return reject(new IOError('Fail to Tar archive', err));
+            });
+        }),
+      IOError,
+      'Fail to archive as tar',
     );
   }
   constructor(tarFilename: string) {
     super(tarFilename);
   }
 
-  fileExists(fileName: string): ResultAsync<boolean, ArchiveError> {
+  fileExists(fileName: string): GyomuResultAsync<boolean> {
     fileName = this.__massageEntryPath(fileName);
 
     let isExist = false;
-    return ResultAsync.fromPromise(
-      tar.list({
-        file: this.archiveFileName,
-        onentry: (entry) => {
-          if (entry.path === fileName) isExist = true;
-        },
-      }),
-      () => new ArchiveError('Fail to list tar archive'),
+    return runAsync(
+      () => {
+        return toPromiseFromEmitter(
+          list({
+            file: this.archiveFileName,
+            onentry: (entry) => {
+              if (entry.path === fileName) isExist = true;
+            },
+          }),
+        );
+        // const result = list({
+        //   file: this.archiveFileName,
+        //   onentry: (entry) => {
+        //     if (entry.path === fileName) isExist = true;
+        //   },
+        // });
+        // if (result instanceof Promise) {
+        //   return result;
+        // }
+        // return new Promise<void>((resolve, reject) => {
+        //   result.on('end', () => resolve);
+        //   result.on('error', reject);
+        // });
+      },
+      IOError,
+      'Fail to list tar archive',
     ).andThen(() => okAsync(isExist));
   }
 
   extractSingileFile(
     sourceEntryFullName: string,
     destinationFolderName: string,
-  ): ResultAsync<boolean, ArchiveError> {
+  ): GyomuResultAsync<boolean> {
     const targetEntryName = this.__massageEntryPath(sourceEntryFullName);
     const numPathElementToSkip = (targetEntryName.match(/\//g) || []).length;
     this.__createDirectoryIfNotExist(destinationFolderName);
-    return ResultAsync.fromSafePromise(
-      tar
-        .extract({
-          cwd: destinationFolderName,
-          file: this.archiveFileName,
-          filter: (path) => path === targetEntryName,
-          strip: numPathElementToSkip,
-        })
-        .then(() => true)
-        .catch((reason: Error) => {
-          throw new ArchiveError(
-            `Fail to untar ${this.archiveFileName} -> ${targetEntryName}`,
-            reason,
-          );
-        }),
-    );
+    return runAsync(
+      () => {
+        return toPromiseFromEmitter(
+          extract({
+            cwd: destinationFolderName,
+            file: this.archiveFileName,
+            filter: (path) => path === targetEntryName,
+            strip: numPathElementToSkip,
+          }),
+        );
+        // if (result instanceof Promise) {
+        //   return result;
+        // }
+        // return new Promise<void>((resolve, reject) => {
+        //   result.on('end', () => resolve);
+        //   result.on('error', reject);
+        // });
+      },
+      IOError,
+      `Fail to untar ${this.archiveFileName} -> ${targetEntryName}`,
+    ).andThen(() => okAsync(true));
   }
 
   extractDirectory(
     sourceDirectory: string,
     destinationDirectory: string,
-  ): ResultAsync<boolean, ArchiveError> {
+  ): GyomuResultAsync<boolean> {
     const targetEntryName = this.__massageEntryPath(sourceDirectory);
     const numPathElementToSkip = !sourceDirectory
       ? 0
@@ -129,42 +159,38 @@ export class TarArchive extends AbstractBaseArchive {
 
     //let directoryName = path.dirname(destinationDirectory);
     this.__createDirectoryIfNotExist(destinationDirectory);
-    return ResultAsync.fromPromise(
-      tar
-        .extract({
-          cwd: destinationDirectory,
-          file: this.archiveFileName,
-          filter: (path) =>
-            !targetEntryName || path.startsWith(targetEntryName),
-          strip: numPathElementToSkip,
-        })
-        .then(() => true),
-      (reason: unknown) =>
-        new ArchiveError(
-          `Fail to untar ${this.archiveFileName} -> ${targetEntryName}`,
-          reason,
-        ),
-    );
+    return runAsync(
+      () => {
+        return toPromiseFromEmitter(
+          extract({
+            cwd: destinationDirectory,
+            file: this.archiveFileName,
+            filter: (path) =>
+              !targetEntryName || path.startsWith(targetEntryName),
+            strip: numPathElementToSkip,
+          }),
+        );
+      },
+      IOError,
+      `Fail to untar ${this.archiveFileName} -> ${targetEntryName}`,
+    ).andThen(() => okAsync(true));
   }
 
-  extractAll(destinationDirectory: string): ResultAsync<boolean, ArchiveError> {
+  extractAll(destinationDirectory: string): GyomuResultAsync<boolean> {
     return this.extractDirectory('', destinationDirectory);
   }
-  extract(
-    transferInformation: FileTransportInfo,
-  ): ResultAsync<boolean, ArchiveError> {
+  extract(transferInformation: FileTransportInfo): GyomuResultAsync<boolean> {
     //console.log('directory', directory);
     // const targetEntryName = this.__massageEntryPath(
-    //   transferInformation.sourceFullName
+    //   transferInformation.sourceFullName,
     // );
     if (
       transferInformation.sourceFileName !==
       transferInformation.destinationFileName
     )
-      return errAsync(
-        new ArchiveError(
-          'Destination filename must be same as original filename',
-        ),
+      return simpleErrAsync(
+        IOError,
+        'Destination filename must be same as original filename',
       );
     //console.log('targetEntryName:', targetEntryName, ':');
 

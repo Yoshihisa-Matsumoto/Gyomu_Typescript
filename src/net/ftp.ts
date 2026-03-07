@@ -1,10 +1,11 @@
 import { Client } from 'basic-ftp';
 
-import { NetworkError } from '../errors';
+import { errAsync, runAsync } from '../result';
 import { FileTransportInfo } from '../fileModel';
-import { okAsync, Result, ResultAsync, ok, err } from '../result';
+import { okAsync, GyomuResultAsync } from '../result';
 import { RemoteConnection } from './remoteConnection';
 import { platform } from '../platform';
+import { NetworkError } from '../errors';
 
 export class Ftp {
   #connectionInformation: RemoteConnection;
@@ -18,88 +19,96 @@ export class Ftp {
   }
   #init() {
     this.client.ftp.verbose = true;
-    return ResultAsync.fromPromise(
-      this.client.access({
-        host: this.#connectionInformation.serverURL,
-        user: this.#connectionInformation.userId,
-        password: this.#connectionInformation.password,
-        port: this.#connectionInformation.port,
-        secure: this.#connectionInformation.sslEnabled
-          ? this.#connectionInformation.sslImplicit
-            ? 'implicit'
-            : true
-          : false,
-        secureOptions: !this.#connectionInformation.sslEnabled
-          ? undefined
-          : {
-              host: this.#connectionInformation.serverURL,
-              port: this.#connectionInformation.port,
-              checkServerIdentity: () => {
-                return undefined;
+    return runAsync(
+      () =>
+        this.client.access({
+          host: this.#connectionInformation.serverURL,
+          user: this.#connectionInformation.userId,
+          password: this.#connectionInformation.password,
+          port: this.#connectionInformation.port,
+          secure: this.#connectionInformation.sslEnabled
+            ? this.#connectionInformation.sslImplicit
+              ? 'implicit'
+              : true
+            : false,
+          secureOptions: !this.#connectionInformation.sslEnabled
+            ? undefined
+            : {
+                host: this.#connectionInformation.serverURL,
+                port: this.#connectionInformation.port,
+                checkServerIdentity: () => {
+                  return undefined;
+                },
               },
-            },
-      }),
-      (err) => new NetworkError('Fail to do ftp connection', err as Error),
+        }),
+      NetworkError,
+      'Fail to do ftp connection',
     ).map(() => true);
   }
 
-  download(
-    transportInformation: FileTransportInfo,
-  ): ResultAsync<boolean, NetworkError> {
+  download(transportInformation: FileTransportInfo): GyomuResultAsync<boolean> {
     // #init() が必要な場合は ResultAsync チェーンに含める
-    const initResult: ResultAsync<boolean, NetworkError> = this.connected
-      ? okAsync<boolean, NetworkError>(true)
+    const initResult: GyomuResultAsync<boolean> = this.connected
+      ? okAsync(true)
       : this.#init(); // #init() は ResultAsync<boolean, NetworkError>
 
     return initResult.andThen(() => {
       const promise = transportInformation.isSourceDirectory
-        ? this.client.downloadToDir(
-            transportInformation.destinationPath,
-            transportInformation.sourceFolderName.replace(platform.sep, '/'),
-          )
-        : this.client
-            .downloadTo(
-              transportInformation.destinationFullName,
-              transportInformation.sourceFullName.replace(platform.sep, '/'),
+        ? () =>
+            this.client.downloadToDir(
+              transportInformation.destinationPath,
+              transportInformation.sourceFolderName.replace(platform.sep, '/'),
             )
-            .then(() => undefined);
+        : () =>
+            this.client
+              .downloadTo(
+                transportInformation.destinationFullName,
+                transportInformation.sourceFullName.replace(platform.sep, '/'),
+              )
+              .then(() => undefined);
 
-      return ResultAsync.fromPromise(
-        promise,
-        (err) => new NetworkError('Fail to do ftp download', err as Error),
-      ).map(() => true);
+      return runAsync(promise, NetworkError, 'Fail to do ftp download').map(
+        () => true,
+      );
     });
   }
-  upload(transportInformation: FileTransportInfo) {
-    const initResult: ResultAsync<boolean, NetworkError> = this.connected
-      ? okAsync<boolean, NetworkError>(true)
+  upload(transportInformation: FileTransportInfo): GyomuResultAsync<boolean> {
+    const initResult: GyomuResultAsync<boolean> = this.connected
+      ? okAsync(true)
       : this.#init(); // #init() は ResultAsync<boolean, NetworkError>
 
     return initResult.andThen(() => {
       const promise = transportInformation.isSourceDirectory
-        ? this.client
-            .uploadFrom(
+        ? () =>
+            this.client
+              .uploadFrom(
+                transportInformation.sourceFullName,
+                transportInformation.destinationFullName.replace(
+                  platform.sep,
+                  '/',
+                ),
+              )
+              .then(() => undefined)
+        : () =>
+            this.client.uploadFromDir(
               transportInformation.sourceFullName,
               transportInformation.destinationFullName.replace(
                 platform.sep,
                 '/',
               ),
-            )
-            .then(() => undefined)
-        : this.client.uploadFromDir(
-            transportInformation.sourceFullName,
-            transportInformation.destinationFullName.replace(platform.sep, '/'),
-          );
+            );
 
-      return ResultAsync.fromPromise(
-        promise,
-        (err) => new NetworkError('Fail to do ftp upload', err as Error),
-      ).map(() => true);
+      return runAsync(promise, NetworkError, 'Fail to do ftp upload').map(
+        () => true,
+      );
     });
   }
 
-  getFileInfo(transportInformation: FileTransportInfo) {
-    const initResult: ResultAsync<boolean, NetworkError> = this.connected
+  getFileInfo(transportInformation: FileTransportInfo): GyomuResultAsync<{
+    size: number;
+    date: Date;
+  }> {
+    const initResult: GyomuResultAsync<boolean> = this.connected
       ? okAsync<boolean, NetworkError>(true)
       : this.#init(); // #init() は ResultAsync<boolean, NetworkError>
 
@@ -110,38 +119,41 @@ export class Ftp {
       const sizePromise = this.client.size(fullPath);
       const lastModPromise = this.client.lastMod(fullPath);
 
-      return ResultAsync.fromPromise(
-        Promise.all([sizePromise, lastModPromise]),
-        (err) =>
-          new NetworkError('Fail to get ftp file information', err as Error),
+      return runAsync(
+        () => Promise.all([sizePromise, lastModPromise]),
+        NetworkError,
+        'Fail to get ftp file information',
       ).map(([size, date]) => ({ size, date }));
     });
   }
 
-  listFiles(transportInformation: FileTransportInfo) {
-    const initResult: ResultAsync<boolean, NetworkError> = this.connected
-      ? okAsync<boolean, NetworkError>(true)
+  listFiles(
+    transportInformation: FileTransportInfo,
+  ): GyomuResultAsync<string[]> {
+    const initResult: GyomuResultAsync<boolean> = this.connected
+      ? okAsync(true)
       : this.#init(); // #init() は ResultAsync<boolean, NetworkError>
 
     return initResult.andThen(() => {
       const fullPath =
         transportInformation.sourceFullName ?? ''.replace(platform.sep, '/');
 
-      const fileInfoListPromise = this.client.list(fullPath);
-      return ResultAsync.fromPromise(
+      const fileInfoListPromise = () => this.client.list(fullPath);
+      return runAsync(
         fileInfoListPromise,
-        (err) => new NetworkError('Fail to retrieve ftp folders', err as Error),
+        NetworkError,
+        'Fail to retrieve ftp folders',
       ).map((fileInfoList) => fileInfoList.map((f) => f.name));
     });
   }
 
-  close(): Result<boolean, NetworkError> {
-    if (!this.connected) return ok(true);
+  close(): GyomuResultAsync<boolean> {
+    if (!this.connected) return okAsync(true);
     try {
       this.client.close();
-      return ok(true);
+      return okAsync(true);
     } catch (error) {
-      return err(
+      return errAsync(
         new NetworkError('Fail to close ftp connection', error as Error),
       );
     }

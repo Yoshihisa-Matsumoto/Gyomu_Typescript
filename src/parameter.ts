@@ -3,28 +3,18 @@ import { format } from 'date-fns';
 import prisma from './dbsingleton';
 import { DBError } from './errors';
 //import { Failure, PromiseResult, fail, success } from './result';
-import { ResultAsync, errAsync, okAsync } from './result';
+import { GyomuResultAsync, errAsync, okAsync, withRetry } from './result';
 import { User } from './user';
 import { genericDBFunction } from './dbutil';
 
 type ParameterType = string | number | boolean;
 
-export const retryResultAsync = <T, E>(
-  fn: () => ResultAsync<T, E>,
-  maxRetry: number,
-): ResultAsync<T, E> => {
-  return fn().orElse((err) =>
-    maxRetry > 1 ? retryResultAsync(fn, maxRetry - 1) : errAsync(err),
-  );
-};
 export class ParameterAccess {
-  static keyExists(key: string): ResultAsync<boolean, DBError> {
+  static keyExists(key: string): GyomuResultAsync<boolean> {
     return this.#loadParameter(key).map((values) => values.length > 0);
   }
 
-  static #loadParameter(
-    key: string,
-  ): ResultAsync<gyomu_param_master[], DBError> {
+  static #loadParameter(key: string): GyomuResultAsync<gyomu_param_master[]> {
     return genericDBFunction<gyomu_param_master[]>(
       'load gyomu_param_master',
       async (key) =>
@@ -44,10 +34,10 @@ export class ParameterAccess {
     key: string,
     user?: User,
     targetDate?: Date,
-  ): ResultAsync<string, DBError> {
+  ): GyomuResultAsync<string> {
     const itemKey = this.getKey(key, user);
 
-    return retryResultAsync(() => this.#loadParameter(itemKey), 3).andThen(
+    return withRetry(() => this.#loadParameter(itemKey), 3).andThen(
       (itemValues) => {
         if (!itemValues || itemValues.length === 0) {
           return errAsync(new DBError('Unknown error on retrieving parameter'));
@@ -96,7 +86,7 @@ export class ParameterAccess {
     key: string,
     user?: User,
     targetDate?: Date,
-  ): ResultAsync<boolean, DBError> {
+  ): GyomuResultAsync<boolean> {
     return ParameterAccess.value(key, user, targetDate).andThen((result) =>
       okAsync(result.toLowerCase() == 'true'),
     );
@@ -106,7 +96,7 @@ export class ParameterAccess {
     key: string,
     user?: User,
     targetDate?: Date,
-  ): ResultAsync<number, DBError> {
+  ): GyomuResultAsync<number> {
     return ParameterAccess.value(key, user, targetDate).andThen((result) =>
       okAsync(+result),
     );
@@ -169,7 +159,7 @@ export class ParameterAccess {
     key: string,
     item: T,
     user?: User,
-  ): ResultAsync<boolean, DBError> {
+  ): GyomuResultAsync<boolean> {
     const itemKey = this.getKey(key, user);
     const itemValue = item.toString();
 

@@ -1,5 +1,5 @@
-import { BaseError, TimeoutError } from './errors';
-import { ResultAsync } from './result';
+import { TimeoutError } from './errors';
+import { GyomuResultAsync, runAsync } from './result';
 /**
  *
  * @param pollingActionName
@@ -8,13 +8,13 @@ import { ResultAsync } from './result';
  * Return success(true) when it's good result in polling. Otherwise return success(false)
  * Return Failure with TimeoutError if there is any unexpected error
  */
-export function polling<E extends BaseError>(
+export function polling(
   pollingActionName: string,
   timeoutSeconds: number,
   intervalSeconds: number,
-  timerFunc: (...args: any[]) => ResultAsync<boolean, E>,
+  timerFunc: (...args: any[]) => GyomuResultAsync<boolean>,
   ...args: any[]
-): ResultAsync<boolean, TimeoutError> {
+): GyomuResultAsync<boolean> {
   const timeoutTime = Date.now() + timeoutSeconds * 1000;
 
   const poll = async (): Promise<boolean> => {
@@ -40,13 +40,9 @@ export function polling<E extends BaseError>(
     return poll();
   };
 
-  return ResultAsync.fromPromise(poll(), (e) =>
-    e instanceof TimeoutError
-      ? e
-      : new TimeoutError(`Fail on polling: ${pollingActionName}`, e),
-  );
+  return runAsync(poll, TimeoutError, `Fail on polling: ${pollingActionName}`);
 }
 
-export const sleep = (ms: number) => {
-  return new Promise<void>((resolve) => setTimeout(resolve, ms));
+export const sleep = async (second: number) => {
+  await new Promise((resolve) => setTimeout(resolve, second * 1000));
 };

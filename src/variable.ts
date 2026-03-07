@@ -2,15 +2,15 @@ import { createDateOnly } from './dateOperation';
 import prisma from './dbsingleton';
 import MarketDateAccess from './holidays';
 import { addDays, addMonths, format, subDays } from 'date-fns';
-import { DBError, ParseError } from './errors';
+import { ValueError } from './errors';
 import {
   okAsync,
-  ResultAsync,
-  Result,
+  GyomuResultAsync,
   ok,
   err,
   result2Async,
   errAsync,
+  GyomuResult,
 } from './result';
 import { genericDBFunction } from './dbutil';
 
@@ -80,23 +80,18 @@ export class VariableTranslator {
     this.#marketAccess = marketAccess;
     //this.#ctx = ctx;
   }
-  static getTranslator(
-    market: string,
-  ): ResultAsync<VariableTranslator, DBError> {
+  static getTranslator(market: string): GyomuResultAsync<VariableTranslator> {
     return MarketDateAccess.getMarketAccess(market)
       .map((access) => new VariableTranslator(access))
       .andThen((translator) => translator.init().map(() => translator));
   }
 
-  init(): ResultAsync<void, DBError> {
+  init(): GyomuResultAsync<void> {
     return this.#getSupportedMarket().map((markets) => {
       this.__supportedMarkets = markets;
     });
   }
-  parse(
-    inputString: string,
-    targetDate: Date,
-  ): ResultAsync<string, ParseError> {
+  parse(inputString: string, targetDate: Date): GyomuResultAsync<string> {
     const startIndex = inputString.indexOf('{%');
     const endIndex = inputString.indexOf('%}');
 
@@ -117,7 +112,7 @@ export class VariableTranslator {
     ctx: ParseDateContext,
     part: string,
     targetDate: Date,
-  ): ResultAsync<ParseDateContext, ParseError> {
+  ): GyomuResultAsync<ParseDateContext> {
     // すでに結果が出ているなら何もしない（reduce 停止相当）
     if (ctx.kind === 'done') {
       return okAsync(ctx);
@@ -170,10 +165,10 @@ export class VariableTranslator {
     return okAsync(ctx);
   }
 
-  parseDate(keyword: string, targetDate: Date): ResultAsync<Date, ParseError> {
+  parseDate(keyword: string, targetDate: Date): GyomuResultAsync<Date> {
     const parts = keyword.split('$');
 
-    const initial: ResultAsync<ParseDateContext, ParseError> = okAsync({
+    const initial: GyomuResultAsync<ParseDateContext> = okAsync({
       kind: 'processing',
       factorIndex: 1,
       marketAccess: this.#marketAccess,
@@ -190,17 +185,17 @@ export class VariableTranslator {
       .andThen((ctx) =>
         ctx.kind === 'done'
           ? okAsync(ctx.result)
-          : errAsync(new ParseError('No keyword: Not supported')),
+          : errAsync(new ValueError('No keyword: Not supported')),
       );
   }
-  // #returnPromiseSuccess<T>(val: T): PromiseResult<T, ParseError> {
+  // #returnPromiseSuccess<T>(val: T): PromiseResult<T, ValueError> {
   //   return new Promise((resolve) => {
   //     resolve(success(val));
   //   });
   // }
-  // #returnPromiseFail<T>(message: string): PromiseResult<T, ParseError> {
+  // #returnPromiseFail<T>(message: string): PromiseResult<T, ValueError> {
   //   return new Promise((resolve) => {
-  //     resolve(fail(message, ParseError));
+  //     resolve(fail(message, ValueError));
   //   });
   // }
   #translateDate(
@@ -208,7 +203,7 @@ export class VariableTranslator {
     targetDate: Date,
     dateParameter: VariableDateKeyword,
     factorIndex: number,
-  ): Result<Date, ParseError> {
+  ): GyomuResult<Date> {
     switch (dateParameter) {
       case VariableDateKeyword.TODAY:
         return ok(targetDate);
@@ -331,7 +326,7 @@ export class VariableTranslator {
           ),
         );
       default:
-        return err(new ParseError(`${dateParameter} is not supported`));
+        return err(new ValueError(`${dateParameter} is not supported`));
     }
   }
   #initialTranslateContext(): TranslateContext {
@@ -347,7 +342,7 @@ export class VariableTranslator {
   //   ctx: TranslateContext,
   //   part: string,
   //   targetDate: Date
-  // ): ResultAsync<TranslateContext, ParseError> {
+  // ): GyomuResultAsync<TranslateContext, ValueError> {
 
   //   /* number */
   //   if (!isNaN(parseInt(part))) {
@@ -360,7 +355,7 @@ export class VariableTranslator {
   //   /* market */
   //   if (this.__supportedMarkets.includes(part)) {
   //     return MarketDateAccess.getMarketAccess(part).mapErr(
-  //       (e) => new ParseError(`Fail to retrieve market data ${part}`, e)
+  //       (e) => new ValueError(`Fail to retrieve market data ${part}`, e)
   //     ).map((access) => ({
   //       ...ctx,
   //       marketAccess: access,
@@ -403,13 +398,13 @@ export class VariableTranslator {
   // #render(
   //   ctx: TranslateContext,
   //   part: string
-  // ): ResultAsync<TranslateContext, ParseError> {
+  // ): GyomuResultAsync<TranslateContext, ValueError> {
 
   //   switch (ctx.variableType) {
   //     case VariableType.Date:
   //       if (!ctx.date) {
   //         return errAsync(
-  //           new ParseError(`Invalid Keyword Setting for date`)
+  //           new ValueError(`Invalid Keyword Setting for date`)
   //         );
   //       }
   //       return okAsync({
@@ -438,7 +433,7 @@ export class VariableTranslator {
     ctx: TranslateContext,
     part: string,
     targetDate: Date,
-  ): ResultAsync<TranslateContext, ParseError> {
+  ): GyomuResultAsync<TranslateContext> {
     /* number */
     if (!isNaN(Number(part))) {
       return okAsync({
@@ -451,7 +446,7 @@ export class VariableTranslator {
     if (this.__supportedMarkets.includes(part)) {
       return MarketDateAccess.getMarketAccess(part)
         .mapErr(
-          (e) => new ParseError(`Fail to retrieve market data ${part}`, e),
+          (e) => new ValueError(`Fail to retrieve market data ${part}`, e),
         )
         .map((access) => ({
           ...ctx,
@@ -463,7 +458,7 @@ export class VariableTranslator {
     if (part in VariableDateKeyword) {
       if (ctx.state.kind === 'DatePending') {
         return errAsync(
-          new ParseError(`Date keyword repeated before format: ${part}`),
+          new ValueError(`Date keyword repeated before format: ${part}`),
         );
       }
       return result2Async(
@@ -505,7 +500,7 @@ export class VariableTranslator {
     ctx: TranslateContext,
     part: string,
     targetDate: Date,
-  ): ResultAsync<TranslateContext, ParseError> {
+  ): GyomuResultAsync<TranslateContext> {
     if (ctx.state.kind === 'DatePending') {
       const formatted = format(ctx.state.date, part);
 
@@ -538,11 +533,11 @@ export class VariableTranslator {
         });
       }
 
-      case VariableType.Argument:
-        return okAsync({
-          ...ctx,
-          output: [...ctx.output, arguments[ctx.factorIndex - 1]],
-        });
+      // case VariableType.Argument:
+      //   return okAsync({
+      //     ...ctx,
+      //     output: [...ctx.output, arguments[ctx.factorIndex - 1]],
+      //   });
 
       case VariableType.ParamMaster:
       case VariableType.ParamMasterStringDictionary:
@@ -553,17 +548,14 @@ export class VariableTranslator {
 
       default:
         return errAsync(
-          new ParseError(`Unsupported variable type: ${ctx.variableType}`),
+          new ValueError(`Unsupported variable type: ${ctx.variableType}`),
         );
     }
   }
 
-  #translate(
-    keyword: string,
-    targetDate: Date,
-  ): ResultAsync<string, ParseError> {
+  #translate(keyword: string, targetDate: Date): GyomuResultAsync<string> {
     const parts = keyword.split('$');
-    const initial: ResultAsync<TranslateContext, ParseError> = okAsync(
+    const initial: GyomuResultAsync<TranslateContext> = okAsync(
       this.#initialTranslateContext(),
     );
     return parts

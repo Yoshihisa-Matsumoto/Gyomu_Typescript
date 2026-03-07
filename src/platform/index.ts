@@ -1,4 +1,8 @@
-import { linux } from './linux';
-import { windows } from './windows';
+import os from 'os';
 
-export const platform = process.platform === 'win32' ? windows : linux;
+import { windows } from './windows';
+import { linux } from './linux';
+
+export const platform = os.platform() === 'win32' ? windows : linux;
+
+export * from './type';

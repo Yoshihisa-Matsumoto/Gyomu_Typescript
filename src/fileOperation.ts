@@ -1,27 +1,40 @@
-import { Configurator } from './configurator';
+// import * as fs from 'fs';
+// import path, { extname } from 'path';
 import {
-  FileArchiveType,
   FileCompareType,
   FileFilterInfo,
   FileInfo,
-  FileTransportInfo,
   FilterType,
 } from './fileModel';
 import { compareAsc } from 'date-fns';
-import { ResultAsync, errAsync, okAsync } from './result';
-import { AccessError, ArchiveError, TimeoutError } from './errors';
-import { ZipArchive } from './archive/zip';
-import { TarArchive } from './archive/tar';
+import { GyomuResultAsync, errAsync, okAsync, runAsync } from './result';
+// import { ZipArchive } from './archive/zip';
+// import { TarArchive } from './archive/tar';
 import { isEqual } from 'date-fns';
-import { GzipArchive } from './archive/gz';
+//import { GzipArchive } from './archive/gz';
 import { polling } from './timer';
+//import * as os from 'os';
 import { platform } from './platform';
+import { AccessError, TimeoutError } from './errors';
 
 export class FileOperation {
+  static getTempPath(): string {
+    return platform.tmpdir();
+  }
+  static join(...paths: string[]) {
+    return platform.join(...paths);
+  }
+  static getExtension(fileName: string) {
+    const extName = platform.extname(fileName);
+    if (extName.length > 0) {
+      return extName.substring(1);
+    }
+    return extName;
+  }
   static canAccess(
     fileName: string,
     readOnly: boolean = false,
-  ): ResultAsync<boolean, AccessError> {
+  ): GyomuResultAsync<boolean> {
     if (!platform.existsSync(fileName))
       return errAsync(new AccessError(`File Not exist: ${fileName}`));
     const specialExtension = ['xls', 'xlsm', 'xlsx', 'zip'];
@@ -34,8 +47,8 @@ export class FileOperation {
       return errAsync(new AccessError(`File is invalid: ${fileName}`));
     if (readOnly) return okAsync(true);
 
-    return ResultAsync.fromPromise(
-      (async () => {
+    return runAsync(
+      async () => {
         await new Promise((resolve) => setTimeout(resolve, 100));
 
         const stat2 = platform.statSync(fileName);
@@ -47,11 +60,9 @@ export class FileOperation {
         }
 
         return true;
-      })(),
-      (e) =>
-        e instanceof AccessError
-          ? e
-          : new AccessError(`File check failed: ${fileName}`, e),
+      },
+      AccessError,
+      `File check failed: ${fileName}`,
     );
 
     // try {
@@ -72,12 +83,12 @@ export class FileOperation {
   static waitTillExclusiveAccess(
     fileName: string,
     timeoutSeconds: number,
-  ): ResultAsync<boolean, TimeoutError> {
-    return polling<AccessError>(
+  ): GyomuResultAsync<boolean> {
+    return polling(
       `File Access check ${fileName}`,
       timeoutSeconds,
       0.5,
-      (): ResultAsync<boolean, AccessError> => {
+      (): GyomuResultAsync<boolean> => {
         const accessible = this.canAccess(fileName, false);
         return accessible.orElse(() => okAsync(false));
       },
@@ -86,6 +97,35 @@ export class FileOperation {
       (error) =>
         new TimeoutError(`Timeout on waiting file access: ${fileName}`, error),
     );
+
+    // const timeoutTime = new Date().getTime() + timeoutSeconds * 1000;
+    // const nextIntervalMilliSecond = 500;
+
+    // const accessible = await this.canAccess(fileName, false);
+    // if (accessible.isSuccess() && accessible.value) {
+    //   return success(accessible.value);
+    // }
+    // if (new Date().getTime() > timeoutTime) {
+    //   return Failure.fromMessage(`Timeout happen to access ${fileName}`, TimeoutError);
+    // }
+
+    // return new Promise(async (resolve, reject) => {
+    //   const timerId = await setInterval(async () => {
+    //     const accessible = await this.canAccess(fileName, false);
+    //     if (accessible.isSuccess() && accessible.value) {
+    //       clearInterval(timerId);
+    //       return resolve(success(accessible.value));
+    //     }
+    //     if (new Date().getTime() > timeoutTime) {
+    //       //console.log('Timeout');
+    //       clearInterval(timerId);
+    //       return resolve(
+    //         Failure.fromMessage(`Timeout happen to access ${fileName}`, TimeoutError)
+    //       );
+    //     }
+    //     //console.log('wait next', new Date().getTime(), timeoutTime);
+    //   }, nextIntervalMilliSecond);
+    // });
   }
 
   static search(
@@ -228,99 +268,97 @@ export class FileOperation {
     }
   }
 
-  static archive(
-    archiveFileName: string,
-    archiveType: FileArchiveType,
-    sourceFileList: FileTransportInfo[],
-    config: Configurator,
-    applicationId: number,
-    password: string = '',
-  ): ResultAsync<boolean, ArchiveError> {
-    if (!sourceFileList || sourceFileList.length === 0)
-      return errAsync(new ArchiveError('Source File Not Specified to archive'));
+  // static async archive(
+  //   archiveFileName: string,
+  //   archiveType: FileArchiveType,
+  //   sourceFileList: FileTransportInfo[],
+  //   config: Configurator,
+  //   applicationId: number,
+  //   password: string = ''
+  // ): Promise<Result<boolean, ArchiveError>> {
+  //   if (!sourceFileList || sourceFileList.length === 0)
+  //     return Failure.fromMessage('Source File Not Specified to archive', ArchiveError);
 
-    const archiveInformation = new FileInfo(archiveFileName);
-    if (archiveType == FileArchiveType.GuessFromFileName) {
-      const extension = archiveInformation.extension.toLowerCase();
-      switch (extension) {
-        case 'zip':
-          archiveType = FileArchiveType.Zip;
-          break;
-        case 'tgz':
-          archiveType = FileArchiveType.Tgz;
-          break;
-        case 'bz2':
-          archiveType = FileArchiveType.BZip2;
-          break;
-        case 'gz':
-          archiveType = FileArchiveType.GZip;
-          break;
-        case 'tar':
-          archiveType = FileArchiveType.Tar;
-          break;
-        default:
-          return errAsync(
-            new ArchiveError(
-              'File Extension Not supported for archiving ' + extension,
-            ),
-          );
-      }
-    }
-    if (
-      archiveType == FileArchiveType.BZip2 ||
-      archiveType == FileArchiveType.GZip
-    ) {
-      if (sourceFileList.length > 1 || sourceFileList[0].isSourceDirectory)
-        return errAsync(
-          new ArchiveError(
-            'Multiple files are not supported in this compression type: ' +
-              archiveType,
-          ),
-        );
-    }
+  //   const archiveInformation = new FileInfo(archiveFileName);
+  //   if (archiveType == FileArchiveType.GuessFromFileName) {
+  //     const extension = archiveInformation.extension.toLowerCase();
+  //     switch (extension) {
+  //       case 'zip':
+  //         archiveType = FileArchiveType.Zip;
+  //         break;
+  //       case 'tgz':
+  //         archiveType = FileArchiveType.Tgz;
+  //         break;
+  //       case 'bz2':
+  //         archiveType = FileArchiveType.BZip2;
+  //         break;
+  //       case 'gz':
+  //         archiveType = FileArchiveType.GZip;
+  //         break;
+  //       case 'tar':
+  //         archiveType = FileArchiveType.Tar;
+  //         break;
+  //       default:
+  //         return Failure.fromMessage(
+  //           'File Extension Not supported for archiving ' + extension,
+  //           ArchiveError
+  //         );
+  //     }
+  //   }
+  //   if (
+  //     archiveType == FileArchiveType.BZip2 ||
+  //     archiveType == FileArchiveType.GZip
+  //   ) {
+  //     if (sourceFileList.length > 1 || sourceFileList[0].isSourceDirectory)
+  //       return Failure.fromMessage(
+  //         'Multiple files are not supported in this compression type: ' +
+  //           archiveType,
+  //         ArchiveError
+  //       );
+  //   }
 
-    if (archiveType !== FileArchiveType.Zip && password !== '')
-      return errAsync(
-        new ArchiveError('password is not supported on other than zip format'),
-      );
-    if (
-      archiveType === FileArchiveType.Tar ||
-      archiveType === FileArchiveType.Tgz
-    ) {
-      if (sourceFileList.length > 1 || !sourceFileList[0].isSourceDirectory)
-        return errAsync(
-          new ArchiveError(
-            'single file or multiple directory is not supported in this compression type: ' +
-              archiveType,
-          ),
-        );
-    }
+  //   if (archiveType !== FileArchiveType.Zip && password !== '')
+  //     return Failure.fromMessage(
+  //       'password is not supported on other than zip format',
+  //       ArchiveError
+  //     );
+  //   if (
+  //     archiveType === FileArchiveType.Tar ||
+  //     archiveType === FileArchiveType.Tgz
+  //   ) {
+  //     if (sourceFileList.length > 1 || !sourceFileList[0].isSourceDirectory)
+  //       return Failure.fromMessage(
+  //         'single file or multiple directory is not supported in this compression type: ' +
+  //           archiveType,
+  //         ArchiveError
+  //       );
+  //   }
 
-    switch (archiveType) {
-      case FileArchiveType.Zip:
-        return ZipArchive.create(
-          archiveInformation.fullPath,
-          sourceFileList,
-          password,
-        );
-      case FileArchiveType.Tar:
-        return TarArchive.create(
-          archiveInformation.fullPath,
-          sourceFileList[0],
-        );
-      case FileArchiveType.GZip:
-        return GzipArchive.create(
-          archiveInformation.fullPath,
-          sourceFileList[0].sourceFullName,
-        );
-      case FileArchiveType.Tgz:
-        return TarArchive.create(
-          archiveInformation.fullPath,
-          sourceFileList[0],
-          true,
-        );
-    }
+  //   switch (archiveType) {
+  //     case FileArchiveType.Zip:
+  //       return await ZipArchive.create(
+  //         archiveInformation.fullPath,
+  //         sourceFileList,
+  //         password
+  //       );
+  //     case FileArchiveType.Tar:
+  //       return await TarArchive.create(
+  //         archiveInformation.fullPath,
+  //         sourceFileList[0]
+  //       );
+  //     case FileArchiveType.GZip:
+  //       return await GzipArchive.create(
+  //         archiveInformation.fullPath,
+  //         sourceFileList[0].sourceFullName
+  //       );
+  //     case FileArchiveType.Tgz:
+  //       return await TarArchive.create(
+  //         archiveInformation.fullPath,
+  //         sourceFileList[0],
+  //         true
+  //       );
+  //   }
 
-    return okAsync(true);
-  }
+  //   return success(true);
+  // }
 }

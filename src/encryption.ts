@@ -1,14 +1,17 @@
 import crypto from 'crypto';
 import { base64String2Buffer, buffer2Base64String } from './base64';
-import { bufferToArrayBuffer, stringToArrayBuffer } from './buffer';
-import { readFileSync, writeFileSync } from 'fs';
-import forge from 'node-forge';
+import {
+  arrayBufferToString,
+  bufferToArrayBuffer,
+  stringToArrayBuffer,
+} from './buffer';
+import { platform } from './platform';
 
 export const aesEncryptBufferByKeyFile = (
   plainBuffer: ArrayBuffer,
   keyFilename: string,
 ): Buffer => {
-  const keyBuffer = readFileSync(keyFilename);
+  const keyBuffer = platform.readFileSync(keyFilename);
   const keyArrayBuffer = bufferToArrayBuffer(keyBuffer);
   return aesEncryptBuffer(plainBuffer, keyArrayBuffer);
 };
@@ -53,7 +56,7 @@ export const aesEncryptBuffer = (
 
 export const aesDecryptBuffer = (
   encryptedBuffer: Buffer,
-  keyBuffer: ArrayBufferLike,
+  keyBuffer: ArrayBuffer,
 ): Buffer => {
   const iv = encryptedBuffer.subarray(0, 16); //Nonce
   const tag = encryptedBuffer.subarray(encryptedBuffer.length - 16); //Tag
@@ -79,106 +82,27 @@ export const aesDecryptBufferByKeyFile = (
   encryptedBuffer: Buffer,
   keyFilename: string,
 ): Buffer => {
-  const keyBuffer = readFileSync(keyFilename);
+  const keyBuffer = platform.readFileSync(keyFilename);
   const keyArrayBuffer = bufferToArrayBuffer(keyBuffer);
   return aesDecryptBuffer(encryptedBuffer, keyArrayBuffer);
 };
 export const aesDecrypt = (encrypted: string, key: string): string => {
   const encryptedBuffer = base64String2Buffer(encrypted);
   const decryptedBuffer = aesDecryptBuffer(encryptedBuffer, getKey(key));
-  //return arrayBufferToString(decryptedBuffer);
-  return decryptedBuffer.toString();
+  return arrayBufferToString(bufferToArrayBuffer(decryptedBuffer));
 };
 
-const getStringByteLength = (stringValue: string): number => {
-  //return encodeURIComponent(stringValue).replace(/%../g, 'x').length;
-  //
-  return new TextEncoder().encode(stringValue).length;
-};
-
-/**
- * AES Encryption using forge. No dependency on browser or nodejs
- * @param plain
- * @param keyWithExpected16Or32Length  to support AES 128/256. If length is not proper, then put space afterwards
- * @returns encrypted string with Base64 encoding
- */
-export const aesEncrypt2 = (
-  plain: string,
-  keyWithExpected16Or32Length: string,
-): string => {
-  const normalizedKey = fixKeylength(keyWithExpected16Or32Length);
-  const keyLength = getStringByteLength(normalizedKey);
-  console.log('KeyLength', keyLength);
-  if (keyLength !== 16 && keyLength !== 32)
-    throw new Error('Invalid Key Length');
-
-  const iv = forge.random.getBytesSync(16);
-
-  const cipher = forge.cipher.createCipher('AES-GCM', normalizedKey);
-  cipher.start({ iv: iv });
-
-  const buffer = new forge.util.ByteStringBuffer(forge.util.encodeUtf8(plain));
-  //const buffer = forge.util.createBuffer(plain);
-  cipher.update(buffer);
-  const pass = cipher.finish();
-  if (pass) {
-    return forge.util.encode64(
-      iv + cipher.output.data + cipher.mode.tag.getBytes(),
-    );
-  } else {
-    throw new Error('Fail to Encrypt');
-  }
-};
-
-/**
- * AES Decryption using Forge
- * No dependency on browser/nodejs
- * @param base64EncodedEncryptionData encrypted string with Base64 Encoding
- * @param keyWithExpected16Or32Length to support AES 128/256. If length is not proper, then put space afterwards
- * @returns decrypted string
- */
-export const aesDecrypt2 = (
-  base64EncodedEncryptionData: string,
-  keyWithExpected16Or32Length: string,
-): string => {
-  const encryptedBuffer = forge.util.decode64(base64EncodedEncryptionData); // base64String2Buffer(encrypted);
-  const normalizedKey = fixKeylength(keyWithExpected16Or32Length);
-
-  const iv = encryptedBuffer.substring(0, 16);
-  const tag = encryptedBuffer.substring(encryptedBuffer.length - 16); //Tag
-  const encryptedData = encryptedBuffer.substring(
-    16,
-    encryptedBuffer.length - 16,
-  );
-
-  const encryptionKey = forge.util.createBuffer(normalizedKey);
-  const decipher = forge.cipher.createDecipher('AES-GCM', encryptionKey);
-  //console.log('tag length:' + getStringByteLength(tag));
-  decipher.start({
-    iv: iv,
-    tag: forge.util.createBuffer(tag),
-  });
-
-  decipher.update(forge.util.createBuffer(encryptedData));
-  const pass = decipher.finish();
-  if (pass) {
-    //return decipher.output.toString();
-    return forge.util.decodeUtf8(decipher.output.data);
-  } else {
-    throw new Error('Fail to Decrypt');
-  }
-};
+// const getStringByteLength = (stringValue: string): number => {
+//   //return encodeURIComponent(stringValue).replace(/%../g, 'x').length;
+//   //
+//   return new TextEncoder().encode(stringValue).length;
+// };
 
 const getKey = (key: string): ArrayBuffer => {
   const arrayBuffer: ArrayBuffer = stringToArrayBuffer(fixKeylength(key));
   //console.log(arrayBuffer.byteLength);
   return arrayBuffer;
 };
-// const getKeyOld = (key: string): DataView => {
-//   const arrayBuffer: ArrayBuffer = stringToArrayBuffer(fixKeylength(key));
-//   //console.log(arrayBuffer.byteLength);
-//   return new DataView(arrayBuffer);
-// };
 
 const fixKeylength = (key: string): string => {
   const keyLength = key.length;
@@ -203,7 +127,7 @@ export const pkiFileEncrypt = (
   publicKeyFilename: string,
   data: Buffer,
 ): Buffer => {
-  return pkiEncrypt(readFileSync(publicKeyFilename), data);
+  return pkiEncrypt(platform.readFileSync(publicKeyFilename), data);
 };
 export const pkiFileEncrypt2Base64 = (
   publicKeyFilename: string,
@@ -222,9 +146,9 @@ export const pkiFileEncryptToFile = (
   plainFilename: string,
   encryptedFilename: string,
 ) => {
-  writeFileSync(
+  platform.writeFileSync(
     encryptedFilename,
-    pkiFileEncrypt(publicKeyFilename, readFileSync(plainFilename)),
+    pkiFileEncrypt(publicKeyFilename, platform.readFileSync(plainFilename)),
   );
 };
 
@@ -236,7 +160,7 @@ export const pkiFileDecrypt = (
   privateKeyFilename: string,
   data: Buffer,
 ): Buffer => {
-  return pkiDecrypt(readFileSync(privateKeyFilename), data);
+  return pkiDecrypt(platform.readFileSync(privateKeyFilename), data);
 };
 export const pkiFileDecrypt2Base64 = (
   privateKeyFilename: string,
@@ -255,8 +179,11 @@ export const pkiFileDecryptFile = (
   encryptedFilename: string,
   decryptedFilename: string,
 ) => {
-  writeFileSync(
+  platform.writeFileSync(
     decryptedFilename,
-    pkiFileDecrypt(privateKeyFilename, readFileSync(encryptedFilename)),
+    pkiFileDecrypt(
+      privateKeyFilename,
+      platform.readFileSync(encryptedFilename),
+    ),
   );
 };

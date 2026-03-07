@@ -1,7 +1,7 @@
 import sftp from 'ssh2-sftp-client';
 import { RemoteConnection } from './remoteConnection';
 
-import { okAsync, ResultAsync } from '../result';
+import { okAsync, GyomuResultAsync, runAsync } from '../result';
 import { NetworkError } from '../errors';
 import { FileTransportInfo } from '../fileModel';
 import { platform } from '../platform';
@@ -16,9 +16,9 @@ export class Sftp {
   client: sftp;
 
   connected: boolean;
-  #init(): ResultAsync<boolean, NetworkError> {
-    return ResultAsync.fromPromise(
-      (async () => {
+  #init(): GyomuResultAsync<boolean> {
+    return runAsync(
+      async () => {
         await this.client.connect({
           host: this.#config.serverURL,
           username: this.#config.userId,
@@ -35,67 +35,72 @@ export class Sftp {
         });
         this.connected = true;
         return true;
-      })(),
-      (err) =>
-        err instanceof NetworkError
-          ? err
-          : new NetworkError('Fail to do SFTP connection', err as Error),
+      },
+      NetworkError,
+      'Fail to do SFTP connection',
     );
   }
 
-  download(
-    transportInformation: FileTransportInfo,
-  ): ResultAsync<boolean, NetworkError> {
+  download(transportInformation: FileTransportInfo): GyomuResultAsync<boolean> {
     const initResult = this.connected ? okAsync(true) : this.#init(); // ResultAsync<boolean, NetworkError>
 
     return initResult.andThen(() => {
-      const promise: Promise<void> = transportInformation.isSourceDirectory
-        ? this.client
-            .downloadDir(
-              transportInformation.sourceFolderName.replace(platform.sep, '/'),
-              transportInformation.destinationPath,
-            )
-            .then(() => undefined)
-        : this.client
-            .get(
-              transportInformation.sourceFullName.replace(platform.sep, '/'),
-              transportInformation.destinationFullName,
-            )
-            .then(() => undefined);
+      const promise = transportInformation.isSourceDirectory
+        ? () =>
+            this.client
+              .downloadDir(
+                transportInformation.sourceFolderName.replace(
+                  platform.sep,
+                  '/',
+                ),
+                transportInformation.destinationPath,
+              )
+              .then(() => undefined)
+        : () =>
+            this.client
+              .get(
+                transportInformation.sourceFullName.replace(platform.sep, '/'),
+                transportInformation.destinationFullName,
+              )
+              .then(() => undefined);
 
-      return ResultAsync.fromPromise(
-        promise.then(() => true),
-        (err) => new NetworkError('Fail to do SFTP download', err as Error),
+      return runAsync(promise, NetworkError, 'Fail to do SFTP download').map(
+        () => true,
       );
     });
   }
 
-  upload(
-    transportInformation: FileTransportInfo,
-  ): ResultAsync<boolean, NetworkError> {
+  upload(transportInformation: FileTransportInfo): GyomuResultAsync<boolean> {
     const initResult = this.connected ? okAsync(true) : this.#init(); // ResultAsync<boolean, NetworkError>
 
     return initResult.andThen(() => {
-      const promise: Promise<string> = transportInformation.isSourceDirectory
-        ? this.client.uploadDir(
-            transportInformation.sourceFullName,
-            transportInformation.destinationFullName.replace(platform.sep, '/'),
-          )
-        : this.client.put(
-            transportInformation.sourceFullName,
-            transportInformation.destinationFullName.replace(platform.sep, '/'),
-          );
+      const promise = transportInformation.isSourceDirectory
+        ? () =>
+            this.client.uploadDir(
+              transportInformation.sourceFullName,
+              transportInformation.destinationFullName.replace(
+                platform.sep,
+                '/',
+              ),
+            )
+        : () =>
+            this.client.put(
+              transportInformation.sourceFullName,
+              transportInformation.destinationFullName.replace(
+                platform.sep,
+                '/',
+              ),
+            );
 
-      return ResultAsync.fromPromise(
-        promise.then(() => true),
-        (err) => new NetworkError('Fail to do SFTP upload', err as Error),
+      return runAsync(promise, NetworkError, 'Fail to do SFTP upload').map(
+        () => true,
       );
     });
   }
 
   getFileInfo(
     transportInformation: FileTransportInfo,
-  ): ResultAsync<{ size: number; date: Date }, NetworkError> {
+  ): GyomuResultAsync<{ size: number; date: Date }> {
     const initResult = this.connected ? okAsync(true) : this.#init(); // ResultAsync<boolean, NetworkError>
 
     return initResult.andThen(() => {
@@ -104,19 +109,20 @@ export class Sftp {
         '/',
       );
 
-      return ResultAsync.fromPromise(
-        this.client.stat(fullPath).then((stat) => ({
-          size: stat.size,
-          date: new Date(stat.modifyTime),
-        })),
-        (err) =>
-          new NetworkError('Fail to get SFTP file information', err as Error),
+      return runAsync(
+        () =>
+          this.client.stat(fullPath).then((stat) => ({
+            size: stat.size,
+            date: new Date(stat.modifyTime),
+          })),
+        NetworkError,
+        'Fail to get SFTP file information',
       );
     });
   }
   listFiles(
     transportInformation: FileTransportInfo,
-  ): ResultAsync<string[], NetworkError> {
+  ): GyomuResultAsync<string[]> {
     // 接続済みなら okAsync(true)、未接続なら #init()
     const initResult = this.connected ? okAsync(true) : this.#init();
 
@@ -126,25 +132,28 @@ export class Sftp {
         '/',
       );
 
-      return ResultAsync.fromPromise(
-        this.client
-          .list(fullPath)
-          .then((fileInfoList) => fileInfoList.map((f) => f.name)),
-        (err) =>
-          new NetworkError('Fail to retrieve SFTP folders', err as Error),
+      return runAsync(
+        () =>
+          this.client
+            .list(fullPath)
+            .then((fileInfoList) => fileInfoList.map((f) => f.name)),
+        NetworkError,
+        'Fail to retrieve SFTP folders',
       );
     });
   }
 
-  close(): ResultAsync<boolean, NetworkError> {
+  close(): GyomuResultAsync<boolean> {
     if (!this.connected) return okAsync(true);
 
-    return ResultAsync.fromPromise(
-      this.client.end().then(() => {
-        this.connected = false;
-        return true;
-      }),
-      (err) => new NetworkError('Fail to close SFTP connection', err as Error),
+    return runAsync(
+      () =>
+        this.client.end().then(() => {
+          this.connected = false;
+          return true;
+        }),
+      NetworkError,
+      'Fail to close SFTP connection',
     );
   }
 }

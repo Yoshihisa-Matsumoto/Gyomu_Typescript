@@ -5,7 +5,7 @@ import { FileCompareType, FileFilterInfo, FilterType } from '../fileModel';
 import tmp from 'tmp';
 import { expect, test } from 'vitest';
 import { platform } from '../platform';
-import { platformConstants } from '../platform/common';
+import { fsConstants } from '../platform';
 
 test('File Whole Search Test', () => {
   const baseDir = platform.resolve('.');
@@ -207,7 +207,7 @@ test('File Exclusive Access Test', async () => {
   let fileHandle = platform.openSync(
     targetFilename,
     'w',
-    platformConstants.O_RDWR | platformConstants.O_EXCL,
+    fsConstants.O_RDWR | fsConstants.O_EXCL,
   );
 
   let currentDate = new Date().getTime();
@@ -238,7 +238,7 @@ test('File Exclusive Access Test', async () => {
   fileHandle = platform.openSync(
     targetFilename,
     'w',
-    platformConstants.O_RDWR | platformConstants.O_EXCL,
+    fsConstants.O_RDWR | fsConstants.O_EXCL,
   );
 
   currentDate = new Date().getTime();

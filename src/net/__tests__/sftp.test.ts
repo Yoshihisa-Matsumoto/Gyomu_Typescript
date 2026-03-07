@@ -1,261 +1,169 @@
-import { beforeEach, vi, describe, test, expect } from 'vitest';
-import { createDateFromYYYYMMDD } from '../../dateOperation';
-import { FileTransportInfo } from '../../fileModel';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Sftp } from '../sftp';
 import { RemoteConnection } from '../remoteConnection';
-import { FileStats, FileInfo } from 'ssh2-sftp-client';
+import { FileTransportInfo } from '../../fileModel';
+import { platform } from '../../platform';
 
-let status = {
-  access: false,
-  downloadTo: false,
-  downloadToDir: false,
-  uploadFrom: false,
-  uploadFromDir: false,
-  stat: false,
-  list: false,
-};
-const initializeStatus = () => {
-  status = {
-    access: false,
-    downloadTo: false,
-    downloadToDir: false,
-    uploadFrom: false,
-    uploadFromDir: false,
-    stat: false,
-    list: false,
-  };
-};
-const fileStat: FileStats = {
-  accessTime: 1,
-  gid: 1,
-  isBlockDevice: false,
-  isCharacterDevice: false,
-  isDirectory: false,
-  isFIFO: false,
-  isFile: true,
-  isSocket: false,
-  isSymbolicLink: false,
-  mode: 1,
-  modifyTime: createDateFromYYYYMMDD('19840101').getTime(),
-  size: 5,
-  uid: 1,
-};
-const fileInfoList: FileInfo[] = [
-  {
-    name: '1',
-    size: 2,
-    accessTime: 1,
-    group: 1,
-    modifyTime: 2,
-    owner: 3,
-    rights: { group: '', other: '', user: '' },
-    type: '-',
-  },
-  {
-    name: '2',
-    size: 2,
-    accessTime: 1,
-    group: 1,
-    modifyTime: 2,
-    owner: 3,
-    rights: { group: '', other: '', user: '' },
-    type: '-',
-  },
-];
-vi.mock('ssh2-sftp-client', async () => {
-  class mockClient {
-    connect = async () => {
-      initializeStatus();
-      status.access = true;
-    };
-    get = async () => {
-      status.downloadTo = true;
-    };
-    downloadDir = async () => {
-      status.downloadToDir = true;
-    };
-    put = async () => {
-      status.uploadFrom = true;
-    };
-    uploadDir = async () => {
-      status.uploadFromDir = true;
-    };
-    stat = async () => {
-      status.stat = true;
-      return fileStat;
-    };
-    list = async () => {
-      status.list = true;
-      return fileInfoList;
-    };
-    end = async () => {
-      status.access = false;
-    };
+const connectMock = vi.fn(async () => {});
+const endMock = vi.fn(async () => {});
+const downloadDirMock = vi.fn(async () => {});
+const getMock = vi.fn(async () => {});
+const uploadDirMock = vi.fn(async () => {});
+const putMock = vi.fn(async () => {});
+const statMock = vi.fn(async () => ({
+  size: 456,
+  modifyTime: Date.parse('2021-02-03T04:05:06Z'),
+}));
+const listMock = vi.fn(async () => [{ name: 'x' }, { name: 'y.dat' }]);
+
+vi.mock('ssh2-sftp-client', () => {
+  class SftpClient {
+    connect = connectMock;
+    end = endMock;
+    downloadDir = downloadDirMock;
+    get = getMock;
+    uploadDir = uploadDirMock;
+    put = putMock;
+    stat = statMock;
+    list = listMock;
   }
-  return { default: mockClient };
+  return { default: SftpClient };
 });
-// const sftpMock = sftp as jest.Mock;
-// sftpMock.mockImplementation(() => {
-//   return {
-//     connect: async (options: sftp.ConnectOptions) => {
-//       initializeStatus();
-//       status.access = true;
-//     },
-//     get: async (
-//       path: string,
-//       dst?: string | NodeJS.WritableStream,
-//       options?: sftp.TransferOptions
-//     ) => {
-//       status.downloadTo = true;
-//     },
-//     downloadDir: async (
-//       srcDir: string,
-//       destDir: string,
-//       filter?: string | RegExp
-//     ) => {
-//       status.downloadToDir = true;
-//     },
-//     put: async (
-//       input: string | Buffer | NodeJS.ReadableStream,
-//       remoteFilePath: string,
-//       options?: sftp.TransferOptions
-//     ) => {
-//       status.uploadFrom = true;
-//     },
-//     uploadDir: async (localDirPath: string, remoteDirPath?: string) => {
-//       status.uploadFromDir = true;
-//     },
-//     stat: async (remotePath: string) => {
-//       status.stat = true;
-//       return fileStat;
-//     },
-//     list: async (path?: string) => {
-//       status.list = true;
-//       return fileInfoList;
-//     },
-//     end: async () => {
-//       status.access = false;
-//     },
-//     //closed: !status.access,
-//   };
-// });
 
 beforeEach(() => {
-  initializeStatus();
+  connectMock.mockClear();
+  endMock.mockClear();
+  downloadDirMock.mockClear();
+  getMock.mockClear();
+  uploadDirMock.mockClear();
+  putMock.mockClear();
+  statMock.mockClear();
+  listMock.mockClear();
 });
 
-const dummyOption: RemoteConnection = new RemoteConnection();
+const makeConn = (): RemoteConnection => {
+  const rc = new RemoteConnection();
+  rc.serverURL = 'sftp.example.com';
+  rc.userId = 'user';
+  rc.password = 'pass';
+  rc.port = 22;
+  return rc;
+};
 
-describe('SFTP Test', () => {
-  // console.log(baseFtp.Client);
-
-  test('sftp download test', async () => {
-    //console.log(sftp);
-    const client: Sftp = new Sftp(dummyOption);
-    // jest.spyOn(client, 'connected', 'get').mockImplementation(() => {
-    //   return status.access;
-    // });
-    //jest.spyOn(client, 'connected', 'get').mjest.spyOn(client, 'connected', 'get').mockReturnValue(status.access);
-    let result = await client.download(
-      new FileTransportInfo({
-        sourceFolderName: 'test',
-        sourceFilename: 'file',
-        destinationFolderName: 'destination',
-      }),
-    );
-    expect(result.isOk()).toBeTruthy();
-    expect(status.access).toBeTruthy();
-    expect(status.downloadTo).toBeTruthy();
-    expect(status.downloadToDir).toBeFalsy();
-    //jest.spyOn(client, 'connected', 'get').mockReturnValue(status.access);
-    const result2 = await client.close();
-    expect(result2.isOk()).toBeTruthy();
-    expect(status.access).toBeFalsy();
-
-    //jest.spyOn(client, 'connected', 'get').mockReturnValue(status.access);
-    result = await client.download(
-      new FileTransportInfo({
-        sourceFolderName: 'test',
-        destinationFolderName: 'destination',
-      }),
-    );
-    expect(result.isOk()).toBeTruthy();
-    expect(status.access).toBeTruthy();
-    expect(status.downloadTo).toBeFalsy();
-    expect(status.downloadToDir).toBeTruthy();
+describe('Sftp', () => {
+  it('connects on first call and reuses connection', async () => {
+    const sftp = new Sftp(makeConn());
+    expect(sftp.connected).toBe(false);
+    const t = new FileTransportInfo({ sourceFolderName: 'in' });
+    const r1 = await sftp.listFiles(t);
+    expect(r1.isOk()).toBe(true);
+    expect(connectMock).toHaveBeenCalledTimes(1);
+    const r2 = await sftp.listFiles(t);
+    expect(r2.isOk()).toBe(true);
+    expect(connectMock).toHaveBeenCalledTimes(1);
   });
 
-  test('sftp upload test', async () => {
-    const client: Sftp = new Sftp(dummyOption);
-    // jest.spyOn(client, 'connected', 'get').mockImplementation(() => {
-    //   return status.access;
-    // });
-    let result = await client.upload(
-      new FileTransportInfo({
-        sourceFolderName: 'test',
-        sourceFilename: 'file',
-        destinationFolderName: 'destination',
-      }),
-    );
-    expect(result.isOk()).toBeTruthy();
-    expect(status.access).toBeTruthy();
-    expect(status.uploadFrom).toBeTruthy();
-    expect(status.uploadFromDir).toBeFalsy();
-    expect(status.access).toBeTruthy();
-    //jest.spyOn(client, 'connected', 'get').mockReturnValue(status.access);
-    const result2 = await client.close();
-    expect(result2.isOk()).toBeTruthy();
-    expect(status.access).toBeFalsy();
+  it('download file and dir normalize paths', async () => {
+    const sftp = new Sftp(makeConn());
+    const tf = new FileTransportInfo({
+      sourceFolderName: `in${platform.sep}dir`,
+      sourceFilename: 'a.txt',
+      destinationFolderName: `out${platform.sep}dir`,
+      destinationFileName: 'b.txt',
+    });
+    const rf = await sftp.download(tf);
+    expect(rf.isOk()).toBe(true);
+    expect(getMock).toHaveBeenCalledTimes(1);
+    const fileCall = getMock.mock.calls[0] as unknown as any[];
+    expect((fileCall[0] as string).replace(/\\/g, '/')).toBe('in/dir/a.txt');
+    expect(
+      fileCall[1].endsWith(`out${platform.sep}dir${platform.sep}b.txt`),
+    ).toBe(true);
 
-    result = await client.upload(
-      new FileTransportInfo({
-        sourceFolderName: 'test',
-        destinationFolderName: 'destination',
-      }),
-    );
-    expect(result.isOk()).toBeTruthy();
-    expect(status.access).toBeTruthy();
-    expect(status.uploadFrom).toBeFalsy();
-    expect(status.uploadFromDir).toBeTruthy();
+    const td = new FileTransportInfo({
+      sourceFolderName: `in${platform.sep}dir`,
+      destinationFolderName: `out${platform.sep}dir`,
+    });
+    const rd = await sftp.download(td);
+    expect(rd.isOk()).toBe(true);
+    expect(downloadDirMock).toHaveBeenCalledTimes(1);
+    const dirCall = downloadDirMock.mock.calls[0] as unknown as any[];
+    expect(dirCall[0]).toBe('in/dir');
+    expect(dirCall[1].endsWith(`out${platform.sep}dir`)).toBe(true);
   });
 
-  test('fileInfo test', async () => {
-    const client: Sftp = new Sftp(dummyOption);
-    // jest.spyOn(client, 'connected', 'get').mockImplementation(() => {
-    //   return status.access;
-    // });
+  it('upload file and dir normalize paths', async () => {
+    const sftp = new Sftp(makeConn());
+    const td = new FileTransportInfo({
+      sourceFolderName: `in${platform.sep}dir`,
+      destinationFolderName: `out${platform.sep}dir`,
+    });
+    const rd = await sftp.upload(td);
+    expect(rd.isOk()).toBe(true);
+    expect(uploadDirMock).toHaveBeenCalledTimes(1);
+    const dirCall = uploadDirMock.mock.calls[0] as unknown as any[];
+    expect(dirCall[0].endsWith(`in${platform.sep}dir`)).toBe(true);
+    expect(dirCall[1]).toBe('out/dir');
 
-    const result = await client.getFileInfo(
-      new FileTransportInfo({
-        sourceFolderName: 'test',
-        sourceFilename: 'file',
-        destinationFolderName: 'destination',
-      }),
-    );
-    if (result.isErr()) {
-      expect(result.isOk()).toBeTruthy();
-      return;
+    const tf = new FileTransportInfo({
+      sourceFolderName: `in${platform.sep}dir`,
+      sourceFilename: 'a.txt',
+      destinationFolderName: `out${platform.sep}dir`,
+      destinationFileName: 'b.txt',
+    });
+    const rf = await sftp.upload(tf);
+    expect(rf.isOk()).toBe(true);
+    expect(putMock).toHaveBeenCalledTimes(1);
+    const fileCall = putMock.mock.calls[0] as unknown as any[];
+    expect(
+      fileCall[0].endsWith(`in${platform.sep}dir${platform.sep}a.txt`),
+    ).toBe(true);
+    expect((fileCall[1] as string).replace(/\\/g, '/')).toBe('out/dir/b.txt');
+  });
+
+  it('getFileInfo and listFiles work with normalized paths', async () => {
+    const sftp = new Sftp(makeConn());
+    const t = new FileTransportInfo({
+      sourceFolderName: `in${platform.sep}dir`,
+      sourceFilename: 'a.txt',
+    });
+    const r = await sftp.getFileInfo(t);
+    expect(r.isOk()).toBe(true);
+    if (r.isOk()) {
+      expect(r.value.size).toBe(456);
+      expect(r.value.date.toISOString()).toBe('2021-02-03T04:05:06.000Z');
     }
-    expect(result.value.size).toBe(fileStat.size);
-    expect(result.value.date).toEqual(createDateFromYYYYMMDD('19840101'));
+    const call = statMock.mock.calls[0] as unknown as any[];
+    expect((call[0] as string).replace(/\\/g, '/')).toBe('in/dir/a.txt');
+
+    const l = await sftp.listFiles(
+      new FileTransportInfo({ sourceFolderName: 'in' }),
+    );
+    expect(l.isOk()).toBe(true);
+    if (l.isOk()) expect(l.value).toEqual(['x', 'y.dat']);
   });
 
-  test('list file test', async () => {
-    const client: Sftp = new Sftp(dummyOption);
-    // jest.spyOn(client, 'connected', 'get').mockImplementation(() => {
-    //   return status.access;
-    // });
-
-    const result = await client.listFiles(
-      new FileTransportInfo({
-        sourceFolderName: 'test',
-        destinationFolderName: 'destination',
-      }),
+  it('wraps connect and close errors with NetworkError messages', async () => {
+    connectMock.mockImplementationOnce(async () => {
+      throw new Error('no conn');
+    });
+    const sftp = new Sftp(makeConn());
+    const r = await sftp.listFiles(
+      new FileTransportInfo({ sourceFolderName: 'in' }),
     );
-    if (result.isErr()) {
-      expect(result.isOk()).toBeTruthy();
-      return;
-    }
-    expect(result.value.length).toBe(2);
+    expect(r.isErr()).toBe(true);
+    if (r.isErr()) expect(r.error.message).toBe('Fail to do SFTP connection');
+
+    // make it connected then make end() fail
+    (connectMock as any).mockImplementationOnce(async () => {});
+    const s2 = new Sftp(makeConn());
+    await s2.listFiles(new FileTransportInfo({ sourceFolderName: 'in' }));
+    endMock.mockImplementationOnce(async () => {
+      throw new Error('cannot end');
+    });
+    const c = await s2.close();
+    expect(c.isErr()).toBe(true);
+    if (c.isErr())
+      expect(c.error.message).toBe('Fail to close SFTP connection');
   });
 });

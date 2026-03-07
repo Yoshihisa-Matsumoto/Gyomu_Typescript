@@ -4,9 +4,8 @@ import {
 } from './generated/prisma/client';
 import { format } from 'date-fns';
 import prisma from './dbsingleton';
-import { DBError } from './errors';
 //import { Failure, PromiseResult, success } from './result';
-import { okAsync, ResultAsync } from './result';
+import { okAsync, GyomuResultAsync } from './result';
 import { polling } from './timer';
 import { genericDBFunction } from './dbutil';
 
@@ -19,7 +18,7 @@ export class Milestone {
     milestoneId: string,
     targetDate: Date,
     isMonthly = false,
-  ): ResultAsync<MilestoneExistResultType, DBError> {
+  ): GyomuResultAsync<MilestoneExistResultType> {
     const targetDateYYYYMMDD = this.#convertTargetDate(targetDate, isMonthly);
     return genericDBFunction(
       'check gyomu_milestone_daily existence',
@@ -49,7 +48,7 @@ export class Milestone {
     milestoneId: string,
     targetDate: Date,
     isMonthly = false,
-  ): ResultAsync<Date, DBError> {
+  ): GyomuResultAsync<Date> {
     const targetDateYYYYMMDD = this.#convertTargetDate(targetDate, isMonthly);
 
     return this.exists(milestoneId, targetDate, isMonthly).andThen(
@@ -90,7 +89,7 @@ export class Milestone {
   ) {
     const interval = timeoutSecond < 60 ? 1 : 5;
 
-    return polling<DBError>(
+    return polling(
       `Wait for milestone ${milestoneId} on ${format(
         targetDate,
         'yyyyMMdd',
@@ -106,7 +105,7 @@ export class Milestone {
 
   static retrieveMilestoneDailyList(
     targetDateYYYYMMDD: string,
-  ): ResultAsync<gyomu_milestone_daily[], DBError> {
+  ): GyomuResultAsync<gyomu_milestone_daily[]> {
     const targetDateMonthly = targetDateYYYYMMDD.substring(0, 6) + '**';
 
     return genericDBFunction(
@@ -127,7 +126,7 @@ export class Milestone {
   static deleteMilestoneDaily(
     milestoneId: string,
     targetDateYYYYMMDD: string,
-  ): ResultAsync<gyomu_milestone_daily, DBError> {
+  ): GyomuResultAsync<gyomu_milestone_daily> {
     return genericDBFunction(
       'delete gyomu_milestone_daily',
       async (milestoneId, targetDateYYYYMMDD) =>
@@ -154,7 +153,7 @@ export class Milestone {
   static upsertMilestoneCode(
     record: gyomu_milestone_cdtbl,
     milestoneId?: string,
-  ): ResultAsync<gyomu_milestone_cdtbl, DBError> {
+  ): GyomuResultAsync<gyomu_milestone_cdtbl> {
     const checkExistence = milestoneId
       ? genericDBFunction<boolean>(
           'check existence of gyomu_milestone_cdtbl record',

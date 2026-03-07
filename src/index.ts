@@ -1,3 +1,4 @@
+export * from './array';
 export * from './base64';
 export * from './buffer';
 export * from './configurator';
@@ -9,3 +10,4 @@ export * from './numberOperation';
 export * from './result';
 export * from './user';
 export * from './platform';
+export * from './zod';

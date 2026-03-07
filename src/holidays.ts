@@ -5,8 +5,7 @@ import prisma from './dbsingleton';
 import { genericDBFunction } from './dbutil';
 import { gyomu_market_holiday } from './generated/prisma/client';
 //import { success, PromiseResult } from './result';
-import { okAsync, ResultAsync } from './result';
-import { DBError } from './errors';
+import { okAsync, GyomuResultAsync } from './result';
 export default class MarketDateAccess {
   private static __marketHolidays: {
     [market: string]: string[];
@@ -23,15 +22,13 @@ export default class MarketDateAccess {
     }
   }
   //static async getMarketAccess(market: string, ctx: Context) {
-  static getMarketAccess(
-    market: string,
-  ): ResultAsync<MarketDateAccess, DBError> {
+  static getMarketAccess(market: string): GyomuResultAsync<MarketDateAccess> {
     const access = new MarketDateAccess(market);
     return access.#initDataLoad().map(() => access);
   }
 
   //async #initDataLoad(ctx: Context) {
-  #initDataLoad(): ResultAsync<boolean, DBError> {
+  #initDataLoad(): GyomuResultAsync<boolean> {
     if (this.#holidays.length > 0) return okAsync(true);
     this.#holidays = new Array<string>();
     return genericDBFunction<gyomu_market_holiday[]>(
