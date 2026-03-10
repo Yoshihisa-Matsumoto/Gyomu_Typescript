@@ -1,0 +1,216 @@
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { Transform } from 'node:stream';
+import { Stream, Effect } from '../index';
+import {
+  acquireNodeStream,
+  throughNodeStream,
+  throughNodeStreamScoped,
+} from '../nodeStream';
+
+describe('nodeStream', () => {
+  describe('acquireNodeStream', () => {
+    it('should acquire and release a node stream', async () => {
+      const destroySpy = vi.fn();
+      const mockStream = {
+        destroy: destroySpy,
+      } as unknown as Transform;
+
+      const create = vi.fn(() => mockStream);
+      const effect = acquireNodeStream(create);
+
+      const result = await Effect.runPromise(Effect.scoped(effect));
+      expect(create).toHaveBeenCalled();
+      expect(result).toBe(mockStream);
+
+      await Effect.runPromise(
+        Effect.sync(() => {
+          /* released */
+        }),
+      );
+      expect(destroySpy).toHaveBeenCalled();
+    });
+
+    it('should handle creation errors', async () => {
+      const error = new Error('creation failed');
+      const create = vi.fn(() => {
+        throw error;
+      });
+
+      const effect = acquireNodeStream(create);
+      await expect(Effect.runPromise(Effect.scoped(effect))).rejects.toThrow(
+        'creation failed',
+      );
+    });
+  });
+
+  describe('throughNodeStream', () => {
+    let transform: Transform;
+
+    beforeEach(() => {
+      transform = new Transform({
+        objectMode: true,
+        transform(chunk, _encoding, callback) {
+          callback(null, Buffer.from(chunk.toString().toUpperCase()));
+        },
+      });
+    });
+
+    afterEach(() => {
+      transform.destroy();
+    });
+
+    it('should transform stream data', async () => {
+      const input = Stream.fromIterable(['hello', 'world']);
+      const output = throughNodeStream<string, string>(transform)(input);
+
+      const results: string[] = [];
+      await Effect.runPromise(
+        Stream.runForEach(output, (chunk) =>
+          Effect.sync(() => {
+            results.push(Buffer.isBuffer(chunk) ? chunk.toString() : chunk);
+          }),
+        ),
+      );
+      expect(results).toContain('HELLO');
+      expect(results).toContain('WORLD');
+    });
+
+    it('should handle backpressure', async () => {
+      const slowTransform = new Transform({
+        highWaterMark: 1,
+        transform(chunk, _encoding, callback) {
+          setTimeout(() => callback(null, chunk), 10);
+        },
+      });
+
+      const input = Stream.fromIterable([1, 2, 3, 4, 5]);
+      const output = throughNodeStream<number, number>(slowTransform)(input);
+
+      const results: number[] = [];
+      await Effect.runPromise(
+        Stream.runForEach(output, (chunk) =>
+          Effect.sync(() => {
+            results.push(chunk as number);
+          }),
+        ),
+      );
+
+      expect(results).toHaveLength(5);
+      slowTransform.destroy();
+    });
+
+    it('should handle transform errors', async () => {
+      const errorTransform = new Transform({
+        transform(_chunk, _encoding, callback) {
+          callback(new Error('transform error'));
+        },
+      });
+
+      const input = Stream.fromIterable(['test']);
+      const output = throughNodeStream<string, string>(errorTransform)(input);
+
+      await expect(
+        Effect.runPromise(Stream.runForEach(output, () => Effect.void)),
+      ).rejects.toThrow();
+
+      errorTransform.destroy();
+    });
+
+    it('should clean up event listeners on completion', async () => {
+      const offSpy = vi.spyOn(transform, 'off');
+      const destroySpy = vi.spyOn(transform, 'destroy');
+
+      const input = Stream.fromIterable(['test']);
+      const output = throughNodeStream<string, string>(transform)(input);
+
+      await Effect.runPromise(Stream.runForEach(output, () => Effect.void));
+
+      expect(offSpy).toHaveBeenCalledWith('data', expect.any(Function));
+      expect(offSpy).toHaveBeenCalledWith('end', expect.any(Function));
+      expect(offSpy).toHaveBeenCalledWith('error', expect.any(Function));
+      expect(destroySpy).toHaveBeenCalled();
+    });
+
+    it('should handle empty input stream', async () => {
+      const input = Stream.fromIterable<string>([]);
+      const output = throughNodeStream<string, string>(transform)(input);
+
+      const results: string[] = [];
+      await Effect.runPromise(
+        Stream.runForEach(output, (chunk) =>
+          Effect.sync(() => {
+            results.push(chunk as string);
+          }),
+        ),
+      );
+
+      expect(results).toHaveLength(0);
+    });
+  });
+
+  describe('throughNodeStreamScoped', () => {
+    it('should acquire and use transform within scope', async () => {
+      const create = vi.fn(
+        () =>
+          new Transform({
+            transform(chunk, _encoding, callback) {
+              callback(null, chunk);
+            },
+          }),
+      );
+
+      const input = Stream.fromIterable(['test']);
+      const output = throughNodeStreamScoped<string, string>(create)(input);
+
+      const results: string[] = [];
+      await Effect.runPromise(
+        Stream.runForEach(output, (chunk) =>
+          Effect.sync(() => {
+            results.push(Buffer.isBuffer(chunk) ? chunk.toString() : chunk);
+          }),
+        ),
+      );
+
+      expect(create).toHaveBeenCalled();
+      expect(results).toContain('test');
+    });
+
+    it('should handle creation errors in scoped version', async () => {
+      const error = new Error('creation failed');
+      const create = vi.fn(() => {
+        throw error;
+      });
+
+      const input = Stream.fromIterable(['test']);
+      const output = throughNodeStreamScoped<string, string>(create)(input);
+
+      await expect(
+        Effect.runPromise(Stream.runForEach(output, () => Effect.void)),
+      ).rejects.toThrow('creation failed');
+    });
+
+    it('should manage resource lifecycle automatically', async () => {
+      const destroySpy = vi.fn();
+      const create = vi.fn(() => {
+        const t = new Transform({
+          transform(chunk, _encoding, callback) {
+            callback(null, chunk);
+          },
+        });
+        const originalDestroy = t.destroy.bind(t);
+        t.destroy = function (...args) {
+          destroySpy();
+          return originalDestroy(...args) as Transform;
+        };
+        return t;
+      });
+
+      const input = Stream.fromIterable(['test']);
+      const output = throughNodeStreamScoped<string, string>(create)(input);
+
+      await Effect.runPromise(Stream.runForEach(output, () => Effect.void));
+
+      expect(destroySpy).toHaveBeenCalled();
+    });
+  });
+});

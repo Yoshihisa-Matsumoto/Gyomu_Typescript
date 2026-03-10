@@ -4,9 +4,9 @@ export function unknownError<E extends AppError>(
   ErrorType: AppErrorCtor<E>,
   error: unknown,
   message = 'Unknown error occurred',
-): E | AppError {
+): E {
   if (error instanceof ErrorType) return error;
-  if (error instanceof AppError) return error;
+  if (error instanceof AppError) return error as E;
   const useMessage =
     message ??
     (error instanceof Error ? error.message : 'Unknown error occurred');

@@ -1,7 +1,10 @@
 import { Transform } from 'node:stream';
 import { TextDecoder } from 'node:util';
 
-export const decode = (content: Buffer, encoding: string = 'utf-8'): string => {
+export const decode = (
+  content: Uint8Array,
+  encoding: string = 'utf-8',
+): string => {
   const decoder = new TextDecoder(encoding);
   return decoder.decode(content);
 };
