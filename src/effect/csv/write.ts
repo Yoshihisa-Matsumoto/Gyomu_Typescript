@@ -1,61 +1,50 @@
 import { platform } from '../../platform';
-import { CsvWriteOption } from './type';
+import { CsvRow, CsvWriteOption } from './type';
 import { stringify } from 'csv';
 import { Options } from 'csv-stringify';
-import { throughNodeStream } from '../nodeStream';
-import { Stream } from '..';
+import { throughNodeStreamScoped } from '../nodeStream';
+import { Stream, Schema } from '..';
 
-type CsvValue = string | number | boolean | null | undefined;
-type CsvRow = Record<string, CsvValue>;
+export const CsvBoolean = Schema.BooleanFromString;
+
+export const CsvDate = Schema.DateFromString;
+
+export const getColumns = <F extends Schema.Struct.Fields>(
+  schema: Schema.Struct<F>,
+) => Object.keys(schema.fields) as (keyof F & string)[];
+
+export const stringifyCsv = <R extends Schema.Struct.Fields>(
+  schema: Schema.Struct<R>,
+  options?: CsvWriteOption<R>,
+) =>
+  throughNodeStreamScoped<CsvRow, string>(() =>
+    stringify({
+      ...convertOption(options),
+      columns: Object.keys(schema.fields),
+    }),
+  );
+type StructType<F extends Schema.Struct.Fields> = Schema.Schema.Type<
+  Schema.Struct<F>
+>;
+export const encodeCsv =
+  <F extends Schema.Struct.Fields>(schema: Schema.Struct<F>) =>
+  (stream: Stream.Stream<StructType<F>>) =>
+    stream.pipe(
+      Stream.map(
+        (r) =>
+          Schema.encodeSync(
+            schema as unknown as Schema.Schema<StructType<F>, any, never>,
+          )(r) as CsvRow,
+      ),
+    );
 
 export const writeCsv =
-  <R extends CsvRow>(options?: CsvWriteOption<R>) =>
-  (stream: Stream.Stream<R>) =>
-    stream.pipe(
-      throughNodeStream<R, string>(stringify(convertOption(options))),
-    );
-// export const writeCsv =
-//   <R extends CsvRow>(options?: CsvWriteOption<R>) =>
-//   (rows: Stream.Stream<R>): Stream.Stream<string, IOError> =>
-//     Stream.async((emit) => {
-//       const csvOptions = convertOption(options);
-//       const stringifier = stringify(csvOptions);
-
-//       const mapRow = options?.mapRow ?? ((x: R) => x);
-
-//       stringifier.on('data', (chunk) => {
-//         emit.single(chunk);
-//       });
-
-//       stringifier.on('end', () => {
-//         emit.end();
-//       });
-
-//       stringifier.on('error', (err) => {
-//         emit.fail(unknownError(IOError, err, 'CSV write error'));
-//       });
-
-//       const writeRow = (row: R) =>
-//         Effect.async<void, Error>((resume) => {
-//           const ok = stringifier.write(mapRow(row));
-
-//           if (ok) {
-//             resume(Effect.succeed(undefined));
-//           } else {
-//             stringifier.once('drain', () => {
-//               resume(Effect.succeed(undefined));
-//             });
-//           }
-//         });
-
-//       Effect.runFork(
-//         Stream.runForEach(rows, writeRow).pipe(
-//           Effect.tap(() => Effect.sync(() => stringifier.end())),
-//         ),
-//       );
-
-//       return Effect.sync(() => stringifier.end());
-//     });
+  <F extends Schema.Struct.Fields>(
+    schema: Schema.Struct<F>,
+    options?: CsvWriteOption<F>,
+  ) =>
+  (stream: Stream.Stream<StructType<F>>) =>
+    stream.pipe(encodeCsv(schema), stringifyCsv(schema, options));
 
 const convertOption = <R>(options?: CsvWriteOption<R>): Options => {
   const csvOptions: Options = {
@@ -64,8 +53,11 @@ const convertOption = <R>(options?: CsvWriteOption<R>): Options => {
     bom: options?.bom ?? false,
     record_delimiter: platform.name == 'linux' ? 'unix' : 'windows',
   };
-  // if (options?.fields) {
-  //   csvOptions.columns = Object.values(options.fields);
-  // }
+  if (options?.fields) {
+    csvOptions.columns = options.fields.map((f) => ({
+      key: f.key,
+      header: f.header,
+    }));
+  }
   return csvOptions;
 };

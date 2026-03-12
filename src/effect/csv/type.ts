@@ -1,13 +1,20 @@
-export type CsvReadOption = {
-  fields?: string[];
+type CsvValue = string | number | boolean | null | undefined;
+export type CsvRow = Record<string, CsvValue>;
+export type CsvColumn<A> = {
+  key: keyof A & string;
+  header: string;
+};
+
+export type CsvReadOption<R> = {
+  fields?: readonly CsvColumn<R>[];
   bom?: boolean;
   encoding?: string;
-  filterFn?: (data: Record<string, string>) => boolean;
+  filterRaw?: (row: Record<string, string>) => boolean;
+  filter?: (row: R) => boolean;
 };
 
 export type CsvWriteOption<R> = {
-  fields?: Record<string, string>;
+  fields?: readonly CsvColumn<R>[];
   quoted?: boolean;
   bom?: boolean;
-  mapRow?: (row: R) => Record<string, string>;
 };

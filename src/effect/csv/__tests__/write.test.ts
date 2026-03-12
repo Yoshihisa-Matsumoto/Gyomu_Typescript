@@ -1,8 +1,13 @@
 import { describe, it, expect, vi } from 'vitest';
 import { writeCsv } from '../write';
-import { Chunk, Effect, Stream } from '../..';
+import { Chunk, Effect, Stream, Schema } from '../..';
 
 describe('writeCsv', () => {
+  const testSchema = Schema.Struct({
+    name: Schema.String,
+    age: Schema.Number,
+  });
+
   it('should convert rows to CSV string format', async () => {
     const rows = [
       { name: 'John', age: 30 },
@@ -21,7 +26,7 @@ describe('writeCsv', () => {
       }),
     } as any;
 
-    writeCsv()(mockStream);
+    writeCsv(testSchema)(mockStream);
     expect(mockStream.pipe).toHaveBeenCalled();
   });
 
@@ -29,21 +34,21 @@ describe('writeCsv', () => {
     const options = { quoted: true, bom: true };
     const mockStream = { pipe: vi.fn(() => mockStream) } as any;
 
-    writeCsv(options)(mockStream);
+    writeCsv(testSchema, options)(mockStream);
     expect(mockStream.pipe).toHaveBeenCalled();
   });
 
   it('should use default options when none provided', () => {
     const mockStream = { pipe: vi.fn(() => mockStream) } as any;
 
-    writeCsv()(mockStream);
+    writeCsv(testSchema)(mockStream);
     expect(mockStream.pipe).toHaveBeenCalled();
   });
 
   it('should handle empty rows', () => {
     const mockStream = { pipe: vi.fn(() => mockStream) } as any;
 
-    writeCsv()(mockStream);
+    writeCsv(testSchema)(mockStream);
     expect(mockStream.pipe).toHaveBeenCalled();
   });
 
@@ -55,16 +60,21 @@ describe('writeCsv', () => {
     ];
     const mockStream = { pipe: vi.fn(() => mockStream) } as any;
 
-    writeCsv()(mockStream);
+    writeCsv(testSchema)(mockStream);
     expect(mockStream.pipe).toHaveBeenCalled();
   });
   it('should write csv', async () => {
+    const schema = Schema.Struct({
+      id: Schema.Number,
+      name: Schema.String,
+    });
+
     const rows = Stream.fromIterable([
       { id: 1, name: 'taro' },
       { id: 2, name: 'jiro' },
     ]);
 
-    const result = await Stream.runCollect(rows.pipe(writeCsv())).pipe(
+    const result = await Stream.runCollect(rows.pipe(writeCsv(schema))).pipe(
       Effect.runPromise,
     );
 

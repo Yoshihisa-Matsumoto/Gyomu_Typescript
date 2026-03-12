@@ -1,50 +1,77 @@
-import { parseCsv } from './csvParser';
-import { Stream, Effect } from '..';
-import { csvRows } from './csvRows';
-import { CsvSource, toAsyncIterable } from './csvSource';
-import { CsvReadOption } from './type';
-import { decode } from '../../encoding/decode';
+import { Schema, Stream, Function } from '..';
+import { AppError } from '../../base-error';
+import { IOError } from '../../errors';
+import { throughNodeStream } from '../nodeStream';
+import { CsvColumn, CsvReadOption, CsvRow } from './type';
+import { parse, Options } from 'csv-parse';
 
-export function readCsv(
-  source: CsvSource,
-  options?: Pick<CsvReadOption, 'filterFn' | 'encoding'>,
-) {
-  const iterable = toAsyncIterable(source);
-  const decoded = options?.encoding
-    ? decodeEncoding(iterable, options.encoding)
-    : iterable;
+export const parseCsv =
+  <A, E extends AppError, R = never>(options?: CsvReadOption<A>) =>
+  (
+    stream: Stream.Stream<string | Buffer, E | IOError, R>,
+  ): Stream.Stream<Record<string, string>, E | IOError, R> =>
+    Function.pipe(
+      stream,
+      throughNodeStream<string | Buffer, Record<string, string>, E | IOError>(
+        parse(convertReadOption(options)),
+      ),
+    );
 
-  let stream = csvRows(parseCsv(decoded));
+export const decodeCsv = <A, I>(schema: Schema.Schema<A, I>) =>
+  Stream.map(Schema.decodeUnknownSync(schema));
 
-  if (options?.filterFn) {
-    stream = stream.pipe(Stream.filter(options.filterFn));
+export const readCsv =
+  <A extends CsvRow, I, E extends AppError, R = never>(
+    schema: Schema.Schema<A, I>,
+    options?: CsvReadOption<A>,
+  ) =>
+  (stream: Stream.Stream<string | Buffer, E, R>) =>
+    stream.pipe(
+      parseCsv(options),
+      Stream.filter((row) =>
+        options?.filterRaw ? options.filterRaw(row) : true,
+      ),
+      decodeCsv(schema),
+      Stream.filter((row) => (options?.filter ? options.filter(row) : true)),
+    );
+
+export const readCsvRaw =
+  <E extends AppError, R = never>(
+    options?: CsvReadOption<Record<string, string>>,
+  ) =>
+  (stream: Stream.Stream<string | Buffer, E, R>) =>
+    stream.pipe(
+      parseCsv(options),
+      Stream.filter((row) =>
+        options?.filterRaw ? options.filterRaw(row) : true,
+      ),
+    );
+
+const convertReadOption = <R>(options?: CsvReadOption<R>) => {
+  const inputCsvOption: Options = {
+    columns: true,
+    bom: false,
+    skip_empty_lines: true,
+    trim: true,
+  };
+
+  if (options?.bom) {
+    inputCsvOption.bom = true;
+  }
+  if (options?.fields) {
+    const fields = options.fields;
+    inputCsvOption.columns = (headers) =>
+      headers.map((h) => buildHeaderMap(fields)[h] ?? h);
+  }
+  return inputCsvOption;
+};
+
+function buildHeaderMap<R>(fields: readonly CsvColumn<R>[]) {
+  const map: Record<string, string> = {};
+
+  for (const f of fields) {
+    map[f.header ?? f.key] = f.key;
   }
 
-  return stream;
-}
-export function collectCsv(
-  source: CsvSource,
-  options?: Pick<CsvReadOption, 'filterFn' | 'encoding'>,
-) {
-  return readCsv(source, options).pipe(
-    Stream.runCollect,
-    Effect.map((rows) => Array.from(rows)),
-  );
-}
-
-export function readCsvDecoded<T>(
-  source: CsvSource,
-  decoder: (row: Record<string, string>) => T,
-  options?: Pick<CsvReadOption, 'filterFn'>,
-) {
-  return readCsv(source, options).pipe(Stream.map(decoder));
-}
-
-async function* decodeEncoding(
-  source: AsyncIterable<Uint8Array>,
-  encoding: string,
-): AsyncIterable<string> {
-  for await (const chunk of source) {
-    yield decode(chunk, encoding);
-  }
+  return map;
 }

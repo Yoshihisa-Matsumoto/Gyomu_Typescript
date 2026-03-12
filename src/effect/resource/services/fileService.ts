@@ -1,11 +1,9 @@
 import { IOError } from '../../../errors';
-import { Context, Effect, Scope } from '../../index';
+import { Context, Stream } from '../../index';
 
 export class FileService extends Context.Tag('FileService')<
   FileService,
   {
-    open: (
-      path: string,
-    ) => Effect.Effect<AsyncIterable<Uint8Array>, IOError, Scope>;
+    open: (path: string) => Stream.Stream<Uint8Array, IOError>;
   }
 >() {}

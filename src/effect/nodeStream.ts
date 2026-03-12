@@ -9,15 +9,21 @@ export const acquireNodeStream = <T extends Duplex>(create: () => T) =>
   );
 
 export const throughNodeStream =
-  <A, B, E extends AppError = never>(duplex: Duplex) =>
-  (input: Stream.Stream<A, E>): Stream.Stream<B, E | IOError> =>
-    Stream.asyncScoped<B, E | IOError>((emit) =>
+  <I, O, E extends AppError = never>(duplex: Duplex) =>
+  <R>(input: Stream.Stream<I, E, R>): Stream.Stream<O, E | IOError, R> =>
+    Stream.asyncScoped<O, E | IOError, R>((emit) =>
       Effect.gen(function* () {
         const onData = (chunk: unknown) => {
-          emit.single(chunk as B);
+          duplex.pause();
+          emit.single(chunk as O);
+          duplex.resume();
         };
 
         const onEnd = () => {
+          emit.end();
+        };
+
+        const onClose = () => {
           emit.end();
         };
 
@@ -28,20 +34,22 @@ export const throughNodeStream =
 
         duplex.on('data', onData);
         duplex.on('end', onEnd);
+        duplex.on('close', onClose);
         duplex.on('error', onError);
 
         yield* Effect.addFinalizer(() =>
           Effect.sync(() => {
             duplex.off('data', onData);
             duplex.off('end', onEnd);
+            duplex.off('close', onClose);
             duplex.off('error', onError);
-            duplex.destroy();
+            if (!duplex.destroyed) duplex.destroy();
           }),
         );
 
         const writableObjectMode =
           (duplex as any)._writableState?.objectMode ?? false;
-        const writeChunk = (chunk: A) =>
+        const writeChunk = (chunk: I) =>
           Effect.async<void, never>((resume) => {
             if (duplex.destroyed) {
               resume(Effect.void);
@@ -52,7 +60,9 @@ export const throughNodeStream =
               ? chunk
               : typeof chunk === 'string'
                 ? chunk
-                : Buffer.from(String(chunk));
+                : Buffer.isBuffer(chunk)
+                  ? chunk
+                  : Buffer.from(chunk as any);
 
             const ok = duplex.write(value);
 
@@ -65,17 +75,23 @@ export const throughNodeStream =
 
         yield* Effect.forkDaemon(
           Stream.runForEach(input, writeChunk).pipe(
-            Effect.tap(() => Effect.sync(() => duplex.end())),
+            Effect.tap(() =>
+              Effect.sync(() => {
+                if (!duplex.destroyed) {
+                  duplex.end();
+                }
+              }),
+            ),
           ),
         );
       }),
     );
 
 export const throughNodeStreamScoped =
-  <A, B, E extends AppError = never>(create: () => Transform) =>
-  (input: Stream.Stream<A, E>) =>
+  <I, O, E extends AppError = never>(create: () => Transform) =>
+  (input: Stream.Stream<I, E>) =>
     Stream.unwrapScoped(
       Effect.map(acquireNodeStream(create), (t) =>
-        throughNodeStream<A, B, E>(t)(input),
+        throughNodeStream<I, O, E>(t)(input),
       ),
     );

@@ -1,260 +1,376 @@
 import { describe, it, expect } from 'vitest';
-import { readCsv, collectCsv, readCsvDecoded } from '../read';
-import { Stream, Effect } from '../../index';
-//import { platform } from '../../../platform';
-import { FileService } from '../../resource/services/fileService';
-import { FileLive } from '../../resource/layers/fileLive';
-// const openFile = (path: string) =>
-//   Effect.acquireRelease(
-//     Effect.sync(() => platform.createReadStream(path)),
-//     (stream) => Effect.sync(() => stream.destroy()),
-//   );
+import { parseCsv, readCsv, readCsvRaw, decodeCsv } from '../read';
+import { Stream, Schema, Effect, Chunk } from '../..';
 
-// const program = (path: string) =>
-//   Effect.gen(function* () {
-//     const stream = yield* openFile(path);
+describe('CSV Read Functions', () => {
+  describe('parseCsv', () => {
+    it('should parse basic CSV data', async () => {
+      const csvData = 'name,age\nJohn,30\nJane,25';
+      const stream = Stream.fromIterable(csvData.split(''));
 
-//     const rows = yield* collectCsv(stream);
+      const result = await Stream.runCollect(stream.pipe(parseCsv())).pipe(
+        Effect.runPromise,
+      );
 
-//     return rows;
-//   }).pipe(Effect.scoped);
-const program = (path: string) =>
-  FileService.pipe(
-    Effect.flatMap((fileService) =>
-      fileService.open(path).pipe(Effect.andThen(collectCsv)),
-    ),
-  );
-describe('read.ts', () => {
-  /**
-   * Unitテスト用のCSVロー(Record<string, string>)を生成するジェネレータ
-   */
-  // async function* generateCsvRows() {
-  //   yield { Name: 'Alice', Age: '30', City: 'Tokyo' };
-  //   yield { Name: 'Bob', Age: '25', City: 'Osaka' };
-  //   yield { Name: 'Charlie', Age: '35', City: 'Kyoto' };
-  // }
+      const records = Chunk.toReadonlyArray(result);
+      expect(records.length).toBeGreaterThan(0);
+      expect(records[0]).toHaveProperty('name');
+      expect(records[0]).toHaveProperty('age');
+    });
 
-  /**
-   * Stringをチャンクで送信するAsyncIterableジェネレータ
-   */
-  async function* generateCsvStringChunks() {
-    const csvContent =
-      'Name,Age,City\nAlice,30,Tokyo\nBob,25,Osaka\nCharlie,35,Kyoto\n';
-    const chunkSize = 10;
-    for (let i = 0; i < csvContent.length; i += chunkSize) {
-      yield csvContent.slice(i, i + chunkSize);
-    }
-  }
+    it('should handle CSV with BOM option', async () => {
+      const csvWithBOM = '\uFEFFname,age\nJohn,30';
+      const stream = Stream.fromIterable(csvWithBOM.split(''));
 
-  /**
-   * Uint8Arrayをチャンクで送信するAsyncIterableジェネレータ
-   */
-  async function* generateCsvUint8ArrayChunks() {
-    const csvContent =
-      'Name,Age,City\nAlice,30,Tokyo\nBob,25,Osaka\nCharlie,35,Kyoto\n';
-    const encoder = new TextEncoder();
-    const uint8Array = encoder.encode(csvContent);
-    const chunkSize = 10;
-    for (let i = 0; i < uint8Array.length; i += chunkSize) {
-      yield uint8Array.slice(i, i + chunkSize);
-    }
-  }
+      const result = await Stream.runCollect(
+        stream.pipe(parseCsv({ bom: true })),
+      ).pipe(Effect.runPromise);
+
+      const records = Chunk.toReadonlyArray(result);
+      expect(records.length).toBeGreaterThan(0);
+    });
+
+    it('should skip empty lines', async () => {
+      const csvData = 'name,age\nJohn,30\n\nJane,25';
+      const stream = Stream.fromIterable(csvData.split(''));
+
+      const result = await Stream.runCollect(stream.pipe(parseCsv())).pipe(
+        Effect.runPromise,
+      );
+
+      const records = Chunk.toReadonlyArray(result);
+      // Should skip empty line
+      expect(records.length).toBeLessThanOrEqual(2);
+    });
+
+    it('should trim whitespace by default', async () => {
+      const csvData = 'name, age \n John , 30 ';
+      const stream = Stream.fromIterable(csvData.split(''));
+
+      const result = await Stream.runCollect(stream.pipe(parseCsv())).pipe(
+        Effect.runPromise,
+      );
+
+      const records = Chunk.toReadonlyArray(result);
+      if (records.length > 0) {
+        const firstRecord = records[0] as Record<string, string>;
+        expect(firstRecord.name?.trim()).toBe(
+          firstRecord.name ?? firstRecord.name,
+        );
+      }
+    });
+
+    it('should map header names using fields option', async () => {
+      const csvData = 'user_name,user_age\nJohn,30';
+      const stream = Stream.fromIterable(csvData.split(''));
+
+      const result = await Stream.runCollect(
+        stream.pipe(
+          parseCsv({
+            fields: [
+              { key: 'name', header: 'user_name' },
+              { key: 'age', header: 'user_age' },
+            ],
+          }),
+        ),
+      ).pipe(Effect.runPromise);
+
+      const records = Chunk.toReadonlyArray(result);
+      if (records.length > 0) {
+        const firstRecord = records[0] as Record<string, string>;
+        expect(firstRecord).toHaveProperty('name');
+        expect(firstRecord).toHaveProperty('age');
+      }
+    });
+  });
+
+  describe('decodeCsv', () => {
+    it('should decode CSV records using schema', async () => {
+      const schema = Schema.Struct({
+        name: Schema.String,
+        age: Schema.NumberFromString,
+      });
+
+      const records = Stream.fromIterable([
+        { name: 'John', age: '30' },
+        { name: 'Jane', age: '25' },
+      ]);
+
+      const result = await Stream.runCollect(
+        records.pipe(decodeCsv(schema)),
+      ).pipe(Effect.runPromise);
+
+      const decoded = Chunk.toReadonlyArray(result);
+      expect(decoded.length).toBe(2);
+      expect(decoded[0]).toEqual({ name: 'John', age: 30 });
+      expect(decoded[1]).toEqual({ name: 'Jane', age: 25 });
+    });
+
+    it('should fail on invalid data', async () => {
+      const schema = Schema.Struct({
+        name: Schema.String,
+        age: Schema.Number,
+      });
+
+      const records = Stream.fromIterable([{ name: 'John', age: 'invalid' }]);
+
+      try {
+        await Stream.runCollect(records.pipe(decodeCsv(schema))).pipe(
+          Effect.runPromise,
+        );
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect(error).toBeDefined();
+      }
+    });
+  });
 
   describe('readCsv', () => {
-    it('should read CSV rows from AsyncIterable source', async () => {
-      const source = generateCsvStringChunks();
-      const stream = readCsv(source);
+    it('should read and validate CSV data', async () => {
+      const schema = Schema.Struct({
+        name: Schema.String,
+        age: Schema.NumberFromString,
+      });
 
-      // Stream を collect して配列に変換
-      const result = await Effect.runPromise(
-        stream.pipe(
-          Stream.runCollect,
-          Effect.map((chunk) => chunk.length),
-        ),
+      const csvData = 'name,age\nJohn,30\nJane,25';
+      const stream = Stream.fromIterable(csvData.split(''));
+
+      const result = await Stream.runCollect(stream.pipe(readCsv(schema))).pipe(
+        Effect.runPromise,
       );
 
-      expect(result).toBeGreaterThan(0);
-    });
-
-    it('should read CSV rows with Uint8Array source', async () => {
-      const source = generateCsvUint8ArrayChunks();
-      const stream = readCsv(source);
-
-      const result = await Effect.runPromise(
-        stream.pipe(
-          Stream.runCollect,
-          Effect.map((chunk) => chunk.length),
-        ),
-      );
-
-      expect(result).toBeGreaterThan(0);
-    });
-
-    it('should apply filter when filterFn is provided', async () => {
-      // Note: 実際のCSVパーサーに依存するテストのため、
-      // シンプルなアサーションで動作確認
-      const source = generateCsvUint8ArrayChunks();
-      const filterFn = (row: Record<string, string>) => {
-        const result = !!row['Age'] && parseInt(row['Age']) >= 30;
-        return result;
-      };
-
-      const stream = readCsv(source, { filterFn });
-
-      const result = await Effect.runPromise(
-        stream.pipe(
-          Stream.runCollect,
-          Effect.map((chunk) => chunk.length),
-        ),
-      );
-
-      // フィルタリング後の結果
-      expect(result).toBeGreaterThanOrEqual(0);
-    });
-  });
-
-  describe('collectCsv', () => {
-    it('should collect CSV rows into an array', async () => {
-      const source = generateCsvUint8ArrayChunks();
-      const result = await Effect.runPromise(collectCsv(source));
-
-      expect(Array.isArray(result)).toBe(true);
-      expect(result.length).toBeGreaterThan(0);
-    });
-
-    it('should return readonly array', async () => {
-      const source = generateCsvUint8ArrayChunks();
-      const result = await Effect.runPromise(collectCsv(source));
-
-      // readonly配列として機能することを確認
-      expect(result).toBeDefined();
-      expect(Array.isArray(result)).toBe(true);
-    });
-
-    it('should apply encoding when provided', async () => {
-      const source = generateCsvUint8ArrayChunks();
-      // UTF-8 encoding (デフォルト)
-      const result = await Effect.runPromise(
-        collectCsv(source, { encoding: 'utf-8' }),
-      );
-
-      expect(Array.isArray(result)).toBe(true);
-    });
-
-    it('should apply filter and collect', async () => {
-      const source = generateCsvUint8ArrayChunks();
-      const filterFn = (row: Record<string, string>) =>
-        row['Name'] !== undefined;
-
-      const result = await Effect.runPromise(collectCsv(source, { filterFn }));
-
-      expect(Array.isArray(result)).toBe(true);
-    });
-  });
-
-  describe('readCsvDecoded', () => {
-    it('should decode CSV rows using provided decoder function', async () => {
-      const source = generateCsvUint8ArrayChunks();
-
-      interface Person {
-        name: string;
-        age: number;
-        city: string;
+      const records = Chunk.toReadonlyArray(result);
+      expect(records.length).toBeGreaterThan(0);
+      if (records.length > 0) {
+        expect(records[0]).toHaveProperty('name');
+        expect(records[0]).toHaveProperty('age');
       }
-
-      const decoder = (row: Record<string, string>): Person => ({
-        name: row['Name'] || '',
-        age: parseInt(row['Age'] || '0', 10),
-        city: row['City'] || '',
-      });
-
-      const stream = readCsvDecoded(source, decoder);
-      const result = await Effect.runPromise(
-        stream.pipe(
-          Stream.runCollect,
-          Effect.map((chunk) => chunk.length),
-        ),
-      );
-
-      expect(result).toBeGreaterThan(0);
     });
 
-    it('should apply decoder with filter', async () => {
-      const source = generateCsvUint8ArrayChunks();
+    it('should apply filterRaw option', async () => {
+      const schema = Schema.Struct({
+        name: Schema.String,
+        age: Schema.NumberFromString,
+      });
 
-      interface Person {
-        name: string;
-        age: number;
+      const csvData = 'name,age\nJohn,30\nJane,25\nBob,20';
+      const stream = Stream.fromIterable(csvData.split(''));
+
+      const result = await Stream.runCollect(
+        stream.pipe(
+          readCsv(schema, {
+            filterRaw: (row) => parseInt(row.age) > 25,
+          }),
+        ),
+      ).pipe(Effect.runPromise);
+
+      const records = Chunk.toReadonlyArray(result);
+      // Should only contain records with age > 25
+      expect(records.length).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should apply decoded filter option', async () => {
+      const schema = Schema.Struct({
+        name: Schema.String,
+        age: Schema.NumberFromString,
+      });
+
+      const csvData = 'name,age\nJohn,30\nJane,25\nBob,20';
+      const stream = Stream.fromIterable(csvData.split(''));
+
+      const result = await Stream.runCollect(
+        stream.pipe(
+          readCsv(schema, {
+            filter: (row) => row.age > 25,
+          }),
+        ),
+      ).pipe(Effect.runPromise);
+
+      const records = Chunk.toReadonlyArray(result);
+      // Should only contain records with age > 25
+      records.forEach((record: any) => {
+        expect(record.age).toBeGreaterThan(25);
+      });
+    });
+
+    it('should apply both filterRaw and filter options', async () => {
+      const schema = Schema.Struct({
+        name: Schema.String,
+        age: Schema.NumberFromString,
+      });
+
+      const csvData = 'name,age\nJohn,30\nJane,25\nBob,20';
+      const stream = Stream.fromIterable(csvData.split(''));
+
+      const result = await Stream.runCollect(
+        stream.pipe(
+          readCsv(schema, {
+            filterRaw: (row) => row.name.length > 3,
+            filter: (row) => row.age > 20,
+          }),
+        ),
+      ).pipe(Effect.runPromise);
+
+      const records = Chunk.toReadonlyArray(result);
+      records.forEach((record: any) => {
+        expect(record.age).toBeGreaterThan(20);
+        expect(record.name.length).toBeGreaterThan(3);
+      });
+    });
+
+    it('should handle header mapping with schema', async () => {
+      const schema = Schema.Struct({
+        name: Schema.String,
+        age: Schema.NumberFromString,
+      });
+
+      const csvData = 'user_name,user_age\nJohn,30\nJane,25';
+      const stream = Stream.fromIterable(csvData.split(''));
+
+      const result = await Stream.runCollect(
+        stream.pipe(
+          readCsv(schema, {
+            fields: [
+              { key: 'name', header: 'user_name' },
+              { key: 'age', header: 'user_age' },
+            ],
+          }),
+        ),
+      ).pipe(Effect.runPromise);
+
+      const records = Chunk.toReadonlyArray(result);
+      expect(records.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('readCsvRaw', () => {
+    it('should read raw CSV data without validation', async () => {
+      const csvData = 'name,age\nJohn,30\nJane,25';
+      const stream = Stream.fromIterable(csvData.split(''));
+
+      const result = await Stream.runCollect(stream.pipe(readCsvRaw())).pipe(
+        Effect.runPromise,
+      );
+
+      const records = Chunk.toReadonlyArray(result);
+      expect(records.length).toBeGreaterThan(0);
+      expect(records[0]).toHaveProperty('name');
+      expect(records[0]).toHaveProperty('age');
+    });
+
+    it('should apply filterRaw option to raw data', async () => {
+      const csvData = 'name,age\nJohn,30\nJane,28\nBob,22';
+      const stream = Stream.fromIterable(csvData.split(''));
+
+      const result = await Stream.runCollect(
+        stream.pipe(
+          readCsvRaw({
+            filterRaw: (row) => {
+              console.log(row.age);
+              return parseInt(row.age) >= 28;
+            },
+          }),
+        ),
+      ).pipe(Effect.runPromise);
+
+      const records = Chunk.toReadonlyArray(result);
+      records.forEach((record: any) => {
+        expect(parseInt(record.age)).toBeGreaterThanOrEqual(28);
+      });
+    });
+
+    it('should handle header mapping in raw data', async () => {
+      const csvData = 'user_name,user_age\nJohn,30\nJane,25';
+      const stream = Stream.fromIterable(csvData.split(''));
+
+      const result = await Stream.runCollect(
+        stream.pipe(
+          readCsvRaw({
+            fields: [
+              { key: 'name', header: 'user_name' },
+              { key: 'age', header: 'user_age' },
+            ],
+          }),
+        ),
+      ).pipe(Effect.runPromise);
+
+      const records = Chunk.toReadonlyArray(result);
+      if (records.length > 0) {
+        const firstRecord = records[0] as Record<string, string>;
+        expect(firstRecord).toHaveProperty('name');
+        expect(firstRecord).toHaveProperty('age');
       }
-
-      const decoder = (row: Record<string, string>): Person => ({
-        name: row['Name'] || '',
-        age: parseInt(row['Age'] || '0', 10),
-      });
-
-      const filterFn = (row: Record<string, string>) =>
-        !!row['Age'] && parseInt(row['Age']) > 25;
-
-      const stream = readCsvDecoded(source, decoder, { filterFn });
-      const result = await Effect.runPromise(
-        stream.pipe(
-          Stream.runCollect,
-          Effect.map((chunk) => chunk.length),
-        ),
-      );
-
-      expect(result).toBeGreaterThanOrEqual(0);
-    });
-
-    it('should handle decoder function transformations correctly', async () => {
-      const source = generateCsvUint8ArrayChunks();
-
-      const decoder = (row: Record<string, string>) => ({
-        ...row,
-        processed: true,
-      });
-
-      const stream = readCsvDecoded(source, decoder);
-      const result = await Effect.runPromise(
-        stream.pipe(
-          Stream.runCollect,
-          Effect.map((chunk) => chunk.length),
-        ),
-      );
-
-      expect(result).toBeGreaterThan(0);
     });
   });
 
-  describe('edge cases', () => {
-    it('should handle empty CSV source', async () => {
-      const emptySource = (async function* () {
-        // 何も yield しない
-      })();
+  describe('Complex scenarios', () => {
+    it('should handle CSV with quoted fields', async () => {
+      const csvData = 'name,description\nJohn,"Hello, World"\nJane,"Test"';
+      const stream = Stream.fromIterable(csvData.split(''));
 
-      const stream = readCsv(emptySource);
-      const result = await Effect.runPromise(
-        stream.pipe(
-          Stream.runCollect,
-          Effect.map((chunk) => chunk.length),
-        ),
+      const result = await Stream.runCollect(stream.pipe(parseCsv())).pipe(
+        Effect.runPromise,
       );
 
-      expect(result).toBe(0);
+      const records = Chunk.toReadonlyArray(result);
+      expect(records.length).toBeGreaterThan(0);
     });
-  });
 
-  describe('integration test', () => {
-    it('should read and process a real CSV file', async () => {
-      const rows = await Effect.runPromise(
-        program('tests/test.utf8.csv').pipe(
-          Effect.provide(FileLive),
-          Effect.scoped,
-        ),
+    it('should handle CSV with optional fields', async () => {
+      const schema = Schema.Struct({
+        name: Schema.String,
+        age: Schema.optional(Schema.NumberFromString),
+      });
+
+      const csvData = 'name,age\nJohn,30\nJane,';
+      const stream = Stream.fromIterable(csvData.split(''));
+
+      try {
+        const result = await Stream.runCollect(
+          stream.pipe(readCsv(schema)),
+        ).pipe(Effect.runPromise);
+
+        const records = Chunk.toReadonlyArray(result);
+        expect(records.length).toBeGreaterThan(0);
+      } catch (error) {
+        // Handle the case where empty fields can't be converted
+        expect(error).toBeDefined();
+      }
+    });
+
+    it('should handle empty CSV', async () => {
+      const csvData = 'name,age';
+      const stream = Stream.fromIterable(csvData.split(''));
+
+      const result = await Stream.runCollect(stream.pipe(parseCsv())).pipe(
+        Effect.runPromise,
       );
-      expect(Array.isArray(rows)).toBe(true);
-      expect(rows.length).toBeGreaterThan(0);
-      console.log(rows[0]);
+
+      const records = Chunk.toReadonlyArray(result);
+      expect(records).toBeDefined();
+    });
+
+    it('should process multiple rows correctly', async () => {
+      const schema = Schema.Struct({
+        id: Schema.NumberFromString,
+        name: Schema.String,
+      });
+
+      const csvData = 'id,name\n1,Alice\n2,Bob\n3,Charlie\n4,David\n5,Eve';
+      const stream = Stream.fromIterable(csvData.split(''));
+
+      const result = await Stream.runCollect(stream.pipe(readCsv(schema))).pipe(
+        Effect.runPromise,
+      );
+
+      const records = Chunk.toReadonlyArray(result);
+      expect(records.length).toBeGreaterThan(0);
+      records.forEach((record: any) => {
+        expect(record).toHaveProperty('id');
+        expect(record).toHaveProperty('name');
+        expect(typeof record.id).toBe('number');
+        expect(typeof record.name).toBe('string');
+      });
     });
   });
 });

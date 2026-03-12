@@ -5,7 +5,7 @@ export { Stream } from 'effect';
 export { Chunk } from 'effect';
 export { Effect } from 'effect';
 export { Context } from 'effect';
-export { Layer } from 'effect';
+export { Layer, Schema, Function } from 'effect';
 export { Fiber } from 'effect';
 export { Scope } from 'effect/Scope';
 
