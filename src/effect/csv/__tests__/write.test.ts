@@ -1,11 +1,12 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { writeCsv } from '../write';
 import { Chunk, Effect, Stream, Schema } from '../..';
+import { platform } from '../../../platform';
 
 describe('writeCsv', () => {
   const testSchema = Schema.Struct({
-    name: Schema.String,
-    age: Schema.Number,
+    name: Schema.optional(Schema.String),
+    age: Schema.NullOr(Schema.Number),
   });
 
   it('should convert rows to CSV string format', async () => {
@@ -14,54 +15,69 @@ describe('writeCsv', () => {
       { name: 'Jane', age: 25 },
     ];
 
-    //const result: string[] = [];
-    const mockStream = {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      pipe: vi.fn((_transform) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        rows.forEach((_row) => {
-          // Simulate transform processing
-        });
-        return mockStream;
-      }),
-    } as any;
+    const testData = Stream.fromIterable(rows);
+    const program = testData.pipe(writeCsv(testSchema), Stream.runCollect);
 
-    writeCsv(testSchema)(mockStream);
-    expect(mockStream.pipe).toHaveBeenCalled();
+    // 実行して中身を確認
+    const result = await Effect.runPromise(program);
+    expect(Chunk.toReadonlyArray(result).join('')).toContain('John');
   });
 
-  it('should apply custom options to CSV stringifier', () => {
+  it('should apply custom options to CSV stringifier', async () => {
     const options = { quoted: true, bom: true };
-    const mockStream = { pipe: vi.fn(() => mockStream) } as any;
+    const input = Stream.make({ name: 'Alice', age: 30 }); // 1件だけの本物ストリーム
 
-    writeCsv(testSchema, options)(mockStream);
-    expect(mockStream.pipe).toHaveBeenCalled();
+    // 実際に動かす設計図を作る
+    const program = input.pipe(
+      writeCsv(testSchema, options),
+      Stream.runCollect,
+    );
+
+    // 実際に動かして結果を確認
+    const result = await Effect.runPromise(program);
+    const output = Chunk.toReadonlyArray(result).join('');
+
+    // options.quoted が効いているか、文字列の中身で判定
+    expect(output).toContain('"Alice"');
   });
 
-  it('should use default options when none provided', () => {
-    const mockStream = { pipe: vi.fn(() => mockStream) } as any;
+  it('should use default options when none provided', async () => {
+    const input = Stream.make({ name: 'Alice', age: 30 }); // 1件だけの本物ストリーム
 
-    writeCsv(testSchema)(mockStream);
-    expect(mockStream.pipe).toHaveBeenCalled();
+    // 実際に動かす設計図を作る
+    const program = input.pipe(writeCsv(testSchema), Stream.runCollect);
+
+    // 実際に動かして結果を確認
+    const result = await Effect.runPromise(program);
+    const output = Chunk.toReadonlyArray(result).join('');
+
+    // options.quoted が効いているか、文字列の中身で判定
+    expect(output).toContain('Alice,30');
   });
 
-  it('should handle empty rows', () => {
-    const mockStream = { pipe: vi.fn(() => mockStream) } as any;
+  it('should handle empty rows', async () => {
+    const input = Stream.make(); // 1件だけの本物ストリーム
 
-    writeCsv(testSchema)(mockStream);
-    expect(mockStream.pipe).toHaveBeenCalled();
+    // 実際に動かす設計図を作る
+    const program = input.pipe(writeCsv(testSchema), Stream.runCollect);
+
+    // 実際に動かして結果を確認
+    const result = await Effect.runPromise(program);
+    const output = Chunk.toReadonlyArray(result).join('');
+    expect(output).toBe('name,age' + platform.EOL); // ヘッダーだけの出力
   });
 
-  it('should handle null and undefined values in rows', () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  it('should handle null and undefined values in rows', async () => {
     const rows = [
       { name: 'John', age: null },
       { name: undefined, age: 25 },
     ];
-    const mockStream = { pipe: vi.fn(() => mockStream) } as any;
+    const testData = Stream.fromIterable(rows);
+    const program = testData.pipe(writeCsv(testSchema), Stream.runCollect);
 
-    writeCsv(testSchema)(mockStream);
-    expect(mockStream.pipe).toHaveBeenCalled();
+    // 実行して中身を確認
+    const result = await Effect.runPromise(program);
+    expect(Chunk.toReadonlyArray(result).join('')).toContain('John');
   });
   it('should write csv', async () => {
     const schema = Schema.Struct({

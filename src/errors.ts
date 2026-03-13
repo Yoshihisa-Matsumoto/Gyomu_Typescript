@@ -14,7 +14,7 @@ export function unknownError<E extends AppError>(
   return new ErrorType(useMessage, { cause: error });
 }
 export class ValueError extends AppError {
-  readonly kind = 'ValueError';
+  readonly _tag = 'ValueError';
   severity = Severity.ERROR;
   isRetryable(): boolean {
     return false;
@@ -25,7 +25,7 @@ export class ValueError extends AppError {
 }
 
 export class DBError extends AppError {
-  readonly kind = 'DBError';
+  readonly _tag = 'DBError';
   severity = Severity.ERROR;
   isRetryable(): boolean {
     return false;
@@ -36,7 +36,7 @@ export class DBError extends AppError {
 }
 
 export class TimeoutError extends AppError {
-  readonly kind = 'TimeoutError';
+  readonly _tag = 'TimeoutError';
   severity = Severity.ERROR;
   isRetryable(): boolean {
     return true;
@@ -46,7 +46,7 @@ export class TimeoutError extends AppError {
   }
 }
 export class IOError extends AppError {
-  readonly kind = 'IOError';
+  readonly _tag = 'IOError';
   severity = Severity.ERROR;
   isRetryable(): boolean {
     return false;
@@ -56,7 +56,7 @@ export class IOError extends AppError {
   }
 }
 export class AccessError extends AppError {
-  readonly kind = 'AccessError';
+  readonly _tag = 'AccessError';
   severity = Severity.ERROR;
   isRetryable(): boolean {
     return false;
@@ -67,7 +67,7 @@ export class AccessError extends AppError {
 }
 
 export class CriticalError extends AppError {
-  readonly kind = 'CriticalError';
+  readonly _tag = 'CriticalError';
   severity = Severity.FATAL;
   isRetryable(): boolean {
     return false;
@@ -78,7 +78,7 @@ export class CriticalError extends AppError {
 }
 
 export class GyomuError extends AppError {
-  readonly kind = 'GyomuError';
+  readonly _tag = 'GyomuError';
   severity = Severity.ERROR;
   isRetryable(): boolean {
     return false;
@@ -88,7 +88,7 @@ export class GyomuError extends AppError {
   }
 }
 export class GyomuErrorWithRetry extends AppError {
-  readonly kind = 'GyomuErrorWithRetry';
+  readonly _tag = 'GyomuErrorWithRetry';
   severity = Severity.ERROR;
   isRetryable(): boolean {
     if (this.cause instanceof AppError) {
@@ -102,7 +102,7 @@ export class GyomuErrorWithRetry extends AppError {
 }
 
 export class NetworkError extends AppError {
-  readonly kind = 'NetworkError';
+  readonly _tag = 'NetworkError';
   severity = Severity.ERROR;
   isRetryable(): boolean {
     return false;
@@ -113,7 +113,7 @@ export class NetworkError extends AppError {
 }
 
 export class ServerError extends AppError {
-  readonly kind = 'ServerError';
+  readonly _tag = 'ServerError';
   severity = Severity.ERROR;
   isRetryable(): boolean {
     return false;

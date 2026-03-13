@@ -8,13 +8,15 @@ import { parse, Options } from 'csv-parse';
 export const parseCsv =
   <A, E extends AppError, R = never>(options?: CsvReadOption<A>) =>
   (
-    stream: Stream.Stream<string | Buffer, E | IOError, R>,
+    stream: Stream.Stream<string | Buffer | Uint8Array, E | IOError, R>,
   ): Stream.Stream<Record<string, string>, E | IOError, R> =>
     Function.pipe(
       stream,
-      throughNodeStream<string | Buffer, Record<string, string>, E | IOError>(
-        parse(convertReadOption(options)),
-      ),
+      throughNodeStream<
+        string | Buffer | Uint8Array,
+        Record<string, string>,
+        E | IOError
+      >(parse(convertReadOption(options))),
     );
 
 export const decodeCsv = <A, I>(schema: Schema.Schema<A, I>) =>
@@ -25,7 +27,7 @@ export const readCsv =
     schema: Schema.Schema<A, I>,
     options?: CsvReadOption<A>,
   ) =>
-  (stream: Stream.Stream<string | Buffer, E, R>) =>
+  (stream: Stream.Stream<string | Buffer | Uint8Array, E, R>) =>
     stream.pipe(
       parseCsv(options),
       Stream.filter((row) =>

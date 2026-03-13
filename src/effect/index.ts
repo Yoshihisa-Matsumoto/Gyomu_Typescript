@@ -3,7 +3,7 @@ import { AppError, AppErrorCtor } from '../base-error';
 import { unknownError } from '../errors';
 export { Stream } from 'effect';
 export { Chunk } from 'effect';
-export { Effect } from 'effect';
+export { Effect, pipe } from 'effect';
 export { Context } from 'effect';
 export { Layer, Schema, Function } from 'effect';
 export { Fiber } from 'effect';

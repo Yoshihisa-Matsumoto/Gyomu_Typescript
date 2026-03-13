@@ -33,7 +33,7 @@ export const commonPlatform = {
   renameSync: fse.renameSync,
   lstatSync: fse.lstatSync,
   ensureFileSync: fse.ensureFileSync,
-
+  EOL: os.EOL,
   sep: path.sep,
   basename: path.basename,
   resolve: path.resolve,

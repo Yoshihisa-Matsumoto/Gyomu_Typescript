@@ -81,6 +81,7 @@
     "!**/__sit__"
   ],
   "devDependencies": {
+    "@effect/language-service": "^0.80.0",
     "@eslint/js": "^9.39.2",
     "@types/fs-extra": "^11.0.3",
     "@types/jsdom": "^27.0.0",
@@ -107,11 +108,14 @@
     "prettier": "^3.8.1",
     "prisma": "^7.3.0",
     "tmp": "^0.2.5",
+    "typescript": "^5.9.3",
     "typescript-eslint": "^8.53.1",
     "vitest": "^4.0.18",
     "vitest-mock-extended": "^3.1.0"
   },
   "dependencies": {
+    "@effect/platform": "^0.94.5",
+    "@effect/platform-node": "^0.104.1",
     "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "^7.3.0",
     "@xmldom/xmldom": "^0.8.10",
