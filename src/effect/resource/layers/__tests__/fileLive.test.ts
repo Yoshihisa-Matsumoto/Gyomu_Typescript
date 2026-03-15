@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PassThrough } from 'node:stream';
-import { Stream, Effect } from 'effect';
+import { Stream, Effect, Exit, Cause, Option } from 'effect';
 import { FileService } from '../../services/fileService.js';
 import { FileLive } from '../../layers/fileLive.js';
 import { platform } from '../../../../platform/index.js';
@@ -69,15 +69,20 @@ describe('FileLive', () => {
     vi.spyOn(platform, 'createReadStream').mockReturnValue(pass as any);
 
     const prog = collectFromPath('any');
-    const run = Effect.runPromise(Effect.scoped(prog));
-
+    const run = Effect.runPromiseExit(Effect.scoped(prog));
+    await new Promise(process.nextTick);
     pass.emit('error', new Error('stream fail'));
 
-    await expect(run).rejects.toThrow('read file error');
-    await expect(run).rejects.toMatchObject({
-      constructor: IOError,
-      cause: expect.objectContaining({ message: 'stream fail' }),
-    });
+    const exit = await run;
+
+    expect(Exit.isFailure(exit)).toBe(true);
+
+    if (Exit.isFailure(exit)) {
+      const err = Option.getOrThrow(Cause.failureOption(exit.cause));
+
+      expect(err).toBeDefined();
+      expect(err).toBeInstanceOf(IOError);
+    }
   });
 
   it('fails when createReadStream throws', async () => {

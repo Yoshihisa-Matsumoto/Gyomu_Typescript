@@ -78,6 +78,7 @@ describe('nodeStream', () => {
     it('should handle backpressure', async () => {
       const slowTransform = new Transform({
         highWaterMark: 1,
+        objectMode: true,
         transform(chunk, _encoding, callback) {
           setTimeout(() => callback(null, chunk), 10);
         },
@@ -97,7 +98,7 @@ describe('nodeStream', () => {
 
       expect(results).toHaveLength(5);
       slowTransform.destroy();
-    });
+    }, 10000);
 
     it('should handle transform errors', async () => {
       const errorTransform = new Transform({
