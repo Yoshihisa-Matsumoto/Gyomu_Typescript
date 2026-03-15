@@ -1,8 +1,8 @@
-import { GzipArchive } from '../gz';
+import { GzipArchive } from '../gz.js';
 
-import { compareFiles } from '../../__tests__/baseClass';
+import { compareFiles } from '../../__tests__/baseClass.js';
 import { beforeAll, expect, test } from 'vitest';
-import { platform } from '../../platform';
+import { platform } from '../../platform/index.js';
 
 let compressDirectory: string;
 let extractDirectory: string;

@@ -1,17 +1,19 @@
-import { Effect } from 'effect/index';
-import { AppError } from '../base-error';
-import { fail, GyomuEffect, succeed } from './index';
-import { GyomuResult, GyomuResultAsync } from '../result';
-export const fromResult = <T>(r: GyomuResult<T>): GyomuEffect<T> => {
+import { Effect } from 'effect';
+import { AppError } from '../base-error.js';
+
+import { GyomuResult, GyomuResultAsync } from '../result.js';
+export const fromResult = <T>(
+  r: GyomuResult<T>,
+): Effect.Effect<T, AppError> => {
   return r.match(
-    (v: T) => succeed(v),
-    (e) => fail(e),
+    (v: T) => Effect.succeed(v),
+    (e) => Effect.fail(e),
   );
 };
 
 export const fromGyomuResultAsync = <T>(
   r: GyomuResultAsync<T>,
-): GyomuEffect<T> => {
+): Effect.Effect<T, AppError> => {
   return Effect.tryPromise({
     try: () =>
       r.match(

@@ -1,13 +1,13 @@
 import { describe, it, expect } from 'vitest';
-import { readCsv, parseCsv } from '../read';
-import { writeCsv } from '../write';
-import { Stream, Schema, Effect, Chunk } from '../..';
+import { readCsv, parseCsv } from '../read.js';
+import { writeCsv } from '../write.js';
+import { Stream, Schema, Effect, Chunk } from 'effect';
 import { readFile } from 'node:fs/promises';
 //import { FileService } from '../../resource/services/fileService';
 //import { IOError, unknownError } from '../../../errors';
 import { FileSystem } from '@effect/platform/FileSystem';
 import { NodeFileSystem } from '@effect/platform-node';
-import { IOError, unknownError } from '../../../errors';
+import { IOError, unknownError } from '../../../errors.js';
 
 describe('CSV Read/Write Integration', () => {
   it('should read CSV data and validate structure', async () => {
@@ -129,16 +129,16 @@ describe('CSV Read/Write Integration', () => {
     const inputContent = await readFile(inputFile, 'utf-8');
     const inputStream = Stream.fromIterable(inputContent.split(''));
 
-    const parsedRecords = await Stream.runCollect(inputStream.pipe(readCsv(schema))).pipe(
-      Effect.runPromise,
-    );
+    const parsedRecords = await Stream.runCollect(
+      inputStream.pipe(readCsv(schema)),
+    ).pipe(Effect.runPromise);
 
     const rows = Chunk.toReadonlyArray(parsedRecords);
     expect(rows.length).toBeGreaterThan(0);
 
-    const outputRows = await Stream.runCollect(Stream.fromIterable(rows).pipe(writeCsv(schema))).pipe(
-      Effect.runPromise,
-    );
+    const outputRows = await Stream.runCollect(
+      Stream.fromIterable(rows).pipe(writeCsv(schema)),
+    ).pipe(Effect.runPromise);
 
     const outputCsv = Chunk.toReadonlyArray(outputRows).join('');
     expect(outputCsv).toContain('UserID');

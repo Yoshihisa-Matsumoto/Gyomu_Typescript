@@ -1,10 +1,10 @@
 //import fs from 'fs';
-import { runAsync, GyomuResultAsync } from '../result';
-import { platform } from '../platform';
-import { AbstractBaseArchive } from './abstract';
+import { runAsync, GyomuResultAsync } from '../result.js';
+import { platform } from '../platform/index.js';
+import { AbstractBaseArchive } from './abstract.js';
 import zlib from 'zlib';
-import { FileInput, toReadable } from '../buffer';
-import { IOError } from '../errors';
+import { FileInput, toReadable } from '../buffer.js';
+import { IOError } from '../errors.js';
 
 /**
  * @remarks
@@ -22,7 +22,7 @@ export class GzipArchive extends AbstractBaseArchive {
             .createReadStream(sourceFilename)
             .pipe(zlib.createGzip())
             .pipe(platform.createWriteStream(gzipFilename))
-            .on('error', (err) => {
+            .on('error', (err: unknown) => {
               reject(new IOError('Error on gzip compression', err));
             })
             .on('finish', () => {
@@ -44,7 +44,7 @@ export class GzipArchive extends AbstractBaseArchive {
             .createReadStream(gzipFilename)
             .pipe(zlib.createGunzip())
             .pipe(platform.createWriteStream(destinationFilename))
-            .on('error', (err) => {
+            .on('error', (err: unknown) => {
               reject(new IOError('Error on gzip uncompression', err));
             })
             .on('finish', () => {

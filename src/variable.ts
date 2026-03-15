@@ -1,8 +1,8 @@
-import { createDateOnly } from './dateOperation';
-import prisma from './dbsingleton';
-import MarketDateAccess from './holidays';
+import { createDateOnly } from './dateOperation.js';
+import prisma from './dbsingleton.js';
+import MarketDateAccess from './holidays.js';
 import { addDays, addMonths, format, subDays } from 'date-fns';
-import { ValueError } from './errors';
+import { ValueError } from './errors.js';
 import {
   okAsync,
   GyomuResultAsync,
@@ -11,8 +11,8 @@ import {
   result2Async,
   errAsync,
   GyomuResult,
-} from './result';
-import { genericDBFunction } from './dbutil';
+} from './result.js';
+import { genericDBFunction } from './dbutil.js';
 
 const VariableType = {
   Date: 'Date',

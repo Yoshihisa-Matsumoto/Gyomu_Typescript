@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Transform } from 'node:stream';
-import { Stream, Effect } from '../index';
+import { Stream, Effect } from 'effect';
 import {
   acquireNodeStream,
   throughNodeStream,
   throughNodeStreamScoped,
-} from '../nodeStream';
+} from '../nodeStream.js';
 
 describe('nodeStream', () => {
   describe('acquireNodeStream', () => {

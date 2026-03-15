@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { parseCsv, readCsv, readCsvRaw, decodeCsv } from '../read';
-import { Stream, Schema, Effect, Chunk } from '../..';
+import { parseCsv, readCsv, readCsvRaw, decodeCsv } from '../read.js';
+import { Stream, Schema, Effect, Chunk } from 'effect';
 
 describe('CSV Read Functions', () => {
   describe('parseCsv', () => {

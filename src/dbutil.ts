@@ -1,6 +1,6 @@
 import { Prisma } from './generated/prisma/client.js';
-import { GyomuResultAsync, runAsyncCustom } from './result';
-import { DBError, CriticalError } from './errors';
+import { GyomuResultAsync, runAsyncCustom } from './result.js';
+import { DBError, CriticalError } from './errors.js';
 
 export function genericDBFunction<T>(
   actionName: string,

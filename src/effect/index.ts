@@ -1,23 +1,12 @@
 import { Effect } from 'effect';
-import { AppError, AppErrorCtor } from '../base-error';
-import { unknownError } from '../errors';
-export { Stream } from 'effect';
-export { Chunk } from 'effect';
-export { Effect, pipe } from 'effect';
-export { Context } from 'effect';
-export { Layer, Schema, Function } from 'effect';
-export { Fiber } from 'effect';
-export { Scope } from 'effect/Scope';
-
-export type GyomuEffect<T> = Effect.Effect<T, AppError>;
-export const succeed = Effect.succeed;
-export const fail = Effect.fail;
+import { AppError, AppErrorCtor } from '../base-error.js';
+import { unknownError } from '../errors.js';
 
 export const tryAsync = <A, E extends AppError>(
   f: () => Promise<A>,
   ErrorType: AppErrorCtor<E>,
   message: string,
-): GyomuEffect<A> =>
+): Effect.Effect<A, E> =>
   Effect.tryPromise({
     try: f,
     catch: (e) => unknownError(ErrorType, e, message),

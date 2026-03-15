@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { Ftp } from '../ftp';
-import { RemoteConnection } from '../remoteConnection';
-import { FileTransportInfo } from '../../fileModel';
-import { platform } from '../../platform';
+import { Ftp } from '../ftp.js';
+import { RemoteConnection } from '../remoteConnection.js';
+import { FileTransportInfo } from '../../fileModel.js';
+import { platform } from '../../platform/index.js';
 
 let instanceState: { closed: boolean };
 

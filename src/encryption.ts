@@ -1,11 +1,11 @@
 import crypto from 'crypto';
-import { base64String2Buffer, buffer2Base64String } from './base64';
+import { base64String2Buffer, buffer2Base64String } from './base64.js';
 import {
   arrayBufferToString,
   bufferToArrayBuffer,
   stringToArrayBuffer,
-} from './buffer';
-import { platform } from './platform';
+} from './buffer.js';
+import { platform } from './platform/index.js';
 
 export const aesEncryptBufferByKeyFile = (
   plainBuffer: ArrayBuffer,

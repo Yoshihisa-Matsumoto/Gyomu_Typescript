@@ -1,14 +1,14 @@
-import { runAsync, GyomuResultAsync } from './result';
-import { platform, ReadStream } from './platform';
+import { runAsync, GyomuResultAsync } from './result.js';
+import { platform, ReadStream } from './platform/index.js';
 import * as csv from 'csv';
 import { Readable, pipeline } from 'stream';
 
 import { parse, Options } from 'csv-parse';
-import { CsvSource } from './types/csvSource';
-import { GzipArchive, ZipArchive } from './archive';
-import { FileInput } from './buffer';
-import { IOError } from './errors';
-import { createDecoder } from './encoding/decode';
+import { CsvSource } from './types/csvSource.js';
+import { GzipArchive, ZipArchive } from './archive/index.js';
+import { FileInput } from './buffer.js';
+import { IOError } from './errors.js';
+import { createDecoder } from './encoding/decode.js';
 
 type CsvWriteOption = {
   fields?: Record<string, string>;

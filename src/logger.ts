@@ -1,9 +1,9 @@
-import { platform } from './platform';
+import { platform } from './platform/index.js';
 import winston from 'winston';
-import { reconcile } from './reconcile';
+import { reconcile } from './reconcile.js';
 import dotenv from 'dotenv';
-import { z } from './zod';
-import { EnvConfigSource, loadConfig } from './configurator';
+import { z } from './zod.js';
+import { EnvConfigSource, loadConfig } from './configurator.js';
 import { format } from 'date-fns';
 dotenv.config();
 interface LeveledLogMethod {

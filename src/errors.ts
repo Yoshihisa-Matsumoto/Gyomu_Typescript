@@ -1,4 +1,4 @@
-import { AppError, AppErrorCtor, Severity } from './base-error';
+import { AppError, AppErrorCtor, Severity } from './base-error.js';
 
 export function unknownError<E extends AppError>(
   ErrorType: AppErrorCtor<E>,

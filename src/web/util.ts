@@ -1,5 +1,5 @@
-import { GenericElement } from './element';
-import { Table, TableOption } from './table';
+import { GenericElement } from './element.js';
+import { Table, TableOption } from './table.js';
 
 export type ElementGenerationOption = TableOption;
 

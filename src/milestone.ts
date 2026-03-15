@@ -1,13 +1,13 @@
 import {
   gyomu_milestone_daily,
   gyomu_milestone_cdtbl,
-} from './generated/prisma/client';
+} from './generated/prisma/client.js';
 import { format } from 'date-fns';
-import prisma from './dbsingleton';
+import prisma from './dbsingleton.js';
 //import { Failure, PromiseResult, success } from './result';
-import { okAsync, GyomuResultAsync } from './result';
-import { polling } from './timer';
-import { genericDBFunction } from './dbutil';
+import { okAsync, GyomuResultAsync } from './result.js';
+import { polling } from './timer.js';
+import { genericDBFunction } from './dbutil.js';
 
 interface MilestoneExistResultType {
   exists: boolean;

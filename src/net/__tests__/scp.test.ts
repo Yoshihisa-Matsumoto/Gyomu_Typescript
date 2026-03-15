@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import type { FileTransportInfo } from '../../fileModel';
-import { Scp } from '../scp';
-import { platform } from '../../platform';
+import type { FileTransportInfo } from '../../fileModel.js';
+import { Scp } from '../scp.js';
+import { platform } from '../../platform/index.js';
 
 // Mock node-scp client
 const mockClient = {

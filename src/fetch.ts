@@ -6,15 +6,15 @@ import {
   ensure,
   result2Async,
   run,
-} from './result';
+} from './result.js';
 import { EnvHttpProxyAgent, setGlobalDispatcher } from 'undici';
 import xml2js from 'xml2js';
-import { platform } from './platform';
+import { platform } from './platform/index.js';
 import { finished } from 'stream/promises';
 import { Readable } from 'stream';
 import { ReadableStream } from 'stream/web';
-import { logger } from './logger';
-import { IOError, NetworkError, ValueError } from './errors';
+import { logger } from './logger.js';
+import { IOError, NetworkError, ValueError } from './errors.js';
 
 export type FetchResult<ResponseType> = {
   value: ResponseType;

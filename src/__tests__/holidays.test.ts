@@ -1,5 +1,5 @@
 //import { gyomu_market_holiday } from '@prisma/client';
-import MarketDateAccess from '../holidays';
+import MarketDateAccess from '../holidays.js';
 
 import { beforeEach, expect, test } from 'vitest';
 //import { prismaMock } from './baseDBClass';

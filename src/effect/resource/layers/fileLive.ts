@@ -1,7 +1,7 @@
-import { Effect, Layer, Stream } from '../..';
-import { IOError, unknownError } from '../../../errors';
-import { platform } from '../../../platform';
-import { FileService } from '../services/fileService';
+import { Effect, Layer, Stream } from 'effect';
+import { IOError, unknownError } from '../../../errors.js';
+import { platform } from '../../../platform/index.js';
+import { FileService } from '../services/fileService.js';
 
 export const FileLive = Layer.succeed(FileService, {
   open: (path: string) =>

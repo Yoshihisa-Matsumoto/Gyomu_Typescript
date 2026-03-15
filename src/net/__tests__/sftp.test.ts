@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { Sftp } from '../sftp';
-import { RemoteConnection } from '../remoteConnection';
-import { FileTransportInfo } from '../../fileModel';
-import { platform } from '../../platform';
+import { Sftp } from '../sftp.js';
+import { RemoteConnection } from '../remoteConnection.js';
+import { FileTransportInfo } from '../../fileModel.js';
+import { platform } from '../../platform/index.js';
 
 const connectMock = vi.fn(async () => {});
 const endMock = vi.fn(async () => {});

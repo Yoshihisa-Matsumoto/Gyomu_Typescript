@@ -1,8 +1,8 @@
-import { Schema, Stream, Function } from '..';
-import { AppError } from '../../base-error';
-import { IOError } from '../../errors';
-import { throughNodeStream } from '../nodeStream';
-import { CsvColumn, CsvReadOption, CsvRow } from './type';
+import { Schema, Stream, Function } from 'effect';
+import { AppError } from '../../base-error.js';
+import { IOError } from '../../errors.js';
+import { throughNodeStream } from '../nodeStream.js';
+import { CsvColumn, CsvReadOption, CsvRow } from './type.js';
 import { parse, Options } from 'csv-parse';
 
 export const parseCsv =

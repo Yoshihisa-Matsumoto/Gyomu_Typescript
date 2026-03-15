@@ -1,6 +1,6 @@
 import { Readable } from 'stream';
-import { platform } from './platform';
-import { encode2ShiftJIS } from './encoding/encode';
+import { platform } from './platform/index.js';
+import { encode2ShiftJIS } from './encoding/encode.js';
 //import { buffer } from 'stream/consumers';
 
 export const stringToArrayBuffer = (source: string): ArrayBuffer => {

@@ -1,6 +1,6 @@
-import { platform } from '../../platform';
-import { Page } from '../page';
-import { convertGenericElementByTagName } from '../util';
+import { platform } from '../../platform/index.js';
+import { Page } from '../page.js';
+import { convertGenericElementByTagName } from '../util.js';
 import { expect, test } from 'vitest';
 
 test('Table initialization', () => {

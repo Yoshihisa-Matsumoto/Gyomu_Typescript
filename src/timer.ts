@@ -1,5 +1,5 @@
-import { TimeoutError } from './errors';
-import { GyomuResultAsync, runAsync } from './result';
+import { TimeoutError } from './errors.js';
+import { GyomuResultAsync, runAsync } from './result.js';
 /**
  *
  * @param pollingActionName

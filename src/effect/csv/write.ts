@@ -1,9 +1,9 @@
-import { platform } from '../../platform';
-import { CsvRow, CsvWriteOption } from './type';
+import { platform } from '../../platform/index.js';
+import { CsvRow, CsvWriteOption } from './type.js';
 import { stringify } from 'csv';
 import { Options } from 'csv-stringify';
-import { throughNodeStreamScoped } from '../nodeStream';
-import { Stream, Schema } from '..';
+import { throughNodeStreamScoped } from '../nodeStream.js';
+import { Stream, Schema } from 'effect';
 
 export const CsvBoolean = Schema.BooleanFromString;
 

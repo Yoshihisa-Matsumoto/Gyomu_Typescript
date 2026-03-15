@@ -1,11 +1,11 @@
 import { Client } from 'basic-ftp';
 
-import { errAsync, runAsync } from '../result';
-import { FileTransportInfo } from '../fileModel';
-import { okAsync, GyomuResultAsync } from '../result';
-import { RemoteConnection } from './remoteConnection';
-import { platform } from '../platform';
-import { NetworkError } from '../errors';
+import { errAsync, runAsync } from '../result.js';
+import { FileTransportInfo } from '../fileModel.js';
+import { okAsync, GyomuResultAsync } from '../result.js';
+import { RemoteConnection } from './remoteConnection.js';
+import { platform } from '../platform/index.js';
+import { NetworkError } from '../errors.js';
 
 export class Ftp {
   #connectionInformation: RemoteConnection;

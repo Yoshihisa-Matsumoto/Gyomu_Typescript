@@ -1,11 +1,11 @@
-import { gyomu_param_master } from './generated/prisma/client';
+import { gyomu_param_master } from './generated/prisma/client.js';
 import { format } from 'date-fns';
-import prisma from './dbsingleton';
-import { DBError } from './errors';
+import prisma from './dbsingleton.js';
+import { DBError } from './errors.js';
 //import { Failure, PromiseResult, fail, success } from './result';
-import { GyomuResultAsync, errAsync, okAsync, withRetry } from './result';
-import { User } from './user';
-import { genericDBFunction } from './dbutil';
+import { GyomuResultAsync, errAsync, okAsync, withRetry } from './result.js';
+import { User } from './user.js';
+import { genericDBFunction } from './dbutil.js';
 
 type ParameterType = string | number | boolean;
 

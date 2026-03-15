@@ -1,6 +1,6 @@
-import { prismaMock } from './baseDBClass';
-import { Milestone } from '../milestone';
-import { createDateFromYYYYMMDD } from '../dateOperation';
+import { prismaMock } from './baseDBClass.js';
+import { Milestone } from '../milestone.js';
+import { createDateFromYYYYMMDD } from '../dateOperation.js';
 import { format } from 'date-fns';
 import { beforeEach, expect, test } from 'vitest';
 

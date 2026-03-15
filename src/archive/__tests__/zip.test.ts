@@ -1,11 +1,11 @@
-import { ZipArchive } from '../zip';
+import { ZipArchive } from '../zip.js';
 
-import { FileTransportInfo } from '../../fileModel';
+import { FileTransportInfo } from '../../fileModel.js';
 
-import { compareFiles, validateFolders } from '../../__tests__/baseClass';
+import { compareFiles, validateFolders } from '../../__tests__/baseClass.js';
 
 import { beforeAll, expect, test } from 'vitest';
-import { platform } from '../../platform';
+import { platform } from '../../platform/index.js';
 
 let compressDirectory: string;
 let extractDirectory: string;

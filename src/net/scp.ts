@@ -1,8 +1,8 @@
-import { GyomuResultAsync, okAsync, runAsync } from '../result';
-import { NetworkError } from '../errors';
-import { RemoteConnection } from './remoteConnection';
-import { FileTransportInfo } from '../fileModel';
-import { platform } from '../platform';
+import { GyomuResultAsync, okAsync, runAsync } from '../result.js';
+import { NetworkError } from '../errors.js';
+import { RemoteConnection } from './remoteConnection.js';
+import { FileTransportInfo } from '../fileModel.js';
+import { platform } from '../platform/index.js';
 
 import { Client as ScpClient } from 'node-scp';
 import { Readable } from 'stream';

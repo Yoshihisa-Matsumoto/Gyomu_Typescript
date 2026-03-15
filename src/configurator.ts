@@ -1,7 +1,7 @@
 import { hostname, networkInterfaces } from 'os';
 import { pid, env } from 'process';
-import { UserFactory, User } from './user';
-import { z } from './zod';
+import { UserFactory, User } from './user.js';
+import { z } from './zod.js';
 import dotenv from 'dotenv';
 
 //const GYOMU_COMMON_MODE: string = 'GYOMU_COMMON_MODE';

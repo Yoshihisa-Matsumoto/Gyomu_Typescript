@@ -1,8 +1,8 @@
 import { NodeSSH } from 'node-ssh';
-import { RemoteConnection } from './remoteConnection';
-import { GyomuResultAsync, okAsync, runAsync } from '../result';
-import { Scp } from './scp';
-import { NetworkError } from '../errors';
+import { RemoteConnection } from './remoteConnection.js';
+import { GyomuResultAsync, okAsync, runAsync } from '../result.js';
+import { Scp } from './scp.js';
+import { NetworkError } from '../errors.js';
 
 export class SSH implements Disposable {
   #connectionInformation: RemoteConnection;

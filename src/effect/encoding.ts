@@ -1,5 +1,5 @@
-import { decode } from '../encoding/decode';
-import { Stream } from './index';
+import { decode } from '../encoding/decode.js';
+import { Stream } from 'effect';
 
 export const decodeText =
   (encoding: BufferEncoding | string) =>

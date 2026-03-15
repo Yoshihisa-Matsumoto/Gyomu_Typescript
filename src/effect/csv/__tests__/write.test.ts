@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { writeCsv } from '../write';
-import { Chunk, Effect, Stream, Schema } from '../..';
-import { platform } from '../../../platform';
+import { writeCsv } from '../write.js';
+import { Chunk, Effect, Stream, Schema } from 'effect';
+import { platform } from '../../../platform/index.js';
 
 describe('writeCsv', () => {
   const testSchema = Schema.Struct({

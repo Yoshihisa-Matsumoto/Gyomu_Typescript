@@ -1,4 +1,4 @@
-import { FileTransportInfo } from '../fileModel';
+import { FileTransportInfo } from '../fileModel.js';
 
 import {
   runAsync,
@@ -6,11 +6,11 @@ import {
   simpleErrAsync,
   okAsync,
   toPromiseFromEmitter,
-} from '../result';
+} from '../result.js';
 
 import { create, list, extract } from 'tar';
-import { AbstractBaseArchive } from './abstract';
-import { IOError } from '../errors';
+import { AbstractBaseArchive } from './abstract.js';
+import { IOError } from '../errors.js';
 
 /**
  * @remarks

@@ -1,9 +1,9 @@
-import { prismaMock } from './baseDBClass';
-import { ParameterAccess } from '../parameter';
-import { gyomu_param_master, Prisma } from '../generated/prisma/client';
+import { prismaMock } from './baseDBClass.js';
+import { ParameterAccess } from '../parameter.js';
+import { gyomu_param_master, Prisma } from '../generated/prisma/client.js';
 
-import { CriticalError } from '../errors';
-import { createDateFromYYYYMMDD } from '../dateOperation';
+import { CriticalError } from '../errors.js';
+import { createDateFromYYYYMMDD } from '../dateOperation.js';
 import { beforeEach, expect, test } from 'vitest';
 
 beforeEach(() => {});

@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PassThrough } from 'node:stream';
-import { Stream, Effect } from '../../../index';
-import { FileService } from '../../services/fileService';
-import { FileLive } from '../../layers/fileLive';
-import { platform } from '../../../../platform';
-import { IOError } from '../../../../errors';
+import { Stream, Effect } from 'effect';
+import { FileService } from '../../services/fileService.js';
+import { FileLive } from '../../layers/fileLive.js';
+import { platform } from '../../../../platform/index.js';
+import { IOError } from '../../../../errors.js';
 
 // a small helper to run a simple open/collect program
 const collectFromPath = (path: string) =>

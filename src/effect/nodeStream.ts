@@ -1,7 +1,7 @@
-import { Stream, Effect } from './index';
+import { Stream, Effect } from 'effect';
 import { Duplex, Transform } from 'node:stream';
-import { IOError, unknownError } from '../errors';
-import { AppError } from '../base-error';
+import { IOError, unknownError } from '../errors.js';
+import { AppError } from '../base-error.js';
 
 export const acquireNodeStream = <T extends Duplex>(create: () => T) =>
   Effect.acquireRelease(Effect.sync(create), (stream) =>

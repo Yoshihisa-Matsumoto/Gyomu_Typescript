@@ -6,8 +6,8 @@ import {
   ResultAsync,
   Result,
 } from 'neverthrow';
-import { AppError, AppErrorCtor } from './base-error';
-import { unknownError } from './errors';
+import { AppError, AppErrorCtor } from './base-error.js';
+import { unknownError } from './errors.js';
 import { EventEmitter } from 'stream';
 
 export type GyomuResult<T> = Result<T, AppError>;

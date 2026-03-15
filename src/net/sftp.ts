@@ -1,10 +1,10 @@
 import sftp from 'ssh2-sftp-client';
-import { RemoteConnection } from './remoteConnection';
+import { RemoteConnection } from './remoteConnection.js';
 
-import { okAsync, GyomuResultAsync, runAsync } from '../result';
-import { NetworkError } from '../errors';
-import { FileTransportInfo } from '../fileModel';
-import { platform } from '../platform';
+import { okAsync, GyomuResultAsync, runAsync } from '../result.js';
+import { NetworkError } from '../errors.js';
+import { FileTransportInfo } from '../fileModel.js';
+import { platform } from '../platform/index.js';
 
 export class Sftp {
   #config: RemoteConnection;

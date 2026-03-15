@@ -1,5 +1,5 @@
-import { VariableTranslator } from '../variable';
-import { createDateFromYYYYMMDD, createDateOnly } from '../dateOperation';
+import { VariableTranslator } from '../variable.js';
+import { createDateFromYYYYMMDD, createDateOnly } from '../dateOperation.js';
 import { isEqual } from 'date-fns';
 import { beforeEach, expect, test } from 'vitest';
 

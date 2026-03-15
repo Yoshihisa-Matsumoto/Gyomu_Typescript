@@ -5,17 +5,17 @@ import {
   FileFilterInfo,
   FileInfo,
   FilterType,
-} from './fileModel';
+} from './fileModel.js';
 import { compareAsc } from 'date-fns';
-import { GyomuResultAsync, errAsync, okAsync, runAsync } from './result';
+import { GyomuResultAsync, errAsync, okAsync, runAsync } from './result.js';
 // import { ZipArchive } from './archive/zip';
 // import { TarArchive } from './archive/tar';
 import { isEqual } from 'date-fns';
 //import { GzipArchive } from './archive/gz';
-import { polling } from './timer';
+import { polling } from './timer.js';
 //import * as os from 'os';
-import { platform } from './platform';
-import { AccessError, TimeoutError } from './errors';
+import { platform } from './platform/index.js';
+import { AccessError, TimeoutError } from './errors.js';
 
 export class FileOperation {
   static getTempPath(): string {
@@ -94,7 +94,7 @@ export class FileOperation {
       },
       fileName,
     ).mapErr(
-      (error) =>
+      (error: unknown) =>
         new TimeoutError(`Timeout on waiting file access: ${fileName}`, error),
     );
 

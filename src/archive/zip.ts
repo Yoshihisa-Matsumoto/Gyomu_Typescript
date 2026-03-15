@@ -1,7 +1,7 @@
-import { FileTransportInfo } from '../fileModel';
+import { FileTransportInfo } from '../fileModel.js';
 // import fse, { remove } from 'fs-extra';
 // import fs from 'fs';
-import { platform } from '../platform';
+import { platform } from '../platform/index.js';
 //import path from 'path';
 import {
   allResultsOk,
@@ -13,22 +13,23 @@ import {
   runAsync,
   run,
   ensure,
-} from '../result';
+} from '../result.js';
 //import archiver from 'archiver';
 import JSZip from 'jszip';
 import { Open, File, Parse, CentralDirectory } from 'unzipper';
 
-import { AbstractBaseArchive } from './abstract';
-import { FileOperation } from '../fileOperation';
-import { logger } from '../logger';
+import { AbstractBaseArchive } from './abstract.js';
+import { FileOperation } from '../fileOperation.js';
+import { logger } from '../logger.js';
 //import { Z_PARTIAL_FLUSH } from 'zlib';
-import { FileInput, IOError, toReadable } from '..';
+import { IOError } from '../errors.js';
+import { FileInput, toReadable } from '../buffer.js';
 import { PassThrough } from 'stream';
 //import os from 'os';
 import { spawnSync } from 'child_process';
 import { Json2Csv } from '../csv.js';
-import { DiffDetail } from '../reconcile';
-import { decode } from '../encoding/decode';
+import { DiffDetail } from '../reconcile.js';
+import { decode } from '../encoding/decode.js';
 
 type CopyOptions = {
   overwrite?: boolean;

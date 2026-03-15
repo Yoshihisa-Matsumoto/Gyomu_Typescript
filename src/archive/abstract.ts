@@ -1,4 +1,4 @@
-import { platform } from '../platform';
+import { platform } from '../platform/index.js';
 
 export abstract class AbstractBaseArchive {
   readonly archiveFileName: string | undefined;

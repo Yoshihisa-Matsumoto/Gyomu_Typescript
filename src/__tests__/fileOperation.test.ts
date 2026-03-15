@@ -1,11 +1,11 @@
-import { FileOperation } from '../fileOperation';
+import { FileOperation } from '../fileOperation.js';
 
-import { FileCompareType, FileFilterInfo, FilterType } from '../fileModel';
+import { FileCompareType, FileFilterInfo, FilterType } from '../fileModel.js';
 
 import tmp from 'tmp';
 import { expect, test } from 'vitest';
-import { platform } from '../platform';
-import { fsConstants } from '../platform';
+import { platform } from '../platform/index.js';
+import { fsConstants } from '../platform/index.js';
 
 test('File Whole Search Test', () => {
   const baseDir = platform.resolve('.');
