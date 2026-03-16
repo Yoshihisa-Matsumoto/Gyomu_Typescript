@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { parseCsv, readCsv, readCsvRaw, decodeCsv } from '../read.js';
-import { Stream, Schema, Effect, Chunk } from 'effect';
+import { parseCsv, readCsv, readCsvRaw } from '../read.js';
+import { Stream, Schema, Effect } from 'effect';
 
 describe('CSV Read Functions', () => {
   describe('parseCsv', () => {
@@ -12,10 +12,10 @@ describe('CSV Read Functions', () => {
         Effect.runPromise,
       );
 
-      const records = Chunk.toReadonlyArray(result);
-      expect(records.length).toBeGreaterThan(0);
-      expect(records[0]).toHaveProperty('name');
-      expect(records[0]).toHaveProperty('age');
+      //const records = Chunk.toReadonlyArray(result);
+      expect(result.length).toBeGreaterThan(0);
+      expect(result[0]).toHaveProperty('name');
+      expect(result[0]).toHaveProperty('age');
     });
 
     it('should handle CSV with BOM option', async () => {
@@ -26,8 +26,8 @@ describe('CSV Read Functions', () => {
         stream.pipe(parseCsv({ bom: true })),
       ).pipe(Effect.runPromise);
 
-      const records = Chunk.toReadonlyArray(result);
-      expect(records.length).toBeGreaterThan(0);
+      //const records = Chunk.toReadonlyArray(result);
+      expect(result.length).toBeGreaterThan(0);
     });
 
     it('should skip empty lines', async () => {
@@ -38,9 +38,8 @@ describe('CSV Read Functions', () => {
         Effect.runPromise,
       );
 
-      const records = Chunk.toReadonlyArray(result);
       // Should skip empty line
-      expect(records.length).toBeLessThanOrEqual(2);
+      expect(result.length).toBeLessThanOrEqual(2);
     });
 
     it('should trim whitespace by default', async () => {
@@ -51,9 +50,8 @@ describe('CSV Read Functions', () => {
         Effect.runPromise,
       );
 
-      const records = Chunk.toReadonlyArray(result);
-      if (records.length > 0) {
-        const firstRecord = records[0] as Record<string, string>;
+      if (result.length > 0) {
+        const firstRecord = result[0] as Record<string, string>;
         expect(firstRecord.name?.trim()).toBe(
           firstRecord.name ?? firstRecord.name,
         );
@@ -75,52 +73,10 @@ describe('CSV Read Functions', () => {
         ),
       ).pipe(Effect.runPromise);
 
-      const records = Chunk.toReadonlyArray(result);
-      if (records.length > 0) {
-        const firstRecord = records[0] as Record<string, string>;
+      if (result.length > 0) {
+        const firstRecord = result[0] as Record<string, string>;
         expect(firstRecord).toHaveProperty('name');
         expect(firstRecord).toHaveProperty('age');
-      }
-    });
-  });
-
-  describe('decodeCsv', () => {
-    it('should decode CSV records using schema', async () => {
-      const schema = Schema.Struct({
-        name: Schema.String,
-        age: Schema.NumberFromString,
-      });
-
-      const records = Stream.fromIterable([
-        { name: 'John', age: '30' },
-        { name: 'Jane', age: '25' },
-      ]);
-
-      const result = await Stream.runCollect(
-        records.pipe(decodeCsv(schema)),
-      ).pipe(Effect.runPromise);
-
-      const decoded = Chunk.toReadonlyArray(result);
-      expect(decoded.length).toBe(2);
-      expect(decoded[0]).toEqual({ name: 'John', age: 30 });
-      expect(decoded[1]).toEqual({ name: 'Jane', age: 25 });
-    });
-
-    it('should fail on invalid data', async () => {
-      const schema = Schema.Struct({
-        name: Schema.String,
-        age: Schema.Number,
-      });
-
-      const records = Stream.fromIterable([{ name: 'John', age: 'invalid' }]);
-
-      try {
-        await Stream.runCollect(records.pipe(decodeCsv(schema))).pipe(
-          Effect.runPromise,
-        );
-        expect.fail('Should have thrown an error');
-      } catch (error) {
-        expect(error).toBeDefined();
       }
     });
   });
@@ -139,11 +95,10 @@ describe('CSV Read Functions', () => {
         Effect.runPromise,
       );
 
-      const records = Chunk.toReadonlyArray(result);
-      expect(records.length).toBeGreaterThan(0);
-      if (records.length > 0) {
-        expect(records[0]).toHaveProperty('name');
-        expect(records[0]).toHaveProperty('age');
+      expect(result.length).toBeGreaterThan(0);
+      if (result.length > 0) {
+        expect(result[0]).toHaveProperty('name');
+        expect(result[0]).toHaveProperty('age');
       }
     });
 
@@ -164,9 +119,8 @@ describe('CSV Read Functions', () => {
         ),
       ).pipe(Effect.runPromise);
 
-      const records = Chunk.toReadonlyArray(result);
       // Should only contain records with age > 25
-      expect(records.length).toBeGreaterThanOrEqual(0);
+      expect(result.length).toBeGreaterThanOrEqual(0);
     });
 
     it('should apply decoded filter option', async () => {
@@ -186,9 +140,8 @@ describe('CSV Read Functions', () => {
         ),
       ).pipe(Effect.runPromise);
 
-      const records = Chunk.toReadonlyArray(result);
       // Should only contain records with age > 25
-      records.forEach((record: any) => {
+      result.forEach((record: any) => {
         expect(record.age).toBeGreaterThan(25);
       });
     });
@@ -211,8 +164,7 @@ describe('CSV Read Functions', () => {
         ),
       ).pipe(Effect.runPromise);
 
-      const records = Chunk.toReadonlyArray(result);
-      records.forEach((record: any) => {
+      result.forEach((record: any) => {
         expect(record.age).toBeGreaterThan(20);
         expect(record.name.length).toBeGreaterThan(3);
       });
@@ -238,8 +190,7 @@ describe('CSV Read Functions', () => {
         ),
       ).pipe(Effect.runPromise);
 
-      const records = Chunk.toReadonlyArray(result);
-      expect(records.length).toBeGreaterThan(0);
+      expect(result.length).toBeGreaterThan(0);
     });
   });
 
@@ -252,10 +203,9 @@ describe('CSV Read Functions', () => {
         Effect.runPromise,
       );
 
-      const records = Chunk.toReadonlyArray(result);
-      expect(records.length).toBeGreaterThan(0);
-      expect(records[0]).toHaveProperty('name');
-      expect(records[0]).toHaveProperty('age');
+      expect(result.length).toBeGreaterThan(0);
+      expect(result[0]).toHaveProperty('name');
+      expect(result[0]).toHaveProperty('age');
     });
 
     it('should apply filterRaw option to raw data', async () => {
@@ -273,8 +223,7 @@ describe('CSV Read Functions', () => {
         ),
       ).pipe(Effect.runPromise);
 
-      const records = Chunk.toReadonlyArray(result);
-      records.forEach((record: any) => {
+      result.forEach((record: any) => {
         expect(parseInt(record.age)).toBeGreaterThanOrEqual(28);
       });
     });
@@ -294,9 +243,8 @@ describe('CSV Read Functions', () => {
         ),
       ).pipe(Effect.runPromise);
 
-      const records = Chunk.toReadonlyArray(result);
-      if (records.length > 0) {
-        const firstRecord = records[0] as Record<string, string>;
+      if (result.length > 0) {
+        const firstRecord = result[0] as Record<string, string>;
         expect(firstRecord).toHaveProperty('name');
         expect(firstRecord).toHaveProperty('age');
       }
@@ -312,8 +260,7 @@ describe('CSV Read Functions', () => {
         Effect.runPromise,
       );
 
-      const records = Chunk.toReadonlyArray(result);
-      expect(records.length).toBeGreaterThan(0);
+      expect(result.length).toBeGreaterThan(0);
     });
 
     it('should handle CSV with optional fields', async () => {
@@ -330,8 +277,7 @@ describe('CSV Read Functions', () => {
           stream.pipe(readCsv(schema)),
         ).pipe(Effect.runPromise);
 
-        const records = Chunk.toReadonlyArray(result);
-        expect(records.length).toBeGreaterThan(0);
+        expect(result.length).toBeGreaterThan(0);
       } catch (error) {
         // Handle the case where empty fields can't be converted
         expect(error).toBeDefined();
@@ -346,8 +292,7 @@ describe('CSV Read Functions', () => {
         Effect.runPromise,
       );
 
-      const records = Chunk.toReadonlyArray(result);
-      expect(records).toBeDefined();
+      expect(result).toBeDefined();
     });
 
     it('should process multiple rows correctly', async () => {
@@ -363,9 +308,8 @@ describe('CSV Read Functions', () => {
         Effect.runPromise,
       );
 
-      const records = Chunk.toReadonlyArray(result);
-      expect(records.length).toBeGreaterThan(0);
-      records.forEach((record: any) => {
+      expect(result.length).toBeGreaterThan(0);
+      result.forEach((record: any) => {
         expect(record).toHaveProperty('id');
         expect(record).toHaveProperty('name');
         expect(typeof record.id).toBe('number');

@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import { readCsv, parseCsv } from '../read.js';
 import { writeCsv } from '../write.js';
-import { Stream, Schema, Effect, Chunk } from 'effect';
+import { Stream, Schema, Effect } from 'effect';
 import { readFile } from 'node:fs/promises';
 //import { FileService } from '../../resource/services/fileService';
 //import { IOError, unknownError } from '../../../errors';
-import { FileSystem } from '@effect/platform/FileSystem';
+import { FileSystem } from 'effect/FileSystem';
 import { NodeFileSystem } from '@effect/platform-node';
 import { IOError, unknownError } from '../../../errors.js';
 
@@ -22,11 +22,9 @@ describe('CSV Read/Write Integration', () => {
       inputStream.pipe(parseCsv()),
     ).pipe(Effect.runPromise);
 
-    const records = Chunk.toReadonlyArray(rawRecords);
-
     // Validate that records were parsed
-    expect(records.length).toBeGreaterThan(0);
-    expect(records[0]).toHaveProperty('UserName');
+    expect(rawRecords.length).toBeGreaterThan(0);
+    expect(rawRecords[0]).toHaveProperty('UserName');
   });
 
   it('should read CSV with schema validation', async () => {
@@ -48,11 +46,9 @@ describe('CSV Read/Write Integration', () => {
       inputStream.pipe(readCsv(schema)),
     ).pipe(Effect.runPromise);
 
-    const parsedRecords = Chunk.toReadonlyArray(records);
-
-    expect(parsedRecords.length).toBeGreaterThan(0);
-    expect(parsedRecords[0]).toHaveProperty('UserName');
-    expect(parsedRecords[0]).toHaveProperty('UserID');
+    expect(records.length).toBeGreaterThan(0);
+    expect(records[0]).toHaveProperty('UserName');
+    expect(records[0]).toHaveProperty('UserID');
   });
 
   it('should filter CSV records during read', async () => {
@@ -78,10 +74,8 @@ describe('CSV Read/Write Integration', () => {
       ),
     ).pipe(Effect.runPromise);
 
-    const records = Chunk.toReadonlyArray(filteredRecords);
-
-    expect(records.length).toBeGreaterThan(0);
-    (records as any[]).forEach((record) => {
+    expect(filteredRecords.length).toBeGreaterThan(0);
+    filteredRecords.forEach((record) => {
       expect(record.UserName).toBeTruthy();
     });
   });
@@ -109,10 +103,8 @@ describe('CSV Read/Write Integration', () => {
       ),
     ).pipe(Effect.runPromise);
 
-    const parsedRecords = Chunk.toReadonlyArray(records);
-
-    expect(parsedRecords.length).toBeGreaterThan(0);
-    expect(parsedRecords[0]).toHaveProperty('UserName');
+    expect(records.length).toBeGreaterThan(0);
+    expect(records[0]).toHaveProperty('UserName');
   });
 
   it('should read CSV and write CSV using writeCsv', async () => {
@@ -133,14 +125,13 @@ describe('CSV Read/Write Integration', () => {
       inputStream.pipe(readCsv(schema)),
     ).pipe(Effect.runPromise);
 
-    const rows = Chunk.toReadonlyArray(parsedRecords);
-    expect(rows.length).toBeGreaterThan(0);
+    expect(parsedRecords.length).toBeGreaterThan(0);
 
     const outputRows = await Stream.runCollect(
-      Stream.fromIterable(rows).pipe(writeCsv(schema)),
+      Stream.fromIterable(parsedRecords).pipe(writeCsv(schema)),
     ).pipe(Effect.runPromise);
 
-    const outputCsv = Chunk.toReadonlyArray(outputRows).join('');
+    const outputCsv = outputRows.join('');
     expect(outputCsv).toContain('UserID');
     expect(outputCsv).toContain('UserName');
     expect(outputCsv).toContain('Age');
@@ -160,20 +151,23 @@ describe('CSV Read/Write Integration', () => {
 
     //const NodeFSLive = FileLive.pipe(Layer.provide(NodeFileSystem.layer));
     // ファイルを開いて CSV を Stream 経由で読み込む関数
+    // const program = (path: string) =>
+    //   Effect.map(FileSystem.asEffect(), (fileService) =>
+    //     fileService.stream(path).pipe(
+    //       Stream.mapError((err) => unknownError(IOError, err)),
+    //       readCsv(schema),
+    //     ),
+    //   ).pipe(Stream.unwrap, Stream.runCollect);
     const program = (path: string) =>
-      FileSystem.pipe(
-        Effect.map((fileService) =>
-          fileService.stream(path).pipe(
-            Stream.mapError((err) => unknownError(IOError, err)),
-            // 1. Uint8Array を utf-8 文字列にデコード
-            //Stream.decodeText('utf-8'),
-            // 2. 文字列になったストリームを CSV 解析に渡す
-            readCsv(schema),
-          ),
-        ),
-        Stream.unwrap,
-        Stream.runCollect,
-      );
+      Effect.gen(function* () {
+        const fs = yield* FileSystem;
+
+        return yield* fs.stream(path).pipe(
+          Stream.mapError((err) => unknownError(IOError, err)),
+          readCsv(schema),
+          Stream.runCollect,
+        );
+      });
 
     // 実行例
     const parsedRecords = await Effect.runPromise(
@@ -183,10 +177,8 @@ describe('CSV Read/Write Integration', () => {
       ),
     );
 
-    const records = Chunk.toReadonlyArray(parsedRecords);
-
-    expect(records.length).toBeGreaterThan(0);
-    expect(records[0]).toHaveProperty('UserName');
-    expect(records[0]).toHaveProperty('UserID');
+    expect(parsedRecords.length).toBeGreaterThan(0);
+    expect(parsedRecords[0]).toHaveProperty('UserName');
+    expect(parsedRecords[0]).toHaveProperty('UserID');
   });
 });

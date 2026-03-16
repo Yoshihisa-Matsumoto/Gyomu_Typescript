@@ -1,4 +1,4 @@
-import { Stream, Effect } from 'effect';
+import { Stream, Effect, Fiber, Queue, Cause } from 'effect';
 import { Duplex, Transform } from 'node:stream';
 import { IOError, unknownError } from '../errors.js';
 import { AppError } from '../base-error.js';
@@ -9,89 +9,111 @@ export const acquireNodeStream = <T extends Duplex>(create: () => T) =>
   );
 
 export const throughNodeStream =
-  <I, O, E extends AppError = never>(duplex: Duplex) =>
-  <R>(input: Stream.Stream<I, E, R>): Stream.Stream<O, E | IOError, R> =>
-    Stream.asyncScoped<O, E | IOError, R>((emit) =>
+  <I, O>(duplex: Duplex) =>
+  <E, R>(input: Stream.Stream<I, E, R>): Stream.Stream<O, E | IOError, R> =>
+    Stream.unwrap(
       Effect.gen(function* () {
-        const onData = (chunk: unknown) => {
-          duplex.pause();
-          emit.single(chunk as O);
-          duplex.resume();
-        };
+        const writer = yield* Stream.runForEach(input, (chunk) =>
+          Effect.promise<void>(
+            () =>
+              new Promise((resolve) => {
+                const ok = duplex.write(chunk as any);
 
-        const onEnd = () => {
-          emit.end();
-        };
-
-        const onClose = () => {
-          emit.end();
-        };
-
-        const onError = (err: unknown) => {
-          emit.fail(unknownError(IOError, err, 'transform error'));
-          duplex.destroy(err as Error);
-        };
-
-        duplex.on('data', onData);
-        duplex.on('end', onEnd);
-        duplex.on('close', onClose);
-        duplex.on('error', onError);
-
-        yield* Effect.addFinalizer(() =>
-          Effect.sync(() => {
-            duplex.off('data', onData);
-            duplex.off('end', onEnd);
-            duplex.off('close', onClose);
-            duplex.off('error', onError);
-            if (!duplex.destroyed) duplex.destroy();
-          }),
-        );
-
-        const writableObjectMode =
-          (duplex as any)._writableState?.objectMode ?? false;
-        const writeChunk = (chunk: I) =>
-          Effect.async<void, never>((resume) => {
-            if (duplex.destroyed) {
-              resume(Effect.void);
-              return;
-            }
-
-            const value = writableObjectMode
-              ? chunk
-              : typeof chunk === 'string'
-                ? chunk
-                : Buffer.isBuffer(chunk)
-                  ? chunk
-                  : Buffer.from(chunk as any);
-
-            const ok = duplex.write(value);
-
-            if (ok) {
-              resume(Effect.void);
-            } else {
-              duplex.once('drain', () => resume(Effect.void));
-            }
-          });
-
-        yield* Effect.forkDaemon(
-          Stream.runForEach(input, writeChunk).pipe(
-            Effect.tap(() =>
-              Effect.sync(() => {
-                if (!duplex.destroyed) {
-                  duplex.end();
+                if (ok) resolve();
+                else {
+                  duplex.once('drain', resolve);
                 }
               }),
-            ),
+          ),
+        ).pipe(
+          Effect.tap(() =>
+            Effect.sync(() => {
+              duplex.end();
+            }),
+          ),
+          Effect.forkChild,
+        );
+
+        const readable = duplex as AsyncIterable<O>;
+
+        return Stream.fromAsyncIterable<O, IOError>(readable, (e) =>
+          unknownError(IOError, e, 'node stream error'),
+        ).pipe(
+          Stream.ensuring(
+            Effect.gen(function* () {
+              yield* Fiber.interrupt(writer);
+              if (!duplex.destroyed) {
+                duplex.destroy();
+              }
+            }),
           ),
         );
       }),
     );
 
+export const throughNodeStream2 =
+  <I, O>(duplex: Duplex) =>
+  <E, R>(input: Stream.Stream<I, E, R>): Stream.Stream<O, E | IOError, R> =>
+    Stream.callback<O, E | IOError, R>((queue) => {
+      const onData = (chunk: unknown) => {
+        duplex.pause();
+        Effect.runFork(Queue.offer(queue, chunk as O));
+        Queue.offerUnsafe(queue, chunk as O);
+        //emit.single(chunk as O);
+        duplex.resume();
+      };
+
+      const onEnd = () => Queue.endUnsafe(queue); //emit.end();
+
+      const onError = (err: unknown) => {
+        Queue.failCauseUnsafe(
+          queue,
+          Cause.fail(unknownError(IOError, err, 'node stream error')),
+        );
+      };
+
+      duplex.on('data', onData);
+      duplex.on('end', onEnd);
+      duplex.on('error', onError);
+
+      const writer = Stream.runForEach(input, (chunk) =>
+        Effect.promise<void>(
+          () =>
+            new Promise((resolve, reject) => {
+              const ok = duplex.write(chunk as any);
+
+              if (ok) resolve();
+              else duplex.once('drain', resolve);
+
+              duplex.once('error', reject);
+            }),
+        ),
+      ).pipe(
+        Effect.tap(() =>
+          Effect.sync(() => {
+            if (!duplex.destroyed) duplex.end();
+          }),
+        ),
+      );
+
+      const fiber = Effect.runFork(writer as Effect.Effect<void, E, never>);
+
+      return Effect.gen(function* () {
+        duplex.off('data', onData);
+        duplex.off('end', onEnd);
+        duplex.off('error', onError);
+
+        if (!duplex.destroyed) duplex.destroy();
+
+        yield* Fiber.interrupt(fiber);
+      });
+    });
+
 export const throughNodeStreamScoped =
   <I, O, E extends AppError = never>(create: () => Transform) =>
   (input: Stream.Stream<I, E>) =>
-    Stream.unwrapScoped(
+    Stream.unwrap(
       Effect.map(acquireNodeStream(create), (t) =>
-        throughNodeStream<I, O, E>(t)(input),
+        throughNodeStream<I, O>(t)(input),
       ),
     );

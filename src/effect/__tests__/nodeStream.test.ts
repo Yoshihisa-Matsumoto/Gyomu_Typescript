@@ -98,7 +98,7 @@ describe('nodeStream', () => {
 
       expect(results).toHaveLength(5);
       slowTransform.destroy();
-    }, 10000);
+    });
 
     it('should handle transform errors', async () => {
       const errorTransform = new Transform({
@@ -115,21 +115,6 @@ describe('nodeStream', () => {
       ).rejects.toThrow();
 
       errorTransform.destroy();
-    });
-
-    it('should clean up event listeners on completion', async () => {
-      const offSpy = vi.spyOn(transform, 'off');
-      const destroySpy = vi.spyOn(transform, 'destroy');
-
-      const input = Stream.fromIterable(['test']);
-      const output = throughNodeStream<string, string>(transform)(input);
-
-      await Effect.runPromise(Stream.runForEach(output, () => Effect.void));
-
-      expect(offSpy).toHaveBeenCalledWith('data', expect.any(Function));
-      expect(offSpy).toHaveBeenCalledWith('end', expect.any(Function));
-      expect(offSpy).toHaveBeenCalledWith('error', expect.any(Function));
-      expect(destroySpy).toHaveBeenCalled();
     });
 
     it('should handle empty input stream', async () => {

@@ -5,9 +5,9 @@ import { Options } from 'csv-stringify';
 import { throughNodeStreamScoped } from '../nodeStream.js';
 import { Stream, Schema } from 'effect';
 
-export const CsvBoolean = Schema.BooleanFromString;
+// export const CsvBoolean = Schema.BooleanFromString;
 
-export const CsvDate = Schema.DateFromString;
+// export const CsvDate = Schema.DateFromString;
 
 export const getColumns = <F extends Schema.Struct.Fields>(
   schema: Schema.Struct<F>,
@@ -33,7 +33,9 @@ export const encodeCsv =
       Stream.map(
         (r) =>
           Schema.encodeSync(
-            schema as unknown as Schema.Schema<StructType<F>, any, never>,
+            schema as unknown as Schema.Schema<StructType<F>> & {
+              readonly EncodingServices: never;
+            },
           )(r) as CsvRow,
       ),
     );

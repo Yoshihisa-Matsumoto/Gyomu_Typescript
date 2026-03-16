@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { writeCsv } from '../write.js';
-import { Chunk, Effect, Stream, Schema } from 'effect';
+import { Effect, Stream, Schema } from 'effect';
 import { platform } from '../../../platform/index.js';
 
 describe('writeCsv', () => {
@@ -20,7 +20,7 @@ describe('writeCsv', () => {
 
     // 実行して中身を確認
     const result = await Effect.runPromise(program);
-    expect(Chunk.toReadonlyArray(result).join('')).toContain('John');
+    expect(result.join('')).toContain('John');
   });
 
   it('should apply custom options to CSV stringifier', async () => {
@@ -35,7 +35,7 @@ describe('writeCsv', () => {
 
     // 実際に動かして結果を確認
     const result = await Effect.runPromise(program);
-    const output = Chunk.toReadonlyArray(result).join('');
+    const output = result.join('');
 
     // options.quoted が効いているか、文字列の中身で判定
     expect(output).toContain('"Alice"');
@@ -49,7 +49,7 @@ describe('writeCsv', () => {
 
     // 実際に動かして結果を確認
     const result = await Effect.runPromise(program);
-    const output = Chunk.toReadonlyArray(result).join('');
+    const output = result.join('');
 
     // options.quoted が効いているか、文字列の中身で判定
     expect(output).toContain('Alice,30');
@@ -63,7 +63,7 @@ describe('writeCsv', () => {
 
     // 実際に動かして結果を確認
     const result = await Effect.runPromise(program);
-    const output = Chunk.toReadonlyArray(result).join('');
+    const output = result.join('');
     expect(output).toBe('name,age' + platform.EOL); // ヘッダーだけの出力
   });
 
@@ -77,7 +77,7 @@ describe('writeCsv', () => {
 
     // 実行して中身を確認
     const result = await Effect.runPromise(program);
-    expect(Chunk.toReadonlyArray(result).join('')).toContain('John');
+    expect(result.join('')).toContain('John');
   });
   it('should write csv', async () => {
     const schema = Schema.Struct({
@@ -94,7 +94,7 @@ describe('writeCsv', () => {
       Effect.runPromise,
     );
 
-    const csv = Chunk.toReadonlyArray(result).join('');
+    const csv = result.join('');
 
     expect(csv).toContain('id,name');
   });
