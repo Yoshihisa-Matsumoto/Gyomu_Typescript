@@ -75,7 +75,7 @@ describe('nodeStream', () => {
       expect(results).toContain('WORLD');
     });
 
-    it('should handle backpressure', async () => {
+    it('should handle slow transform without data loss', async () => {
       const slowTransform = new Transform({
         highWaterMark: 1,
         objectMode: true,
@@ -99,7 +99,35 @@ describe('nodeStream', () => {
       expect(results).toHaveLength(5);
       slowTransform.destroy();
     });
+    it('should apply backpressure via Queue (slow consumer)', async () => {
+      const fastTransform = new Transform({
+        objectMode: true,
+        transform(chunk, _enc, cb) {
+          cb(null, chunk); // 即流す（重要）
+        },
+      });
 
+      const input = Stream.fromIterable(
+        Array.from({ length: 200 }, (_, i) => i),
+      );
+
+      const output = throughNodeStream<number, number>(fastTransform)(input);
+
+      const results: number[] = [];
+
+      await Effect.runPromise(
+        Stream.runForEach(output, (chunk) =>
+          Effect.gen(function* () {
+            // 👇 わざと遅くする（ここが本質）
+            yield* Effect.sleep(10);
+
+            results.push(chunk);
+          }),
+        ),
+      );
+
+      expect(results.length).toBe(200);
+    });
     it('should handle transform errors', async () => {
       const errorTransform = new Transform({
         transform(_chunk, _encoding, callback) {

@@ -1,4 +1,4 @@
-import { Stream, Effect, Fiber, Queue, Cause } from 'effect';
+import { Stream, Effect, Fiber } from 'effect';
 import { Duplex, Transform } from 'node:stream';
 import { IOError, unknownError } from '../errors.js';
 import { AppError } from '../base-error.js';
@@ -51,63 +51,83 @@ export const throughNodeStream =
       }),
     );
 
-export const throughNodeStream2 =
-  <I, O>(duplex: Duplex) =>
-  <E, R>(input: Stream.Stream<I, E, R>): Stream.Stream<O, E | IOError, R> =>
-    Stream.callback<O, E | IOError, R>((queue) => {
-      const onData = (chunk: unknown) => {
-        duplex.pause();
-        Effect.runFork(Queue.offer(queue, chunk as O));
-        Queue.offerUnsafe(queue, chunk as O);
-        //emit.single(chunk as O);
-        duplex.resume();
-      };
+// const HIGH_WATER_MARK = 100;
+// const LOW_WATER_MARK = 50;
+// export const throughNodeStreamWithCallback =
+//   <I, O>(duplex: Duplex) =>
+//   <E, R>(input: Stream.Stream<I, E, R>): Stream.Stream<O, E | IOError, R> =>
+//     Stream.callback<O, E | IOError, R>((queue) => {
+//       const resumeWatcher = Effect.gen(function* () {
+//         while (true) {
+//           // Queueに空きが出るのを待つ、あるいは定期的にサイズをチェックする
+//           yield* Effect.sleep('10 millis');
+//           const size = yield* Queue.size(queue);
+//           if (duplex.isPaused() && size <= LOW_WATER_MARK) {
+//             console.log('resume');
+//             duplex.resume();
+//           }
+//         }
+//       }).pipe(Effect.forkChild); // バックグラウンドで監視
+//       const onData = (chunk: unknown) => {
+//         console.log('data');
+//         const size = Effect.runSync(Queue.size(queue));
+//         if (size > HIGH_WATER_MARK) {
+//           console.log('pause');
+//           duplex.pause();
+//         }
+//         Effect.runFork(Queue.offer(queue, chunk as O));
+//       };
 
-      const onEnd = () => Queue.endUnsafe(queue); //emit.end();
+//       const onEnd = () => Effect.runSync(Queue.end(queue)); //emit.end();
 
-      const onError = (err: unknown) => {
-        Queue.failCauseUnsafe(
-          queue,
-          Cause.fail(unknownError(IOError, err, 'node stream error')),
-        );
-      };
+//       const onError = (err: unknown) => {
+//         Effect.runSync(
+//           Queue.failCause(
+//             queue,
+//             Cause.fail(unknownError(IOError, err, 'node stream error')),
+//           ),
+//         );
+//       };
 
-      duplex.on('data', onData);
-      duplex.on('end', onEnd);
-      duplex.on('error', onError);
+//       duplex.on('data', onData);
+//       duplex.on('end', onEnd);
+//       duplex.on('error', onError);
 
-      const writer = Stream.runForEach(input, (chunk) =>
-        Effect.promise<void>(
-          () =>
-            new Promise((resolve, reject) => {
-              const ok = duplex.write(chunk as any);
+//       const writer = Stream.runForEach(input, (chunk) =>
+//         Effect.promise<void>(
+//           () =>
+//             new Promise((resolve, reject) => {
+//               console.log('writing');
+//               const ok = duplex.write(chunk as any);
 
-              if (ok) resolve();
-              else duplex.once('drain', resolve);
+//               if (ok) resolve();
+//               else duplex.once('drain', resolve);
 
-              duplex.once('error', reject);
-            }),
-        ),
-      ).pipe(
-        Effect.tap(() =>
-          Effect.sync(() => {
-            if (!duplex.destroyed) duplex.end();
-          }),
-        ),
-      );
+//               duplex.once('error', reject);
+//             }),
+//         ),
+//       ).pipe(
+//         Effect.tap(() =>
+//           Effect.sync(() => {
+//             if (!duplex.destroyed) duplex.end();
+//           }),
+//         ),
+//       );
 
-      const fiber = Effect.runFork(writer as Effect.Effect<void, E, never>);
+//       const watcherFiber = Effect.runSync(resumeWatcher);
 
-      return Effect.gen(function* () {
-        duplex.off('data', onData);
-        duplex.off('end', onEnd);
-        duplex.off('error', onError);
+//       const fiber = Effect.runFork(writer as Effect.Effect<void, E, never>);
 
-        if (!duplex.destroyed) duplex.destroy();
+//       return Effect.gen(function* () {
+//         duplex.off('data', onData);
+//         duplex.off('end', onEnd);
+//         duplex.off('error', onError);
 
-        yield* Fiber.interrupt(fiber);
-      });
-    });
+//         yield* Fiber.interrupt(fiber);
+//         yield* Fiber.interrupt(watcherFiber);
+//         if (!duplex.destroyed) duplex.destroy();
+//       });
+//     });
 
 export const throughNodeStreamScoped =
   <I, O, E extends AppError = never>(create: () => Transform) =>
