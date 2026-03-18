@@ -93,9 +93,58 @@ ScopeはC#のusingに似ていて、File・DBなどクローズ処理を保証�
 - 複数リソースを合成して一つにすることができる
 - クリーンアップ処理を重複して行っても安全
 
-## fork / forkScoped / forkDaemon の違い
+ファイルについては、確かにスコープ管理する（Stream.scopedなどで）
+
+DBについても短い処理で完結する場合はそうなのだが、クローズしてしまうと、再度オープンするのに時間・リソースを食うのでクローズは実際にせず、コネクションプールの管理をすることが多いと思う
+また、ネット上のシステムへのセッションも似たような感じで、処理が終わったらすぐログアウトするわけではない（別の処理が後で行われるかもしれない）
+こうしたものはEffectでLayerとして管理し、その上位のアプリレベルで終了時にクローズなどを行う
+Layer.scopedは長命でアプリ単位で管理
+
+Scope同士は親子関係で束ねる（統合する）ことで管理する＝単一のScopeツリーとして管理する
+依存関係がないLayerの親はScopeツリーのルートのScopeの子供として、依存関係があればそこで依存関係を構築する
+
+Scopeツリーは、Effect.runPromiseなど実行されるたびに作られる。
+
+## Effect.gen(function* () {})、中で使う yield* の役割
+
+yield* は「await + 依存性注入 + 失敗処理 + 中断管理」をまとめたもの
+Effect.gen(function* () { ... })
+は
+「それを型安全に書くための構文」
+
+yield　はiterator自身を外に出し、yield\* はiteratorの中身を出す
+Effect.genで考える、かつそれがネストした状態を考えると
+中でiteratorを自分で回す必要がなく、フラットに処理ができるようになるので管理が容易
+
+## forkChild / Effect.forkDetach / Effect.forkScoped の違い
+
+いずれも別Fiberで実行するようになるが、
+forkChildは現在のFiberにぶら下がる子Fiber上で実行されるので、親が終われば子がInterruptされる
+forkDetachは別Fiberで実行するので、親が終わっても、Scopeが閉じても生きている。
+forkScopedは同じScopeに属し、Scopeが閉じるとそのFiberがInterruptされる
+Node Streamを扱う場合、Node Stream側のPush（主導権）のため、下流が止まる可能性がある。forkChildはあくまで上流が止まった場合に子がInterruptされるにすぎないため、Stream.ensuringの中でinterruptしてあげる必要がある
 
 ## Stream.scoped の内部構造
+
+Scope付きのStreamを作成し、終わったらリソースを解放する（クローズする）ことを保証する
+
+## 下における inputを入力にしたメソッドは誰が呼ぶ？
+
+export const throughNodeStream =
+<I, O>(duplex: Duplex) =>
+<E, R>(input: Stream.Stream<I, E, R>): Stream.Stream<O, E | IOError, R> =>
+Stream.unwrap(＊＊＊)
+に対して、実際の呼び出しでは、以下のようにしている。　
+これは、Function.pipeを通じて、throughNodeStream()に対してstreamが渡される、という理解であっているか（Function.pipeは内部の関数は引数を一つだけ持つように縛りがある）
+Effectは後続のPullによって始まるから、throughNodeStream()側が必要としているinputを上のstreamから渡すようFunction.pipeに要求している？
+で、Function.pipeは中にある中にある関数群（第2引数以降）を呼び出していくが、必ずその関数は引数を一つだけ持つことが求められる。
+これができない場合はEffect.gen(function\* (){})で実装すべき
+Function.pipe(
+stream,
+throughNodeStream<string | Buffer | Uint8Array, Record<string, string>>(
+parse(convertReadOption(options)),
+),
+)
 
 ## 2026/3/17時点のthroughNodeStreamは従来のPull型ではなく、Push型
 
