@@ -12,6 +12,9 @@ applyTo: '**'
 - コードの変更をする場合、変更量が２００行を超える可能性が高い場合は、事前に「この指示では変更量が２００行を超える可能性がありますが、続行してもよろしいですか？」と確認してください。
 - 何か大きい変更を加える場合、まず何をするのか計画を立てたうえで、ユーザに確認してください。
 - プロジェクトにファイルを追加せずに、コードを書いたりファイルを保存する場合、指示がなければ、必ず `playground/ai` ディレクトリの下に保存してください。
+- Use functional programming where possible
+- Prefer composition over inheritance
+- All async operations must use Effect-TS
 
 ## 注意事項
 

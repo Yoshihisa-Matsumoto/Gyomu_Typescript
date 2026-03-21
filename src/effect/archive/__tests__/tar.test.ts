@@ -1,12 +1,35 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
-import { Effect, Stream } from 'effect';
-import { untar } from '../tar.js';
-import { FileSystem } from '@effect/platform/FileSystem';
-import { NodeFileSystem } from '@effect/platform-node';
-import { IOError, unknownError } from '../../../errors.js';
+import { beforeAll, describe, expect, it } from 'vitest';
+import { Effect, Result, Stream } from 'effect';
+import {
+  extractTar,
+  filterEntries,
+  readTextEntry,
+  requireEntry,
+  untar,
+} from '../tar.js';
+import { IOError } from '../../../errors.js';
 import { Option } from 'effect';
+import { platform } from '../../../platform/index.js';
+import { validateFolders } from '../../../__tests__/baseClass.js';
+import { runWithEnv, runWithEnvOrThrow } from '../../infrastructure/runtime.js';
+import { FileTransportInfo } from '../../../fileModel.js';
+import { fileStream } from '../../fs-utils.js';
+
+let compressDirectory: string;
+let extractDirectory: string;
+beforeAll(() => {
+  const tmpPath = platform.tmpdir();
+  const sourceDirectory = platform.resolve('./tests');
+  const destinationDirectory = platform.join(tmpPath, 'compressTar');
+
+  platform.emptyDirSync(destinationDirectory);
+  platform.copySync(sourceDirectory, destinationDirectory);
+  compressDirectory = destinationDirectory;
+  extractDirectory = platform.join(destinationDirectory, 'extract');
+  platform.emptyDirSync(extractDirectory);
+});
 
 describe('untar test', () => {
   it('untar should return entries and content from temp.tar', async () => {
@@ -39,40 +62,61 @@ describe('untar test', () => {
     expect(readmeText.length).toBeGreaterThan(0);
     expect(readmeText).toContain('Gyomu');
   }, 15000);
-  it('untar streaming test', async () => {
+  it('untar streaming test with filtering entries', async () => {
     const tarPath = join(process.cwd(), 'tests', 'compress', 'temp.tar');
-
-    const program = (path: string, entryName: string) =>
-      Effect.gen(function* () {
-        const fileService = yield* FileSystem;
-
-        // 1. Stream.unwrap で Effect<Stream> を Stream に展開
-        return yield* fileService.stream(path).pipe(
-          Stream.mapError((err) => unknownError(IOError, err)),
-          // 2. 自作の untar を適用（untar は Stream<Source> -> Stream<TarEntry> である想定）
-          untar,
-          Stream.filter((entry) => entry.header.name === entryName),
-          // 3. runForEach で各エントリを処理（ここは Effect を返す）
-          Stream.mapEffect((entry) =>
-            Effect.gen(function* () {
-              const chunks = yield* Stream.runCollect(entry.content);
-              return Buffer.concat(Array.from(chunks)).toString('utf8');
-            }),
-          ),
-          Stream.runHead,
-          Effect.map((option) => Option.getOrNull(option)),
-        );
-      });
-    const readMe = await Effect.runPromise(
-      program(tarPath, 'README.md').pipe(
-        Effect.provide(NodeFileSystem.layer),
-        Effect.scoped,
+    // const rawRecords = await runWithEnv(
+    //   Stream.runCollect(fileStream(inputFile).pipe(parseCsv())),
+    // );
+    const readMe = await runWithEnvOrThrow(
+      fileStream(tarPath).pipe(
+        untar,
+        filterEntries((header) => header.name == 'README.md'),
+        Stream.runHead,
+        Effect.flatMap(
+          Option.match({
+            onNone: () => Effect.fail(new IOError(`File not found: README.md`)),
+            onSome: (entry) => Effect.succeed(entry),
+          }),
+        ), // ここで見つからなければ IOError
+        Effect.flatMap(readTextEntry),
       ),
     );
-    // expect(allNames).toContain('README.md');
-    // expect(allNames).toContain('folder1/email_sender.py');
-    // expect(allNames).toContain('setup.cfg');
     expect(readMe).not.toBeNull();
-    expect(readMe!).toContain('Gyomu');
-  }, 15000);
+    expect(readMe).toContain('Gyomu');
+    console.log(readMe);
+  });
+  it('untar streaming test with mandatory require Entry', async () => {
+    const tarPath = join(process.cwd(), 'tests', 'compress', 'temp.tar');
+
+    const readMe = await runWithEnvOrThrow(
+      fileStream(tarPath).pipe(
+        untar,
+        requireEntry('README.md'), // ここで見つからなければ IOError
+        Effect.flatMap(readTextEntry),
+      ),
+    );
+    expect(readMe).not.toBeNull();
+    expect(readMe).toContain('Gyomu');
+    //console.log(readMe);
+  });
+  it('Tar2 Unarchive Folder Test', async () => {
+    const transferInformation = new FileTransportInfo({
+      sourceFolderName: 'folder1/folder 2',
+      destinationFolderName: platform.join(extractDirectory, 'folder 2'),
+    });
+    const tarFilename = platform.join(compressDirectory, 'compress/temp.tar');
+    const program = (path: string, transferInformation: FileTransportInfo) =>
+      fileStream(path).pipe(extractTar(transferInformation));
+    const result = await runWithEnv(program(tarFilename, transferInformation));
+    // const archive: TarArchive = new TarArchive(
+    //   platform.join(compressDirectory, 'compress/temp.tar'),
+    // );
+    // let result = await archive.extract(transferInformation);
+    //expect(result.isOk()).toBeTruthy();
+    expect(Result.isSuccess(result)).toBeTruthy();
+    validateFolders(
+      platform.join(compressDirectory, 'source/folder1/folder 2'),
+      platform.join(extractDirectory, 'folder 2'),
+    );
+  });
 });

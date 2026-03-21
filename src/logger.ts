@@ -23,6 +23,13 @@ interface Logger {
 class InternalLogger implements Logger {
   constructor(private readonly logger: winston.Logger) {}
   info(message: any, ...meta: any[]) {
+    // console.log('logger.level =', this.logger.level);
+    // console.log(
+    //   this.logger.transports.map((t) => ({
+    //     name: t.constructor.name,
+    //     level: t.level,
+    //   })),
+    // );
     this.logger.info(message, ...meta);
   }
   debug(message: any, ...meta: any[]) {
@@ -131,6 +138,7 @@ const getLogger = () => {
           (LogFileNameStatic
             ? ''
             : '.' + format(new Date(), 'yyyyMMddHHmmss') + '.log'));
+    console.log(`Level: ${loggerLevel}, File: ${LogFileName}`);
     loggerInstance = new InternalLogger(
       winston.createLogger({
         level: loggerLevel,
@@ -179,3 +187,5 @@ export const logDifferenceWhenDebugMode = (
     logger.debug(`Object ${objectKey} has difference`, result);
   }
 };
+
+//logger.info('test');

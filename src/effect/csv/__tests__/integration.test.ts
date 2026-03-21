@@ -8,19 +8,22 @@ import { readFile } from 'node:fs/promises';
 import { FileSystem } from 'effect/FileSystem';
 import { NodeFileSystem } from '@effect/platform-node';
 import { IOError, unknownError } from '../../../errors.js';
+import { platform } from '../../../platform/index.js';
+import { fileStream, writeTextToFile } from '../../fs-utils.js';
+import { runWithEnvOrThrow } from '../../infrastructure/runtime.js';
 
 describe('CSV Read/Write Integration', () => {
   it('should read CSV data and validate structure', async () => {
     const inputFile = 'tests/test.utf8.csv';
 
-    // Read CSV file content
-    const inputContent = await readFile(inputFile, 'utf-8');
-    const inputStream = Stream.fromIterable(inputContent.split(''));
+    // // Read CSV file content
+    // const inputContent = await readFile(inputFile, 'utf-8');
+    // const inputStream = Stream.fromIterable(inputContent.split(''));
 
     // Parse CSV
-    const rawRecords = await Stream.runCollect(
-      inputStream.pipe(parseCsv()),
-    ).pipe(Effect.runPromise);
+    const rawRecords = await runWithEnvOrThrow(
+      Stream.runCollect(fileStream(inputFile).pipe(parseCsv())),
+    );
 
     // Validate that records were parsed
     expect(rawRecords.length).toBeGreaterThan(0);
@@ -135,6 +138,21 @@ describe('CSV Read/Write Integration', () => {
     expect(outputCsv).toContain('UserID');
     expect(outputCsv).toContain('UserName');
     expect(outputCsv).toContain('Age');
+
+    const program = (path: string) =>
+      Effect.gen(function* () {
+        return yield* Stream.fromIterable(parsedRecords).pipe(
+          writeCsv(schema),
+          writeTextToFile(path),
+        );
+      });
+
+    await Effect.runPromise(
+      program(platform.join(platform.tmpdir(), 'output-temp.csv')).pipe(
+        Effect.provide(NodeFileSystem.layer),
+        Effect.scoped,
+      ),
+    );
   });
 
   it('use Layer to read CSV file', async () => {

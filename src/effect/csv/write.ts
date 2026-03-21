@@ -1,34 +1,59 @@
 import { platform } from '../../platform/index.js';
-import { CsvRow, CsvWriteOption } from './type.js';
+import { CsvRow, CsvValue, CsvWriteOption } from './type.js';
 import { stringify } from 'csv';
 import { Options } from 'csv-stringify';
 import { throughNodeStreamScoped } from '../nodeStream.js';
-import { Stream, Schema } from 'effect';
+import { Stream, Schema, Function, Effect, Console } from 'effect';
+import { AppError } from '../../base-error.js';
+import { IOError } from '../../errors.js';
+import { FileSystem } from 'effect/FileSystem';
+import { encodeUtf8ToBinaryStream } from '../encoding.js';
+import { NodeFileSystem } from '@effect/platform-node';
 
 // export const CsvBoolean = Schema.BooleanFromString;
 
 // export const CsvDate = Schema.DateFromString;
 
-export const getColumns = <F extends Schema.Struct.Fields>(
-  schema: Schema.Struct<F>,
-) => Object.keys(schema.fields) as (keyof F & string)[];
+// export const getColumns = <F extends Schema.Struct.Fields>(
+//   schema: Schema.Struct<F>,
+// ) => Object.keys(schema.fields) as (keyof F & string)[];
 
-export const stringifyCsv = <R extends Schema.Struct.Fields>(
-  schema: Schema.Struct<R>,
-  options?: CsvWriteOption<R>,
+const stringifyCsv = <
+  S extends Schema.Struct.Fields,
+  E extends AppError = never,
+  R = never,
+>(
+  schema: Schema.Struct<S>,
+  options?: CsvWriteOption<S>,
 ) =>
-  throughNodeStreamScoped<CsvRow, string>(() =>
+  throughNodeStreamScoped<CsvRow, string, E, R>(() =>
     stringify({
       ...convertOption(options),
       columns: Object.keys(schema.fields),
     }),
   );
+const stringifyCsvRaw =
+  <E extends AppError = never, R = never>(options?: CsvWriteOption<CsvRow>) =>
+  (
+    stream: Stream.Stream<CsvRow, E, R>,
+  ): Stream.Stream<string, E | IOError, R> =>
+    Function.pipe(
+      stream,
+      throughNodeStreamScoped<CsvRow, string, E, R>(() =>
+        stringify({
+          ...convertOption(options),
+        }),
+      ),
+    );
+
 type StructType<F extends Schema.Struct.Fields> = Schema.Schema.Type<
   Schema.Struct<F>
 >;
-export const encodeCsv =
-  <F extends Schema.Struct.Fields>(schema: Schema.Struct<F>) =>
-  (stream: Stream.Stream<StructType<F>>) =>
+const encodeCsv =
+  <F extends Schema.Struct.Fields, E extends AppError = never, R = never>(
+    schema: Schema.Struct<F>,
+  ) =>
+  (stream: Stream.Stream<StructType<F>, E, R>) =>
     stream.pipe(
       Stream.map(
         (r) =>
@@ -41,12 +66,64 @@ export const encodeCsv =
     );
 
 export const writeCsv =
-  <F extends Schema.Struct.Fields>(
+  <F extends Schema.Struct.Fields, E extends AppError = never, R = never>(
     schema: Schema.Struct<F>,
     options?: CsvWriteOption<F>,
   ) =>
-  (stream: Stream.Stream<StructType<F>>) =>
+  (stream: Stream.Stream<StructType<F>, E, R>) =>
     stream.pipe(encodeCsv(schema), stringifyCsv(schema, options));
+
+export const writeCsvRaw =
+  <T extends Record<string, CsvValue>, E extends AppError = never, R = never>(
+    options?: CsvWriteOption<CsvRow>,
+  ) =>
+  (stream: Stream.Stream<T, E, R>) =>
+    stream.pipe(stringifyCsvRaw(options));
+
+type CsvOutput =
+  | { type: 'string' }
+  | { type: 'file'; path: string }
+  | { type: 'console' };
+
+export const jsonToCsv = <T extends Record<string, any>>(
+  records: T[],
+  options?: CsvWriteOption<CsvRow>,
+  output: CsvOutput = { type: 'string' },
+) =>
+  Stream.fromIterable(records).pipe(
+    Stream.map((row): CsvRow => row as CsvRow),
+    writeCsvRaw(options),
+    (stream) => {
+      switch (output.type) {
+        case 'string':
+          return stream.pipe(
+            Stream.runCollect,
+            Effect.map((chunks) => chunks.join('')),
+          );
+        case 'console':
+          return stream.pipe(Stream.runForEach(Console.log));
+        case 'file':
+          return Effect.gen(function* () {
+            const fs = yield* FileSystem;
+            yield* stream.pipe(
+              encodeUtf8ToBinaryStream,
+              Stream.run(fs.sink(output.path)),
+            );
+          });
+      }
+    },
+  );
+export const jusonToCsvRun = async <T extends Record<string, any>>(
+  records: T[],
+  options?: CsvWriteOption<CsvRow>,
+  output: CsvOutput = { type: 'string' },
+) => {
+  return Effect.runPromise(
+    jsonToCsv(records, options, output).pipe(
+      Effect.provide(NodeFileSystem.layer),
+    ),
+  );
+};
 
 const convertOption = <R>(options?: CsvWriteOption<R>): Options => {
   const csvOptions: Options = {

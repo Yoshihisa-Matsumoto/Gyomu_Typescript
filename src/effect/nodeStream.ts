@@ -130,10 +130,10 @@ export const throughNodeStream =
 //     });
 
 export const throughNodeStreamScoped =
-  <I, O, E extends AppError = never>(create: () => Transform) =>
-  (input: Stream.Stream<I, E>) =>
+  <I, O, E extends AppError = never, R = never>(create: () => Transform) =>
+  (input: Stream.Stream<I, E, R>) =>
     Stream.unwrap(
       Effect.map(acquireNodeStream(create), (t) =>
-        throughNodeStream<I, O>(t)(input),
+        throughNodeStream<I, O>(t)<E, R>(input),
       ),
     );

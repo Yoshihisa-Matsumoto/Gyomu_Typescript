@@ -13,3 +13,7 @@ export const decodeText =
         }
       }),
     );
+
+export const encodeUtf8ToBinaryStream = <E, R>(
+  stream: Stream.Stream<string, E, R>,
+) => stream.pipe(Stream.map((s) => new TextEncoder().encode(s)));

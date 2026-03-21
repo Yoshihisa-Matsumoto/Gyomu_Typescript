@@ -7,5 +7,10 @@ export default defineConfig({
     globals: true,
     setupFiles: ['src/__tests__/baseDBClass.ts'],
     clearMocks: true,
+    onConsoleLog() {
+      return true;
+    },
+    logHeapUsage: false,
+    printConsoleTrace: false,
   },
 });

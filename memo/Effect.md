@@ -105,6 +105,9 @@ Scope同士は親子関係で束ねる（統合する）ことで管理する＝
 
 Scopeツリーは、Effect.runPromiseなど実行されるたびに作られる。
 
+よって、Web Serviceがあったとして、サービス内でDB接続を管理している場合、LayerとしてExpressであったりHonoであったりNitroであったりのルーティング含めた全体をEffect化し、そのルート内でDBをScope化する
+仮にルーティングハンドラーごとにLayer化した場合、プログラミングとしてはわかりやすいが、これだとリクエストごとにDB接続・解除を繰り返すことになる
+
 ## Effect.gen(function* () {})、中で使う yield* の役割
 
 yield* は「await + 依存性注入 + 失敗処理 + 中断管理」をまとめたもの
@@ -127,6 +130,101 @@ Node Streamを扱う場合、Node Stream側のPush（主導権）のため、下
 ## Stream.scoped の内部構造
 
 Scope付きのStreamを作成し、終わったらリソースを解放する（クローズする）ことを保証する
+
+## StreamのrunCollect, runDrain, runSinkの違い
+
+いずれもStream→Effectに変換する
+| API | 返り値 | 用途 | 戻り |
+| --- | --- | --- | --- |
+| runCollect | Effect<Chunk<A>> | 全件メモリに集める | Stream<A> → Effect<Chunk<A>> |
+| runDrain | Effect<void> | 結果不要・副作用だけ | Stream<A> → Effect<void> |
+| runSink | Effect<Z> or Effect<Fiber> | sinkに流す | Stream<A> → Sink<A, Z> |
+
+# Sink　とは
+
+SinkはStreamの終端処理をするもの
+
+- データの処理
+- 結果を作る
+- 終了条件を決める
+
+その終端処理が同期であれば中のデータがEffectで返されるが、非同期処理であれば、Effectの中は中のデータを返すFiberになる
+Stream<A> → Sink<A, Z>
+↓
+Effect<Z> または Effect<Fiber<Z>>
+
+## 「SinkとChannelの関係（内部実装）」
+
+Streamはデータの流れの処理を表し、Stream処理（入出力+終了）の最小単位としてChannelが存在する
+
+概念的にはStreamもSinkもChannelの一種である
+Channel（本体）
+├── Stream（Outを使う）
+└── Sink （Resultを使う）
+
+## 「なぜSinkがあるとBackpressureが自然に解決されるのか」
+
+Stream.take(5)のようにすると、最初の5要素だけを要求し、それ以降は終了として扱う。
+
+EffectはPull型であるため、終端（Sink）が要求した分だけ上流が実行される。
+そのため、終端が要求を止めれば、それ以上上流の処理は起動されない。
+
+この構造により、終端が処理する量や速度を完全に制御でき、
+上流から勝手にデータが流れてくることは仕組み上発生しない。
+
+したがって、Node StreamのようなPush型が絡まない限り、
+Backpressureは自然に解決される。
+
+## 「なぜStreamはEffectの単なる配列ではないのか」
+
+StreamはEffectの配列ではなく、
+必要に応じてデータを生成する遅延評価の仕組みである。
+
+そのため、
+・無限データを扱える
+・Backpressureが自然に成立する
+・途中終了が可能
+・リソース管理が安全にできる
+
+Chunkはパフォーマンス最適化のための実装であり、
+本質は「Pullによる逐次生成」にある。
+
+## Chunk 処理について
+
+Chunkは、StreamのPullモデルを維持しながら、
+・関数呼び出し回数削減
+・Fiberスケジューリング効率化
+・CPUキャッシュ効率向上
+を実現するためのバッチ単位である
+
+ChannelはChunk単位でループすることで、
+高性能かつBackpressureを維持したストリーム処理を実現している
+
+## Stream fusionについて
+
+Stream.map(f).map(g).filter(h)
+を直観的に
+各map/filterごとにさらにChunk処理をして、とすると大変に見える。
+
+StreamはEffectと同様に実行計画であるが、
+Streamは複数要素を扱うループ構造（Channel）として表現される。
+
+そのため、mapやfilterなどの操作は実行時に逐次処理されるのではなく、
+実行前に1つのChannelとして合成される。
+
+結果として、実行時にはChunk単位で、
+合成済みの処理が一度のループで適用されるため、
+中間データや余分なループを発生させず高速に処理できる。
+
+## StreamのflatMapがfusionしにくいのは
+
+flatMapは1つの入力から複数の要素（Stream）を生成し、
+それを動的に結合する処理であるため、
+処理構造が実行時に決定される。
+
+そのため、mapのように静的に処理を合成（fusion）することが難しく、
+ループのネストやChunkの分断が発生することで、
+最適化の自由度が制限される。
 
 ## 下における inputを入力にしたメソッドは誰が呼ぶ？
 

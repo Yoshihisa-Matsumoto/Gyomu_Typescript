@@ -1,4 +1,4 @@
-type CsvValue = string | number | boolean | null | undefined;
+export type CsvValue = string | number | boolean | null | undefined;
 export type CsvRow = Record<string, CsvValue>;
 export type CsvColumn<A> = {
   key: keyof A & string;
