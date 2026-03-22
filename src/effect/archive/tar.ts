@@ -113,17 +113,25 @@ export const untar = <E extends AppError, R = never>(
     ),
   );
 
-export const existsInTar = (
-  source: Stream.Stream<Uint8Array, AppError>,
-  targetPath: string,
-): Effect.Effect<boolean, AppError> =>
-  untar(source).pipe(
-    Stream.filter(
-      (entry) => entry.header.name === massageEntryPath(targetPath),
-    ),
-    Stream.runHead,
-    Effect.map((opt) => opt._tag === 'Some'),
-  );
+export const existsInTar =
+  (entryName: string) =>
+  <E extends AppError, R = never>(
+    self: Stream.Stream<Uint8Array, E, R>,
+  ): Effect.Effect<boolean, AppError, R> =>
+    self.pipe(
+      untar,
+      filterEntries((h) => h.name === massageEntryPath(entryName)),
+      Stream.runHead,
+      Effect.flatMap((option) =>
+        Option.match(option, {
+          // 見つからなかった場合
+          onNone: () => Effect.succeed(false),
+          // 見つかった場合、そのエントリの content を空読みしてストリームを正常終了させる
+          onSome: (entry) =>
+            Stream.runDrain(entry.content).pipe(Effect.as(true)),
+        }),
+      ),
+    );
 
 /**
  * TarEntry の content をすべて読み込み、文字列として返す Effect を生成する

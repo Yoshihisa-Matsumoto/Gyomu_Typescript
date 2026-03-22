@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@effect/platform-node':
         specifier: 4.0.0-beta.31
-        version: 4.0.0-beta.31(effect@4.0.0-beta.31)(ioredis@5.10.0)
+        version: 4.0.0-beta.31(effect@4.0.0-beta.36)(ioredis@5.10.0)
       '@prisma/adapter-pg':
         specifier: ^7.3.0
         version: 7.3.0
@@ -42,8 +42,8 @@ importers:
         specifier: ^17.3.1
         version: 17.3.1
       effect:
-        specifier: 4.0.0-beta.31
-        version: 4.0.0-beta.31
+        specifier: 4.0.0-beta.36
+        version: 4.0.0-beta.36
       fflate:
         specifier: ^0.8.2
         version: 0.8.2
@@ -1272,8 +1272,8 @@ packages:
   effect@3.18.4:
     resolution: {integrity: sha512-b1LXQJLe9D11wfnOKAk3PKxuqYshQ0Heez+y5pnkd3jLj1yx9QhM72zZ9uUrOQyNvrs2GZZd/3maL0ZV18YuDA==}
 
-  effect@4.0.0-beta.31:
-    resolution: {integrity: sha512-w3QwJnlaLtWWiUSzhCXUTIisnULPsxLzpO6uqaBFjXybKx6FvCqsLJT6v4dV7G9eA9jeTtG6Gv7kF+jGe3HxzA==}
+  effect@4.0.0-beta.36:
+    resolution: {integrity: sha512-It0ivpQrAi7cTAISEVPLbPjGGLSN90dZ1Y6iDhYbUdBj/QH8rf/AZVx1tGYLgA++Jfs+5ONrxA88gpNYWXxXKA==}
 
   empathic@2.0.0:
     resolution: {integrity: sha512-i6UzDscO/XfAcNYD75CfICkmfLedpyPDdozrLMmQc5ORaQcdMoc21OnlEylMIqI7U8eniKrPMxxtj8k0vhmJhA==}
@@ -2602,19 +2602,19 @@ snapshots:
 
   '@effect/language-service@0.80.0': {}
 
-  '@effect/platform-node-shared@4.0.0-beta.31(effect@4.0.0-beta.31)':
+  '@effect/platform-node-shared@4.0.0-beta.31(effect@4.0.0-beta.36)':
     dependencies:
       '@types/ws': 8.18.1
-      effect: 4.0.0-beta.31
+      effect: 4.0.0-beta.36
       ws: 8.19.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
 
-  '@effect/platform-node@4.0.0-beta.31(effect@4.0.0-beta.31)(ioredis@5.10.0)':
+  '@effect/platform-node@4.0.0-beta.31(effect@4.0.0-beta.36)(ioredis@5.10.0)':
     dependencies:
-      '@effect/platform-node-shared': 4.0.0-beta.31(effect@4.0.0-beta.31)
-      effect: 4.0.0-beta.31
+      '@effect/platform-node-shared': 4.0.0-beta.31(effect@4.0.0-beta.36)
+      effect: 4.0.0-beta.36
       ioredis: 5.10.0
       mime: 4.1.0
       undici: 7.22.0
@@ -3526,7 +3526,7 @@ snapshots:
       '@standard-schema/spec': 1.0.0
       fast-check: 3.23.2
 
-  effect@4.0.0-beta.31:
+  effect@4.0.0-beta.36:
     dependencies:
       '@standard-schema/spec': 1.1.0
       fast-check: 4.6.0
