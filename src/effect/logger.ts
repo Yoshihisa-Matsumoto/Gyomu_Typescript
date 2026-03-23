@@ -13,7 +13,7 @@ export const effectLogger = Logger.make(({ logLevel, message }) => {
       logger.warn(message);
       break;
     case 'Error':
-      logger.warn(message);
+      logger.error(message);
       break;
   }
 });

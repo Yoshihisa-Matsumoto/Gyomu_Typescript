@@ -1,27 +1,29 @@
-import { Effect, Layer, ServiceMap, Redacted, Config } from 'effect';
+import { Effect, Layer, ServiceMap, Redacted, Config, Schema } from 'effect';
 import { Client } from 'basic-ftp';
 import { withDefault } from 'effect/Config';
 import { NetworkError, unknownError } from '../../../errors.js';
 
 const ftpConfigRaw = Config.all({
-  host: Config.string('FTP_HOST'),
-  port: withDefault(Config.number('FTP_PORT'), 21),
-  user: Config.string('FTP_USER'),
-  password: Config.redacted('FTP_PASS'),
+  host: Config.string('HOST'),
+  port: withDefault(Config.number('PORT'), 21),
+  user: Config.string('USER'),
+  password: Config.redacted('PASS'),
 
-  secure: withDefault(Config.boolean('FTP_SSL'), false),
+  secure: withDefault(Config.boolean('SSL'), false),
 });
-type ftpConfigType = Config.Success<typeof ftpConfigRaw>;
+
+type FtpConfig = Config.Success<typeof ftpConfigRaw>;
 
 export class FtpConfigService extends ServiceMap.Service<
   FtpConfigService,
-  ftpConfigType
+  FtpConfig
 >()('FtpConfigService') {}
 
 export const FtpConfigLive = Layer.effect(
   FtpConfigService,
   ftpConfigRaw.asEffect(),
 );
+
 export class FtpService extends ServiceMap.Service<FtpService>()('FtpService', {
   make: Effect.gen(function* () {
     const config = yield* FtpConfigService;

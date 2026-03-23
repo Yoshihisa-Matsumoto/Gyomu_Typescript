@@ -52,3 +52,13 @@ export const toReadable = (input: FileInput): Readable => {
 
   return input;
 };
+
+export const toBuffer = async (input: Buffer | Readable): Promise<Buffer> => {
+  if (Buffer.isBuffer(input)) return input;
+
+  const chunks: Buffer[] = [];
+  for await (const chunk of input) {
+    chunks.push(Buffer.from(chunk));
+  }
+  return Buffer.concat(chunks);
+};

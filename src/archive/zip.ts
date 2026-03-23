@@ -5,7 +5,7 @@ import { platform } from '../platform/index.js';
 //import path from 'path';
 import {
   allResultsOk,
-  GyomuResultAsync,
+  type GyomuResultAsync,
   errAsync,
   okAsync,
   result2Async,
@@ -13,34 +13,129 @@ import {
   runAsync,
   run,
   ensure,
+  sequenceTap,
+  sequenceReduce,
+  //withResource,
 } from '../result.js';
 //import archiver from 'archiver';
 import JSZip from 'jszip';
-import { Open, File, Parse, CentralDirectory } from 'unzipper';
+//import { Open, type File, Parse, type CentralDirectory } from 'unzipper';
+import yauzl from 'yauzl';
 
+import { decode } from '../encoding.js';
 import { AbstractBaseArchive } from './abstract.js';
 import { FileOperation } from '../fileOperation.js';
 import { logger } from '../logger.js';
 //import { Z_PARTIAL_FLUSH } from 'zlib';
-import { IOError } from '../errors.js';
-import { FileInput, toReadable } from '../buffer.js';
-import { PassThrough } from 'stream';
+import type { DiffDetail } from '../reconcile.js';
+//import { type FileInput, toReadable } from '../buffer.js';
+import { PassThrough, Readable } from 'stream';
 //import os from 'os';
 import { spawnSync } from 'child_process';
 import { Json2Csv } from '../csv.js';
-import { DiffDetail } from '../reconcile.js';
-import { decode } from '../encoding/decode.js';
+//import pLimit from 'p-limit';
+import { toBuffer, type FileInput } from '../buffer.js';
+import { IOError } from '../errors.js';
 
 type CopyOptions = {
   overwrite?: boolean;
 };
 const unicode_flag: number = 0x800;
+
+export type FileEntryItem = {
+  path: string;
+  crc32: number;
+  uncompressedSize: number;
+  isDirectory: false;
+  entry: yauzl.Entry;
+  stream: () => PassThrough;
+  buffer: () => Promise<Buffer>;
+};
+type DirectoryEntryItem = {
+  path: string;
+  isDirectory: true;
+};
+type ZipEntryItem = FileEntryItem | DirectoryEntryItem;
+
+type ZipCentralDirectory = {
+  zipFile: yauzl.ZipFile;
+  entries: Map<string, ZipEntryItem>;
+};
+export const getFileEntry = (
+  entryPath: string,
+  zipCentralDirectory: ZipCentralDirectory,
+): FileEntryItem | undefined => {
+  return zipCentralDirectory.entries.get(entryPath) as FileEntryItem;
+};
+
+const getEntryStream = (
+  entryPath: string,
+  entry: yauzl.Entry,
+  zipfile: yauzl.ZipFile,
+) => {
+  const passThrough = new PassThrough();
+
+  //console.log(`Opening read stream for ${entryPath}: ${zipfile.isOpen}`);
+  zipfile.openReadStream(entry, (err, stream) => {
+    if (err) {
+      logger.error(
+        `Failed to open read stream for ${entryPath}: ${err.message}`,
+      );
+      passThrough.destroy(err);
+      return;
+    }
+    if (!stream) {
+      passThrough.destroy(
+        new IOError(
+          `Failed to open read stream for ${entryPath}: Stream is null`,
+        ),
+      );
+      return;
+    }
+    stream.pipe(passThrough);
+
+    stream.on('error', (err) => {
+      logger.error(`Failed to read stream for ${entryPath}: ${err.message}`);
+      passThrough.destroy(err);
+    });
+  });
+  return passThrough;
+};
+
+const getEntryBuffer = async (
+  entryPath: string,
+  entry: yauzl.Entry,
+  zipfile: yauzl.ZipFile,
+): Promise<Buffer> => {
+  if (entryPath.endsWith('/')) return Buffer.alloc(0);
+
+  const stream = getEntryStream(entryPath, entry, zipfile);
+  const chunks: Buffer[] = [];
+  return new Promise((resolve, reject) => {
+    stream.on('data', (chunk) => chunks.push(chunk));
+    stream.on('end', () => resolve(Buffer.concat(chunks)));
+    stream.on('error', (err) => {
+      logger.error(`Failed to read stream for ${entryPath}: ${err.message}`);
+      reject(err);
+    });
+  });
+};
+
 /**
  * @remarks
  * This class (extract side) doesn't support stream based retrieval yet
  * This class  doesn't support AES decryption yet
  */
-export class ZipArchive extends AbstractBaseArchive {
+export class ZipArchive extends AbstractBaseArchive implements Disposable {
+  #zipfile: yauzl.ZipFile | null = null;
+  [Symbol.dispose](): void {
+    this.close();
+  }
+  close() {
+    if (!this.#zipfile) return;
+    this.#zipfile.close();
+    this.#zipfile = null;
+  }
   // static {
   //   archiver.registerFormat('zip-encrypted', require('archiver-zip-encrypted'));
   // }
@@ -71,33 +166,28 @@ export class ZipArchive extends AbstractBaseArchive {
         'Fail to add directory',
       );
     // transferInformation を直列処理
-    const initial: GyomuResultAsync<void> = okAsync(undefined);
-    const processTransfers = transferInformationList.reduce(
-      (acc, info) =>
-        acc.andThen(() => {
-          const sourcePath = info.sourceFullNameWithBasePath;
+    const processTransfers = sequenceTap(transferInformationList, (info) => {
+      const sourcePath = info.sourceFullNameWithBasePath;
 
-          if (!platform.existsSync(sourcePath)) {
-            return errAsync(new IOError(`File Not Found: ${sourcePath}`));
-          }
+      if (!platform.existsSync(sourcePath)) {
+        return errAsync(new IOError(`File Not Found: ${sourcePath}`));
+      }
 
-          if (!info.isSourceDirectory) {
-            const destinationEntryName = info.destinationFullName.replace(
-              platform.sep,
-              '/',
-            );
-            zip.file(destinationEntryName, platform.readFileSync(sourcePath));
-            return okAsync(undefined);
-          }
+      if (!info.isSourceDirectory) {
+        const destinationEntryName = info.destinationFullName.replace(
+          platform.sep,
+          '/',
+        );
+        zip.file(destinationEntryName, platform.readFileSync(sourcePath));
+        return okAsync(undefined);
+      }
 
-          const destRoot = info.destinationPath
-            ? info.destinationPath.replace(platform.sep, '/')
-            : '';
+      const destRoot = info.destinationPath
+        ? info.destinationPath.replace(platform.sep, '/')
+        : '';
 
-          return addDirectory(sourcePath, destRoot);
-        }),
-      initial,
-    );
+      return addDirectory(sourcePath, destRoot);
+    });
 
     // ZIP生成 + 書き込み
     return processTransfers
@@ -251,11 +341,22 @@ export class ZipArchive extends AbstractBaseArchive {
   #getZip() {
     return runAsync(
       async () => {
+        let output: ZipCentralDirectory | null = null;
         if (this.archiveFileName) {
-          return Open.file(this.archiveFileName);
+          output = await ZipArchive.retrieveCentralDirectories(
+            this.archiveFileName,
+            this.encoding,
+          );
         } else {
-          return Open.buffer(this.archiveContent as Buffer);
+          output = await ZipArchive.#openZipFromBuffer(
+            this.archiveContent!,
+            this.encoding,
+          );
         }
+        if (output) {
+          this.#zipfile = output.zipFile;
+        }
+        return output;
       },
       IOError,
       'fail to get zip dictionary',
@@ -264,11 +365,11 @@ export class ZipArchive extends AbstractBaseArchive {
   fileExists(fileName: string): GyomuResultAsync<boolean> {
     return this.#getFileEntry(fileName, true).map((fileEntry) => !!fileEntry);
   }
-  #massageFileEntryFullPath(file: File) {
-    return massageFileEntryFullPath(file, this.encoding);
+  #massageFileEntryFullPath(file: ZipEntryItem) {
+    return massageFileEntryFullPath(file);
   }
-  #extractSingleFileEntry(file: File, destinationFullName: string) {
-    return extractSingleFile(file, destinationFullName, this.encoding);
+  #extractSingleFileEntry(file: FileEntryItem, destinationFullName: string) {
+    return extractSingleFile(file, destinationFullName);
   }
   #getFileEntry(
     targetEntryName: string,
@@ -278,12 +379,7 @@ export class ZipArchive extends AbstractBaseArchive {
     return this.#getZip().andThen((directory) =>
       runAsync(
         async () => {
-          const targetFile = directory.files.find((f) => {
-            return (
-              f.type === 'File' &&
-              this.#massageFileEntryFullPath(f) === targetEntryName
-            );
-          });
+          const targetFile = directory.entries.get(targetEntryName);
           if (!targetFile) {
             if (returnFalseWhenNotExist) return false;
             logger.error(`File not found :${targetEntryName}`);
@@ -297,7 +393,9 @@ export class ZipArchive extends AbstractBaseArchive {
     );
   }
   #getFileEntryThrowIfNotExist(targetEntryName: string) {
-    return this.#getFileEntry(targetEntryName) as GyomuResultAsync<File>;
+    return this.#getFileEntry(
+      targetEntryName,
+    ) as GyomuResultAsync<FileEntryItem>;
   }
   extractSingleFile2Buffer(
     sourceEntryFullName: string,
@@ -338,12 +436,18 @@ export class ZipArchive extends AbstractBaseArchive {
     destinationDirectory: string,
   ): GyomuResultAsync<boolean> {
     const targetEntryName = this.__massageEntryPath(sourceDirectory);
+    //const limit = pLimit(1);
     return (
       this.#getZip()
         .andThen((directory) => {
-          const targetFileList = directory.files.filter((f) =>
-            this.#massageFileEntryFullPath(f).startsWith(targetEntryName),
-          );
+          const targetFileList = directory.entries
+            .values()
+            .filter(
+              (f) =>
+                !f.isDirectory &&
+                this.#massageFileEntryFullPath(f).startsWith(targetEntryName),
+            )
+            .toArray();
           if (!targetFileList || targetFileList.length === 0) {
             return simpleErrAsync(
               IOError,
@@ -352,7 +456,7 @@ export class ZipArchive extends AbstractBaseArchive {
           }
           this.__createDirectoryIfNotExist(destinationDirectory);
           targetFileList
-            .filter((file) => file.type === 'Directory')
+            .filter((file) => file.isDirectory)
             .forEach((file) => {
               const entryFullPath = this.#massageFileEntryFullPath(file);
               const destinationPath = platform.join(
@@ -365,7 +469,7 @@ export class ZipArchive extends AbstractBaseArchive {
             });
           // ディレクトリ作成（同期）
           targetFileList
-            .filter((f) => f.type === 'Directory')
+            .filter((f) => f.isDirectory)
             .forEach((file) => {
               const entryFullPath = this.#massageFileEntryFullPath(file);
               const destinationPath = platform.join(
@@ -377,7 +481,7 @@ export class ZipArchive extends AbstractBaseArchive {
               this.__createDirectoryFromFileNameIfNotExist(destinationPath);
             });
 
-          return okAsync(targetFileList.filter((f) => f.type === 'File'));
+          return okAsync(targetFileList.filter((f) => !f.isDirectory));
         })
         // ③ ファイル展開（並列）
         .andThen((files) =>
@@ -392,7 +496,10 @@ export class ZipArchive extends AbstractBaseArchive {
               );
 
               return runAsync(
-                () => this.#extractSingleFileEntry(file, destinationPath),
+                () =>
+                  // limit(() =>
+                  this.#extractSingleFileEntry(file, destinationPath),
+                // ),
                 IOError,
 
                 `Error on unarchive ${entryFullPath}`,
@@ -431,39 +538,184 @@ export class ZipArchive extends AbstractBaseArchive {
       );
     }
   }
-  static async retrieveCentralDirectories(zipFilename: string) {
-    return await Open.file(zipFilename);
-  }
-  static async *fromZip(zip: FileInput, sourceEntryFullName: string) {
-    const targetEntryName = sourceEntryFullName.replace(/\\/g, '/');
-    const zipStream = toReadable(zip).pipe(Parse({ forceStream: true }));
+  static async retrieveCentralDirectories(
+    zipFilename: string,
+    encoding?: string,
+  ) {
+    let zipFile: yauzl.ZipFile | null = null;
 
-    for await (const entry of zipStream) {
-      if (entry.path !== targetEntryName) {
-        entry.autodrain();
-        continue;
+    zipFile = await this.#openZip(zipFilename);
+    zipFile.setMaxListeners(10);
+    return this.#retrieveCentralDirectory(zipFile, encoding);
+  }
+
+  static async #openZipFromBuffer(
+    buffer: Buffer<ArrayBufferLike>,
+    encoding?: string,
+  ) {
+    const zipFile = await new Promise<yauzl.ZipFile>((resolve, reject) => {
+      yauzl.fromBuffer(
+        buffer,
+        { lazyEntries: true, decodeStrings: false, autoClose: false },
+        (err, instance) => {
+          if (err) reject(err);
+          else resolve(instance);
+        },
+      );
+    });
+    zipFile.setMaxListeners(10);
+    return this.#retrieveCentralDirectory(zipFile, encoding);
+  }
+  static async #openZip(zipFilename: string) {
+    return new Promise<yauzl.ZipFile>((resolve, reject) => {
+      yauzl.open(
+        zipFilename,
+        { lazyEntries: true, decodeStrings: false, autoClose: false },
+        (err, instance) => {
+          if (err) reject(err);
+          else resolve(instance);
+        },
+      );
+    });
+  }
+  static async #retrieveCentralDirectory(
+    zipfile: yauzl.ZipFile,
+    encoding?: string,
+  ): Promise<ZipCentralDirectory> {
+    const directory: ZipCentralDirectory = {
+      entries: new Map<string, ZipEntryItem>(),
+      zipFile: zipfile,
+    };
+
+    const entries = await new Promise<yauzl.Entry[]>((resolve, reject) => {
+      const outputs: yauzl.Entry[] = [];
+      zipfile.on('entry', (entry) => {
+        outputs.push(entry);
+        zipfile.readEntry();
+      });
+      zipfile.on('end', () => resolve(outputs));
+      zipfile.on('error', (err) => reject(err));
+      zipfile.readEntry();
+    });
+    if (!zipfile.isOpen)
+      throw new IOError('Zip file was closed unexpectedly after scanning');
+
+    entries.forEach((entry) => {
+      const rawFileNameBuffer = entry.fileName as any as Buffer;
+
+      const flags = entry.generalPurposeBitFlag;
+      const isUnicode = (flags & unicode_flag) !== 0;
+      const fileName =
+        isUnicode || !encoding
+          ? rawFileNameBuffer.toString('utf-8')
+          : decode(rawFileNameBuffer, encoding);
+      const isDirectory = fileName.endsWith('/');
+
+      const normalizedPath = fileName.replace(/\\/g, '/');
+      if (isDirectory) {
+        directory.entries.set(normalizedPath, {
+          path: normalizedPath,
+          isDirectory: true,
+        });
+      } else {
+        directory.entries.set(normalizedPath, {
+          path: normalizedPath,
+          crc32: entry.crc32,
+          uncompressedSize: entry.uncompressedSize,
+          isDirectory: false,
+          entry: entry,
+          stream: () => getEntryStream(normalizedPath, entry, zipfile),
+          buffer: () => getEntryBuffer(normalizedPath, entry, zipfile),
+        });
       }
-      yield {
-        name: entry.path,
-        stream: entry,
-      };
+    });
+
+    return directory;
+  }
+  static async getZipfile(zip: FileInput) {
+    if (typeof zip == 'string') {
+      return new Promise<yauzl.ZipFile>((resolve, reject) => {
+        yauzl.open(
+          zip,
+          { lazyEntries: true, decodeStrings: false },
+          (err, instance) => {
+            if (err) reject(err);
+            else resolve(instance);
+          },
+        );
+      });
+    } else {
+      const buffer = await toBuffer(zip);
+      return new Promise<yauzl.ZipFile>((resolve, reject) => {
+        yauzl.fromBuffer(
+          buffer,
+          { lazyEntries: true, decodeStrings: false },
+          (err, instance) => {
+            if (err) reject(err);
+            else resolve(instance);
+          },
+        );
+      });
     }
-    return;
+  }
+  static async *fromZip(
+    zip: FileInput,
+    sourceEntryFullName: string,
+    encoding?: string,
+  ) {
+    const targetEntryName = sourceEntryFullName.replace(/\\/g, '/');
+
+    const zipfile = await ZipArchive.getZipfile(zip);
+    try {
+      const readNextEntry = () => zipfile.readEntry();
+      while (true) {
+        const entry = await new Promise<yauzl.Entry | null>(
+          (resolve, reject) => {
+            zipfile.once('entry', (e) => resolve(e));
+            zipfile.once('end', () => resolve(null));
+            zipfile.once('error', (err) => reject(err));
+            readNextEntry();
+          },
+        );
+        if (!entry) break;
+
+        const rawFileNameBuffer = entry.fileName as any as Buffer;
+
+        const flags = entry.generalPurposeBitFlag;
+        const isUnicode = (flags & unicode_flag) !== 0;
+        const fileName = isUnicode
+          ? rawFileNameBuffer.toString('utf-8')
+          : decode(rawFileNameBuffer, encoding);
+
+        const normalizedPath = fileName.replace(/\\/g, '/');
+        if (normalizedPath != targetEntryName) continue;
+
+        const stream = await new Promise<Readable>((resolve, reject) => {
+          zipfile.openReadStream(entry, (err, readStream) => {
+            if (err) reject(err);
+            else resolve(readStream);
+          });
+        });
+
+        yield {
+          entry,
+          name: fileName,
+          normalizedPath,
+          stream,
+        };
+      }
+    } finally {
+      zipfile.close();
+    }
   }
 }
 
-const massageFileEntryFullPath = (file: File, encoding?: string) => {
-  if (!encoding || (!!file.flags && (file.flags & unicode_flag) !== 0)) {
-    return file.path;
-  }
-  const decoded = decode(file.pathBuffer, encoding);
-  // console.log(decoded);
-  return decoded;
+const massageFileEntryFullPath = (file: ZipEntryItem) => {
+  return file.path;
 };
 const extractSingleFile = (
-  targetFile: File,
+  targetFile: FileEntryItem,
   destinationFullName: string,
-  encoding?: string,
 ) => {
   platform.createDirectoryFromFileNameIfNotExist(destinationFullName);
   return new Promise<boolean>((resolve, reject) => {
@@ -475,7 +727,6 @@ const extractSingleFile = (
           new IOError(
             `Unknown Error on extract ${massageFileEntryFullPath(
               targetFile,
-              encoding,
             )} to ${destinationFullName}`,
             err,
           ),
@@ -589,23 +840,24 @@ type DiffResult = {
   diffExist: boolean;
 };
 type InterimOutputType = {
-  sourceFiles: CentralDirectory;
-  destinationFiles: CentralDirectory;
+  sourceFiles: ZipCentralDirectory;
+  destinationFiles: ZipCentralDirectory;
   results: DiffSummary[];
   promises: Promise<boolean>[];
 };
 export const compareZip = (
   option: ZipCompareOption,
   compareFunc?: (option: {
-    source: FileEntry;
-    destination: FileEntry;
+    source: FileEntryItem;
+    destination: FileEntryItem;
     filePath: string;
     resultPath: string;
   }) => GyomuResultAsync<DiffResult>,
 ): GyomuResultAsync<DiffSummary[] | undefined> => {
   const { sourceFilename, destinationFilename, resultPath } = option;
 
-  return result2Async(
+  let interimOutput: InterimOutputType | undefined = undefined;
+  const result = result2Async(
     ensure(
       platform.existsSync(sourceFilename),
       IOError,
@@ -635,7 +887,7 @@ export const compareZip = (
       runAsync(
         async () => {
           //状態初期化
-          const interimOutput: InterimOutputType = {
+          interimOutput = {
             sourceFiles:
               await ZipArchive.retrieveCentralDirectories(sourceFilename),
             destinationFiles:
@@ -651,78 +903,75 @@ export const compareZip = (
     )
     .andThen((interimOutput) => {
       //ソースファイルから比較するパターン
-      return interimOutput.sourceFiles.files.reduce<
-        GyomuResultAsync<InterimOutputType>
-      >(
-        (previousOutput, sourceFile) =>
-          previousOutput.andThen(() => {
-            if (
-              option.fileNameExcludeRule &&
-              isComparisionExcludeTarget(
-                sourceFile.path.replaceAll('/', '\\'),
-                option.fileNameExcludeRule,
-                Object.keys(option.fileNameExcludeRule),
-              )
-            ) {
-              //比較除外条件に入ったものは何もしない
-              return previousOutput;
+      return sequenceReduce(
+        Array.from(interimOutput.sourceFiles.entries.values()),
+        interimOutput,
+        (previousOutput, sourceFile) => {
+          if (
+            option.fileNameExcludeRule &&
+            isComparisionExcludeTarget(
+              sourceFile.path.replaceAll('/', '\\'),
+              option.fileNameExcludeRule,
+              Object.keys(option.fileNameExcludeRule),
+            )
+          ) {
+            //比較除外条件に入ったものは何もしないvalues()
+            return okAsync(previousOutput);
+          }
+          const destinationFile = interimOutput.destinationFiles.entries.get(
+            sourceFile.path,
+          );
+          if (destinationFile) {
+            if (sourceFile.isDirectory || destinationFile.isDirectory) {
+              return okAsync(interimOutput);
             }
-            const destinationFile = interimOutput.destinationFiles.files.find(
-              (f) => f.path === sourceFile.path && f.type === sourceFile.type,
+            //File exist on both zip, need comparison
+            return internalCompareFileEntry(
+              sourceFile,
+              destinationFile,
+              interimOutput,
+              option,
+              compareFunc,
             );
-            if (destinationFile) {
-              //File exist on both zip, need comparison
-              return internalCompareFileEntry(
-                sourceFile,
-                destinationFile,
-                interimOutput,
-                option,
-                compareFunc,
-              );
-            } else {
-              //File exist only in source zip
-              return handleMissingFileInComparison(
-                sourceFile,
-                true,
-                interimOutput,
-                option,
-              );
-            }
-          }),
-        okAsync(interimOutput),
+          } else {
+            //File exist only in source zip
+            return handleMissingFileInComparison(
+              sourceFile,
+              true,
+              interimOutput,
+              option,
+            );
+          }
+        },
       );
     })
     .andThen((interimOutput) => {
       //デスティネーションファイルから比較するパターン
-      return interimOutput.destinationFiles.files.reduce<
-        GyomuResultAsync<InterimOutputType>
-      >(
-        (previousOutput, destinationFile) =>
-          previousOutput.andThen(() => {
-            const sourceFile = interimOutput.sourceFiles.files.find(
-              (f) =>
-                f.path === destinationFile.path &&
-                f.type === destinationFile.type,
-            );
-            if (sourceFile) return okAsync(interimOutput);
-            if (
-              option.fileNameExcludeRule &&
-              isComparisionExcludeTarget(
-                destinationFile.path.replaceAll('/', '\\'),
-                option.fileNameExcludeRule,
-                Object.keys(option.fileNameExcludeRule),
-              )
-            ) {
-              return okAsync(interimOutput);
-            }
-            return handleMissingFileInComparison(
-              destinationFile,
-              false,
-              interimOutput,
-              option,
-            );
-          }),
-        okAsync(interimOutput),
+      return sequenceReduce(
+        Array.from(interimOutput.destinationFiles.entries.values()),
+        interimOutput,
+        (_, destinationFile) => {
+          const sourceFile = interimOutput.sourceFiles.entries.get(
+            destinationFile.path,
+          );
+          if (sourceFile) return okAsync(interimOutput);
+          if (
+            option.fileNameExcludeRule &&
+            isComparisionExcludeTarget(
+              destinationFile.path.replaceAll('/', '\\'),
+              option.fileNameExcludeRule,
+              Object.keys(option.fileNameExcludeRule),
+            )
+          ) {
+            return okAsync(interimOutput);
+          }
+          return handleMissingFileInComparison(
+            destinationFile,
+            false,
+            interimOutput,
+            option,
+          );
+        },
       );
     })
     .andThen((interimOutput) =>
@@ -761,16 +1010,25 @@ export const compareZip = (
         quoted: true,
       }).map(() => results);
     });
+  if (interimOutput) {
+    try {
+      (interimOutput as InterimOutputType).sourceFiles.zipFile.close();
+      (interimOutput as InterimOutputType).destinationFiles.zipFile.close();
+    } catch (error) {
+      //
+    }
+  }
+  return result;
 };
 
 const internalCompareFileEntry = (
-  sourceFile: File,
-  destinationFile: File,
+  sourceFile: FileEntryItem,
+  destinationFile: FileEntryItem,
   interimOutput: InterimOutputType,
   option: ZipCompareOption,
   compareFunc?: (option: {
-    source: FileEntry;
-    destination: FileEntry;
+    source: FileEntryItem;
+    destination: FileEntryItem;
     filePath: string;
     resultPath: string;
   }) => GyomuResultAsync<DiffResult>,
@@ -900,7 +1158,7 @@ const internalCompareFileEntry = (
             resultPath,
             sourceFile.path.replaceAll('/', '\\') + '.source',
           );
-          if (sourceFile.type == 'File') {
+          if (!sourceFile.isDirectory) {
             promises.push(extractSingleFile(sourceFile, sourcePath));
           }
 
@@ -915,7 +1173,7 @@ const internalCompareFileEntry = (
     });
 };
 const handleMissingFileInComparison = (
-  existingFile: File,
+  existingFile: ZipEntryItem,
   isSourceExist: boolean,
   interimOutput: InterimOutputType,
   option: ZipCompareOption,
@@ -934,7 +1192,7 @@ const handleMissingFileInComparison = (
     );
   }
   if (!targetIgnoreRule) {
-    if (existingFile.type != 'File') return okAsync(interimOutput);
+    if (existingFile.isDirectory) return okAsync(interimOutput);
     results.push({ path: existingFile.path, diff: `Only in ${existingPart}` });
     const filePath = platform.join(
       resultPath,
@@ -946,8 +1204,8 @@ const handleMissingFileInComparison = (
 };
 const gitTempPath = platform.join(platform.tmpdir(), 'gitCompareTemp');
 const compareTextfile = (
-  source: FileEntry,
-  destination: FileEntry,
+  source: FileEntryItem,
+  destination: FileEntryItem,
   filePath: string,
   resultPath: string,
 ): GyomuResultAsync<boolean> => {
@@ -1087,3 +1345,29 @@ const isComparisionExcludeTarget = (
   // }
   return isExclude;
 };
+
+//ZipArchive._initialize();
+
+// compareZip(
+//   { sourceFilename:'c:\\data\\test\\zip\\compare1.zip',
+//   destinationFilename:'c:\\data\\test\\zip\\compare2.zip',
+//   resultPath:'c:\\data\\test\\zip\\result',
+//   compareFunc: async (option: {source:Buffer, destination:Buffer})=>{
+//     const item:DiffDetail = {
+//       place: 'content',
+//       sourceValue:arrayBufferToString(bufferToArrayBuffer(option.source)),
+//       destinationValue: arrayBufferToString(bufferToArrayBuffer(option.destination))
+//     };
+//     return success([item]);
+//   }
+// }).then(result=>console.log(result));
+
+// compareZip(
+//   { sourceFilename:'C:\\data\\program\\sfdx-test\\ibcommons2\\mdapi\\unpackaged.zip',
+//   destinationFilename:'C:\\data\\program\\sfdx-test\\ibcommons1\\mdapi\\unpackaged.zip',
+//   resultPath:'c:\\data\\test\\zip\\result'}).then(result=>console.log(result));
+
+// compareZip(
+//   { sourceFilename:'C:\\data\\test\\unpackaged_before.zip',
+//   destinationFilename:'C:\\data\\test\\unpackaged_after.zip',
+//   resultPath:'c:\\data\\test\\zip\\result'}).then(result=>console.log(result));

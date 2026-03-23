@@ -187,3 +187,32 @@ export function andAttachAs<T, K extends string, U>(
         }) as T & { [P in K]: U },
     );
 }
+
+export function sequenceReduce<T, A>(
+  items: T[],
+  initial: A,
+  fn: (acc: A, item: T) => GyomuResultAsync<A>,
+): GyomuResultAsync<A> {
+  return items.reduce(
+    (accResult, item) => accResult.andThen((acc) => fn(acc, item)),
+    okAsync(initial),
+  );
+}
+
+export function sequenceMap<T, R>(
+  items: T[],
+  fn: (item: T) => GyomuResultAsync<R>,
+): GyomuResultAsync<R[]> {
+  return items.reduce(
+    (accResult, item) =>
+      accResult.andThen((results) => fn(item).map((r) => [...results, r])),
+    okAsync<R[], AppError>([]),
+  );
+}
+
+export function sequenceTap<T>(
+  items: T[],
+  fn: (item: T) => GyomuResultAsync<any>,
+): GyomuResultAsync<void> {
+  return ResultAsync.combine(items.map(fn)).map(() => undefined);
+}
