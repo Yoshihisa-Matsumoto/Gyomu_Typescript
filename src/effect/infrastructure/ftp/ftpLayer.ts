@@ -1,4 +1,4 @@
-import { Effect, Layer, ServiceMap, Redacted, Config, Schema } from 'effect';
+import { Effect, Layer, ServiceMap, Redacted, Config } from 'effect';
 import { Client } from 'basic-ftp';
 import { withDefault } from 'effect/Config';
 import { NetworkError, unknownError } from '../../../errors.js';

@@ -1,4 +1,7 @@
 import { defineConfig } from 'vitest/config';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export default defineConfig({
   test: {
@@ -7,10 +10,11 @@ export default defineConfig({
     globals: true,
     setupFiles: ['src/__tests__/baseDBClass.ts'],
     clearMocks: true,
-    onConsoleLog() {
-      return true;
-    },
+    // onConsoleLog() {
+    //   return true;
+    // },
     logHeapUsage: false,
     printConsoleTrace: false,
+    disableConsoleIntercept: true,
   },
 });

@@ -1,7 +1,8 @@
-import { Stream, Effect, Fiber } from 'effect';
+import { Stream, Effect, Fiber, Queue } from 'effect';
 import { Duplex, Transform } from 'node:stream';
 import { IOError, unknownError } from '../errors.js';
 import { AppError } from '../base-error.js';
+import { runSync } from 'effect/Effect';
 
 export const acquireNodeStream = <T extends Duplex>(create: () => T) =>
   Effect.acquireRelease(Effect.sync(create), (stream) =>
@@ -128,7 +129,22 @@ export const throughNodeStream =
 //         if (!duplex.destroyed) duplex.destroy();
 //       });
 //     });
-
+/**
+ * Connects a Node.js Transform stream to an Effect Stream.
+ *
+ * IMPORTANT:
+ * - This function accepts only Transform (not generic Duplex).
+ * - Transform represents a true "I -> O" data transformation,
+ *   which matches Stream.pipe semantics.
+ *
+ * Why not Duplex?
+ * - Duplex is more general (e.g. sockets) and does not guarantee transformation.
+ * - Allowing Duplex would weaken type safety and may introduce incorrect usage.
+ *
+ * Note:
+ * - Readable (source) streams are NOT handled here.
+ *   They must be converted separately (e.g. via Effect + Stream.async).
+ */
 export const throughNodeStreamScoped =
   <I, O, E extends AppError = never, R = never>(create: () => Transform) =>
   (input: Stream.Stream<I, E, R>) =>
@@ -137,3 +153,45 @@ export const throughNodeStreamScoped =
         throughNodeStream<I, O>(t)<E, R>(input),
       ),
     );
+
+export const fromReadable = (readable: NodeJS.ReadableStream) =>
+  Stream.callback<Uint8Array, IOError>((queue) =>
+    Effect.acquireRelease(
+      Effect.sync(() => {
+        const onData = (chunk: Uint8Array) => {
+          runSync(Queue.offer(queue, chunk));
+        };
+        const onEnd = () => {
+          runSync(Queue.end(queue));
+        };
+        const onError = (err: unknown) => {
+          runSync(Queue.fail(queue, unknownError(IOError, err, 'Tar Error')));
+        };
+
+        readable.on('data', onData);
+        readable.on('end', onEnd);
+        readable.on('error', onError);
+
+        return { onData, onEnd, onError };
+      }),
+      ({ onData, onEnd, onError }) =>
+        Effect.sync(() => {
+          readable.off('data', onData);
+          readable.off('end', onEnd);
+          readable.off('error', onError);
+        }),
+    ),
+  );
+
+export const fromNodeCallback = <A>(
+  f: (cb: (err: Error | null, result?: A) => void) => void,
+) =>
+  Effect.callback<A, IOError>((resume) => {
+    f((err, result) => {
+      if (err || result == null) {
+        resume(Effect.fail(new IOError(err?.message ?? 'callback failed')));
+      } else {
+        resume(Effect.succeed(result));
+      }
+    });
+  });

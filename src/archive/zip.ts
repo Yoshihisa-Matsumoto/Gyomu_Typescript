@@ -47,7 +47,7 @@ export type FileEntryItem = {
   crc32: number;
   uncompressedSize: number;
   isDirectory: false;
-  entry: yauzl.Entry;
+  //entry: yauzl.Entry;
   stream: () => PassThrough;
   buffer: () => Promise<Buffer>;
 };
@@ -623,7 +623,7 @@ export class ZipArchive extends AbstractBaseArchive implements Disposable {
           crc32: entry.crc32,
           uncompressedSize: entry.uncompressedSize,
           isDirectory: false,
-          entry: entry,
+          //entry: entry,
           stream: () => getEntryStream(normalizedPath, entry, zipfile),
           buffer: () => getEntryBuffer(normalizedPath, entry, zipfile),
         });

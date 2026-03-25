@@ -3,9 +3,6 @@ import { readCsv, parseCsv } from '../read.js';
 import { writeCsv } from '../write.js';
 import { Stream, Schema, Effect } from 'effect';
 import { readFile } from 'node:fs/promises';
-//import { FileService } from '../../resource/services/fileService';
-//import { IOError, unknownError } from '../../../errors';
-import { FileSystem } from 'effect/FileSystem';
 import { NodeFileSystem } from '@effect/platform-node';
 import { IOError, unknownError } from '../../../errors.js';
 import { platform } from '../../../platform/index.js';
@@ -178,9 +175,7 @@ describe('CSV Read/Write Integration', () => {
     //   ).pipe(Stream.unwrap, Stream.runCollect);
     const program = (path: string) =>
       Effect.gen(function* () {
-        const fs = yield* FileSystem;
-
-        return yield* fs.stream(path).pipe(
+        return yield* fileStream(path).pipe(
           Stream.mapError((err) => unknownError(IOError, err)),
           readCsv(schema),
           Stream.runCollect,

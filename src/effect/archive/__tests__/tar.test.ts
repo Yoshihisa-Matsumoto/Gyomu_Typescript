@@ -67,10 +67,10 @@ describe('untar test', () => {
 
     await Effect.runPromise(
       Stream.runForEach(untar(tarStream), (entry) =>
-        Stream.runCollect(entry.content).pipe(
+        Stream.runCollect(entry.openStream()).pipe(
           Effect.map((chunks) => {
-            entryNames.push(entry.header.name);
-            if (entry.header.name === 'README.md') {
+            entryNames.push(entry.path);
+            if (entry.path === 'README.md') {
               const buffer = Buffer.concat(
                 Array.from(chunks).map((c) => Buffer.from(c)),
               );
@@ -95,7 +95,7 @@ describe('untar test', () => {
     const readMe = await runWithEnvOrThrow(
       fileStream(tarPath).pipe(
         untar,
-        filterEntries((header) => header.name == 'README.md'),
+        filterEntries((header) => header.path == 'README.md'),
         Stream.runHead,
         Effect.flatMap(
           Option.match({

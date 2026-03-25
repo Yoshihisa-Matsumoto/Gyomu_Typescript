@@ -36,6 +36,7 @@ export const commonPlatform = {
   EOL: os.EOL,
   sep: path.sep,
   basename: path.basename,
+  normalize: path.normalize,
   resolve: path.resolve,
   join: path.join,
   dirname: path.dirname,
