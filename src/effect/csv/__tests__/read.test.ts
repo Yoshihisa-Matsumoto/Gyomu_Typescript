@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { parseCsv, readCsv, readCsvRaw } from '../read.js';
 import { Stream, Schema, Effect } from 'effect';
+import { logger } from '../../../logger.js';
 
 describe('CSV Read Functions', () => {
   describe('parseCsv', () => {
@@ -139,7 +140,7 @@ describe('CSV Read Functions', () => {
           }),
         ),
       ).pipe(Effect.runPromise);
-
+      logger.info(result);
       // Should only contain records with age > 25
       result.forEach((record: any) => {
         expect(record.age).toBeGreaterThan(25);

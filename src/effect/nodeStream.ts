@@ -146,6 +146,16 @@ export const throughNodeStream =
  *   They must be converted separately (e.g. via Effect + Stream.async).
  */
 export const throughNodeStreamScoped =
+  <I, O>(create: () => Transform) =>
+  <E extends AppError = never, R = never>(
+    input: Stream.Stream<I, E, R>,
+  ): Stream.Stream<O, E | IOError, R> =>
+    Stream.unwrap(
+      Effect.map(acquireNodeStream(create), (t) =>
+        throughNodeStream<I, O>(t)<E, R>(input),
+      ),
+    );
+export const throughNodeStreamScoped_original =
   <I, O, E extends AppError = never, R = never>(create: () => Transform) =>
   (input: Stream.Stream<I, E, R>) =>
     Stream.unwrap(

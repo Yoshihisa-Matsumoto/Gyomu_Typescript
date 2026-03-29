@@ -1,4 +1,4 @@
-import { Schema, Stream, Function, Result } from 'effect';
+import { Schema, Stream, Function, Option, Effect } from 'effect';
 import { AppError } from '../../base-error.js';
 import { IOError } from '../../errors.js';
 import { throughNodeStream } from '../nodeStream.js';
@@ -17,36 +17,49 @@ export const parseCsv =
       ),
     );
 
+// const decodeCsv_Old =
+//   <A>(schema: Schema.Schema<A>, skipInvalid?: boolean) =>
+//   <E extends AppError = never, R = never>(
+//     stream: Stream.Stream<unknown, E, R>,
+//   ) => {
+//     return skipInvalid
+//       ? stream.pipe(
+//           Stream.filterMap((input) => {
+//             const decode = Schema.decodeUnknownOption(schema as any) as (
+//               input: unknown,
+//             ) => Option.Option<A>;
+//             const opt = decode(input);
+//             // Option を Result<A, void> に変換します。
+//             // Result.fromOption の第2引数は「失敗（スキップ）」時の値（voidなど）です。
+//             return Result.fromOption(opt, () => undefined);
+//           }),
+//         )
+//       : stream.pipe(
+//           Stream.mapEffect((input) =>
+//             Schema.decodeUnknownEffect(schema)(input),
+//           ),
+//         );
+//   };
+
 const decodeCsv =
-  <S extends Schema.Schema<any> & { readonly DecodingServices: never }>(
-    schema: S,
-    skipInvalid?: boolean,
-  ) =>
-  <E, R>(stream: Stream.Stream<unknown, E, R>) => {
-    return skipInvalid
-      ? stream.pipe(
-          Stream.filterMap((input) => {
-            const opt = Schema.decodeUnknownOption(schema)(input);
-            // Option を Result<A, void> に変換します。
-            // Result.fromOption の第2引数は「失敗（スキップ）」時の値（voidなど）です。
-            return Result.fromOption(opt, () => undefined);
-          }),
-        )
-      : stream.pipe(
-          Stream.mapEffect((input) =>
-            Schema.decodeUnknownEffect(schema)(input),
-          ),
-        );
-  };
+  <A>(schema: Schema.Schema<A>) =>
+  <E, R>(stream: Stream.Stream<unknown, E, R>) =>
+    stream.pipe(
+      Stream.map((input) => {
+        const opt = Schema.decodeUnknownOption(schema as any)(input);
+
+        return {
+          ok: Option.isSome(opt),
+          value: Option.getOrUndefined(opt),
+          raw: input,
+        };
+      }),
+    );
 
 export const readCsv =
-  <
-    S extends Schema.Schema<any> & { readonly DecodingServices: never },
-    E extends AppError,
-    R = never,
-  >(
-    schema: S,
-    options?: CsvReadOption<Schema.Schema.Type<S>>,
+  <A, E extends AppError, R = never>(
+    schema: Schema.Schema<A>,
+    options?: CsvReadOption<Schema.Schema.Type<Schema.Schema<A>>>,
   ) =>
   (stream: Stream.Stream<string | Buffer | Uint8Array, E, R>) =>
     stream.pipe(
@@ -54,7 +67,14 @@ export const readCsv =
       Stream.filter((row) =>
         options?.filterRaw ? options.filterRaw(row) : true,
       ),
-      decodeCsv(schema, options?.invalidRowSkip),
+      decodeCsv(schema),
+      Stream.tap((row) =>
+        Effect.sync(() => {
+          if (!row.ok) options?.onInvalidRow?.(row.raw);
+        }),
+      ),
+      Stream.filter((row) => row.ok),
+      Stream.map((row) => row.value as A),
       Stream.filter((row) => (options?.filter ? options.filter(row) : true)),
     );
 

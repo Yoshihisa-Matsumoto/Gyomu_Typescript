@@ -1,17 +1,20 @@
 import { Effect } from 'effect';
 import { RunEnv } from './layer.js';
 import { Result } from 'effect/Result';
+import { Layer, mergeAll } from 'effect/Layer';
 
 export const runWithEnvOrThrow = <A, E>(
   effect: Effect.Effect<A, E, any>,
+  additionalLayer?: Layer<any>,
 ): Promise<A> => {
+  const layer = additionalLayer ? mergeAll(RunEnv, additionalLayer) : RunEnv;
   return effect.pipe(
     Effect.catchCause((cause) =>
       Effect.logError('Execution failed', cause).pipe(
         Effect.andThen(Effect.failCause(cause)),
       ),
     ),
-    Effect.provide(RunEnv),
+    Effect.provide(layer),
 
     Effect.scoped,
     (e) => Effect.runPromise(e as Effect.Effect<A, E, never>),
@@ -27,7 +30,10 @@ export const runWithEnvOrThrow = <A, E>(
 
 export const runWithEnv = <A, E>(
   effect: Effect.Effect<A, E, any>,
+  additionalLayer?: Layer<any>,
 ): Promise<Result<A, E>> => {
+  const layer = additionalLayer ? mergeAll(RunEnv, additionalLayer) : RunEnv;
+
   return effect.pipe(
     Effect.catchCause((cause) =>
       Effect.logError('Execution failed', cause).pipe(
@@ -35,7 +41,7 @@ export const runWithEnv = <A, E>(
       ),
     ),
     Effect.result,
-    Effect.provide(RunEnv),
+    Effect.provide(layer),
 
     Effect.scoped,
     (e) => Effect.runPromise(e as Effect.Effect<Result<A, E>, never, never>),

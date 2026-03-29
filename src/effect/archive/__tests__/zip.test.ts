@@ -4,15 +4,15 @@ import { runWithEnvOrThrow } from '../../infrastructure/runtime.js';
 import { writeToFile } from '../../fs-utils.js';
 import { compareFiles, validateFolders } from '../../../__tests__/baseClass.js';
 import { Effect, Stream } from 'effect';
-import { zipToStream } from '../zip/write.js';
 import {
   existsInZip,
-  extractZip,
-  extractZipAll,
-  openZipEntries,
+  // extractZip,
+  // extractZipAll,
+  // openZipEntries,
   exportedForTesting,
-} from '../zip/read.js';
+} from '../zip/internals/read.js';
 import { FileTransportInfo } from '../../../fileModel.js';
+import { ZipService } from '../zip/index.js';
 
 let compressDirectory: string;
 let extractDirectory: string;
@@ -38,6 +38,8 @@ describe('Zip resolvePath test', () => {
     });
     output = exportedForTesting.resolvePath(
       {
+        _tag: 'zip',
+        crc32: 0,
         isDirectory: false,
         path: 'README.md',
         uncompressedSize: 0,
@@ -56,6 +58,8 @@ describe('Zip resolvePath test', () => {
     });
     output = exportedForTesting.resolvePath(
       {
+        _tag: 'zip',
+        crc32: 0,
         isDirectory: false,
         path: 'folder1/email_sender.py',
         uncompressedSize: 0,
@@ -73,6 +77,9 @@ describe('Zip resolvePath test', () => {
     });
     output = exportedForTesting.resolvePath(
       {
+        _tag: 'zip',
+        crc32: 0,
+
         isDirectory: false,
         path: 'foder1/folder 2/aes_encryption.py',
         uncompressedSize: 0,
@@ -86,9 +93,9 @@ describe('Zip resolvePath test', () => {
 
     output = exportedForTesting.resolvePath(
       {
+        _tag: 'zip',
         isDirectory: true,
         path: 'foder1/folder 2/folder4',
-        openStream: () => Stream.empty,
       },
       transferInformation,
     );
@@ -101,21 +108,28 @@ describe('Zip Dictionary Test', () => {
   it('Dictionary Check', async () => {
     const program = (filePath: string) =>
       Effect.scoped(
-        openZipEntries(filePath, 'shift-jis').pipe(
-          Stream.tap((entry) => Effect.sync(() => console.log(entry.path))),
-          Stream.runDrain,
-        ),
+        Effect.gen(function* () {
+          const zip = yield* ZipService;
+          return yield* zip.unarchiveFromFile(filePath, 'shift-jis').pipe(
+            Stream.tap((entry) => Effect.sync(() => console.log(entry.path))),
+            Stream.runDrain,
+          );
+        }),
       );
 
-    await runWithEnvOrThrow(program('tests/compress/temp.zip'));
+    await runWithEnvOrThrow(
+      program('tests/compress/temp.zip'),
+      ZipService.live,
+    );
   });
   it('Effect File Entry Check', async () => {
     const program = (filePath: string) =>
       Effect.scoped(
         Effect.gen(function* () {
-          const entries = yield* openZipEntries(filePath, 'shift-jis').pipe(
-            Stream.runCollect,
-          );
+          const zip = yield* ZipService;
+          const entries = yield* zip
+            .unarchiveFromFile(filePath, 'shift-jis')
+            .pipe(Stream.runCollect);
 
           // 実際に解凍する場合は、withZipFileのScopeの中で処理が必要
           expect(yield* existsInZip('README.md')(entries)).toBeTruthy();
@@ -129,7 +143,10 @@ describe('Zip Dictionary Test', () => {
           expect(yield* existsInZip('ユーザー噂.py')(entries)).toBeTruthy();
         }),
       );
-    await runWithEnvOrThrow(program('tests/compress/temp.zip'));
+    await runWithEnvOrThrow(
+      program('tests/compress/temp.zip'),
+      ZipService.live,
+    );
   });
   it('Zip Creation Test', async () => {
     //const extractDirectory = platform.join(compressDirectory,'extracted');
@@ -143,12 +160,13 @@ describe('Zip Dictionary Test', () => {
     const program = (zipFilename: string) =>
       Effect.scoped(
         Effect.gen(function* () {
-          yield* zipToStream(transferInformationList).pipe(
-            writeToFile(zipFilename),
-          );
-          const entries = yield* openZipEntries(zipFilename, 'shift-jis').pipe(
-            Stream.runCollect,
-          );
+          const zip = yield* ZipService;
+          yield* zip
+            .create(transferInformationList)
+            .pipe(writeToFile(zipFilename));
+          const entries = yield* zip
+            .unarchiveFromFile(zipFilename, 'shift-jis')
+            .pipe(Stream.runCollect);
 
           // 実際に解凍する場合は、withZipFileのScopeの中で処理が必要
           expect(yield* existsInZip('README.md')(entries)).toBeTruthy();
@@ -162,7 +180,7 @@ describe('Zip Dictionary Test', () => {
           expect(yield* existsInZip('ユーザー噂.py')(entries)).toBeTruthy();
         }),
       );
-    await runWithEnvOrThrow(program(zipFilename));
+    await runWithEnvOrThrow(program(zipFilename), ZipService.live);
     //validateFolders(platform.join(compressDirectory, 'source'), destinationRoot);
   });
   it('ZipEffect1 Unarchive Test', async () => {
@@ -179,11 +197,17 @@ describe('Zip Dictionary Test', () => {
       transferInformation: FileTransportInfo,
     ) =>
       Effect.scoped(
-        openZipEntries(zipFilename, 'shift-jis').pipe(
-          extractZip(transferInformation),
-        ),
+        Effect.gen(function* () {
+          const zip = yield* ZipService;
+          return yield* zip
+            .unarchiveFromFile(zipFilename, 'shift-jis')
+            .pipe(zip.extract(transferInformation));
+        }),
       );
-    await runWithEnvOrThrow(program(zipFilename, transferInformation));
+    await runWithEnvOrThrow(
+      program(zipFilename, transferInformation),
+      ZipService.live,
+    );
     extractedFile = platform.join(extractDirectory, 'outputREADME.md');
     expect(
       compareFiles(
@@ -198,7 +222,10 @@ describe('Zip Dictionary Test', () => {
       destinationFolderName: extractDirectory,
     });
 
-    await runWithEnvOrThrow(program(zipFilename, transferInformation));
+    await runWithEnvOrThrow(
+      program(zipFilename, transferInformation),
+      ZipService.live,
+    );
     extractedFile = platform.join(extractDirectory, 'email_sender.py');
     expect(
       compareFiles(
@@ -211,7 +238,10 @@ describe('Zip Dictionary Test', () => {
       sourceFilename: 'ユーザー噂.py',
       destinationFolderName: extractDirectory,
     });
-    await runWithEnvOrThrow(program(zipFilename, transferInformation));
+    await runWithEnvOrThrow(
+      program(zipFilename, transferInformation),
+      ZipService.live,
+    );
     extractedFile = platform.join(extractDirectory, 'ユーザー噂.py');
     expect(
       compareFiles(
@@ -233,11 +263,17 @@ describe('Zip Dictionary Test', () => {
       transferInformation: FileTransportInfo,
     ) =>
       Effect.scoped(
-        openZipEntries(zipFilename, 'shift-jis').pipe(
-          extractZip(transferInformation),
-        ),
+        Effect.gen(function* () {
+          const zip = yield* ZipService;
+          return yield* zip
+            .unarchiveFromFile(zipFilename, 'shift-jis')
+            .pipe(zip.extract(transferInformation));
+        }),
       );
-    await runWithEnvOrThrow(program(zipFilename, transferInformation));
+    await runWithEnvOrThrow(
+      program(zipFilename, transferInformation),
+      ZipService.live,
+    );
     validateFolders(
       platform.join(compressDirectory, 'source/folder1/folder 2'),
       platform.join(extractDirectory, 'folder 2'),
@@ -246,11 +282,17 @@ describe('Zip Dictionary Test', () => {
     const destinationRoot = platform.join(extractDirectory, 'fullZipExtract');
     const program2 = (zipFilename: string, destinationFolder: string) =>
       Effect.scoped(
-        openZipEntries(zipFilename, 'shift-jis').pipe(
-          extractZipAll(destinationFolder),
-        ),
+        Effect.gen(function* () {
+          const zip = yield* ZipService;
+          return yield* zip
+            .unarchiveFromFile(zipFilename, 'shift-jis')
+            .pipe(zip.extractAll(destinationFolder));
+        }),
       );
-    await runWithEnvOrThrow(program2(zipFilename, destinationRoot));
+    await runWithEnvOrThrow(
+      program2(zipFilename, destinationRoot),
+      ZipService.live,
+    );
     validateFolders(
       platform.join(compressDirectory, 'source'),
       destinationRoot,

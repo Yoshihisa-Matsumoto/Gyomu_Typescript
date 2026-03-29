@@ -5,7 +5,7 @@ import { Options } from 'csv-stringify';
 import { throughNodeStreamScoped } from '../nodeStream.js';
 import { Stream, Schema, Function, Effect, Console } from 'effect';
 import { AppError } from '../../base-error.js';
-import { IOError } from '../../errors.js';
+import { IOError, unknownError } from '../../errors.js';
 import { FileSystem } from 'effect/FileSystem';
 import { encodeUtf8ToBinaryStream } from '../encoding.js';
 import { NodeFileSystem } from '@effect/platform-node';
@@ -18,28 +18,30 @@ import { NodeFileSystem } from '@effect/platform-node';
 //   schema: Schema.Struct<F>,
 // ) => Object.keys(schema.fields) as (keyof F & string)[];
 
-const stringifyCsv = <
-  S extends Schema.Struct.Fields,
-  E extends AppError = never,
-  R = never,
->(
-  schema: Schema.Struct<S>,
-  options?: CsvWriteOption<S>,
-) =>
-  throughNodeStreamScoped<CsvRow, string, E, R>(() =>
-    stringify({
-      ...convertOption(options),
-      columns: Object.keys(schema.fields),
-    }),
-  );
+const stringifyCsv =
+  <S extends Schema.Struct.Fields>(
+    schema: Schema.Struct<S>,
+    options?: CsvWriteOption<S>,
+  ) =>
+  <E extends AppError = never, R = never>(
+    stream: Stream.Stream<CsvRow, E, R>,
+  ) =>
+    stream.pipe(
+      throughNodeStreamScoped<CsvRow, string>(() =>
+        stringify({
+          ...convertOption(options),
+          columns: Object.keys(schema.fields),
+        }),
+      ),
+    );
 const stringifyCsvRaw =
-  <E extends AppError = never, R = never>(options?: CsvWriteOption<CsvRow>) =>
-  (
+  (options?: CsvWriteOption<CsvRow>) =>
+  <E extends AppError = never, R = never>(
     stream: Stream.Stream<CsvRow, E, R>,
   ): Stream.Stream<string, E | IOError, R> =>
     Function.pipe(
       stream,
-      throughNodeStreamScoped<CsvRow, string, E, R>(() =>
+      throughNodeStreamScoped<CsvRow, string>(() =>
         stringify({
           ...convertOption(options),
         }),
@@ -50,19 +52,19 @@ type StructType<F extends Schema.Struct.Fields> = Schema.Schema.Type<
   Schema.Struct<F>
 >;
 const encodeCsv =
-  <F extends Schema.Struct.Fields, E extends AppError = never, R = never>(
-    schema: Schema.Struct<F>,
+  <F extends Schema.Struct.Fields>(schema: Schema.Struct<F>) =>
+  <E extends AppError = never, R = never>(
+    stream: Stream.Stream<StructType<F>, E, R>,
   ) =>
-  (stream: Stream.Stream<StructType<F>, E, R>) =>
     stream.pipe(
-      Stream.map(
-        (r) =>
-          Schema.encodeSync(
-            schema as unknown as Schema.Schema<StructType<F>> & {
-              readonly EncodingServices: never;
-            },
-          )(r) as CsvRow,
+      Stream.mapEffect((r) =>
+        Schema.encodeEffect(schema)(r).pipe(
+          Effect.mapError((e) =>
+            unknownError(IOError, e, 'Failed to encode CSV row'),
+          ),
+        ),
       ),
+      Stream.map((r) => r as CsvRow),
     );
 
 export const writeCsv =
@@ -105,6 +107,9 @@ export const jsonToCsv = <T extends Record<string, any>>(
         case 'file':
           return Effect.gen(function* () {
             const fs = yield* FileSystem;
+            yield* fs.makeDirectory(platform.dirname(output.path), {
+              recursive: true,
+            });
             yield* stream.pipe(
               encodeUtf8ToBinaryStream,
               Stream.run(fs.sink(output.path)),

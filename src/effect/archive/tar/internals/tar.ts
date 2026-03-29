@@ -2,18 +2,19 @@ import * as tar from 'tar-stream';
 import { create } from 'tar';
 import { Effect, Stream, Queue, Option } from 'effect';
 import { NodeStream } from '@effect/platform-node';
-import { IOError, unknownError } from '../../errors.js';
-import { AppError } from '../../base-error.js';
+import { IOError, unknownError } from '../../../../errors.js';
+import { AppError } from '../../../../base-error.js';
 import type { Readable } from 'node:stream';
 import { runSync } from 'effect/Effect';
 
 import { FileSystem } from 'effect/FileSystem';
 import { Path } from 'effect/Path';
 import { PlatformError } from 'effect/PlatformError';
-import { platform } from '../../platform/index.js';
-import { FileTransportInfo } from '../../fileModel.js';
-import { ArchiveEntryItem } from './common.js';
+import { platform } from '../../../../platform/index.js';
+import { FileTransportInfo } from '../../../../fileModel.js';
+import { ArchiveEntryItem } from '../../common.js';
 
+type TarEntryItem = Extract<ArchiveEntryItem, { _tag: 'tar' }>;
 /**
  * 指定されたディレクトリの内容を tar (または tar.gz) アーカイブとして作成する
  */
@@ -47,7 +48,7 @@ export const createTar = <R = never>(options: {
 
 export const untar = <E extends AppError, R = never>(
   source: Stream.Stream<Uint8Array, E, R>,
-): Stream.Stream<ArchiveEntryItem, E | IOError, R> =>
+): Stream.Stream<TarEntryItem, E | IOError, R> =>
   Stream.scoped(
     Stream.unwrap(
       Effect.gen(function* () {
@@ -69,7 +70,7 @@ export const untar = <E extends AppError, R = never>(
 
         // 2. Stream.callback による実装
         // emit は Queue<Take<TarEntry, AppError>> のような挙動をする Queue です
-        return Stream.callback<ArchiveEntryItem, E, R>((queue) => {
+        return Stream.callback<TarEntryItem, E, R>((queue) => {
           extract.on('entry', (header, stream, next) => {
             // next() を確実に呼ぶためのフラグ
             let nextCalled = false;
@@ -98,15 +99,17 @@ export const untar = <E extends AppError, R = never>(
 
             // Queue.offer を使ってデータを流す (single の代わり)
             // Stream.callback の emit は Effect を返す関数ではなく直接 Queue.offer 的な挙動
-            const entry: ArchiveEntryItem =
+            const entry: TarEntryItem =
               header.type == 'file'
                 ? {
+                    _tag: 'tar',
                     path: header.name,
                     isDirectory: false,
                     openStream: () => content,
                     uncompressedSize: header.size!,
                   }
                 : {
+                    _tag: 'tar',
                     path: header.name,
                     isDirectory: true,
                     openStream: () => content,
@@ -153,18 +156,18 @@ export const existsInTar =
  * TarEntry の content をすべて読み込み、文字列として返す Effect を生成する
  */
 export const readTextEntry = <R = never>(
-  entry: ArchiveEntryItem,
+  entry: TarEntryItem,
 ): Effect.Effect<string, AppError, R> =>
   readEntry(entry).pipe(
     Effect.map((chunks) => Buffer.concat(chunks).toString('utf8')),
   );
 export const readEntry = <R = never>(
-  entry: ArchiveEntryItem,
+  entry: TarEntryItem,
 ): Effect.Effect<Uint8Array<ArrayBufferLike>[], AppError, R> =>
   Stream.runCollect(entry.openStream());
 
 export const readEntryStream = <R = never>(
-  entry: ArchiveEntryItem,
+  entry: TarEntryItem,
 ): Stream.Stream<Uint8Array<ArrayBufferLike>, AppError, R> =>
   entry.openStream();
 
@@ -177,11 +180,11 @@ const massageEntryPath = (fileName: string) => {
  */
 export const filterEntries =
   <E extends AppError = never, R = never>(
-    predicate: (entry: ArchiveEntryItem) => boolean,
+    predicate: (entry: TarEntryItem) => boolean,
   ) =>
   (
-    self: Stream.Stream<ArchiveEntryItem, E, R>,
-  ): Stream.Stream<ArchiveEntryItem, AppError | E, R> =>
+    self: Stream.Stream<TarEntryItem, E, R>,
+  ): Stream.Stream<TarEntryItem, AppError | E, R> =>
     self.pipe(
       Stream.mapEffect((entry) =>
         predicate(entry)
@@ -200,9 +203,7 @@ export const filterEntries =
  */
 export const requireEntry =
   (entryName: string) =>
-  <E extends AppError, R = never>(
-    self: Stream.Stream<ArchiveEntryItem, E, R>,
-  ) =>
+  <E extends AppError, R = never>(self: Stream.Stream<TarEntryItem, E, R>) =>
     self.pipe(
       // 1. フィルタリング（内部で Drain 済み）
       filterEntries((h) => h.path === massageEntryPath(entryName)),

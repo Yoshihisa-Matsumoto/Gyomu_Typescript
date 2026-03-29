@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@effect/platform-node':
-        specifier: 4.0.0-beta.31
-        version: 4.0.0-beta.31(effect@4.0.0-beta.40)(ioredis@5.10.0)
+        specifier: 4.0.0-beta.42
+        version: 4.0.0-beta.42(effect@4.0.0-beta.42)(ioredis@5.10.0)
       '@prisma/adapter-pg':
         specifier: ^7.3.0
         version: 7.3.0
@@ -42,8 +42,8 @@ importers:
         specifier: ^17.3.1
         version: 17.3.1
       effect:
-        specifier: 4.0.0-beta.40
-        version: 4.0.0-beta.40
+        specifier: 4.0.0-beta.42
+        version: 4.0.0-beta.42
       fflate:
         specifier: ^0.8.2
         version: 0.8.2
@@ -298,17 +298,17 @@ packages:
     resolution: {integrity: sha512-dKMATT1fDzaCpNrICpXga7sjJBtFLpKCAoE/1MiGXI8UwcHA9rmAZ2t52JO9g/kJpERWyomkJ+rl+VFlwNIofg==}
     hasBin: true
 
-  '@effect/platform-node-shared@4.0.0-beta.31':
-    resolution: {integrity: sha512-m/4FT+kWEh9VtzrMQaJwPCF2Mhzjc7KEPeHqS/0dfodA/Wxn4gdlv9sstn9rpk0NLO5DVcSfXBPUAB37Znrmkg==}
+  '@effect/platform-node-shared@4.0.0-beta.42':
+    resolution: {integrity: sha512-PC+lxLsrwob3+nBChAPrQq32olCeyApgXBvs1NrRsoArLViNT76T/68CttuCAksCZj5e1bZ1ZibLPel3vUmx2g==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
-      effect: ^4.0.0-beta.31
+      effect: ^4.0.0-beta.42
 
-  '@effect/platform-node@4.0.0-beta.31':
-    resolution: {integrity: sha512-KmVZwGsQRBMZZYPJwpL2vj6sxjBzfXhyA8RgsH5/cmckDTsZpVTyqODQ/FFzmCnMWuYjZoJGPghTDrVVDn/6ZA==}
+  '@effect/platform-node@4.0.0-beta.42':
+    resolution: {integrity: sha512-kbdRML2FBa4q8U8rZQcnmLKZ5zN/z1bAA7t5D1/UsBHZqJgnfRgu1CP6kaEfb1Nie6YyaWshxTktZQryjvW/Yg==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
-      effect: ^4.0.0-beta.31
+      effect: ^4.0.0-beta.42
       ioredis: ^5.7.0
 
   '@electric-sql/pglite-socket@0.0.20':
@@ -1297,8 +1297,8 @@ packages:
   effect@3.18.4:
     resolution: {integrity: sha512-b1LXQJLe9D11wfnOKAk3PKxuqYshQ0Heez+y5pnkd3jLj1yx9QhM72zZ9uUrOQyNvrs2GZZd/3maL0ZV18YuDA==}
 
-  effect@4.0.0-beta.40:
-    resolution: {integrity: sha512-GA7Q1TglPIrEjg/Dtj3AvXbyh00A4sAXgu3JGDUHRPZ4hxMRC5CMAsCzCH0140zetRMpe7LOH8uVi5gb4t/8oQ==}
+  effect@4.0.0-beta.42:
+    resolution: {integrity: sha512-c1UrRP+tLzyHb4Fepl8XBDJlLQLkrcMXrRBba441GQRxMbeQ/aIOSFcBwSda1iMJ5l9F0lYc3Bhe33/whrmavQ==}
 
   empathic@2.0.0:
     resolution: {integrity: sha512-i6UzDscO/XfAcNYD75CfICkmfLedpyPDdozrLMmQc5ORaQcdMoc21OnlEylMIqI7U8eniKrPMxxtj8k0vhmJhA==}
@@ -2350,6 +2350,10 @@ packages:
     resolution: {integrity: sha512-RqslV2Us5BrllB+JeiZnK4peryVTndy9Dnqq62S3yYRRTj0tFQCwEniUy2167skdGOy3vqRzEvl1Dm4sV2ReDg==}
     engines: {node: '>=20.18.1'}
 
+  undici@7.24.6:
+    resolution: {integrity: sha512-Xi4agocCbRzt0yYMZGMA6ApD7gvtUFaxm4ZmeacWI4cZxaF6C+8I8QfofC20NAePiB/IcvZmzkJ7XPa471AEtA==}
+    engines: {node: '>=20.18.1'}
+
   universalify@2.0.1:
     resolution: {integrity: sha512-gptHNQghINnc/vTGIk0SOFGFNXw7JVrlRUtConJRlvaw6DuX0wO5Jeko9sWrMBhh+PsYAZ7oXAiOnf/UKogyiw==}
     engines: {node: '>= 10.0.0'}
@@ -2637,22 +2641,22 @@ snapshots:
 
   '@effect/language-service@0.80.0': {}
 
-  '@effect/platform-node-shared@4.0.0-beta.31(effect@4.0.0-beta.40)':
+  '@effect/platform-node-shared@4.0.0-beta.42(effect@4.0.0-beta.42)':
     dependencies:
       '@types/ws': 8.18.1
-      effect: 4.0.0-beta.40
+      effect: 4.0.0-beta.42
       ws: 8.19.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
 
-  '@effect/platform-node@4.0.0-beta.31(effect@4.0.0-beta.40)(ioredis@5.10.0)':
+  '@effect/platform-node@4.0.0-beta.42(effect@4.0.0-beta.42)(ioredis@5.10.0)':
     dependencies:
-      '@effect/platform-node-shared': 4.0.0-beta.31(effect@4.0.0-beta.40)
-      effect: 4.0.0-beta.40
+      '@effect/platform-node-shared': 4.0.0-beta.42(effect@4.0.0-beta.42)
+      effect: 4.0.0-beta.42
       ioredis: 5.10.0
       mime: 4.1.0
-      undici: 7.22.0
+      undici: 7.24.6
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -3573,7 +3577,7 @@ snapshots:
       '@standard-schema/spec': 1.0.0
       fast-check: 3.23.2
 
-  effect@4.0.0-beta.40:
+  effect@4.0.0-beta.42:
     dependencies:
       '@standard-schema/spec': 1.1.0
       fast-check: 4.6.0
@@ -4656,6 +4660,8 @@ snapshots:
   undici-types@7.16.0: {}
 
   undici@7.22.0: {}
+
+  undici@7.24.6: {}
 
   universalify@2.0.1: {}
 

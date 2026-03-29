@@ -1,26 +1,24 @@
 import { Effect, Queue, Stream } from 'effect';
 import yauzl, { RandomAccessReader } from 'yauzl';
-import { IOError, unknownError } from '../../../errors.js';
-import { logger } from '../../../logger.js';
-import { fromNodeCallback, fromReadable } from '../../nodeStream.js';
-import { decode } from '../../../encoding/decode.js';
-import { AppError } from '../../../base-error.js';
-import {
-  ArchiveEntryItem,
-  FileEntryItem,
-  massageEntryPath,
-} from '../common.js';
-import { writeToFile } from '../../fs-utils.js';
+import { IOError, unknownError } from '../../../../errors.js';
+import { logger } from '../../../../logger.js';
+import { fromNodeCallback, fromReadable } from '../../../nodeStream.js';
+import { decode } from '../../../../encoding/decode.js';
+import { AppError } from '../../../../base-error.js';
+import { ArchiveEntryItem, massageEntryPath } from '../../common.js';
+import { writeToFile } from '../../../fs-utils.js';
 import { FileSystem } from 'effect/FileSystem';
 import { runSync } from 'effect/Effect';
-import { FileTransportInfo } from '../../../fileModel.js';
-import { platform } from '../../../platform/index.js';
+import { FileTransportInfo } from '../../../../fileModel.js';
+import { platform } from '../../../../platform/index.js';
 
+export type ZipEntryItem = Extract<ArchiveEntryItem, { _tag: 'zip' }>;
+export type ZipFileEntryItem = Extract<ZipEntryItem, { isDirectory: false }>;
 const unicode_flag: number = 0x800;
 
 // type ZipCentralDirectory = {
 //   zipFile: yauzl.ZipFile;
-//   entries: Map<string, ArchiveEntryItem>;
+//   entries: Map<string, ZipEntryItem>;
 // };
 
 type ZipSource =
@@ -64,9 +62,9 @@ export const withZipFile = (filePath: string) =>
 export const buildCentralDirectory = <E extends AppError, R = never>(
   zip: yauzl.ZipFile,
   encoding?: string,
-): Stream.Stream<ArchiveEntryItem, E | IOError, R> =>
-  Stream.callback<ArchiveEntryItem, IOError>((queue) =>
-    //const entries = new Map<string, ArchiveEntryItem>();
+): Stream.Stream<ZipEntryItem, E | IOError, R> =>
+  Stream.callback<ZipEntryItem, IOError>((queue) =>
+    //const entries = new Map<string, ZipEntryItem>();
     Effect.sync(() => {
       zip.readEntry();
 
@@ -84,9 +82,9 @@ export const buildCentralDirectory = <E extends AppError, R = never>(
           logger.debug('directory');
           runSync(
             Queue.offer(queue, {
+              _tag: 'zip',
               path: fileName,
               isDirectory: true,
-              openStream: () => Stream.empty,
             }),
           );
           zip.readEntry();
@@ -101,6 +99,7 @@ export const buildCentralDirectory = <E extends AppError, R = never>(
             const stream = fromReadable(rs);
             runSync(
               Queue.offer(queue, {
+                _tag: 'zip',
                 path: fileName,
                 crc32: entry.crc32,
                 uncompressedSize: entry.uncompressedSize,
@@ -126,7 +125,7 @@ export const buildCentralDirectory = <E extends AppError, R = never>(
 export const openZipEntries = (
   filePath: string,
   encoding?: string,
-): Stream.Stream<ArchiveEntryItem, AppError | IOError, FileSystem> =>
+): Stream.Stream<ZipEntryItem, AppError | IOError, FileSystem> =>
   Stream.unwrap(
     Effect.map(withZipFile(filePath), (zip) =>
       buildCentralDirectory(zip, encoding),
@@ -136,7 +135,7 @@ export const openZipEntries = (
 export const existsInZip =
   (entryName: string) =>
   <E extends AppError, R = never>(
-    entries: ArchiveEntryItem[],
+    entries: ZipEntryItem[],
   ): Effect.Effect<boolean, E | AppError, R> => {
     const path = massageEntryPath(entryName);
     logger.debug(`massage:${path}`);
@@ -152,24 +151,24 @@ export const existsInZip =
  * ZipEntry の content をすべて読み込み、文字列として返す Effect を生成する
  */
 export const readTextEntry = <R = never>(
-  entry: FileEntryItem,
+  entry: ZipFileEntryItem,
   encoding: string = 'utf-8',
 ): Effect.Effect<string, AppError, R> =>
   readEntry(entry).pipe(
     Effect.map((chunks) => decode(Buffer.concat(chunks), encoding)),
   );
 export const readEntry = <R = never>(
-  entry: FileEntryItem,
+  entry: ZipFileEntryItem,
 ): Effect.Effect<Uint8Array<ArrayBufferLike>[], AppError, R> =>
   Stream.runCollect(entry.openStream());
 
 export const readEntryStream = <R = never>(
-  entry: FileEntryItem,
+  entry: ZipFileEntryItem,
 ): Stream.Stream<Uint8Array<ArrayBufferLike>, AppError, R> =>
   entry.openStream();
 
 const matchTransfer = (
-  entry: ArchiveEntryItem,
+  entry: ZipEntryItem,
   transferInformation: FileTransportInfo,
 ): boolean => {
   logger.debug(entry.path);
@@ -197,10 +196,7 @@ const matchTransfer = (
   return result;
 };
 
-const resolvePath = (
-  entry: ArchiveEntryItem,
-  info: FileTransportInfo,
-): string => {
+const resolvePath = (entry: ZipEntryItem, info: FileTransportInfo): string => {
   const {
     sourceFolderName,
     sourceFileName,
@@ -257,7 +253,7 @@ const resolvePath = (
   //   : relativePath;
 };
 const extractEntry = (
-  entry: ArchiveEntryItem,
+  entry: ZipEntryItem,
   transferInformation: FileTransportInfo,
 ) => {
   logger.debug(`${entry.path} to be extracted `);
@@ -281,12 +277,25 @@ const extractEntry = (
     );
   });
 };
+
+export const extractSingleFileEntry = (
+  targetFile: ZipFileEntryItem,
+  destinationFullName: string,
+) => {
+  return extractEntry(
+    targetFile,
+    new FileTransportInfo({
+      destinationFileName: platform.basename(destinationFullName),
+      destinationFolderName: platform.dirname(destinationFullName),
+    }),
+  );
+};
 export const extractZip =
   <E extends AppError, R = never>(
     //zipFilename: string,
     transferInformation: FileTransportInfo,
   ) =>
-  (stream: Stream.Stream<ArchiveEntryItem, IOError | E, R>) => {
+  (stream: Stream.Stream<ZipEntryItem, IOError | E, R>) => {
     return stream.pipe(
       Stream.filter((entry) => matchTransfer(entry, transferInformation)),
       Stream.mapEffect((entry) => extractEntry(entry, transferInformation), {
@@ -298,7 +307,7 @@ export const extractZip =
 
 export const extractZipAll =
   <E extends AppError, R = never>(destinationDirectory: string) =>
-  (stream: Stream.Stream<ArchiveEntryItem, IOError | E, R>) => {
+  (stream: Stream.Stream<ZipEntryItem, IOError | E, R>) => {
     const transferInformation: FileTransportInfo = new FileTransportInfo({
       basePath: 'fake',
       destinationFolderName: destinationDirectory,
