@@ -1,13 +1,10 @@
 // infrastructure/layer.ts などに定義
 import { NodeFileSystem, NodePath } from '@effect/platform-node';
-import { ConfigProvider, Effect, Layer, Logger, References } from 'effect';
+import { Layer, Logger, References } from 'effect';
 import { fsConstants } from '../../platform/index.js';
 import { effectLogger } from '../logger.js';
-import { makeConfigProvider } from './config.js';
+import { ConfigProviderLive } from './config.js';
 
-const ConfigProviderLive = Layer.unwrap(
-  Effect.map(makeConfigProvider, (provider) => ConfigProvider.layer(provider)),
-);
 // プロジェクトで使う標準セットをマージする
 const PlatformLayer = Layer.mergeAll(NodeFileSystem.layer, NodePath.layer);
 

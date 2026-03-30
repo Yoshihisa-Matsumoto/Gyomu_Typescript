@@ -135,7 +135,9 @@ const convertOption = <R>(options?: CsvWriteOption<R>): Options => {
     header: true,
     quoted: options?.quoted ?? false,
     bom: options?.bom ?? false,
-    record_delimiter: platform.name == 'linux' ? 'unix' : 'windows',
+    record_delimiter:
+      options?.recordDelimiter ??
+      (platform.name == 'linux' ? 'unix' : 'windows'),
   };
   if (options?.fields) {
     csvOptions.columns = options.fields.map((f) => ({

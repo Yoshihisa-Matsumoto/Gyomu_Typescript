@@ -18,4 +18,5 @@ export type CsvWriteOption<R> = {
   fields?: readonly CsvColumn<R>[];
   quoted?: boolean;
   bom?: boolean;
+  recordDelimiter?: 'windows' | 'unix';
 };

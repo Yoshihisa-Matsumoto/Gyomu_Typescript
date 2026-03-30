@@ -12,6 +12,16 @@ export const tryAsync = <A, E extends AppError>(
     catch: (e) => unknownError(ErrorType, e, message),
   });
 
+export const trySync = <A, E extends AppError>(
+  f: () => A,
+  ErrorType: AppErrorCtor<E>,
+  message: string,
+): Effect.Effect<A, E> =>
+  Effect.try({
+    try: f,
+    catch: (e) => unknownError(ErrorType, e, message),
+  });
+
 export const unwrapPassword = (
   password: Option.Option<Redacted.Redacted<string>>,
 ): string | undefined =>

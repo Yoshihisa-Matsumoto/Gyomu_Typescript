@@ -1,9 +1,9 @@
-import { Effect, Layer, ServiceMap, Redacted, Config } from 'effect';
-import { Client } from 'basic-ftp';
+import { Effect, Layer, ServiceMap, Config, Option } from 'effect';
+import { Client } from 'ssh2';
 import { ConfigError, withDefault } from 'effect/Config';
 import { NetworkError } from '../../../errors.js';
 import { ConfigProviderLive, ConfigService } from '../config.js';
-import { tryAsync } from '../../index.js';
+import { unwrapPassword } from '../../index.js';
 import { AppError } from '../../../base-error.js';
 import { Scope } from 'effect/Scope';
 import { FileTransportInfo } from '../../../fileModel.js';
@@ -15,25 +15,26 @@ import {
   list,
   upload,
   uploadFromStream,
-} from './internals/ftpClient.js';
+} from './internals/sftpClient.js';
+import { platform } from '../../../platform/index.js';
+import { connectEffect } from './internals/sftpClient.js';
 
-const ftpConfigRaw = Config.all({
+const sftpConfigRaw = Config.all({
   host: Config.string('HOST'),
-  port: withDefault(Config.number('PORT'), 21),
+  port: withDefault(Config.number('PORT'), 22),
   user: Config.string('USER'),
-  password: Config.redacted('PASS'),
-
-  secure: withDefault(Config.boolean('SSL'), false),
+  password: Config.option(Config.redacted('PASS')),
+  privateKeyFilename: Config.option(Config.string('PRIVATE_KEY_FILENAME')),
 });
 
 //type FtpConfig = Config.Success<typeof ftpConfigRaw>;
 
-export class FtpService extends ServiceMap.Service<
-  FtpService,
+export class SftpService extends ServiceMap.Service<
+  SftpService,
   {
     withConnection: <A, R = never>(
       prefix: string,
-      f: (ftp: {
+      f: (sftp: {
         download: (
           transportInformation: FileTransportInfo,
         ) => Effect.Effect<boolean, AppError | NetworkError, R>;
@@ -68,29 +69,30 @@ export class FtpService extends ServiceMap.Service<
     return {
       withConnection: (prefix, f) =>
         Effect.gen(function* () {
-          const config = yield* configService.load(ftpConfigRaw, prefix);
+          const config = yield* configService.load(sftpConfigRaw, prefix);
+          const privateKeyFilename = Option.getOrUndefined(
+            config.privateKeyFilename,
+          );
           return yield* Effect.acquireRelease(
             Effect.sync(() => new Client()),
             (client) =>
               Effect.sync(() => {
-                if (!client.closed) client.close();
+                if (client) client.end();
               }),
           ).pipe(
             Effect.flatMap((client) =>
               Effect.gen(function* () {
-                yield* tryAsync(
-                  () =>
-                    client.access({
-                      host: config.host,
-                      port: config.port,
-                      user: config.user,
-                      password: Redacted.value(config.password),
-                      secure: config.secure,
-                    }),
-                  NetworkError,
-                  'Failed to connect to FTP server',
-                );
-                const ftp = {
+                yield* connectEffect(client, {
+                  host: config.host,
+                  port: config.port,
+                  username: config.user,
+                  password: unwrapPassword(config.password),
+                  privateKey: privateKeyFilename
+                    ? platform.readFileSync(privateKeyFilename, 'utf-8')
+                    : undefined,
+                });
+
+                const sftp = {
                   downloadToStream: (path: string) =>
                     downloadToStream(client)(path),
                   list: (path: string) => list(client)(path),
@@ -104,7 +106,7 @@ export class FtpService extends ServiceMap.Service<
                   upload: (transportInformation: FileTransportInfo) =>
                     upload(client)(transportInformation),
                 };
-                return yield* f(ftp);
+                return yield* f(sftp);
               }),
             ),
           );

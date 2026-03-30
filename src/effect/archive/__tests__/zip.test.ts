@@ -13,6 +13,7 @@ import {
 } from '../zip/internals/read.js';
 import { FileTransportInfo } from '../../../fileModel.js';
 import { ZipService } from '../zip/index.js';
+import { compareZip } from '../zip/compare.js';
 
 let compressDirectory: string;
 let extractDirectory: string;
@@ -104,7 +105,7 @@ describe('Zip resolvePath test', () => {
     );
   });
 });
-describe('Zip Dictionary Test', () => {
+describe('Zip Test', () => {
   it('Dictionary Check', async () => {
     const program = (filePath: string) =>
       Effect.scoped(
@@ -297,5 +298,29 @@ describe('Zip Dictionary Test', () => {
       platform.join(compressDirectory, 'source'),
       destinationRoot,
     );
+  });
+});
+describe('ZipCompare test', () => {
+  it('Zip Compare Test', async () => {
+    const program = await compareZip({
+      sourceFilename: platform.join(
+        compressDirectory,
+        'compress\\compare1.zip',
+      ),
+      destinationFilename: platform.join(
+        compressDirectory,
+        'compress\\compare2.zip',
+      ),
+      resultPath: platform.join(compressDirectory, 'zipCompare'),
+      recordDelimiter: 'unix',
+    });
+    await runWithEnvOrThrow(program, ZipService.live);
+
+    expect(
+      compareFiles(
+        platform.join(compressDirectory, 'zipCompareResult.csv'),
+        platform.join(compressDirectory, 'zipCompare\\@summary.csv'),
+      ),
+    ).toBeTruthy();
   });
 });

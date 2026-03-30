@@ -285,6 +285,7 @@ export const extractSingleFileEntry = (
   return extractEntry(
     targetFile,
     new FileTransportInfo({
+      sourceFilename: platform.basename(targetFile.path),
       destinationFileName: platform.basename(destinationFullName),
       destinationFolderName: platform.dirname(destinationFullName),
     }),

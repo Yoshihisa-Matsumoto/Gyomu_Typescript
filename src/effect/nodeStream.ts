@@ -1,5 +1,5 @@
 import { Stream, Effect, Fiber, Queue } from 'effect';
-import { Duplex, Transform } from 'node:stream';
+import { Duplex, Readable, Transform } from 'node:stream';
 import { IOError, unknownError } from '../errors.js';
 import { AppError } from '../base-error.js';
 import { runSync } from 'effect/Effect';
@@ -164,13 +164,26 @@ export const throughNodeStreamScoped_original =
       ),
     );
 
-export const fromReadable = (readable: NodeJS.ReadableStream) =>
-  Stream.callback<Uint8Array, IOError>((queue) =>
+export const fromReadable = (
+  readable: Readable,
+  options?: { chunkSize?: number },
+) => {
+  const chunkSize = options?.chunkSize ?? 64 * 1024; // デフォルト64KB
+
+  return Stream.callback<Uint8Array, IOError>((queue) =>
     Effect.acquireRelease(
       Effect.sync(() => {
-        const onData = (chunk: Uint8Array) => {
-          runSync(Queue.offer(queue, chunk));
+        readable.pause(); // 最初は読み込みを止めておく
+
+        const onReadable = () => {
+          let chunk;
+          while ((chunk = readable.read(chunkSize)) !== null) {
+            runSync(Queue.offer(queue, chunk));
+          }
         };
+        // const onData = (chunk: Uint8Array) => {
+        //   runSync(Queue.offer(queue, chunk));
+        // };
         const onEnd = () => {
           runSync(Queue.end(queue));
         };
@@ -178,21 +191,25 @@ export const fromReadable = (readable: NodeJS.ReadableStream) =>
           runSync(Queue.fail(queue, unknownError(IOError, err, 'Tar Error')));
         };
 
-        readable.on('data', onData);
+        readable.on('readable', onReadable);
         readable.on('end', onEnd);
         readable.on('error', onError);
 
-        return { onData, onEnd, onError };
+        return { onReadable, onEnd, onError };
       }),
-      ({ onData, onEnd, onError }) =>
+      ({ onReadable, onEnd, onError }) =>
         Effect.sync(() => {
-          readable.off('data', onData);
+          readable.off('readable', onReadable);
           readable.off('end', onEnd);
           readable.off('error', onError);
+
+          if (!readable.destroyed) {
+            readable.destroy();
+          }
         }),
     ),
   );
-
+};
 export const fromNodeCallback = <A>(
   f: (cb: (err: Error | null, result?: A) => void) => void,
 ) =>

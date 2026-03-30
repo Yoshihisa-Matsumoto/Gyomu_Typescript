@@ -19,6 +19,8 @@ test('File Whole Search Test', () => {
     'tests\\compress\\README.md.gz',
     'tests\\compress\\README_aes_password.zip',
     'tests\\compress\\README_password.zip',
+    'tests\\compress\\compare1.zip',
+    'tests\\compress\\compare2.zip',
     'tests\\compress\\temp.tar',
     'tests\\compress\\temp.zip',
     'tests\\compress\\ユーザー噂.py.bz2',
@@ -48,6 +50,7 @@ test('File Whole Search Test', () => {
     'tests\\rsa4096.pub',
     'tests\\rsa4096.pub.pem',
     'tests\\rsa4096.pub.pem.dat',
+    'tests\\zipCompareResult.csv',
   ];
   expect(fullPathList.sort()).toEqual(expected.sort());
   // expect(fullPathList).toEqual(expect.arrayContaining(expected));
@@ -112,6 +115,8 @@ test('File Name NoExact Search Test', () => {
   let expected = [
     'tests\\compress\\README_aes_password.zip',
     'tests\\compress\\README_password.zip',
+    'tests\\compress\\compare1.zip',
+    'tests\\compress\\compare2.zip',
     'tests\\compress\\temp.tar',
     'tests\\compress\\temp.zip',
     'tests\\compress\\ユーザー噂.py.bz2',
@@ -140,6 +145,7 @@ test('File Name NoExact Search Test', () => {
     'tests\\test.utf8.bom.csv',
     'tests\\test.utf8.csv',
     'tests\\utf8_sample.txt',
+    'tests\\zipCompareResult.csv',
   ];
   expect(fullPathList.sort()).toEqual(expected.sort());
   // expect(fullPathList).toEqual(expect.arrayContaining(expected));

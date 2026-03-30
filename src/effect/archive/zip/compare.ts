@@ -33,6 +33,7 @@ type ZipCompareOption = {
   diffIgnoreRule?: IgnoreRule[];
   fileNameExcludeRule?: FileNameExclusionRule;
   includeOriginalFileInDiff?: boolean;
+  recordDelimiter?: 'windows' | 'unix';
 };
 
 export type FileNameExclusionRule = {
@@ -60,9 +61,9 @@ type ExistInOnlyOnePartyIgnoreRule = {
 
 export type IgnoreRule = DiffernceIgnoreRule | ExistInOnlyOnePartyIgnoreRule;
 
-export type FileEntry = {
-  openStream: () => Stream.Stream<Uint8Array, AppError>;
-};
+// export type FileEntry = {
+//   openStream: () => Stream.Stream<Uint8Array, AppError>;
+// };
 
 type DiffResult = {
   diff: DiffDetail[];
@@ -214,6 +215,7 @@ export const compareZip = (
       {
         bom: true,
         quoted: true,
+        recordDelimiter: option.recordDelimiter,
       },
       {
         type: 'file',
@@ -448,6 +450,7 @@ const writeCsvIfNeeded = (
   diffDetailList: DiffDetail[],
   resultPath: string,
   sourceFile: ZipFileEntryItem,
+  option: ZipCompareOption,
 ) =>
   diffDetailList.length > 0
     ? Effect.gen(function* () {
@@ -457,7 +460,7 @@ const writeCsvIfNeeded = (
 
         yield* jsonToCsv(
           diffDetailList.sort((a, b) => a.path.localeCompare(b.path)),
-          { bom: true, quoted: true },
+          { bom: true, quoted: true, recordDelimiter: option.recordDelimiter },
           { type: 'file', path: filePath },
         );
       })
@@ -473,6 +476,7 @@ const runCompareFuncFlow = (
     resultPath: string;
   }) => Effect.Effect<DiffResult>,
   targetIgnoreRule: DiffernceIgnoreRule | undefined,
+  option: ZipCompareOption,
 ) => {
   return Effect.gen(function* () {
     const diffResult = yield* runCompare(
@@ -497,7 +501,7 @@ const runCompareFuncFlow = (
       resultPath,
       shouldRun,
     );
-    yield* writeCsvIfNeeded(diffDetailList, resultPath, sourceFile);
+    yield* writeCsvIfNeeded(diffDetailList, resultPath, sourceFile, option);
     return {
       diffResult,
       diffDetailList,
@@ -549,6 +553,7 @@ const internalCompareFileEntry = (
         resultPath,
         compareFunc,
         targetIgnoreRule as DiffernceIgnoreRule | undefined,
+        option,
       );
     }
     if (!diffSummaryRecord) return Effect.succeed(interimOutput);
