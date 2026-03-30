@@ -61,7 +61,7 @@ export class FtpService extends ServiceMap.Service<
       }) => Effect.Effect<A, AppError | NetworkError | ConfigError, R>,
     ) => Effect.Effect<A, AppError | NetworkError | ConfigError, R | Scope>;
   }
->()('SshService', {
+>()('FtpService', {
   make: Effect.gen(function* () {
     const configService = yield* ConfigService;
 
@@ -69,6 +69,7 @@ export class FtpService extends ServiceMap.Service<
       withConnection: (prefix, f) =>
         Effect.gen(function* () {
           const config = yield* configService.load(ftpConfigRaw, prefix);
+
           return yield* Effect.acquireRelease(
             Effect.sync(() => new Client()),
             (client) =>
@@ -78,6 +79,8 @@ export class FtpService extends ServiceMap.Service<
           ).pipe(
             Effect.flatMap((client) =>
               Effect.gen(function* () {
+                console.log('FTP Config:', config);
+                console.log('password raw:', config.password);
                 yield* tryAsync(
                   () =>
                     client.access({

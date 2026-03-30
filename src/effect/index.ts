@@ -9,7 +9,10 @@ export const tryAsync = <A, E extends AppError>(
 ): Effect.Effect<A, E> =>
   Effect.tryPromise({
     try: f,
-    catch: (e) => unknownError(ErrorType, e, message),
+    catch: (e) => {
+      console.error('Async operation failed:', e);
+      return unknownError(ErrorType, e, message);
+    },
   });
 
 export const trySync = <A, E extends AppError>(

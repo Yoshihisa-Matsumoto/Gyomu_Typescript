@@ -1,13 +1,13 @@
 import { Effect } from 'effect';
 import { RunEnv } from './layer.js';
 import { Result } from 'effect/Result';
-import { Layer, mergeAll } from 'effect/Layer';
+import { Layer, provide } from 'effect/Layer';
 
 export const runWithEnvOrThrow = <A, E>(
   effect: Effect.Effect<A, E, any>,
-  additionalLayer?: Layer<any>,
+  overrideLayer?: Layer<any, any>,
 ): Promise<A> => {
-  const layer = additionalLayer ? mergeAll(RunEnv, additionalLayer) : RunEnv;
+  const layer = overrideLayer ? provide(overrideLayer, RunEnv) : RunEnv;
   return effect.pipe(
     Effect.catchCause((cause) =>
       Effect.logError('Execution failed', cause).pipe(
@@ -30,9 +30,9 @@ export const runWithEnvOrThrow = <A, E>(
 
 export const runWithEnv = <A, E>(
   effect: Effect.Effect<A, E, any>,
-  additionalLayer?: Layer<any>,
+  overrideLayer?: Layer<any, any>,
 ): Promise<Result<A, E>> => {
-  const layer = additionalLayer ? mergeAll(RunEnv, additionalLayer) : RunEnv;
+  const layer = overrideLayer ? provide(overrideLayer, RunEnv) : RunEnv;
 
   return effect.pipe(
     Effect.catchCause((cause) =>
