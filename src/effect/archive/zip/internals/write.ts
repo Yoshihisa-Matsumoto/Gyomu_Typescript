@@ -5,7 +5,8 @@ import { IOError } from '../../../../errors.js';
 import { ZipFile } from 'yazl';
 import { platform } from '../../../../platform/index.js';
 import { FileTransportInfo } from '../../../../fileModel.js';
-import { fromReadable } from '../../../nodeStream.js';
+//import { fromReadable } from '../../../nodeStream.js';
+import { NodeStream } from '@effect/platform-node';
 
 const addFile = (zip: ZipFile, fsPath: string, zipPath: string) =>
   Effect.sync(() => {
@@ -76,6 +77,6 @@ export const zipToStream = (
       // 👇 ここ重要（Stream開始前にend）
       zip.end();
 
-      return fromReadable(zip.outputStream);
+      return NodeStream.fromReadable({ evaluate: () => zip.outputStream });
     }),
   );

@@ -7,7 +7,7 @@ import {
   FilterType,
 } from './fileModel.js';
 import { compareAsc } from 'date-fns';
-import { GyomuResultAsync, errAsync, okAsync, runAsync } from './result.js';
+//import { GyomuResultAsync, errAsync, okAsync, runAsync } from './result.js';
 // import { ZipArchive } from './archive/zip';
 // import { TarArchive } from './archive/tar';
 import { isEqual } from 'date-fns';
@@ -16,6 +16,8 @@ import { polling } from './timer.js';
 //import * as os from 'os';
 import { platform } from './platform/index.js';
 import { AccessError, TimeoutError } from './errors.js';
+import { Effect } from 'effect';
+import { fromPromise } from './effect/index.js';
 
 export class FileOperation {
   static getTempPath(): string {
@@ -34,9 +36,9 @@ export class FileOperation {
   static canAccess(
     fileName: string,
     readOnly: boolean = false,
-  ): GyomuResultAsync<boolean> {
+  ): Effect.Effect<boolean, AccessError> {
     if (!platform.existsSync(fileName))
-      return errAsync(new AccessError(`File Not exist: ${fileName}`));
+      return Effect.fail(new AccessError(`File Not exist: ${fileName}`));
     const specialExtension = ['xls', 'xlsm', 'xlsx', 'zip'];
     const stat = platform.statSync(fileName);
 
@@ -44,26 +46,25 @@ export class FileOperation {
       specialExtension.includes(platform.extname(fileName)) &&
       stat.size === 0
     )
-      return errAsync(new AccessError(`File is invalid: ${fileName}`));
-    if (readOnly) return okAsync(true);
+      return Effect.fail(new AccessError(`File is invalid: ${fileName}`));
+    if (readOnly) return Effect.succeed(true);
 
-    return runAsync(
-      async () => {
-        await new Promise((resolve) => setTimeout(resolve, 100));
-
-        const stat2 = platform.statSync(fileName);
-        if (
-          !isEqual(stat.ctime, stat2.ctime) ||
-          !isEqual(stat.mtime, stat2.mtime)
-        ) {
-          throw new AccessError(`File is under operation: ${fileName}`);
-        }
-
-        return true;
-      },
+    return fromPromise(
       AccessError,
       `File check failed: ${fileName}`,
-    );
+    )(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const stat2 = platform.statSync(fileName);
+      if (
+        !isEqual(stat.ctime, stat2.ctime) ||
+        !isEqual(stat.mtime, stat2.mtime)
+      ) {
+        throw new AccessError(`File is under operation: ${fileName}`);
+      }
+
+      return true;
+    });
 
     // try {
     //   const fileHandle = platform.openSync(
@@ -83,49 +84,25 @@ export class FileOperation {
   static waitTillExclusiveAccess(
     fileName: string,
     timeoutSeconds: number,
-  ): GyomuResultAsync<boolean> {
+  ): Effect.Effect<boolean, TimeoutError> {
     return polling(
       `File Access check ${fileName}`,
       timeoutSeconds,
       0.5,
-      (): GyomuResultAsync<boolean> => {
-        const accessible = this.canAccess(fileName, false);
-        return accessible.orElse(() => okAsync(false));
-      },
+      (): Effect.Effect<boolean, AccessError> =>
+        this.canAccess(fileName, false).pipe(
+          Effect.catch(() => Effect.succeed(false)),
+        ),
       fileName,
-    ).mapErr(
-      (error: unknown) =>
-        new TimeoutError(`Timeout on waiting file access: ${fileName}`, error),
+    ).pipe(
+      Effect.mapError(
+        (error) =>
+          new TimeoutError(
+            `Timeout on waiting file access: ${fileName}`,
+            error,
+          ),
+      ),
     );
-
-    // const timeoutTime = new Date().getTime() + timeoutSeconds * 1000;
-    // const nextIntervalMilliSecond = 500;
-
-    // const accessible = await this.canAccess(fileName, false);
-    // if (accessible.isSuccess() && accessible.value) {
-    //   return success(accessible.value);
-    // }
-    // if (new Date().getTime() > timeoutTime) {
-    //   return Failure.fromMessage(`Timeout happen to access ${fileName}`, TimeoutError);
-    // }
-
-    // return new Promise(async (resolve, reject) => {
-    //   const timerId = await setInterval(async () => {
-    //     const accessible = await this.canAccess(fileName, false);
-    //     if (accessible.isSuccess() && accessible.value) {
-    //       clearInterval(timerId);
-    //       return resolve(success(accessible.value));
-    //     }
-    //     if (new Date().getTime() > timeoutTime) {
-    //       //console.log('Timeout');
-    //       clearInterval(timerId);
-    //       return resolve(
-    //         Failure.fromMessage(`Timeout happen to access ${fileName}`, TimeoutError)
-    //       );
-    //     }
-    //     //console.log('wait next', new Date().getTime(), timeoutTime);
-    //   }, nextIntervalMilliSecond);
-    // });
   }
 
   static search(

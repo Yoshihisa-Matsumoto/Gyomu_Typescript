@@ -1,20 +1,11 @@
-import {
-  GyomuResultAsync,
-  runAsync,
-  okAsync,
-  errAsync,
-  ensure,
-  result2Async,
-  run,
-} from './result.js';
 import { EnvHttpProxyAgent, setGlobalDispatcher } from 'undici';
 import xml2js from 'xml2js';
 import { platform } from './platform/index.js';
 import { finished } from 'stream/promises';
 import { Readable } from 'stream';
-import { ReadableStream } from 'stream/web';
-import { logger } from './logger.js';
 import { IOError, NetworkError, ValueError } from './errors.js';
+import { Effect, pipe, Stream } from 'effect';
+import { fromPromise, fromSync, networkStream } from './effect/index.js';
 
 export type FetchResult<ResponseType> = {
   value: ResponseType;
@@ -22,6 +13,63 @@ export type FetchResult<ResponseType> = {
   extraAttribute?: any;
 };
 
+export const fetchStream = (
+  url: string,
+  options?: RequestInit,
+): Stream.Stream<Uint8Array, NetworkError> =>
+  Stream.unwrap(
+    Effect.gen(function* () {
+      const response = yield* fetchEffect(url, options);
+
+      if (!response.ok) {
+        return yield* Effect.fail(
+          new NetworkError(`HTTP Error: ${response.status} ${url}`),
+        );
+      }
+
+      if (!response.body) {
+        return yield* Effect.fail(new NetworkError(`No response body: ${url}`));
+      }
+
+      return Stream.fromReadableStream({
+        evaluate: () => response.body!,
+        onError: (e) => new NetworkError(`Stream error: ${String(e)} (${url})`),
+      });
+    }),
+  );
+const fetchEffect = (url: string, init?: RequestInit) =>
+  fromPromise(NetworkError, `Fetch Error to ${url}`)(() => fetch(url, init));
+
+const jsonEffect = <T>(
+  stream: Stream.Stream<Uint8Array, NetworkError>,
+): Effect.Effect<T, NetworkError | ValueError> =>
+  stream.pipe(
+    Stream.decodeText(),
+    Stream.runCollect,
+    Effect.flatMap((chunks) =>
+      fromSync(
+        ValueError,
+        `Invalid JSON`,
+      )(() => JSON.parse(chunks.join('')) as T),
+    ),
+  );
+
+const textEffect = (stream: Stream.Stream<Uint8Array, NetworkError>) =>
+  stream.pipe(
+    Stream.decodeText(),
+    Stream.runCollect,
+    Effect.map((chunks) => chunks.join('')),
+  );
+
+const validate =
+  <A>(predicate?: (a: A) => boolean) =>
+  (effect: Effect.Effect<A, NetworkError | ValueError>) =>
+    effect.pipe(
+      Effect.filterOrFail(
+        (a) => predicate?.(a) ?? true,
+        (a) => new ValueError(`Invalid Response Data : ${JSON.stringify(a)}`),
+      ),
+    );
 export function fetchJson<RequestType, ResponseType>(
   url: string,
   method: 'GET' | 'POST' | 'DELETE' | 'PATCH',
@@ -31,7 +79,7 @@ export function fetchJson<RequestType, ResponseType>(
     isValidData?: (obj: ResponseType) => boolean;
     extraAttribute?: any;
   },
-): GyomuResultAsync<FetchResult<ResponseType>> {
+): Effect.Effect<FetchResult<ResponseType>, NetworkError | ValueError> {
   let headers: Record<string, string> = {};
   if (!option?.headers) {
     headers = { 'Content-Type': 'application/json' };
@@ -40,64 +88,22 @@ export function fetchJson<RequestType, ResponseType>(
     headers['Content-Type'] = 'application/json';
   }
 
-  // const options: OptionsOfTextResponseBody = {
-  //   method: method,
-  //   headers:headers,
-  //   json: input ? JSON.parse(JSON.stringify(input)) : undefined,
-  // };
-  //console.log('options', headers);
-  return runAsync(
-    () =>
-      fetch(
-        url,
-        input
-          ? {
-              method,
-              headers,
-              body: JSON.stringify(input),
-            }
-          : {
-              method,
-              headers,
-            },
-      ),
-    NetworkError,
-    `Fetch Error to ${url}`,
-  ).andThen((response) => {
-    //console.log(JSON.stringify(response));
-    //const jsonData: Awaited<ResponseType> = await response.json<ResponseType>();
-    const statusCode = response.status;
-    if (!response.body) {
-      return okAsync({
-        value: response.body as ResponseType,
-        code: statusCode,
-        extraAttribute: option?.extraAttribute,
-      });
-    } else {
-      logger.info(response.body);
-      logger.info(response.status);
-      return runAsync(
-        () => response.json() as Promise<ResponseType>,
-        NetworkError,
-        `fail to convert into Json`,
-      ).andThen((jsonData) => {
-        if (option?.isValidData) {
-          if (!option.isValidData(jsonData)) {
-            return errAsync(
-              new ValueError(
-                `Invalid Response Data : ${JSON.stringify(jsonData)}`,
-              ),
-            );
-          }
-        }
-        return okAsync({
-          value: jsonData,
-          code: statusCode,
-          extraAttribute: option?.extraAttribute,
-        });
-      });
-    }
-  });
+  const stream = fetchStream(
+    url,
+    input
+      ? { method, headers, body: JSON.stringify(input) }
+      : { method, headers },
+  );
+  return pipe(
+    stream,
+    jsonEffect<ResponseType>,
+    validate(option?.isValidData),
+    Effect.map((jsonData) => ({
+      value: jsonData,
+      code: 200, // ← 後述
+      extraAttribute: option?.extraAttribute,
+    })),
+  );
 }
 
 export function simpleWebAccess(url: string, isInternal: boolean = true) {
@@ -115,133 +121,146 @@ export function postAndReceiveXml<ResponseType>(
     isValidData?: (obj: ResponseType) => boolean;
     extraAttribute?: any;
   },
-): GyomuResultAsync<{
-  value: ResponseType;
-  code: number;
-  extraAttribute?: any;
-}> {
-  let headers: Record<string, string> = {};
-  if (!option?.headers) {
-    headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
-  } else {
-    headers = option.headers;
-    headers['Content-Type'] = 'application/x-www-form-urlencoded';
-  }
-  // const options: OptionsOfTextResponseBody = {
-  //   method: 'POST',
-  //   headers,
-  //   form: input,
-  // };
-  return runAsync(
-    () =>
-      fetch(url, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(input),
-      }),
-    NetworkError,
-    'fetch POST to ${url}',
-  )
-    .andThen((response) => {
-      const statusCode = response.status;
-      //console.log(response.body);
-      return runAsync(
-        () => response.text(),
-        NetworkError,
-        'fail to get response text',
-      ).map((text) => {
-        return { statusCode, text };
-      });
-    })
-    .andThen(({ statusCode, text }) => {
-      const parser = new xml2js.Parser();
-      return runAsync(
-        () => parser.parseStringPromise(text) as Promise<ResponseType>,
-        NetworkError,
-        'fail to parse response text',
-      ).map((resultData) => {
-        return { statusCode, resultData };
-      });
-    })
-    .andThen(({ statusCode, resultData }) => {
-      if (option?.isValidData) {
-        if (!option.isValidData(resultData)) {
-          return errAsync(
-            new ValueError(`Invalid Response Data : ${resultData}`),
-          );
-        }
-      }
-      return okAsync({
-        value: resultData,
-        code: statusCode,
-        extraAttribute: option?.extraAttribute,
-      });
+): Effect.Effect<
+  {
+    value: ResponseType;
+    code: number;
+    extraAttribute?: any;
+  },
+  NetworkError | ValueError
+> {
+  const headers: Record<string, string> = {
+    ...(option?.headers ?? {}),
+    'Content-Type': 'application/x-www-form-urlencoded',
+  };
+
+  const body = new URLSearchParams(input).toString();
+
+  return Effect.gen(function* () {
+    // =====================
+    // fetch (statusも保持)
+    // =====================
+    const response = yield* fetchEffect(url, {
+      method: 'POST',
+      headers,
+      body,
     });
+
+    const statusCode = response.status;
+
+    if (!response.body) {
+      return yield* Effect.fail(new NetworkError('No response body'));
+    }
+
+    // =====================
+    // stream → text
+    // =====================
+    const text = yield* pipe(
+      networkStream(() => response.body!, `Fetching XML from ${url}`),
+      textEffect, // ← さっき作ったやつ再利用
+    );
+
+    // =====================
+    // XML parse
+    // =====================
+    const parser = new xml2js.Parser();
+
+    const resultData = yield* fromPromise(
+      NetworkError,
+      `fail to parse response text`,
+    )(() => parser.parseStringPromise(text) as Promise<ResponseType>);
+
+    // =====================
+    // validate
+    // =====================
+    if (option?.isValidData && !option.isValidData(resultData)) {
+      return yield* Effect.fail(new ValueError(`Invalid Response Data`));
+    }
+
+    return {
+      value: resultData,
+      code: statusCode,
+      extraAttribute: option?.extraAttribute,
+    };
+  });
 }
 export const webDownloadStream = (
   url: string,
   headers?: Record<string, string>,
-): GyomuResultAsync<ReadableStream<any>> => {
-  return runAsync(
-    () => fetch(url, { headers }),
-    NetworkError,
-    `Web Download Error:${url}`,
-  ).andThen((response) => {
-    if (!response.body) return errAsync(new NetworkError(`No response body`));
-    return okAsync(response.body as ReadableStream<any>);
-  });
-};
+): Stream.Stream<Uint8Array, NetworkError> =>
+  Stream.unwrap(
+    Effect.gen(function* () {
+      const response = yield* fetchEffect(url, { headers });
+
+      if (!response.body) {
+        return yield* Effect.fail(new NetworkError('No response body'));
+      }
+
+      return networkStream(() => response.body!, `Stream error `);
+    }),
+  );
 export const webDownload = (
   url: string,
   destinationFilename: string,
   headers?: Record<string, string>,
-): GyomuResultAsync<boolean> => {
-  return result2Async(
-    ensure(
-      !platform.existsSync(destinationFilename) ||
-        destinationFilename == platform.basename(destinationFilename),
+): Effect.Effect<boolean, NetworkError | IOError> =>
+  Effect.gen(function* () {
+    // =====================
+    // validation
+    // =====================
+    if (
+      platform.existsSync(destinationFilename) &&
+      destinationFilename !== platform.basename(destinationFilename)
+    ) {
+      return yield* Effect.fail(
+        new IOError(`Invalid Filepath :${destinationFilename}`),
+      );
+    }
+
+    if (
+      platform.existsSync(destinationFilename) &&
+      platform.lstatSync(destinationFilename).isDirectory()
+    ) {
+      return yield* Effect.fail(
+        new IOError(`This is directory:${destinationFilename}`),
+      );
+    }
+
+    if (!platform.extname(destinationFilename)) {
+      return yield* Effect.fail(
+        new IOError(
+          `file name should include extension:${destinationFilename}`,
+        ),
+      );
+    }
+
+    // =====================
+    // file prepare
+    // =====================
+    yield* fromSync(
       IOError,
-      `Invalid Filepath :${destinationFilename}`,
-    ),
-  )
-    .andThen(() =>
-      ensure(
-        !platform.existsSync(destinationFilename) ||
-          !platform.lstatSync(destinationFilename).isDirectory(),
-        IOError,
-        `This is directory:${destinationFilename}`,
-      ),
-    )
-    .andThen(() =>
-      ensure(
-        !!platform.extname(destinationFilename),
-        IOError,
-        `file name should include extension:${destinationFilename}`,
-      ),
-    )
-    .andThen(() =>
-      result2Async(
-        run(
-          () => {
-            platform.ensureFileSync(destinationFilename);
-            platform.removeSync(destinationFilename);
-          },
-          IOError,
-          'fail to prepare files to save',
-        ).map(() => true),
-      ),
-    )
-    .andThen(() => webDownloadStream(url, headers))
-    .andThen((readStream) =>
-      runAsync(
-        () => {
-          const fileWriterStream =
-            platform.createWriteStream(destinationFilename);
-          return finished(Readable.fromWeb(readStream).pipe(fileWriterStream));
-        },
-        IOError,
-        `Web Download Error:${url} into ${destinationFilename}`,
-      ),
-    )
-    .map(() => true);
-};
+      'fail to prepare files to save',
+    )(() => {
+      platform.ensureFileSync(destinationFilename);
+      platform.removeSync(destinationFilename);
+    });
+
+    // =====================
+    // download stream
+    // =====================
+    const stream = webDownloadStream(url, headers);
+
+    // =====================
+    // write file
+    // =====================
+    yield* fromPromise(
+      IOError,
+      `Web Download Error:${url} into ${destinationFilename}`,
+    )(async () => {
+      const fileWriterStream = platform.createWriteStream(destinationFilename);
+
+      await finished(Readable.fromWeb(stream as any).pipe(fileWriterStream));
+    });
+
+    return true;
+  });

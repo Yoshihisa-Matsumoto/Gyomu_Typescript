@@ -3,6 +3,7 @@ import { Duplex, Readable, Transform } from 'node:stream';
 import { IOError, unknownError } from '../errors.js';
 import { AppError } from '../base-error.js';
 import { runSync } from 'effect/Effect';
+import { NodeStream } from '@effect/platform-node';
 
 export const acquireNodeStream = <T extends Duplex>(create: () => T) =>
   Effect.acquireRelease(Effect.sync(create), (stream) =>
@@ -163,8 +164,19 @@ export const throughNodeStreamScoped_original =
         throughNodeStream<I, O>(t)<E, R>(input),
       ),
     );
+export const fromReadable = (readable: Readable) =>
+  NodeStream.fromReadable({
+    evaluate: () => readable,
+    onError: (e) => unknownError(IOError, e, 'node stream error'),
+  });
 
-export const fromReadable = (
+/**
+ * @deprecated こちらは backpressure 対応のための実験的な実装。安易に使用しないこと。
+ * @param readable
+ * @param options
+ * @returns
+ */
+export const fromReadableControlled = (
   readable: Readable,
   options?: { chunkSize?: number },
 ) => {

@@ -3,7 +3,7 @@ import { Client } from 'basic-ftp';
 import { ConfigError, withDefault } from 'effect/Config';
 import { NetworkError } from '../../../errors.js';
 import { ConfigProviderLive, ConfigService } from '../config.js';
-import { tryAsync } from '../../index.js';
+import { fromPromise } from '../../index.js';
 import { AppError } from '../../../base-error.js';
 import { Scope } from 'effect/Scope';
 import { FileTransportInfo } from '../../../fileModel.js';
@@ -81,17 +81,17 @@ export class FtpService extends ServiceMap.Service<
               Effect.gen(function* () {
                 console.log('FTP Config:', config);
                 console.log('password raw:', config.password);
-                yield* tryAsync(
-                  () =>
-                    client.access({
-                      host: config.host,
-                      port: config.port,
-                      user: config.user,
-                      password: Redacted.value(config.password),
-                      secure: config.secure,
-                    }),
+                yield* fromPromise(
                   NetworkError,
                   'Failed to connect to FTP server',
+                )(() =>
+                  client.access({
+                    host: config.host,
+                    port: config.port,
+                    user: config.user,
+                    password: Redacted.value(config.password),
+                    secure: config.secure,
+                  }),
                 );
                 const ftp = {
                   downloadToStream: (path: string) =>

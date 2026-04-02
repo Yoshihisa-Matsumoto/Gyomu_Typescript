@@ -1,28 +1,37 @@
-import { Effect, Option, pipe, Redacted } from 'effect';
+import { Effect, Option, pipe, Redacted, Stream } from 'effect';
 import { AppError, AppErrorCtor } from '../base-error.js';
-import { unknownError } from '../errors.js';
+import { NetworkError, unknownError } from '../errors.js';
 
-export const tryAsync = <A, E extends AppError>(
-  f: () => Promise<A>,
-  ErrorType: AppErrorCtor<E>,
-  message: string,
-): Effect.Effect<A, E> =>
-  Effect.tryPromise({
-    try: f,
-    catch: (e) => {
-      console.error('Async operation failed:', e);
-      return unknownError(ErrorType, e, message);
-    },
-  });
+export const fromPromise =
+  <E extends AppError>(ErrorType: AppErrorCtor<E>, message: string) =>
+  <A>(f: () => Promise<A>): Effect.Effect<A, E> =>
+    Effect.tryPromise({
+      try: f,
+      catch: (e) => unknownError(ErrorType, e, message),
+    });
 
-export const trySync = <A, E extends AppError>(
-  f: () => A,
-  ErrorType: AppErrorCtor<E>,
-  message: string,
-): Effect.Effect<A, E> =>
-  Effect.try({
-    try: f,
-    catch: (e) => unknownError(ErrorType, e, message),
+export const fromSync =
+  <E extends AppError>(ErrorType: AppErrorCtor<E>, message: string) =>
+  <A>(f: () => A): Effect.Effect<A, E> =>
+    Effect.try({
+      try: f,
+      catch: (e) => unknownError(ErrorType, e, message),
+    });
+
+export const fromReadableStream =
+  <E>(onError: (e: unknown) => E) =>
+  (f: () => ReadableStream<Uint8Array>): Stream.Stream<Uint8Array, E> =>
+    Stream.fromReadableStream({
+      evaluate: f,
+      onError,
+    });
+export const networkStream = (
+  f: () => ReadableStream<Uint8Array>,
+  context: string,
+) =>
+  Stream.fromReadableStream({
+    evaluate: f,
+    onError: (e) => new NetworkError(`${context}: ${String(e)}`),
   });
 
 export const unwrapPassword = (

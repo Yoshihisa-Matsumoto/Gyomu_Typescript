@@ -6,6 +6,7 @@ import tmp from 'tmp';
 import { expect, test } from 'vitest';
 import { platform } from '../platform/index.js';
 import { fsConstants } from '../platform/index.js';
+import { runWithEnvOrThrow } from '../effect/infrastructure/runtime.js';
 
 test('File Whole Search Test', () => {
   const baseDir = platform.resolve('.');
@@ -243,12 +244,12 @@ test('File Exclusive Access Test', async () => {
     }
   }, 100);
 
-  let result = await FileOperation.waitTillExclusiveAccess(targetFilename, 2);
+  let result = await runWithEnvOrThrow(
+    FileOperation.waitTillExclusiveAccess(targetFilename, 2),
+  );
   const finishDate = new Date().getTime();
-  expect(result.isOk()).toBeTruthy();
-  if (result.isErr()) {
-    return;
-  }
+  expect(result).toBeTruthy();
+
   const duration = finishDate - currentDate;
   //expect(result.value).toBeTruthy();
   expect(duration).toBeGreaterThan(500);
@@ -274,11 +275,9 @@ test('File Exclusive Access Test', async () => {
     }
     //console.log('written', new Date());
   }, 50);
-  result = await FileOperation.waitTillExclusiveAccess(targetFilename, 1);
+  result = await runWithEnvOrThrow(
+    FileOperation.waitTillExclusiveAccess(targetFilename, 1),
+  );
   clearInterval(timerId);
-  if (!result.isOk()) console.log(result.error);
-  expect(result.isOk()).toBeTruthy();
-  if (result.isOk()) {
-    expect(result.value).toBeFalsy();
-  }
+  expect(result).toBeFalsy();
 }, 10000);

@@ -4,8 +4,8 @@ import { IOError, NetworkError } from '../../../../errors.js';
 import { AppError } from '../../../../base-error.js';
 import { PassThrough } from 'node:stream';
 import { Effect, pipe, Stream } from 'effect';
-import { fromReadable } from '../../../nodeStream.js';
-import { tryAsync } from '../../../index.js';
+import { fromReadableControlled } from '../../../nodeStream.js';
+import { fromPromise } from '../../../index.js';
 import { NodeStream } from '@effect/platform-node';
 import { platform } from '../../../../platform/index.js';
 
@@ -29,11 +29,10 @@ export const list =
 
     const fileInfoListPromise = () => client.list(fullPath);
     return pipe(
-      tryAsync(
-        fileInfoListPromise,
+      fromPromise(
         NetworkError,
         'Fail to retrieve ftp folders',
-      ),
+      )(fileInfoListPromise),
       Effect.map((fileInfoList) => fileInfoList.map((f) => f.name)),
     );
   };
@@ -52,12 +51,11 @@ export const getFileInfo =
   > => {
     return pipe(
       Effect.all([
-        tryAsync(() => client.size(path), NetworkError, 'Fail to get size'),
-        tryAsync(
-          () => client.lastMod(path),
+        fromPromise(NetworkError, 'Fail to get size')(() => client.size(path)),
+        fromPromise(
           NetworkError,
           'Fail to get lastMod',
-        ),
+        )(() => client.lastMod(path)),
       ]),
       Effect.map(([size, date]) => ({ size, date })),
     );
@@ -74,11 +72,10 @@ export const uploadFromStream =
       const readable = yield* NodeStream.toReadable(source);
 
       // FTP upload
-      yield* tryAsync(
-        () => client.uploadFrom(readable, remotePath),
+      yield* fromPromise(
         NetworkError,
         `Failed to upload file to FTP server: ${remotePath}`,
-      );
+      )(() => client.uploadFrom(readable, remotePath));
     });
 
 export const downloadToStream =
@@ -98,7 +95,7 @@ export const downloadToStream =
           }),
         );
 
-        return fromReadable(stream);
+        return fromReadableControlled(stream);
       }),
     );
 
@@ -122,7 +119,7 @@ export const download =
             .then(() => undefined);
 
     return pipe(
-      tryAsync(promise, NetworkError, 'Fail to do ftp download'),
+      fromPromise(NetworkError, 'Fail to do ftp download')(promise),
       Effect.map(() => true),
     );
   };
@@ -149,7 +146,7 @@ export const upload =
           );
 
     return pipe(
-      tryAsync(promise, NetworkError, 'Fail to do ftp upload'),
+      fromPromise(NetworkError, 'Fail to do ftp upload')(promise),
       Effect.map(() => true),
     );
   };

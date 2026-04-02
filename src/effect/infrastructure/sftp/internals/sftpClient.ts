@@ -2,7 +2,7 @@ import { Client, ConnectConfig, FileEntryWithStats, SFTPWrapper } from 'ssh2';
 import { IOError, NetworkError, unknownError } from '../../../../errors.js';
 import { Effect, Stream } from 'effect';
 import { AppError } from '../../../../base-error.js';
-import { tryAsync, trySync } from '../../../index.js';
+import { fromPromise, fromSync } from '../../../index.js';
 import { platform } from '../../../../platform/index.js';
 import { FileTransportInfo } from '../../../../fileModel.js';
 import { fromReadable } from '../../../nodeStream.js';
@@ -162,11 +162,10 @@ const downloadDir =
   ): Effect.Effect<void, IOError | NetworkError> =>
     Effect.gen(function* () {
       // ローカルディレクトリ作成
-      yield* trySync(
-        () => platform.mkdirSync(localDir, { recursive: true }),
+      yield* fromSync(
         IOError,
         'Failed to create local directory',
-      );
+      )(() => platform.mkdirSync(localDir, { recursive: true }));
 
       const list = yield* listInternal(sftp, remoteDir);
 
@@ -333,11 +332,10 @@ const uploadDir =
     Effect.gen(function* () {
       yield* mkdirRecursive(sftp)(remoteDir);
 
-      const entries = yield* tryAsync(
-        () => platform.readdir(localDir, { withFileTypes: true }),
+      const entries = yield* fromPromise(
         NetworkError,
         'Failed to read local directory',
-      );
+      )(() => platform.readdir(localDir, { withFileTypes: true }));
 
       yield* Effect.forEach(entries, (entry) => {
         const localPath = `${localDir}/${entry.name}`;
