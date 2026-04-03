@@ -134,7 +134,7 @@ export interface GyomuTaskInfoCdtbl {
   language: string;
   location: string;
   restartable: boolean;
-  task_id: number;
+  task_info_id: number;
 }
 
 export interface GyomuTaskInstance {

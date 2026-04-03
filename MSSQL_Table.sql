@@ -269,7 +269,7 @@ GO
 CREATE TABLE [dbo].[gyomu_task_info_cdtbl](
  	[id] [uniqueidentifier]  NOT NULL,  
 	[application_id] [smallint] NOT NULL,
-	[task_id] [smallint] NOT NULL,
+	[task_info_id] [smallint] NOT NULL,
 	[description] [varchar](100) NOT NULL,
 	[language] [varchar](10) NOT NULL,
 	[location] [text] NOT NULL,
@@ -284,7 +284,7 @@ GO
 CREATE UNIQUE CLUSTERED INDEX [CX_gyomu_task_info_cdtbl] ON [dbo].[gyomu_task_info_cdtbl]
 (
 	[application_id] ASC,
-	[task_id] ASC
+	[task_info_id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
 
@@ -499,9 +499,9 @@ CREATE TABLE [dbo].[gyomu_task_scheduler_config](
 	service_id smallint NOT NULL,
 	description varchar(200) NOT NULL,
 	application_id smallint NOT NULL,
-	task_id smallint NOT NULL,
+	task_info_id smallint NOT NULL,
 	monitor_parameter ntext NOT NULL,
-	next_trigger_time bigint NOT NULL,
+	next_trigger_time datetimeoffset(3) NOT NULL,
 	task_parameter ntext NULL,
 	is_enabled bit NOT NULL,
  CONSTRAINT [PK_gyomu_task_scheduler_config] PRIMARY KEY NONCLUSTERED 
@@ -513,7 +513,7 @@ GO
 
 CREATE CLUSTERED INDEX [CX_gyomu_task_scheduler_config] ON [dbo].[gyomu_task_scheduler_config]
 (
-	[service_id] ASC,[application_id] ASC,[task_id] ASC
+	[service_id] ASC,[application_id] ASC,[task_info_id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
 
@@ -527,7 +527,7 @@ CREATE INDEX IX_gyomu_task_scheduler_config2 on gyomu_task_scheduler_config
 go
 
 CREATE INDEX IX_gyomu_task_scheduler_config3 on gyomu_task_scheduler_config
-(application_id,task_id)
+(application_id,task_info_id)
 go
 
 CREATE INDEX IX_gyomu_task_scheduler_config4 on gyomu_task_scheduler_config

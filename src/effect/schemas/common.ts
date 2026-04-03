@@ -10,7 +10,7 @@ export type CrudSchemaGeneratorType<
   TIncludeAudit extends boolean,
 > = ReturnType<typeof defineEntityCrudSchemas<TFields, TIncludeAudit>>;
 //type InferSchema<S extends Schema.Schema<any>> =
-  S extends Schema.Schema<infer A> ? A : never;
+//  S extends Schema.Schema<infer A> ? A : never;
 type Fields = Record<string, Schema.Schema<any>>;
 
 const textRequired = (option?: { minLength?: number; maxLength?: number }) => {
@@ -78,6 +78,7 @@ export const db = {
   optionalBoolean: Schema.NullOr(Schema.Boolean),
   optionalTimestampString: Schema.NullOr(IsoDateTimeString),
   optionalDateString: Schema.NullOr(IsoDateString),
+  optionalId: Schema.NullOr(Schema.String.check(Schema.isUUID())),
 };
 
 type Optionalized<T extends Fields> = {
