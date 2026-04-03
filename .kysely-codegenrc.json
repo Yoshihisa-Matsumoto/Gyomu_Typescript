@@ -1,0 +1,4 @@
+{
+  "outFile": "./src/db/db.d.ts",
+  "includePattern": "gyomu_*"
+}

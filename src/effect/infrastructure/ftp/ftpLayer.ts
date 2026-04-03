@@ -17,15 +17,6 @@ import {
   uploadFromStream,
 } from './internals/ftpClient.js';
 
-const ftpConfigRaw = Config.all({
-  host: Config.string('HOST'),
-  port: withDefault(Config.number('PORT'), 21),
-  user: Config.string('USER'),
-  password: Config.redacted('PASS'),
-
-  secure: withDefault(Config.boolean('SSL'), false),
-});
-
 //type FtpConfig = Config.Success<typeof ftpConfigRaw>;
 
 export class FtpService extends ServiceMap.Service<
@@ -68,7 +59,20 @@ export class FtpService extends ServiceMap.Service<
     return {
       withConnection: (prefix, f) =>
         Effect.gen(function* () {
-          const config = yield* configService.load(ftpConfigRaw, prefix);
+          const ftpConfigRaw = Config.all({
+            host: Config.string(`${prefix.toUpperCase()}_HOST`),
+            port: withDefault(
+              Config.number(`${prefix.toUpperCase()}_PORT`),
+              21,
+            ),
+            user: Config.string(`${prefix.toUpperCase()}_USER`),
+            password: Config.redacted(`${prefix.toUpperCase()}_PASS`),
+            secure: withDefault(
+              Config.boolean(`${prefix.toUpperCase()}_SSL`),
+              false,
+            ),
+          });
+          const config = yield* configService.load(ftpConfigRaw);
 
           return yield* Effect.acquireRelease(
             Effect.sync(() => new Client()),

@@ -18,20 +18,14 @@ export const ConfigProviderLive = Layer.unwrap(
 export class ConfigService extends ServiceMap.Service<
   ConfigService,
   {
-    load: <A>(
-      config: Config.Config<A>,
-      prefix?: string,
-    ) => Effect.Effect<A, ConfigError>;
+    load: <A>(config: Config.Config<A>) => Effect.Effect<A, ConfigError>;
   }
 >()('ConfigService', {
   make: Effect.gen(function* () {
     const provider = yield* ConfigProvider.ConfigProvider;
 
     return {
-      load: (config, prefix) =>
-        prefix
-          ? Config.nested(config, prefix).pipe((c) => c.parse(provider))
-          : config.parse(provider),
+      load: (config) => config.parse(provider),
     };
   }),
 }) {

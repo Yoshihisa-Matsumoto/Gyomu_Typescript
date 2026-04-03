@@ -19,14 +19,6 @@ import {
 import { platform } from '../../../platform/index.js';
 import { connectEffect } from './internals/sftpClient.js';
 
-const sftpConfigRaw = Config.all({
-  host: Config.string('HOST'),
-  port: withDefault(Config.number('PORT'), 22),
-  user: Config.string('USER'),
-  password: Config.option(Config.redacted('PASS')),
-  privateKeyFilename: Config.option(Config.string('PRIVATE_KEY_FILENAME')),
-});
-
 //type FtpConfig = Config.Success<typeof ftpConfigRaw>;
 
 export class SftpService extends ServiceMap.Service<
@@ -69,7 +61,21 @@ export class SftpService extends ServiceMap.Service<
     return {
       withConnection: (prefix, f) =>
         Effect.gen(function* () {
-          const config = yield* configService.load(sftpConfigRaw, prefix);
+          const sftpConfigRaw = Config.all({
+            host: Config.string(`${prefix.toUpperCase()}_HOST`),
+            port: withDefault(
+              Config.number(`${prefix.toUpperCase()}_PORT`),
+              22,
+            ),
+            user: Config.string(`${prefix.toUpperCase()}_USER`),
+            password: Config.option(
+              Config.redacted(`${prefix.toUpperCase()}_PASS`),
+            ),
+            privateKeyFilename: Config.option(
+              Config.string(`${prefix.toUpperCase()}_PRIVATE_KEY_FILENAME`),
+            ),
+          });
+          const config = yield* configService.load(sftpConfigRaw);
           const privateKeyFilename = Option.getOrUndefined(
             config.privateKeyFilename,
           );

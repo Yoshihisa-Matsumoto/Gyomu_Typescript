@@ -1,3 +1,6 @@
+import { format, isValid, parse } from 'date-fns';
+import { ValueError } from './errors.js';
+
 export const createDateOnly = (
   year: number,
   one_base_month: number,
@@ -26,3 +29,14 @@ export const extractDateOnly = (date: Date) => {
   ).slice(-2)}-${('00' + date.getDate()).slice(-2)}`;
   return new Date(dateString);
 };
+
+export function formatDateToYmd(date: Date): string {
+  return format(date, 'yyyy-MM-dd');
+}
+export function parseYmdToDate(ymd: string): Date {
+  const date = parse(ymd, 'yyyy-MM-dd', new Date());
+  if (!isValid(date) || format(date, 'yyyy-MM-dd') !== ymd) {
+    throw new ValueError(`Invalid date string: ${ymd}`);
+  }
+  return date;
+}
