@@ -56,7 +56,6 @@ GO
 
 CREATE TABLE [dbo].[gyomu_apps_info_cdtbl](
   [id] [uniqueidentifier] NOT NULL,
-	[application_id] [smallint] NOT NULL,
 	[description] [varchar](50) NULL,
 	[mail_from_address] [varchar](200) NULL,
 	[mail_from_name] [varchar](200) NULL,
@@ -69,13 +68,12 @@ GO
 
 CREATE UNIQUE CLUSTERED INDEX CX_gyomu_apps_info_cdtbl ON [dbo].[gyomu_apps_info_cdtbl]
 (
-  [application_id] ASC
+  [description] ASC
 ) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[gyomu_status_type_cdtbl](
   [id] [uniqueidentifier] NOT NULL,
-	[status_type] [smallint] NOT NULL,
 	[description] [varchar](15) NULL,
  CONSTRAINT [PK_gyomu_status_type_cdtbl] PRIMARY KEY NONCLUSTERED 
 (
@@ -86,20 +84,20 @@ GO
 
 CREATE UNIQUE CLUSTERED INDEX CX_gyomu_status_type_cdtbl ON [dbo].[gyomu_status_type_cdtbl]
 (
-  [status_type] ASC
+  [description] ASC
 ) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
 
-INSERT INTO [gyomu_status_type_cdtbl] VALUES (NEWID(),0,'INFO');
-INSERT INTO [gyomu_status_type_cdtbl] VALUES (NEWID(),1,'WARNING');
-INSERT INTO [gyomu_status_type_cdtbl] VALUES (NEWID(),2,'ERROR_BUSINESS');
-INSERT INTO [gyomu_status_type_cdtbl] VALUES (NEWID(),8,'ERROR_DEVEL');
+INSERT INTO [gyomu_status_type_cdtbl] VALUES (NEWID(),'INFO');
+INSERT INTO [gyomu_status_type_cdtbl] VALUES (NEWID(),'WARNING');
+INSERT INTO [gyomu_status_type_cdtbl] VALUES (NEWID(),'ERROR_BUSINESS');
+INSERT INTO [gyomu_status_type_cdtbl] VALUES (NEWID(),'ERROR_DEVEL');
 
 CREATE TABLE [dbo].[gyomu_status_handler](
 	[id] [uniqueidentifier] NOT NULL,
-	[application_id] [smallint] NOT NULL,
+	[application_id] [uniqueidentifier] NOT NULL,
 	[region] [varchar](3) NULL,
-	[status_type] [smallint] NULL,
+	[status_type_id] [uniqueidentifier] NULL,
 	[recipient_address] [varchar](200) NULL,
 	[recipient_type] [varchar](3) NULL,
  CONSTRAINT [PK_gyomu_status_handler_cdtbl] PRIMARY KEY NONCLUSTERED 
@@ -111,20 +109,20 @@ GO
 
 CREATE CLUSTERED INDEX CX_gyomu_status_handler ON [dbo].[gyomu_status_handler]
 (
-  [application_id] ASC,[status_type] ASC, [region] ASC
+  [application_id] ASC,[status_type_id] ASC, [region] ASC
 ) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
 
 
 CREATE TABLE [dbo].[gyomu_status_info](
 	[id] [uniqueidentifier]  NOT NULL,
-	[application_id] [smallint] NOT NULL,
+	[application_id] [uniqueidentifier] NOT NULL,
 	[modified_at] datetimeoffset(3) NOT NULL,
 	[modified_by] [varchar](100) NOT NULL,
-	[status_type] [smallint] NOT NULL,
+	[status_type_id] [uniqueidentifier] NOT NULL,
   error_id smallint NOT NULL,
 	[instance_id] [int] NOT NULL,
-	[hostname] [varchar](50) NULL,
+	[host_name] [varchar](50) NULL,
 	[summary] [nvarchar](400) NULL,
 	[description] [nvarchar](1000) NULL,
 	[developer_info] ntext NULL,
@@ -268,8 +266,7 @@ GO
 
 CREATE TABLE [dbo].[gyomu_task_info_cdtbl](
  	[id] [uniqueidentifier]  NOT NULL,  
-	[application_id] [smallint] NOT NULL,
-	[task_info_id] [smallint] NOT NULL,
+	[application_id] [uniqueidentifier] NOT NULL,
 	[description] [varchar](100) NOT NULL,
 	[language] [varchar](10) NOT NULL,
 	[location] [text] NOT NULL,
@@ -284,14 +281,14 @@ GO
 CREATE UNIQUE CLUSTERED INDEX [CX_gyomu_task_info_cdtbl] ON [dbo].[gyomu_task_info_cdtbl]
 (
 	[application_id] ASC,
-	[task_info_id] ASC
+	[description] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[gyomu_task_info_access_list](
  	[id] [uniqueidentifier]  NOT NULL, 
-	[application_id] [smallint] NOT NULL,
-	[task_info_id] [smallint] NOT NULL,
+	[application_id] [uniqueidentifier] NOT NULL,
+	[task_info_id] [uniqueidentifier] NOT NULL,
 	[account_name] [varchar](100) NOT NULL,
 	[can_access] [bit] NOT NULL,
 	[forbidden] [bit] NOT NULL,
@@ -314,8 +311,8 @@ GO
 
 CREATE TABLE [dbo].[gyomu_task_data](
  	[id] [uniqueidentifier]  NOT NULL, 
-	[application_id] [smallint] NOT NULL,
-	[task_info_id] [smallint] NOT NULL,
+	[application_id] [uniqueidentifier] NOT NULL,
+	[task_info_id] [uniqueidentifier] NOT NULL,
 	[modified_at] datetimeoffset(3) NOT NULL,
 	[modified_by] [varchar](100) NOT NULL,
 	[parent_task_data_id] [uniqueidentifier] NULL,
@@ -459,7 +456,6 @@ GO
 
 CREATE TABLE [dbo].[gyomu_service_type_cdtbl](
  	[id] [uniqueidentifier]  NOT NULL,   
-	[service_type_id] [smallint] NOT NULL,
 	[description] [varchar](100) NOT NULL,
 	[assembly_name] [varchar](100) NULL,
 	[class_name] [varchar](100) NULL,
@@ -471,15 +467,14 @@ CREATE TABLE [dbo].[gyomu_service_type_cdtbl](
 GO
 CREATE UNIQUE CLUSTERED INDEX [CX_gyomu_service_type_cdtbl] ON [dbo].[gyomu_service_type_cdtbl]
 (
-	[service_type_id] ASC
+	[description] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[gyomu_service_cdtbl](
  	[id] [uniqueidentifier]  NOT NULL,  
-	[service_id] [smallint] NOT NULL,
 	[description] [varchar](100) NOT NULL,
-	[service_type_id] [smallint] NOT NULL,
+	[service_type_id] [uniqueidentifier] NOT NULL,
 	[parameter] ntext NULL,
  CONSTRAINT [PK_gyomu_server_service_cdtbl] PRIMARY KEY NONCLUSTERED 
 (
@@ -489,17 +484,17 @@ CREATE TABLE [dbo].[gyomu_service_cdtbl](
 GO
 CREATE UNIQUE CLUSTERED INDEX [CX_gyomu_service_cdtbl] ON [dbo].[gyomu_service_cdtbl]
 (
-	[service_id] ASC
+	[description] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
 
 
 CREATE TABLE [dbo].[gyomu_task_scheduler_config](
  	[id] [uniqueidentifier]  NOT NULL,
-	service_id smallint NOT NULL,
+	service_id uniqueidentifier NOT NULL,
 	description varchar(200) NOT NULL,
-	application_id smallint NOT NULL,
-	task_info_id smallint NOT NULL,
+	application_id uniqueidentifier NOT NULL,
+	task_info_id uniqueidentifier NOT NULL,
 	monitor_parameter ntext NOT NULL,
 	next_trigger_time datetimeoffset(3) NOT NULL,
 	task_parameter ntext NULL,

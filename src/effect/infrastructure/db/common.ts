@@ -1,0 +1,582 @@
+import { Effect, Schema } from 'effect';
+import { DB } from '../../../db/db.js';
+import { DBError, ValueError } from '../../../errors.js';
+import { Insertable, Kysely, Selectable, DeleteResult } from 'kysely';
+import { fromPromise } from '../../index.js';
+import {
+  decodeStructuredEffect,
+  encodeStructuredEffect,
+} from '../../schemas/common.js';
+import { generateUuid7 } from '../../../guid.js';
+import { SchemaError } from 'effect/Schema';
+
+export type TablesWithId = {
+  [K in keyof DB]: DB[K] extends { id: any } ? K : never;
+}[keyof DB];
+
+// type FindableStringColumns = {
+
+// }
+
+const getNewTimestamp = () => new Date();
+
+export type CrudSchemasBase<
+  Insert extends Schema.Top,
+  Select extends Schema.Top,
+  Update extends Schema.Top,
+> = {
+  readonly insertSchema: Insert;
+  readonly selectSchema: Select;
+  readonly updateSchema: Update;
+};
+
+export type CrudSchemasWithAudit<
+  Insert extends Schema.Top,
+  Select extends Schema.Top,
+  Update extends Schema.Top,
+> = CrudSchemasBase<Insert, Select, Update> & {
+  includeAuditFields: true;
+};
+
+export type CrudSchemasWithoutAudit<
+  Insert extends Schema.Top,
+  Select extends Schema.Top,
+  Update extends Schema.Top,
+> = CrudSchemasBase<Insert, Select, Update> & {
+  includeAuditFields?: false;
+};
+
+export type CrudSchemas<
+  Insert extends Schema.Top,
+  Select extends Schema.Top,
+  Update extends Schema.Top,
+> =
+  | CrudSchemasWithAudit<Insert, Select, Update>
+  | CrudSchemasWithoutAudit<Insert, Select, Update>;
+
+const selectRecordById =
+  <
+    T extends TablesWithId,
+    Insert extends Schema.Top,
+    Select extends Schema.Top,
+    Update extends Schema.Top,
+  >(
+    db: Kysely<DB>,
+    table: T,
+    schema: CrudSchemas<Insert, Select, Update>,
+  ) =>
+  (id: string) =>
+    Effect.gen(function* () {
+      const record = yield* fromPromise(
+        DBError,
+        `fail to select ${table} by id = ${id}`,
+      )(async () => {
+        const query = db.selectFrom(table).selectAll();
+        return await (query as any).where('id', '=', id).executeTakeFirst();
+      });
+      if (!record) return undefined;
+      return yield* decodeStructuredEffect(schema.selectSchema, record);
+    });
+
+type StringColumnKeys<T> = {
+  [K in keyof T]-?: T[K] extends string | null | undefined ? K : never;
+}[keyof T] &
+  string;
+
+const selectRecordsByColumn =
+  <
+    const T extends TablesWithId,
+    Insert extends Schema.Top,
+    Select extends Schema.Top,
+    Update extends Schema.Top,
+  >(
+    db: Kysely<DB>,
+    args: {
+      table: TablesWithId;
+      schema: CrudSchemas<Insert, Select, Update>;
+      columnName: StringColumnKeys<T>;
+    },
+  ) =>
+  (columnValue: string) =>
+    Effect.gen(function* () {
+      const records = yield* fromPromise(
+        DBError,
+        `fail to select ${args.table} by ${args.columnName} = ${columnValue}`,
+      )(async () => {
+        const query = db.selectFrom(args.table).selectAll();
+        return await (query as any)
+          .where(args.columnName, '=', columnValue)
+          .execute();
+      });
+      return yield* decodeStructuredEffect(
+        Schema.Array(args.schema.selectSchema),
+        records,
+      );
+    });
+
+type RepositoryContext<
+  T extends TablesWithId,
+  Insert extends Schema.Top,
+  Select extends Schema.Top,
+  Update extends Schema.Top,
+> = {
+  db: Kysely<DB>;
+  table: T;
+  schemas: CrudSchemas<Insert, Select, Update>;
+};
+
+const makeCustomQuery =
+  <
+    T extends TablesWithId,
+    Insert extends Schema.Top,
+    Select extends Schema.Top,
+    Update extends Schema.Top,
+  >(
+    db: Kysely<DB>,
+    table: T,
+    schemas: CrudSchemas<Insert, Select, Update>,
+  ) =>
+  (
+    f: (ctx: RepositoryContext<T, Insert, Select, Update>) => Promise<unknown>,
+  ): Effect.Effect<
+    readonly Select['Type'][],
+    DBError | Schema.SchemaError,
+    Select['DecodingServices']
+  > =>
+    Effect.gen(function* () {
+      const result = yield* fromPromise(
+        DBError,
+        `fail custom query on ${table}`,
+      )(async () => await f({ db, table, schemas }));
+      return yield* decodeStructuredEffect(
+        Schema.Array(schemas.selectSchema),
+        result,
+      );
+    });
+
+const selectAllRecords =
+  <
+    T extends TablesWithId,
+    Insert extends Schema.Top,
+    Select extends Schema.Top,
+    Update extends Schema.Top,
+  >(
+    db: Kysely<DB>,
+    table: T,
+    schema: CrudSchemas<Insert, Select, Update>,
+  ) =>
+  () =>
+    Effect.gen(function* () {
+      const records = yield* fromPromise(
+        DBError,
+        `fail to select all ${table}`,
+      )(async () => await db.selectFrom(table).selectAll().execute());
+      return yield* decodeStructuredEffect(
+        Schema.Array(schema.selectSchema),
+        records,
+      );
+    });
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type CreateRecordsFn<
+  Insert extends Schema.Top,
+  Select extends Schema.Top,
+  Update extends Schema.Top,
+  S extends CrudSchemas<Insert, Select, Update>,
+> = S extends { includeAuditFields: true }
+  ? (
+      data: Schema.Schema.Type<S['insertSchema']>[],
+      modifiedBy: string,
+    ) => Effect.Effect<any, any, any>
+  : (
+      data: Schema.Schema.Type<S['insertSchema']>[],
+      modifiedBy?: string,
+    ) => Effect.Effect<
+      readonly Select['Type'][],
+      ValueError | Schema.SchemaError | DBError,
+      Select['DecodingServices'] | Insert['EncodingServices']
+    >;
+const createRecords =
+  <
+    T extends TablesWithId,
+    Insert extends Schema.Top,
+    Select extends Schema.Top,
+    Update extends Schema.Top,
+  >(
+    db: Kysely<DB>,
+    table: T,
+    schema: CrudSchemas<Insert, Select, Update>,
+  ) =>
+  (
+    data: Schema.Schema.Type<typeof schema.insertSchema>[],
+    modifiedBy?: string,
+  ) =>
+    Effect.gen(function* () {
+      if (data.length == 0) return [];
+      const encoded = yield* encodeStructuredEffect(
+        Schema.Array(schema.insertSchema),
+        data,
+      );
+      if (schema.includeAuditFields) {
+        if (!modifiedBy)
+          return yield* Effect.fail(
+            new ValueError(`modifiedBy is not set for audit table`),
+          );
+        encoded.forEach((item) => {
+          (item as any).modified_at = getNewTimestamp();
+          (item as any).modified_by = modifiedBy;
+        });
+      }
+      encoded.forEach((item) => {
+        (item as any).id = generateUuid7();
+      });
+      const records = yield* fromPromise(
+        DBError,
+        `fail to insert ${table} record`,
+      )(async () => {
+        return await db.transaction().execute(async (trx) => {
+          const insertedRows: Selectable<DB[T]>[] = [];
+          for (const patch of encoded) {
+            const inserted = await trx
+              .insertInto(table)
+              .values(patch as Insertable<DB[T]>)
+              .outputAll('inserted')
+              .executeTakeFirst();
+            if (inserted) insertedRows.push(inserted as Selectable<DB[T]>);
+          }
+          return insertedRows;
+        });
+      });
+      return yield* decodeStructuredEffect(
+        Schema.Array(schema.selectSchema),
+        records,
+      );
+    });
+
+const updateRecords =
+  <
+    T extends TablesWithId,
+    Insert extends Schema.Top,
+    Select extends Schema.Top,
+    Update extends Schema.Top,
+  >(
+    db: Kysely<DB>,
+    table: T,
+    schema: CrudSchemas<Insert, Select, Update>,
+  ) =>
+  (
+    data: Schema.Schema.Type<typeof schema.updateSchema>[],
+    modifiedBy?: string,
+  ) =>
+    Effect.gen(function* () {
+      if (data.length == 0) return [];
+      const encoded = yield* encodeStructuredEffect(
+        Schema.Array(schema.updateSchema),
+        data,
+      );
+      if (schema.includeAuditFields) {
+        if (!modifiedBy)
+          return yield* Effect.fail(
+            new ValueError(`modifiedBy is not set for audit table`),
+          );
+        encoded.forEach((item) => {
+          (item as any).modified_at = getNewTimestamp();
+          (item as any).modified_by = modifiedBy;
+        });
+      }
+      const records = yield* fromPromise(
+        DBError,
+        `fail to update ${table} record`,
+      )(async () => {
+        return await db.transaction().execute(async (trx) => {
+          const updatedRows: Selectable<DB[T]>[] = [];
+          for (const patch of encoded as Array<{ id: string }>) {
+            const { id, ...data } = patch;
+            const query = trx.updateTable(table) as any;
+            const updated = await query
+              .set(data)
+              .where('id', '=', id)
+              .outputAll('inserted')
+              .executeTakeFirst();
+            if (updated) updatedRows.push(updated as Selectable<DB[T]>);
+          }
+          return updatedRows;
+        });
+      });
+      return yield* decodeStructuredEffect(
+        Schema.Array(schema.selectSchema),
+        records,
+      );
+    });
+
+const deleteRecords =
+  <T extends TablesWithId>(db: Kysely<DB>, table: T) =>
+  (ids: string[]) =>
+    Effect.gen(function* () {
+      if (ids.length == 0 || !ids) {
+        return 0n;
+      }
+      const result = yield* fromPromise(
+        DBError,
+        `fail to delete ${table} by ids = ${ids.join(',')}`,
+      )(
+        async () =>
+          (await (db.deleteFrom(table) as any)
+            .where('id', 'in', ids)
+            .execute()) as DeleteResult[],
+      );
+      return result
+        .map((r) => r.numDeletedRows)
+        .reduce((prev, current) => prev + current, BigInt(0));
+    });
+
+type CrudRepository<
+  Insert extends Schema.Top,
+  Select extends Schema.Top,
+  Update extends Schema.Top,
+> = {
+  readonly create: (
+    data: Schema.Schema.Type<Insert>[],
+    modifiedBy?: string,
+  ) => Effect.Effect<Schema.Schema.Type<Select>[], DBError | SchemaError>;
+  readonly findById: (
+    id: string,
+  ) => Effect.Effect<
+    Schema.Schema.Type<Select> | undefined,
+    DBError | SchemaError
+  >;
+  readonly updateRecords: (
+    data: Schema.Schema.Type<Update>[],
+    modifiedBy?: string,
+  ) => Effect.Effect<
+    readonly Schema.Schema.Type<Select>[],
+    DBError | SchemaError
+  >;
+  readonly deleteRecords: (ids: string[]) => Effect.Effect<bigint, DBError>;
+  readonly customQuery: (
+    f: (
+      ctx: RepositoryContext<TablesWithId, Insert, Select, Update>,
+    ) => Promise<unknown>,
+  ) => Effect.Effect<
+    readonly Select['Type'][],
+    DBError | SchemaError,
+    Select['DecodingServices']
+  >;
+};
+
+type WithFindAll<Select extends Schema.Top> = {
+  readonly findAll: () => Effect.Effect<
+    readonly Schema.Schema.Type<Select>[],
+    DBError | SchemaError
+  >;
+};
+
+type FindByMethod<Select extends Schema.Top, MethodName extends string> = {
+  readonly [K in MethodName]: (
+    value: string,
+  ) => Effect.Effect<
+    readonly Schema.Schema.Type<Select>[],
+    DBError | SchemaError
+  >;
+};
+
+type FindByColumnMeta<Column extends string> = {
+  readonly findByColumnName: Column;
+};
+
+type WithFindByColumn<
+  Select extends Schema.Top,
+  Column extends string,
+  MethodName extends string,
+> = FindByMethod<Select, MethodName> & FindByColumnMeta<Column>;
+
+type CrudSchemaSet = {
+  readonly insertSchema: Schema.Top;
+  readonly selectSchema: Schema.Top;
+  readonly updateSchema: Schema.Top;
+};
+
+type CrudRepositoryWithFindAll<
+  Insert extends Schema.Top,
+  Select extends Schema.Top,
+  Update extends Schema.Top,
+> = CrudRepository<Insert, Select, Update> & WithFindAll<Select>;
+
+type CrudRepositoryWithFindByColumn<
+  Insert extends Schema.Top,
+  Select extends Schema.Top,
+  Update extends Schema.Top,
+  Column extends string,
+  MethodName extends string,
+> = CrudRepository<Insert, Select, Update> &
+  WithFindByColumn<Select, Column, MethodName>;
+
+type CrudRepositoryWithFindAllAndFindByColumn<
+  Insert extends Schema.Top,
+  Select extends Schema.Top,
+  Update extends Schema.Top,
+  Column extends string,
+  MethodName extends string,
+> = CrudRepository<Insert, Select, Update> &
+  WithFindAll<Select> &
+  WithFindByColumn<Select, Column, MethodName>;
+
+export type CrudRepositoryFromSchemas<TSchemas extends CrudSchemaSet> =
+  CrudRepository<
+    TSchemas['insertSchema'],
+    TSchemas['selectSchema'],
+    TSchemas['updateSchema']
+  >;
+
+export type CrudRepositoryFromSchemasWithFindAll<
+  TSchemas extends CrudSchemaSet,
+> = CrudRepositoryWithFindAll<
+  TSchemas['insertSchema'],
+  TSchemas['selectSchema'],
+  TSchemas['updateSchema']
+>;
+
+export type CrudRepositoryFromSchemasWithFindByColumn<
+  TSchemas extends CrudSchemaSet,
+  Column extends string,
+  MethodName extends string,
+> = CrudRepositoryWithFindByColumn<
+  TSchemas['insertSchema'],
+  TSchemas['selectSchema'],
+  TSchemas['updateSchema'],
+  Column,
+  MethodName
+>;
+
+export type CrudRepositoryFromSchemasWithFindAllAndFindByColumn<
+  TSchemas extends CrudSchemaSet,
+  Column extends string,
+  MethodName extends string,
+> = CrudRepositoryWithFindAllAndFindByColumn<
+  TSchemas['insertSchema'],
+  TSchemas['selectSchema'],
+  TSchemas['updateSchema'],
+  Column,
+  MethodName
+>;
+
+type RepositoryFromOptions<
+  Insert extends Schema.Top,
+  Select extends Schema.Top,
+  Update extends Schema.Top,
+  TFindAll extends boolean | undefined,
+  TColumn extends string | undefined,
+  MethodName extends string,
+> = CrudRepository<Insert, Select, Update> &
+  (TFindAll extends true ? WithFindAll<Select> : object) &
+  (TColumn extends string
+    ? WithFindByColumn<Select, TColumn, MethodName>
+    : object);
+
+export const makeRepositoryFromDb = <
+  const T extends TablesWithId,
+  Insert extends Schema.Top,
+  Select extends Schema.Top,
+  Update extends Schema.Top,
+  const TFindAll extends boolean | undefined = undefined,
+  const TColumn extends string | undefined = undefined,
+  const TMethodName extends string = string,
+>(
+  db: Kysely<DB>,
+  params: {
+    readonly table: T;
+    readonly schemas: CrudSchemas<Insert, Select, Update>;
+    readonly options?: {
+      readonly findAll?: TFindAll;
+      readonly findByColumn?: {
+        methodName: TMethodName;
+        columnName: StringColumnKeys<T>;
+      };
+    };
+  },
+) => {
+  const base = {
+    create: createRecords(db, params.table, params.schemas),
+    findById: selectRecordById(db, params.table, params.schemas),
+    updateRecords: updateRecords(db, params.table, params.schemas),
+    deleteRecords: deleteRecords(db, params.table),
+    customQuery: makeCustomQuery(db, params.table, params.schemas),
+  };
+
+  const withFindAll =
+    params.options?.findAll == true
+      ? { findAll: selectAllRecords(db, params.table, params.schemas) }
+      : {};
+
+  const withFindByColumn = params.options?.findByColumn
+    ? {
+        [params.options.findByColumn.methodName]: selectRecordsByColumn(db, {
+          table: params.table,
+          schema: params.schemas,
+          columnName: params.options.findByColumn.columnName,
+        }),
+      }
+    : {};
+
+  return {
+    ...base,
+    ...withFindAll,
+    ...withFindByColumn,
+  } as RepositoryFromOptions<
+    Insert,
+    Select,
+    Update,
+    TFindAll,
+    TColumn,
+    TMethodName
+  >;
+};
+
+type DefinitionShape = {
+  fields: Record<string, unknown>;
+  options?: {
+    keyMapping?: Partial<Record<string, string>>;
+  };
+};
+
+type ExtractKeyMapping<TDef extends DefinitionShape> = TDef['options'] extends {
+  keyMapping?: infer KM;
+}
+  ? KM extends Partial<Record<keyof TDef['fields'] & string, string>>
+    ? KM
+    : undefined
+  : undefined;
+
+type MappedFieldKeys<
+  TFields extends Record<string, unknown>,
+  TKeyMapping extends
+    | Partial<Record<keyof TFields & string, string>>
+    | undefined,
+> = {
+  [K in keyof TFields & string]: TKeyMapping extends Record<string, string>
+    ? K extends keyof TKeyMapping
+      ? TKeyMapping[K]
+      : K
+    : K;
+}[keyof TFields & string];
+
+type KeysAreSubsetOf<A extends string, B extends string> =
+  Exclude<A, B> extends never ? true : false;
+
+type AssertDefinitionKeysExistInTable<
+  TDef extends DefinitionShape,
+  TTableKeys extends string,
+> =
+  KeysAreSubsetOf<
+    MappedFieldKeys<TDef['fields'], ExtractKeyMapping<TDef>>,
+    TTableKeys
+  > extends true
+    ? TDef
+    : never;
+
+export const assertDefinitionKeysExistInTable =
+  <TTableKeys extends string>() =>
+  <TDef extends DefinitionShape>(
+    def: AssertDefinitionKeysExistInTable<TDef, TTableKeys>,
+  ) =>
+    def;

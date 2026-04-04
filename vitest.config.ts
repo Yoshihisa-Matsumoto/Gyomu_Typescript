@@ -1,8 +1,8 @@
 import { defineConfig } from 'vitest/config';
 import dotenv from 'dotenv';
 
-dotenv.config();
-
+dotenv.config({ path: '.env' });
+console.log('Env', process.env);
 export default defineConfig({
   test: {
     include: ['src/**/__tests__/**/*.test.{ts,tsx,js}'],
@@ -16,5 +16,7 @@ export default defineConfig({
     logHeapUsage: false,
     printConsoleTrace: false,
     disableConsoleIntercept: true,
+    pool: 'forks',
+    fileParallelism: false,
   },
 });

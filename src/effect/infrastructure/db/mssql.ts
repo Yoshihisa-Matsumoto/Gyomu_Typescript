@@ -10,6 +10,18 @@ export const makeMssql = (config: {
   user: string;
   password: string;
 }) => {
+  // const pool = new ConnectionPool({
+  //   server: config.server,
+  //   database: config.database,
+  //   port: config.port,
+  //   user: config.user,
+  //   password: config.password,
+  //   options: {
+  //     trustServerCertificate: true,
+  //   },
+  // });
+  // await pool.connect();
+
   return new Kysely<DB>({
     dialect: new MssqlDialect({
       tarn: {
@@ -21,6 +33,7 @@ export const makeMssql = (config: {
       },
       tedious: {
         ...tediuous,
+
         connectionFactory: () =>
           new tediuous.Connection({
             authentication: {

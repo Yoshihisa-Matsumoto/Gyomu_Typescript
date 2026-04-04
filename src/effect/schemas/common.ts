@@ -2,6 +2,24 @@ import { Schema, SchemaTransformation } from 'effect';
 import { decodeTo } from 'effect/Schema';
 import { formatDateToYmd, parseYmdToDate } from '../../dateOperation.js';
 
+export const decodeStructuredSyncFromString = <S extends Schema.Schema<any>>(
+  schema: S,
+  content: string,
+) =>
+  Schema.decodeUnknownSync(
+    schema as unknown as Schema.Decoder<Schema.Schema.Type<S>, never>,
+  )(JSON.parse(content));
+
+export const decodeStructuredEffect = <S extends Schema.Schema<any>>(
+  schema: S,
+  input: unknown,
+) => Schema.decodeUnknownEffect(schema)(input);
+
+export const encodeStructuredEffect = <S extends Schema.Schema<any>>(
+  schema: S,
+  input: S['Type'],
+) => Schema.encodeEffect(schema)(input);
+
 type Mutable<T> = {
   -readonly [P in keyof T]: T[P];
 };

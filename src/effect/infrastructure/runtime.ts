@@ -1,5 +1,5 @@
 import { Effect } from 'effect';
-import { RunEnv } from './layer.js';
+import { MainLayer } from './layer.js';
 import { Result } from 'effect/Result';
 import { Layer, provide } from 'effect/Layer';
 
@@ -44,6 +44,6 @@ export const makeRunner =
     );
   };
 
-export const runWithEnvOrThrow = makeRunner(RunEnv);
+export const runWithEnvOrThrow = makeRunner(MainLayer);
 
-export const runWithEnv = makeRunnerAsReturn(RunEnv);
+export const runWithEnv = makeRunnerAsReturn(MainLayer);

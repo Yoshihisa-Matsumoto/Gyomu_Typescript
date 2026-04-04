@@ -1,7 +1,7 @@
 import { Kysely } from 'kysely';
 import { DB } from '../../../db/db.js';
-import { ConfigService } from '../config.js';
-import { ConfigLayer } from '../layer.js';
+import { ConfigLayer, ConfigService } from '../config.js';
+import { MainLayer } from '../layer.js';
 import { ConfigError } from 'effect/Config';
 import { Config, Effect, Layer, Scope, ServiceMap } from 'effect';
 import { makeMssql } from './mssql.js';
@@ -39,3 +39,9 @@ export class KyselyService extends ServiceMap.Service<
     Layer.provide(ConfigLayer),
   );
 }
+
+export const DBLayer = Layer.mergeAll(
+  MainLayer,
+  ConfigLayer,
+  KyselyService.live,
+);

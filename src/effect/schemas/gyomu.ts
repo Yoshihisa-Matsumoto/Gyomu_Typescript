@@ -1,56 +1,52 @@
 import { db, defineEntityCrudSchemas } from './common.js';
 
-const appInfo = {
+export const appInfoDefinition = {
   fields: {
-    applicationId: db.int({ max: 6000, min: 1 }),
     description: db.optionalText({ maxLength: 50 }),
     mailFromAddress: db.optionalText({ maxLength: 200 }),
     mailFromName: db.optionalText({ maxLength: 200 }),
   },
   options: {
     keyMapping: {
-      applicationId: 'application_id',
       mailFromAddress: 'mail_from_address',
       mailFromName: 'mail_from_name',
     },
   },
 } as const;
-export const AppInfoSchema = defineEntityCrudSchemas(appInfo);
+export const AppInfoSchema = defineEntityCrudSchemas(appInfoDefinition);
 
-export const StatusType = defineEntityCrudSchemas({
+export const statusTypeDefinition = {
   fields: {
-    statusType: db.int({ max: 6000, min: 1 }),
     description: db.optionalText({ maxLength: 15 }),
   },
-  options: {
-    keyMapping: {
-      statusType: 'status_type',
-    },
-  },
-});
+} as const;
+export const StatusTypeSchema = defineEntityCrudSchemas(statusTypeDefinition);
 
-export const StatusHandler = defineEntityCrudSchemas({
+export const statusHandlerDefinition = {
   fields: {
-    applicationId: db.int({ max: 6000, min: 1 }),
+    applicationId: db.id,
     region: db.optionalText({ maxLength: 3 }),
-    statusType: db.int({ max: 6000, min: 1 }),
+    statusTypeId: db.id,
     recipientAddress: db.optionalText({ maxLength: 200 }),
     recipientType: db.optionalText({ maxLength: 3 }),
   },
   options: {
     keyMapping: {
       applicationId: 'application_id',
-      statusType: 'status_type',
+      statusTypeId: 'status_type_id',
       recipientAddress: 'recipient_address',
       recipientType: 'recipient_type',
     },
   },
-});
+} as const;
+export const StatusHandlerSchema = defineEntityCrudSchemas(
+  statusHandlerDefinition,
+);
 
-export const StatusInformation = defineEntityCrudSchemas({
+export const statusInformationDefinition = {
   fields: {
-    applicationId: db.int({ max: 6000, min: 1 }),
-    statusType: db.int({ max: 6000, min: 1 }),
+    applicationId: db.id,
+    statusTypeId: db.id,
     errorId: db.int({ max: 6000, min: 1 }),
     instanceId: db.int({ max: 2147483647 }),
     hostName: db.optionalText({ maxLength: 50 }),
@@ -61,24 +57,31 @@ export const StatusInformation = defineEntityCrudSchemas({
   options: {
     keyMapping: {
       applicationId: 'application_id',
-      statusType: 'status_type',
+      statusTypeId: 'status_type_id',
       errorId: 'error_id',
       instanceId: 'instance_id',
       developerInfo: 'developer_info',
+      hostName: 'host_name',
     },
     includeAudit: true,
   },
-});
+} as const;
+export const StatusInformationSchema = defineEntityCrudSchemas(
+  statusInformationDefinition,
+);
 
-export const MarketHoliday = defineEntityCrudSchemas({
+export const marketHolidayDefinition = {
   fields: {
     market: db.text({ maxLength: 10 }),
     year: db.int({ max: 65534 }),
     holiday: db.dateString,
   },
-});
+} as const;
+export const MarketHolidaySchema = defineEntityCrudSchemas(
+  marketHolidayDefinition,
+);
 
-export const Milestone = defineEntityCrudSchemas({
+export const milestoneDefinition = {
   fields: {
     milestoneId: db.text({ maxLength: 200 }),
     description: db.text({ maxLength: 1000 }),
@@ -88,9 +91,10 @@ export const Milestone = defineEntityCrudSchemas({
       milestoneId: 'milestone_id',
     },
   },
-});
+} as const;
+export const MilestoneSchema = defineEntityCrudSchemas(milestoneDefinition);
 
-export const MilestoneDaily = defineEntityCrudSchemas({
+export const milestoneDailyDefinition = {
   fields: {
     targetDate: db.dateString,
     milestoneId: db.text({ maxLength: 200 }),
@@ -102,9 +106,12 @@ export const MilestoneDaily = defineEntityCrudSchemas({
     },
     includeAudit: true,
   },
-});
+} as const;
+export const MilestoneDailySchema = defineEntityCrudSchemas(
+  milestoneDailyDefinition,
+);
 
-export const VariableParameter = defineEntityCrudSchemas({
+export const variableParameterDefinition = {
   fields: {
     variableKey: db.text({ maxLength: 20 }),
     description: db.text({ maxLength: 200 }),
@@ -114,9 +121,12 @@ export const VariableParameter = defineEntityCrudSchemas({
       variableKey: 'variable_key',
     },
   },
-});
+} as const;
+export const VariableParameterSchema = defineEntityCrudSchemas(
+  variableParameterDefinition,
+);
 
-export const ParameterMaster = defineEntityCrudSchemas({
+export const parameterMasterDefinition = {
   fields: {
     itemKey: db.text({ maxLength: 50 }),
     itemValue: db.text(),
@@ -129,12 +139,14 @@ export const ParameterMaster = defineEntityCrudSchemas({
       itemFromDate: 'item_fromdate',
     },
   },
-});
+} as const;
+export const ParameterMasterSchema = defineEntityCrudSchemas(
+  parameterMasterDefinition,
+);
 
-export const TaskInfo = defineEntityCrudSchemas({
+export const taskInfoDefinition = {
   fields: {
-    applicationId: db.int({ max: 6000, min: 1 }),
-    taskInformationId: db.int({ max: 6000, min: 1 }),
+    applicationId: db.id,
     description: db.text({ maxLength: 100 }),
     language: db.text({ maxLength: 10 }),
     location: db.text(),
@@ -144,16 +156,16 @@ export const TaskInfo = defineEntityCrudSchemas({
   options: {
     keyMapping: {
       applicationId: 'application_id',
-      taskInformationId: 'task_info_id',
       className: 'class_name',
     },
   },
-});
+} as const;
+export const TaskInfoSchema = defineEntityCrudSchemas(taskInfoDefinition);
 
-export const TaskInfoAccessList = defineEntityCrudSchemas({
+export const taskInfoAccessListDefitniion = {
   fields: {
-    applicationId: db.int({ max: 6000, min: 1 }),
-    taskInformationId: db.int({ max: 6000, min: 1 }),
+    applicationId: db.id,
+    taskInformationId: db.id,
     accountName: db.text({ maxLength: 100 }),
     canAccess: db.boolean,
     forbidden: db.boolean,
@@ -166,12 +178,15 @@ export const TaskInfoAccessList = defineEntityCrudSchemas({
       canAccess: 'can_access',
     },
   },
-});
+} as const;
+export const TaskInfoAccessListSchema = defineEntityCrudSchemas(
+  taskInfoAccessListDefitniion,
+);
 
-export const TaskData = defineEntityCrudSchemas({
+export const taskDataDefinition = {
   fields: {
-    applicationId: db.int({ max: 6000, min: 1 }),
-    taskInformationId: db.int({ max: 6000, min: 1 }),
+    applicationId: db.id,
+    taskInformationId: db.id,
     parentTaskDataId: db.optionalId,
     parameter: db.optionalText(),
   },
@@ -183,9 +198,10 @@ export const TaskData = defineEntityCrudSchemas({
     },
     includeAudit: true,
   },
-});
+} as const;
+export const TaskDataSchema = defineEntityCrudSchemas(taskDataDefinition);
 
-export const TaskInstance = defineEntityCrudSchemas({
+export const taskInstanceDefinition = {
   fields: {
     taskDataId: db.id,
     taskStatus: db.text({ maxLength: 10 }),
@@ -203,16 +219,22 @@ export const TaskInstance = defineEntityCrudSchemas({
     },
     includeAudit: true,
   },
-});
+} as const;
+export const TaskInstanceSchema = defineEntityCrudSchemas(
+  taskInstanceDefinition,
+);
 
-export const TaskInstanceSubmitInformation = defineEntityCrudSchemas({
+export const taskInstanceSubmitInformationDefinition = {
   fields: {
     taskInstanceId: db.id,
     submitTo: db.optionalText({ maxLength: 30 }),
   },
-});
+} as const;
+export const TaskInstanceSubmitInformationSchema = defineEntityCrudSchemas(
+  taskInstanceSubmitInformationDefinition,
+);
 
-export const TaskDataStatus = defineEntityCrudSchemas({
+export const taskDataStatusDefinition = {
   fields: {
     taskDataId: db.id,
     taskStatus: db.text({ maxLength: 10 }),
@@ -226,9 +248,10 @@ export const TaskDataStatus = defineEntityCrudSchemas({
       latestTaskInstanceId: 'latest_task_instance_id',
     },
   },
-});
+} as const;
+export const TaskDataStatus = defineEntityCrudSchemas(taskDataStatusDefinition);
 
-export const TaskDataLog = defineEntityCrudSchemas({
+export const taskDataLogDefinition = {
   fields: {
     taskDataId: db.id,
     log: db.text(),
@@ -239,45 +262,44 @@ export const TaskDataLog = defineEntityCrudSchemas({
       taskDataId: 'task_data_id',
     },
   },
-});
+} as const;
+export const TaskDataLogSchema = defineEntityCrudSchemas(taskDataLogDefinition);
 
-export const ServiceType = defineEntityCrudSchemas({
+export const serviceTypeDefinition = {
   fields: {
-    serviceTypeId: db.int({ max: 6000, min: 1 }),
     description: db.text({ maxLength: 100 }),
     assemblyName: db.optionalText({ maxLength: 100 }),
     className: db.optionalText({ maxLength: 100 }),
   },
   options: {
     keyMapping: {
-      serviceTypeId: 'service_type_id',
       assemblyName: 'assembly_name',
       className: 'class_name',
     },
   },
-});
+} as const;
+export const ServiceTypeSchema = defineEntityCrudSchemas(serviceTypeDefinition);
 
-export const Service = defineEntityCrudSchemas({
+export const serviceDefinition = {
   fields: {
-    serviceId: db.int({ max: 6000, min: 1 }),
     description: db.text({ maxLength: 100 }),
-    serviceTypeId: db.int({ max: 6000, min: 1 }),
+    serviceTypeId: db.id,
     parameter: db.optionalText(),
   },
   options: {
     keyMapping: {
-      serviceId: 'service_id',
       serviceTypeId: 'service_type_id',
     },
   },
-});
+} as const;
+export const ServiceSchema = defineEntityCrudSchemas(serviceDefinition);
 
-export const TaskSchedulerConfig = defineEntityCrudSchemas({
+export const taskSchedulerConfigDefinition = {
   fields: {
-    serviceId: db.int({ max: 6000, min: 1 }),
+    serviceId: db.id,
     description: db.text({ maxLength: 200 }),
-    applicationId: db.int({ max: 6000, min: 1 }),
-    taskInformationId: db.int({ max: 6000, min: 1 }),
+    applicationId: db.id,
+    taskInformationId: db.id,
     monitorParameter: db.text(),
     nextTriggerTime: db.timestampString,
     taskParameter: db.optionalText(),
@@ -294,4 +316,7 @@ export const TaskSchedulerConfig = defineEntityCrudSchemas({
       isEnabled: 'is_enabled',
     },
   },
-});
+} as const;
+export const TaskSchedulerConfigSchema = defineEntityCrudSchemas(
+  taskSchedulerConfigDefinition,
+);

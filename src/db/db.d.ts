@@ -10,7 +10,6 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
   : ColumnType<T, T | undefined, T>;
 
 export interface GyomuAppsInfoCdtbl {
-  application_id: number;
   description: string | null;
   id: string;
   mail_from_address: string | null;
@@ -49,8 +48,7 @@ export interface GyomuServiceCdtbl {
   description: string;
   id: string;
   parameter: string | null;
-  service_id: number;
-  service_type_id: number;
+  service_type_id: string;
 }
 
 export interface GyomuServiceTypeCdtbl {
@@ -58,46 +56,44 @@ export interface GyomuServiceTypeCdtbl {
   class_name: string | null;
   description: string;
   id: string;
-  service_type_id: number;
 }
 
 export interface GyomuStatusHandler {
-  application_id: number;
+  application_id: string;
   id: string;
   recipient_address: string | null;
   recipient_type: string | null;
   region: string | null;
-  status_type: number | null;
+  status_type_id: string | null;
 }
 
 export interface GyomuStatusInfo {
-  application_id: number;
+  application_id: string;
   description: string | null;
   developer_info: string | null;
   error_id: number;
-  hostname: string | null;
+  host_name: string | null;
   id: string;
   instance_id: number;
   modified_at: Date;
   modified_by: string;
-  status_type: number;
+  status_type_id: string;
   summary: string | null;
 }
 
 export interface GyomuStatusTypeCdtbl {
   description: string | null;
   id: string;
-  status_type: number;
 }
 
 export interface GyomuTaskData {
-  application_id: number;
+  application_id: string;
   id: string;
   modified_at: Date;
   modified_by: string;
   parameter: string | null;
   parent_task_data_id: string | null;
-  task_info_id: number;
+  task_info_id: string;
 }
 
 export interface GyomuTaskDataLog {
@@ -119,22 +115,21 @@ export interface GyomuTaskDataStatus {
 
 export interface GyomuTaskInfoAccessList {
   account_name: string;
-  application_id: number;
+  application_id: string;
   can_access: boolean;
   forbidden: boolean;
   id: string;
-  task_info_id: number;
+  task_info_id: string;
 }
 
 export interface GyomuTaskInfoCdtbl {
-  application_id: number;
+  application_id: string;
   class_name: string;
   description: string;
   id: string;
   language: string;
   location: string;
   restartable: boolean;
-  task_info_id: number;
 }
 
 export interface GyomuTaskInstance {
@@ -156,14 +151,14 @@ export interface GyomuTaskInstanceSubmitInformation {
 }
 
 export interface GyomuTaskSchedulerConfig {
-  application_id: number;
+  application_id: string;
   description: string;
   id: string;
   is_enabled: boolean;
   monitor_parameter: string;
-  next_trigger_time: number;
-  service_id: number;
-  task_id: number;
+  next_trigger_time: Date;
+  service_id: string;
+  task_info_id: string;
   task_parameter: string | null;
 }
 

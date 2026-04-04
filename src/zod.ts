@@ -1,11 +1,11 @@
-export { z } from 'zod';
-import { z } from 'zod';
-export const desc = <T extends z.ZodTypeAny>(
-  schema: T,
-  description: string,
-): T => {
-  return schema.describe(description) as T;
-};
+// export { z } from 'zod';
+// import { z } from 'zod';
+// export const desc = <T extends z.ZodTypeAny>(
+//   schema: T,
+//   description: string,
+// ): T => {
+//   return schema.describe(description) as T;
+// };
 
 // export type ZObjectReturn<
 //   T extends core.$ZodLooseShape = Partial<Record<never, core.SomeType>>,

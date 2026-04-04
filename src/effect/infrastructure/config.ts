@@ -31,3 +31,8 @@ export class ConfigService extends ServiceMap.Service<
 }) {
   static readonly live = Layer.effect(this, this.make);
 }
+
+export const ConfigLayer = Layer.mergeAll(
+  ConfigProviderLive,
+  ConfigService.live,
+);
