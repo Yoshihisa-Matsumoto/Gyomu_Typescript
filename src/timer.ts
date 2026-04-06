@@ -8,17 +8,17 @@ import { TimeoutError } from './errors.js';
  * Return success(true) when it's good result in polling. Otherwise return success(false)
  * Return Failure with TimeoutError if there is any unexpected error
  */
-export const polling = (
+export const polling = <R = never>(
   pollingActionName: string,
   timeoutSeconds: number,
   intervalSeconds: number,
-  timerFunc: (...args: any[]) => Effect.Effect<boolean, unknown>,
+  timerFunc: (...args: any[]) => Effect.Effect<boolean, unknown, R>,
   ...args: any[]
-): Effect.Effect<boolean, TimeoutError> =>
+): Effect.Effect<boolean, TimeoutError, R> =>
   Effect.gen(function* () {
     const timeoutTime = Date.now() + timeoutSeconds * 1000;
 
-    const poll = (): Effect.Effect<boolean, TimeoutError> =>
+    const poll = (): Effect.Effect<boolean, TimeoutError, R> =>
       Effect.gen(function* () {
         const result = yield* timerFunc(...args).pipe(
           Effect.mapError(

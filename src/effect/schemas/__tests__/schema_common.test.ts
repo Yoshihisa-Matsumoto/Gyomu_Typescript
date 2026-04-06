@@ -23,6 +23,7 @@ describe('defineEntityCrudSchemas', () => {
           userId: 'user_id',
         },
       },
+      tags: { entity: 'test' },
     });
 
     const encoded = Schema.encodeSync(schema.selectSchema)({
@@ -41,6 +42,7 @@ describe('defineEntityCrudSchemas', () => {
       fields: {
         userId: Schema.Number,
       },
+      tags: { entity: 'test' },
     });
 
     const encoded = Schema.encodeSync(schema.selectSchema)({
@@ -65,6 +67,7 @@ describe('defineEntityCrudSchemas', () => {
           userId: 'user_id',
         },
       },
+      tags: { entity: 'test' },
     });
 
     const encoded = Schema.encodeSync(schema.selectSchema)({
@@ -84,6 +87,7 @@ describe('defineEntityCrudSchemas', () => {
       fields: {
         userId: Schema.Number,
       },
+      tags: { entity: 'test' },
     });
 
     expect(schema.includeAuditFields).toBe(false);
@@ -95,6 +99,7 @@ describe('defineEntityCrudSchemas', () => {
         a: Schema.Number,
         b: Schema.String,
       },
+      tags: { entity: 'test' },
     });
 
     expect(schema.updatefieldNames.sort()).toEqual(['a', 'b']);
@@ -106,6 +111,7 @@ describe('defineEntityCrudSchemas', () => {
         a: Schema.Number,
         b: Schema.String,
       },
+      tags: { entity: 'test' },
     });
 
     // a, b を渡さなくてもOKなはず
@@ -123,6 +129,7 @@ describe('defineEntityCrudSchemas', () => {
       fields: {
         a: Schema.Number,
       },
+      tags: { entity: 'test' },
     });
 
     expect(() =>
@@ -142,6 +149,7 @@ describe('defineEntityCrudSchemas', () => {
           userId: 'user_id',
         },
       },
+      tags: { entity: 'test' },
     });
 
     const input = {
@@ -159,6 +167,7 @@ describe('defineEntityCrudSchemas', () => {
       fields: {
         a: Schema.Number,
       },
+      tags: { entity: 'test' },
     });
 
     expect(() =>

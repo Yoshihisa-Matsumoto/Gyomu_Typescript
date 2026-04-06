@@ -4,12 +4,10 @@ import { DBError, ValueError } from '../../../errors.js';
 import { Insertable, Kysely, Selectable, DeleteResult } from 'kysely';
 import { fromPromise } from '../../index.js';
 import {
-  decodeStructuredEffect,
-  encodeStructuredEffect,
+  convertToSchemaObjectWithEffect,
+  convertFromSchemaObjectWithEffect,
 } from '../../schemas/common.js';
 import { generateUuid7 } from '../../../guid.js';
-import { SchemaError } from 'effect/Schema';
-
 export type TablesWithId = {
   [K in keyof DB]: DB[K] extends { id: any } ? K : never;
 }[keyof DB];
@@ -25,6 +23,7 @@ export type CrudSchemasBase<
   Select extends Schema.Top,
   Update extends Schema.Top,
 > = {
+  readonly tags: { entity: string };
   readonly insertSchema: Insert;
   readonly selectSchema: Select;
   readonly updateSchema: Update;
@@ -75,7 +74,10 @@ const selectRecordById =
         return await (query as any).where('id', '=', id).executeTakeFirst();
       });
       if (!record) return undefined;
-      return yield* decodeStructuredEffect(schema.selectSchema, record);
+      return yield* convertToSchemaObjectWithEffect(
+        DBError,
+        schema.tags.entity,
+      )(schema.selectSchema, record);
     });
 
 type StringColumnKeys<T> = {
@@ -108,10 +110,10 @@ const selectRecordsByColumn =
           .where(args.columnName, '=', columnValue)
           .execute();
       });
-      return yield* decodeStructuredEffect(
-        Schema.Array(args.schema.selectSchema),
-        records,
-      );
+      return yield* convertToSchemaObjectWithEffect(
+        DBError,
+        `${args.schema.tags.entity} Array`,
+      )(Schema.Array(args.schema.selectSchema), records);
     });
 
 type RepositoryContext<
@@ -134,24 +136,24 @@ const makeCustomQuery =
   >(
     db: Kysely<DB>,
     table: T,
-    schemas: CrudSchemas<Insert, Select, Update>,
+    schema: CrudSchemas<Insert, Select, Update>,
   ) =>
   (
     f: (ctx: RepositoryContext<T, Insert, Select, Update>) => Promise<unknown>,
   ): Effect.Effect<
     readonly Select['Type'][],
-    DBError | Schema.SchemaError,
+    DBError,
     Select['DecodingServices']
   > =>
     Effect.gen(function* () {
       const result = yield* fromPromise(
         DBError,
         `fail custom query on ${table}`,
-      )(async () => await f({ db, table, schemas }));
-      return yield* decodeStructuredEffect(
-        Schema.Array(schemas.selectSchema),
-        result,
-      );
+      )(async () => await f({ db, table, schemas: schema }));
+      return yield* convertToSchemaObjectWithEffect(
+        DBError,
+        `${schema.tags.entity} Array`,
+      )(Schema.Array(schema.selectSchema), result);
     });
 
 const selectAllRecords =
@@ -171,10 +173,10 @@ const selectAllRecords =
         DBError,
         `fail to select all ${table}`,
       )(async () => await db.selectFrom(table).selectAll().execute());
-      return yield* decodeStructuredEffect(
-        Schema.Array(schema.selectSchema),
-        records,
-      );
+      return yield* convertToSchemaObjectWithEffect(
+        DBError,
+        `${schema.tags.entity} Array`,
+      )(Schema.Array(schema.selectSchema), records);
     });
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -193,7 +195,7 @@ type CreateRecordsFn<
       modifiedBy?: string,
     ) => Effect.Effect<
       readonly Select['Type'][],
-      ValueError | Schema.SchemaError | DBError,
+      ValueError | DBError,
       Select['DecodingServices'] | Insert['EncodingServices']
     >;
 const createRecords =
@@ -213,10 +215,10 @@ const createRecords =
   ) =>
     Effect.gen(function* () {
       if (data.length == 0) return [];
-      const encoded = yield* encodeStructuredEffect(
-        Schema.Array(schema.insertSchema),
-        data,
-      );
+      const encoded = yield* convertFromSchemaObjectWithEffect(
+        DBError,
+        `${schema.tags.entity} Array`,
+      )(Schema.Array(schema.insertSchema), data);
       if (schema.includeAuditFields) {
         if (!modifiedBy)
           return yield* Effect.fail(
@@ -247,10 +249,10 @@ const createRecords =
           return insertedRows;
         });
       });
-      return yield* decodeStructuredEffect(
-        Schema.Array(schema.selectSchema),
-        records,
-      );
+      return yield* convertToSchemaObjectWithEffect(
+        DBError,
+        `${schema.tags.entity} Array`,
+      )(Schema.Array(schema.selectSchema), records);
     });
 
 const updateRecords =
@@ -270,10 +272,10 @@ const updateRecords =
   ) =>
     Effect.gen(function* () {
       if (data.length == 0) return [];
-      const encoded = yield* encodeStructuredEffect(
-        Schema.Array(schema.updateSchema),
-        data,
-      );
+      const encoded = yield* convertFromSchemaObjectWithEffect(
+        DBError,
+        `${schema.tags.entity} Array`,
+      )(Schema.Array(schema.updateSchema), data);
       if (schema.includeAuditFields) {
         if (!modifiedBy)
           return yield* Effect.fail(
@@ -303,10 +305,10 @@ const updateRecords =
           return updatedRows;
         });
       });
-      return yield* decodeStructuredEffect(
-        Schema.Array(schema.selectSchema),
-        records,
-      );
+      return yield* convertToSchemaObjectWithEffect(
+        DBError,
+        `${schema.tags.entity} Array`,
+      )(Schema.Array(schema.selectSchema), records);
     });
 
 const deleteRecords =
@@ -338,20 +340,14 @@ type CrudRepository<
   readonly create: (
     data: Schema.Schema.Type<Insert>[],
     modifiedBy?: string,
-  ) => Effect.Effect<Schema.Schema.Type<Select>[], DBError | SchemaError>;
+  ) => Effect.Effect<Schema.Schema.Type<Select>[], DBError>;
   readonly findById: (
     id: string,
-  ) => Effect.Effect<
-    Schema.Schema.Type<Select> | undefined,
-    DBError | SchemaError
-  >;
+  ) => Effect.Effect<Schema.Schema.Type<Select> | undefined, DBError>;
   readonly updateRecords: (
     data: Schema.Schema.Type<Update>[],
     modifiedBy?: string,
-  ) => Effect.Effect<
-    readonly Schema.Schema.Type<Select>[],
-    DBError | SchemaError
-  >;
+  ) => Effect.Effect<readonly Schema.Schema.Type<Select>[], DBError>;
   readonly deleteRecords: (ids: string[]) => Effect.Effect<bigint, DBError>;
   readonly customQuery: (
     f: (
@@ -359,7 +355,7 @@ type CrudRepository<
     ) => Promise<unknown>,
   ) => Effect.Effect<
     readonly Select['Type'][],
-    DBError | SchemaError,
+    DBError,
     Select['DecodingServices']
   >;
 };
@@ -367,17 +363,14 @@ type CrudRepository<
 type WithFindAll<Select extends Schema.Top> = {
   readonly findAll: () => Effect.Effect<
     readonly Schema.Schema.Type<Select>[],
-    DBError | SchemaError
+    DBError
   >;
 };
 
 type FindByMethod<Select extends Schema.Top, MethodName extends string> = {
   readonly [K in MethodName]: (
     value: string,
-  ) => Effect.Effect<
-    readonly Schema.Schema.Type<Select>[],
-    DBError | SchemaError
-  >;
+  ) => Effect.Effect<readonly Schema.Schema.Type<Select>[], DBError>;
 };
 
 type FindByColumnMeta<Column extends string> = {
@@ -467,11 +460,25 @@ type RepositoryFromOptions<
   TFindAll extends boolean | undefined,
   TColumn extends string | undefined,
   MethodName extends string,
+  TExt extends object,
 > = CrudRepository<Insert, Select, Update> &
   (TFindAll extends true ? WithFindAll<Select> : object) &
   (TColumn extends string
     ? WithFindByColumn<Select, TColumn, MethodName>
-    : object);
+    : object) &
+  TExt;
+
+type RepositoryExtensions<
+  T extends TablesWithId,
+  Insert extends Schema.Top,
+  Select extends Schema.Top,
+  Update extends Schema.Top,
+  TEnv,
+> = (ctx: {
+  db: Kysely<DB>;
+  table: T;
+  schemas: CrudSchemas<Insert, Select, Update>;
+}) => Record<string, (...args: any[]) => Effect.Effect<any, DBError, TEnv>>;
 
 export const makeRepositoryFromDb = <
   const T extends TablesWithId,
@@ -481,6 +488,7 @@ export const makeRepositoryFromDb = <
   const TFindAll extends boolean | undefined = undefined,
   const TColumn extends string | undefined = undefined,
   const TMethodName extends string = string,
+  const TExt extends object = object,
 >(
   db: Kysely<DB>,
   params: {
@@ -494,6 +502,7 @@ export const makeRepositoryFromDb = <
       };
     };
   },
+  extensions?: RepositoryExtensions<T, Insert, Select, Update, any>,
 ) => {
   const base = {
     create: createRecords(db, params.table, params.schemas),
@@ -502,6 +511,10 @@ export const makeRepositoryFromDb = <
     deleteRecords: deleteRecords(db, params.table),
     customQuery: makeCustomQuery(db, params.table, params.schemas),
   };
+
+  const ext = extensions
+    ? extensions({ db, table: params.table, schemas: params.schemas })
+    : {};
 
   const withFindAll =
     params.options?.findAll == true
@@ -522,13 +535,15 @@ export const makeRepositoryFromDb = <
     ...base,
     ...withFindAll,
     ...withFindByColumn,
+    ...ext,
   } as RepositoryFromOptions<
     Insert,
     Select,
     Update,
     TFindAll,
     TColumn,
-    TMethodName
+    TMethodName,
+    TExt
   >;
 };
 

@@ -1,41 +1,36 @@
-import {
-  gyomu_market_holiday,
-  PrismaClient,
-} from '../generated/prisma/client.js';
-import { mockDeep, mockReset, DeepMockProxy } from 'vitest-mock-extended';
+// import { beforeEach, vi } from 'vitest';
 
-import prisma from '../dbsingleton.js';
-import { beforeEach, vi } from 'vitest';
+import { Effect, Layer } from 'effect';
+import { GyomuRepository } from '../effect/gyomu/gyomuRepository.js';
+import { MarketHolidaySchema } from '../effect/schemas/gyomu.js';
+// beforeEach(() => {
+//   //console.log('beforeEach in baseDBClass', prismaMock, prisma);
+//   mockReset(prismaMock);
 
-vi.mock('../dbsingleton', () => ({
-  __esModule: true,
-  default: mockDeep<PrismaClient>(),
-}));
+//   prismaMock.gyomu_market_holiday.findMany.mockResolvedValue(dummy_holidays);
+// });
+const testId = 'F6AE5F2D-BD14-4C5F-9CC3-3A69EF90DD5B';
 
-export const prismaMock = prisma as unknown as DeepMockProxy<PrismaClient>;
-
-beforeEach(() => {
-  //console.log('beforeEach in baseDBClass', prismaMock, prisma);
-  mockReset(prismaMock);
-
-  prismaMock.gyomu_market_holiday.findMany.mockResolvedValue(dummy_holidays);
-});
-
-const dummy_holidays: gyomu_market_holiday[] = [
-  { year: 1984, market: 'JP', holiday: '19840101' },
-  { year: 1984, market: 'JP', holiday: '19840102' },
-  { year: 1984, market: 'JP', holiday: '19840115' },
-  { year: 1984, market: 'JP', holiday: '19840116' },
-  { year: 1984, market: 'JP', holiday: '19840211' },
-  { year: 1984, market: 'JP', holiday: '19840320' },
-  { year: 1984, market: 'JP', holiday: '19840429' },
-  { year: 1984, market: 'JP', holiday: '19840430' },
-  { year: 1984, market: 'JP', holiday: '19840503' },
-  { year: 1984, market: 'JP', holiday: '19840505' },
-  { year: 1984, market: 'JP', holiday: '19840915' },
-  { year: 1984, market: 'JP', holiday: '19840923' },
-  { year: 1984, market: 'JP', holiday: '19840924' },
-  { year: 1984, market: 'JP', holiday: '19841010' },
-  { year: 1984, market: 'JP', holiday: '19841103' },
-  { year: 1984, market: 'JP', holiday: '19841123' },
+export const GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
+  marketHoliday: {
+    findByMarket: () => Effect.succeed(dummy_holidays),
+  },
+} as any);
+const dummy_holidays: (typeof MarketHolidaySchema.types._select)[] = [
+  { id: testId, year: 1984, market: 'JP', holiday: '1984-01-01' },
+  { id: testId, year: 1984, market: 'JP', holiday: '1984-01-02' },
+  { id: testId, year: 1984, market: 'JP', holiday: '1984-01-15' },
+  { id: testId, year: 1984, market: 'JP', holiday: '1984-01-16' },
+  { id: testId, year: 1984, market: 'JP', holiday: '1984-02-11' },
+  { id: testId, year: 1984, market: 'JP', holiday: '1984-03-20' },
+  { id: testId, year: 1984, market: 'JP', holiday: '1984-04-29' },
+  { id: testId, year: 1984, market: 'JP', holiday: '1984-04-30' },
+  { id: testId, year: 1984, market: 'JP', holiday: '1984-05-03' },
+  { id: testId, year: 1984, market: 'JP', holiday: '1984-05-05' },
+  { id: testId, year: 1984, market: 'JP', holiday: '1984-09-15' },
+  { id: testId, year: 1984, market: 'JP', holiday: '1984-09-23' },
+  { id: testId, year: 1984, market: 'JP', holiday: '1984-09-24' },
+  { id: testId, year: 1984, market: 'JP', holiday: '1984-10-10' },
+  { id: testId, year: 1984, market: 'JP', holiday: '1984-11-03' },
+  { id: testId, year: 1984, market: 'JP', holiday: '1984-11-23' },
 ];

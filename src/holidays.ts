@@ -1,11 +1,10 @@
-import { format, addDays, subDays } from 'date-fns';
+import { addDays, subDays } from 'date-fns';
 import { addMonths, isBefore, isEqual } from 'date-fns';
-import { createDateOnly } from './dateOperation.js';
-import prisma from './dbsingleton.js';
-import { genericDBFunction } from './dbutil.js';
-import { gyomu_market_holiday } from './generated/prisma/client.js';
-//import { success, PromiseResult } from './result';
-import { okAsync, GyomuResultAsync } from './result.js';
+import { createDateOnly, formatDateToYmd } from './dateOperation.js';
+
+import { Effect } from 'effect';
+import { GyomuRepository } from './effect/gyomu/gyomuRepository.js';
+import { DBError } from './errors.js';
 export default class MarketDateAccess {
   private static __marketHolidays: {
     [market: string]: string[];
@@ -22,37 +21,53 @@ export default class MarketDateAccess {
     }
   }
   //static async getMarketAccess(market: string, ctx: Context) {
-  static getMarketAccess(market: string): GyomuResultAsync<MarketDateAccess> {
+  static getMarketAccess(
+    market: string,
+  ): Effect.Effect<MarketDateAccess, DBError, GyomuRepository> {
     const access = new MarketDateAccess(market);
-    return access.#initDataLoad().map(() => access);
+    return access.#initDataLoad().pipe(Effect.map(() => access));
   }
 
   //async #initDataLoad(ctx: Context) {
-  #initDataLoad(): GyomuResultAsync<boolean> {
-    if (this.#holidays.length > 0) return okAsync(true);
+  #initDataLoad(): Effect.Effect<boolean, DBError, GyomuRepository> {
+    if (this.#holidays.length > 0) return Effect.succeed(true);
     this.#holidays = new Array<string>();
-    return genericDBFunction<gyomu_market_holiday[]>(
-      'load gyomu_market_holiday',
-      () =>
-        prisma.gyomu_market_holiday.findMany({
-          where: { market: this.#market },
-        }),
-      [],
-    ).map((holidays) => {
-      holidays.forEach((row) => {
-        this.#holidays.push(row.holiday);
-      });
+    const market = this.#market;
+    const holiday = this.#holidays;
+    return Effect.gen(function* () {
+      const repo = yield* GyomuRepository;
+      return yield* repo.marketHoliday.findByMarket(market);
+    }).pipe(
+      Effect.map((holidays) => {
+        holidays.forEach((row) => {
+          holiday.push(row.holiday);
+        });
+        MarketDateAccess.__marketHolidays[market] = holiday;
+        return true;
+      }),
+    );
+    // return genericDBFunction<gyomu_market_holiday[]>(
+    //   'load gyomu_market_holiday',
+    //   () =>
+    //     prisma.gyomu_market_holiday.findMany({
+    //       where: { market: this.#market },
+    //     }),
+    //   [],
+    // ).map((holidays) => {
+    //   holidays.forEach((row) => {
+    //     this.#holidays.push(row.holiday);
+    //   });
 
-      MarketDateAccess.__marketHolidays[this.#market] = this.#holidays;
-      return true;
-    });
+    //   MarketDateAccess.__marketHolidays[this.#market] = this.#holidays;
+    //   return true;
+    // });
   }
 
   isBusinessDay(targetDate: Date): boolean {
     const dayOfWeek = targetDate.getDay();
-    const targetYYYYMMDD = format(targetDate, 'yyyyMMdd');
+    const targetYmd = formatDateToYmd(targetDate);
     if (dayOfWeek === 0 || dayOfWeek === 6) return false;
-    const holidayArray = this.#holidays.filter((val) => val === targetYYYYMMDD);
+    const holidayArray = this.#holidays.filter((val) => val === targetYmd);
     return !holidayArray || holidayArray.length === 0;
   }
 

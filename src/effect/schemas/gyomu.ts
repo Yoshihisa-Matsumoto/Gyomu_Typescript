@@ -6,6 +6,11 @@ export const appInfoDefinition = {
     mailFromAddress: db.optionalText({ maxLength: 200 }),
     mailFromName: db.optionalText({ maxLength: 200 }),
   },
+  tags: {
+    entity: 'AppInfo',
+    sensitiveFields: ['mailFromAddress', 'mailFromName'] as const,
+  },
+
   options: {
     keyMapping: {
       mailFromAddress: 'mail_from_address',
@@ -19,6 +24,7 @@ export const statusTypeDefinition = {
   fields: {
     description: db.optionalText({ maxLength: 15 }),
   },
+  tags: { entity: 'StatusType' },
 } as const;
 export const StatusTypeSchema = defineEntityCrudSchemas(statusTypeDefinition);
 
@@ -30,6 +36,7 @@ export const statusHandlerDefinition = {
     recipientAddress: db.optionalText({ maxLength: 200 }),
     recipientType: db.optionalText({ maxLength: 3 }),
   },
+  tags: { entity: 'StatusHandler' },
   options: {
     keyMapping: {
       applicationId: 'application_id',
@@ -54,6 +61,7 @@ export const statusInformationDefinition = {
     description: db.optionalText({ maxLength: 1000 }),
     developerInfo: db.optionalText(),
   },
+  tags: { entity: 'StatusInfo' },
   options: {
     keyMapping: {
       applicationId: 'application_id',
@@ -76,6 +84,7 @@ export const marketHolidayDefinition = {
     year: db.int({ max: 65534 }),
     holiday: db.dateString,
   },
+  tags: { entity: 'MarketHoliday' },
 } as const;
 export const MarketHolidaySchema = defineEntityCrudSchemas(
   marketHolidayDefinition,
@@ -86,6 +95,7 @@ export const milestoneDefinition = {
     milestoneId: db.text({ maxLength: 200 }),
     description: db.text({ maxLength: 1000 }),
   },
+  tags: { entity: 'Milestone' },
   options: {
     keyMapping: {
       milestoneId: 'milestone_id',
@@ -99,6 +109,7 @@ export const milestoneDailyDefinition = {
     targetDate: db.dateString,
     milestoneId: db.text({ maxLength: 200 }),
   },
+  tags: { entity: 'MilestoneDaily' },
   options: {
     keyMapping: {
       targetDate: 'target_date',
@@ -116,6 +127,7 @@ export const variableParameterDefinition = {
     variableKey: db.text({ maxLength: 20 }),
     description: db.text({ maxLength: 200 }),
   },
+  tags: { entity: 'VariableParameter' },
   options: {
     keyMapping: {
       variableKey: 'variable_key',
@@ -132,6 +144,7 @@ export const parameterMasterDefinition = {
     itemValue: db.text(),
     itemFromDate: db.dateString,
   },
+  tags: { entity: 'ParameterMaster' },
   options: {
     keyMapping: {
       itemKey: 'item_key',
@@ -153,6 +166,7 @@ export const taskInfoDefinition = {
     className: db.text({ maxLength: 100 }),
     restartable: db.boolean,
   },
+  tags: { entity: 'TaskInfo' },
   options: {
     keyMapping: {
       applicationId: 'application_id',
@@ -170,6 +184,7 @@ export const taskInfoAccessListDefitniion = {
     canAccess: db.boolean,
     forbidden: db.boolean,
   },
+  tags: { entity: 'TaskInfoAccessList' },
   options: {
     keyMapping: {
       applicationId: 'application_id',
@@ -190,6 +205,7 @@ export const taskDataDefinition = {
     parentTaskDataId: db.optionalId,
     parameter: db.optionalText(),
   },
+  tags: { entity: 'TaskData' },
   options: {
     keyMapping: {
       applicationId: 'application_id',
@@ -210,6 +226,7 @@ export const taskInstanceDefinition = {
     parameter: db.optionalText(),
     comment: db.optionalText(),
   },
+  tags: { entity: 'TaskInstance' },
   options: {
     keyMapping: {
       taskDataId: 'task_data_id',
@@ -229,6 +246,7 @@ export const taskInstanceSubmitInformationDefinition = {
     taskInstanceId: db.id,
     submitTo: db.optionalText({ maxLength: 30 }),
   },
+  tags: { entity: 'TaskInstanceSubmitInformation' },
 } as const;
 export const TaskInstanceSubmitInformationSchema = defineEntityCrudSchemas(
   taskInstanceSubmitInformationDefinition,
@@ -240,6 +258,7 @@ export const taskDataStatusDefinition = {
     taskStatus: db.text({ maxLength: 10 }),
     latestTaskInstanceId: db.id,
   },
+  tags: { entity: 'TaskDataStatus' },
   options: {
     includeAudit: true,
     keyMapping: {
@@ -256,6 +275,7 @@ export const taskDataLogDefinition = {
     taskDataId: db.id,
     log: db.text(),
   },
+  tags: { entity: 'TaskDataLog' },
   options: {
     includeAudit: true,
     keyMapping: {
@@ -271,6 +291,7 @@ export const serviceTypeDefinition = {
     assemblyName: db.optionalText({ maxLength: 100 }),
     className: db.optionalText({ maxLength: 100 }),
   },
+  tags: { entity: 'ServiceType' },
   options: {
     keyMapping: {
       assemblyName: 'assembly_name',
@@ -286,6 +307,7 @@ export const serviceDefinition = {
     serviceTypeId: db.id,
     parameter: db.optionalText(),
   },
+  tags: { entity: 'Service' },
   options: {
     keyMapping: {
       serviceTypeId: 'service_type_id',
@@ -305,6 +327,7 @@ export const taskSchedulerConfigDefinition = {
     taskParameter: db.optionalText(),
     isEnabled: db.boolean,
   },
+  tags: { entity: 'TaskSchedulerConfig' },
   options: {
     keyMapping: {
       serviceId: 'service_id',

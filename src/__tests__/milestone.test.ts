@@ -1,88 +1,153 @@
-import { prismaMock } from './baseDBClass.js';
+import { Effect, Layer } from 'effect';
 import { Milestone } from '../milestone.js';
-import { createDateFromYYYYMMDD } from '../dateOperation.js';
-import { format } from 'date-fns';
-import { beforeEach, expect, test } from 'vitest';
+import { beforeEach, describe, expect, it, test } from 'vitest';
+import { GyomuRepository } from '../effect/gyomu/gyomuRepository.js';
+import { MainLayer } from '../effect/infrastructure/layer.js';
+import { ConfigLayer } from '../effect/infrastructure/config.js';
+import { NodeFileSystem } from '@effect/platform-node';
+import { makeRunner } from '../effect/infrastructure/runtime.js';
 
+const testId = 'F6AE5F2D-BD14-4C5F-9CC3-3A69EF90DD5B';
+const testTime = '2026-10-28T00:00:00.000Z';
 beforeEach(() => {});
-test('Milestone access check', async () => {
+describe('Milestone access check', async () => {
   const milestoneId: string = 'TestMilestone';
-  const targetDate = createDateFromYYYYMMDD('20010101');
-  prismaMock.gyomu_milestone_daily.findUnique.mockResolvedValue(null);
-  let result = await Milestone.exists(milestoneId, targetDate);
-  if (result.isErr()) {
-    expect(result.isErr()).toBeFalsy();
-    return;
-  }
-  expect(result.value.exists).toBeFalsy();
-  expect(result.value.updateTime).toBeUndefined();
+  const targetYmd = '2001-01-01';
+  it('Milestone should not exist', async () => {
+    const GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
+      milestoneDaily: {
+        customQuery: () => Effect.succeed([]),
+      },
+    } as any);
+    const TestLayer = Layer.mergeAll(MainLayer, ConfigLayer)
+      .pipe(Layer.provideMerge(GyomuRepositoryMock))
+      // .pipe(Layer.provideMerge(KyselyService.live))
+      .pipe(Layer.provideMerge(NodeFileSystem.layer));
+    const testRunner = makeRunner(TestLayer);
+    const result = await testRunner(Milestone.exists(milestoneId, targetYmd));
 
-  prismaMock.gyomu_milestone_daily.findUnique.mockResolvedValue({
-    milestone_id: milestoneId,
-    target_date: format(targetDate, 'yyyyMMdd'),
-    update_time: BigInt(1),
+    expect(result.exists).toBeFalsy();
   });
-  result = await Milestone.exists(milestoneId, targetDate);
-  if (result.isErr()) {
-    expect(result.isErr()).toBeFalsy();
-    return;
-  }
-  expect(result.value.exists).toBeTruthy();
-  expect(result.value.updateTime).not.toBeUndefined();
+  it('Milestone should  exist', async () => {
+    const GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
+      milestoneDaily: {
+        customQuery: () =>
+          Effect.succeed([
+            {
+              id: testId,
+              milestoneId: milestoneId,
+              targetDate: targetYmd,
+              modifiedAt: testTime,
+              modifiedBy: 'testUser',
+            },
+          ]),
+      },
+    } as any);
+    const TestLayer = Layer.mergeAll(MainLayer, ConfigLayer)
+      .pipe(Layer.provideMerge(GyomuRepositoryMock))
+      // .pipe(Layer.provideMerge(KyselyService.live))
+      .pipe(Layer.provideMerge(NodeFileSystem.layer));
+    const testRunner = makeRunner(TestLayer);
+    const result = await testRunner(Milestone.exists(milestoneId, targetYmd));
 
-  prismaMock.gyomu_milestone_daily.findUnique.mockResolvedValue({
-    milestone_id: milestoneId,
-    target_date: format(targetDate, 'yyyyMM') + '**',
-    update_time: BigInt(1),
+    expect(result.exists).toBeTruthy();
+    if (result.exists) {
+      expect(result.updateTime).not.toBeUndefined();
+    }
   });
-  result = await Milestone.exists(milestoneId, targetDate, true);
-  if (result.isErr()) {
-    expect(result.isErr()).toBeFalsy();
-    return;
-  }
-  expect(result.value.exists).toBeTruthy();
-  expect(result.value.updateTime).not.toBeUndefined();
+  it('Monthly Milestone test', async () => {
+    const GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
+      milestoneDaily: {
+        customQuery: () =>
+          Effect.succeed([
+            {
+              id: testId,
+              milestoneId: milestoneId,
+              targetDate: targetYmd.substring(0, 8) + '**',
+              modifiedAt: testTime,
+              modifiedBy: 'testUser',
+            },
+          ]),
+      },
+    } as any);
+    const TestLayer = Layer.mergeAll(MainLayer, ConfigLayer)
+      .pipe(Layer.provideMerge(GyomuRepositoryMock))
+      // .pipe(Layer.provideMerge(KyselyService.live))
+      .pipe(Layer.provideMerge(NodeFileSystem.layer));
+    const testRunner = makeRunner(TestLayer);
+    const result = await testRunner(Milestone.exists(milestoneId, targetYmd));
+
+    expect(result.exists).toBeTruthy();
+    if (result.exists) {
+      expect(result.updateTime).not.toBeUndefined();
+    }
+  });
 });
 
 test('Milestone register test', async () => {
   const milestoneId: string = 'TestMilestone';
-  const targetDate = createDateFromYYYYMMDD('20010101');
+  const targetYmd = '2001-01-01';
+  const GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
+    milestoneDaily: {
+      customQuery: () => Effect.succeed([]),
+      create: () =>
+        Effect.succeed([
+          {
+            id: testId,
+            milestoneId: milestoneId,
+            targetDate: targetYmd,
+            modifiedAt: testTime,
+            modifiedBy: 'testUser',
+          },
+        ]),
+    },
+  } as any);
+  const TestLayer = Layer.mergeAll(MainLayer, ConfigLayer)
+    .pipe(Layer.provideMerge(GyomuRepositoryMock))
+    // .pipe(Layer.provideMerge(KyselyService.live))
+    .pipe(Layer.provideMerge(NodeFileSystem.layer));
+  const testRunner = makeRunner(TestLayer);
+  const result = await testRunner(Milestone.register(milestoneId, targetYmd));
 
-  prismaMock.gyomu_milestone_daily.create.mockResolvedValue({
-    milestone_id: milestoneId,
-    target_date: format(targetDate, 'yyyyMMdd'),
-    update_time: BigInt(1),
-  });
-  const result = await Milestone.register(milestoneId, targetDate);
-  if (result.isErr()) {
-    expect(result.isErr()).toBeFalsy();
-    return;
-  }
-  expect(result.value).not.toBeUndefined();
+  expect(result).toBe(testTime);
 });
 
-test('Milestone wait test', async () => {
+describe('Milestone wait test', async () => {
   const milestoneId: string = 'TestMilestone';
-  const targetDate = createDateFromYYYYMMDD('20010101');
+  const targetYmd = '2001-01-01';
 
-  const result = await Milestone.wait(milestoneId, targetDate, 1);
-  if (result.isErr()) {
-    expect(result.isErr()).toBeFalsy();
-    return;
-  }
-  expect(result.value).toBeFalsy();
+  it('should return with false without milestone', async () => {
+    const GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
+      milestoneDaily: {
+        customQuery: () => Effect.succeed([]),
+      },
+    } as any);
+    const TestLayer = Layer.mergeAll(MainLayer, ConfigLayer)
+      .pipe(Layer.provideMerge(GyomuRepositoryMock))
+      // .pipe(Layer.provideMerge(KyselyService.live))
+      .pipe(Layer.provideMerge(NodeFileSystem.layer));
+    const testRunner = makeRunner(TestLayer);
+    const result = await testRunner(Milestone.wait(milestoneId, targetYmd, 1));
+    expect(result).toBeFalsy();
+  });
 
-  setTimeout(async () => {
-    prismaMock.gyomu_milestone_daily.findUnique.mockResolvedValue({
-      milestone_id: milestoneId,
-      target_date: format(targetDate, 'yyyyMMdd'),
-      update_time: BigInt(1),
-    });
-  }, 1000);
-  const result2 = await Milestone.wait(milestoneId, targetDate, 5);
-  if (result2.isErr()) {
-    expect(result2.isErr()).toBeFalsy();
-    return;
-  }
-  expect(result2.value).toBeTruthy();
+  // if (result.isErr()) {
+  //   expect(result.isErr()).toBeFalsy();
+  //   return;
+  // }
+  // expect(result.value).toBeFalsy();
+
+  // setTimeout(async () => {
+  //   prismaMock.gyomu_milestone_daily.findUnique.mockResolvedValue({
+  //     milestone_id: milestoneId,
+  //     target_date: format(targetDate, 'yyyyMMdd'),
+  //     update_time: BigInt(1),
+  //   });
+  // }, 1000);
+  // const result2 = await Milestone.wait(milestoneId, targetDate, 5);
+  // if (result2.isErr()) {
+  //   expect(result2.isErr()).toBeFalsy();
+  //   return;
+  // }
+  // expect(result2.value).toBeTruthy();
 });

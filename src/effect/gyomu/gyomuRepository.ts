@@ -3,20 +3,25 @@ import {
   assertDefinitionKeysExistInTable,
   CrudRepositoryFromSchemasWithFindAll,
   CrudRepositoryFromSchemasWithFindAllAndFindByColumn,
+  CrudRepositoryFromSchemasWithFindByColumn,
   makeRepositoryFromDb,
 } from '../infrastructure/db/common.js';
 import {
   appInfoDefinition,
   AppInfoSchema,
   marketHolidayDefinition,
+  MarketHolidaySchema,
   milestoneDailyDefinition,
+  MilestoneDailySchema,
   milestoneDefinition,
+  MilestoneSchema,
   parameterMasterDefinition,
   serviceDefinition,
   serviceTypeDefinition,
   statusHandlerDefinition,
   StatusHandlerSchema,
   statusInformationDefinition,
+  StatusInformationSchema,
   statusTypeDefinition,
   StatusTypeSchema,
   taskDataDefinition,
@@ -24,6 +29,9 @@ import {
 } from '../schemas/gyomu.js';
 import { KyselyService } from '../infrastructure/db/kysely-service.js';
 import { DB } from '../../db/db.js';
+import { fromPromise } from '../index.js';
+import { DBError } from '../../errors.js';
+import { convertToSchemaObjectWithEffect } from '../schemas/common.js';
 
 export class GyomuRepository extends ServiceMap.Service<
   GyomuRepository,
@@ -39,6 +47,34 @@ export class GyomuRepository extends ServiceMap.Service<
       'application_id',
       'findByApplicationId'
     >;
+    readonly statusInfo: CrudRepositoryFromSchemasWithFindByColumn<
+      typeof StatusInformationSchema,
+      'application_id',
+      'findByApplicationId'
+    >;
+    readonly marketHoliday: CrudRepositoryFromSchemasWithFindByColumn<
+      typeof MarketHolidaySchema,
+      'market',
+      'findByMarket'
+    >;
+    readonly milestone: CrudRepositoryFromSchemasWithFindAllAndFindByColumn<
+      typeof MilestoneSchema,
+      'milestone_id',
+      'findByMilestoneId'
+    >;
+    readonly milestoneDaily: CrudRepositoryFromSchemasWithFindByColumn<
+      typeof MilestoneDailySchema,
+      'target_date',
+      'findByTargetDate'
+    > & {
+      exists: (
+        milestoneId: string,
+        targetDate: string,
+      ) => Effect.Effect<
+        { exists: true; updateTime: string } | { exists: false },
+        DBError
+      >;
+    };
   }
 >()('GyomuRepository', {
   make: Effect.gen(function* () {
@@ -70,6 +106,85 @@ export class GyomuRepository extends ServiceMap.Service<
           },
         },
       }),
+      statusInfo: makeRepositoryFromDb(db, {
+        table: 'gyomu_status_info',
+        schemas: StatusInformationSchema,
+        options: {
+          findAll: false,
+          findByColumn: {
+            columnName: 'application_id',
+            methodName: 'findByApplicationId',
+          },
+        },
+      }),
+      marketHoliday: makeRepositoryFromDb(db, {
+        table: 'gyomu_market_holiday',
+        schemas: MarketHolidaySchema,
+        options: {
+          findAll: false,
+          findByColumn: {
+            columnName: 'market',
+            methodName: 'findByMarket',
+          },
+        },
+      }),
+      milestone: makeRepositoryFromDb(db, {
+        table: 'gyomu_milestone_cdtbl',
+        schemas: MilestoneSchema,
+        options: {
+          findAll: true,
+          findByColumn: {
+            columnName: 'milestone_id',
+            methodName: 'findByMilestoneId',
+          },
+        },
+      }),
+      milestoneDaily: makeRepositoryFromDb(
+        db,
+        {
+          table: 'gyomu_milestone_daily',
+          schemas: MilestoneDailySchema,
+          options: {
+            findByColumn: {
+              columnName: 'target_date',
+              methodName: 'findByTargetDate',
+            },
+          },
+        },
+        ({ db, table, schemas }) => {
+          return {
+            exists: (milestoneId: string, targetDate: string) =>
+              fromPromise(
+                DBError,
+                `fail to find ${table} by milestone_id and target_date`,
+              )(async () => {
+                const record = await db
+                  .selectFrom(table)
+                  .selectAll()
+                  .where('milestone_id', '=', milestoneId)
+                  .where('target_date', '=', targetDate)
+                  .executeTakeFirst();
+                return record;
+              }).pipe(
+                Effect.flatMap((record) => {
+                  if (!record) return Effect.succeed({ exists: false });
+
+                  return convertToSchemaObjectWithEffect(
+                    DBError,
+                    `${schemas.tags.entity}`,
+                  )(schemas.selectSchema, record).pipe(
+                    Effect.map((data) => {
+                      return {
+                        exists: true,
+                        updateTime: data.modifiedAt,
+                      };
+                    }),
+                  );
+                }),
+              ),
+          };
+        },
+      ),
     } as const;
   }),
 }) {

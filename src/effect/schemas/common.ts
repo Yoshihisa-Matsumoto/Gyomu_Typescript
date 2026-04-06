@@ -1,8 +1,12 @@
-import { Schema, SchemaTransformation } from 'effect';
-import { decodeTo } from 'effect/Schema';
+import { Effect, Schema, SchemaTransformation } from 'effect';
+import { decodeTo, SchemaError } from 'effect/Schema';
 import { formatDateToYmd, parseYmdToDate } from '../../dateOperation.js';
+import { AppError, AppErrorCtor } from '../../base-error.js';
+import { unknownError } from '../../errors.js';
 
-export const decodeStructuredSyncFromString = <S extends Schema.Schema<any>>(
+export const jsonString2SchemaObjectWithoutEffect = <
+  S extends Schema.Schema<any>,
+>(
   schema: S,
   content: string,
 ) =>
@@ -10,15 +14,23 @@ export const decodeStructuredSyncFromString = <S extends Schema.Schema<any>>(
     schema as unknown as Schema.Decoder<Schema.Schema.Type<S>, never>,
   )(JSON.parse(content));
 
-export const decodeStructuredEffect = <S extends Schema.Schema<any>>(
-  schema: S,
-  input: unknown,
-) => Schema.decodeUnknownEffect(schema)(input);
+export const convertToSchemaObjectWithEffect =
+  <E extends AppError>(ErrorType: AppErrorCtor<E>, schemaName: string) =>
+  <S extends Schema.Schema<any>>(schema: S, input: unknown) =>
+    Schema.decodeUnknownEffect(schema)(input).pipe(
+      Effect.mapError((e: SchemaError) =>
+        unknownError(ErrorType, e, `Fail to decode into ${schemaName}`),
+      ),
+    );
 
-export const encodeStructuredEffect = <S extends Schema.Schema<any>>(
-  schema: S,
-  input: S['Type'],
-) => Schema.encodeEffect(schema)(input);
+export const convertFromSchemaObjectWithEffect =
+  <E extends AppError>(ErrorType: AppErrorCtor<E>, schemaName: string) =>
+  <S extends Schema.Schema<any>>(schema: S, input: S['Type']) =>
+    Schema.encodeEffect(schema)(input).pipe(
+      Effect.mapError((e: SchemaError) =>
+        unknownError(ErrorType, e, `Fail to encode from ${schemaName}`),
+      ),
+    );
 
 type Mutable<T> = {
   -readonly [P in keyof T]: T[P];
@@ -135,6 +147,10 @@ export const defineEntityCrudSchemas = <
   TIncludeAudit extends boolean,
 >(args: {
   fields: TFields;
+  tags: {
+    entity: string;
+    sensitiveFields?: readonly Extract<keyof TFields, string>[];
+  };
   options?: {
     includeAudit?: TIncludeAudit;
     keyMapping?: { readonly [K in keyof TFields]?: PropertyKey };
@@ -196,5 +212,6 @@ export const defineEntityCrudSchemas = <
     updatefieldNames: updateKeys,
     includeAuditFields: args.options?.includeAudit ?? false,
     fields: args.fields,
+    tags: args.tags,
   };
 };
