@@ -127,7 +127,7 @@ type RepositoryContext<
   schemas: CrudSchemas<Insert, Select, Update>;
 };
 
-const makeCustomQuery =
+export const customSQLAndReturnRecords =
   <
     T extends TablesWithId,
     Insert extends Schema.Top,
@@ -311,6 +311,32 @@ const updateRecords =
       )(Schema.Array(schema.selectSchema), records);
     });
 
+export const makeCustomDelete =
+  <
+    T extends TablesWithId,
+    Insert extends Schema.Top,
+    Select extends Schema.Top,
+    Update extends Schema.Top,
+  >(
+    db: Kysely<DB>,
+    table: T,
+    schema: CrudSchemas<Insert, Select, Update>,
+  ) =>
+  (
+    f: (
+      ctx: RepositoryContext<T, Insert, Select, Update>,
+    ) => Promise<DeleteResult[]>,
+  ): Effect.Effect<bigint, DBError> =>
+    Effect.gen(function* () {
+      const result = yield* fromPromise(
+        DBError,
+        `fail custom delete on ${table}`,
+      )(async () => await f({ db, table, schemas: schema }));
+      return result
+        .map((r) => r.numDeletedRows)
+        .reduce((prev, current) => prev + current, BigInt(0));
+    });
+
 const deleteRecords =
   <T extends TablesWithId>(db: Kysely<DB>, table: T) =>
   (ids: string[]) =>
@@ -349,15 +375,6 @@ type CrudRepository<
     modifiedBy?: string,
   ) => Effect.Effect<readonly Schema.Schema.Type<Select>[], DBError>;
   readonly deleteRecords: (ids: string[]) => Effect.Effect<bigint, DBError>;
-  readonly customQuery: (
-    f: (
-      ctx: RepositoryContext<TablesWithId, Insert, Select, Update>,
-    ) => Promise<unknown>,
-  ) => Effect.Effect<
-    readonly Select['Type'][],
-    DBError,
-    Select['DecodingServices']
-  >;
 };
 
 type WithFindAll<Select extends Schema.Top> = {
@@ -509,7 +526,6 @@ export const makeRepositoryFromDb = <
     findById: selectRecordById(db, params.table, params.schemas),
     updateRecords: updateRecords(db, params.table, params.schemas),
     deleteRecords: deleteRecords(db, params.table),
-    customQuery: makeCustomQuery(db, params.table, params.schemas),
   };
 
   const ext = extensions

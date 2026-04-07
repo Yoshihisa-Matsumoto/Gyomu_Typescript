@@ -33,8 +33,21 @@ export class Milestone {
     const targetDateYmd = convertTargetDate(targetYmd, isMonthly);
     return Effect.gen(function* () {
       const repo = yield* GyomuRepository;
-      return yield* repo.milestoneDaily.exists(milestoneId, targetDateYmd);
-    });
+      return yield* repo.milestoneDaily.findByMilestoneIdAndTargetDate(
+        milestoneId,
+        targetDateYmd,
+      );
+    }).pipe(
+      Effect.map((records) => {
+        if (records.length > 0) {
+          return {
+            exists: true,
+            updateTime: records[0].modifiedAt,
+          };
+        }
+        return { exists: false };
+      }),
+    );
     // return genericDBFunction(
     //   'check gyomu_milestone_daily existence',
     //   async (milestoneId: string, targetDateYYYYMMDD: string) => {
@@ -109,17 +122,9 @@ export class Milestone {
 
     return Effect.gen(function* () {
       const repo = yield* GyomuRepository;
-      return yield* repo.milestoneDaily.customQuery((ctx) =>
-        ctx.db
-          .selectFrom('gyomu_milestone_daily')
-          .selectAll()
-          .where((eb) =>
-            eb.or([
-              eb('gyomu_milestone_daily.target_date', '=', targetDateYmd),
-              eb('gyomu_milestone_daily.target_date', '=', targetDateMonthly),
-            ]),
-          )
-          .execute(),
+      return yield* repo.milestoneDaily.findByTargetDateAndMonthlyDate(
+        targetDateYmd,
+        targetDateMonthly,
       );
     });
   }
@@ -127,19 +132,13 @@ export class Milestone {
   static deleteMilestoneDaily(
     milestoneId: string,
     targetDateYmd: string,
-  ): Effect.Effect<void, DBError, GyomuRepository> {
+  ): Effect.Effect<bigint, DBError, GyomuRepository> {
     return Effect.gen(function* () {
       const repo = yield* GyomuRepository;
-      const records = yield* repo.milestoneDaily.customQuery((ctx) =>
-        ctx.db
-          .selectFrom('gyomu_milestone_daily')
-          .selectAll()
-          .where('gyomu_milestone_daily.milestone_id', '=', milestoneId)
-          .where('gyomu_milestone_daily.target_date', '=', targetDateYmd)
-          .executeTakeFirst(),
+      return yield* repo.milestoneDaily.deleteByMilestoneIdAndTargetDate(
+        milestoneId,
+        targetDateYmd,
       );
-      if (records.length == 0) return;
-      yield* repo.milestoneDaily.deleteRecords([records[0].id]);
     });
   }
 

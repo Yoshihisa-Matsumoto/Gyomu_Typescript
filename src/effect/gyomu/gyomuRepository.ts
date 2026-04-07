@@ -4,6 +4,8 @@ import {
   CrudRepositoryFromSchemasWithFindAll,
   CrudRepositoryFromSchemasWithFindAllAndFindByColumn,
   CrudRepositoryFromSchemasWithFindByColumn,
+  makeCustomDelete,
+  customSQLAndReturnRecords,
   makeRepositoryFromDb,
 } from '../infrastructure/db/common.js';
 import {
@@ -31,7 +33,6 @@ import { KyselyService } from '../infrastructure/db/kysely-service.js';
 import { DB } from '../../db/db.js';
 import { fromPromise } from '../index.js';
 import { DBError } from '../../errors.js';
-import { convertToSchemaObjectWithEffect } from '../schemas/common.js';
 
 export class GyomuRepository extends ServiceMap.Service<
   GyomuRepository,
@@ -67,13 +68,24 @@ export class GyomuRepository extends ServiceMap.Service<
       'target_date',
       'findByTargetDate'
     > & {
-      exists: (
+      findByMilestoneIdAndTargetDate: (
         milestoneId: string,
         targetDate: string,
       ) => Effect.Effect<
-        { exists: true; updateTime: string } | { exists: false },
+        (typeof MilestoneDailySchema.types._select)[],
         DBError
       >;
+      findByTargetDateAndMonthlyDate: (
+        targetDate: string,
+        monthlyDate: string,
+      ) => Effect.Effect<
+        (typeof MilestoneDailySchema.types._select)[],
+        DBError
+      >;
+      deleteByMilestoneIdAndTargetDate: (
+        milestoneId: string,
+        targetDate: string,
+      ) => Effect.Effect<bigint, DBError>;
     };
   }
 >()('GyomuRepository', {
@@ -153,34 +165,71 @@ export class GyomuRepository extends ServiceMap.Service<
         },
         ({ db, table, schemas }) => {
           return {
-            exists: (milestoneId: string, targetDate: string) =>
+            findByMilestoneIdAndTargetDate: (
+              milestoneId: string,
+              targetDate: string,
+            ) =>
               fromPromise(
                 DBError,
                 `fail to find ${table} by milestone_id and target_date`,
-              )(async () => {
-                const record = await db
-                  .selectFrom(table)
-                  .selectAll()
-                  .where('milestone_id', '=', milestoneId)
-                  .where('target_date', '=', targetDate)
-                  .executeTakeFirst();
-                return record;
-              }).pipe(
-                Effect.flatMap((record) => {
-                  if (!record) return Effect.succeed({ exists: false });
-
-                  return convertToSchemaObjectWithEffect(
-                    DBError,
-                    `${schemas.tags.entity}`,
-                  )(schemas.selectSchema, record).pipe(
-                    Effect.map((data) => {
-                      return {
-                        exists: true,
-                        updateTime: data.modifiedAt,
-                      };
-                    }),
-                  );
-                }),
+              )(async () =>
+                customSQLAndReturnRecords(
+                  db,
+                  table,
+                  schemas,
+                )((ctx) =>
+                  ctx.db
+                    .selectFrom(table)
+                    .selectAll()
+                    .where('milestone_id', '=', milestoneId)
+                    .where('target_date', '=', targetDate)
+                    .execute(),
+                ),
+              ),
+            findByTargetDateAndMonthlyDate: (
+              targetYmd: string,
+              monthlyYmd: string,
+            ) =>
+              fromPromise(
+                DBError,
+                `fail to find ${table} by date = ${targetYmd} or  ${monthlyYmd}`,
+              )(async () =>
+                customSQLAndReturnRecords(
+                  db,
+                  table,
+                  schemas,
+                )((ctx) =>
+                  ctx.db
+                    .selectFrom(table)
+                    .selectAll()
+                    .where((eb) =>
+                      eb.or([
+                        eb('target_date', '=', targetYmd),
+                        eb('target_date', '=', monthlyYmd),
+                      ]),
+                    )
+                    .execute(),
+                ),
+              ),
+            deleteByMilestoneIdAndTargetDate: (
+              milestoneId: string,
+              targetYmd: string,
+            ) =>
+              fromPromise(
+                DBError,
+                `fail to delete ${table} by milestone_id and target_date`,
+              )(async () =>
+                makeCustomDelete(
+                  db,
+                  table,
+                  schemas,
+                )((ctx) =>
+                  ctx.db
+                    .deleteFrom(table)
+                    .where('milestone_id', '=', milestoneId)
+                    .where('target_date', '=', targetYmd)
+                    .execute(),
+                ),
               ),
           };
         },
