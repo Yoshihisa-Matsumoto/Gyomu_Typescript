@@ -7,6 +7,7 @@ import {
   makeCustomDelete,
   customSQLAndReturnRecords,
   makeRepositoryFromDb,
+  makeCustomUpdate,
 } from '../infrastructure/db/common.js';
 import {
   appInfoDefinition,
@@ -18,6 +19,7 @@ import {
   milestoneDefinition,
   MilestoneSchema,
   parameterMasterDefinition,
+  ParameterMasterSchema,
   serviceDefinition,
   serviceTypeDefinition,
   statusHandlerDefinition,
@@ -57,7 +59,9 @@ export class GyomuRepository extends ServiceMap.Service<
       typeof MarketHolidaySchema,
       'market',
       'findByMarket'
-    >;
+    > & {
+      findDistinctMarkets: () => Effect.Effect<string[], DBError>;
+    };
     readonly milestone: CrudRepositoryFromSchemasWithFindAllAndFindByColumn<
       typeof MilestoneSchema,
       'milestone_id',
@@ -86,6 +90,17 @@ export class GyomuRepository extends ServiceMap.Service<
         milestoneId: string,
         targetDate: string,
       ) => Effect.Effect<bigint, DBError>;
+    };
+    readonly parameterMaster: CrudRepositoryFromSchemasWithFindByColumn<
+      typeof ParameterMasterSchema,
+      'item_key',
+      'findByItemKey'
+    > & {
+      updateValueByItemKey: (
+        itemKey: string,
+        newValue: string,
+      ) => Effect.Effect<bigint, DBError>;
+      deleteByItemKey: (itemKey: string) => Effect.Effect<bigint, DBError>;
     };
   }
 >()('GyomuRepository', {
@@ -129,17 +144,37 @@ export class GyomuRepository extends ServiceMap.Service<
           },
         },
       }),
-      marketHoliday: makeRepositoryFromDb(db, {
-        table: 'gyomu_market_holiday',
-        schemas: MarketHolidaySchema,
-        options: {
-          findAll: false,
-          findByColumn: {
-            columnName: 'market',
-            methodName: 'findByMarket',
+      marketHoliday: makeRepositoryFromDb(
+        db,
+        {
+          table: 'gyomu_market_holiday',
+          schemas: MarketHolidaySchema,
+          options: {
+            findAll: false,
+            findByColumn: {
+              columnName: 'market',
+              methodName: 'findByMarket',
+            },
           },
         },
-      }),
+        ({ db, table }) => {
+          return {
+            findDistinctMarkets: () => {
+              return fromPromise(
+                DBError,
+                `fail to find distinct markets from ${table}`,
+              )(async () => {
+                const markets = await db
+                  .selectFrom(table)
+                  .select('market')
+                  .distinct()
+                  .execute();
+                return markets.map((m) => m.market);
+              });
+            },
+          };
+        },
+      ),
       milestone: makeRepositoryFromDb(db, {
         table: 'gyomu_milestone_cdtbl',
         schemas: MilestoneSchema,
@@ -169,48 +204,42 @@ export class GyomuRepository extends ServiceMap.Service<
               milestoneId: string,
               targetDate: string,
             ) =>
-              fromPromise(
-                DBError,
+              customSQLAndReturnRecords(
+                db,
+                table,
+                schemas,
                 `fail to find ${table} by milestone_id and target_date`,
-              )(async () =>
-                customSQLAndReturnRecords(
-                  db,
-                  table,
-                  schemas,
-                )((ctx) =>
-                  ctx.db
-                    .selectFrom(table)
-                    .selectAll()
-                    .where('milestone_id', '=', milestoneId)
-                    .where('target_date', '=', targetDate)
-                    .execute(),
-                ),
+              )((ctx) =>
+                ctx.db
+                  .selectFrom(table)
+                  .selectAll()
+                  .where('milestone_id', '=', milestoneId)
+                  .where('target_date', '=', targetDate)
+                  .execute(),
               ),
+
             findByTargetDateAndMonthlyDate: (
               targetYmd: string,
               monthlyYmd: string,
             ) =>
-              fromPromise(
-                DBError,
+              customSQLAndReturnRecords(
+                db,
+                table,
+                schemas,
                 `fail to find ${table} by date = ${targetYmd} or  ${monthlyYmd}`,
-              )(async () =>
-                customSQLAndReturnRecords(
-                  db,
-                  table,
-                  schemas,
-                )((ctx) =>
-                  ctx.db
-                    .selectFrom(table)
-                    .selectAll()
-                    .where((eb) =>
-                      eb.or([
-                        eb('target_date', '=', targetYmd),
-                        eb('target_date', '=', monthlyYmd),
-                      ]),
-                    )
-                    .execute(),
-                ),
+              )((ctx) =>
+                ctx.db
+                  .selectFrom(table)
+                  .selectAll()
+                  .where((eb) =>
+                    eb.or([
+                      eb('target_date', '=', targetYmd),
+                      eb('target_date', '=', monthlyYmd),
+                    ]),
+                  )
+                  .execute(),
               ),
+
             deleteByMilestoneIdAndTargetDate: (
               milestoneId: string,
               targetYmd: string,
@@ -230,6 +259,56 @@ export class GyomuRepository extends ServiceMap.Service<
                     .where('target_date', '=', targetYmd)
                     .execute(),
                 ),
+              ),
+          };
+        },
+      ),
+      parameterMaster: makeRepositoryFromDb(
+        db,
+        {
+          table: 'gyomu_param_master',
+          schemas: ParameterMasterSchema,
+          options: {
+            findAll: false,
+            findByColumn: {
+              columnName: 'item_key',
+              methodName: 'findByItemKey',
+            },
+          },
+        },
+        ({ db, table, schemas }) => {
+          return {
+            updateValueByItemKey: (itemKey: string, newValue: string) =>
+              makeCustomUpdate(
+                db,
+                table,
+                schemas,
+              )(
+                (ctx) =>
+                  ctx.db
+                    .updateTable(table)
+                    .set(() => ({
+                      item_value: newValue,
+                      item_fromdate: '',
+                    }))
+                    .where('item_key', '=', itemKey)
+                    .execute(),
+                `fail to update ${table} by item_key and new_value`,
+              ),
+
+            deleteByItemKey: (itemKey: string) =>
+              makeCustomDelete(
+                db,
+                table,
+                schemas,
+              )(
+                (ctx) =>
+                  ctx.db
+                    .deleteFrom(table)
+                    .where('item_key', '=', itemKey)
+                    .where('item_fromdate', '=', '')
+                    .execute(),
+                `fail to delete from ${table} by item_key=${itemKey}`,
               ),
           };
         },

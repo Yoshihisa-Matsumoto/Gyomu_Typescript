@@ -1,10 +1,7 @@
-import { Effect, Layer } from 'effect';
-import { Milestone } from '../milestone.js';
+import { Effect, Layer, Ref } from 'effect';
+import { MilestoneService } from '../milestone.js';
 import { beforeEach, describe, expect, it, test } from 'vitest';
 import { GyomuRepository } from '../effect/gyomu/gyomuRepository.js';
-import { MainLayer } from '../effect/infrastructure/layer.js';
-import { ConfigLayer } from '../effect/infrastructure/config.js';
-import { NodeFileSystem } from '@effect/platform-node';
 import { makeRunner } from '../effect/infrastructure/runtime.js';
 
 const testId = 'F6AE5F2D-BD14-4C5F-9CC3-3A69EF90DD5B';
@@ -16,22 +13,25 @@ describe('Milestone access check', async () => {
   it('Milestone should not exist', async () => {
     const GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
       milestoneDaily: {
-        customQuery: () => Effect.succeed([]),
+        findByMilestoneIdAndTargetDate: () => Effect.succeed([]),
       },
     } as any);
-    const TestLayer = Layer.mergeAll(MainLayer, ConfigLayer)
-      .pipe(Layer.provideMerge(GyomuRepositoryMock))
-      // .pipe(Layer.provideMerge(KyselyService.live))
-      .pipe(Layer.provideMerge(NodeFileSystem.layer));
+    const TestLayer = MilestoneService.live.pipe(
+      Layer.provide(GyomuRepositoryMock),
+    );
     const testRunner = makeRunner(TestLayer);
-    const result = await testRunner(Milestone.exists(milestoneId, targetYmd));
+    const program = Effect.gen(function* () {
+      const milestone = yield* MilestoneService;
+      return yield* milestone.exists(milestoneId, targetYmd);
+    });
+    const result = await testRunner(program);
 
     expect(result.exists).toBeFalsy();
   });
   it('Milestone should  exist', async () => {
     const GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
       milestoneDaily: {
-        customQuery: () =>
+        findByMilestoneIdAndTargetDate: () =>
           Effect.succeed([
             {
               id: testId,
@@ -43,12 +43,15 @@ describe('Milestone access check', async () => {
           ]),
       },
     } as any);
-    const TestLayer = Layer.mergeAll(MainLayer, ConfigLayer)
-      .pipe(Layer.provideMerge(GyomuRepositoryMock))
-      // .pipe(Layer.provideMerge(KyselyService.live))
-      .pipe(Layer.provideMerge(NodeFileSystem.layer));
+    const TestLayer = MilestoneService.live.pipe(
+      Layer.provide(GyomuRepositoryMock),
+    );
     const testRunner = makeRunner(TestLayer);
-    const result = await testRunner(Milestone.exists(milestoneId, targetYmd));
+    const program = Effect.gen(function* () {
+      const milestone = yield* MilestoneService;
+      return yield* milestone.exists(milestoneId, targetYmd);
+    });
+    const result = await testRunner(program);
 
     expect(result.exists).toBeTruthy();
     if (result.exists) {
@@ -58,7 +61,7 @@ describe('Milestone access check', async () => {
   it('Monthly Milestone test', async () => {
     const GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
       milestoneDaily: {
-        customQuery: () =>
+        findByMilestoneIdAndTargetDate: () =>
           Effect.succeed([
             {
               id: testId,
@@ -70,12 +73,15 @@ describe('Milestone access check', async () => {
           ]),
       },
     } as any);
-    const TestLayer = Layer.mergeAll(MainLayer, ConfigLayer)
-      .pipe(Layer.provideMerge(GyomuRepositoryMock))
-      // .pipe(Layer.provideMerge(KyselyService.live))
-      .pipe(Layer.provideMerge(NodeFileSystem.layer));
+    const TestLayer = MilestoneService.live.pipe(
+      Layer.provide(GyomuRepositoryMock),
+    );
     const testRunner = makeRunner(TestLayer);
-    const result = await testRunner(Milestone.exists(milestoneId, targetYmd));
+    const program = Effect.gen(function* () {
+      const milestone = yield* MilestoneService;
+      return yield* milestone.exists(milestoneId, targetYmd);
+    });
+    const result = await testRunner(program);
 
     expect(result.exists).toBeTruthy();
     if (result.exists) {
@@ -89,7 +95,7 @@ test('Milestone register test', async () => {
   const targetYmd = '2001-01-01';
   const GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
     milestoneDaily: {
-      customQuery: () => Effect.succeed([]),
+      findByMilestoneIdAndTargetDate: () => Effect.succeed([]),
       create: () =>
         Effect.succeed([
           {
@@ -102,12 +108,15 @@ test('Milestone register test', async () => {
         ]),
     },
   } as any);
-  const TestLayer = Layer.mergeAll(MainLayer, ConfigLayer)
-    .pipe(Layer.provideMerge(GyomuRepositoryMock))
-    // .pipe(Layer.provideMerge(KyselyService.live))
-    .pipe(Layer.provideMerge(NodeFileSystem.layer));
+  const TestLayer = MilestoneService.live.pipe(
+    Layer.provide(GyomuRepositoryMock),
+  );
   const testRunner = makeRunner(TestLayer);
-  const result = await testRunner(Milestone.register(milestoneId, targetYmd));
+  const program = Effect.gen(function* () {
+    const milestone = yield* MilestoneService;
+    return yield* milestone.register(milestoneId, targetYmd);
+  });
+  const result = await testRunner(program);
 
   expect(result).toBe(testTime);
 });
@@ -119,18 +128,61 @@ describe('Milestone wait test', async () => {
   it('should return with false without milestone', async () => {
     const GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
       milestoneDaily: {
-        customQuery: () => Effect.succeed([]),
+        findByMilestoneIdAndTargetDate: () => Effect.succeed([]),
       },
     } as any);
-    const TestLayer = Layer.mergeAll(MainLayer, ConfigLayer)
-      .pipe(Layer.provideMerge(GyomuRepositoryMock))
-      // .pipe(Layer.provideMerge(KyselyService.live))
-      .pipe(Layer.provideMerge(NodeFileSystem.layer));
+    const TestLayer = MilestoneService.live.pipe(
+      Layer.provide(GyomuRepositoryMock),
+    );
     const testRunner = makeRunner(TestLayer);
-    const result = await testRunner(Milestone.wait(milestoneId, targetYmd, 1));
+    const program = Effect.gen(function* () {
+      const milestone = yield* MilestoneService;
+      return yield* milestone.wait(milestoneId, targetYmd, 1);
+    });
+    const result = await testRunner(program);
     expect(result).toBeFalsy();
   });
 
+  it('should return with true with milestone after waiting', async () => {
+    const GyomuRepositoryMock = Layer.effect(
+      GyomuRepository,
+      Effect.gen(function* () {
+        const ref = yield* Ref.make(0);
+
+        return {
+          milestoneDaily: {
+            findByMilestoneIdAndTargetDate: () =>
+              Ref.updateAndGet(ref, (n) => n + 1).pipe(
+                Effect.andThen((count) => {
+                  if (count < 3) {
+                    return Effect.succeed([]); // 最初は存在しない
+                  }
+                  return Effect.succeed([
+                    {
+                      id: testId,
+                      milestoneId: milestoneId,
+                      targetDate: targetYmd,
+                      modifiedAt: testTime,
+                      modifiedBy: 'testUser',
+                    },
+                  ]);
+                }),
+              ),
+          },
+        } as any;
+      }),
+    );
+    const TestLayer = MilestoneService.live.pipe(
+      Layer.provide(GyomuRepositoryMock),
+    );
+    const testRunner = makeRunner(TestLayer);
+    const program = Effect.gen(function* () {
+      const milestone = yield* MilestoneService;
+      return yield* milestone.wait(milestoneId, targetYmd, 5);
+    });
+    const result = await testRunner(program);
+    expect(result).toBeTruthy();
+  });
   // if (result.isErr()) {
   //   expect(result.isErr()).toBeFalsy();
   //   return;

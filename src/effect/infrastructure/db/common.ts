@@ -1,7 +1,13 @@
 import { Effect, Schema } from 'effect';
 import { DB } from '../../../db/db.js';
 import { DBError, ValueError } from '../../../errors.js';
-import { Insertable, Kysely, Selectable, DeleteResult } from 'kysely';
+import {
+  Insertable,
+  Kysely,
+  Selectable,
+  DeleteResult,
+  UpdateResult,
+} from 'kysely';
 import { fromPromise } from '../../index.js';
 import {
   convertToSchemaObjectWithEffect,
@@ -137,6 +143,7 @@ export const customSQLAndReturnRecords =
     db: Kysely<DB>,
     table: T,
     schema: CrudSchemas<Insert, Select, Update>,
+    message?: string,
   ) =>
   (
     f: (ctx: RepositoryContext<T, Insert, Select, Update>) => Promise<unknown>,
@@ -148,7 +155,7 @@ export const customSQLAndReturnRecords =
     Effect.gen(function* () {
       const result = yield* fromPromise(
         DBError,
-        `fail custom query on ${table}`,
+        message ?? `fail custom query on ${table}`,
       )(async () => await f({ db, table, schemas: schema }));
       return yield* convertToSchemaObjectWithEffect(
         DBError,
@@ -310,7 +317,32 @@ const updateRecords =
         `${schema.tags.entity} Array`,
       )(Schema.Array(schema.selectSchema), records);
     });
-
+export const makeCustomUpdate =
+  <
+    T extends TablesWithId,
+    Insert extends Schema.Top,
+    Select extends Schema.Top,
+    Update extends Schema.Top,
+  >(
+    db: Kysely<DB>,
+    table: T,
+    schema: CrudSchemas<Insert, Select, Update>,
+  ) =>
+  (
+    f: (
+      ctx: RepositoryContext<T, Insert, Select, Update>,
+    ) => Promise<UpdateResult[]>,
+    message?: string,
+  ): Effect.Effect<bigint, DBError> =>
+    Effect.gen(function* () {
+      const result = yield* fromPromise(
+        DBError,
+        message ?? `fail custom update on ${table}`,
+      )(async () => await f({ db, table, schemas: schema }));
+      return result
+        .map((r) => r.numUpdatedRows)
+        .reduce((prev, current) => prev + current, BigInt(0));
+    });
 export const makeCustomDelete =
   <
     T extends TablesWithId,
@@ -326,11 +358,12 @@ export const makeCustomDelete =
     f: (
       ctx: RepositoryContext<T, Insert, Select, Update>,
     ) => Promise<DeleteResult[]>,
+    message?: string,
   ): Effect.Effect<bigint, DBError> =>
     Effect.gen(function* () {
       const result = yield* fromPromise(
         DBError,
-        `fail custom delete on ${table}`,
+        message ?? `fail custom delete on ${table}`,
       )(async () => await f({ db, table, schemas: schema }));
       return result
         .map((r) => r.numDeletedRows)
