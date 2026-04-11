@@ -2,10 +2,51 @@ import { addDays, subDays } from 'date-fns';
 import { addMonths, isBefore, isEqual } from 'date-fns';
 import { createDateOnly, formatDateToYmd } from './dateOperation.js';
 
-import { Effect } from 'effect';
+import { Effect, Layer, ServiceMap } from 'effect';
 import { GyomuRepository } from './effect/gyomu/gyomuRepository.js';
-import { DBError } from './errors.js';
-export default class MarketDateAccess {
+import { DBError, GyomuError } from './errors.js';
+import { fromSync } from './effect/index.js';
+
+export interface MarketDateAccess {
+  isBusinessDay: (targetDate: Date) => boolean;
+
+  businessDay: (targetDate: Date, dayOffset: number) => Date;
+
+  businessDayOfBeginningMonthWithOffset: (
+    targetDate: Date,
+    dayOffset?: number,
+  ) => Date;
+
+  businessDayOfBeginningOfNextMonthWithOffset: (
+    targetDate: Date,
+    dayOffset?: number,
+  ) => Date;
+
+  businessDayOfBeginningOfPreviousMonthWithOffset: (
+    targetDate: Date,
+    dayOffset?: number,
+  ) => Date;
+
+  businessDayOfEndMonthWithOffset: (
+    targetDate: Date,
+    dayOffset: number,
+  ) => Date;
+
+  businessDayOfEndOfNextMonthWithOffset: (
+    targetDate: Date,
+    dayOffset: number,
+  ) => Date;
+
+  businessDayOfEndOfPreviousMonthWithOffset: (
+    targetDate: Date,
+    dayOffset: number,
+  ) => Date;
+
+  businessDayOfBeginningOfYear: (targetDate: Date, dayOffset: number) => Date;
+
+  businessDayOfEndOfYear: (targetDate: Date, dayOffset: number) => Date;
+}
+class MarketDateAccessImpl {
   private static __marketHolidays: {
     [market: string]: string[];
   } = {};
@@ -15,8 +56,8 @@ export default class MarketDateAccess {
   private constructor(market: string) {
     this.#market = market;
     //console.log('__marketHolidays', MarketDateAccess.__marketHolidays);
-    if (market in MarketDateAccess.__marketHolidays) {
-      this.#holidays = MarketDateAccess.__marketHolidays[market];
+    if (market in MarketDateAccessImpl.__marketHolidays) {
+      this.#holidays = MarketDateAccessImpl.__marketHolidays[market];
       return;
     }
   }
@@ -24,7 +65,7 @@ export default class MarketDateAccess {
   static getMarketAccess(
     market: string,
   ): Effect.Effect<MarketDateAccess, DBError, GyomuRepository> {
-    const access = new MarketDateAccess(market);
+    const access = new MarketDateAccessImpl(market);
     return access.#initDataLoad().pipe(Effect.map(() => access));
   }
 
@@ -42,7 +83,7 @@ export default class MarketDateAccess {
         holidays.forEach((row) => {
           holiday.push(row.holiday);
         });
-        MarketDateAccess.__marketHolidays[market] = holiday;
+        MarketDateAccessImpl.__marketHolidays[market] = holiday;
         return true;
       }),
     );
@@ -212,4 +253,33 @@ export default class MarketDateAccess {
     if (dayOffset === 0) dayOffset = 1;
     return this.businessDay(businessDay, -dayOffset);
   }
+}
+
+export class MarketDateService extends ServiceMap.Service<
+  MarketDateService,
+  {
+    get: (
+      market: string,
+    ) => Effect.Effect<MarketDateAccess, DBError, GyomuRepository>;
+  }
+>()('MarketDateService', {
+  make: fromSync(
+    GyomuError,
+    'Failed to create MarketDateService',
+  )(() => {
+    const cache = new Map<string, MarketDateAccess>();
+    return {
+      get: (market: string) => {
+        if (cache.has(market)) return Effect.succeed(cache.get(market)!);
+        return Effect.gen(function* () {
+          const access = yield* MarketDateAccessImpl.getMarketAccess(market);
+
+          cache.set(market, access);
+          return access;
+        });
+      },
+    };
+  }),
+}) {
+  static readonly live = Layer.effect(this, this.make);
 }

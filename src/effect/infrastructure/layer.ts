@@ -15,5 +15,6 @@ export const PlatformLayer = Layer.mergeAll(
 export const MainLayer = Layer.mergeAll(
   Logger.layer([effectLogger], { mergeWithExisting: false }),
   Layer.succeed(References.MinimumLogLevel, 'All'),
-).pipe(Layer.provide(NodeFileSystem.layer));
+);
+//.pipe(Layer.provide(NodeFileSystem.layer));
 export const FileModes = fsConstants;

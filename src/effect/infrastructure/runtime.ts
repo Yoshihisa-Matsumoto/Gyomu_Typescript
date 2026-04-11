@@ -25,7 +25,7 @@ export const makeRunnerAsReturn =
   };
 
 export const makeRunner =
-  <BaseR, BaseE>(baseLayer: Layer<BaseR, BaseE, never>) =>
+  <BaseR, BaseE, R>(baseLayer: Layer<BaseR, BaseE, R>) =>
   <A, E, R>(
     effect: Effect.Effect<A, E, R>,
     overrideLayer?: Layer<any, any, any>,

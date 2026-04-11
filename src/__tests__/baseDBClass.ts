@@ -13,7 +13,9 @@ const testId = 'F6AE5F2D-BD14-4C5F-9CC3-3A69EF90DD5B';
 
 export const GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
   marketHoliday: {
-    findByMarket: () => Effect.succeed(dummy_holidays),
+    findByMarket: (market: string) =>
+      Effect.succeed(dummy_holidays.filter((h) => h.market === market)),
+    findDistinctMarkets: () => Effect.succeed(['JP', 'US']),
   },
 } as any);
 const dummy_holidays: (typeof MarketHolidaySchema.types._select)[] = [
