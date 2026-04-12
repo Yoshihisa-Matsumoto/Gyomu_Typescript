@@ -4,14 +4,19 @@ import { ConfigLayer, ConfigService } from '../config.js';
 import { MainLayer } from '../layer.js';
 import { ConfigError } from 'effect/Config';
 import { Config, Effect, Layer, Scope, ServiceMap } from 'effect';
-import { makeMssql } from './mssql.js';
+import { MssqlService } from './mssql.js';
+import { DBError } from '../../../errors.js';
 
 export class KyselyService extends ServiceMap.Service<
   KyselyService,
   {
     withConnection: (
       prefix: string,
-    ) => Effect.Effect<Kysely<DB>, ConfigError, Scope.Scope>;
+    ) => Effect.Effect<
+      Kysely<DB>,
+      ConfigError | DBError,
+      Scope.Scope | MssqlService
+    >;
   }
 >()('KyselyService', {
   make: Effect.gen(function* () {
@@ -27,9 +32,10 @@ export class KyselyService extends ServiceMap.Service<
             password: Config.string(`${prefix.toUpperCase()}_PASSWORD`),
           });
           const dbConfig = yield* configService.load(dbConfigRaw);
-          return yield* Effect.acquireRelease(
-            Effect.sync(() => makeMssql(dbConfig)),
-            (db) => Effect.promise(() => db.destroy()),
+          const mssql = yield* MssqlService;
+
+          return yield* Effect.acquireRelease(mssql.make(dbConfig), (db) =>
+            Effect.promise(() => db.destroy()),
           );
         }),
     };
@@ -37,6 +43,7 @@ export class KyselyService extends ServiceMap.Service<
 }) {
   static readonly live = Layer.effect(this, this.make).pipe(
     Layer.provide(ConfigLayer),
+    Layer.provide(MssqlService.live),
   );
 }
 

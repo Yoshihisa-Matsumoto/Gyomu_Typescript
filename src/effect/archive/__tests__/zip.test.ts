@@ -1,9 +1,8 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { platform } from '../../../platform/index.js';
-import { runWithEnvOrThrow } from '../../infrastructure/runtime.js';
 import { writeToFile } from '../../fs-utils.js';
 import { compareFiles, validateFolders } from '../../../__tests__/baseClass.js';
-import { Effect, Stream } from 'effect';
+import { Effect, Layer, Stream } from 'effect';
 import {
   existsInZip,
   // extractZip,
@@ -14,6 +13,11 @@ import {
 import { FileTransportInfo } from '../../../fileModel.js';
 import { ZipService } from '../zip/index.js';
 import { compareZip } from '../zip/compare.js';
+import { MainLayer, PlatformLayer } from '../../infrastructure/layer.js';
+import { makeRunner } from '../../infrastructure/runtime.js';
+
+const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
+const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
 
 let compressDirectory: string;
 let extractDirectory: string;
@@ -118,7 +122,7 @@ describe('Zip Test', () => {
         }),
       );
 
-    await runWithEnvOrThrow(
+    await runNodeWithEnvOrThrow(
       program('tests/compress/temp.zip'),
       ZipService.live,
     );
@@ -144,7 +148,7 @@ describe('Zip Test', () => {
           expect(yield* existsInZip('ユーザー噂.py')(entries)).toBeTruthy();
         }),
       );
-    await runWithEnvOrThrow(
+    await runNodeWithEnvOrThrow(
       program('tests/compress/temp.zip'),
       ZipService.live,
     );
@@ -181,7 +185,7 @@ describe('Zip Test', () => {
           expect(yield* existsInZip('ユーザー噂.py')(entries)).toBeTruthy();
         }),
       );
-    await runWithEnvOrThrow(program(zipFilename), ZipService.live);
+    await runNodeWithEnvOrThrow(program(zipFilename), ZipService.live);
     //validateFolders(platform.join(compressDirectory, 'source'), destinationRoot);
   });
   it('ZipEffect1 Unarchive Test', async () => {
@@ -205,7 +209,7 @@ describe('Zip Test', () => {
             .pipe(zip.extract(transferInformation));
         }),
       );
-    await runWithEnvOrThrow(
+    await runNodeWithEnvOrThrow(
       program(zipFilename, transferInformation),
       ZipService.live,
     );
@@ -223,7 +227,7 @@ describe('Zip Test', () => {
       destinationFolderName: extractDirectory,
     });
 
-    await runWithEnvOrThrow(
+    await runNodeWithEnvOrThrow(
       program(zipFilename, transferInformation),
       ZipService.live,
     );
@@ -239,7 +243,7 @@ describe('Zip Test', () => {
       sourceFilename: 'ユーザー噂.py',
       destinationFolderName: extractDirectory,
     });
-    await runWithEnvOrThrow(
+    await runNodeWithEnvOrThrow(
       program(zipFilename, transferInformation),
       ZipService.live,
     );
@@ -271,7 +275,7 @@ describe('Zip Test', () => {
             .pipe(zip.extract(transferInformation));
         }),
       );
-    await runWithEnvOrThrow(
+    await runNodeWithEnvOrThrow(
       program(zipFilename, transferInformation),
       ZipService.live,
     );
@@ -290,7 +294,7 @@ describe('Zip Test', () => {
             .pipe(zip.extractAll(destinationFolder));
         }),
       );
-    await runWithEnvOrThrow(
+    await runNodeWithEnvOrThrow(
       program2(zipFilename, destinationRoot),
       ZipService.live,
     );
@@ -314,7 +318,7 @@ describe('ZipCompare test', () => {
       resultPath: platform.join(compressDirectory, 'zipCompare'),
       recordDelimiter: 'unix',
     });
-    await runWithEnvOrThrow(program, ZipService.live);
+    await runNodeWithEnvOrThrow(program, ZipService.live);
 
     expect(
       compareFiles(

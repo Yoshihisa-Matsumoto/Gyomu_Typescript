@@ -1,15 +1,15 @@
-import { Effect } from 'effect';
-import { MainLayer } from './layer.js';
 import { Result } from 'effect/Result';
-import { Layer, provide } from 'effect/Layer';
+import { Layer, Effect } from 'effect';
 
 export const makeRunnerAsReturn =
-  <BaseR, BaseE>(baseLayer: Layer<BaseR, BaseE, never>) =>
+  <BaseR, BaseE>(baseLayer: Layer.Layer<BaseR, BaseE, never>) =>
   <A, E, R>(
     effect: Effect.Effect<A, E, R>,
-    overrideLayer?: Layer<any, any, any>,
+    overrideLayer?: Layer.Layer<any, any, any>,
   ): Promise<Result<A, E>> => {
-    const layer = overrideLayer ? provide(overrideLayer, baseLayer) : baseLayer;
+    const layer = overrideLayer
+      ? baseLayer.pipe(Layer.provideMerge(overrideLayer))
+      : baseLayer;
 
     return effect.pipe(
       Effect.catchCause((cause) =>
@@ -25,12 +25,14 @@ export const makeRunnerAsReturn =
   };
 
 export const makeRunner =
-  <BaseR, BaseE, R>(baseLayer: Layer<BaseR, BaseE, R>) =>
+  <BaseR, BaseE>(baseLayer: Layer.Layer<BaseR, BaseE, never>) =>
   <A, E, R>(
     effect: Effect.Effect<A, E, R>,
-    overrideLayer?: Layer<any, any, any>,
+    overrideLayer?: Layer.Layer<any, any, any>,
   ): Promise<A> => {
-    const layer = overrideLayer ? provide(overrideLayer, baseLayer) : baseLayer;
+    const layer = overrideLayer
+      ? baseLayer.pipe(Layer.provideMerge(overrideLayer))
+      : baseLayer;
 
     return effect.pipe(
       Effect.catchCause((cause) =>
@@ -44,6 +46,6 @@ export const makeRunner =
     );
   };
 
-export const runWithEnvOrThrow = makeRunner(MainLayer);
+// export const runWithEnvOrThrow = makeRunner(MainLayer);
 
-export const runWithEnv = makeRunnerAsReturn(MainLayer);
+// export const runWithEnv = makeRunnerAsReturn(MainLayer);

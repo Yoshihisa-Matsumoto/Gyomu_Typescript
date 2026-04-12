@@ -172,9 +172,9 @@ const downloadDir =
       yield* Effect.forEach(list, (item) => {
         const remotePath = `${remoteDir}/${item.filename}`;
         const localPath = `${localDir}/${item.filename}`;
-
+        //console.log(`Downloading ${JSON.stringify(item)} `);
         //if (item.longname.startsWith('d')) {
-        if (item.attrs.isDirectory()) {
+        if (item.attrs && item.attrs.isDirectory()) {
           // ディレクトリ
           return downloadDir(sftp)(remotePath, localPath);
         } else {

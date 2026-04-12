@@ -2,13 +2,18 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { Effect, Layer, Redacted, Result, Option } from 'effect';
 import { SshService } from '../ssh/sshLayer.js';
 import { ConfigService } from '../config.js';
-import { runWithEnvOrThrow, runWithEnv } from '../runtime.js';
+import { makeRunner, makeRunnerAsReturn } from '../runtime.js';
 import { NetworkError } from '../../../errors.js';
 import { NodeFileSystem } from '@effect/platform-node';
 import { ConfigError } from 'effect/Config';
 import { SourceError } from 'effect/ConfigProvider';
 import EventEmitter from 'node:events';
+import { MainLayer, PlatformLayer } from '../layer.js';
 
+const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
+const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
+
+const runNodeWithEnv = makeRunnerAsReturn(nodeTestLayer);
 // Mock basic-ftp
 
 const exec = vi.fn((command, cb) => {
@@ -95,7 +100,7 @@ describe('SshService', () => {
         return yield* ssh.withConnection('', () => Effect.succeed('connected'));
       });
 
-      const result = await runWithEnvOrThrow(program, usingLayer);
+      const result = await runNodeWithEnvOrThrow(program, usingLayer);
 
       expect(result).toBe('connected');
     });
@@ -108,7 +113,9 @@ describe('SshService', () => {
         );
       });
 
-      await expect(runWithEnvOrThrow(program, usingLayer)).rejects.toThrow();
+      await expect(
+        runNodeWithEnvOrThrow(program, usingLayer),
+      ).rejects.toThrow();
     });
   });
 
@@ -121,7 +128,7 @@ describe('SshService', () => {
         );
       });
 
-      const result = await runWithEnvOrThrow(program, usingLayer);
+      const result = await runNodeWithEnvOrThrow(program, usingLayer);
 
       expect(result).toEqual({
         exitCode: 0,
@@ -143,7 +150,7 @@ describe('SshService', () => {
         );
       });
 
-      await expect(runWithEnvOrThrow(program, usingLayer)).rejects.toThrow(
+      await expect(runNodeWithEnvOrThrow(program, usingLayer)).rejects.toThrow(
         NetworkError,
       );
     });
@@ -158,7 +165,7 @@ describe('SshService', () => {
     //     return yield* ssh.withConnection('', () => Effect.succeed(undefined));
     //   });
 
-    //   const result = await runWithEnv(program, usingLayer);
+    //   const result = await runNodeWithEnv(program, usingLayer);
 
     //   expect(Result.isFailure(result)).toBe(true);
     // });
@@ -181,7 +188,7 @@ describe('SshService', () => {
         failingConfigService,
       ).pipe(Layer.provide(NodeFileSystem.layer));
 
-      const result = await runWithEnv(program, failureLayer);
+      const result = await runNodeWithEnv(program, failureLayer);
 
       expect(Result.isFailure(result)).toBe(true);
     });

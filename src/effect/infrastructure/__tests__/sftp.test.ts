@@ -2,14 +2,19 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { Effect, Layer, Redacted, Result, Stream, Option } from 'effect';
 import { SftpService } from '../sftp/sftpLayer.js';
 import { ConfigService } from '../config.js';
-import { runWithEnvOrThrow, runWithEnv } from '../runtime.js';
+import { makeRunner, makeRunnerAsReturn } from '../runtime.js';
 import { NetworkError } from '../../../errors.js';
 import { FileTransportInfo } from '../../../fileModel.js';
 import { NodeFileSystem } from '@effect/platform-node';
 import { Readable, Writable } from 'node:stream';
 import { ConfigError } from 'effect/Config';
 import { SourceError } from 'effect/ConfigProvider';
+import { MainLayer, PlatformLayer } from '../layer.js';
 
+const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
+const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
+
+const runNodeWithEnv = makeRunnerAsReturn(nodeTestLayer);
 // Mock basic-ftp
 
 const readdir = vi.fn((path, cb) => {
@@ -157,7 +162,7 @@ describe('SftpService', () => {
         );
       });
 
-      const result = await runWithEnvOrThrow(program, usingLayer);
+      const result = await runNodeWithEnvOrThrow(program, usingLayer);
 
       expect(result).toBe('connected');
     });
@@ -170,7 +175,9 @@ describe('SftpService', () => {
         );
       });
 
-      await expect(runWithEnvOrThrow(program, usingLayer)).rejects.toThrow();
+      await expect(
+        runNodeWithEnvOrThrow(program, usingLayer),
+      ).rejects.toThrow();
     });
   });
 
@@ -181,7 +188,7 @@ describe('SftpService', () => {
         return yield* sftp.withConnection('', (client) => client.list('/test'));
       });
 
-      const result = await runWithEnvOrThrow(program, usingLayer);
+      const result = await runNodeWithEnvOrThrow(program, usingLayer);
 
       expect(result).toEqual(['a.txt', 'b']);
     });
@@ -199,7 +206,7 @@ describe('SftpService', () => {
         return yield* sftp.withConnection('', (client) => client.list('/test'));
       });
 
-      await expect(runWithEnvOrThrow(program, usingLayer)).rejects.toThrow(
+      await expect(runNodeWithEnvOrThrow(program, usingLayer)).rejects.toThrow(
         NetworkError,
       );
     });
@@ -214,7 +221,7 @@ describe('SftpService', () => {
         );
       });
 
-      const result = await runWithEnvOrThrow(program, usingLayer);
+      const result = await runNodeWithEnvOrThrow(program, usingLayer);
 
       expect(result).toEqual({
         size: 123,
@@ -244,7 +251,7 @@ describe('SftpService', () => {
         );
       });
 
-      const result = await runWithEnvOrThrow(program, usingLayer);
+      const result = await runNodeWithEnvOrThrow(program, usingLayer);
 
       expect(result).toBe(true);
     });
@@ -265,7 +272,7 @@ describe('SftpService', () => {
         );
       });
 
-      const result = await runWithEnvOrThrow(program, usingLayer);
+      const result = await runNodeWithEnvOrThrow(program, usingLayer);
 
       expect(result).toBe(true);
     });
@@ -287,7 +294,7 @@ describe('SftpService', () => {
         );
       });
 
-      const result = await runWithEnvOrThrow(program, usingLayer);
+      const result = await runNodeWithEnvOrThrow(program, usingLayer);
 
       expect(result).toBe(true);
     });
@@ -307,7 +314,7 @@ describe('SftpService', () => {
         );
       });
 
-      const result = await runWithEnvOrThrow(program, usingLayer);
+      const result = await runNodeWithEnvOrThrow(program, usingLayer);
 
       expect(result).toBeDefined();
       //expect(downloadToMock).toHaveBeenCalled();
@@ -325,7 +332,7 @@ describe('SftpService', () => {
         );
       });
 
-      await runWithEnvOrThrow(program, usingLayer);
+      await runNodeWithEnvOrThrow(program, usingLayer);
     });
   });
 
@@ -338,7 +345,7 @@ describe('SftpService', () => {
     //     return yield* sftp.withConnection('', () => Effect.succeed(undefined));
     //   });
 
-    //   const result = await runWithEnv(program, usingLayer);
+    //   const result = await runNodeWithEnv(program, usingLayer);
 
     //   expect(Result.isFailure(result)).toBe(true);
     // });
@@ -361,7 +368,7 @@ describe('SftpService', () => {
         failingConfigService,
       ).pipe(Layer.provide(NodeFileSystem.layer));
 
-      const result = await runWithEnv(program, failureLayer);
+      const result = await runNodeWithEnv(program, failureLayer);
 
       expect(Result.isFailure(result)).toBe(true);
     });

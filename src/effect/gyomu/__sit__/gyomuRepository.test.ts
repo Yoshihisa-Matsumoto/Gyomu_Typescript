@@ -6,9 +6,11 @@ import { ConfigLayer } from '../../infrastructure/config.js';
 import { KyselyService } from '../../infrastructure/db/kysely-service.js';
 import { NodeFileSystem } from '@effect/platform-node';
 import { makeRunner } from '../../infrastructure/runtime.js';
+import { MssqlService } from '../../infrastructure/db/mssql.js';
 
 const TestLayer = Layer.mergeAll(MainLayer, ConfigLayer, GyomuRepository.live)
   .pipe(Layer.provideMerge(KyselyService.live))
+  .pipe(Layer.provideMerge(MssqlService.live))
   .pipe(Layer.provideMerge(NodeFileSystem.layer));
 const testRunner = makeRunner(TestLayer);
 

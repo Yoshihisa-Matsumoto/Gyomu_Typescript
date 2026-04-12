@@ -12,7 +12,6 @@ import { NodeFileSystem } from '@effect/platform-node';
 import { makeRunner } from '../effect/infrastructure/runtime.js';
 import { MainLayer } from '../effect/infrastructure/layer.js';
 import { ConfigLayer } from '../effect/infrastructure/config.js';
-import { ValueError } from '../errors.js';
 
 const TestLayer = Layer.mergeAll(
   VariableTranslatorService.live,

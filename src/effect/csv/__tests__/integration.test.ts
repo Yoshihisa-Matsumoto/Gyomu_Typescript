@@ -1,13 +1,17 @@
 import { describe, it, expect } from 'vitest';
 import { readCsv, parseCsv } from '../read.js';
 import { writeCsv } from '../write.js';
-import { Stream, Schema, Effect } from 'effect';
+import { Stream, Schema, Effect, Layer } from 'effect';
 import { readFile } from 'node:fs/promises';
 import { NodeFileSystem } from '@effect/platform-node';
 import { IOError, unknownError } from '../../../errors.js';
 import { platform } from '../../../platform/index.js';
 import { fileStream, writeTextToFile } from '../../fs-utils.js';
-import { runWithEnvOrThrow } from '../../infrastructure/runtime.js';
+import { MainLayer, PlatformLayer } from '../../infrastructure/layer.js';
+import { makeRunner } from '../../infrastructure/runtime.js';
+
+const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
+const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
 
 describe('CSV Read/Write Integration', () => {
   it('should read CSV data and validate structure', async () => {
@@ -18,7 +22,7 @@ describe('CSV Read/Write Integration', () => {
     // const inputStream = Stream.fromIterable(inputContent.split(''));
 
     // Parse CSV
-    const rawRecords = await runWithEnvOrThrow(
+    const rawRecords = await runNodeWithEnvOrThrow(
       Stream.runCollect(fileStream(inputFile).pipe(parseCsv())),
     );
 

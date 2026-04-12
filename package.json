@@ -71,7 +71,7 @@
     "@@sit:docker_down": "docker-compose -f ./test-docker/docker-compose.yml down",
     "schema-gen": "kysely-codegen --dialect mssql --env-file=.env --config-file=.kysely-codegenrc.json",
     "@sit": "pnpm run postgre:setup && pnpm run sit:docker && dotenv -e .env.sit -- vitest --config=./vitest.sit.config.ts --typecheck.tsconfig=./tsconfig.vitest.json && pnpm run sit:docker_down",
-    "sit": "dotenv -e .env -- vitest --config=./vitest.sit.config.ts --typecheck.tsconfig.json"
+    "sit": "dotenv -e .env -- vitest --config=./vitest.sit.config.ts --typecheck.tsconfig=./tsconfig.vitest.json"
   },
   "keywords": [],
   "author": "",

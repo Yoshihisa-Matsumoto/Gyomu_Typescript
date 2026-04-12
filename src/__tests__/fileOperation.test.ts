@@ -6,7 +6,12 @@ import tmp from 'tmp';
 import { expect, test } from 'vitest';
 import { platform } from '../platform/index.js';
 import { fsConstants } from '../platform/index.js';
-import { runWithEnvOrThrow } from '../effect/infrastructure/runtime.js';
+import { Layer } from 'effect';
+import { MainLayer, PlatformLayer } from '../effect/infrastructure/layer.js';
+import { makeRunner } from '../effect/infrastructure/runtime.js';
+
+const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
+const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
 
 test('File Whole Search Test', () => {
   const baseDir = platform.resolve('.');
@@ -244,7 +249,7 @@ test('File Exclusive Access Test', async () => {
     }
   }, 100);
 
-  let result = await runWithEnvOrThrow(
+  let result = await runNodeWithEnvOrThrow(
     FileOperation.waitTillExclusiveAccess(targetFilename, 2),
   );
   const finishDate = new Date().getTime();
@@ -275,7 +280,7 @@ test('File Exclusive Access Test', async () => {
     }
     //console.log('written', new Date());
   }, 50);
-  result = await runWithEnvOrThrow(
+  result = await runNodeWithEnvOrThrow(
     FileOperation.waitTillExclusiveAccess(targetFilename, 1),
   );
   clearInterval(timerId);

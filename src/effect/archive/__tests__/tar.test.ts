@@ -1,13 +1,12 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { Effect, Result, Stream } from 'effect';
+import { Effect, Layer, Result, Stream } from 'effect';
 
 import { IOError } from '../../../errors.js';
 import { Option } from 'effect';
 import { platform } from '../../../platform/index.js';
 import { compareFiles, validateFolders } from '../../../__tests__/baseClass.js';
-import { runWithEnv, runWithEnvOrThrow } from '../../infrastructure/runtime.js';
 import { FileTransportInfo } from '../../../fileModel.js';
 import { fileStream } from '../../fs-utils.js';
 import {
@@ -16,6 +15,16 @@ import {
   requireEntry,
   TarService,
 } from '../tar/index.js';
+import { MainLayer, PlatformLayer } from '../../infrastructure/layer.js';
+import {
+  makeRunner,
+  makeRunnerAsReturn,
+} from '../../infrastructure/runtime.js';
+
+const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
+const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
+
+const runNodeWithEnv = makeRunnerAsReturn(nodeTestLayer);
 
 let compressDirectory: string;
 let extractDirectory: string;
@@ -38,7 +47,7 @@ const validateFileExistence = async (
 ) => {
   const program = (path: string, entryName: string) =>
     fileStream(path).pipe(existsInTar(entryName));
-  const result = await runWithEnv(program(tarFilename, entryName));
+  const result = await runNodeWithEnv(program(tarFilename, entryName));
   if (Result.isSuccess(result)) {
     if (result.success !== expected_result) {
       console.log(
@@ -108,7 +117,7 @@ describe('untar test', () => {
         Effect.flatMap(tar.readTextEntry),
       );
     });
-    const readMe = await runWithEnvOrThrow(program, TarService.live);
+    const readMe = await runNodeWithEnvOrThrow(program, TarService.live);
     expect(readMe).not.toBeNull();
     expect(readMe).toContain('Gyomu');
     console.log(readMe);
@@ -123,7 +132,7 @@ describe('untar test', () => {
         Effect.flatMap(tar.readTextEntry),
       );
     });
-    const readMe = await runWithEnvOrThrow(program, TarService.live);
+    const readMe = await runNodeWithEnvOrThrow(program, TarService.live);
     expect(readMe).not.toBeNull();
     expect(readMe).toContain('Gyomu');
     //console.log(readMe);
@@ -139,7 +148,7 @@ describe('untar test', () => {
         const tar = yield* TarService;
         return yield* fileStream(path).pipe(tar.extract(transferInformation));
       });
-    const result = await runWithEnv(
+    const result = await runNodeWithEnv(
       program(tarFilename, transferInformation),
       TarService.live,
     );
@@ -165,7 +174,7 @@ describe('untar test', () => {
         return yield* tar.create({ tarFileName: path, cwd: sourceDirectory });
       });
     //const transferInformationList = [transferInformation];
-    const result = await runWithEnvOrThrow(
+    const result = await runNodeWithEnvOrThrow(
       program(tarFileName),
       TarService.live,
     );
@@ -205,7 +214,7 @@ describe('untar test', () => {
         );
       });
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const result2 = await runWithEnvOrThrow(
+    const result2 = await runNodeWithEnvOrThrow(
       program2(tarFileName, destinationRoot),
       TarService.live,
     );
@@ -230,7 +239,7 @@ describe('untar test', () => {
         const tar = yield* TarService;
         return yield* fileStream(path).pipe(tar.extract(transferInformation));
       });
-    let result = await runWithEnvOrThrow(
+    let result = await runNodeWithEnvOrThrow(
       program(tarFileName, transferInformation),
       TarService.live,
     );
@@ -247,7 +256,7 @@ describe('untar test', () => {
       sourceFolderName: 'folder1',
       destinationFolderName: extractDirectory,
     });
-    result = await runWithEnvOrThrow(
+    result = await runNodeWithEnvOrThrow(
       program(tarFileName, transferInformation),
       TarService.live,
     );
@@ -266,7 +275,7 @@ describe('untar test', () => {
       destinationFolderName: extractDirectory,
     });
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    result = await runWithEnvOrThrow(
+    result = await runNodeWithEnvOrThrow(
       program(tarFileName, transferInformation),
       TarService.live,
     );

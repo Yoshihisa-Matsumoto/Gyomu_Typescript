@@ -1,9 +1,14 @@
 import { beforeAll, expect, test } from 'vitest';
 import { platform } from '../../../platform/index.js';
-import { runWithEnvOrThrow } from '../../infrastructure/runtime.js';
 import { gunzip, gzip } from '../gz.js';
 import { fileStream, writeToFile } from '../../fs-utils.js';
 import { compareFiles } from '../../../__tests__/baseClass.js';
+import { makeRunner } from '../../infrastructure/runtime.js';
+import { Layer } from 'effect';
+import { MainLayer, PlatformLayer } from '../../infrastructure/layer.js';
+
+const nodeTestLayer = Layer.mergeAll(MainLayer, PlatformLayer);
+const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
 
 let compressDirectory: string;
 let extractDirectory: string;
@@ -25,7 +30,7 @@ test('GZ Creation Test', async () => {
   const gzFilename = platform.join(compressDirectory, 'test_gz_create.gz');
   const targetSourceFilename = platform.join(sourceDirectory, 'README.md');
 
-  await runWithEnvOrThrow(
+  await runNodeWithEnvOrThrow(
     fileStream(targetSourceFilename).pipe(gzip(), writeToFile(gzFilename)),
   );
   // expect(result.isOk()).toBeTruthy();
@@ -40,7 +45,7 @@ test('GZ Creation Test', async () => {
   // const checkFilename = platform.join(sourceDirectory, 'README.md');
   // //const [sourceBuffer,destinationBuffer] = getBufferG
   const extractedFilename = platform.join(extractDirectory, 'README.md');
-  await runWithEnvOrThrow(
+  await runNodeWithEnvOrThrow(
     fileStream(gzFilename).pipe(gunzip(), writeToFile(extractedFilename)),
   );
 
