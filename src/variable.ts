@@ -3,7 +3,7 @@ import { MarketDateAccess, MarketDateService } from './holidays.js';
 import { addDays, addMonths, format, subDays } from 'date-fns';
 import { DBError, ValueError } from './errors.js';
 import { Effect, Layer, ServiceMap } from 'effect';
-import { GyomuRepository } from './effect/gyomu/gyomuRepository.js';
+import { GyomuRepository } from './gyomu/gyomuRepository.js';
 import { fromSync } from './shared/effect.ts/core.js';
 
 const VariableType = {

@@ -3,10 +3,10 @@ import { Effect, Layer } from 'effect';
 import { MarketDateService, MarketDateAccess } from '../holidays.js';
 
 import { beforeEach, expect, test } from 'vitest';
-import { MainLayer } from '../effect/infrastructure/layer.js';
-import { ConfigLayer } from '../effect/infrastructure/config.js';
+import { MainLayer } from '../infrastructure/layer.js';
+import { ConfigLayer } from '../infrastructure/config.js';
 import { NodeFileSystem } from '@effect/platform-node';
-import { makeRunner } from '../effect/infrastructure/runtime.js';
+import { makeRunner } from '../infrastructure/runtime.js';
 import { GyomuRepositoryMock } from './baseDBClass.js';
 //import { prismaMock } from './baseDBClass';
 

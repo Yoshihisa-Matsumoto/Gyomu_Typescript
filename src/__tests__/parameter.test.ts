@@ -3,10 +3,10 @@ import { ParameterService } from '../parameter.js';
 import { DBError } from '../errors.js';
 import { parseYmdToDate } from '../dateOperation.js';
 import { beforeEach, expect, it, test } from 'vitest';
-import { GyomuRepository } from '../effect/gyomu/gyomuRepository.js';
+import { GyomuRepository } from '../gyomu/gyomuRepository.js';
 import { Effect, Layer } from 'effect';
-import { ParameterMasterSchema } from '../effect/schemas/gyomu.js';
-import { makeRunner } from '../effect/infrastructure/runtime.js';
+import { ParameterMasterSchema } from '../schemas/gyomu.js';
+import { makeRunner } from '../infrastructure/runtime.js';
 import { describe } from 'node:test';
 
 const testId = 'F6AE5F2D-BD14-4C5F-9CC3-3A69EF90DD5B';

@@ -1,7 +1,7 @@
 import { DBError } from './errors.js';
 import { User } from './user.js';
 import { Effect, Layer, Schedule, ServiceMap } from 'effect';
-import { GyomuRepository } from './effect/gyomu/gyomuRepository.js';
+import { GyomuRepository } from './gyomu/gyomuRepository.js';
 import { formatDateToYmd } from './dateOperation.js';
 
 type ParameterType = string | number | boolean;

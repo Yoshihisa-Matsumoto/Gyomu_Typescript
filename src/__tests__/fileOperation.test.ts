@@ -7,8 +7,8 @@ import { expect, test } from 'vitest';
 import { platform } from '../platform/index.js';
 import { fsConstants } from '../platform/index.js';
 import { Layer } from 'effect';
-import { MainLayer, PlatformLayer } from '../effect/infrastructure/layer.js';
-import { makeRunner } from '../effect/infrastructure/runtime.js';
+import { MainLayer, PlatformLayer } from '../infrastructure/layer.js';
+import { makeRunner } from '../infrastructure/runtime.js';
 
 const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
 const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);

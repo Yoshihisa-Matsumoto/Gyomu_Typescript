@@ -1,11 +1,8 @@
 import { format } from 'date-fns';
 import { polling } from './timer.js';
 import { Effect, Layer, ServiceMap } from 'effect';
-import { GyomuRepository } from './effect/gyomu/gyomuRepository.js';
-import {
-  MilestoneDailySchema,
-  MilestoneSchema,
-} from './effect/schemas/gyomu.js';
+import { GyomuRepository } from './gyomu/gyomuRepository.js';
+import { MilestoneDailySchema, MilestoneSchema } from './schemas/gyomu.js';
 import { DBError, TimeoutError } from './errors.js';
 
 type MilestoneExistResultType =

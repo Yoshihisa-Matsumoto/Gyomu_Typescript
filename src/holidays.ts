@@ -3,7 +3,7 @@ import { addMonths, isBefore, isEqual } from 'date-fns';
 import { createDateOnly, formatDateToYmd } from './dateOperation.js';
 
 import { Effect, Layer, ServiceMap } from 'effect';
-import { GyomuRepository } from './effect/gyomu/gyomuRepository.js';
+import { GyomuRepository } from './gyomu/gyomuRepository.js';
 import { DBError, GyomuError } from './errors.js';
 import { fromSync } from './shared/effect.ts/core.js';
 

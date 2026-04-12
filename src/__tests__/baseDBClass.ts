@@ -1,8 +1,8 @@
 // import { beforeEach, vi } from 'vitest';
 
 import { Effect, Layer } from 'effect';
-import { GyomuRepository } from '../effect/gyomu/gyomuRepository.js';
-import { MarketHolidaySchema } from '../effect/schemas/gyomu.js';
+import { GyomuRepository } from '../gyomu/gyomuRepository.js';
+import { MarketHolidaySchema } from '../schemas/gyomu.js';
 // beforeEach(() => {
 //   //console.log('beforeEach in baseDBClass', prismaMock, prisma);
 //   mockReset(prismaMock);
