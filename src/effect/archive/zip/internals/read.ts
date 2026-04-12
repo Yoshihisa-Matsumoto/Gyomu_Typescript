@@ -2,11 +2,14 @@ import { Effect, Queue, Stream } from 'effect';
 import yauzl, { RandomAccessReader } from 'yauzl';
 import { IOError, unknownError } from '../../../../errors.js';
 import { logger } from '../../../../logger.js';
-import { fromNodeCallback, fromReadable } from '../../../nodeStream.js';
+import {
+  fromNodeCallback,
+  fromReadable,
+} from '../../../infrastructure/stream/nodeStream.js';
 import { decode } from '../../../../encoding/decode.js';
 import { AppError } from '../../../../base-error.js';
 import { ArchiveEntryItem, massageEntryPath } from '../../common.js';
-import { writeToFile } from '../../../fs-utils.js';
+import { writeToFile } from '../../../infrastructure/fs/fs-utils.js';
 import { FileSystem } from 'effect/FileSystem';
 import { runSync } from 'effect/Effect';
 import { FileTransportInfo } from '../../../../fileModel.js';

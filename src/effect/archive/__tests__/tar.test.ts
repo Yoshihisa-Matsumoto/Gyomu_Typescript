@@ -8,7 +8,7 @@ import { Option } from 'effect';
 import { platform } from '../../../platform/index.js';
 import { compareFiles, validateFolders } from '../../../__tests__/baseClass.js';
 import { FileTransportInfo } from '../../../fileModel.js';
-import { fileStream } from '../../fs-utils.js';
+import { fileStream } from '../../infrastructure/fs/fs-utils.js';
 import {
   existsInTar,
   filterEntries,

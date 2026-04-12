@@ -1,8 +1,8 @@
 import { FileSystem, OpenFlag } from 'effect/FileSystem';
 import { Stream, Effect } from 'effect';
-import { IOError, unknownError } from '../errors.js';
+import { IOError, unknownError } from '../../../errors.js';
 import { PlatformError } from 'effect/PlatformError';
-import { AppError } from '../base-error.js';
+import { AppError } from '../../../base-error.js';
 
 /**
  * パスからファイルストリームを生成する。

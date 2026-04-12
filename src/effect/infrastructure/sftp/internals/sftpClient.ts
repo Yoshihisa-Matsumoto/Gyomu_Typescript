@@ -5,7 +5,7 @@ import { AppError } from '../../../../base-error.js';
 import { fromPromise, fromSync } from '../../../index.js';
 import { platform } from '../../../../platform/index.js';
 import { FileTransportInfo } from '../../../../fileModel.js';
-import { fromReadable } from '../../../nodeStream.js';
+import { fromReadable } from '../../stream/nodeStream.js';
 import { Readable, Writable } from 'node:stream';
 import { NodeStream } from '@effect/platform-node';
 

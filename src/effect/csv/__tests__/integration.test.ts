@@ -6,7 +6,10 @@ import { readFile } from 'node:fs/promises';
 import { NodeFileSystem } from '@effect/platform-node';
 import { IOError, unknownError } from '../../../errors.js';
 import { platform } from '../../../platform/index.js';
-import { fileStream, writeTextToFile } from '../../fs-utils.js';
+import {
+  fileStream,
+  writeTextToFile,
+} from '../../infrastructure/fs/fs-utils.js';
 import { MainLayer, PlatformLayer } from '../../infrastructure/layer.js';
 import { makeRunner } from '../../infrastructure/runtime.js';
 

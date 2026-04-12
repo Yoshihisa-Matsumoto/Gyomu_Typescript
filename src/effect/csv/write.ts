@@ -2,7 +2,7 @@ import { platform } from '../../platform/index.js';
 import { CsvRow, CsvValue, CsvWriteOption } from './type.js';
 import { stringify } from 'csv';
 import { Options } from 'csv-stringify';
-import { throughNodeStreamScoped } from '../nodeStream.js';
+import { throughNodeStreamScoped } from '../infrastructure/stream/nodeStream.js';
 import { Stream, Schema, Function, Effect, Console } from 'effect';
 import { AppError } from '../../base-error.js';
 import { IOError, unknownError } from '../../errors.js';

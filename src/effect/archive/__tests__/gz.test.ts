@@ -1,7 +1,7 @@
 import { beforeAll, expect, test } from 'vitest';
 import { platform } from '../../../platform/index.js';
 import { gunzip, gzip } from '../gz.js';
-import { fileStream, writeToFile } from '../../fs-utils.js';
+import { fileStream, writeToFile } from '../../infrastructure/fs/fs-utils.js';
 import { compareFiles } from '../../../__tests__/baseClass.js';
 import { makeRunner } from '../../infrastructure/runtime.js';
 import { Layer } from 'effect';

@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { platform } from '../../../platform/index.js';
-import { writeToFile } from '../../fs-utils.js';
+import { writeToFile } from '../../infrastructure/fs/fs-utils.js';
 import { compareFiles, validateFolders } from '../../../__tests__/baseClass.js';
 import { Effect, Layer, Stream } from 'effect';
 import {
