@@ -33,7 +33,7 @@ import {
 } from '../schemas/gyomu.js';
 import { KyselyService } from '../infrastructure/db/kysely-service.js';
 import { DB } from '../../db/db.js';
-import { fromPromise } from '../index.js';
+import { fromPromise } from '../../shared/effect.ts/core.js';
 import { DBError } from '../../errors.js';
 
 export class GyomuRepository extends ServiceMap.Service<

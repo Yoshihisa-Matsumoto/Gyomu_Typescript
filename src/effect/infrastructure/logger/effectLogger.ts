@@ -1,5 +1,5 @@
 import { Logger } from 'effect';
-import { logger } from '../logger.js';
+import { logger } from '../../../logger.js';
 
 export const effectLogger = Logger.make(({ logLevel, message }) => {
   switch (logLevel) {
@@ -17,7 +17,3 @@ export const effectLogger = Logger.make(({ logLevel, message }) => {
       break;
   }
 });
-
-// export const initEffectLogger = () => {
-//   Effect.provide(Logger.layer([effectLogger], { mergeWithExisting: false }));
-// };

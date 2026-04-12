@@ -1,5 +1,5 @@
 import { Effect } from 'effect';
-import { fromPromise } from '../../../index.js';
+import { fromPromise } from '../../../../shared/effect.ts/core.js';
 import { ValueError } from '../../../../errors.js';
 
 export const xmlEffect = <ResponseType>(

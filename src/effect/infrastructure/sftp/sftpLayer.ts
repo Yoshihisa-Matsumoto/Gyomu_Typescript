@@ -3,7 +3,7 @@ import { Client } from 'ssh2';
 import { ConfigError, withDefault } from 'effect/Config';
 import { NetworkError } from '../../../errors.js';
 import { ConfigProviderLive, ConfigService } from '../config.js';
-import { unwrapPassword } from '../../index.js';
+import { unwrapPassword } from '../../../shared/effect.ts/option.js';
 import { AppError } from '../../../base-error.js';
 import { Scope } from 'effect/Scope';
 import { FileTransportInfo } from '../../../fileModel.js';

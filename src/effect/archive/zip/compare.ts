@@ -2,7 +2,7 @@ import { pipe, Ref, Stream } from 'effect';
 import { AppError } from '../../../base-error.js';
 import { DiffDetail } from '../../../reconcile.js';
 import { Effect } from 'effect';
-import { ensure } from '../../index.js';
+import { ensure } from '../../../shared/effect.ts/core.js';
 import { platform } from '../../../platform/index.js';
 import { IOError } from '../../../errors.js';
 import { spawnSync } from 'node:child_process';

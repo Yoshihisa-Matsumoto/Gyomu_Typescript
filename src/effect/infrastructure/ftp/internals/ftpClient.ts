@@ -5,7 +5,7 @@ import { AppError } from '../../../../base-error.js';
 import { PassThrough } from 'node:stream';
 import { Effect, pipe, Stream } from 'effect';
 import { fromReadable } from '../../stream/nodeStream.js';
-import { fromPromise } from '../../../index.js';
+import { fromPromise } from '../../../../shared/effect.ts/core.js';
 import { NodeStream } from '@effect/platform-node';
 import { platform } from '../../../../platform/index.js';
 

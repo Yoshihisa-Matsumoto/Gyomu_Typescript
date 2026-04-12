@@ -17,7 +17,7 @@ import { polling } from './timer.js';
 import { platform } from './platform/index.js';
 import { AccessError, TimeoutError } from './errors.js';
 import { Effect } from 'effect';
-import { fromPromise } from './effect/index.js';
+import { fromPromise } from './shared/effect.ts/core.js';
 
 export class FileOperation {
   static getTempPath(): string {

@@ -7,7 +7,7 @@ import { Stream, Schema, Function, Effect, Console } from 'effect';
 import { AppError } from '../../base-error.js';
 import { IOError, unknownError } from '../../errors.js';
 import { FileSystem } from 'effect/FileSystem';
-import { encodeUtf8ToBinaryStream } from '../encoding.js';
+import { encodeUtf8ToBinaryStream } from '../../shared/stream/transform/encoding.js';
 import { NodeFileSystem } from '@effect/platform-node';
 
 // export const CsvBoolean = Schema.BooleanFromString;

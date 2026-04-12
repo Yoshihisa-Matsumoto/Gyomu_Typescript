@@ -8,7 +8,7 @@ import {
   DeleteResult,
   UpdateResult,
 } from 'kysely';
-import { fromPromise } from '../../index.js';
+import { fromPromise } from '../../../shared/effect.ts/core.js';
 import {
   convertToSchemaObjectWithEffect,
   convertFromSchemaObjectWithEffect,

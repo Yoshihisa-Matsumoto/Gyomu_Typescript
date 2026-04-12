@@ -5,7 +5,7 @@ import { createDateOnly, formatDateToYmd } from './dateOperation.js';
 import { Effect, Layer, ServiceMap } from 'effect';
 import { GyomuRepository } from './effect/gyomu/gyomuRepository.js';
 import { DBError, GyomuError } from './errors.js';
-import { fromSync } from './effect/index.js';
+import { fromSync } from './shared/effect.ts/core.js';
 
 export interface MarketDateAccess {
   isBusinessDay: (targetDate: Date) => boolean;

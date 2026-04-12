@@ -2,7 +2,7 @@ import { Client, ConnectConfig, FileEntryWithStats, SFTPWrapper } from 'ssh2';
 import { IOError, NetworkError, unknownError } from '../../../../errors.js';
 import { Effect, Stream } from 'effect';
 import { AppError } from '../../../../base-error.js';
-import { fromPromise, fromSync } from '../../../index.js';
+import { fromPromise, fromSync } from '../../../../shared/effect.ts/core.js';
 import { platform } from '../../../../platform/index.js';
 import { FileTransportInfo } from '../../../../fileModel.js';
 import { fromReadable } from '../../stream/nodeStream.js';
