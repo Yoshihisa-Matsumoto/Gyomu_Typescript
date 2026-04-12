@@ -10,4 +10,3 @@ export * from './numberOperation.js';
 export * from './result.js';
 export * from './user.js';
 export * from './platform/index.js';
-export * from './zod.js';

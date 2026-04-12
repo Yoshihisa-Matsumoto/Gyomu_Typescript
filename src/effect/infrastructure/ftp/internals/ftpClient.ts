@@ -4,21 +4,12 @@ import { IOError, NetworkError } from '../../../../errors.js';
 import { AppError } from '../../../../base-error.js';
 import { PassThrough } from 'node:stream';
 import { Effect, pipe, Stream } from 'effect';
-import { fromReadableControlled } from '../../../nodeStream.js';
+import { fromReadable } from '../../../nodeStream.js';
 import { fromPromise } from '../../../index.js';
 import { NodeStream } from '@effect/platform-node';
 import { platform } from '../../../../platform/index.js';
 
 // ftpClient.ts
-export interface FtpClient {
-  download: (path: string) => Stream.Stream<Uint8Array>;
-  list: (path: string) => Effect.Effect<string[]>;
-  getFileInfo(transportInformation: FileTransportInfo): Effect.Effect<{
-    size: number;
-    date: Date;
-  }>;
-  upload(transportInformation: FileTransportInfo): Effect.Effect<void>;
-}
 
 export const list =
   (client: Client) =>
@@ -95,7 +86,7 @@ export const downloadToStream =
           }),
         );
 
-        return fromReadableControlled(stream);
+        return fromReadable(stream);
       }),
     );
 
