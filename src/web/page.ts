@@ -1,14 +1,14 @@
-import { AxiosResponse } from 'axios';
-import xdom from '@xmldom/xmldom';
-import { DOMElement, GenericElement } from './element';
-//import { parse } from 'parse5';
-import xpath from 'xpath';
+// import xmlser from 'xmlserializer';
+// import xdom from '@xmldom/xmldom';
+import { DOMElement, GenericElement } from './element.js';
+// import * as parse5 from 'parse5';
+import jsdom from 'jsdom';
 
-//const parse5 = require('parse5');
+// import xpath from 'xpath';
 
 export type PageResponseOption = {
   kind: 'response';
-  response: AxiosResponse;
+  response: Response;
 };
 export type PageTextOption = {
   kind: 'html';
@@ -18,22 +18,33 @@ export type PageTextOption = {
 export type PageOption = PageResponseOption | PageTextOption;
 
 export class Page {
-  readonly #response: AxiosResponse | undefined;
+  readonly #response: Response | undefined;
   //readonly #dom: JSDOM;
-  readonly #xdoc: Document;
-  readonly #htmlString: string;
+  #xdoc: Document;
+  #htmlString: string;
   constructor(option: PageOption) {
     if (option.kind === 'response') {
       this.#response = option.response;
-      this.#htmlString = this.#response.data as string;
+      this.#htmlString = '';
     } else {
       this.#htmlString = option.htmlText;
     }
-    // const document = parse5.parse(this.#htmlString);
-    // const xhtml = convert(document);
-    this.#xdoc = new xdom.DOMParser().parseFromString(this.#htmlString);
+    const document = new jsdom.JSDOM(this.#htmlString);
+    // const doc = parse5.parse(this.#htmlString);
+    // const xhtml = xmlser.serializeToString(doc as any as Node);
+    // //const xhtml = serialize(document);
+    // console.log(xhtml);
+    this.#xdoc = document.window.document; //new xdom.DOMParser().parseFromString(xhtml);
     // this.#dom = new JSDOM(response.data as string);
     // this.#dom.window.document.evaluate;
+  }
+
+  static async createFromResponse(response: Response) {
+    const page = new Page({ kind: 'response', response });
+    page.#htmlString = await response.text();
+    const document = new jsdom.JSDOM(page.#htmlString);
+    page.#xdoc = document.window.document;
+    return page;
   }
 
   getElementById<T extends HTMLElement>(id: string) {
@@ -66,27 +77,33 @@ export class Page {
   }
 
   searchByXPath(path: string) {
-    const searchValue = xpath.select(path, this.#xdoc, false);
-    if (!Array.isArray(searchValue)) return searchValue;
-
-    return searchValue.map((v) => {
-      return DOMElement.parseXPathResultValidValue(v);
-    });
+    // return xpath.select(path, this.#xdoc).map((v) => {
+    //   return DOMElement.parseXPathResultValidValue(v);
+    // });
+    return this.#xdoc.querySelectorAll(path);
   }
 
   searchOneByXPath(path: string) {
-    const searchValue = xpath.select(path, this.#xdoc, true);
-    return DOMElement.parseXPathResultValue(searchValue);
+    return this.#xdoc.querySelector(path);
+    // const searchValue = xpath.select(path, this.#xdoc, true);
+    // return DOMElement.parseXPathResultValue(searchValue);
   }
 
   get title() {
     let fileName;
     if (this.#response) {
       if ('Content-Disposition' in this.#response.headers) {
-        const headerValue = this.#response.headers['Content-Disposition'];
-        fileName = decodeURI(
-          headerValue.substring(headerValue.indexOf('filename=') + 9),
-        );
+        let headerValue = this.#response.headers['Content-Disposition'] as
+          | string
+          | string[];
+        if (headerValue) {
+          if (Array.isArray(headerValue)) {
+            headerValue = headerValue[0];
+          }
+          fileName = decodeURI(
+            headerValue.substring(headerValue.indexOf('filename=') + 9),
+          );
+        }
       }
     }
     if (!fileName) {

@@ -1,11 +1,23 @@
-import { ZipArchive } from '../zip';
+import { beforeAll, describe, expect, it } from 'vitest';
+import { platform } from '../../platform/index.js';
+import { writeToFile } from '../../infrastructure/fs/fs-utils.js';
+import { compareFiles, validateFolders } from '../../__tests__/baseClass.js';
+import { Effect, Layer, Stream } from 'effect';
+import {
+  existsInZip,
+  // extractZip,
+  // extractZipAll,
+  // openZipEntries,
+  exportedForTesting,
+} from '../zip/internals/read.js';
+import { FileTransportInfo } from '../../fileModel.js';
+import { ZipService } from '../zip/index.js';
+import { compareZip } from '../zip/compare.js';
+import { MainLayer, PlatformLayer } from '../../infrastructure/layer.js';
+import { makeRunner } from '../../infrastructure/runtime.js';
 
-import { FileTransportInfo } from '../../fileModel';
-
-import { compareFiles, validateFolders } from '../../__tests__/baseClass';
-
-import { beforeAll, expect, test } from 'vitest';
-import { platform } from '../../platform';
+const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
+const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
 
 let compressDirectory: string;
 let extractDirectory: string;
@@ -20,183 +32,299 @@ beforeAll(() => {
   extractDirectory = platform.join(destinationDirectory, 'extract');
   platform.emptyDirSync(extractDirectory);
 });
+describe('Zip resolvePath test', () => {
+  it('resolvePath', () => {
+    let transferInformation: FileTransportInfo;
+    let output: string;
+    transferInformation = new FileTransportInfo({
+      sourceFilename: 'README.md',
+      destinationFileName: 'outputREADME.md',
+      destinationFolderName: extractDirectory,
+    });
+    output = exportedForTesting.resolvePath(
+      {
+        _tag: 'zip',
+        crc32: 0,
+        isDirectory: false,
+        path: 'README.md',
+        uncompressedSize: 0,
+        openStream: () => Stream.empty,
+      },
+      transferInformation,
+    );
+    expect(output).toBe(
+      `C:\\Users\\yoshm\\AppData\\Local\\Temp\\compressZip\\extract\\outputREADME.md`,
+    );
 
-// afterAll(() => {
-//   const tmpPath = platform.tmpdir();
-//   const destinationDirectory = platform.join(tmpPath, 'compress');
-//   platform.removeSync(destinationDirectory);
-// });
+    transferInformation = new FileTransportInfo({
+      sourceFilename: 'email_sender.py',
+      sourceFolderName: 'folder1',
+      destinationFolderName: extractDirectory,
+    });
+    output = exportedForTesting.resolvePath(
+      {
+        _tag: 'zip',
+        crc32: 0,
+        isDirectory: false,
+        path: 'folder1/email_sender.py',
+        uncompressedSize: 0,
+        openStream: () => Stream.empty,
+      },
+      transferInformation,
+    );
+    expect(output).toBe(
+      `C:\\Users\\yoshm\\AppData\\Local\\Temp\\compressZip\\extract\\email_sender.py`,
+    );
 
-const validateFileExistence = async (
-  archive: ZipArchive,
-  entryName: string,
-  expected_result: boolean,
-) => {
-  const result = await archive.fileExists(entryName);
-  if (result.isOk()) {
-    if (result.value !== expected_result) {
-      console.log(
-        entryName,
-        'Different from expected result:',
-        expected_result,
+    transferInformation = new FileTransportInfo({
+      sourceFolderName: 'folder1/folder 2',
+      destinationFolderName: platform.join(extractDirectory, 'folder 2'),
+    });
+    output = exportedForTesting.resolvePath(
+      {
+        _tag: 'zip',
+        crc32: 0,
+
+        isDirectory: false,
+        path: 'foder1/folder 2/aes_encryption.py',
+        uncompressedSize: 0,
+        openStream: () => Stream.empty,
+      },
+      transferInformation,
+    );
+    expect(output).toBe(
+      `C:\\Users\\yoshm\\AppData\\Local\\Temp\\compressZip\\extract\\folder 2\\aes_encryption.py`,
+    );
+
+    output = exportedForTesting.resolvePath(
+      {
+        _tag: 'zip',
+        isDirectory: true,
+        path: 'foder1/folder 2/folder4',
+      },
+      transferInformation,
+    );
+    expect(output).toBe(
+      `C:\\Users\\yoshm\\AppData\\Local\\Temp\\compressZip\\extract\\folder 2\\folder4`,
+    );
+  });
+});
+describe('Zip Test', () => {
+  it('Dictionary Check', async () => {
+    const program = (filePath: string) =>
+      Effect.scoped(
+        Effect.gen(function* () {
+          const zip = yield* ZipService;
+          return yield* zip.unarchiveFromFile(filePath, 'shift-jis').pipe(
+            Stream.tap((entry) => Effect.sync(() => console.log(entry.path))),
+            Stream.runDrain,
+          );
+        }),
       );
-    }
-    expect(result.value).toBe(expected_result);
-  } else {
-    console.log(result.error);
-    expect(false).toBeTruthy();
-  }
-};
-test('Zip Creation Test', async () => {
-  //const extractDirectory = platform.join(compressDirectory,'extracted');
-  const sourceDirectory = platform.join(compressDirectory, 'source');
-  const zipFilename = platform.join(compressDirectory, 'test_zip_create.zip');
-  const transferInformation = new FileTransportInfo({
-    basePath: sourceDirectory,
+
+    await runNodeWithEnvOrThrow(
+      program('tests/compress/temp.zip'),
+      ZipService.live,
+    );
   });
-  const transferInformationList = [transferInformation];
+  it('Effect File Entry Check', async () => {
+    const program = (filePath: string) =>
+      Effect.scoped(
+        Effect.gen(function* () {
+          const zip = yield* ZipService;
+          const entries = yield* zip
+            .unarchiveFromFile(filePath, 'shift-jis')
+            .pipe(Stream.runCollect);
 
-  let result = await ZipArchive.create(zipFilename, transferInformationList);
+          // 実際に解凍する場合は、withZipFileのScopeの中で処理が必要
+          expect(yield* existsInZip('README.md')(entries)).toBeTruthy();
+          expect(yield* existsInZip('README1.md')(entries)).toBeFalsy();
+          expect(
+            yield* existsInZip('folder1\\folder 2\\aes_encryption.py')(entries),
+          ).toBeTruthy();
+          expect(
+            yield* existsInZip('folder1\\folder 3\\aes_encryption.py')(entries),
+          ).toBeFalsy();
+          expect(yield* existsInZip('ユーザー噂.py')(entries)).toBeTruthy();
+        }),
+      );
+    await runNodeWithEnvOrThrow(
+      program('tests/compress/temp.zip'),
+      ZipService.live,
+    );
+  });
+  it('Zip Creation Test', async () => {
+    //const extractDirectory = platform.join(compressDirectory,'extracted');
+    const sourceDirectory = platform.join(compressDirectory, 'source');
+    const zipFilename = platform.join(compressDirectory, 'test_zip_create.zip');
+    const transferInformation = new FileTransportInfo({
+      basePath: sourceDirectory,
+    });
+    const transferInformationList = [transferInformation];
 
-  expect(result.isOk()).toBeTruthy();
-  // if (result.isSuccess()) {
-  //   Promise.allSettled([result.value]);
-  // }
-  //const checkFilename = platform.join(sourceDirectory, 'README.md');
-  //const [sourceBuffer,destinationBuffer] = getBufferFromFilenames()
-  const archive: ZipArchive = new ZipArchive({ zipFilename });
-  //let isExist = await archive.fileExists('README.md');
-  await validateFileExistence(archive, 'README.md', true);
-  //isExist = await archive.fileExists('README1.md');
-  await validateFileExistence(archive, 'README1.md', false);
-  //isExist = await archive.fileExists('folder1/folder 2/aes_encryption.py');
-  await validateFileExistence(
-    archive,
-    'folder1/folder 2/aes_encryption.py',
-    true,
-  );
-  //isExist = await archive.fileExists('folder1\\folder 2\\aes_encryption.py');
-  await validateFileExistence(
-    archive,
-    'folder1\\folder 2\\aes_encryption.py',
-    true,
-  );
+    const program = (zipFilename: string) =>
+      Effect.scoped(
+        Effect.gen(function* () {
+          const zip = yield* ZipService;
+          yield* zip
+            .create(transferInformationList)
+            .pipe(writeToFile(zipFilename));
+          const entries = yield* zip
+            .unarchiveFromFile(zipFilename, 'shift-jis')
+            .pipe(Stream.runCollect);
 
-  //isExist = await archive.fileExists('folder1\\folder 3\\aes_encryption.py');
-  await validateFileExistence(
-    archive,
-    'folder1\\folder 3\\aes_encryption.py',
-    false,
-  );
+          // 実際に解凍する場合は、withZipFileのScopeの中で処理が必要
+          expect(yield* existsInZip('README.md')(entries)).toBeTruthy();
+          expect(yield* existsInZip('README1.md')(entries)).toBeFalsy();
+          expect(
+            yield* existsInZip('folder1\\folder 2\\aes_encryption.py')(entries),
+          ).toBeTruthy();
+          expect(
+            yield* existsInZip('folder1\\folder 3\\aes_encryption.py')(entries),
+          ).toBeFalsy();
+          expect(yield* existsInZip('ユーザー噂.py')(entries)).toBeTruthy();
+        }),
+      );
+    await runNodeWithEnvOrThrow(program(zipFilename), ZipService.live);
+    //validateFolders(platform.join(compressDirectory, 'source'), destinationRoot);
+  });
+  it('ZipEffect1 Unarchive Test', async () => {
+    let transferInformation: FileTransportInfo;
+    let extractedFile: string;
+    transferInformation = new FileTransportInfo({
+      sourceFilename: 'README.md',
+      destinationFileName: 'outputREADME.md',
+      destinationFolderName: extractDirectory,
+    });
+    const zipFilename = platform.join(compressDirectory, 'compress/temp.zip');
+    const program = (
+      zipFilename: string,
+      transferInformation: FileTransportInfo,
+    ) =>
+      Effect.scoped(
+        Effect.gen(function* () {
+          const zip = yield* ZipService;
+          return yield* zip
+            .unarchiveFromFile(zipFilename, 'shift-jis')
+            .pipe(zip.extract(transferInformation));
+        }),
+      );
+    await runNodeWithEnvOrThrow(
+      program(zipFilename, transferInformation),
+      ZipService.live,
+    );
+    extractedFile = platform.join(extractDirectory, 'outputREADME.md');
+    expect(
+      compareFiles(
+        extractedFile,
+        platform.join(compressDirectory, 'source/README.md'),
+      ),
+    ).toBeTruthy();
 
-  //isExist = await archive.fileExists('ユーザー噂.py');
-  await validateFileExistence(archive, 'ユーザー噂.py', true);
+    transferInformation = new FileTransportInfo({
+      sourceFilename: 'email_sender.py',
+      sourceFolderName: 'folder1',
+      destinationFolderName: extractDirectory,
+    });
 
-  const destinationRoot = platform.join(extractDirectory, 'fullZipCreate');
+    await runNodeWithEnvOrThrow(
+      program(zipFilename, transferInformation),
+      ZipService.live,
+    );
+    extractedFile = platform.join(extractDirectory, 'email_sender.py');
+    expect(
+      compareFiles(
+        extractedFile,
+        platform.join(compressDirectory, 'source/folder1/email_sender.py'),
+      ),
+    ).toBeTruthy();
 
-  result = await archive.extractAll(destinationRoot);
-  expect(result.isOk()).toBeTruthy();
-  validateFolders(platform.join(compressDirectory, 'source'), destinationRoot);
+    transferInformation = new FileTransportInfo({
+      sourceFilename: 'ユーザー噂.py',
+      destinationFolderName: extractDirectory,
+    });
+    await runNodeWithEnvOrThrow(
+      program(zipFilename, transferInformation),
+      ZipService.live,
+    );
+    extractedFile = platform.join(extractDirectory, 'ユーザー噂.py');
+    expect(
+      compareFiles(
+        extractedFile,
+        platform.join(compressDirectory, 'source/ユーザー噂.py'),
+      ),
+    ).toBeTruthy();
+  });
+
+  it('ZipEffectUnarchive Folder Test', async () => {
+    const transferInformation = new FileTransportInfo({
+      sourceFolderName: 'folder1/folder 2',
+      destinationFolderName: platform.join(extractDirectory, 'folder 2'),
+    });
+    const zipFilename = platform.join(compressDirectory, 'compress/temp.zip');
+
+    const program = (
+      zipFilename: string,
+      transferInformation: FileTransportInfo,
+    ) =>
+      Effect.scoped(
+        Effect.gen(function* () {
+          const zip = yield* ZipService;
+          return yield* zip
+            .unarchiveFromFile(zipFilename, 'shift-jis')
+            .pipe(zip.extract(transferInformation));
+        }),
+      );
+    await runNodeWithEnvOrThrow(
+      program(zipFilename, transferInformation),
+      ZipService.live,
+    );
+    validateFolders(
+      platform.join(compressDirectory, 'source/folder1/folder 2'),
+      platform.join(extractDirectory, 'folder 2'),
+    );
+
+    const destinationRoot = platform.join(extractDirectory, 'fullZipExtract');
+    const program2 = (zipFilename: string, destinationFolder: string) =>
+      Effect.scoped(
+        Effect.gen(function* () {
+          const zip = yield* ZipService;
+          return yield* zip
+            .unarchiveFromFile(zipFilename, 'shift-jis')
+            .pipe(zip.extractAll(destinationFolder));
+        }),
+      );
+    await runNodeWithEnvOrThrow(
+      program2(zipFilename, destinationRoot),
+      ZipService.live,
+    );
+    validateFolders(
+      platform.join(compressDirectory, 'source'),
+      destinationRoot,
+    );
+  });
 });
+describe('ZipCompare test', () => {
+  it('Zip Compare Test', async () => {
+    const program = await compareZip({
+      sourceFilename: platform.join(
+        compressDirectory,
+        'compress\\compare1.zip',
+      ),
+      destinationFilename: platform.join(
+        compressDirectory,
+        'compress\\compare2.zip',
+      ),
+      resultPath: platform.join(compressDirectory, 'zipCompare'),
+      recordDelimiter: 'unix',
+    });
+    await runNodeWithEnvOrThrow(program, ZipService.live);
 
-test('Zip Creation with password Test', async () => {
-  //const extractDirectory = platform.join(compressDirectory,'extracted');
-  const sourceDirectory = platform.join(compressDirectory, 'source');
-  const zipFilename = platform.join(
-    compressDirectory,
-    'test_zip_create_password.zip',
-  );
-  const transferInformation = new FileTransportInfo({
-    basePath: sourceDirectory,
+    expect(
+      compareFiles(
+        platform.join(compressDirectory, 'zipCompareResult.csv'),
+        platform.join(compressDirectory, 'zipCompare\\@summary.csv'),
+      ),
+    ).toBeTruthy();
   });
-  const transferInformationList = [transferInformation];
-  const password = 'SimplePassword';
-  const result = await ZipArchive.create(
-    zipFilename,
-    transferInformationList,
-    password,
-  );
-
-  // password creation unsupported: expect failure
-  expect(result.isOk()).toBeFalsy();
-});
-
-test('Zip Unarchive Test', async () => {
-  let transferInformation: FileTransportInfo;
-  let extractedFile: string;
-  transferInformation = new FileTransportInfo({
-    sourceFilename: 'README.md',
-    destinationFileName: 'outputREADME.md',
-    destinationFolderName: extractDirectory,
-  });
-  let archive: ZipArchive = new ZipArchive({
-    zipFilename: platform.join(compressDirectory, 'compress/temp.zip'),
-  });
-  await archive.extract(transferInformation);
-  extractedFile = platform.join(extractDirectory, 'outputREADME.md');
-  expect(
-    compareFiles(
-      extractedFile,
-      platform.join(compressDirectory, 'source/README.md'),
-    ),
-  ).toBeTruthy();
-
-  transferInformation = new FileTransportInfo({
-    sourceFilename: 'email_sender.py',
-    sourceFolderName: 'folder1',
-    destinationFolderName: extractDirectory,
-  });
-  await archive.extract(transferInformation);
-  extractedFile = platform.join(extractDirectory, 'email_sender.py');
-  expect(
-    compareFiles(
-      extractedFile,
-      platform.join(compressDirectory, 'source/folder1/email_sender.py'),
-    ),
-  ).toBeTruthy();
-
-  //let isExist = await archive.fileExists('ユーザー噂.py');
-  await validateFileExistence(archive, 'ユーザー噂.py', false);
-
-  archive = new ZipArchive({
-    zipFilename: platform.join(compressDirectory, 'compress/temp.zip'),
-    encoding: 'Shift_JIS',
-  });
-  //isExist = await archive.fileExists('ユーザー噂.py');
-  await validateFileExistence(archive, 'ユーザー噂.py', true);
-
-  transferInformation = new FileTransportInfo({
-    sourceFilename: 'ユーザー噂.py',
-    destinationFolderName: extractDirectory,
-  });
-  await archive.extract(transferInformation);
-  extractedFile = platform.join(extractDirectory, 'ユーザー噂.py');
-  expect(
-    compareFiles(
-      extractedFile,
-      platform.join(compressDirectory, 'source/ユーザー噂.py'),
-    ),
-  ).toBeTruthy();
-});
-test('Zip Unarchive Folder Test', async () => {
-  const transferInformation = new FileTransportInfo({
-    sourceFolderName: 'folder1/folder 2',
-    destinationFolderName: platform.join(extractDirectory, 'folder 2'),
-  });
-  const archive: ZipArchive = new ZipArchive({
-    zipFilename: platform.join(compressDirectory, 'compress/temp.zip'),
-    encoding: 'Shift_JIS',
-  });
-  let result = await archive.extract(transferInformation);
-  expect(result.isOk()).toBeTruthy();
-  validateFolders(
-    platform.join(compressDirectory, 'source/folder1/folder 2'),
-    platform.join(extractDirectory, 'folder 2'),
-  );
-
-  const destinationRoot = platform.join(extractDirectory, 'fullZipExtract');
-
-  result = await archive.extractAll(destinationRoot);
-  expect(result.isOk()).toBeTruthy();
-  validateFolders(platform.join(compressDirectory, 'source'), destinationRoot);
 });

@@ -1,6 +1,8 @@
 import { hostname, networkInterfaces } from 'os';
 import { pid, env } from 'process';
-import { UserFactory, User } from './user';
+import { UserFactory, User } from './user.js';
+// import { z } from './zod.js';
+// import dotenv from 'dotenv';
 
 //const GYOMU_COMMON_MODE: string = 'GYOMU_COMMON_MODE';
 export interface Configurator {
@@ -59,3 +61,33 @@ export class ConfigurationFactory {
     return ConfigurationFactory.#config;
   };
 }
+
+// export interface ConfigSource {
+//   get(key: string): string | undefined;
+// }
+
+// export function toEnvKey(key: string) {
+//   return key.replace(/([A-Z])/g, '_$1').toUpperCase();
+// }
+
+// export function loadConfig<T extends z.ZodRawShape>(
+//   source: ConfigSource,
+//   schema: z.ZodObject<T>,
+//   keyMap?: Record<string, string>,
+// ): z.infer<z.ZodObject<T>> {
+//   const raw: Record<string, unknown> = {};
+//   for (const key in schema.shape) {
+//     const envKey = keyMap?.[key] ?? toEnvKey(key);
+//     raw[key] = source.get(envKey);
+//   }
+//   return schema.parse(raw);
+// }
+
+// export class EnvConfigSource implements ConfigSource {
+//   constructor() {
+//     dotenv.config();
+//   }
+//   get(key: string): string | undefined {
+//     return process.env[key];
+//   }
+// }

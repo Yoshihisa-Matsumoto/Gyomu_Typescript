@@ -1,6 +1,5 @@
-import { Attribute } from './attribute';
-import xpath from 'xpath';
-import { WebParseError } from '../errors';
+import { Attribute } from './attribute.js';
+//import xpath from 'xpath';
 
 export class DOMElement {
   protected __node: HTMLElement;
@@ -63,44 +62,44 @@ export class DOMElement {
   }
 
   searchByXPath(path: string) {
-    const selectedValue = xpath.select(path, this.__node);
-    if (!Array.isArray(selectedValue)) return selectedValue;
-    return selectedValue.map((v) => {
-      return DOMElement.parseXPathResultValidValue(v);
-    });
+    // return xpath.select(path, this.__node).map((v) => {
+    //   return DOMElement.parseXPathResultValidValue(v);
+    // });
+    return this.__node.querySelectorAll(path);
   }
 
   searchOneByXPath(path: string) {
-    const searchValue = xpath.select(path, this.__node, true);
-    return DOMElement.parseXPathResultValue(searchValue);
+    // const searchValue = xpath.select(path, this.__node, true);
+    // return DOMElement.parseXPathResultValue(searchValue);
+    return this.__node.querySelector(path);
   }
 
-  static parseXPathResultValue(searchValue: xpath.SelectedValue | undefined) {
-    if (!searchValue) return undefined;
-    return DOMElement.parseXPathResultValidValue(searchValue);
-  }
-  static parseXPathResultValidValue(searchValue: xpath.SelectedValue) {
-    switch (typeof searchValue) {
-      case 'string':
-        return searchValue as string;
-      case 'number':
-        return searchValue as number;
-      case 'boolean':
-        return searchValue as boolean;
-      default:
-        if (searchValue instanceof Attr) {
-          return new Attribute(searchValue);
-        } else {
-          if (searchValue instanceof HTMLElement) {
-            return new GenericElement<HTMLElement>(searchValue);
-          } else {
-            throw new WebParseError(
-              `Unsupported Value: ${JSON.stringify(searchValue)}`,
-            );
-          }
-        }
-    }
-  }
+  // static parseXPathResultValue(searchValue: xpath.SelectedValue | undefined) {
+  //   if (!searchValue) return undefined;
+  //   return DOMElement.parseXPathResultValidValue(searchValue);
+  // }
+  // static parseXPathResultValidValue(searchValue: xpath.SelectedValue) {
+  //   switch (typeof searchValue) {
+  //     case 'string':
+  //       return searchValue as string;
+  //     case 'number':
+  //       return searchValue as number;
+  //     case 'boolean':
+  //       return searchValue as boolean;
+  //     default:
+  //       if (searchValue instanceof Attr) {
+  //         return new Attribute(searchValue);
+  //       } else {
+  //         if (searchValue instanceof HTMLElement) {
+  //           return new GenericElement<HTMLElement>(searchValue);
+  //         } else {
+  //           throw new WebParseError(
+  //             `Unsupported Value: ${JSON.stringify(searchValue)}`
+  //           );
+  //         }
+  //       }
+  //   }
+  // }
 }
 
 export class GenericElement<T extends HTMLElement> extends DOMElement {

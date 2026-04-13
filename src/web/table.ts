@@ -1,5 +1,5 @@
-import { GenericElement } from './element';
-import { TableRow } from './tableRow';
+import { GenericElement } from './element.js';
+import { TableRow } from './tableRow.js';
 
 export type TableOption = {
   headerExist: boolean;

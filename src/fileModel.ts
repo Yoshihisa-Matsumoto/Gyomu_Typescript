@@ -1,6 +1,6 @@
-import { platform } from './platform';
+import { platform } from './platform/index.js';
 import { parse } from 'date-fns';
-import { ValueError } from './errors';
+import { ValueError } from './errors.js';
 
 export class FileInfo {
   readonly fileName: string;

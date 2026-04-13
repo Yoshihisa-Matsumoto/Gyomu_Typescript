@@ -1,12 +1,23 @@
 //import { gyomu_market_holiday } from '@prisma/client';
-import MarketDateAccess from '../holidays';
+import { Effect, Layer } from 'effect';
+import { MarketDateService, MarketDateAccess } from '../holidays.js';
 
 import { beforeEach, expect, test } from 'vitest';
+import { MainLayer } from '../infrastructure/layer.js';
+import { ConfigLayer } from '../infrastructure/config.js';
+import { NodeFileSystem } from '@effect/platform-node';
+import { makeRunner } from '../infrastructure/runtime.js';
+import { GyomuRepositoryMock } from './baseDBClass.js';
 //import { prismaMock } from './baseDBClass';
 
 // let mockCtx: MockContext;
 // let ctx: Context;
 let access: MarketDateAccess;
+const TestLayer = Layer.mergeAll(MarketDateService.live, MainLayer, ConfigLayer)
+  .pipe(Layer.provideMerge(GyomuRepositoryMock))
+  // .pipe(Layer.provideMerge(KyselyService.live))
+  .pipe(Layer.provideMerge(NodeFileSystem.layer));
+const testRunner = makeRunner(TestLayer);
 
 beforeEach(async () => {
   // mockCtx = createMockContext();
@@ -16,9 +27,13 @@ beforeEach(async () => {
   // );
   //access = await MarketDateAccess.getMarketAccess('JP');
   //console.log('beforeEach');
-  const result = await MarketDateAccess.getMarketAccess('JP');
-  if (result.isErr()) expect(result.isOk()).toBeTruthy();
-  else access = result.value;
+  const program = Effect.gen(function* () {
+    const marketService = yield* MarketDateService;
+    const access = yield* marketService.get('JP');
+    return access;
+  });
+  const result = await testRunner(program);
+  access = result;
 });
 
 test('Construction Test', () => {

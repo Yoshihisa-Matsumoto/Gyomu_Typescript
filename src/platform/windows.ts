@@ -1,5 +1,6 @@
-import { commonPlatform } from './common';
+import { commonPlatform } from './common.js';
 
 export const windows = {
+  name: 'windows',
   ...commonPlatform,
 };

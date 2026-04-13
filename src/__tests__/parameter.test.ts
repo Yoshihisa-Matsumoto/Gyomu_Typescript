@@ -1,10 +1,15 @@
-import { prismaMock } from './baseDBClass';
-import { ParameterAccess } from '../parameter';
-import { gyomu_param_master, Prisma } from '../generated/prisma/client';
+import { ParameterService } from '../parameter.js';
 
-import { CriticalError } from '../errors';
-import { createDateFromYYYYMMDD } from '../dateOperation';
-import { beforeEach, expect, test } from 'vitest';
+import { DBError } from '../errors.js';
+import { parseYmdToDate } from '../dateOperation.js';
+import { beforeEach, expect, it, test } from 'vitest';
+import { GyomuRepository } from '../gyomu/gyomuRepository.js';
+import { Effect, Layer } from 'effect';
+import { ParameterMasterSchema } from '../schemas/gyomu.js';
+import { makeRunner } from '../infrastructure/runtime.js';
+import { describe } from 'node:test';
+
+const testId = 'F6AE5F2D-BD14-4C5F-9CC3-3A69EF90DD5B';
 
 beforeEach(() => {});
 test('parameter parse', async () => {
@@ -14,157 +19,331 @@ test('parameter parse', async () => {
 });
 
 test('db error test', async () => {
-  const expectedErrors = [
-    new Prisma.PrismaClientKnownRequestError('test', {
-      code: 'c010',
-      clientVersion: '1.2.3',
-    }),
-    new Prisma.PrismaClientUnknownRequestError('test', {
-      clientVersion: '1.2.3',
-    }),
-    new Prisma.PrismaClientValidationError('test', { clientVersion: '1.2.3' }),
-    new Error('test'),
-  ];
-  expectedErrors.forEach(async (err) => {
-    prismaMock.gyomu_param_master.findMany.mockRejectedValue(err);
-    const itemKey = 'ITEM_KEY_Test$$';
-    const result = await ParameterAccess.keyExists(itemKey);
-    if (result.isOk()) {
-      expect(result.isOk()).toBeFalsy();
-    } else {
-      const dbError = result.error;
-      expect(dbError.message).toContain('load gyomu_param_master');
-      expect(dbError.innerError).not.toBeUndefined();
-      const innerError = dbError.innerError as Error;
-      expect(innerError).toEqual(err);
-    }
+  const GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
+    parameterMaster: {
+      findByItemKey: () => Effect.fail(new DBError('DB connection error')),
+    },
+  } as any);
+  const TestLayer = ParameterService.live.pipe(
+    Layer.provide(GyomuRepositoryMock),
+  );
+  const testRunner = makeRunner(TestLayer);
+  const program = Effect.gen(function* () {
+    const parameter = yield* ParameterService;
+    return yield* parameter.setValue('abc', 'abc');
   });
-
-  const criticalErrors = [
-    new CriticalError('critical'),
-    new Prisma.PrismaClientRustPanicError('critical', '1.2.3'),
-  ];
-  criticalErrors.forEach(async (err) => {
-    prismaMock.gyomu_param_master.findMany.mockRejectedValue(err);
-    const itemKey = 'ITEM_KEY_Test$$';
-    await expect(ParameterAccess.keyExists(itemKey)).rejects.toBeInstanceOf(
-      CriticalError,
-    );
-  });
+  expect(async () => await testRunner(program)).rejects.toThrow(
+    'DB connection error',
+  );
 });
-
-test('multiple parameter with different value test', async () => {
+test('no parameter found', async () => {
+  const GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
+    parameterMaster: {
+      findByItemKey: () => Effect.succeed([]),
+    },
+  } as any);
+  const TestLayer = ParameterService.live.pipe(
+    Layer.provide(GyomuRepositoryMock),
+  );
+  const testRunner = makeRunner(TestLayer);
+  const itemKey = 'abc';
+  const program = Effect.gen(function* () {
+    const parameter = yield* ParameterService;
+    return yield* parameter.getValue(itemKey);
+  });
+  expect(async () => await testRunner(program)).rejects.toThrow(
+    `Can not retrieve parameter value for key: ${itemKey}`,
+  );
+});
+test('invalid number returns NaN', async () => {
+  const GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
+    parameterMaster: {
+      findByItemKey: () =>
+        Effect.succeed([
+          {
+            id: testId,
+            itemKey: 'abc',
+            itemValue: 'not a number',
+            itemFromDate: '',
+          },
+        ]),
+    },
+  } as any);
+  const TestLayer = ParameterService.live.pipe(
+    Layer.provide(GyomuRepositoryMock),
+  );
+  const testRunner = makeRunner(TestLayer);
+  const program = Effect.gen(function* () {
+    const parameter = yield* ParameterService;
+    return yield* parameter.numberValue('abc');
+  });
+  const result = await testRunner(program);
+  expect(result).toBeNaN();
+});
+test('boolean is case insensitive', async () => {
+  const GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
+    parameterMaster: {
+      findByItemKey: () =>
+        Effect.succeed([
+          {
+            id: testId,
+            itemKey: 'abc',
+            itemValue: 'TrUE',
+            itemFromDate: '',
+          },
+        ]),
+    },
+  } as any);
+  const TestLayer = ParameterService.live.pipe(
+    Layer.provide(GyomuRepositoryMock),
+  );
+  const testRunner = makeRunner(TestLayer);
+  const program = Effect.gen(function* () {
+    const parameter = yield* ParameterService;
+    return yield* parameter.booleanValue('abc');
+  });
+  const result = await testRunner(program);
+  expect(result).toBe(true);
+});
+describe('multiple parameter with different value test', () => {
   const itemKey = 'ITEM_KEY_Test$$';
-  const records: gyomu_param_master[] = [
+  const records: (typeof ParameterMasterSchema.types._select)[] = [
     {
-      item_key: itemKey,
-      item_value: 'oldest',
-      item_fromdate: '',
+      id: testId,
+      itemKey: itemKey,
+      itemValue: 'oldest',
+      itemFromDate: '',
     },
     {
-      item_key: itemKey,
-      item_value: 'old',
-      item_fromdate: '19841001',
+      id: testId,
+      itemKey: itemKey,
+      itemValue: 'current',
+      itemFromDate: '2021-01-01',
     },
     {
-      item_key: itemKey,
-      item_value: 'current',
-      item_fromdate: '20210101',
+      id: testId,
+      itemKey: itemKey,
+      itemValue: 'old',
+      itemFromDate: '1984-10-01',
     },
   ];
-  prismaMock.gyomu_param_master.findMany.mockResolvedValue(records);
-  let result = await ParameterAccess.value(
-    itemKey,
-    undefined,
-    createDateFromYYYYMMDD('19800401'),
+  const GyomuRepositoryRetrieveMock = Layer.succeed(GyomuRepository, {
+    parameterMaster: {
+      findByItemKey: () => Effect.succeed(records),
+    },
+  } as any);
+  const TestRetrieveLayer = ParameterService.live.pipe(
+    Layer.provide(GyomuRepositoryRetrieveMock),
   );
-  if (result.isErr()) {
-    expect(result.isErr()).toBeFalsy();
-    return;
-  }
-  expect(result.value).toEqual('oldest');
-
-  result = await ParameterAccess.value(
-    itemKey,
-    undefined,
-    createDateFromYYYYMMDD('19850401'),
-  );
-  if (result.isErr()) {
-    expect(result.isErr()).toBeFalsy();
-    return;
-  }
-  expect(result.value).toEqual('old');
-
-  result = await ParameterAccess.value(
-    itemKey,
-    undefined,
-    createDateFromYYYYMMDD('20220401'),
-  );
-  if (result.isErr()) {
-    expect(result.isErr()).toBeFalsy();
-    return;
-  }
-  expect(result.value).toEqual('current');
-
-  result = await ParameterAccess.value(
-    itemKey,
-    undefined,
-    createDateFromYYYYMMDD('20210101'),
-  );
-  if (result.isErr()) {
-    expect(result.isErr()).toBeFalsy();
-    return;
-  }
-  expect(result.value).toEqual('current');
+  const testRetrieveRunner = makeRunner(TestRetrieveLayer);
+  const programValue = (targetYmd: string) =>
+    Effect.gen(function* () {
+      const parameter = yield* ParameterService;
+      return yield* parameter.getValue(
+        itemKey,
+        undefined,
+        parseYmdToDate(targetYmd),
+      );
+    });
+  it('get oldest value', async () => {
+    const resultValue = await testRetrieveRunner(programValue('1980-04-01'));
+    expect(resultValue).toEqual('oldest');
+  });
+  it('get mid range value', async () => {
+    const resultValue = await testRetrieveRunner(programValue('1985-04-01'));
+    expect(resultValue).toEqual('old');
+  });
+  it('get current value by future date', async () => {
+    const resultValue = await testRetrieveRunner(programValue('2022-04-01'));
+    expect(resultValue).toEqual('current');
+  });
+  it('get current value by exact date', async () => {
+    const resultValue = await testRetrieveRunner(programValue('2021-01-01'));
+    expect(resultValue).toEqual('current');
+  });
 });
-
+test('no defaultRow test', async () => {
+  const itemKey = 'ITEM_KEY_Test$$';
+  const records: (typeof ParameterMasterSchema.types._select)[] = [
+    {
+      id: testId,
+      itemKey: itemKey,
+      itemValue: 'current',
+      itemFromDate: '2021-01-01',
+    },
+    {
+      id: testId,
+      itemKey: itemKey,
+      itemValue: 'old',
+      itemFromDate: '1984-10-01',
+    },
+  ];
+  const GyomuRepositoryRetrieveMock = Layer.succeed(GyomuRepository, {
+    parameterMaster: {
+      findByItemKey: () => Effect.succeed(records),
+    },
+  } as any);
+  const TestRetrieveLayer = ParameterService.live.pipe(
+    Layer.provide(GyomuRepositoryRetrieveMock),
+  );
+  const testRetrieveRunner = makeRunner(TestRetrieveLayer);
+  const programValue = (targetYmd: string) =>
+    Effect.gen(function* () {
+      const parameter = yield* ParameterService;
+      return yield* parameter.getValue(
+        itemKey,
+        undefined,
+        parseYmdToDate(targetYmd),
+      );
+    });
+  await expect(testRetrieveRunner(programValue('1980-04-01'))).rejects.toThrow(
+    new DBError(
+      `No default value found for key: ${itemKey} and target date: 1980-04-01`,
+    ),
+  );
+});
+test('multiple defaultRows test', async () => {
+  const itemKey = 'ITEM_KEY_Test$$';
+  const records: (typeof ParameterMasterSchema.types._select)[] = [
+    {
+      id: testId,
+      itemKey: itemKey,
+      itemValue: 'current',
+      itemFromDate: '',
+    },
+    {
+      id: testId,
+      itemKey: itemKey,
+      itemValue: 'old',
+      itemFromDate: '',
+    },
+  ];
+  const GyomuRepositoryRetrieveMock = Layer.succeed(GyomuRepository, {
+    parameterMaster: {
+      findByItemKey: () => Effect.succeed(records),
+    },
+  } as any);
+  const TestRetrieveLayer = ParameterService.live.pipe(
+    Layer.provide(GyomuRepositoryRetrieveMock),
+  );
+  const testRetrieveRunner = makeRunner(TestRetrieveLayer);
+  const programValue = Effect.gen(function* () {
+    const parameter = yield* ParameterService;
+    return yield* parameter.getValue(itemKey);
+  });
+  await expect(testRetrieveRunner(programValue)).rejects.toThrow(
+    new DBError(
+      `Multiple default values found for key: ${itemKey}. Please ensure there is only one default value without itemFromDate.`,
+    ),
+  );
+});
 async function setValueTest<T extends string | boolean | number>(itemValue: T) {
   const itemKey = 'ITEM_KEY_Test$$';
-  const record: gyomu_param_master = {
-    item_key: itemKey,
-    item_value: itemValue.toString(),
-    item_fromdate: '',
+  const recordCreate: typeof ParameterMasterSchema.types._insert = {
+    itemKey: itemKey,
+    itemValue: itemValue.toString(),
+    itemFromDate: '',
   };
+  const recordSelect: typeof ParameterMasterSchema.types._select = {
+    ...recordCreate,
+    id: testId,
+  };
+  let GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
+    parameterMaster: {
+      findByItemKey: () => Effect.succeed([]),
+      create: () => Effect.succeed([recordCreate]),
+    },
+  } as any);
+  let TestLayer = ParameterService.live.pipe(
+    Layer.provide(GyomuRepositoryMock),
+  );
+  let testRunner = makeRunner(TestLayer);
+  let program = Effect.gen(function* () {
+    const parameter = yield* ParameterService;
+    return yield* parameter.setValue(itemKey, itemValue);
+  });
+  await testRunner(program);
 
-  prismaMock.gyomu_param_master.create.mockResolvedValue(record);
-  prismaMock.gyomu_param_master.findMany.mockResolvedValue([]);
-  let result = await ParameterAccess.setValue(itemKey, itemValue);
-  expect(result.isOk()).toBeTruthy();
-  let resultValue: any;
-  if (typeof itemValue === 'string') {
-    resultValue = await ParameterAccess.value(itemKey);
-  } else if (typeof itemValue === 'boolean') {
-    resultValue = await ParameterAccess.booleanValue(itemKey);
-  } else if (typeof itemValue === 'number') {
-    resultValue = await ParameterAccess.numberValue(itemKey);
-  }
-  prismaMock.gyomu_param_master.findMany.mockResolvedValue([record]);
-  prismaMock.gyomu_param_master.update.mockResolvedValue(record);
-  result = await ParameterAccess.setValue(itemKey, itemValue);
-  if (result.isErr()) {
-    console.log(result.error);
-  }
-  expect(result.isOk()).toBeTruthy();
+  let GyomuRepositoryRetrieveMock = Layer.succeed(GyomuRepository, {
+    parameterMaster: {
+      findByItemKey: () => Effect.succeed([recordSelect]),
+    },
+  } as any);
+  let TestRetrieveLayer = ParameterService.live.pipe(
+    Layer.provide(GyomuRepositoryRetrieveMock),
+  );
+  let testRetrieveRunner = makeRunner(TestRetrieveLayer);
+  const programValue = Effect.gen(function* () {
+    const parameter = yield* ParameterService;
+    if (typeof itemValue === 'string') {
+      return yield* parameter.getValue(itemKey);
+    } else if (typeof itemValue === 'boolean') {
+      return yield* parameter.booleanValue(itemKey);
+    } else if (typeof itemValue === 'number') {
+      return yield* parameter.numberValue(itemKey);
+    } else {
+      return yield* Effect.fail(new DBError('Invalid type'));
+    }
+  });
+  let resultValue = await testRetrieveRunner(programValue);
+  expect(resultValue).toEqual(itemValue);
 
-  if (typeof itemValue === 'string') {
-    resultValue = await ParameterAccess.value(itemKey);
-  } else if (typeof itemValue === 'boolean') {
-    resultValue = await ParameterAccess.booleanValue(itemKey);
-  } else if (typeof itemValue === 'number') {
-    resultValue = await ParameterAccess.numberValue(itemKey);
-  }
+  GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
+    parameterMaster: {
+      findByItemKey: () => Effect.succeed([recordSelect]),
+      updateValueByItemKey: () => Effect.succeed(true),
+      create: () =>
+        Effect.fail(
+          new DBError('Create should not be called when record exists'),
+        ),
+    },
+  } as any);
+  TestLayer = ParameterService.live.pipe(Layer.provide(GyomuRepositoryMock));
+  testRunner = makeRunner(TestLayer);
+  program = Effect.gen(function* () {
+    const parameter = yield* ParameterService;
+    return yield* parameter.setValue(itemKey, itemValue);
+  });
+  await testRunner(program);
 
-  expect(resultValue.isOk()).toBeTruthy();
-  if (resultValue.isErr()) expect(resultValue.error).toBeNull();
-  else {
-    expect(resultValue.value).toEqual(itemValue);
-  }
+  resultValue = await testRetrieveRunner(programValue);
+  expect(resultValue).toEqual(itemValue);
 
-  prismaMock.gyomu_param_master.delete.mockResolvedValue(record);
-  result = await ParameterAccess.setValue(itemKey, '');
-  expect(result.isOk()).toBeTruthy();
-  prismaMock.gyomu_param_master.findMany.mockResolvedValue([]);
-  result = await ParameterAccess.keyExists(itemKey);
-  expect(result.isOk()).toBeTruthy();
-  if (result.isOk()) expect(result.value).toBeFalsy();
+  GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
+    parameterMaster: {
+      findByItemKey: () => Effect.succeed([recordSelect]),
+      deleteByItemKey: () => Effect.succeed(true),
+      updateValueByItemKey: () =>
+        Effect.fail(
+          new DBError('Update should not be called when record is deleted'),
+        ),
+      create: () =>
+        Effect.fail(
+          new DBError('Create should not be called when record exists'),
+        ),
+    },
+  } as any);
+  TestLayer = ParameterService.live.pipe(Layer.provide(GyomuRepositoryMock));
+  testRunner = makeRunner(TestLayer);
+  program = Effect.gen(function* () {
+    const parameter = yield* ParameterService;
+    return yield* parameter.setValue(itemKey, '');
+  });
+  await testRunner(program);
+
+  GyomuRepositoryRetrieveMock = Layer.succeed(GyomuRepository, {
+    parameterMaster: {
+      findByItemKey: () => Effect.succeed([]),
+    },
+  } as any);
+  TestRetrieveLayer = ParameterService.live.pipe(
+    Layer.provide(GyomuRepositoryRetrieveMock),
+  );
+  testRetrieveRunner = makeRunner(TestRetrieveLayer);
+  const programExists = Effect.gen(function* () {
+    const parameter = yield* ParameterService;
+    return yield* parameter.keyExists(itemKey);
+  });
+  const resultExists = await testRetrieveRunner(programExists);
+  expect(resultExists).toBeFalsy();
 }

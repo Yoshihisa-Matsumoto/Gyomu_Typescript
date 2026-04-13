@@ -1,9 +1,9 @@
-import * as aes from '../encryption';
-import { bufferToArrayBuffer } from '../buffer';
+import * as aes from '../encryption.js';
+import { platform } from '../platform/index.js';
+import { bufferToArrayBuffer } from '../buffer.js';
 import { tmpNameSync } from 'tmp';
-import { compareFiles } from './baseClass';
-import { expect, test } from 'vitest';
-import { platform } from '../platform';
+import { compareFiles } from './baseClass.js';
+import { test, expect } from 'vitest';
 
 test('aes gcm decode compatibility with other library encoded data', () => {
   const csharp_result =
@@ -11,15 +11,6 @@ test('aes gcm decode compatibility with other library encoded data', () => {
   const key = 'abc';
   const expected_result = 'Hello$Test';
   const decrypted_data = aes.aesDecrypt(csharp_result, key);
-  expect(decrypted_data).toEqual(expected_result);
-});
-
-test('aes gcm decode compatibility with other library encoded data by forge', () => {
-  const csharp_result =
-    'h6QYCpU8SqaRBUeGFTO0esu4SNBUVlIYzEQkYh1W6j9qmgT0OoEZuUvj';
-  const key = 'abc';
-  const expected_result = 'Hello$Test';
-  const decrypted_data = aes.aesDecrypt2(csharp_result, key);
   expect(decrypted_data).toEqual(expected_result);
 });
 
@@ -52,7 +43,7 @@ test('AES Decrypt Error Test', () => {
   const key2 = 'abcdefghijklmnop';
   expect(() => {
     aes.aesDecrypt(encData, key2);
-  }).toThrow('Unsupported state or unable to authenticate data');
+  }).toThrowError('Unsupported state or unable to authenticate data');
 });
 
 test('Invalid AES Key Encrypt Test', () => {
@@ -64,7 +55,7 @@ test('Invalid AES Key Encrypt Test', () => {
 });
 
 test('AES Encrypt/Decrypt using binary file key', () => {
-  const keyFilename = './tests/key-256.key';
+  const keyFilename = './tests/key-256.key.dat';
   // const keyBuffer = fs.readFileSync(keyFilename);
   // const keyBufferArrary = bufferToArrayBuffer(keyBuffer);
   const plainFilename = './tests/utf8_sample.txt';
@@ -77,12 +68,12 @@ test('AES Encrypt/Decrypt using binary file key', () => {
     encryptedBuffer,
     keyFilename,
   );
-  expect(plainBuffer.equals(decryptedBuffer)).toBeTruthy();
+  expect(plainBuffer).toEqual(decryptedBuffer);
 });
 
 test('PKI Encrypt/Decrypt using key pair file', () => {
   const privateKey = './tests/rsa4096';
-  const publicKey = './tests/rsa4096.pub.pem';
+  const publicKey = './tests/rsa4096.pub.pem.dat';
   const plainFilename = './tests/utf8_sample.txt';
   const encryptedFilename = tmpNameSync();
   const decryptedFilename = tmpNameSync();
@@ -90,53 +81,4 @@ test('PKI Encrypt/Decrypt using key pair file', () => {
   aes.pkiFileDecryptFile(privateKey, encryptedFilename, decryptedFilename);
   const isEqual = compareFiles(plainFilename, decryptedFilename);
   expect(isEqual).toBeTruthy();
-});
-
-test('aes gcm decode compatibility with other library encoded data by forge', () => {
-  const csharp_result =
-    'h6QYCpU8SqaRBUeGFTO0esu4SNBUVlIYzEQkYh1W6j9qmgT0OoEZuUvj';
-  const key = 'abc';
-  const expected_result = 'Hello$Test';
-  const decrypted_data = aes.aesDecrypt2(csharp_result, key);
-  expect(decrypted_data).toEqual(expected_result);
-});
-
-test('Normal AES Encrypt/Decrypt Test by forge', () => {
-  const plain = 'Hello$Test';
-  const key = 'abc';
-  const encData = aes.aesEncrypt2(plain, key);
-  console.log('Encrypt:', encData);
-  expect(plain).toEqual(aes.aesDecrypt2(encData, key));
-  const key2 = 'abcdefghijklmnop';
-  const encData2 = aes.aesEncrypt2(plain, key2);
-  expect(plain).toEqual(aes.aesDecrypt2(encData2, key2));
-});
-
-test('Normal AES Encrypt/Decrypt Japanese Test by forge', () => {
-  const plain = '皆さん、こんにちは';
-  const key = 'abc';
-  const encData = aes.aesEncrypt2(plain, key);
-  console.log('Encrypt:', encData);
-  expect(aes.aesDecrypt2(encData, key)).toEqual(plain);
-  const key2 = 'abcdefghijklmnop';
-  const encData2 = aes.aesEncrypt2(plain, key2);
-  expect(aes.aesDecrypt2(encData2, key2)).toEqual(plain);
-});
-
-test('AES Decrypt Error Test by forge', () => {
-  const plain = 'Hello$Test';
-  const key = 'abc';
-  const encData = aes.aesEncrypt2(plain, key);
-  const key2 = 'abcdefghijklmnop';
-  expect(() => {
-    aes.aesDecrypt2(encData, key2);
-  }).toThrow('Fail to Decrypt');
-});
-
-test('Invalid AES Key Encrypt Test by forge', () => {
-  const plain = 'Hello$Test';
-  const key = 'abcdefghijklmnoprstuvwxyz012345678';
-  expect(() => {
-    aes.aesEncrypt2(plain, key);
-  }).toThrow('Invalid Key Length:');
 });
