@@ -92,6 +92,8 @@ describe('All Schema Definitions', () => {
   it('MilestoneDaily', () => {
     assertValidDefinition(MilestoneDailySchema, {
       id: testId,
+      targetType: 'daily',
+      targetYm: '2024-01',
       targetDate: '2024-01-01',
       milestoneId: 'M1',
       modifiedAt: '2026-10-28T00:00:00.000Z',
