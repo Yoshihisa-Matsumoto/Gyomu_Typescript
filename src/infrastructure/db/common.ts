@@ -14,6 +14,7 @@ import {
   convertFromSchemaObjectWithEffect,
 } from '../../schemas/common.js';
 import { generateUuid7 } from '../../guid.js';
+import { LocalDate } from '../../schemas/date.js';
 export type TablesWithId = {
   [K in keyof DB]: DB[K] extends { id: any } ? K : never;
 }[keyof DB];
@@ -22,6 +23,9 @@ export type TablesWithId = {
 
 // }
 
+export function toSqlDate(localDate: LocalDate): Date {
+  return new Date(`${localDate}T00:00:00+09:00`);
+}
 const getNewTimestamp = () => new Date();
 
 export type CrudSchemasBase<

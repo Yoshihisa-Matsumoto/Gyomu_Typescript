@@ -1,4 +1,6 @@
+import { Schema } from 'effect';
 import { db, defineEntityCrudSchemas } from './common.js';
+import { TargetDateSchema } from './date.js';
 
 export const appInfoDefinition = {
   fields: {
@@ -106,7 +108,9 @@ export const MilestoneSchema = defineEntityCrudSchemas(milestoneDefinition);
 
 export const milestoneDailyDefinition = {
   fields: {
+    targetType: db.text({ maxLength: 10 }), // 'daily' | 'monthly'
     targetDate: db.dateString,
+    targetYm: db.text({ maxLength: 7 }), // 'YYYY-MM'
     milestoneId: db.text({ maxLength: 200 }),
   },
   tags: { entity: 'MilestoneDaily' },
@@ -114,6 +118,8 @@ export const milestoneDailyDefinition = {
     keyMapping: {
       targetDate: 'target_date',
       milestoneId: 'milestone_id',
+      targetType: 'target_type',
+      targetYm: 'target_ym',
     },
     includeAudit: true,
   },
@@ -121,6 +127,14 @@ export const milestoneDailyDefinition = {
 export const MilestoneDailySchema = defineEntityCrudSchemas(
   milestoneDailyDefinition,
 );
+
+export const MilestoneDailyDomainSchema = Schema.Struct({
+  id: db.id,
+  modifiedAt: db.timestampString,
+  modifiedBy: db.text({ maxLength: 100 }),
+  milestoneId: db.text({ maxLength: 200 }),
+  target: TargetDateSchema,
+});
 
 export const variableParameterDefinition = {
   fields: {

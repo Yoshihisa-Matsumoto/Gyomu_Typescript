@@ -23,11 +23,7 @@ export const createDateOnly = (
 // };
 
 export const extractDateOnly = (date: Date) => {
-  const dateString = `${date.getFullYear()}-${(
-    '00' +
-    (date.getMonth() + 1)
-  ).slice(-2)}-${('00' + date.getDate()).slice(-2)}`;
-  return new Date(dateString);
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 };
 
 export function formatDateToYmd(date: Date): string {

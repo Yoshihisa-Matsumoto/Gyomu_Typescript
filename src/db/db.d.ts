@@ -34,7 +34,9 @@ export interface GyomuMilestoneDaily {
   milestone_id: string;
   modified_at: Date;
   modified_by: string;
-  target_date: string;
+  target_date: Date;
+  target_type: string;
+  target_ym: string;
 }
 
 export interface GyomuParamMaster {

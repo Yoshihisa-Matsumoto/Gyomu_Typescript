@@ -1,9 +1,20 @@
 import { format } from 'date-fns';
-import { polling } from './timer.js';
-import { Effect, Layer, ServiceMap } from 'effect';
-import { GyomuRepository } from './gyomu/gyomuRepository.js';
-import { MilestoneDailySchema, MilestoneSchema } from './schemas/gyomu.js';
-import { DBError, TimeoutError } from './errors.js';
+import { polling } from '../timer.js';
+import { Effect, Layer, Schema, ServiceMap } from 'effect';
+import { GyomuRepository } from './gyomuRepository.js';
+import {
+  MilestoneDailyDomainSchema,
+  MilestoneDailySchema,
+  MilestoneSchema,
+} from '../schemas/gyomu.js';
+import { DBError, TimeoutError, ValueError } from '../errors.js';
+import { convertToSchemaObjectWithEffect } from '../schemas/common.js';
+import {
+  LocalDate,
+  LocalDateSchema,
+  YearMonth,
+  YearMonthSchema,
+} from '../schemas/date.js';
 
 type MilestoneExistResultType =
   | {
@@ -14,42 +25,42 @@ type MilestoneExistResultType =
       exists: false;
     };
 
-const convertTargetDate = (targetDate: string, isMonthly: boolean) => {
-  let targetDateYmD = targetDate;
-  if (isMonthly) {
-    targetDateYmD = targetDate.substring(0, 8) + '**';
-  }
-  return targetDateYmD;
-};
+// const convertTargetDate = (targetDate: string, isMonthly: boolean) => {
+//   let targetDateYmD = targetDate;
+//   if (isMonthly) {
+//     targetDateYmD = targetDate.substring(0, 8) + '**';
+//   }
+//   return targetDateYmD;
+// };
 
 export class MilestoneService extends ServiceMap.Service<
   MilestoneService,
   {
     exists: (
       milestoneId: string,
-      targetYmd: string,
+      targetYmd: LocalDate,
       isMonthly?: boolean,
     ) => Effect.Effect<MilestoneExistResultType, DBError, GyomuRepository>;
     register: (
       milestoneId: string,
-      targetYmd: string,
+      targetYmd: LocalDate,
       isMonthly?: boolean,
     ) => Effect.Effect<string, DBError, GyomuRepository>;
     wait: (
       milestoneId: string,
-      targetYmd: string,
+      targetYmd: LocalDate,
       timeoutSecond: number,
     ) => Effect.Effect<boolean, TimeoutError, GyomuRepository>;
     retrieveMilestoneDailyList: (
-      targetDateYmd: string,
+      targetDateYmd: LocalDate,
     ) => Effect.Effect<
-      readonly (typeof MilestoneDailySchema.types._select)[],
-      DBError,
+      Schema.Schema.Type<typeof MilestoneDailyDomainSchema>[],
+      DBError | ValueError,
       GyomuRepository
     >;
     deleteMilestoneDaily: (
       milestoneId: string,
-      targetDateYmd: string,
+      targetDateYmd: LocalDate,
     ) => Effect.Effect<bigint, DBError, GyomuRepository>;
     milestoneList: () => Effect.Effect<
       readonly (typeof MilestoneSchema.types._select)[],
@@ -73,12 +84,12 @@ export class MilestoneService extends ServiceMap.Service<
     const repo = yield* GyomuRepository;
     const existFunc = (
       milestoneId: string,
-      targetYmd: string,
+      targetYmd: LocalDate,
       isMonthly = false,
     ): Effect.Effect<MilestoneExistResultType, DBError, GyomuRepository> => {
-      const targetDateYmd = convertTargetDate(targetYmd, isMonthly);
+      //const targetDateYmd = convertTargetDate(targetYmd, isMonthly);
       return repo.milestoneDaily
-        .findByMilestoneIdAndTargetDate(milestoneId, targetDateYmd)
+        .findByMilestoneIdAndTargetDate(milestoneId, targetYmd, isMonthly)
         .pipe(
           Effect.map((records) => {
             if (records.length > 0) {
@@ -95,28 +106,34 @@ export class MilestoneService extends ServiceMap.Service<
       exists: existFunc,
       register: (
         milestoneId: string,
-        targetYmd: string,
+        targetYmd: LocalDate,
         isMonthly = false,
       ): Effect.Effect<string, DBError, GyomuRepository> => {
-        const targetYmdForRecord = convertTargetDate(targetYmd, isMonthly);
+        //const targetYmdForRecord = convertTargetDate(targetYmd, isMonthly);
 
         return Effect.gen(function* () {
           const existsResult = yield* existFunc(
             milestoneId,
-            targetYmdForRecord,
+            targetYmd,
+            isMonthly,
           );
           if (existsResult.exists) {
             return existsResult.updateTime;
           }
           const result = yield* repo.milestoneDaily.create([
-            { milestoneId, targetDate: targetYmdForRecord },
+            {
+              milestoneId,
+              targetType: isMonthly ? 'monthly' : 'daily',
+              targetDate: targetYmd,
+              targetYm: targetYmd.substring(0, 7),
+            },
           ]);
           return result[0].modifiedAt;
         });
       },
       wait: (
         milestoneId: string,
-        targetYmd: string,
+        targetYmd: LocalDate,
         timeoutSecond: number,
       ): Effect.Effect<boolean, TimeoutError, GyomuRepository> => {
         const interval = timeoutSecond < 60 ? 1 : 5;
@@ -137,29 +154,32 @@ export class MilestoneService extends ServiceMap.Service<
         );
       },
       retrieveMilestoneDailyList: (
-        targetDateYmd: string,
+        targetDateYmd: LocalDate,
       ): Effect.Effect<
-        readonly (typeof MilestoneDailySchema.types._select)[],
-        DBError,
+        Schema.Schema.Type<typeof MilestoneDailyDomainSchema>[],
+        DBError | ValueError,
         GyomuRepository
       > => {
-        const targetDateMonthly = targetDateYmd.substring(0, 8) + '**';
+        const targetDateMonthly = targetDateYmd.substring(0, 7) as YearMonth;
 
         return Effect.gen(function* () {
-          return yield* repo.milestoneDaily.findByTargetDateAndMonthlyDate(
-            targetDateYmd,
-            targetDateMonthly,
-          );
+          return yield* repo.milestoneDaily
+            .findByTargetDateAndMonthlyDate(targetDateYmd, targetDateMonthly)
+            .pipe(
+              Effect.flatMap((rows) => Effect.forEach(rows, toMilestoneDomain)),
+            );
         });
       },
       deleteMilestoneDaily: (
         milestoneId: string,
-        targetDateYmd: string,
+        targetDateYmd: LocalDate,
+        isMonthly: boolean = false,
       ): Effect.Effect<bigint, DBError, GyomuRepository> => {
         return Effect.gen(function* () {
           return yield* repo.milestoneDaily.deleteByMilestoneIdAndTargetDate(
             milestoneId,
             targetDateYmd,
+            isMonthly,
           );
         });
       },
@@ -208,6 +228,70 @@ export class MilestoneService extends ServiceMap.Service<
 }) {
   static readonly live = Layer.effect(this, this.make);
 }
+
+const toMilestoneDomain = (
+  row: typeof MilestoneDailySchema.types._select,
+): Effect.Effect<
+  Schema.Schema.Type<typeof MilestoneDailyDomainSchema>,
+  ValueError
+> =>
+  Effect.gen(function* () {
+    return {
+      id: row.id,
+      modifiedAt: row.modifiedAt,
+      modifiedBy: row.modifiedBy,
+      milestoneId: row.milestoneId,
+      target:
+        row.targetType === 'daily'
+          ? {
+              type: 'daily',
+              date: yield* convertToSchemaObjectWithEffect(
+                ValueError,
+                'LocalDate',
+              )(LocalDateSchema, row.targetDate),
+            }
+          : {
+              type: 'monthly',
+              month: yield* convertToSchemaObjectWithEffect(
+                ValueError,
+                'YearMonth',
+              )(YearMonthSchema, row.targetYm),
+            },
+    } as Schema.Schema.Type<typeof MilestoneDailyDomainSchema>;
+  });
+
+// const fromMilestoneDomain = (
+//   domain: Schema.Schema.Type<typeof MilestoneDailyDomainSchema>,
+// ): Effect.Effect<
+//   Schema.Schema.Type<typeof MilestoneDailySchema.types._insert>,
+//   ValueError
+// > =>
+//   Effect.gen(function* () {
+//     switch (domain.target.type) {
+//       case 'daily':
+//         return {
+//           milestoneId: domain.milestoneId,
+//           targetType: 'daily',
+//           targetDate: yield* convertFromSchemaObjectWithEffect(
+//             ValueError,
+//             'LocalDate',
+//           )(LocalDateSchema, domain.target.date),
+//           targetYm: domain.target,
+//         } as Schema.Schema.Type<typeof MilestoneDailySchema.types._insert>;
+//       case 'monthly':
+//         return {
+//           milestoneId: domain.milestoneId,
+//           targetType: 'monthly',
+//           targetDate:
+//             (yield* convertFromSchemaObjectWithEffect(ValueError, 'YearMonth')(
+//               YearMonthSchema,
+//               domain.target.month,
+//             )) + '-01',
+//           targetYm: domain.target.month,
+//         } as Schema.Schema.Type<typeof MilestoneDailySchema.types._insert>;
+//     }
+//   });
+
 // export class MilestoneA {
 //   static exists(
 //     milestoneId: string,

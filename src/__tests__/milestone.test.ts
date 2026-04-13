@@ -1,8 +1,9 @@
 import { Effect, Layer, Ref } from 'effect';
-import { MilestoneService } from '../milestone.js';
+import { MilestoneService } from '../gyomu/milestone.js';
 import { beforeEach, describe, expect, it, test } from 'vitest';
 import { GyomuRepository } from '../gyomu/gyomuRepository.js';
 import { makeRunner } from '../infrastructure/runtime.js';
+import { LocalDate } from '../schemas/date.js';
 
 const testId = 'F6AE5F2D-BD14-4C5F-9CC3-3A69EF90DD5B';
 const testTime = '2026-10-28T00:00:00.000Z';
@@ -22,7 +23,7 @@ describe('Milestone access check', async () => {
     const testRunner = makeRunner(TestLayer);
     const program = Effect.gen(function* () {
       const milestone = yield* MilestoneService;
-      return yield* milestone.exists(milestoneId, targetYmd);
+      return yield* milestone.exists(milestoneId, targetYmd as LocalDate);
     });
     const result = await testRunner(program);
 
@@ -49,7 +50,7 @@ describe('Milestone access check', async () => {
     const testRunner = makeRunner(TestLayer);
     const program = Effect.gen(function* () {
       const milestone = yield* MilestoneService;
-      return yield* milestone.exists(milestoneId, targetYmd);
+      return yield* milestone.exists(milestoneId, targetYmd as LocalDate);
     });
     const result = await testRunner(program);
 
@@ -79,7 +80,7 @@ describe('Milestone access check', async () => {
     const testRunner = makeRunner(TestLayer);
     const program = Effect.gen(function* () {
       const milestone = yield* MilestoneService;
-      return yield* milestone.exists(milestoneId, targetYmd);
+      return yield* milestone.exists(milestoneId, targetYmd as LocalDate);
     });
     const result = await testRunner(program);
 
@@ -114,7 +115,7 @@ test('Milestone register test', async () => {
   const testRunner = makeRunner(TestLayer);
   const program = Effect.gen(function* () {
     const milestone = yield* MilestoneService;
-    return yield* milestone.register(milestoneId, targetYmd);
+    return yield* milestone.register(milestoneId, targetYmd as LocalDate);
   });
   const result = await testRunner(program);
 
@@ -137,7 +138,7 @@ describe('Milestone wait test', async () => {
     const testRunner = makeRunner(TestLayer);
     const program = Effect.gen(function* () {
       const milestone = yield* MilestoneService;
-      return yield* milestone.wait(milestoneId, targetYmd, 1);
+      return yield* milestone.wait(milestoneId, targetYmd as LocalDate, 1);
     });
     const result = await testRunner(program);
     expect(result).toBeFalsy();
@@ -178,7 +179,7 @@ describe('Milestone wait test', async () => {
     const testRunner = makeRunner(TestLayer);
     const program = Effect.gen(function* () {
       const milestone = yield* MilestoneService;
-      return yield* milestone.wait(milestoneId, targetYmd, 5);
+      return yield* milestone.wait(milestoneId, targetYmd as LocalDate, 5);
     });
     const result = await testRunner(program);
     expect(result).toBeTruthy();

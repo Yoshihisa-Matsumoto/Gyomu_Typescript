@@ -31,7 +31,8 @@ export const bufferToArrayBuffer = (buffer: Buffer): ArrayBuffer => {
 };
 
 export const utf8String2ShiftJisBuffer = (source: string) => {
-  return encode2ShiftJIS(source).buffer;
+  const encoded = encode2ShiftJIS(source).buffer;
+  return Buffer.from(encoded);
 };
 
 export const readableStream2ArrayBuffer = async (stream: ReadableStream) => {

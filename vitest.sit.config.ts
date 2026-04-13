@@ -12,5 +12,10 @@ export default defineConfig({
     clearMocks: true,
     pool: 'forks',
     fileParallelism: false,
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html'],
+      reportsDirectory: './coverage/sit',
+    },
   },
 });
