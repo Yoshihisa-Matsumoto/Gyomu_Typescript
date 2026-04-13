@@ -1,8 +1,14 @@
-import { GzipArchive } from '../gz';
-
-import { compareFiles } from '../../__tests__/baseClass';
 import { beforeAll, expect, test } from 'vitest';
-import { platform } from '../../platform';
+import { platform } from '../../platform/index.js';
+import { gunzip, gzip } from '../gz.js';
+import { fileStream, writeToFile } from '../../infrastructure/fs/fs-utils.js';
+import { compareFiles } from '../../__tests__/baseClass.js';
+import { makeRunner } from '../../infrastructure/runtime.js';
+import { Layer } from 'effect';
+import { MainLayer, PlatformLayer } from '../../infrastructure/layer.js';
+
+const nodeTestLayer = Layer.mergeAll(MainLayer, PlatformLayer);
+const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
 
 let compressDirectory: string;
 let extractDirectory: string;
@@ -24,9 +30,10 @@ test('GZ Creation Test', async () => {
   const gzFilename = platform.join(compressDirectory, 'test_gz_create.gz');
   const targetSourceFilename = platform.join(sourceDirectory, 'README.md');
 
-  let result = await GzipArchive.create(gzFilename, targetSourceFilename);
-
-  expect(result.isOk()).toBeTruthy();
+  await runNodeWithEnvOrThrow(
+    fileStream(targetSourceFilename).pipe(gzip(), writeToFile(gzFilename)),
+  );
+  // expect(result.isOk()).toBeTruthy();
 
   let isSame: boolean = true;
   // let isSame = compareFiles(
@@ -38,8 +45,9 @@ test('GZ Creation Test', async () => {
   // const checkFilename = platform.join(sourceDirectory, 'README.md');
   // //const [sourceBuffer,destinationBuffer] = getBufferG
   const extractedFilename = platform.join(extractDirectory, 'README.md');
-  result = await GzipArchive.extract(gzFilename, extractedFilename);
-  expect(result.isOk()).toBeTruthy();
+  await runNodeWithEnvOrThrow(
+    fileStream(gzFilename).pipe(gunzip(), writeToFile(extractedFilename)),
+  );
 
   isSame = compareFiles(
     extractedFilename,

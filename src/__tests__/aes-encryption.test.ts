@@ -1,8 +1,8 @@
-import * as aes from '../encryption';
-import { platform } from '../platform';
-import { bufferToArrayBuffer } from '../buffer';
+import * as aes from '../encryption.js';
+import { platform } from '../platform/index.js';
+import { bufferToArrayBuffer } from '../buffer.js';
 import { tmpNameSync } from 'tmp';
-import { compareFiles } from './baseClass';
+import { compareFiles } from './baseClass.js';
 import { test, expect } from 'vitest';
 
 test('aes gcm decode compatibility with other library encoded data', () => {

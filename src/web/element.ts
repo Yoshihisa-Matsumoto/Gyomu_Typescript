@@ -1,4 +1,4 @@
-import { Attribute } from './attribute';
+import { Attribute } from './attribute.js';
 //import xpath from 'xpath';
 
 export class DOMElement {

@@ -1,6 +1,6 @@
 import { Readable } from 'stream';
-import { platform } from './platform';
-import { encode2ShiftJIS } from './encoding/encode';
+import { platform } from './platform/index.js';
+import { encode2ShiftJIS } from './encoding/encode.js';
 //import { buffer } from 'stream/consumers';
 
 export const stringToArrayBuffer = (source: string): ArrayBuffer => {
@@ -31,7 +31,8 @@ export const bufferToArrayBuffer = (buffer: Buffer): ArrayBuffer => {
 };
 
 export const utf8String2ShiftJisBuffer = (source: string) => {
-  return encode2ShiftJIS(source).buffer;
+  const encoded = encode2ShiftJIS(source).buffer;
+  return Buffer.from(encoded);
 };
 
 export const readableStream2ArrayBuffer = async (stream: ReadableStream) => {
@@ -51,4 +52,14 @@ export const toReadable = (input: FileInput): Readable => {
   if (Buffer.isBuffer(input)) return Readable.from(input);
 
   return input;
+};
+
+export const toBuffer = async (input: Buffer | Readable): Promise<Buffer> => {
+  if (Buffer.isBuffer(input)) return input;
+
+  const chunks: Buffer[] = [];
+  for await (const chunk of input) {
+    chunks.push(Buffer.from(chunk));
+  }
+  return Buffer.concat(chunks);
 };

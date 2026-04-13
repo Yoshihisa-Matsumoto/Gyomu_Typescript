@@ -1,5 +1,5 @@
-import { GenericElement } from './element';
-import { TableColumn } from './tableColumn';
+import { GenericElement } from './element.js';
+import { TableColumn } from './tableColumn.js';
 
 export class TableRow extends GenericElement<HTMLTableRowElement> {
   previousRow?: TableRow = undefined;

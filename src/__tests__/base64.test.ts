@@ -1,7 +1,7 @@
-import { base64String2String, string2Base64String } from '../base64';
+import { base64String2String, string2Base64String } from '../base64.js';
 import { expect, test } from 'vitest';
-import { platform } from '../platform';
-import { decode } from '../encoding/decode';
+import { platform } from '../platform/index.js';
+import { decode } from '../encoding/decode.js';
 
 test('base64 encode', () => {
   const bin = platform.readFileSync('tests/shiftjis_sample.txt');

@@ -55,55 +55,74 @@ GO
 
 
 CREATE TABLE [dbo].[gyomu_apps_info_cdtbl](
-	[application_id] [smallint] NOT NULL,
+  [id] [uniqueidentifier] NOT NULL,
 	[description] [varchar](50) NULL,
 	[mail_from_address] [varchar](200) NULL,
 	[mail_from_name] [varchar](200) NULL,
- CONSTRAINT [PK_gyomu_apps_info_cdtbl] PRIMARY KEY CLUSTERED 
-(
-	[application_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-
-CREATE TABLE [dbo].[gyomu_status_type_cdtbl](
-	[status_type] [smallint] NOT NULL,
-	[description] [varchar](15) NULL,
- CONSTRAINT [PK_gyomu_status_type_cdtbl] PRIMARY KEY CLUSTERED 
-(
-	[status_type] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-
-INSERT INTO [gyomu_status_type_cdtbl] VALUES (0,'INFO');
-INSERT INTO [gyomu_status_type_cdtbl] VALUES (1,'WARNING');
-INSERT INTO [gyomu_status_type_cdtbl] VALUES (2,'ERROR_BUSINESS');
-INSERT INTO [gyomu_status_type_cdtbl] VALUES (8,'ERROR_DEVEL');
-
-CREATE TABLE [dbo].[gyomu_status_handler](
-	[id] [int] IDENTITY(1,1) NOT NULL,
-	[application_id] [smallint] NOT NULL,
-	[region] [varchar](3) NULL,
-	[status_type] [smallint] NULL,
-	[recipient_address] [varchar](200) NULL,
-	[recipient_type] [varchar](3) NULL,
- CONSTRAINT [PK_gyomu_status_handler_cdtbl] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_gyomu_apps_info_cdtbl] PRIMARY KEY NONCLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
 
+CREATE UNIQUE CLUSTERED INDEX CX_gyomu_apps_info_cdtbl ON [dbo].[gyomu_apps_info_cdtbl]
+(
+  [description] ASC
+) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[gyomu_status_type_cdtbl](
+  [id] [uniqueidentifier] NOT NULL,
+	[description] [varchar](15) NULL,
+ CONSTRAINT [PK_gyomu_status_type_cdtbl] PRIMARY KEY NONCLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+CREATE UNIQUE CLUSTERED INDEX CX_gyomu_status_type_cdtbl ON [dbo].[gyomu_status_type_cdtbl]
+(
+  [description] ASC
+) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+
+INSERT INTO [gyomu_status_type_cdtbl] VALUES (NEWID(),'INFO');
+INSERT INTO [gyomu_status_type_cdtbl] VALUES (NEWID(),'WARNING');
+INSERT INTO [gyomu_status_type_cdtbl] VALUES (NEWID(),'ERROR_BUSINESS');
+INSERT INTO [gyomu_status_type_cdtbl] VALUES (NEWID(),'ERROR_DEVEL');
+
+CREATE TABLE [dbo].[gyomu_status_handler](
+	[id] [uniqueidentifier] NOT NULL,
+	[application_id] [uniqueidentifier] NOT NULL,
+	[region] [varchar](3) NULL,
+	[status_type_id] [uniqueidentifier] NULL,
+	[recipient_address] [varchar](200) NULL,
+	[recipient_type] [varchar](3) NULL,
+ CONSTRAINT [PK_gyomu_status_handler_cdtbl] PRIMARY KEY NONCLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+CREATE CLUSTERED INDEX CX_gyomu_status_handler ON [dbo].[gyomu_status_handler]
+(
+  [application_id] ASC,[status_type_id] ASC, [region] ASC
+) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+
+
 CREATE TABLE [dbo].[gyomu_status_info](
-	[id] [bigint] IDENTITY(1,1) NOT NULL,
-	[application_id] [smallint] NOT NULL,
-	[entry_date] [bigint] NOT NULL DEFAULT DATEDIFF_BIG(millisecond,'1970-01-01',SYSUTCDATETIME()),
-	[entry_author] [varchar](30) NOT NULL,
-	[status_type] [smallint] NOT NULL,
+	[id] [uniqueidentifier]  NOT NULL,
+	[application_id] [uniqueidentifier] NOT NULL,
+	[modified_at] datetimeoffset(3) NOT NULL,
+	[modified_by] [varchar](100) NOT NULL,
+	[status_type_id] [uniqueidentifier] NOT NULL,
   error_id smallint NOT NULL,
 	[instance_id] [int] NOT NULL,
-	[hostname] [varchar](50) NULL,
+	[host_name] [varchar](50) NULL,
 	[summary] [nvarchar](400) NULL,
 	[description] [nvarchar](1000) NULL,
 	[developer_info] ntext NULL,
@@ -117,7 +136,7 @@ GO
 
 CREATE CLUSTERED INDEX [CX_gyomu_status_info] ON [dbo].[gyomu_status_info]
 (
-	[entry_date] ASC
+	[modified_at] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
 
@@ -125,39 +144,64 @@ GO
 
 
 CREATE TABLE [dbo].[gyomu_market_holiday](
+	[id] [uniqueidentifier]  NOT NULL,
 	[market] [varchar](10) NOT NULL,
 	year smallint NOT NULL,
-	holiday char(8) NOT NULL,
- CONSTRAINT [PK_gyomu_market_holiday] PRIMARY KEY CLUSTERED 
+	holiday char(10) NOT NULL,
+ CONSTRAINT [PK_gyomu_market_holiday] PRIMARY KEY NONCLUSTERED 
 (
-	[market] ASC,
-	[holiday] ASC
+	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+
+CREATE UNIQUE CLUSTERED INDEX [CX_gyomu_market_holiday] ON [dbo].[gyomu_market_holiday]
+(
+	[market] ASC,
+	[holiday] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+
 
 CREATE INDEX IX_gyomu_market_holiday ON gyomu_market_holiday
 (market ASC,year ASC)
 GO
 
 CREATE TABLE [dbo].[gyomu_milestone_cdtbl](
+	[id] [uniqueidentifier]  NOT NULL,  
 	[milestone_id] varchar(200) NOT NULL,
 	[description] nvarchar(1000) NOT NULL,
-	 CONSTRAINT [PK_gyomu_milestone_cdtbl] PRIMARY KEY CLUSTERED 
+	 CONSTRAINT [PK_gyomu_milestone_cdtbl] PRIMARY KEY NONCLUSTERED 
 (
-	[milestone_id] ASC
+	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 )
 
-CREATE TABLE [dbo].[gyomu_milestone_daily](
-	[target_date] [varchar](8) NOT NULL,
-	[milestone_id] varchar(200) NOT NULL,
-	[update_time] [bigint]  DEFAULT DATEDIFF_BIG(millisecond,'1970-01-01',SYSUTCDATETIME()),
- CONSTRAINT [PK_gyomu_milestone_daily] PRIMARY KEY CLUSTERED 
+CREATE UNIQUE CLUSTERED INDEX [CX_gyomu_milestone_cdtbl] ON [dbo].[gyomu_milestone_cdtbl]
 (
-	[target_date] ASC,[milestone_id]
+	[milestone_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[gyomu_milestone_daily](
+	[id] [uniqueidentifier]  NOT NULL,
+  [target_type] [varchar](10) NOT NULL, --- 'daily' | 'monthly'  
+	[target_date] DATE NOT NULL,
+  [target_ym] CHAR(7) NOT NULL, --- 'YYYY-MM'
+	[milestone_id] varchar(200) NOT NULL,
+	[modified_at] datetimeoffset(3) NOT NULL,
+	[modified_by] [varchar](100) NOT NULL,
+ CONSTRAINT [PK_gyomu_milestone_daily] PRIMARY KEY NONCLUSTERED 
+(
+	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
+GO
+
+CREATE UNIQUE CLUSTERED INDEX [CX_gyomu_milestone_daily] ON [dbo].[gyomu_milestone_daily]
+(
+	[target_date] ASC,[milestone_id]
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
 
 CREATE  INDEX IX_gyomu_milestone_daily ON gyomu_milestone_daily
@@ -166,69 +210,93 @@ CREATE  INDEX IX_gyomu_milestone_daily ON gyomu_milestone_daily
 )
 GO
 
+CREATE  INDEX IX_gyomu_milestone_daily2 ON gyomu_milestone_daily
+(
+	[target_type] ASC, [target_ym] ASC, [milestone_id] ASC
+)
+GO
+
 CREATE TABLE [dbo].[gyomu_variable_parameter](
+  	[id] [uniqueidentifier]  NOT NULL,  
 	variable_key varchar(20) NOT NULL,
 	description varchar(200) NOT NULL,
- CONSTRAINT [PK_gyomu_variable_parameter] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_gyomu_variable_parameter] PRIMARY KEY NONCLUSTERED 
 (
-	variable_key
+	id
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
 
-INSERT INTO gyomu_variable_parameter VALUES('BBOM','Business Day of Beginning Of Month');
-INSERT INTO gyomu_variable_parameter VALUES('BBOY','Business Day of Beginning Of Year');
-INSERT INTO gyomu_variable_parameter VALUES('BOM','Beginning of Month');
-INSERT INTO gyomu_variable_parameter VALUES('BOY','Beginning of Year');
-INSERT INTO gyomu_variable_parameter VALUES('BEOM','Business Day of End Of Month');
-INSERT INTO gyomu_variable_parameter VALUES('BEOY','Business Day of End Of Year');
-INSERT INTO gyomu_variable_parameter VALUES('EOM','End of Month');
-INSERT INTO gyomu_variable_parameter VALUES('EOY','End Day of Year');
-INSERT INTO gyomu_variable_parameter VALUES('NEXTBBOM','Business Day of Next Beginning Of Month');
-INSERT INTO gyomu_variable_parameter VALUES('NEXTBUS','Previous Business Day');
-INSERT INTO gyomu_variable_parameter VALUES('NEXTDAY','Next Day');
-INSERT INTO gyomu_variable_parameter VALUES('NEXTBEOM','Business Day of Next End Of Month');
-INSERT INTO gyomu_variable_parameter VALUES('PARAMMASTER','From param_master');
-INSERT INTO gyomu_variable_parameter VALUES('PREVBUS','Previous Business Day');
-INSERT INTO gyomu_variable_parameter VALUES('PREVDAY','Previous Day');
-INSERT INTO gyomu_variable_parameter VALUES('PREVBEOM',' Business Day of Previous End Of Month');
-INSERT INTO gyomu_variable_parameter VALUES('TODAY','Today');
+CREATE UNIQUE CLUSTERED INDEX [CX_gyomu_variable_parameter] ON [dbo].[gyomu_variable_parameter]
+(
+	variable_key ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+
+INSERT INTO gyomu_variable_parameter VALUES(NEWID(),'BBOM','Business Day of Beginning Of Month');
+INSERT INTO gyomu_variable_parameter VALUES(NEWID(),'BBOY','Business Day of Beginning Of Year');
+INSERT INTO gyomu_variable_parameter VALUES(NEWID(),'BOM','Beginning of Month');
+INSERT INTO gyomu_variable_parameter VALUES(NEWID(),'BOY','Beginning of Year');
+INSERT INTO gyomu_variable_parameter VALUES(NEWID(),'BEOM','Business Day of End Of Month');
+INSERT INTO gyomu_variable_parameter VALUES(NEWID(),'BEOY','Business Day of End Of Year');
+INSERT INTO gyomu_variable_parameter VALUES(NEWID(),'EOM','End of Month');
+INSERT INTO gyomu_variable_parameter VALUES(NEWID(),'EOY','End Day of Year');
+INSERT INTO gyomu_variable_parameter VALUES(NEWID(),'NEXTBBOM','Business Day of Next Beginning Of Month');
+INSERT INTO gyomu_variable_parameter VALUES(NEWID(),'NEXTBUS','Previous Business Day');
+INSERT INTO gyomu_variable_parameter VALUES(NEWID(),'NEXTDAY','Next Day');
+INSERT INTO gyomu_variable_parameter VALUES(NEWID(),'NEXTBEOM','Business Day of Next End Of Month');
+INSERT INTO gyomu_variable_parameter VALUES(NEWID(),'PARAMMASTER','From param_master');
+INSERT INTO gyomu_variable_parameter VALUES(NEWID(),'PREVBUS','Previous Business Day');
+INSERT INTO gyomu_variable_parameter VALUES(NEWID(),'PREVDAY','Previous Day');
+INSERT INTO gyomu_variable_parameter VALUES(NEWID(),'PREVBEOM',' Business Day of Previous End Of Month');
+INSERT INTO gyomu_variable_parameter VALUES(NEWID(),'TODAY','Today');
 GO
 
 
 CREATE TABLE [dbo].[gyomu_param_master](
+ 	[id] [uniqueidentifier]  NOT NULL,  
 	[item_key] [varchar](50) NOT NULL,
 	[item_value] ntext NOT NULL,
-	[item_fromdate] [varchar](8) NOT NULL default ''
- CONSTRAINT [PK_gyomu_param_master] PRIMARY KEY CLUSTERED 
+	[item_fromdate] [varchar](10) NOT NULL default ''
+ CONSTRAINT [PK_gyomu_param_master] PRIMARY KEY NONCLUSTERED 
 (
-	[item_key] ASC,[item_fromdate] ASC
+	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
 
+CREATE UNIQUE CLUSTERED INDEX [CX_gyomu_param_master] ON [dbo].[gyomu_param_master]
+(
+	[item_key] ASC,[item_fromdate] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
 
 
 CREATE TABLE [dbo].[gyomu_task_info_cdtbl](
-	[application_id] [smallint] NOT NULL,
-	[task_id] [smallint] NOT NULL,
+ 	[id] [uniqueidentifier]  NOT NULL,  
+	[application_id] [uniqueidentifier] NOT NULL,
 	[description] [varchar](100) NOT NULL,
 	[language] [varchar](10) NOT NULL,
 	[location] [text] NOT NULL,
 	[class_name] [varchar](100) NOT NULL,
 	[restartable] [bit] NOT NULL,
- CONSTRAINT [PK_gyomu_task_info_cdtbl] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_gyomu_task_info_cdtbl] PRIMARY KEY NONCLUSTERED 
 (
-	[application_id] ASC,
-	[task_id] ASC
+	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+CREATE UNIQUE CLUSTERED INDEX [CX_gyomu_task_info_cdtbl] ON [dbo].[gyomu_task_info_cdtbl]
+(
+	[application_id] ASC,
+	[description] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
 
 CREATE TABLE [dbo].[gyomu_task_info_access_list](
-	[id] [bigint] IDENTITY(1,1)  NOT NULL,
-	[application_id] [smallint] NOT NULL,
-	[task_info_id] [smallint] NOT NULL,
+ 	[id] [uniqueidentifier]  NOT NULL, 
+	[application_id] [uniqueidentifier] NOT NULL,
+	[task_info_id] [uniqueidentifier] NOT NULL,
 	[account_name] [varchar](100) NOT NULL,
 	[can_access] [bit] NOT NULL,
 	[forbidden] [bit] NOT NULL,
@@ -250,12 +318,12 @@ GO
 
 
 CREATE TABLE [dbo].[gyomu_task_data](
-	[id] [bigint] IDENTITY(1,1)  NOT NULL,
-	[application_id] [smallint] NOT NULL,
-	[task_info_id] [smallint] NOT NULL,
-	[entry_date] [bigint] NOT NULL DEFAULT DATEDIFF_BIG(millisecond,'1970-01-01',SYSUTCDATETIME()),
-	[entry_author] varchar(30) NOT NULL,
-	[parent_task_data_id] bigint NULL,
+ 	[id] [uniqueidentifier]  NOT NULL, 
+	[application_id] [uniqueidentifier] NOT NULL,
+	[task_info_id] [uniqueidentifier] NOT NULL,
+	[modified_at] datetimeoffset(3) NOT NULL,
+	[modified_by] [varchar](100) NOT NULL,
+	[parent_task_data_id] [uniqueidentifier] NULL,
 	[parameter] ntext NULL,
  CONSTRAINT [PK_gyomu_task_data] PRIMARY KEY NONCLUSTERED 
 (
@@ -267,7 +335,7 @@ GO
 
 CREATE CLUSTERED INDEX [CX_gyomu_task_data] ON [dbo].[gyomu_task_data]
 (
-	[entry_date] ASC
+	[modified_at] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
 
@@ -285,18 +353,18 @@ GO
 
 CREATE INDEX IX_gyomu_task_data3 ON dbo.gyomu_task_data
 (
-	entry_author ASC
+	[modified_by] ASC
 ) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[gyomu_task_instance](
-	[id] [bigint] IDENTITY(1,1)  NOT NULL,
-	[task_data_id] [bigint] NOT NULL,
-	[entry_date] [bigint] NOT NULL DEFAULT DATEDIFF_BIG(millisecond,'1970-01-01',SYSUTCDATETIME()),
-	[entry_author] varchar(30) NOT NULL,
+ 	[id] [uniqueidentifier]  NOT NULL, 
+	[task_data_id] [uniqueidentifier] NOT NULL,
+	[modified_at] datetimeoffset(3) NOT NULL,
+	[modified_by] [varchar](100) NOT NULL,
 	[task_status] varchar(10) NULL,
 	[is_done] bit NOT NULL,
-	[status_info_id] bigint NULL,
+	[status_info_id] [uniqueidentifier] NULL,
 	[parameter] ntext NULL,
 	[comment] ntext NULL,
  CONSTRAINT [PK_gyomu_task_instance] PRIMARY KEY NONCLUSTERED 
@@ -312,7 +380,7 @@ GO
 
 CREATE CLUSTERED INDEX [CX_gyomu_task_instance] ON [dbo].[gyomu_task_instance]
 (
-	[entry_date] ASC
+	[modified_at] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
 
@@ -331,8 +399,8 @@ GO
 
 
 CREATE TABLE [dbo].[gyomu_task_instance_submit_information](
-	[id] [bigint] IDENTITY(1,1)  NOT NULL,
-	[task_instance_id] [bigint] NOT NULL,
+ 	[id] [uniqueidentifier]  NOT NULL, 
+	[task_instance_id] [uniqueidentifier] NOT NULL,
 	[submit_to] [varchar](30) NULL,
  CONSTRAINT [PK_gyomu_task_instance_submit_information] PRIMARY KEY NONCLUSTERED 
 (
@@ -351,26 +419,33 @@ GO
 
 
 CREATE TABLE [dbo].[gyomu_task_data_status](
-	[task_data_id] [bigint] NOT NULL,
+ 	[id] [uniqueidentifier]  NOT NULL, 
+	[task_data_id] [uniqueidentifier] NOT NULL,
 	[task_status] varchar(10) NULL,
-	[latest_update_date] [bigint] NOT NULL,
-	[latest_task_instance_id] [bigint] NOT NULL,
- CONSTRAINT [PK_gyomu_task_data_status] PRIMARY KEY CLUSTERED 
+	[modified_at] datetimeoffset(3) NOT NULL,
+	[modified_by] [varchar](100) NOT NULL,
+	[latest_task_instance_id] [uniqueidentifier] NOT NULL,
+ CONSTRAINT [PK_gyomu_task_data_status] PRIMARY KEY NONCLUSTERED 
 (
-	[task_data_id] ASC
+	[id] ASC
 
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
 
-
+CREATE CLUSTERED INDEX [CX_gyomu_task_data_status] ON [dbo].[gyomu_task_data_status]
+(
+	[task_data_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
 
 
 
 CREATE TABLE [dbo].[gyomu_task_data_log](
-	[id] [bigint] IDENTITY(1,1)  NOT NULL,
-	[task_data_id] [bigint] NOT NULL,
-	[log_time] [bigint] NOT NULL DEFAULT DATEDIFF_BIG(millisecond,'1970-01-01',SYSUTCDATETIME()),
+ 	[id] [uniqueidentifier]  NOT NULL, 
+	[task_data_id] [uniqueidentifier] NOT NULL,
+	[modified_at] datetimeoffset(3) NOT NULL,
+	[modified_by] [varchar](100) NOT NULL,
 	[log] [ntext] NOT NULL,
  CONSTRAINT [PK_gyomu_task_data_log] PRIMARY KEY NONCLUSTERED 
 (
@@ -382,52 +457,67 @@ GO
 CREATE CLUSTERED INDEX [CX_gyomu_task_data_log] ON [dbo].[gyomu_task_data_log]
 (
 	[task_data_id] ASC,
-	[log_time] ASC
+	[modified_at] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
 
 
 CREATE TABLE [dbo].[gyomu_service_type_cdtbl](
-	[id] [smallint] NOT NULL,
+ 	[id] [uniqueidentifier]  NOT NULL,   
 	[description] [varchar](100) NOT NULL,
 	[assembly_name] [varchar](100) NULL,
 	[class_name] [varchar](100) NULL,
- CONSTRAINT [PK_gyomu_service_type_cdtbl] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_gyomu_service_type_cdtbl] PRIMARY KEY NONCLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
+GO
+CREATE UNIQUE CLUSTERED INDEX [CX_gyomu_service_type_cdtbl] ON [dbo].[gyomu_service_type_cdtbl]
+(
+	[description] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[gyomu_service_cdtbl](
-	[id] [smallint] NOT NULL,
+ 	[id] [uniqueidentifier]  NOT NULL,  
 	[description] [varchar](100) NOT NULL,
-	[service_type_id] [smallint] NOT NULL,
+	[service_type_id] [uniqueidentifier] NOT NULL,
 	[parameter] ntext NULL,
- CONSTRAINT [PK_gyomu_server_service_cdtbl] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_gyomu_server_service_cdtbl] PRIMARY KEY NONCLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-
+CREATE UNIQUE CLUSTERED INDEX [CX_gyomu_service_cdtbl] ON [dbo].[gyomu_service_cdtbl]
+(
+	[description] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
 
 
 CREATE TABLE [dbo].[gyomu_task_scheduler_config](
-	[id] [bigint] IDENTITY(1,1) NOT NULL,
-	service_id smallint NOT NULL,
+ 	[id] [uniqueidentifier]  NOT NULL,
+	service_id uniqueidentifier NOT NULL,
 	description varchar(200) NOT NULL,
-	application_id smallint NOT NULL,
-	task_id smallint NOT NULL,
+	application_id uniqueidentifier NOT NULL,
+	task_info_id uniqueidentifier NOT NULL,
 	monitor_parameter ntext NOT NULL,
-	next_trigger_time bigint NOT NULL,
+	next_trigger_time datetimeoffset(3) NOT NULL,
 	task_parameter ntext NULL,
 	is_enabled bit NOT NULL,
- CONSTRAINT [PK_gyomu_task_scheduler_config] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_gyomu_task_scheduler_config] PRIMARY KEY NONCLUSTERED 
 (
 	id
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
+GO
+
+CREATE CLUSTERED INDEX [CX_gyomu_task_scheduler_config] ON [dbo].[gyomu_task_scheduler_config]
+(
+	[service_id] ASC,[application_id] ASC,[task_info_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
 
 CREATE INDEX IX_gyomu_task_scheduler_config on gyomu_task_scheduler_config
@@ -440,7 +530,7 @@ CREATE INDEX IX_gyomu_task_scheduler_config2 on gyomu_task_scheduler_config
 go
 
 CREATE INDEX IX_gyomu_task_scheduler_config3 on gyomu_task_scheduler_config
-(application_id,task_id)
+(application_id,task_info_id)
 go
 
 CREATE INDEX IX_gyomu_task_scheduler_config4 on gyomu_task_scheduler_config

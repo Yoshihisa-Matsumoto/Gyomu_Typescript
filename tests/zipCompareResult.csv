@@ -1,0 +1,4 @@
+﻿"path","diff"
+"folder/anotherData.txt","Only in Source"
+"folder/anotherData2.txt","Only in Destination"
+"testData.txt","Different"

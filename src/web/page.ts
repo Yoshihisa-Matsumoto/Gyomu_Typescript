@@ -1,6 +1,6 @@
 // import xmlser from 'xmlserializer';
 // import xdom from '@xmldom/xmldom';
-import { DOMElement, GenericElement } from './element';
+import { DOMElement, GenericElement } from './element.js';
 // import * as parse5 from 'parse5';
 import jsdom from 'jsdom';
 

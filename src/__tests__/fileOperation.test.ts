@@ -1,11 +1,17 @@
-import { FileOperation } from '../fileOperation';
+import { FileOperation } from '../fileOperation.js';
 
-import { FileCompareType, FileFilterInfo, FilterType } from '../fileModel';
+import { FileCompareType, FileFilterInfo, FilterType } from '../fileModel.js';
 
 import tmp from 'tmp';
 import { expect, test } from 'vitest';
-import { platform } from '../platform';
-import { fsConstants } from '../platform';
+import { platform } from '../platform/index.js';
+import { fsConstants } from '../platform/index.js';
+import { Layer } from 'effect';
+import { MainLayer, PlatformLayer } from '../infrastructure/layer.js';
+import { makeRunner } from '../infrastructure/runtime.js';
+
+const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
+const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
 
 test('File Whole Search Test', () => {
   const baseDir = platform.resolve('.');
@@ -19,6 +25,8 @@ test('File Whole Search Test', () => {
     'tests\\compress\\README.md.gz',
     'tests\\compress\\README_aes_password.zip',
     'tests\\compress\\README_password.zip',
+    'tests\\compress\\compare1.zip',
+    'tests\\compress\\compare2.zip',
     'tests\\compress\\temp.tar',
     'tests\\compress\\temp.zip',
     'tests\\compress\\ユーザー噂.py.bz2',
@@ -34,12 +42,21 @@ test('File Whole Search Test', () => {
     'tests\\source\\setup.cfg',
     'tests\\source\\ユーザー噂.py',
     'tests\\utf8_sample.txt',
+    'tests\\test.csv.gz',
+    'tests\\test.csv.zip',
     'tests\\test.html',
+    'tests\\test.shiftjis.csv',
+    'tests\\test.utf8.bom.csv',
+    'tests\\test.utf8.csv',
     'tests\\key-256.key',
+    'tests\\key-256.key.dat',
     'tests\\rsa4096',
     'tests\\rsa4096.pem',
+    'tests\\rsa4096.pem.dat',
     'tests\\rsa4096.pub',
     'tests\\rsa4096.pub.pem',
+    'tests\\rsa4096.pub.pem.dat',
+    'tests\\zipCompareResult.csv',
   ];
   expect(fullPathList.sort()).toEqual(expected.sort());
   // expect(fullPathList).toEqual(expect.arrayContaining(expected));
@@ -104,10 +121,20 @@ test('File Name NoExact Search Test', () => {
   let expected = [
     'tests\\compress\\README_aes_password.zip',
     'tests\\compress\\README_password.zip',
+    'tests\\compress\\compare1.zip',
+    'tests\\compress\\compare2.zip',
     'tests\\compress\\temp.tar',
     'tests\\compress\\temp.zip',
     'tests\\compress\\ユーザー噂.py.bz2',
     'tests\\compress\\ユーザー噂.py.gz',
+    'tests\\key-256.key',
+    'tests\\key-256.key.dat',
+    'tests\\rsa4096',
+    'tests\\rsa4096.pem',
+    'tests\\rsa4096.pem.dat',
+    'tests\\rsa4096.pub',
+    'tests\\rsa4096.pub.pem',
+    'tests\\rsa4096.pub.pem.dat',
     'tests\\shiftjis_sample.txt',
     'tests\\source\\folder1\\email_sender.py',
     'tests\\source\\folder1\\folder 2\\aes_encryption.py',
@@ -117,13 +144,14 @@ test('File Name NoExact Search Test', () => {
     'tests\\source\\folder1\\gyomu_db_model.py',
     'tests\\source\\setup.cfg',
     'tests\\source\\ユーザー噂.py',
-    'tests\\utf8_sample.txt',
-    'tests\\key-256.key',
-    'tests\\rsa4096',
-    'tests\\rsa4096.pem',
-    'tests\\rsa4096.pub',
-    'tests\\rsa4096.pub.pem',
+    'tests\\test.csv.gz',
+    'tests\\test.csv.zip',
     'tests\\test.html',
+    'tests\\test.shiftjis.csv',
+    'tests\\test.utf8.bom.csv',
+    'tests\\test.utf8.csv',
+    'tests\\utf8_sample.txt',
+    'tests\\zipCompareResult.csv',
   ];
   expect(fullPathList.sort()).toEqual(expected.sort());
   // expect(fullPathList).toEqual(expect.arrayContaining(expected));
@@ -221,12 +249,12 @@ test('File Exclusive Access Test', async () => {
     }
   }, 100);
 
-  let result = await FileOperation.waitTillExclusiveAccess(targetFilename, 2);
+  let result = await runNodeWithEnvOrThrow(
+    FileOperation.waitTillExclusiveAccess(targetFilename, 2),
+  );
   const finishDate = new Date().getTime();
-  expect(result.isOk()).toBeTruthy();
-  if (result.isErr()) {
-    return;
-  }
+  expect(result).toBeTruthy();
+
   const duration = finishDate - currentDate;
   //expect(result.value).toBeTruthy();
   expect(duration).toBeGreaterThan(500);
@@ -252,11 +280,9 @@ test('File Exclusive Access Test', async () => {
     }
     //console.log('written', new Date());
   }, 50);
-  result = await FileOperation.waitTillExclusiveAccess(targetFilename, 1);
+  result = await runNodeWithEnvOrThrow(
+    FileOperation.waitTillExclusiveAccess(targetFilename, 1),
+  );
   clearInterval(timerId);
-  if (!result.isOk()) console.log(result.error);
-  expect(result.isOk()).toBeTruthy();
-  if (result.isOk()) {
-    expect(result.value).toBeFalsy();
-  }
+  expect(result).toBeFalsy();
 }, 10000);

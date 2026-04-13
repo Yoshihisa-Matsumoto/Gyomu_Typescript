@@ -1,11 +1,11 @@
-import { platform } from './platform';
+import { platform } from './platform/index.js';
 import winston from 'winston';
-import { reconcile } from './reconcile';
-import dotenv from 'dotenv';
-import { z } from './zod';
-import { EnvConfigSource, loadConfig } from './configurator';
+import { reconcile } from './reconcile.js';
+//import dotenv from 'dotenv';
+//import { z } from './zod.js';
+//import { EnvConfigSource, loadConfig } from './configurator.js';
 import { format } from 'date-fns';
-dotenv.config();
+//dotenv.config();
 interface LeveledLogMethod {
   (message: any, ...meta: any[]): void;
 }
@@ -23,6 +23,13 @@ interface Logger {
 class InternalLogger implements Logger {
   constructor(private readonly logger: winston.Logger) {}
   info(message: any, ...meta: any[]) {
+    // console.log('logger.level =', this.logger.level);
+    // console.log(
+    //   this.logger.transports.map((t) => ({
+    //     name: t.constructor.name,
+    //     level: t.level,
+    //   })),
+    // );
     this.logger.info(message, ...meta);
   }
   debug(message: any, ...meta: any[]) {
@@ -57,34 +64,49 @@ class InternalLogger implements Logger {
 export let LogFileName: string | undefined = undefined;
 let loggerInstance: InternalLogger | null = null;
 
-export const loggerConfigSchema = z.object({
-  logLevel: z
-    .enum(['error', 'warn', 'info', 'debug'])
-    .optional()
-    .default('info'),
-  fixedLogFilename: z
-    .string()
-    .optional()
-    .transform((v) => v === 'true')
-    .default(false),
-  logPath: z.string().optional().default(platform.tmpdir()),
-  logFilename: z.string().optional(),
-});
-export type LoggerConfig = z.infer<typeof loggerConfigSchema>;
+// export const loggerConfigSchema = z.object({
+//   logLevel: z
+//     .enum(['error', 'warn', 'info', 'debug'])
+//     .optional()
+//     .default('info'),
+//   fixedLogFilename: z
+//     .string()
+//     .optional()
+//     .transform((v) => v === 'true')
+//     .default(false),
+//   logPath: z.string().optional().default(platform.tmpdir()),
+//   logFilename: z.string().optional(),
+// });
+//export type LoggerConfig = z.infer<typeof loggerConfigSchema>;
 
-export const loggerEnvMap = {
-  logLevel: 'LOGGER_LEVEL',
-  fixedLogFilename: 'FIXED_LOGFILENAME',
-  logPath: 'LOGPATH',
-  logFilename: 'LOGFILENAME',
+// export const loggerEnvMap = {
+//   logLevel: 'LOGGER_LEVEL',
+//   fixedLogFilename: 'FIXED_LOGFILENAME',
+//   logPath: 'LOGPATH',
+//   logFilename: 'LOGFILENAME',
+// };
+type LoggerConfig = {
+  logLevel: string;
+  fixedLogFilename: boolean;
+  logPath: string;
+  logFilename?: string;
 };
-
 export const initLoggerFromEnv = () => {
-  const config = loadConfig(
-    new EnvConfigSource(),
-    loggerConfigSchema,
-    loggerEnvMap,
-  );
+  // const config = loadConfig(
+  //   new EnvConfigSource(),
+  //   loggerConfigSchema,
+  //   loggerEnvMap,
+  // );
+  const config: LoggerConfig = {
+    logLevel: process.env.LOGGER_LEVEL ?? 'info',
+    fixedLogFilename: !process.env.FIXED_LOGFILENAME
+      ? false
+      : process.env.FIXED_LOGFILENAME == 'true'
+        ? true
+        : false,
+    logPath: process.env.LOGPATH ?? platform.tmpdir(),
+    logFilename: process.env.LOGFILENAME,
+  };
   initLogger(config);
 };
 
@@ -131,6 +153,7 @@ const getLogger = () => {
           (LogFileNameStatic
             ? ''
             : '.' + format(new Date(), 'yyyyMMddHHmmss') + '.log'));
+    console.log(`Level: ${loggerLevel}, File: ${LogFileName}`);
     loggerInstance = new InternalLogger(
       winston.createLogger({
         level: loggerLevel,
@@ -179,3 +202,5 @@ export const logDifferenceWhenDebugMode = (
     logger.debug(`Object ${objectKey} has difference`, result);
   }
 };
+
+//logger.info('test');

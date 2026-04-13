@@ -1,88 +1,206 @@
-import { prismaMock } from './baseDBClass';
-import { Milestone } from '../milestone';
-import { createDateFromYYYYMMDD } from '../dateOperation';
-import { format } from 'date-fns';
-import { beforeEach, expect, test } from 'vitest';
+import { Effect, Layer, Ref } from 'effect';
+import { MilestoneService } from '../gyomu/milestone.js';
+import { beforeEach, describe, expect, it, test } from 'vitest';
+import { GyomuRepository } from '../gyomu/gyomuRepository.js';
+import { makeRunner } from '../infrastructure/runtime.js';
+import { LocalDate } from '../schemas/date.js';
 
+const testId = 'F6AE5F2D-BD14-4C5F-9CC3-3A69EF90DD5B';
+const testTime = '2026-10-28T00:00:00.000Z';
 beforeEach(() => {});
-test('Milestone access check', async () => {
+describe('Milestone access check', async () => {
   const milestoneId: string = 'TestMilestone';
-  const targetDate = createDateFromYYYYMMDD('20010101');
-  prismaMock.gyomu_milestone_daily.findUnique.mockResolvedValue(null);
-  let result = await Milestone.exists(milestoneId, targetDate);
-  if (result.isErr()) {
-    expect(result.isErr()).toBeFalsy();
-    return;
-  }
-  expect(result.value.exists).toBeFalsy();
-  expect(result.value.updateTime).toBeUndefined();
+  const targetYmd = '2001-01-01';
+  it('Milestone should not exist', async () => {
+    const GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
+      milestoneDaily: {
+        findByMilestoneIdAndTargetDate: () => Effect.succeed([]),
+      },
+    } as any);
+    const TestLayer = MilestoneService.live.pipe(
+      Layer.provide(GyomuRepositoryMock),
+    );
+    const testRunner = makeRunner(TestLayer);
+    const program = Effect.gen(function* () {
+      const milestone = yield* MilestoneService;
+      return yield* milestone.exists(milestoneId, targetYmd as LocalDate);
+    });
+    const result = await testRunner(program);
 
-  prismaMock.gyomu_milestone_daily.findUnique.mockResolvedValue({
-    milestone_id: milestoneId,
-    target_date: format(targetDate, 'yyyyMMdd'),
-    update_time: BigInt(1),
+    expect(result.exists).toBeFalsy();
   });
-  result = await Milestone.exists(milestoneId, targetDate);
-  if (result.isErr()) {
-    expect(result.isErr()).toBeFalsy();
-    return;
-  }
-  expect(result.value.exists).toBeTruthy();
-  expect(result.value.updateTime).not.toBeUndefined();
+  it('Milestone should  exist', async () => {
+    const GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
+      milestoneDaily: {
+        findByMilestoneIdAndTargetDate: () =>
+          Effect.succeed([
+            {
+              id: testId,
+              milestoneId: milestoneId,
+              targetDate: targetYmd,
+              modifiedAt: testTime,
+              modifiedBy: 'testUser',
+            },
+          ]),
+      },
+    } as any);
+    const TestLayer = MilestoneService.live.pipe(
+      Layer.provide(GyomuRepositoryMock),
+    );
+    const testRunner = makeRunner(TestLayer);
+    const program = Effect.gen(function* () {
+      const milestone = yield* MilestoneService;
+      return yield* milestone.exists(milestoneId, targetYmd as LocalDate);
+    });
+    const result = await testRunner(program);
 
-  prismaMock.gyomu_milestone_daily.findUnique.mockResolvedValue({
-    milestone_id: milestoneId,
-    target_date: format(targetDate, 'yyyyMM') + '**',
-    update_time: BigInt(1),
+    expect(result.exists).toBeTruthy();
+    if (result.exists) {
+      expect(result.updateTime).not.toBeUndefined();
+    }
   });
-  result = await Milestone.exists(milestoneId, targetDate, true);
-  if (result.isErr()) {
-    expect(result.isErr()).toBeFalsy();
-    return;
-  }
-  expect(result.value.exists).toBeTruthy();
-  expect(result.value.updateTime).not.toBeUndefined();
+  it('Monthly Milestone test', async () => {
+    const GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
+      milestoneDaily: {
+        findByMilestoneIdAndTargetDate: () =>
+          Effect.succeed([
+            {
+              id: testId,
+              milestoneId: milestoneId,
+              targetDate: targetYmd.substring(0, 8) + '**',
+              modifiedAt: testTime,
+              modifiedBy: 'testUser',
+            },
+          ]),
+      },
+    } as any);
+    const TestLayer = MilestoneService.live.pipe(
+      Layer.provide(GyomuRepositoryMock),
+    );
+    const testRunner = makeRunner(TestLayer);
+    const program = Effect.gen(function* () {
+      const milestone = yield* MilestoneService;
+      return yield* milestone.exists(milestoneId, targetYmd as LocalDate);
+    });
+    const result = await testRunner(program);
+
+    expect(result.exists).toBeTruthy();
+    if (result.exists) {
+      expect(result.updateTime).not.toBeUndefined();
+    }
+  });
 });
 
 test('Milestone register test', async () => {
   const milestoneId: string = 'TestMilestone';
-  const targetDate = createDateFromYYYYMMDD('20010101');
-
-  prismaMock.gyomu_milestone_daily.create.mockResolvedValue({
-    milestone_id: milestoneId,
-    target_date: format(targetDate, 'yyyyMMdd'),
-    update_time: BigInt(1),
+  const targetYmd = '2001-01-01';
+  const GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
+    milestoneDaily: {
+      findByMilestoneIdAndTargetDate: () => Effect.succeed([]),
+      create: () =>
+        Effect.succeed([
+          {
+            id: testId,
+            milestoneId: milestoneId,
+            targetDate: targetYmd,
+            modifiedAt: testTime,
+            modifiedBy: 'testUser',
+          },
+        ]),
+    },
+  } as any);
+  const TestLayer = MilestoneService.live.pipe(
+    Layer.provide(GyomuRepositoryMock),
+  );
+  const testRunner = makeRunner(TestLayer);
+  const program = Effect.gen(function* () {
+    const milestone = yield* MilestoneService;
+    return yield* milestone.register(milestoneId, targetYmd as LocalDate);
   });
-  const result = await Milestone.register(milestoneId, targetDate);
-  if (result.isErr()) {
-    expect(result.isErr()).toBeFalsy();
-    return;
-  }
-  expect(result.value).not.toBeUndefined();
+  const result = await testRunner(program);
+
+  expect(result).toBe(testTime);
 });
 
-test('Milestone wait test', async () => {
+describe('Milestone wait test', async () => {
   const milestoneId: string = 'TestMilestone';
-  const targetDate = createDateFromYYYYMMDD('20010101');
+  const targetYmd = '2001-01-01';
 
-  const result = await Milestone.wait(milestoneId, targetDate, 1);
-  if (result.isErr()) {
-    expect(result.isErr()).toBeFalsy();
-    return;
-  }
-  expect(result.value).toBeFalsy();
-
-  setTimeout(async () => {
-    prismaMock.gyomu_milestone_daily.findUnique.mockResolvedValue({
-      milestone_id: milestoneId,
-      target_date: format(targetDate, 'yyyyMMdd'),
-      update_time: BigInt(1),
+  it('should return with false without milestone', async () => {
+    const GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
+      milestoneDaily: {
+        findByMilestoneIdAndTargetDate: () => Effect.succeed([]),
+      },
+    } as any);
+    const TestLayer = MilestoneService.live.pipe(
+      Layer.provide(GyomuRepositoryMock),
+    );
+    const testRunner = makeRunner(TestLayer);
+    const program = Effect.gen(function* () {
+      const milestone = yield* MilestoneService;
+      return yield* milestone.wait(milestoneId, targetYmd as LocalDate, 1);
     });
-  }, 1000);
-  const result2 = await Milestone.wait(milestoneId, targetDate, 5);
-  if (result2.isErr()) {
-    expect(result2.isErr()).toBeFalsy();
-    return;
-  }
-  expect(result2.value).toBeTruthy();
+    const result = await testRunner(program);
+    expect(result).toBeFalsy();
+  });
+
+  it('should return with true with milestone after waiting', async () => {
+    const GyomuRepositoryMock = Layer.effect(
+      GyomuRepository,
+      Effect.gen(function* () {
+        const ref = yield* Ref.make(0);
+
+        return {
+          milestoneDaily: {
+            findByMilestoneIdAndTargetDate: () =>
+              Ref.updateAndGet(ref, (n) => n + 1).pipe(
+                Effect.andThen((count) => {
+                  if (count < 3) {
+                    return Effect.succeed([]); // 最初は存在しない
+                  }
+                  return Effect.succeed([
+                    {
+                      id: testId,
+                      milestoneId: milestoneId,
+                      targetDate: targetYmd,
+                      modifiedAt: testTime,
+                      modifiedBy: 'testUser',
+                    },
+                  ]);
+                }),
+              ),
+          },
+        } as any;
+      }),
+    );
+    const TestLayer = MilestoneService.live.pipe(
+      Layer.provide(GyomuRepositoryMock),
+    );
+    const testRunner = makeRunner(TestLayer);
+    const program = Effect.gen(function* () {
+      const milestone = yield* MilestoneService;
+      return yield* milestone.wait(milestoneId, targetYmd as LocalDate, 5);
+    });
+    const result = await testRunner(program);
+    expect(result).toBeTruthy();
+  });
+  // if (result.isErr()) {
+  //   expect(result.isErr()).toBeFalsy();
+  //   return;
+  // }
+  // expect(result.value).toBeFalsy();
+
+  // setTimeout(async () => {
+  //   prismaMock.gyomu_milestone_daily.findUnique.mockResolvedValue({
+  //     milestone_id: milestoneId,
+  //     target_date: format(targetDate, 'yyyyMMdd'),
+  //     update_time: BigInt(1),
+  //   });
+  // }, 1000);
+  // const result2 = await Milestone.wait(milestoneId, targetDate, 5);
+  // if (result2.isErr()) {
+  //   expect(result2.isErr()).toBeFalsy();
+  //   return;
+  // }
+  // expect(result2.value).toBeTruthy();
 });

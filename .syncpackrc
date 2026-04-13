@@ -1,0 +1,25 @@
+{
+  "versionGroups": [
+    {
+      "label": "Effect Stack (同期対象)",
+      "packages": [
+        "**"
+      ],
+      "dependencies": [
+        "effect",
+        "@effect/*",
+        "!@effect/language-service"
+      ]
+    },
+    {
+      "label": "それ以外の全パッケージを無視",
+      "packages": [
+        "**"
+      ],
+      "dependencies": [
+        "**"
+      ],
+      "isIgnored": true
+    }
+  ]
+}
