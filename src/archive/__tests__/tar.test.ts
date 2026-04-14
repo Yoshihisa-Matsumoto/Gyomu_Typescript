@@ -7,7 +7,7 @@ import { IOError } from '../../errors.js';
 import { Option } from 'effect';
 import { platform } from '../../platform/index.js';
 import { compareFiles, validateFolders } from '../../__tests__/baseClass.js';
-import { FileTransportInfo } from '../../fileModel.js';
+import { FileTransportInfo } from '../../gyomu/file/transport.js';
 import { fileStream } from '../../infrastructure/fs/fs-utils.js';
 import {
   existsInTar,

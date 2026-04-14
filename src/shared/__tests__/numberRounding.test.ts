@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import * as num from '../numberOperation.js';
+import * as rounding from '../number/rounding.js';
 
 const testNumber = 12345.678901234;
 const testNumber2 = 1486.4;
@@ -25,27 +25,27 @@ const variables2 = [
 
 test('Round Test', () => {
   variables.forEach((array) => {
-    expect(num.toHalfAdjust(testNumber, array[0])).toBe(array[1]);
+    expect(rounding.toHalfAdjust(testNumber, array[0])).toBe(array[1]);
   });
   variables2.forEach((array) => {
-    expect(num.toHalfAdjust(testNumber2, array[0])).toBe(array[1]);
+    expect(rounding.toHalfAdjust(testNumber2, array[0])).toBe(array[1]);
   });
 });
 
 test('RoundUp Test', () => {
   variables.forEach((array) => {
-    expect(num.toRoundUp(testNumber, array[0])).toBe(array[2]);
+    expect(rounding.toRoundUp(testNumber, array[0])).toBe(array[2]);
   });
   variables2.forEach((array) => {
-    expect(num.toRoundUp(testNumber2, array[0])).toBe(array[2]);
+    expect(rounding.toRoundUp(testNumber2, array[0])).toBe(array[2]);
   });
 });
 
 test('RoundDown Test', () => {
   variables.forEach((array) => {
-    expect(num.toRoundDown(testNumber, array[0])).toBe(array[3]);
+    expect(rounding.toRoundDown(testNumber, array[0])).toBe(array[3]);
   });
   variables2.forEach((array) => {
-    expect(num.toRoundDown(testNumber2, array[0])).toBe(array[3]);
+    expect(rounding.toRoundDown(testNumber2, array[0])).toBe(array[3]);
   });
 });

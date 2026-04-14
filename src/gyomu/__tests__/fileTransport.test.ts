@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { FileTransportInfo } from '../fileModel.js';
+import { FileTransportInfo } from '../file/transport.js';
 
 class TransportResult {
   index: number;

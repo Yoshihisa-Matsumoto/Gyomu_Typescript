@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { reconcile, reconcileDetail } from '../reconcile.js';
+import { reconcile, reconcileDetail } from '../object/diff.js';
 
 describe('reconcile', () => {
   it('差分なしの場合は空配列', () => {

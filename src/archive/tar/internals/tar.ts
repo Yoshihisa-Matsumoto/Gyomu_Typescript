@@ -11,7 +11,7 @@ import { FileSystem } from 'effect/FileSystem';
 import { Path } from 'effect/Path';
 import { PlatformError } from 'effect/PlatformError';
 import { platform } from '../../../platform/index.js';
-import { FileTransportInfo } from '../../../fileModel.js';
+import { FileTransportInfo } from '../../../gyomu/file/transport.js';
 import { ArchiveEntryItem } from '../../common.js';
 
 type TarEntryItem = Extract<ArchiveEntryItem, { _tag: 'tar' }>;

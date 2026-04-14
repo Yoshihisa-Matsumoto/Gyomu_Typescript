@@ -1,99 +1,6 @@
-import { platform } from './platform/index.js';
-import { parse } from 'date-fns';
-import { ValueError } from './errors.js';
-
-export class FileInfo {
-  readonly fileName: string;
-  readonly fullPath: string;
-  readonly directoryName: string;
-  readonly directoryPath: string;
-  readonly size: number;
-  readonly extension: string;
-  readonly createTime: Date;
-  readonly updateTime: Date;
-  readonly lastAccessTime: Date;
-  readonly isFile: boolean;
-
-  constructor(filePath: string) {
-    //console.log('FileInfo', filePath);
-    const stats = platform.statSync(filePath);
-    this.isFile = stats.isFile();
-    if (this.isFile) {
-      this.fileName = platform.basename(filePath);
-      this.fullPath = platform.resolve(filePath);
-      this.directoryName = platform.basename(platform.dirname(filePath));
-      this.directoryPath = platform.dirname(platform.resolve(filePath));
-      this.extension = platform.extname(filePath);
-    } else {
-      this.fileName = '';
-      this.extension = '';
-      this.fullPath = platform.resolve(filePath);
-      this.directoryName = platform.basename(platform.dirname(filePath));
-      this.directoryPath = platform.dirname(platform.resolve(filePath));
-    }
-    this.size = stats.size;
-    this.createTime = stats.birthtime;
-    this.updateTime = stats.mtime;
-    this.lastAccessTime = stats.atime;
-  }
-}
-
-export const FilterType = {
-  FileName: 'Name',
-  CreateTime: 'Create Time',
-  LastAccessTime: 'Last Access Time',
-  LastModifiedTime: 'Last Modified Time',
-} as const;
-
-export type FilterType = (typeof FilterType)[keyof typeof FilterType];
-
-export const FileCompareType = {
-  Equal: 'Equal',
-  Larger: 'Larger',
-  Less: 'Less',
-  LargerOrEqual: 'LargerOrEqual',
-  LessOrEqual: 'LessOrEqual',
-} as const;
-
-export type FileCompareType =
-  (typeof FileCompareType)[keyof typeof FileCompareType];
-
-export const FileArchiveType = {
-  Zip: 'zip',
-  Tgz: 'tgz',
-  BZip2: 'bz2',
-  GZip: 'gz',
-  Tar: 'tar',
-  GuessFromFileName: 'unknown',
-} as const;
-export type FileArchiveType =
-  (typeof FileArchiveType)[keyof typeof FileArchiveType];
-
-export class FileFilterInfo {
-  readonly kind: FilterType;
-  readonly operator: FileCompareType;
-  readonly nameFilter: string;
-  readonly targetDate: Date;
-  constructor(
-    kind: FilterType,
-    operator: FileCompareType,
-    filter: string | Date,
-  ) {
-    this.kind = kind;
-    this.operator = operator;
-    if (this.kind === FilterType.FileName && typeof filter === 'string') {
-      this.nameFilter = filter;
-      this.targetDate = new Date();
-    } else if (this.kind !== FilterType.FileName) {
-      this.nameFilter = '';
-      if (typeof filter === 'string')
-        this.targetDate = parse(filter, 'yyyyMMdd', 0);
-      else this.targetDate = filter;
-    } else {
-      throw new ValueError('Date Parameter is invalid:' + filter);
-    }
-  }
-}
+import { ValueError } from '../../errors.js';
+import { platform } from '../../platform/index.js';
+import { FileFilterInfo } from './filter.js';
 
 export class FileTransportInfo {
   readonly sourceFileName: string;
@@ -135,7 +42,6 @@ export class FileTransportInfo {
    * 		        x		        x			                    Sname		        Sname	Dname		        Dname
    * 		        x					                            Sname		        Sname	Sname		        Sname
    */
-
   constructor({
     basePath = '',
     sourceFilename = '',

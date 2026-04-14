@@ -1,10 +1,18 @@
-import { createDateOnly } from './dateOperation.js';
-import { MarketDateAccess, MarketDateService } from './holidays.js';
+import { createDateOnly } from '../../dateOperation.js';
+import {
+  BusinessCalendar,
+  BusinessCalendarService,
+} from '../../gyomu/date/holidays.js';
 import { addDays, addMonths, format, subDays } from 'date-fns';
-import { DBError, ValueError } from './errors.js';
+import { DBError, ValueError } from '../../errors.js';
 import { Effect, Layer, ServiceMap } from 'effect';
-import { GyomuRepository } from './gyomu/gyomuRepository.js';
-import { fromSync } from './shared/effect.ts/core.js';
+import { GyomuRepository } from '../../gyomu/gyomuRepository.js';
+import { fromSync } from '../effect/core.js';
+import {
+  Date2LocalDate,
+  LocalDate,
+  LocalDate2Date,
+} from '../../schemas/date.js';
 
 const VariableType = {
   Date: 'Date',
@@ -40,15 +48,17 @@ type VariableDateKeyword =
 //   factorIndex: number;
 //   variableType: VariableType;
 //   marketAccess: MarketDateAccess;
-//   date?: Date;
+//   date?: LocalDate;
 //   output: string[];
 // };
-type TranslateState = { kind: 'Normal' } | { kind: 'DatePending'; date: Date };
+type TranslateState =
+  | { kind: 'Normal' }
+  | { kind: 'DatePending'; date: LocalDate };
 
 type TranslateContext = {
   factorIndex: number;
   variableType: VariableType;
-  marketAccess: MarketDateAccess;
+  marketAccess: BusinessCalendar;
   state: TranslateState;
   output: string[];
 };
@@ -57,11 +67,11 @@ type ParseDateContext =
   | {
       kind: 'processing';
       factorIndex: number;
-      marketAccess: MarketDateAccess;
+      marketAccess: BusinessCalendar;
     }
   | {
       kind: 'done';
-      result: Date;
+      result: LocalDate;
     };
 
 export class VariableTranslatorService extends ServiceMap.Service<
@@ -69,32 +79,32 @@ export class VariableTranslatorService extends ServiceMap.Service<
   {
     parse(
       inputString: string,
-      targetDate: Date,
+      targetDate: LocalDate,
       market: string,
     ): Effect.Effect<
       string,
       DBError | ValueError,
-      MarketDateService | GyomuRepository
+      BusinessCalendarService | GyomuRepository
     >;
     parseDate(
       keyword: string,
-      targetDate: Date,
+      targetDate: LocalDate,
       market: string,
     ): Effect.Effect<
-      Date,
+      LocalDate,
       DBError | ValueError,
-      MarketDateService | GyomuRepository
+      BusinessCalendarService | GyomuRepository
     >;
   }
 >()('VariableTranslatorService', {
   make: Effect.gen(function* () {
-    const marketAccessService = yield* MarketDateService;
+    const marketAccessService = yield* BusinessCalendarService;
     const gyomuRepository = yield* GyomuRepository;
 
     const supportedMarkets =
       yield* gyomuRepository.marketHoliday.findDistinctMarkets();
 
-    //const translate = (keyword: string, targetDate: Date): Effect.Effect<string, ValueError> => {
+    //const translate = (keyword: string, targetDate: LocalDate): Effect.Effect<string, ValueError> => {
     //const parts = keyword.split('$');
     const initialTranslateContext = (market: string) => {
       if (!supportedMarkets.includes(market)) {
@@ -113,12 +123,12 @@ export class VariableTranslatorService extends ServiceMap.Service<
     };
     const translate = (
       keyword: string,
-      targetDate: Date,
+      targetDate: LocalDate,
       market: string,
     ): Effect.Effect<
       string,
       DBError | ValueError,
-      MarketDateService | GyomuRepository
+      BusinessCalendarService | GyomuRepository
     > => {
       const parts = keyword.split('$');
       const initial = initialTranslateContext(market);
@@ -126,7 +136,7 @@ export class VariableTranslatorService extends ServiceMap.Service<
         Effect.Effect<
           TranslateContext,
           DBError | ValueError,
-          MarketDateService | GyomuRepository
+          BusinessCalendarService | GyomuRepository
         >
       >(
         (ctxR, part) =>
@@ -149,12 +159,12 @@ export class VariableTranslatorService extends ServiceMap.Service<
     };
     const parse = (
       inputString: string,
-      targetDate: Date,
+      targetDate: LocalDate,
       market: string,
     ): Effect.Effect<
       string,
       DBError | ValueError,
-      MarketDateService | GyomuRepository
+      BusinessCalendarService | GyomuRepository
     > => {
       const startIndex = inputString.indexOf('{%');
       const endIndex = inputString.indexOf('%}');
@@ -176,12 +186,12 @@ export class VariableTranslatorService extends ServiceMap.Service<
 
     const parseDate = (
       keyword: string,
-      targetDate: Date,
+      targetDate: LocalDate,
       market: string,
     ): Effect.Effect<
-      Date,
+      LocalDate,
       DBError | ValueError,
-      MarketDateService | GyomuRepository
+      BusinessCalendarService | GyomuRepository
     > => {
       const parts = keyword.split('$');
 
@@ -197,7 +207,7 @@ export class VariableTranslatorService extends ServiceMap.Service<
           Effect.Effect<
             ParseDateContext,
             DBError | ValueError,
-            MarketDateService | GyomuRepository
+            BusinessCalendarService | GyomuRepository
           >
         >(
           (ctxR, part) =>
@@ -231,7 +241,7 @@ export class VariableTranslatorService extends ServiceMap.Service<
 const render = (
   ctx: TranslateContext,
   part: string,
-  targetDate: Date,
+  targetDate: LocalDate,
 ): Effect.Effect<TranslateContext, ValueError> => {
   if (ctx.state.kind === 'DatePending') {
     if (!part) {
@@ -296,11 +306,12 @@ const render = (
 };
 
 const translateDate = (
-  targetMarketAccess: MarketDateAccess,
-  targetDate: Date,
+  targetMarketAccess: BusinessCalendar,
+  targetDate: LocalDate,
   dateParameter: VariableDateKeyword,
   factorIndex: number,
-): Effect.Effect<Date, ValueError> => {
+): Effect.Effect<LocalDate, ValueError> => {
+  const targetDt = LocalDate2Date(targetDate);
   switch (dateParameter) {
     case VariableDateKeyword.TODAY:
       return Effect.succeed(targetDate);
@@ -323,13 +334,11 @@ const translateDate = (
     case VariableDateKeyword.BOM:
       // Beginning of Month
       return Effect.succeed(
-        addDays(
-          createDateOnly(
-            targetDate.getFullYear(),
-            targetDate.getMonth() + 1,
-            1,
+        Date2LocalDate(
+          addDays(
+            createDateOnly(targetDt.getFullYear(), targetDt.getMonth() + 1, 1),
+            factorIndex - 1,
           ),
-          factorIndex - 1,
         ),
       );
     case VariableDateKeyword.BEOM:
@@ -344,7 +353,7 @@ const translateDate = (
       // Business Day of End of Next Month
       return Effect.succeed(
         targetMarketAccess.businessDayOfBeginningMonthWithOffset(
-          addMonths(targetDate, 2),
+          Date2LocalDate(addMonths(targetDt, 2)),
           -factorIndex,
         ),
       );
@@ -353,10 +362,8 @@ const translateDate = (
 
       return Effect.succeed(
         targetMarketAccess.businessDay(
-          createDateOnly(
-            targetDate.getFullYear(),
-            targetDate.getMonth() + 1,
-            1,
+          Date2LocalDate(
+            createDateOnly(targetDt.getFullYear(), targetDt.getMonth() + 1, 1),
           ),
           -factorIndex,
         ),
@@ -364,13 +371,15 @@ const translateDate = (
     case VariableDateKeyword.EOM:
       // End Of Month
       return Effect.succeed(
-        subDays(
-          createDateOnly(
-            addMonths(targetDate, 1).getFullYear(),
-            addMonths(targetDate, 1).getMonth() + 1,
-            1,
+        Date2LocalDate(
+          subDays(
+            createDateOnly(
+              addMonths(targetDt, 1).getFullYear(),
+              addMonths(targetDt, 1).getMonth() + 1,
+              1,
+            ),
+            factorIndex,
           ),
-          factorIndex,
         ),
       );
     case VariableDateKeyword.NEXTBUS:
@@ -380,7 +389,7 @@ const translateDate = (
       );
     case VariableDateKeyword.NEXTDAY:
       // Next Day
-      return Effect.succeed(addDays(targetDate, factorIndex));
+      return Effect.succeed(Date2LocalDate(addDays(targetDate, factorIndex)));
     case VariableDateKeyword.PREVBUS:
       // Previous Business Day
       return Effect.succeed(
@@ -388,20 +397,22 @@ const translateDate = (
       );
     case VariableDateKeyword.PREVDAY:
       // Previous Day
-      return Effect.succeed(subDays(targetDate, factorIndex));
+      return Effect.succeed(Date2LocalDate(subDays(targetDate, factorIndex)));
     case VariableDateKeyword.EOY:
       // End of Year
       return Effect.succeed(
-        subDays(
-          createDateOnly(targetDate.getFullYear() + 1, 1, 1),
-          factorIndex,
+        Date2LocalDate(
+          subDays(
+            Date2LocalDate(createDateOnly(targetDt.getFullYear() + 1, 1, 1)),
+            factorIndex,
+          ),
         ),
       );
     case VariableDateKeyword.BEOY:
       // Business Day of End of Year
       return Effect.succeed(
         targetMarketAccess.businessDay(
-          createDateOnly(targetDate.getFullYear() + 1, 1, 1),
+          Date2LocalDate(createDateOnly(targetDt.getFullYear() + 1, 1, 1)),
           -factorIndex,
         ),
       );
@@ -409,10 +420,10 @@ const translateDate = (
       // Business Day Of Beginning of Year
       return Effect.succeed(
         targetMarketAccess.businessDay(
-          createDateOnly(targetDate.getFullYear(), 1, 1),
+          Date2LocalDate(createDateOnly(targetDt.getFullYear(), 1, 1)),
           factorIndex -
             (targetMarketAccess.isBusinessDay(
-              createDateOnly(targetDate.getFullYear(), 1, 1),
+              Date2LocalDate(createDateOnly(targetDt.getFullYear(), 1, 1)),
             )
               ? 1
               : 0),
@@ -421,9 +432,11 @@ const translateDate = (
     case VariableDateKeyword.BOY:
       // Beginning of Year
       return Effect.succeed(
-        addDays(
-          createDateOnly(targetDate.getFullYear(), 1, 1),
-          factorIndex - 1,
+        Date2LocalDate(
+          addDays(
+            createDateOnly(targetDt.getFullYear(), 1, 1),
+            factorIndex - 1,
+          ),
         ),
       );
     default:
@@ -434,12 +447,12 @@ const translateDate = (
 const handlePart = (
   ctx: TranslateContext,
   part: string,
-  targetDate: Date,
+  targetDate: LocalDate,
   supportedMarkets: string[],
 ): Effect.Effect<
   TranslateContext,
   ValueError | DBError,
-  GyomuRepository | MarketDateService
+  GyomuRepository | BusinessCalendarService
 > => {
   /* number */
   if (!isNaN(Number(part))) {
@@ -452,7 +465,7 @@ const handlePart = (
   /* market */
   if (supportedMarkets.includes(part)) {
     return Effect.gen(function* () {
-      const marketAccessService = yield* MarketDateService;
+      const marketAccessService = yield* BusinessCalendarService;
       const marketAccess = yield* marketAccessService.get(part);
       return {
         ...ctx,
@@ -509,12 +522,12 @@ const handlePart = (
 const handleParseDatePart = (
   ctx: ParseDateContext,
   part: string,
-  targetDate: Date,
+  targetDate: LocalDate,
   supportedMarkets: string[],
 ): Effect.Effect<
   ParseDateContext,
   ValueError | DBError,
-  GyomuRepository | MarketDateService
+  GyomuRepository | BusinessCalendarService
 > => {
   // すでに結果が出ているなら何もしない（reduce 停止相当）
   if (ctx.kind === 'done') {
@@ -532,7 +545,7 @@ const handleParseDatePart = (
   return Effect.gen(function* () {
     // Market
     if (supportedMarkets.includes(part)) {
-      const marketAccessService = yield* MarketDateService;
+      const marketAccessService = yield* BusinessCalendarService;
       const marketAccess = yield* marketAccessService.get(part);
       return {
         ...ctx,
@@ -561,7 +574,7 @@ const handleParseDatePart = (
 
     // return okAsync({
     //   ...ctx,
-    //   result: dateResult.value,
+    //   result: localdateResult.value,
     // });
     //}
 
@@ -590,7 +603,7 @@ const handleParseDatePart = (
 //       this.__supportedMarkets = markets;
 //     });
 //   }
-//   parse(inputString: string, targetDate: Date): GyomuResultAsync<string> {
+//   parse(inputString: string, targetDate: LocalDate): GyomuResultAsync<string> {
 //     const startIndex = inputString.indexOf('{%');
 //     const endIndex = inputString.indexOf('%}');
 
@@ -610,7 +623,7 @@ const handleParseDatePart = (
 //   #handleParseDatePart(
 //     ctx: ParseDateContext,
 //     part: string,
-//     targetDate: Date,
+//     targetDate: LocalDate,
 //   ): GyomuResultAsync<ParseDateContext> {
 //     // すでに結果が出ているなら何もしない（reduce 停止相当）
 //     if (ctx.kind === 'done') {
@@ -646,7 +659,7 @@ const handleParseDatePart = (
 //         ? errAsync(dateResult.error)
 //         : okAsync({
 //             kind: 'done',
-//             result: dateResult.value,
+//             result: localdateResult.value,
 //           });
 //     }
 
@@ -656,7 +669,7 @@ const handleParseDatePart = (
 
 //     // return okAsync({
 //     //   ...ctx,
-//     //   result: dateResult.value,
+//     //   result: localdateResult.value,
 //     // });
 //     //}
 
@@ -664,7 +677,7 @@ const handleParseDatePart = (
 //     return okAsync(ctx);
 //   }
 
-//   parseDate(keyword: string, targetDate: Date): GyomuResultAsync<Date> {
+//   parseDate(keyword: string, targetDate: LocalDate): GyomuResultAsync<Date> {
 //     const parts = keyword.split('$');
 
 //     const initial: GyomuResultAsync<ParseDateContext> = okAsync({
@@ -699,7 +712,7 @@ const handleParseDatePart = (
 //   // }
 //   #translateDate(
 //     targetMarketAccess: MarketDateAccess,
-//     targetDate: Date,
+//     targetDate: LocalDate,
 //     dateParameter: VariableDateKeyword,
 //     factorIndex: number,
 //   ): GyomuResult<Date> {
@@ -840,7 +853,7 @@ const handleParseDatePart = (
 //   // #handlePart(
 //   //   ctx: TranslateContext,
 //   //   part: string,
-//   //   targetDate: Date
+//   //   targetDate: LocalDate
 //   // ): GyomuResultAsync<TranslateContext, ValueError> {
 
 //   //   /* number */
@@ -931,7 +944,7 @@ const handleParseDatePart = (
 //   #handlePart(
 //     ctx: TranslateContext,
 //     part: string,
-//     targetDate: Date,
+//     targetDate: LocalDate,
 //   ): GyomuResultAsync<TranslateContext> {
 //     /* number */
 //     if (!isNaN(Number(part))) {
@@ -998,7 +1011,7 @@ const handleParseDatePart = (
 //   #render(
 //     ctx: TranslateContext,
 //     part: string,
-//     targetDate: Date,
+//     targetDate: LocalDate,
 //   ): GyomuResultAsync<TranslateContext> {
 //     if (ctx.state.kind === 'DatePending') {
 //       const formatted = format(ctx.state.date, part);
@@ -1052,7 +1065,7 @@ const handleParseDatePart = (
 //     }
 //   }
 
-//   #translate(keyword: string, targetDate: Date): GyomuResultAsync<string> {
+//   #translate(keyword: string, targetDate: LocalDate): GyomuResultAsync<string> {
 //     const parts = keyword.split('$');
 //     const initial: GyomuResultAsync<TranslateContext> = okAsync(
 //       this.#initialTranslateContext(),

@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import child_process from 'child_process';
+import tmp from 'tmp';
 
 export const commonPlatform = {
   existsSync: (path: string): boolean => fse.existsSync(path),
@@ -43,10 +44,18 @@ export const commonPlatform = {
   extname: path.extname,
   relative: path.relative,
   tmpdir: os.tmpdir,
+  tmpNameSync: tmp.tmpNameSync,
   networkInterfaces: os.networkInterfaces,
   hostname: os.hostname,
   parsePath: path.parse,
 
+  getExtension(fileName: string) {
+    const extName = path.extname(fileName);
+    if (extName.length > 0) {
+      return extName.substring(1);
+    }
+    return extName;
+  },
   createDirectoryFromFileNameIfNotExist(filePath: string) {
     const dir = path.dirname(filePath);
     if (!this.existsSync(dir)) {

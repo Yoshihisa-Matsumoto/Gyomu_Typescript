@@ -2,7 +2,7 @@ import { Effect, Layer, ServiceMap, Stream } from 'effect';
 import { IOError } from '../../errors.js';
 import { AppError } from '../../base-error.js';
 import { PlatformError } from 'effect/PlatformError';
-import { FileTransportInfo } from '../../fileModel.js';
+import { FileTransportInfo } from '../../gyomu/file/transport.js';
 import { zipToStream } from './internals/write.js';
 import {
   extractSingleFileEntry,

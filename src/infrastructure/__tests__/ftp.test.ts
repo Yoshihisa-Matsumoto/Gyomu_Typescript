@@ -4,7 +4,7 @@ import { FtpService } from '../ftp/ftpLayer.js';
 import { ConfigService } from '../config.js';
 import { makeRunner, makeRunnerAsReturn } from '../runtime.js';
 import { NetworkError } from '../../errors.js';
-import { FileTransportInfo } from '../../fileModel.js';
+import { FileTransportInfo } from '../../gyomu/file/transport.js';
 import { NodeFileSystem } from '@effect/platform-node';
 import { Readable } from 'node:stream';
 import { ConfigError } from 'effect/Config';

@@ -1,6 +1,6 @@
 import { platform } from './platform/index.js';
 import winston from 'winston';
-import { reconcile } from './reconcile.js';
+import { reconcile } from './shared/object/diff.js';
 //import dotenv from 'dotenv';
 //import { z } from './zod.js';
 //import { EnvConfigSource, loadConfig } from './configurator.js';

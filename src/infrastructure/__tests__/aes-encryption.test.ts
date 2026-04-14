@@ -1,8 +1,9 @@
-import * as aes from '../encryption.js';
-import { platform } from '../platform/index.js';
-import { bufferToArrayBuffer } from '../buffer.js';
+import * as pki from '../crypt/pki.js';
+import * as aes from '../crypt/aes.js';
+import { platform } from '../../platform/index.js';
+import { bufferToArrayBuffer } from '../../buffer.js';
 import { tmpNameSync } from 'tmp';
-import { compareFiles } from './baseClass.js';
+import { compareFiles } from '../../__tests__/baseClass.js';
 import { test, expect } from 'vitest';
 
 test('aes gcm decode compatibility with other library encoded data', () => {
@@ -77,8 +78,8 @@ test('PKI Encrypt/Decrypt using key pair file', () => {
   const plainFilename = './tests/utf8_sample.txt';
   const encryptedFilename = tmpNameSync();
   const decryptedFilename = tmpNameSync();
-  aes.pkiFileEncryptToFile(publicKey, plainFilename, encryptedFilename);
-  aes.pkiFileDecryptFile(privateKey, encryptedFilename, decryptedFilename);
+  pki.pkiFileEncryptToFile(publicKey, plainFilename, encryptedFilename);
+  pki.pkiFileDecryptFile(privateKey, encryptedFilename, decryptedFilename);
   const isEqual = compareFiles(plainFilename, decryptedFilename);
   expect(isEqual).toBeTruthy();
 });

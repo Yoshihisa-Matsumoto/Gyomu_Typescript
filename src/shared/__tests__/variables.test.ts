@@ -1,24 +1,18 @@
-import { VariableTranslatorService } from '../variable.js';
-import {
-  parseYmdToDate,
-  createDateOnly,
-  formatDateToYmd,
-} from '../dateOperation.js';
+import { VariableTranslatorService } from '../variable/variable.js';
+import { parseYmdToDate, createDateOnly } from '../../dateOperation.js';
 import { beforeEach, describe, expect, test } from 'vitest';
 import { Effect, Layer } from 'effect';
-import { MarketDateService } from '../holidays.js';
-import { GyomuRepositoryMock } from './baseDBClass.js';
+import { BusinessCalendarService } from '../../gyomu/date/holidays.js';
+import { GyomuRepositoryMock } from '../../__tests__/baseDBClass.js';
 import { NodeFileSystem } from '@effect/platform-node';
-import { makeRunner } from '../infrastructure/runtime.js';
-import { MainLayer } from '../infrastructure/layer.js';
-import { ConfigLayer } from '../infrastructure/config.js';
+import { makeRunner } from '../../infrastructure/runtime.js';
+import { MainLayer } from '../../infrastructure/layer.js';
+import { ConfigLayer } from '../../infrastructure/config.js';
+import { Date2LocalDate } from '../../schemas/date.js';
 
-const TestLayer = Layer.mergeAll(
-  VariableTranslatorService.live,
-  MainLayer,
-  ConfigLayer,
-)
-  .pipe(Layer.provideMerge(MarketDateService.live))
+const TestLayer = Layer.mergeAll(VariableTranslatorService.live, MainLayer)
+  .pipe(Layer.provideMerge(ConfigLayer))
+  .pipe(Layer.provideMerge(BusinessCalendarService.live))
   .pipe(Layer.provideMerge(GyomuRepositoryMock))
   // .pipe(Layer.provideMerge(KyselyService.live))
   .pipe(Layer.provideMerge(NodeFileSystem.layer));
@@ -52,7 +46,7 @@ describe('VariableTranslatorService', () => {
     test('variables parse', async () => {
       const program = Effect.gen(function* () {
         const translator = yield* VariableTranslatorService;
-        const targetDate = createDateOnly(1984, 5, 2);
+        const targetDate = Date2LocalDate(createDateOnly(1984, 5, 2));
         for (const c of testCases) {
           const result = yield* translator.parse(c.parameter, targetDate, 'JP');
           if (result !== c.expected) console.log(c.parameter);
@@ -67,7 +61,7 @@ describe('VariableTranslatorService', () => {
     test('invalid keyword', async () => {
       const program = Effect.gen(function* () {
         const translator = yield* VariableTranslatorService;
-        const targetDate = createDateOnly(1984, 5, 2);
+        const targetDate = Date2LocalDate(createDateOnly(1984, 5, 2));
         const input = '{%JP$UNKNOWN$yyyy-MM-dd%}';
         const expected = 'Start: 1984-05-02, Next: 1984-05-04';
         const result = yield* translator.parse(input, targetDate, 'JP');
@@ -80,7 +74,7 @@ describe('VariableTranslatorService', () => {
     test('repeated date keyword', async () => {
       const program = Effect.gen(function* () {
         const translator = yield* VariableTranslatorService;
-        const targetDate = createDateOnly(1984, 5, 2);
+        const targetDate = Date2LocalDate(createDateOnly(1984, 5, 2));
         const input = '{%JP$TODAY$NEXTDAY$yyyy-MM-dd%}';
         const expected = 'Start: 1984-05-02, Next: 1984-05-04';
         const result = yield* translator.parse(input, targetDate, 'JP');
@@ -93,7 +87,7 @@ describe('VariableTranslatorService', () => {
     test('no format', async () => {
       const program = Effect.gen(function* () {
         const translator = yield* VariableTranslatorService;
-        const targetDate = createDateOnly(1984, 5, 2);
+        const targetDate = Date2LocalDate(createDateOnly(1984, 5, 2));
         const input = '{%JP$TODAY%}';
         const expected = 'Start: 1984-05-02, Next: 1984-05-04';
         const result = yield* translator.parse(input, targetDate, 'JP');
@@ -106,7 +100,7 @@ describe('VariableTranslatorService', () => {
     test('invalid market', async () => {
       const program = Effect.gen(function* () {
         const translator = yield* VariableTranslatorService;
-        const targetDate = createDateOnly(1984, 5, 2);
+        const targetDate = Date2LocalDate(createDateOnly(1984, 5, 2));
         const input = '{%UK$TODAY$yyyy-MM-dd%}';
         const expected = 'Start: 1984-05-02, Next: 1984-05-04';
         const result = yield* translator.parse(input, targetDate, 'JP');
@@ -122,7 +116,7 @@ describe('VariableTranslatorService', () => {
     test('should handle multiple expressions in one string', async () => {
       const program = Effect.gen(function* () {
         const translator = yield* VariableTranslatorService;
-        const targetDate = createDateOnly(1984, 5, 2);
+        const targetDate = Date2LocalDate(createDateOnly(1984, 5, 2));
         const input =
           'Start: {%JP$TODAY$yyyy-MM-dd%}, Next: {%JP$2$NEXTDAY$yyyy-MM-dd%}';
         const expected = 'Start: 1984-05-02, Next: 1984-05-04';
@@ -137,7 +131,7 @@ describe('VariableTranslatorService', () => {
     test('variables parseDate', async () => {
       const program = Effect.gen(function* () {
         const translator = yield* VariableTranslatorService;
-        const targetDate = parseYmdToDate('1984-05-02');
+        const targetDate = Date2LocalDate(parseYmdToDate('1984-05-02'));
         for (const c of testCases) {
           const result = yield* translator.parseDate(
             c.parameter,
@@ -146,7 +140,7 @@ describe('VariableTranslatorService', () => {
           );
           //const expectedDate = parseYmdToDate(c.expected); // JSTに変換
           //if (!isEqual(result, expectedDate)) console.log(c.parameter);
-          expect(formatDateToYmd(result)).toEqual(c.expected);
+          expect(result).toEqual(c.expected);
         }
       });
       await testRunner(program);
@@ -157,7 +151,7 @@ describe('VariableTranslatorService', () => {
     test('should maintain state across multiple calls', async () => {
       const program = Effect.gen(function* () {
         const translator = yield* VariableTranslatorService;
-        const targetDate = createDateOnly(1984, 5, 2);
+        const targetDate = Date2LocalDate(createDateOnly(1984, 5, 2));
         const input = '{%JP$TODAY$yyyy$MM$dd%}';
         const expected = '19840502';
         const result = yield* translator.parse(input, targetDate, 'JP');
@@ -171,7 +165,7 @@ describe('VariableTranslatorService', () => {
     test('multiple market', async () => {
       const program = Effect.gen(function* () {
         const translator = yield* VariableTranslatorService;
-        const targetDate = createDateOnly(1984, 5, 2);
+        const targetDate = Date2LocalDate(createDateOnly(1984, 5, 2));
         const input = '{%JP$TODAY$yyyy-MM-dd%}_{%US$TODAY$yyyy-MM-dd%}';
         const expected = '1984-05-02_1984-05-02';
         const result = yield* translator.parse(input, targetDate, 'JP');

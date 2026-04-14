@@ -8,12 +8,12 @@ import {
   DeleteResult,
   UpdateResult,
 } from 'kysely';
-import { fromPromise } from '../../shared/effect.ts/core.js';
+import { fromPromise } from '../../shared/effect/core.js';
 import {
   convertToSchemaObjectWithEffect,
   convertFromSchemaObjectWithEffect,
 } from '../../schemas/common.js';
-import { generateUuid7 } from '../../guid.js';
+import { generateUuid7 } from '../../shared/guid.js';
 import { LocalDate } from '../../schemas/date.js';
 export type TablesWithId = {
   [K in keyof DB]: DB[K] extends { id: any } ? K : never;

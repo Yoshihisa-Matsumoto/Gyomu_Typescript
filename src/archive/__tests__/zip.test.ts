@@ -10,7 +10,7 @@ import {
   // openZipEntries,
   exportedForTesting,
 } from '../zip/internals/read.js';
-import { FileTransportInfo } from '../../fileModel.js';
+import { FileTransportInfo } from '../../gyomu/file/transport.js';
 import { ZipService } from '../zip/index.js';
 import { compareZip } from '../zip/compare.js';
 import { MainLayer, PlatformLayer } from '../../infrastructure/layer.js';

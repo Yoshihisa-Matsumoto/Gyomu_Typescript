@@ -1,52 +1,63 @@
 import { addDays, subDays } from 'date-fns';
 import { addMonths, isBefore, isEqual } from 'date-fns';
-import { createDateOnly, formatDateToYmd } from './dateOperation.js';
+import { createDateOnly, formatDateToYmd } from '../../dateOperation.js';
 
 import { Effect, Layer, ServiceMap } from 'effect';
-import { GyomuRepository } from './gyomu/gyomuRepository.js';
-import { DBError, GyomuError } from './errors.js';
-import { fromSync } from './shared/effect.ts/core.js';
+import { GyomuRepository } from '../gyomuRepository.js';
+import { DBError, GyomuError } from '../../errors.js';
+import { fromSync } from '../../shared/effect/core.js';
+import {
+  Date2LocalDate,
+  LocalDate,
+  LocalDate2Date,
+} from '../../schemas/date.js';
 
-export interface MarketDateAccess {
-  isBusinessDay: (targetDate: Date) => boolean;
+export interface BusinessCalendar {
+  isBusinessDay: (targetDate: LocalDate) => boolean;
 
-  businessDay: (targetDate: Date, dayOffset: number) => Date;
+  businessDay: (targetDate: LocalDate, dayOffset: number) => LocalDate;
 
   businessDayOfBeginningMonthWithOffset: (
-    targetDate: Date,
+    targetDate: LocalDate,
     dayOffset?: number,
-  ) => Date;
+  ) => LocalDate;
 
   businessDayOfBeginningOfNextMonthWithOffset: (
-    targetDate: Date,
+    targetDate: LocalDate,
     dayOffset?: number,
-  ) => Date;
+  ) => LocalDate;
 
   businessDayOfBeginningOfPreviousMonthWithOffset: (
-    targetDate: Date,
+    targetDate: LocalDate,
     dayOffset?: number,
-  ) => Date;
+  ) => LocalDate;
 
   businessDayOfEndMonthWithOffset: (
-    targetDate: Date,
+    targetDate: LocalDate,
     dayOffset: number,
-  ) => Date;
+  ) => LocalDate;
 
   businessDayOfEndOfNextMonthWithOffset: (
-    targetDate: Date,
+    targetDate: LocalDate,
     dayOffset: number,
-  ) => Date;
+  ) => LocalDate;
 
   businessDayOfEndOfPreviousMonthWithOffset: (
-    targetDate: Date,
+    targetDate: LocalDate,
     dayOffset: number,
-  ) => Date;
+  ) => LocalDate;
 
-  businessDayOfBeginningOfYear: (targetDate: Date, dayOffset: number) => Date;
+  businessDayOfBeginningOfYear: (
+    targetDate: LocalDate,
+    dayOffset: number,
+  ) => LocalDate;
 
-  businessDayOfEndOfYear: (targetDate: Date, dayOffset: number) => Date;
+  businessDayOfEndOfYear: (
+    targetDate: LocalDate,
+    dayOffset: number,
+  ) => LocalDate;
 }
-class MarketDateAccessImpl {
+class BusinessCalendarImpl implements BusinessCalendar {
   private static __marketHolidays: {
     [market: string]: string[];
   } = {};
@@ -56,16 +67,16 @@ class MarketDateAccessImpl {
   private constructor(market: string) {
     this.#market = market;
     //console.log('__marketHolidays', MarketDateAccess.__marketHolidays);
-    if (market in MarketDateAccessImpl.__marketHolidays) {
-      this.#holidays = MarketDateAccessImpl.__marketHolidays[market];
+    if (market in BusinessCalendarImpl.__marketHolidays) {
+      this.#holidays = BusinessCalendarImpl.__marketHolidays[market];
       return;
     }
   }
   //static async getMarketAccess(market: string, ctx: Context) {
   static getMarketAccess(
     market: string,
-  ): Effect.Effect<MarketDateAccess, DBError, GyomuRepository> {
-    const access = new MarketDateAccessImpl(market);
+  ): Effect.Effect<BusinessCalendar, DBError, GyomuRepository> {
+    const access = new BusinessCalendarImpl(market);
     return access.#initDataLoad().pipe(Effect.map(() => access));
   }
 
@@ -83,7 +94,7 @@ class MarketDateAccessImpl {
         holidays.forEach((row) => {
           holiday.push(row.holiday);
         });
-        MarketDateAccessImpl.__marketHolidays[market] = holiday;
+        BusinessCalendarImpl.__marketHolidays[market] = holiday;
         return true;
       }),
     );
@@ -104,7 +115,10 @@ class MarketDateAccessImpl {
     // });
   }
 
-  isBusinessDay(targetDate: Date): boolean {
+  isBusinessDay(targetDate: LocalDate): boolean {
+    return this.__isBusinessDay(LocalDate2Date(targetDate));
+  }
+  __isBusinessDay(targetDate: Date): boolean {
     const dayOfWeek = targetDate.getDay();
     const targetYmd = formatDateToYmd(targetDate);
     if (dayOfWeek === 0 || dayOfWeek === 6) return false;
@@ -112,7 +126,12 @@ class MarketDateAccessImpl {
     return !holidayArray || holidayArray.length === 0;
   }
 
-  businessDay(targetDate: Date, dayOffset: number) {
+  businessDay(targetDate: LocalDate, dayOffset: number): LocalDate {
+    return Date2LocalDate(
+      this.__getBusinessDay(LocalDate2Date(targetDate), dayOffset),
+    );
+  }
+  __getBusinessDay(targetDate: Date, dayOffset: number): Date {
     if (dayOffset === 0)
       return this.__getNextBusinessDay(
         this.__getPreviousBusinessDay(targetDate, 1),
@@ -122,31 +141,32 @@ class MarketDateAccessImpl {
     return this.__getPreviousBusinessDay(targetDate, -dayOffset);
   }
 
-  __getNextBusinessDay(targetDate: Date, dayOffset: number) {
+  __getNextBusinessDay(targetDate: Date, dayOffset: number): Date {
     let businessDay = targetDate;
     while (dayOffset > 0) {
       businessDay = addDays(businessDay, 1);
-      if (this.isBusinessDay(businessDay)) dayOffset--;
+      if (this.__isBusinessDay(businessDay)) dayOffset--;
     }
     return businessDay;
   }
-  __getPreviousBusinessDay(targetDate: Date, dayOffset: number) {
+  __getPreviousBusinessDay(targetDate: Date, dayOffset: number): Date {
     let businessDay = targetDate;
     while (dayOffset > 0) {
       businessDay = subDays(businessDay, 1);
-      if (this.isBusinessDay(businessDay)) dayOffset--;
+      if (this.__isBusinessDay(businessDay)) dayOffset--;
     }
     return businessDay;
   }
   businessDayOfBeginningMonthWithOffset(
-    targetDate: Date,
+    targetDate: LocalDate,
     dayOffset: number = 1,
   ) {
-    const businessDay = createDateOnly(
-      targetDate.getFullYear(),
-      targetDate.getMonth() + 1,
-      1,
-    );
+    // const businessDay = createDateOnly(
+    //   targetDate.getFullYear(),
+    //   targetDate.getMonth() + 1,
+    //   1,
+    // );
+    const businessDay = (targetDate.substring(0, 8) + '01') as LocalDate;
 
     if (this.isBusinessDay(businessDay)) {
       if (dayOffset > 1) return this.businessDay(businessDay, dayOffset - 1);
@@ -155,6 +175,17 @@ class MarketDateAccessImpl {
     return this.businessDay(businessDay, dayOffset);
   }
   businessDayOfBeginningOfNextMonthWithOffset(
+    targetDate: LocalDate,
+    dayOffset: number = 1,
+  ) {
+    return Date2LocalDate(
+      this.__businessDayOfBeginningOfNextMonthWithOffset(
+        LocalDate2Date(targetDate),
+        dayOffset,
+      ),
+    );
+  }
+  __businessDayOfBeginningOfNextMonthWithOffset(
     targetDate: Date,
     dayOffset: number = 1,
   ) {
@@ -165,9 +196,10 @@ class MarketDateAccessImpl {
     );
     let result = businessDay;
     if (dayOffset === 0) dayOffset = 1;
-    if (this.isBusinessDay(businessDay)) {
-      if (dayOffset > 1) result = this.businessDay(businessDay, dayOffset - 1);
-    } else result = this.businessDay(businessDay, dayOffset);
+    if (this.__isBusinessDay(businessDay)) {
+      if (dayOffset > 1)
+        result = this.__getBusinessDay(businessDay, dayOffset - 1);
+    } else result = this.__getBusinessDay(businessDay, dayOffset);
 
     // if (isEqual(result, targetDate) || isAfter(targetDate, result)) {
     //   businessDay = addMonths(businessDay, 1);
@@ -182,6 +214,17 @@ class MarketDateAccessImpl {
   }
 
   businessDayOfBeginningOfPreviousMonthWithOffset(
+    targetDate: LocalDate,
+    dayOffset: number = 1,
+  ) {
+    return Date2LocalDate(
+      this.__businessDayOfBeginningOfPreviousMonthWithOffset(
+        LocalDate2Date(targetDate),
+        dayOffset,
+      ),
+    );
+  }
+  __businessDayOfBeginningOfPreviousMonthWithOffset(
     targetDate: Date,
     dayOffset: number = 1,
   ) {
@@ -191,9 +234,10 @@ class MarketDateAccessImpl {
       1,
     );
     let result = businessDay;
-    if (this.isBusinessDay(businessDay)) {
-      if (dayOffset > 1) result = this.businessDay(businessDay, dayOffset - 1);
-    } else result = this.businessDay(businessDay, dayOffset);
+    if (this.__isBusinessDay(businessDay)) {
+      if (dayOffset > 1)
+        result = this.__getBusinessDay(businessDay, dayOffset - 1);
+    } else result = this.__getBusinessDay(businessDay, dayOffset);
 
     // if (isEqual(result, targetDate) || isAfter(targetDate, result)) {
     //   businessDay = addMonths(businessDay, 1);
@@ -206,31 +250,61 @@ class MarketDateAccessImpl {
     return result;
   }
 
-  businessDayOfEndMonthWithOffset(targetDate: Date, dayOffset: number) {
+  businessDayOfEndMonthWithOffset(targetDate: LocalDate, dayOffset: number) {
+    return Date2LocalDate(
+      this.__businessDayOfEndMonthWithOffset(
+        LocalDate2Date(targetDate),
+        dayOffset,
+      ),
+    );
+  }
+  __businessDayOfEndMonthWithOffset(targetDate: Date, dayOffset: number) {
     const businessDay = createDateOnly(
       targetDate.getFullYear() + (targetDate.getMonth() === 11 ? 1 : 0),
       targetDate.getMonth() + 1 + (targetDate.getMonth() === 11 ? -11 : 1),
       1,
     );
     if (dayOffset === 0) dayOffset = 1;
-    return this.businessDay(businessDay, -dayOffset);
+    return this.__getBusinessDay(businessDay, -dayOffset);
   }
-  businessDayOfEndOfNextMonthWithOffset(targetDate: Date, dayOffset: number) {
+  businessDayOfEndOfNextMonthWithOffset(
+    targetDate: LocalDate,
+    dayOffset: number,
+  ) {
+    return Date2LocalDate(
+      this.__businessDayOfEndOfNextMonthWithOffset(
+        LocalDate2Date(targetDate),
+        dayOffset,
+      ),
+    );
+  }
+  __businessDayOfEndOfNextMonthWithOffset(targetDate: Date, dayOffset: number) {
     let businessDay = createDateOnly(
       targetDate.getFullYear() + (targetDate.getMonth() === 11 ? 1 : 0),
       targetDate.getMonth() + 1 + (targetDate.getMonth() === 11 ? -11 : 1),
       1,
     );
     if (dayOffset === 0) dayOffset = 1;
-    let result = this.businessDay(businessDay, -dayOffset);
+    let result = this.__getBusinessDay(businessDay, -dayOffset);
     if (isEqual(targetDate, result) || isBefore(targetDate, result)) {
       businessDay = addMonths(businessDay, 1);
-      result = this.businessDay(businessDay, -dayOffset);
+      result = this.__getBusinessDay(businessDay, -dayOffset);
     }
     return result;
   }
 
   businessDayOfEndOfPreviousMonthWithOffset(
+    targetDate: LocalDate,
+    dayOffset: number,
+  ) {
+    return Date2LocalDate(
+      this.__businessDayOfEndOfPreviousMonthWithOffset(
+        LocalDate2Date(targetDate),
+        dayOffset,
+      ),
+    );
+  }
+  __businessDayOfEndOfPreviousMonthWithOffset(
     targetDate: Date,
     dayOffset: number,
   ) {
@@ -240,39 +314,52 @@ class MarketDateAccessImpl {
       1,
     );
     if (dayOffset === 0) dayOffset = 1;
-    return this.businessDay(businessDay, -dayOffset);
+    return this.__getBusinessDay(businessDay, -dayOffset);
   }
-  businessDayOfBeginningOfYear(targetDate: Date, dayOffset: number) {
+  businessDayOfBeginningOfYear(targetDate: LocalDate, dayOffset: number) {
+    return Date2LocalDate(
+      this.__businessDayOfBeginningOfYear(
+        LocalDate2Date(targetDate),
+        dayOffset,
+      ),
+    );
+  }
+  __businessDayOfBeginningOfYear(targetDate: Date, dayOffset: number) {
     const businessDay = createDateOnly(targetDate.getFullYear(), 1, 1);
-    if (this.isBusinessDay(businessDay))
-      return this.businessDay(businessDay, dayOffset - 1);
-    return this.businessDay(businessDay, dayOffset);
+    if (this.__isBusinessDay(businessDay))
+      return this.__getBusinessDay(businessDay, dayOffset - 1);
+    return this.__getBusinessDay(businessDay, dayOffset);
   }
-  businessDayOfEndOfYear(targetDate: Date, dayOffset: number) {
+  businessDayOfEndOfYear(targetDate: LocalDate, dayOffset: number) {
+    return Date2LocalDate(
+      this.__businessDayOfEndOfYear(LocalDate2Date(targetDate), dayOffset),
+    );
+  }
+  __businessDayOfEndOfYear(targetDate: Date, dayOffset: number) {
     const businessDay = createDateOnly(targetDate.getFullYear() + 1, 1, 1);
     if (dayOffset === 0) dayOffset = 1;
-    return this.businessDay(businessDay, -dayOffset);
+    return this.__getBusinessDay(businessDay, -dayOffset);
   }
 }
 
-export class MarketDateService extends ServiceMap.Service<
-  MarketDateService,
+export class BusinessCalendarService extends ServiceMap.Service<
+  BusinessCalendarService,
   {
     get: (
       market: string,
-    ) => Effect.Effect<MarketDateAccess, DBError, GyomuRepository>;
+    ) => Effect.Effect<BusinessCalendar, DBError, GyomuRepository>;
   }
 >()('MarketDateService', {
   make: fromSync(
     GyomuError,
     'Failed to create MarketDateService',
   )(() => {
-    const cache = new Map<string, MarketDateAccess>();
+    const cache = new Map<string, BusinessCalendar>();
     return {
       get: (market: string) => {
         if (cache.has(market)) return Effect.succeed(cache.get(market)!);
         return Effect.gen(function* () {
-          const access = yield* MarketDateAccessImpl.getMarketAccess(market);
+          const access = yield* BusinessCalendarImpl.getMarketAccess(market);
 
           cache.set(market, access);
           return access;

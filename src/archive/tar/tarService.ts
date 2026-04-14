@@ -16,7 +16,7 @@ import {
   readTextEntry,
   untar,
 } from './internals/tar.js';
-import { FileTransportInfo } from '../../fileModel.js';
+import { FileTransportInfo } from '../../gyomu/file/transport.js';
 
 type TarEntryItem = Extract<ArchiveEntryItem, { _tag: 'tar' }>;
 

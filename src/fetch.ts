@@ -5,8 +5,8 @@ import { finished } from 'stream/promises';
 import { Readable } from 'stream';
 import { IOError, NetworkError, ValueError } from './errors.js';
 import { Effect, pipe, Stream } from 'effect';
-import { networkStream } from './shared/effect.ts/stream.js';
-import { fromPromise, fromSync } from './shared/effect.ts/core.js';
+import { networkStream } from './shared/effect/stream.js';
+import { fromPromise, fromSync } from './shared/effect/core.js';
 
 export type FetchResult<ResponseType> = {
   value: ResponseType;

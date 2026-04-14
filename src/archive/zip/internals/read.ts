@@ -12,7 +12,7 @@ import { ArchiveEntryItem, massageEntryPath } from '../../common.js';
 import { writeToFile } from '../../../infrastructure/fs/fs-utils.js';
 import { FileSystem } from 'effect/FileSystem';
 import { runSync } from 'effect/Effect';
-import { FileTransportInfo } from '../../../fileModel.js';
+import { FileTransportInfo } from '../../../gyomu/file/transport.js';
 import { platform } from '../../../platform/index.js';
 
 export type ZipEntryItem = Extract<ArchiveEntryItem, { _tag: 'zip' }>;

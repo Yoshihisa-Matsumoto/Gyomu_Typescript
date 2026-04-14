@@ -1,8 +1,8 @@
 import { pipe, Ref, Stream } from 'effect';
 import { AppError } from '../../base-error.js';
-import { DiffDetail } from '../../reconcile.js';
+import { DiffDetail } from '../../shared/object/diff.js';
 import { Effect } from 'effect';
-import { ensure } from '../../shared/effect.ts/core.js';
+import { ensure } from '../../shared/effect/core.js';
 import { platform } from '../../platform/index.js';
 import { IOError } from '../../errors.js';
 import { spawnSync } from 'node:child_process';

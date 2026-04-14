@@ -1,21 +1,34 @@
-import { FileOperation } from '../fileOperation.js';
+import { FileFilterInfo } from '../../gyomu/file/filter.js';
+import { FileCompareType, FilterType } from '../../gyomu/file/type.js';
 
-import { FileCompareType, FileFilterInfo, FilterType } from '../fileModel.js';
-
-import tmp from 'tmp';
 import { expect, test } from 'vitest';
-import { platform } from '../platform/index.js';
-import { fsConstants } from '../platform/index.js';
-import { Layer } from 'effect';
-import { MainLayer, PlatformLayer } from '../infrastructure/layer.js';
-import { makeRunner } from '../infrastructure/runtime.js';
+import { platform } from '../../platform/index.js';
+import { Effect, Layer } from 'effect';
+import { MainLayer, PlatformLayer } from '../../infrastructure/layer.js';
+import { makeRunner } from '../../infrastructure/runtime.js';
+import { FileSearchService } from '../fs/FileSearchService.js';
 
 const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
 const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
 
-test('File Whole Search Test', () => {
+const program = (
+  parentDirectory: string,
+  filterCondition: FileFilterInfo[],
+  recursive?: boolean,
+) => {
+  return Effect.gen(function* () {
+    const service = yield* FileSearchService;
+    return yield* service.search(parentDirectory, filterCondition, recursive);
+  });
+};
+
+test('File Whole Search Test', async () => {
   const baseDir = platform.resolve('.');
-  const fileInfoList = FileOperation.search('tests', [], true);
+
+  const fileInfoList = await runNodeWithEnvOrThrow(
+    program('tests', [], true),
+    FileSearchService.live,
+  );
   const fullPathList = new Array<string>();
   fileInfoList.forEach((fileInfo) => {
     fullPathList.push(platform.relative(baseDir, fileInfo.fullPath));
@@ -63,19 +76,23 @@ test('File Whole Search Test', () => {
   // expect(expected).toEqual(expect.arrayContaining(fullPathList));
 });
 
-test('File Name Exact Search Test', () => {
+test('File Name Exact Search Test', async () => {
   const baseDir = platform.resolve('.');
-  let fileInfoList = FileOperation.search(
-    'tests',
-    [
-      new FileFilterInfo(
-        FilterType.FileName,
-        FileCompareType.Equal,
-        'README.md.gz',
-      ),
-    ],
-    true,
+  let fileInfoList = await runNodeWithEnvOrThrow(
+    program(
+      'tests',
+      [
+        new FileFilterInfo(
+          FilterType.FileName,
+          FileCompareType.Equal,
+          'README.md.gz',
+        ),
+      ],
+      true,
+    ),
+    FileSearchService.live,
   );
+
   let fullPathList = new Array<string>();
   fileInfoList.forEach((fileInfo) => {
     fullPathList.push(platform.relative(baseDir, fileInfo.fullPath));
@@ -84,10 +101,19 @@ test('File Name Exact Search Test', () => {
   expect(fullPathList).toEqual(expect.arrayContaining(expected));
   expect(expected).toEqual(expect.arrayContaining(fullPathList));
 
-  fileInfoList = FileOperation.search(
-    'tests',
-    [new FileFilterInfo(FilterType.FileName, FileCompareType.Equal, '.*aes.*')],
-    true,
+  fileInfoList = await runNodeWithEnvOrThrow(
+    program(
+      'tests',
+      [
+        new FileFilterInfo(
+          FilterType.FileName,
+          FileCompareType.Equal,
+          '.*aes.*',
+        ),
+      ],
+      true,
+    ),
+    FileSearchService.live,
   );
   fullPathList = new Array<string>();
   fileInfoList.forEach((fileInfo) => {
@@ -101,18 +127,21 @@ test('File Name Exact Search Test', () => {
   expect(expected).toEqual(expect.arrayContaining(fullPathList));
 });
 
-test('File Name NoExact Search Test', () => {
+test('File Name NoExact Search Test', async () => {
   const baseDir = platform.resolve('.');
-  let fileInfoList = FileOperation.search(
-    'tests',
-    [
-      new FileFilterInfo(
-        FilterType.FileName,
-        FileCompareType.Larger,
-        'README.md.gz',
-      ),
-    ],
-    true,
+  let fileInfoList = await runNodeWithEnvOrThrow(
+    program(
+      'tests',
+      [
+        new FileFilterInfo(
+          FilterType.FileName,
+          FileCompareType.Larger,
+          'README.md.gz',
+        ),
+      ],
+      true,
+    ),
+    FileSearchService.live,
   );
   let fullPathList = new Array<string>();
   fileInfoList.forEach((fileInfo) => {
@@ -157,16 +186,19 @@ test('File Name NoExact Search Test', () => {
   // expect(fullPathList).toEqual(expect.arrayContaining(expected));
   // expect(expected).toEqual(expect.arrayContaining(fullPathList));
 
-  fileInfoList = FileOperation.search(
-    'tests',
-    [
-      new FileFilterInfo(
-        FilterType.FileName,
-        FileCompareType.LargerOrEqual,
-        'ユーザー噂.py.bz2',
-      ),
-    ],
-    true,
+  fileInfoList = await runNodeWithEnvOrThrow(
+    program(
+      'tests',
+      [
+        new FileFilterInfo(
+          FilterType.FileName,
+          FileCompareType.LargerOrEqual,
+          'ユーザー噂.py.bz2',
+        ),
+      ],
+      true,
+    ),
+    FileSearchService.live,
   );
   fullPathList = new Array<string>();
   fileInfoList.forEach((fileInfo) => {
@@ -180,17 +212,21 @@ test('File Name NoExact Search Test', () => {
   expect(fullPathList).toEqual(expect.arrayContaining(expected));
   expect(expected).toEqual(expect.arrayContaining(fullPathList));
 
-  fileInfoList = FileOperation.search(
-    'tests',
-    [
-      new FileFilterInfo(
-        FilterType.FileName,
-        FileCompareType.Less,
-        'README_aes_password.zip',
-      ),
-    ],
-    true,
+  fileInfoList = await runNodeWithEnvOrThrow(
+    program(
+      'tests',
+      [
+        new FileFilterInfo(
+          FilterType.FileName,
+          FileCompareType.Less,
+          'README_aes_password.zip',
+        ),
+      ],
+      true,
+    ),
+    FileSearchService.live,
   );
+
   fullPathList = new Array<string>();
   fileInfoList.forEach((fileInfo) => {
     fullPathList.push(platform.relative(baseDir, fileInfo.fullPath));
@@ -203,17 +239,21 @@ test('File Name NoExact Search Test', () => {
   expect(fullPathList).toEqual(expect.arrayContaining(expected));
   expect(expected).toEqual(expect.arrayContaining(fullPathList));
 
-  fileInfoList = FileOperation.search(
-    'tests',
-    [
-      new FileFilterInfo(
-        FilterType.FileName,
-        FileCompareType.LessOrEqual,
-        'README_aes_password.zip',
-      ),
-    ],
-    true,
+  fileInfoList = await runNodeWithEnvOrThrow(
+    program(
+      'tests',
+      [
+        new FileFilterInfo(
+          FilterType.FileName,
+          FileCompareType.LessOrEqual,
+          'README_aes_password.zip',
+        ),
+      ],
+      true,
+    ),
+    FileSearchService.live,
   );
+
   fullPathList = new Array<string>();
   fileInfoList.forEach((fileInfo) => {
     fullPathList.push(platform.relative(baseDir, fileInfo.fullPath));
@@ -227,62 +267,3 @@ test('File Name NoExact Search Test', () => {
   expect(fullPathList).toEqual(expect.arrayContaining(expected));
   expect(expected).toEqual(expect.arrayContaining(fullPathList));
 });
-
-test('File Exclusive Access Test', async () => {
-  //const sourceDirectory = platform.resolve('./tests');
-  let targetFilename = tmp.tmpNameSync();
-
-  let fileHandle = platform.openSync(
-    targetFilename,
-    'w',
-    fsConstants.O_RDWR | fsConstants.O_EXCL,
-  );
-
-  let currentDate = new Date().getTime();
-  let targetDate = currentDate + 1000;
-
-  let timerId = setInterval(() => {
-    platform.writeSync(fileHandle, 'a');
-    if (targetDate < new Date().getTime()) {
-      clearInterval(timerId);
-      platform.closeSync(fileHandle);
-    }
-  }, 100);
-
-  let result = await runNodeWithEnvOrThrow(
-    FileOperation.waitTillExclusiveAccess(targetFilename, 2),
-  );
-  const finishDate = new Date().getTime();
-  expect(result).toBeTruthy();
-
-  const duration = finishDate - currentDate;
-  //expect(result.value).toBeTruthy();
-  expect(duration).toBeGreaterThan(500);
-  expect(duration).toBeLessThan(2200);
-  console.log('duration', duration);
-  //console.log('test2');
-  targetFilename = tmp.tmpNameSync();
-
-  fileHandle = platform.openSync(
-    targetFilename,
-    'w',
-    fsConstants.O_RDWR | fsConstants.O_EXCL,
-  );
-
-  currentDate = new Date().getTime();
-  targetDate = currentDate + 2000;
-  platform.writeSync(fileHandle, 'a');
-  timerId = setInterval(() => {
-    platform.writeSync(fileHandle, 'a');
-    if (targetDate < new Date().getTime()) {
-      clearInterval(timerId);
-      platform.closeSync(fileHandle);
-    }
-    //console.log('written', new Date());
-  }, 50);
-  result = await runNodeWithEnvOrThrow(
-    FileOperation.waitTillExclusiveAccess(targetFilename, 1),
-  );
-  clearInterval(timerId);
-  expect(result).toBeFalsy();
-}, 10000);

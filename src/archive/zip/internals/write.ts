@@ -4,7 +4,7 @@ import { IOError } from '../../../errors.js';
 
 import { ZipFile } from 'yazl';
 import { platform } from '../../../platform/index.js';
-import { FileTransportInfo } from '../../../fileModel.js';
+import { FileTransportInfo } from '../../../gyomu/file/transport.js';
 //import { fromReadable } from '../../../nodeStream.js';
 import { NodeStream } from '@effect/platform-node';
 

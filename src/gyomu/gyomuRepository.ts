@@ -34,7 +34,7 @@ import {
 } from '../schemas/gyomu.js';
 import { KyselyService } from '../infrastructure/db/kysely-service.js';
 import { DB } from '../db/db.js';
-import { fromPromise } from '../shared/effect.ts/core.js';
+import { fromPromise } from '../shared/effect/core.js';
 import { DBError } from '../errors.js';
 import { LocalDate, YearMonth } from '../schemas/date.js';
 
