@@ -1,7 +1,7 @@
 import { Schema, Stream, Function, Option, Effect } from 'effect';
 import { AppError } from '../base-error.js';
 import { IOError } from '../errors.js';
-import { throughNodeStream } from '../infrastructure/stream/nodeStream.js';
+import { throughNodeStream } from '../infrastructure/stream/bridge/nodeStream.js';
 import { CsvColumn, CsvReadOption } from './type.js';
 import { parse, Options } from 'csv-parse';
 

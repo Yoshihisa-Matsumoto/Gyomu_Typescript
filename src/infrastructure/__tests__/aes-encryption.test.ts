@@ -1,7 +1,7 @@
 import * as pki from '../crypt/pki.js';
 import * as aes from '../crypt/aes.js';
 import { platform } from '../../platform/index.js';
-import { bufferToArrayBuffer } from '../../buffer.js';
+import { bufferToArrayBuffer } from '../../shared/binary/convert.js';
 import { tmpNameSync } from 'tmp';
 import { compareFiles } from '../../__tests__/baseClass.js';
 import { test, expect } from 'vitest';

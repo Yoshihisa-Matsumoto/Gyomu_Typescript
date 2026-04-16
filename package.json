@@ -4,53 +4,9 @@
   "description": "",
   "type": "module",
   "exports": {
-    ".": {
-      "import": "./lib/index.js",
-      "types": "./lib/index.d.ts"
-    },
-    "./web": {
-      "import": "./lib/web/index.js",
-      "types": "./lib/web/index.d.ts"
-    },
-    "./archive": {
-      "import": "./lib/archive/index.js",
-      "types": "./lib/archive/index.d.ts"
-    },
-    "./csv": {
-      "import": "./lib/csv.js",
-      "types": "./lib/csv.d.ts"
-    },
-    "./encryption": {
-      "import": "./lib/encryption.js",
-      "types": "./lib/encryption.d.ts"
-    },
-    "./excel": {
-      "import": "./lib/excel.js",
-      "types": "./lib/excel.d.ts"
-    },
-    "./fetch": {
-      "import": "./lib/fetch.js",
-      "types": "./lib/fetch.d.ts"
-    },
-    "./guid": {
-      "import": "./lib/guid.js",
-      "types": "./lib/guid.d.ts"
-    },
-    "./holidays": {
-      "import": "./lib/holidays.js",
-      "types": "./lib/holidays.d.ts"
-    },
-    "./html": {
-      "import": "./lib/html.js",
-      "types": "./lib/html.d.ts"
-    },
-    "./jwt": {
-      "import": "./lib/jwt.js",
-      "types": "./lib/jwt.d.ts"
-    },
-    "./net": {
-      "import": "./lib/net/index.js",
-      "types": "./lib/net/index.d.ts"
+    "./*": {
+      "import": "./lib/*.js",
+      "types": "./lib/*.d.ts"
     }
   },
   "scripts": {

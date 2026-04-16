@@ -4,8 +4,8 @@ import {
   extractDateOnly,
   formatDateToYmd,
   parseYmdToDate,
-} from '../dateOperation.js';
-import { ValueError } from '../errors.js';
+} from '../date/dateConverter.js';
+import { ValueError } from '../../errors.js';
 
 // --- createDateOnly ---
 describe('createDateOnly', () => {

@@ -5,8 +5,8 @@ import { logger } from '../../../logger.js';
 import {
   fromNodeCallback,
   fromReadable,
-} from '../../../infrastructure/stream/nodeStream.js';
-import { decode } from '../../../encoding/decode.js';
+} from '../../../infrastructure/stream/bridge/nodeStream.js';
+import { decode } from '../../../shared/encoding/decode.js';
 import { AppError } from '../../../base-error.js';
 import { ArchiveEntryItem, massageEntryPath } from '../../common.js';
 import { writeToFile } from '../../../infrastructure/fs/fs-utils.js';

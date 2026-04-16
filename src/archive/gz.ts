@@ -1,7 +1,7 @@
 import { Stream } from 'effect';
 import zlib from 'zlib';
 import { AppError } from '../base-error.js';
-import { throughNodeStreamScoped } from '../infrastructure/stream/nodeStream.js';
+import { throughNodeStreamScoped } from '../infrastructure/stream/bridge/nodeStream.js';
 import { IOError } from '../errors.js';
 
 export const gzip =

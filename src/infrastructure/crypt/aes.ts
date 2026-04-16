@@ -1,10 +1,13 @@
 import crypto from 'crypto';
-import { base64String2Buffer, buffer2Base64String } from '../../base64.js';
+import {
+  base64String2Buffer,
+  buffer2Base64String,
+} from '../../shared/encoding/base64.js';
 import {
   arrayBufferToString,
   bufferToArrayBuffer,
   stringToArrayBuffer,
-} from '../../buffer.js';
+} from '../../shared/binary/convert.js';
 import { loadKeyFromFile } from './keyLoader.js';
 
 export const aesEncrypt = (plain: string, key: string): string => {

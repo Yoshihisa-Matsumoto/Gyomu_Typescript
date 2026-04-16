@@ -1,7 +1,7 @@
 import { ParameterService } from '../parameter/parameter.js';
 
 import { DBError } from '../../errors.js';
-import { parseYmdToDate } from '../../dateOperation.js';
+import { parseYmdToDate } from '../../infrastructure/date/dateConverter.js';
 import { beforeEach, expect, it, test } from 'vitest';
 import { GyomuRepository } from '../../gyomu/gyomuRepository.js';
 import { Effect, Layer } from 'effect';

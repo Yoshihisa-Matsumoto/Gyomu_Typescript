@@ -1,9 +1,12 @@
+export const encodeUtf8ToShiftJisBuffer = (source: string) => {
+  const encoded = encode2ShiftJIS(source).buffer;
+  return Buffer.from(encoded);
+};
 const table: { [key: string]: number } = {
   '\u00a5': 0x5c,
   '\u203e': 0x7e,
   '\u301c': 0x8160,
 };
-
 const initTable = () => {
   if (table.length > 3) return;
 

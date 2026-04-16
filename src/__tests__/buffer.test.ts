@@ -1,15 +1,17 @@
 import { describe, it, expect } from 'vitest';
 import { Readable } from 'stream';
 import {
-  utf8String2ShiftJisBuffer,
   readableStream2ArrayBuffer,
   readableStream2Buffer,
-  toReadable,
-  toBuffer,
+  fileInputToReadable,
+  readableToBuffer,
+} from '../infrastructure/stream/io/readable.js';
+import { encodeUtf8ToShiftJisBuffer } from '../shared/encoding/shiftjis.js';
+import {
   bufferToArrayBuffer,
   arrayBufferToString,
   stringToArrayBuffer,
-} from '../buffer.js'; // パス調整
+} from '../shared/binary/convert.js';
 
 // --- stringToArrayBuffer ---
 describe('stringToArrayBuffer', () => {
@@ -90,13 +92,13 @@ describe('bufferToArrayBuffer', () => {
 // --- utf8String2ShiftJisBuffer ---
 describe('utf8String2ShiftJisBuffer', () => {
   it('should convert ASCII string', () => {
-    const result = utf8String2ShiftJisBuffer('hello');
+    const result = encodeUtf8ToShiftJisBuffer('hello');
     expect(Buffer.isBuffer(result)).toBe(true);
     expect(result.length).toBeGreaterThan(0);
   });
 
   it('should convert Japanese string', () => {
-    const result = utf8String2ShiftJisBuffer('こんにちは');
+    const result = encodeUtf8ToShiftJisBuffer('こんにちは');
     expect(Buffer.isBuffer(result)).toBe(true);
     expect(result.length).toBeGreaterThan(0);
   });
@@ -140,22 +142,22 @@ describe('readableStream2Buffer', () => {
 describe('toReadable', () => {
   it('should return Readable when Buffer is given', async () => {
     const buf = Buffer.from('hello');
-    const stream = toReadable(buf);
+    const stream = fileInputToReadable(buf);
 
-    const result = await toBuffer(stream);
+    const result = await readableToBuffer(stream);
     expect(result.toString()).toBe('hello');
   });
 
   it('should return same Readable if already Readable', () => {
     const stream = Readable.from('hello');
-    const result = toReadable(stream);
+    const result = fileInputToReadable(stream);
 
     expect(result).toBe(stream);
   });
 
   it('should create Readable from file path (mocked)', () => {
     const path = 'dummy.txt';
-    const stream = toReadable(path);
+    const stream = fileInputToReadable(path);
 
     // 中身まではテストしない（I/Oは別）
     expect(stream).toBeDefined();
@@ -166,14 +168,14 @@ describe('toReadable', () => {
 describe('toBuffer', () => {
   it('should return same buffer if Buffer is given', async () => {
     const buf = Buffer.from('hello');
-    const result = await toBuffer(buf);
+    const result = await readableToBuffer(buf);
 
     expect(result).toBe(buf);
   });
 
   it('should convert Readable to Buffer', async () => {
     const stream = Readable.from(['he', 'llo']);
-    const result = await toBuffer(stream);
+    const result = await readableToBuffer(stream);
 
     expect(result.toString()).toBe('hello');
   });
@@ -181,7 +183,7 @@ describe('toBuffer', () => {
   it('should handle binary chunks', async () => {
     const stream = Readable.from([Buffer.from([0x01]), Buffer.from([0x02])]);
 
-    const result = await toBuffer(stream);
+    const result = await readableToBuffer(stream);
     expect(result.equals(Buffer.from([0x01, 0x02]))).toBe(true);
   });
 });

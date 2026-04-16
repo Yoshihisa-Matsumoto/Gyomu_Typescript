@@ -5,7 +5,7 @@ import {
   acquireNodeStream,
   throughNodeStream,
   throughNodeStreamScoped,
-} from '../stream/nodeStream.js';
+} from '../stream/bridge/nodeStream.js';
 
 describe('nodeStream', () => {
   describe('acquireNodeStream', () => {
