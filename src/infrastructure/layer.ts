@@ -1,7 +1,7 @@
 // infrastructure/layer.ts などに定義
 import { NodeFileSystem, NodePath } from '@effect/platform-node';
 import { Layer, Logger, References } from 'effect';
-import { fsConstants } from '../platform/index.js';
+import { fsConstants } from './fs/index.js';
 import { effectLogger } from './logger/effectLogger.js';
 
 // プロジェクトで使う標準セットをマージする

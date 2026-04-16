@@ -1,4 +1,4 @@
-import { platform } from '../platform/index.js';
+import { platform } from '../fs/index.js';
 import { expect } from 'vitest';
 
 export const tmpDir = () => {

@@ -16,7 +16,7 @@ import {
   upload,
   uploadFromStream,
 } from './internals/sftpClient.js';
-import { platform } from '../../platform/index.js';
+import { platform } from '../fs/index.js';
 import { connectEffect } from './internals/sftpClient.js';
 
 //type FtpConfig = Config.Success<typeof ftpConfigRaw>;

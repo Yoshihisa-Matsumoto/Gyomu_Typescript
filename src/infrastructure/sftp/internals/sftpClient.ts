@@ -3,7 +3,7 @@ import { IOError, NetworkError, unknownError } from '../../../errors.js';
 import { Effect, Stream } from 'effect';
 import { AppError } from '../../../base-error.js';
 import { fromPromise, fromSync } from '../../../shared/effect/core.js';
-import { platform } from '../../../platform/index.js';
+import { platform } from '../../fs/index.js';
 import { FileTransportInfo } from '../../../gyomu/file/transport.js';
 import { fromReadable } from '../../stream/bridge/nodeStream.js';
 import { Readable, Writable } from 'node:stream';

@@ -42,7 +42,7 @@ describe('fetchJson', () => {
 
     await expect(
       Effect.runPromise(
-        fetchJson('http://test', 'GET', null, {
+        fetchJson<null, { a: number }>('http://test', 'GET', null, {
           isValidData: (x) => x.a === 2,
         }),
       ),

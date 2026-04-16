@@ -1,8 +1,8 @@
 import { beforeAll, expect, test } from 'vitest';
-import { platform } from '../../platform/index.js';
-import { gunzip, gzip } from '../gz.js';
+import { platform } from '../fs/index.js';
+import { gunzip, gzip } from '../archive/gz.js';
 import { fileStream, writeToFile } from '../../infrastructure/fs/fs-utils.js';
-import { compareFiles } from '../../__tests__/baseClass.js';
+import { compareFiles } from './baseClass.js';
 import { makeRunner } from '../../infrastructure/runtime.js';
 import { Layer } from 'effect';
 import { MainLayer, PlatformLayer } from '../../infrastructure/layer.js';

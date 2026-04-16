@@ -1,6 +1,6 @@
 import { Effect, Layer, ServiceMap } from 'effect';
 import { AccessError, TimeoutError } from '../../errors.js';
-import { platform } from '../../platform/index.js';
+import { platform } from '../../infrastructure/fs/index.js';
 import { fromPromise } from '../effect/core.js';
 import { isEqual } from 'date-fns';
 import { polling } from '../effect/timer.js';

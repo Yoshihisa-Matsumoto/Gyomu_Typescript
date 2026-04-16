@@ -1,5 +1,5 @@
 import * as jwt from 'jsonwebtoken';
-import { platform } from '../../platform/index.js';
+import { platform } from '../fs/index.js';
 
 // let env_priv: Record<string, never> | undefined = undefined;
 // const getEnv = () => {

@@ -7,7 +7,7 @@ import { Effect, pipe, Stream } from 'effect';
 import { fromReadable } from '../../stream/bridge/nodeStream.js';
 import { fromPromise } from '../../../shared/effect/core.js';
 import { NodeStream } from '@effect/platform-node';
-import { platform } from '../../../platform/index.js';
+import { platform } from '../../fs/index.js';
 
 // ftpClient.ts
 

@@ -1,7 +1,7 @@
 import { Config, ConfigProvider, Effect, Layer, ServiceMap } from 'effect';
 import { ConfigError } from 'effect/Config';
 import { IOError } from '../errors.js';
-import { platform } from '../platform/index.js';
+import { platform } from './fs/index.js';
 import { fromSync } from '../shared/effect/core.js';
 // const makeConfigProvider = Effect.gen(function* () {
 //   const dotEnv = yield* ConfigProvider.fromDotEnv();

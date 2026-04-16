@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import { platform } from '../../../platform/index.js';
+import { platform } from '../../fs/index.js';
 
 export const readableStream2ArrayBuffer = async (stream: ReadableStream) => {
   return await new Response(stream).arrayBuffer();

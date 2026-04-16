@@ -6,7 +6,7 @@ import {
 import { beforeEach, describe, expect, test } from 'vitest';
 import { Effect, Layer } from 'effect';
 import { BusinessCalendarService } from '../../gyomu/date/holidays.js';
-import { GyomuRepositoryMock } from '../../__tests__/baseDBClass.js';
+import { GyomuRepositoryMock } from '../../gyomu/__tests__/baseDBClass.js';
 import { NodeFileSystem } from '@effect/platform-node';
 import { makeRunner } from '../../infrastructure/runtime.js';
 import { MainLayer } from '../../infrastructure/layer.js';

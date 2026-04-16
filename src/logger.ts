@@ -1,4 +1,4 @@
-import { platform } from './platform/index.js';
+import { platform } from './infrastructure/fs/index.js';
 import winston from 'winston';
 import { reconcile } from './shared/object/diff.js';
 //import dotenv from 'dotenv';

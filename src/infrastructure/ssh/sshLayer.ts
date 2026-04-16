@@ -7,7 +7,7 @@ import { unwrapPassword } from '../../shared/effect/option.js';
 import { AppError } from '../../base-error.js';
 import { Scope } from 'effect/Scope';
 import { execute } from './internals/sshClient.js';
-import { platform } from '../../platform/index.js';
+import { platform } from '../fs/index.js';
 import { connectEffect } from './internals/sshClient.js';
 
 //type FtpConfig = Config.Success<typeof ftpConfigRaw>;

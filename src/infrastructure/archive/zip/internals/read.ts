@@ -1,19 +1,19 @@
 import { Effect, Queue, Stream } from 'effect';
 import yauzl, { RandomAccessReader } from 'yauzl';
-import { IOError, unknownError } from '../../../errors.js';
-import { logger } from '../../../logger.js';
+import { IOError, unknownError } from '../../../../errors.js';
+import { logger } from '../../../../logger.js';
 import {
   fromNodeCallback,
   fromReadable,
-} from '../../../infrastructure/stream/bridge/nodeStream.js';
-import { decode } from '../../../shared/encoding/decode.js';
-import { AppError } from '../../../base-error.js';
+} from '../../../../infrastructure/stream/bridge/nodeStream.js';
+import { decode } from '../../../../shared/encoding/decode.js';
+import { AppError } from '../../../../base-error.js';
 import { ArchiveEntryItem, massageEntryPath } from '../../common.js';
-import { writeToFile } from '../../../infrastructure/fs/fs-utils.js';
+import { writeToFile } from '../../../../infrastructure/fs/fs-utils.js';
 import { FileSystem } from 'effect/FileSystem';
 import { runSync } from 'effect/Effect';
-import { FileTransportInfo } from '../../../gyomu/file/transport.js';
-import { platform } from '../../../platform/index.js';
+import { FileTransportInfo } from '../../../../gyomu/file/transport.js';
+import { platform } from '../../../fs/index.js';
 
 export type ZipEntryItem = Extract<ArchiveEntryItem, { _tag: 'zip' }>;
 export type ZipFileEntryItem = Extract<ZipEntryItem, { isDirectory: false }>;

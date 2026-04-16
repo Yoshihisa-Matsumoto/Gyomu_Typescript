@@ -2,16 +2,16 @@ import * as tar from 'tar-stream';
 import { create } from 'tar';
 import { Effect, Stream, Queue, Option } from 'effect';
 import { NodeStream } from '@effect/platform-node';
-import { IOError, unknownError } from '../../../errors.js';
-import { AppError } from '../../../base-error.js';
+import { IOError, unknownError } from '../../../../errors.js';
+import { AppError } from '../../../../base-error.js';
 import type { Readable } from 'node:stream';
 import { runSync } from 'effect/Effect';
 
 import { FileSystem } from 'effect/FileSystem';
 import { Path } from 'effect/Path';
 import { PlatformError } from 'effect/PlatformError';
-import { platform } from '../../../platform/index.js';
-import { FileTransportInfo } from '../../../gyomu/file/transport.js';
+import { platform } from '../../../fs/index.js';
+import { FileTransportInfo } from '../../../../gyomu/file/transport.js';
 import { ArchiveEntryItem } from '../../common.js';
 
 type TarEntryItem = Extract<ArchiveEntryItem, { _tag: 'tar' }>;

@@ -1,4 +1,4 @@
-import { platform } from '../../platform/index.js';
+import { platform } from '../../infrastructure/fs/index.js';
 import { Page } from '../page.js';
 import { convertGenericElementByTagName } from '../util.js';
 import { expect, test } from 'vitest';

@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { buffer2Base64String } from '../../shared/encoding/base64.js';
-import { platform } from '../../platform/index.js';
+import { platform } from '../fs/index.js';
 import { loadKeyFromFile } from './keyLoader.js';
 
 export const pkiEncrypt = (publicKey: Buffer, data: Buffer): Buffer => {

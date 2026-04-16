@@ -1,9 +1,9 @@
 import * as pki from '../crypt/pki.js';
 import * as aes from '../crypt/aes.js';
-import { platform } from '../../platform/index.js';
+import { platform } from '../fs/index.js';
 import { bufferToArrayBuffer } from '../../shared/binary/convert.js';
 import { tmpNameSync } from 'tmp';
-import { compareFiles } from '../../__tests__/baseClass.js';
+import { compareFiles } from './baseClass.js';
 import { test, expect } from 'vitest';
 
 test('aes gcm decode compatibility with other library encoded data', () => {

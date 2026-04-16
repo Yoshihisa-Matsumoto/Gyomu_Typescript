@@ -1,10 +1,10 @@
 import { Effect, Stream } from 'effect';
-import { IOError } from '../../../errors.js';
+import { IOError } from '../../../../errors.js';
 //import { Readable } from 'node:stream';
 
 import { ZipFile } from 'yazl';
-import { platform } from '../../../platform/index.js';
-import { FileTransportInfo } from '../../../gyomu/file/transport.js';
+import { platform } from '../../../fs/index.js';
+import { FileTransportInfo } from '../../../../gyomu/file/transport.js';
 //import { fromReadable } from '../../../nodeStream.js';
 import { NodeStream } from '@effect/platform-node';
 

@@ -1,5 +1,5 @@
 import { Stream } from 'effect';
-import { AppError } from '../base-error.js';
+import { AppError } from '../../base-error.js';
 
 export const massageEntryPath = (fileName: string) => {
   return fileName ? fileName.replace(/\\/g, '/') : fileName;

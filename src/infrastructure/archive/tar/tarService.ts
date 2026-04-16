@@ -1,7 +1,7 @@
 import { Effect, Layer, ServiceMap, Stream } from 'effect';
-import { IOError } from '../../errors.js';
+import { IOError } from '../../../errors.js';
 import { ArchiveEntryItem } from '../common.js';
-import { AppError } from '../../base-error.js';
+import { AppError } from '../../../base-error.js';
 import { PlatformError } from 'effect/PlatformError';
 import { FileSystem } from 'effect/FileSystem';
 import { Path } from 'effect/Path';
@@ -16,7 +16,7 @@ import {
   readTextEntry,
   untar,
 } from './internals/tar.js';
-import { FileTransportInfo } from '../../gyomu/file/transport.js';
+import { FileTransportInfo } from '../../../gyomu/file/transport.js';
 
 type TarEntryItem = Extract<ArchiveEntryItem, { _tag: 'tar' }>;
 

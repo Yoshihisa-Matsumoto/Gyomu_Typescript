@@ -5,8 +5,8 @@ import { Effect, Layer, Result, Stream } from 'effect';
 
 import { IOError } from '../../errors.js';
 import { Option } from 'effect';
-import { platform } from '../../platform/index.js';
-import { compareFiles, validateFolders } from '../../__tests__/baseClass.js';
+import { platform } from '../fs/index.js';
+import { compareFiles, validateFolders } from './baseClass.js';
 import { FileTransportInfo } from '../../gyomu/file/transport.js';
 import { fileStream } from '../../infrastructure/fs/fs-utils.js';
 import {
@@ -14,7 +14,7 @@ import {
   filterEntries,
   requireEntry,
   TarService,
-} from '../tar/index.js';
+} from '../archive/tar/index.js';
 import { MainLayer, PlatformLayer } from '../../infrastructure/layer.js';
 import {
   makeRunner,

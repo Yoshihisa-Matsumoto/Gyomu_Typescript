@@ -1,4 +1,4 @@
-import { platform } from '../../platform/index.js';
+import { platform } from './index.js';
 
 export class FileInfo {
   readonly fileName: string;

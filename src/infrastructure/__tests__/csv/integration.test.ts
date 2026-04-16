@@ -1,17 +1,14 @@
 import { describe, it, expect } from 'vitest';
-import { readCsv, parseCsv } from '../read.js';
-import { writeCsv } from '../write.js';
+import { readCsv, parseCsv } from '../../csv/read.js';
+import { writeCsv } from '../../csv/write.js';
 import { Stream, Schema, Effect, Layer } from 'effect';
 import { readFile } from 'node:fs/promises';
 import { NodeFileSystem } from '@effect/platform-node';
-import { IOError, unknownError } from '../../errors.js';
-import { platform } from '../../platform/index.js';
-import {
-  fileStream,
-  writeTextToFile,
-} from '../../infrastructure/fs/fs-utils.js';
-import { MainLayer, PlatformLayer } from '../../infrastructure/layer.js';
-import { makeRunner } from '../../infrastructure/runtime.js';
+import { IOError, unknownError } from '../../../errors.js';
+import { platform } from '../../fs/index.js';
+import { fileStream, writeTextToFile } from '../../fs/fs-utils.js';
+import { MainLayer, PlatformLayer } from '../../layer.js';
+import { makeRunner } from '../../runtime.js';
 
 const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
 const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);

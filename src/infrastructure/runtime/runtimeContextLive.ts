@@ -1,6 +1,6 @@
 import { Layer } from 'effect';
 import { RuntimeContext } from '../../shared/runtime/runtimeContext.js';
-import { platform } from '../../platform/index.js';
+import { platform } from '../fs/index.js';
 import { pid } from 'process';
 
 export const RuntimeContextLive = Layer.sync(RuntimeContext, () => {

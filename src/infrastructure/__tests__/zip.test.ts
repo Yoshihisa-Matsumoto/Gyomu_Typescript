@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { platform } from '../../platform/index.js';
+import { platform } from '../fs/index.js';
 import { writeToFile } from '../../infrastructure/fs/fs-utils.js';
-import { compareFiles, validateFolders } from '../../__tests__/baseClass.js';
+import { compareFiles, validateFolders } from './baseClass.js';
 import { Effect, Layer, Stream } from 'effect';
 import {
   existsInZip,
@@ -9,10 +9,10 @@ import {
   // extractZipAll,
   // openZipEntries,
   exportedForTesting,
-} from '../zip/internals/read.js';
+} from '../archive/zip/internals/read.js';
 import { FileTransportInfo } from '../../gyomu/file/transport.js';
-import { ZipService } from '../zip/index.js';
-import { compareZip } from '../zip/compare.js';
+import { ZipService } from '../archive/zip/index.js';
+import { compareZip } from '../archive/zip/compare.js';
 import { MainLayer, PlatformLayer } from '../../infrastructure/layer.js';
 import { makeRunner } from '../../infrastructure/runtime.js';
 

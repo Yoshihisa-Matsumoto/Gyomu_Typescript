@@ -2,7 +2,7 @@ import { FileFilterInfo } from '../../gyomu/file/filter.js';
 import { FileCompareType, FilterType } from '../../gyomu/file/type.js';
 
 import { expect, test } from 'vitest';
-import { platform } from '../../platform/index.js';
+import { platform } from '../../infrastructure/fs/index.js';
 import { Effect, Layer } from 'effect';
 import { MainLayer, PlatformLayer } from '../../infrastructure/layer.js';
 import { makeRunner } from '../../infrastructure/runtime.js';

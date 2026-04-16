@@ -1,5 +1,5 @@
 import { ValueError } from '../../errors.js';
-import { platform } from '../../platform/index.js';
+import { platform } from '../../infrastructure/fs/index.js';
 import { FileFilterInfo } from './filter.js';
 
 export class FileTransportInfo {

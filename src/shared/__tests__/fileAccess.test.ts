@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { fsConstants, platform } from '../../platform/index.js';
+import { fsConstants, platform } from '../../infrastructure/fs/index.js';
 import { Effect, Layer } from 'effect';
 import { MainLayer, PlatformLayer } from '../../infrastructure/layer.js';
 import { makeRunner } from '../../infrastructure/runtime.js';
