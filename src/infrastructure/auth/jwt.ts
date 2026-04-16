@@ -1,5 +1,5 @@
 import * as jwt from 'jsonwebtoken';
-import { platform } from '../fs/index.js';
+import { fs } from '../fs/index.js';
 
 // let env_priv: Record<string, never> | undefined = undefined;
 // const getEnv = () => {
@@ -29,7 +29,7 @@ export type JwtVerifyOption = {
 export const generateToken = (uid: string, option: JwtOption) => {
   //  if (kind == 'AccessToken') {
   //console.log(option.expiryHour);
-  const secretOrPrivateKey = platform.readFileSync(option.keyFilepath);
+  const secretOrPrivateKey = fs.readFileSync(option.keyFilepath);
   const payload = { name: uid };
   const token = jwt.sign(payload, secretOrPrivateKey, {
     expiresIn: `${option.expiryHour}Hour`,
@@ -51,7 +51,7 @@ export const validateToken = (
   option: JwtVerifyOption,
 ) => {
   try {
-    const key = platform.readFileSync(option.keyFilepath);
+    const key = fs.readFileSync(option.keyFilepath);
     const accessResult = jwt.verify(token, key) as jwt.JwtPayload;
     return { result: true, uid: accessResult['name'] };
     // } else {

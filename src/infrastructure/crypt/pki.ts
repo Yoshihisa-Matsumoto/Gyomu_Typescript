@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { buffer2Base64String } from '../../shared/encoding/base64.js';
-import { platform } from '../fs/index.js';
+import { fs } from '../fs/index.js';
 import { loadKeyFromFile } from './keyLoader.js';
 
 export const pkiEncrypt = (publicKey: Buffer, data: Buffer): Buffer => {
@@ -30,7 +30,7 @@ export const pkiFileEncryptToFile = (
   plainFilename: string,
   encryptedFilename: string,
 ) => {
-  platform.writeFileSync(
+  fs.writeFileSync(
     encryptedFilename,
     pkiFileEncrypt(publicKeyFilename, loadKeyFromFile(plainFilename)),
   );
@@ -63,7 +63,7 @@ export const pkiFileDecryptFile = (
   encryptedFilename: string,
   decryptedFilename: string,
 ) => {
-  platform.writeFileSync(
+  fs.writeFileSync(
     decryptedFilename,
     pkiFileDecrypt(privateKeyFilename, loadKeyFromFile(encryptedFilename)),
   );

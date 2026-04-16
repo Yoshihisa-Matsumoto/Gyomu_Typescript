@@ -5,7 +5,7 @@ import { Effect, Layer, Result, Stream } from 'effect';
 
 import { IOError } from '../../errors.js';
 import { Option } from 'effect';
-import { platform } from '../fs/index.js';
+import { fs } from '../fs/index.js';
 import { compareFiles, validateFolders } from './baseClass.js';
 import { FileTransportInfo } from '../../gyomu/file/transport.js';
 import { fileStream } from '../../infrastructure/fs/fs-utils.js';
@@ -29,15 +29,15 @@ const runNodeWithEnv = makeRunnerAsReturn(nodeTestLayer);
 let compressDirectory: string;
 let extractDirectory: string;
 beforeAll(() => {
-  const tmpPath = platform.tmpdir();
-  const sourceDirectory = platform.resolve('./tests');
-  const destinationDirectory = platform.join(tmpPath, 'compressTar');
+  const tmpPath = fs.tmpdir();
+  const sourceDirectory = fs.resolve('./tests');
+  const destinationDirectory = fs.join(tmpPath, 'compressTar');
 
-  platform.emptyDirSync(destinationDirectory);
-  platform.copySync(sourceDirectory, destinationDirectory);
+  fs.emptyDirSync(destinationDirectory);
+  fs.copySync(sourceDirectory, destinationDirectory);
   compressDirectory = destinationDirectory;
-  extractDirectory = platform.join(destinationDirectory, 'extract');
-  platform.emptyDirSync(extractDirectory);
+  extractDirectory = fs.join(destinationDirectory, 'extract');
+  fs.emptyDirSync(extractDirectory);
 });
 
 const validateFileExistence = async (
@@ -140,9 +140,9 @@ describe('untar test', () => {
   it('Tar2 Unarchive Folder Test', async () => {
     const transferInformation = new FileTransportInfo({
       sourceFolderName: 'folder1/folder 2',
-      destinationFolderName: platform.join(extractDirectory, 'folder 2'),
+      destinationFolderName: fs.join(extractDirectory, 'folder 2'),
     });
-    const tarFilename = platform.join(compressDirectory, 'compress/temp.tar');
+    const tarFilename = fs.join(compressDirectory, 'compress/temp.tar');
     const program = (path: string, transferInformation: FileTransportInfo) =>
       Effect.gen(function* () {
         const tar = yield* TarService;
@@ -159,14 +159,14 @@ describe('untar test', () => {
     //expect(result.isOk()).toBeTruthy();
     expect(Result.isSuccess(result)).toBeTruthy();
     validateFolders(
-      platform.join(compressDirectory, 'source/folder1/folder 2'),
-      platform.join(extractDirectory, 'folder 2'),
+      fs.join(compressDirectory, 'source/folder1/folder 2'),
+      fs.join(extractDirectory, 'folder 2'),
     );
   });
   it('Tar Creation Test', async () => {
     //const extractDirectory = platform.join(compressDirectory,'extracted');
-    const sourceDirectory = platform.join(compressDirectory, 'source');
-    const tarFileName = platform.join(compressDirectory, 'test_tar_create.tar');
+    const sourceDirectory = fs.join(compressDirectory, 'source');
+    const tarFileName = fs.join(compressDirectory, 'test_tar_create.tar');
 
     const program = (path: string) =>
       Effect.gen(function* () {
@@ -205,7 +205,7 @@ describe('untar test', () => {
     );
     await validateFileExistence(tarFileName, 'ユーザー噂.py', true);
 
-    const destinationRoot = platform.join(extractDirectory, 'fullTarCreate');
+    const destinationRoot = fs.join(extractDirectory, 'fullTarCreate');
     const program2 = (path: string, destination: string) =>
       Effect.gen(function* () {
         const tar = yield* TarService;
@@ -220,10 +220,7 @@ describe('untar test', () => {
     );
     //result = await archive.extractAll(destinationRoot);
 
-    validateFolders(
-      platform.join(compressDirectory, 'source'),
-      destinationRoot,
-    );
+    validateFolders(fs.join(compressDirectory, 'source'), destinationRoot);
   }, 10000);
   it('Tar Unarchive Test', async () => {
     let transferInformation: FileTransportInfo;
@@ -232,7 +229,7 @@ describe('untar test', () => {
       sourceFilename: 'README.md',
       destinationFolderName: extractDirectory,
     });
-    const tarFileName = platform.join(compressDirectory, 'compress/temp.tar');
+    const tarFileName = fs.join(compressDirectory, 'compress/temp.tar');
 
     const program = (path: string, transferInformation: FileTransportInfo) =>
       Effect.gen(function* () {
@@ -243,11 +240,11 @@ describe('untar test', () => {
       program(tarFileName, transferInformation),
       TarService.live,
     );
-    extractedFile = platform.join(extractDirectory, 'README.md');
+    extractedFile = fs.join(extractDirectory, 'README.md');
     expect(
       compareFiles(
         extractedFile,
-        platform.join(compressDirectory, 'source/README.md'),
+        fs.join(compressDirectory, 'source/README.md'),
       ),
     ).toBeTruthy();
 
@@ -260,11 +257,11 @@ describe('untar test', () => {
       program(tarFileName, transferInformation),
       TarService.live,
     );
-    extractedFile = platform.join(extractDirectory, 'email_sender.py');
+    extractedFile = fs.join(extractDirectory, 'email_sender.py');
     expect(
       compareFiles(
         extractedFile,
-        platform.join(compressDirectory, 'source/folder1/email_sender.py'),
+        fs.join(compressDirectory, 'source/folder1/email_sender.py'),
       ),
     ).toBeTruthy();
 
@@ -279,11 +276,11 @@ describe('untar test', () => {
       program(tarFileName, transferInformation),
       TarService.live,
     );
-    extractedFile = platform.join(extractDirectory, 'ユーザー噂.py');
+    extractedFile = fs.join(extractDirectory, 'ユーザー噂.py');
     expect(
       compareFiles(
         extractedFile,
-        platform.join(compressDirectory, 'source/ユーザー噂.py'),
+        fs.join(compressDirectory, 'source/ユーザー噂.py'),
       ),
     ).toBeTruthy();
   }, 10000);

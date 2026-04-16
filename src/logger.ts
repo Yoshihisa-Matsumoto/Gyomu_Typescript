@@ -1,4 +1,4 @@
-import { platform } from './infrastructure/fs/index.js';
+import { fs } from './infrastructure/fs/index.js';
 import winston from 'winston';
 import { reconcile } from './shared/object/diff.js';
 //import dotenv from 'dotenv';
@@ -104,7 +104,7 @@ export const initLoggerFromEnv = () => {
       : process.env.FIXED_LOGFILENAME == 'true'
         ? true
         : false,
-    logPath: process.env.LOGPATH ?? platform.tmpdir(),
+    logPath: process.env.LOGPATH ?? fs.tmpdir(),
     logFilename: process.env.LOGFILENAME,
   };
   initLogger(config);
@@ -117,7 +117,7 @@ export const initLogger = (config: LoggerConfig) => {
   LogFileName = !config.logFilename
     ? undefined
     : LogFileDirectory +
-      platform.sep +
+      fs.sep +
       (config.logFilename +
         (LogFileNameStatic
           ? ''
@@ -144,11 +144,11 @@ const getLogger = () => {
     const loggerLevel = process.env.LOGGER_LEVEL ?? 'info';
     const LogFileNameStatic =
       (process.env.FIXED_LOGFILENAME ?? 'false').toUpperCase() === 'TRUE';
-    const LogFileDirectory = process.env.LOGPATH ?? platform.tmpdir();
+    const LogFileDirectory = process.env.LOGPATH ?? fs.tmpdir();
     const LogFileName = !process.env.LOGFILENAME
       ? undefined
       : LogFileDirectory +
-        platform.sep +
+        fs.sep +
         (process.env.LOGFILENAME +
           (LogFileNameStatic
             ? ''

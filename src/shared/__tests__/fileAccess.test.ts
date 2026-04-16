@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { fsConstants, platform } from '../../infrastructure/fs/index.js';
+import { fsConstants, fs } from '../../infrastructure/fs/index.js';
 import { Effect, Layer } from 'effect';
 import { MainLayer, PlatformLayer } from '../../infrastructure/layer.js';
 import { makeRunner } from '../../infrastructure/runtime.js';
@@ -17,9 +17,9 @@ const program = (fileName: string, timeoutSeconds: number) => {
 
 test('File Exclusive Access Test', async () => {
   //const sourceDirectory = platform.resolve('./tests');
-  let targetFilename = platform.tmpNameSync();
+  let targetFilename = fs.tmpNameSync();
 
-  let fileHandle = platform.openSync(
+  let fileHandle = fs.openSync(
     targetFilename,
     'w',
     fsConstants.O_RDWR | fsConstants.O_EXCL,
@@ -29,10 +29,10 @@ test('File Exclusive Access Test', async () => {
   let targetDate = currentDate + 1000;
 
   let timerId = setInterval(() => {
-    platform.writeSync(fileHandle, 'a');
+    fs.writeSync(fileHandle, 'a');
     if (targetDate < new Date().getTime()) {
       clearInterval(timerId);
-      platform.closeSync(fileHandle);
+      fs.closeSync(fileHandle);
     }
   }, 100);
 
@@ -49,9 +49,9 @@ test('File Exclusive Access Test', async () => {
   expect(duration).toBeLessThan(2200);
   console.log('duration', duration);
   //console.log('test2');
-  targetFilename = platform.tmpNameSync();
+  targetFilename = fs.tmpNameSync();
 
-  fileHandle = platform.openSync(
+  fileHandle = fs.openSync(
     targetFilename,
     'w',
     fsConstants.O_RDWR | fsConstants.O_EXCL,
@@ -59,12 +59,12 @@ test('File Exclusive Access Test', async () => {
 
   currentDate = new Date().getTime();
   targetDate = currentDate + 2000;
-  platform.writeSync(fileHandle, 'a');
+  fs.writeSync(fileHandle, 'a');
   timerId = setInterval(() => {
-    platform.writeSync(fileHandle, 'a');
+    fs.writeSync(fileHandle, 'a');
     if (targetDate < new Date().getTime()) {
       clearInterval(timerId);
-      platform.closeSync(fileHandle);
+      fs.closeSync(fileHandle);
     }
     //console.log('written', new Date());
   }, 50);

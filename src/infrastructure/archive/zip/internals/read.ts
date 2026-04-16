@@ -13,7 +13,7 @@ import { writeToFile } from '../../../../infrastructure/fs/fs-utils.js';
 import { FileSystem } from 'effect/FileSystem';
 import { runSync } from 'effect/Effect';
 import { FileTransportInfo } from '../../../../gyomu/file/transport.js';
-import { platform } from '../../../fs/index.js';
+import { fs } from '../../../fs/index.js';
 
 export type ZipEntryItem = Extract<ArchiveEntryItem, { _tag: 'zip' }>;
 export type ZipFileEntryItem = Extract<ZipEntryItem, { isDirectory: false }>;
@@ -210,16 +210,13 @@ const resolvePath = (entry: ZipEntryItem, info: FileTransportInfo): string => {
   //const entryPath = entry.path.split('/').join(platform.sep);
 
   if (sourceFileName) {
-    return platform.join(
-      destinationPath,
-      destinationFileName ?? sourceFileName,
-    );
+    return fs.join(destinationPath, destinationFileName ?? sourceFileName);
   }
   const remaining = entry.path.substring(sourceFolderName.length);
   //  if(entry.path.startsWith(sourceFolderName)){
 
   if (!remaining) return destinationPath;
-  return platform.join(destinationPath, remaining.replace(/[/\\]+$/, ''));
+  return fs.join(destinationPath, remaining.replace(/[/\\]+$/, ''));
   // }
 
   // // ② destinationFileName がある場合
@@ -261,14 +258,14 @@ const extractEntry = (
 ) => {
   logger.debug(`${entry.path} to be extracted `);
   return Effect.gen(function* () {
-    const fs = yield* FileSystem;
+    const fileSystem = yield* FileSystem;
     const outputPath = resolvePath(entry, transferInformation);
     logger.debug(`OutputPath:${outputPath}`);
     if (entry.isDirectory) {
-      return yield* fs.makeDirectory(outputPath, { recursive: true });
+      return yield* fileSystem.makeDirectory(outputPath, { recursive: true });
     }
-    const dir = platform.dirname(outputPath);
-    yield* fs.makeDirectory(dir, { recursive: true });
+    const dir = fs.dirname(outputPath);
+    yield* fileSystem.makeDirectory(dir, { recursive: true });
 
     logger.debug(`Creating file:${outputPath},entry:${entry.path}`);
     logger.debug(transferInformation);
@@ -288,9 +285,9 @@ export const extractSingleFileEntry = (
   return extractEntry(
     targetFile,
     new FileTransportInfo({
-      sourceFilename: platform.basename(targetFile.path),
-      destinationFileName: platform.basename(destinationFullName),
-      destinationFolderName: platform.dirname(destinationFullName),
+      sourceFilename: fs.basename(targetFile.path),
+      destinationFileName: fs.basename(destinationFullName),
+      destinationFolderName: fs.dirname(destinationFullName),
     }),
   );
 };

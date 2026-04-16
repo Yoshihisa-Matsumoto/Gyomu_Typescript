@@ -1,6 +1,6 @@
 import * as pki from '../crypt/pki.js';
 import * as aes from '../crypt/aes.js';
-import { platform } from '../fs/index.js';
+import { fs } from '../fs/index.js';
 import { bufferToArrayBuffer } from '../../shared/binary/convert.js';
 import { tmpNameSync } from 'tmp';
 import { compareFiles } from './baseClass.js';
@@ -60,7 +60,7 @@ test('AES Encrypt/Decrypt using binary file key', () => {
   // const keyBuffer = fs.readFileSync(keyFilename);
   // const keyBufferArrary = bufferToArrayBuffer(keyBuffer);
   const plainFilename = './tests/utf8_sample.txt';
-  const plainBuffer = platform.readFileSync(plainFilename);
+  const plainBuffer = fs.readFileSync(plainFilename);
   const encryptedBuffer = aes.aesEncryptBufferByKeyFile(
     bufferToArrayBuffer(plainBuffer),
     keyFilename,

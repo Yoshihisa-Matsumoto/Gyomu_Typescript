@@ -1,7 +1,7 @@
 import { Effect } from 'effect';
 import { Stream } from 'effect';
 import { NetworkError, IOError } from '../../errors.js';
-import { platform } from '../fs/index.js';
+import { fs } from '../fs/index.js';
 import { fromSync } from '../../shared/effect/core.js';
 import { networkStream } from '../../shared/effect/stream.js';
 import { fetchEffect } from './client.js';
@@ -31,8 +31,8 @@ export const webDownload = (
     // validation
     // =====================
     if (
-      platform.existsSync(destinationFilename) &&
-      destinationFilename !== platform.basename(destinationFilename)
+      fs.existsSync(destinationFilename) &&
+      destinationFilename !== fs.basename(destinationFilename)
     ) {
       return yield* Effect.fail(
         new IOError(`Invalid Filepath :${destinationFilename}`),
@@ -40,15 +40,15 @@ export const webDownload = (
     }
 
     if (
-      platform.existsSync(destinationFilename) &&
-      platform.lstatSync(destinationFilename).isDirectory()
+      fs.existsSync(destinationFilename) &&
+      fs.lstatSync(destinationFilename).isDirectory()
     ) {
       return yield* Effect.fail(
         new IOError(`This is directory:${destinationFilename}`),
       );
     }
 
-    if (!platform.extname(destinationFilename)) {
+    if (!fs.extname(destinationFilename)) {
       return yield* Effect.fail(
         new IOError(
           `file name should include extension:${destinationFilename}`,
@@ -63,14 +63,14 @@ export const webDownload = (
       IOError,
       'fail to prepare files to save',
     )(() => {
-      platform.ensureFileSync(destinationFilename);
-      platform.removeSync(destinationFilename);
+      fs.ensureFileSync(destinationFilename);
+      fs.removeSync(destinationFilename);
     });
 
     const writer = yield* fromSync(
       IOError,
       `fail to create write stream`,
-    )(() => platform.createWriteStream(destinationFilename));
+    )(() => fs.createWriteStream(destinationFilename));
 
     // =====================
     // download stream

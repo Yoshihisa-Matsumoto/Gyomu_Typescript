@@ -3,7 +3,7 @@ import { IOError } from '../../../../errors.js';
 //import { Readable } from 'node:stream';
 
 import { ZipFile } from 'yazl';
-import { platform } from '../../../fs/index.js';
+import { fs } from '../../../fs/index.js';
 import { FileTransportInfo } from '../../../../gyomu/file/transport.js';
 //import { fromReadable } from '../../../nodeStream.js';
 import { NodeStream } from '@effect/platform-node';
@@ -19,12 +19,12 @@ const addDirectory = (
   relativeTo: string,
 ): Effect.Effect<void, IOError> =>
   Effect.try({
-    try: () => platform.readdirSync(fsPath, { withFileTypes: true }),
+    try: () => fs.readdirSync(fsPath, { withFileTypes: true }),
     catch: (e) => new IOError(String(e)),
   }).pipe(
     Effect.flatMap((items) =>
       Effect.forEach(items, (item) => {
-        const itemPath = platform.join(fsPath, item.name);
+        const itemPath = fs.join(fsPath, item.name);
         const zipPath = (relativeTo ? relativeTo + '/' : '') + item.name;
 
         if (item.isDirectory()) {
@@ -44,7 +44,7 @@ const processTransfers = (zip: ZipFile, list: FileTransportInfo[]) =>
   Effect.forEach(list, (info) => {
     const sourcePath = info.sourceFullNameWithBasePath;
 
-    return Effect.sync(() => platform.existsSync(sourcePath)).pipe(
+    return Effect.sync(() => fs.existsSync(sourcePath)).pipe(
       Effect.flatMap((exists) =>
         exists
           ? Effect.void

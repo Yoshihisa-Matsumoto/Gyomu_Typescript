@@ -3,7 +3,7 @@ import { AppError } from '../../../base-error.js';
 import { DiffDetail } from '../../../shared/object/diff.js';
 import { Effect } from 'effect';
 import { ensure } from '../../../shared/effect/core.js';
-import { platform } from '../../fs/index.js';
+import { fs } from '../../fs/index.js';
 import { IOError } from '../../../errors.js';
 import { spawnSync } from 'node:child_process';
 import {
@@ -92,20 +92,20 @@ export const compareZip = (
 
   return Effect.gen(function* () {
     yield* ensure(
-      platform.existsSync(sourceFilename),
+      fs.existsSync(sourceFilename),
       IOError,
       `${sourceFilename} Not exist`,
     );
     yield* ensure(
-      platform.existsSync(destinationFilename),
+      fs.existsSync(destinationFilename),
       IOError,
       `${destinationFilename} Not exist`,
     );
 
     yield* Effect.try({
       try: () => {
-        platform.removeSync(resultPath);
-        platform.emptyDirSync(resultPath);
+        fs.removeSync(resultPath);
+        fs.emptyDirSync(resultPath);
       },
       catch: (e) => new IOError('Fail to prepare result directory', e),
     });
@@ -219,7 +219,7 @@ export const compareZip = (
       },
       {
         type: 'file',
-        path: platform.join(resultPath, summaryFilename),
+        path: fs.join(resultPath, summaryFilename),
       },
     );
 
@@ -455,7 +455,7 @@ const writeCsvIfNeeded = (
   diffDetailList.length > 0
     ? Effect.gen(function* () {
         const filePath =
-          platform.join(resultPath, sourceFile.path.replaceAll('/', '\\')) +
+          fs.join(resultPath, sourceFile.path.replaceAll('/', '\\')) +
           '.diff.csv';
 
         yield* jsonToCsv(
@@ -567,7 +567,7 @@ const internalCompareFileEntry = (
     const effects: Effect.Effect<void, AppError | PlatformError, FileSystem>[] =
       [];
 
-    const sourcePath = platform.join(
+    const sourcePath = fs.join(
       resultPath,
       sourceFile.path.replaceAll('/', '\\') + '.source',
     );
@@ -576,7 +576,7 @@ const internalCompareFileEntry = (
       effects.push(extractSingleFileEntry(sourceFile, sourcePath));
     }
 
-    const destinationPath = platform.join(
+    const destinationPath = fs.join(
       resultPath,
       destinationFile.path.replaceAll('/', '\\') + '.destination',
     );
@@ -615,7 +615,7 @@ const handleMissingFileInComparison = (
         });
         return output;
       });
-      const filePath = platform.join(
+      const filePath = fs.join(
         resultPath,
         existingFile.path.replaceAll('/', '\\'),
       );
@@ -627,16 +627,16 @@ const handleMissingFileInComparison = (
   }
   return Effect.succeed(interimOutput);
 };
-const gitTempPath = platform.join(platform.tmpdir(), 'gitCompareTemp');
+const gitTempPath = fs.join(fs.tmpdir(), 'gitCompareTemp');
 const compareTextfile = (
   source: ZipFileEntryItem,
   destination: ZipFileEntryItem,
   filePath: string,
   resultPath: string,
 ): Effect.Effect<boolean, IOError | AppError | PlatformError, FileSystem> => {
-  const sourceFilename = platform.join(gitTempPath, 'before');
-  const destinationFilename = platform.join(gitTempPath, 'after');
-  const diffFilename = platform.join(
+  const sourceFilename = fs.join(gitTempPath, 'before');
+  const destinationFilename = fs.join(gitTempPath, 'after');
+  const diffFilename = fs.join(
     resultPath,
     filePath.replaceAll('/', '\\') + '.diff',
   );
@@ -644,13 +644,13 @@ const compareTextfile = (
     // ① 事前準備
     Effect.try({
       try: () => {
-        platform.emptyDirSync(gitTempPath);
+        fs.emptyDirSync(gitTempPath);
 
-        platform.removeSync(sourceFilename);
-        platform.removeSync(destinationFilename);
+        fs.removeSync(sourceFilename);
+        fs.removeSync(destinationFilename);
 
-        const diffFilePath = platform.dirname(diffFilename);
-        platform.ensureDirSync(diffFilePath);
+        const diffFilePath = fs.dirname(diffFilename);
+        fs.ensureDirSync(diffFilePath);
       },
       catch: (e) => new IOError('fail to prepare files for git diff', e),
     }),
@@ -683,7 +683,7 @@ const compareTextfile = (
             throw result.error;
           }
 
-          if (!platform.existsSync(diffFilename)) {
+          if (!fs.existsSync(diffFilename)) {
             throw new Error(result.output?.toString());
           }
 
@@ -699,9 +699,9 @@ const compareTextfile = (
 };
 
 const removeUnnecessaryLinesFromDiffFile = (diffFilename: string) => {
-  platform.writeFileSync(
+  fs.writeFileSync(
     diffFilename,
-    platform.readFileSync(diffFilename, 'utf8').split('\n').slice(4).join('\n'),
+    fs.readFileSync(diffFilename, 'utf8').split('\n').slice(4).join('\n'),
     { flag: 'w', flush: true },
   );
 };

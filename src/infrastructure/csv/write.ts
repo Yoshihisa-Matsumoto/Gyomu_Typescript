@@ -1,4 +1,4 @@
-import { platform } from '../fs/index.js';
+import { fs } from '../fs/index.js';
 import { CsvRow, CsvValue, CsvWriteOption } from './type.js';
 import { stringify } from 'csv';
 import { Options } from 'csv-stringify';
@@ -106,13 +106,13 @@ export const jsonToCsv = <T extends Record<string, any>>(
           return stream.pipe(Stream.runForEach(Console.log));
         case 'file':
           return Effect.gen(function* () {
-            const fs = yield* FileSystem;
-            yield* fs.makeDirectory(platform.dirname(output.path), {
+            const fileSystem = yield* FileSystem;
+            yield* fileSystem.makeDirectory(fs.dirname(output.path), {
               recursive: true,
             });
             yield* stream.pipe(
               encodeUtf8ToBinaryStream,
-              Stream.run(fs.sink(output.path)),
+              Stream.run(fileSystem.sink(output.path)),
             );
           });
       }
@@ -136,8 +136,7 @@ const convertOption = <R>(options?: CsvWriteOption<R>): Options => {
     quoted: options?.quoted ?? false,
     bom: options?.bom ?? false,
     record_delimiter:
-      options?.recordDelimiter ??
-      (platform.name == 'linux' ? 'unix' : 'windows'),
+      options?.recordDelimiter ?? (fs.name == 'linux' ? 'unix' : 'windows'),
   };
   if (options?.fields) {
     csvOptions.columns = options.fields.map((f) => ({

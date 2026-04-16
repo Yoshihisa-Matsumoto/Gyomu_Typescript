@@ -1,13 +1,13 @@
-import { platform } from '../fs/index.js';
+import { fs } from '../fs/index.js';
 import { expect } from 'vitest';
 
 export const tmpDir = () => {
-  return platform.tmpdir() + platform.sep;
+  return fs.tmpdir() + fs.sep;
 };
 
 export const compareFiles = (srcFile: string, destFile: string): boolean => {
-  const source: Buffer = platform.readFileSync(srcFile);
-  const destination: Buffer = platform.readFileSync(destFile);
+  const source: Buffer = fs.readFileSync(srcFile);
+  const destination: Buffer = fs.readFileSync(destFile);
   const result = source.equals(
     destination as any as Uint8Array<ArrayBufferLike>,
   );
@@ -18,11 +18,11 @@ export const compareFiles = (srcFile: string, destFile: string): boolean => {
 };
 
 export const validateTextFiles = (srcFile: string, destFile: string) => {
-  const srcData = platform
+  const srcData = fs
     .readFileSync(srcFile)
     .toString()
     .replace(/\r\n|\r/g, '\n');
-  const destData = platform
+  const destData = fs
     .readFileSync(destFile)
     .toString()
     .replace(/\r\n|\r/g, '\n');
@@ -38,21 +38,15 @@ const compareFoldersFromSource = (
   srcFolder: string,
   destFolder: string,
 ): boolean => {
-  platform.readdirSync(srcFolder, { withFileTypes: true }).forEach((dirent) => {
-    const sourceFullPath = platform.join(
-      platform.resolve(srcFolder),
-      dirent.name,
-    );
-    const targetDestFullPath = platform.join(
-      platform.resolve(destFolder),
-      dirent.name,
-    );
+  fs.readdirSync(srcFolder, { withFileTypes: true }).forEach((dirent) => {
+    const sourceFullPath = fs.join(fs.resolve(srcFolder), dirent.name);
+    const targetDestFullPath = fs.join(fs.resolve(destFolder), dirent.name);
     if (dirent.isFile()) {
-      expect(platform.existsSync(targetDestFullPath)).toBeTruthy();
+      expect(fs.existsSync(targetDestFullPath)).toBeTruthy();
       expect(compareFiles(sourceFullPath, targetDestFullPath)).toBeTruthy();
     } else {
       //console.log(targetDestFullPath);
-      expect(platform.existsSync(targetDestFullPath)).toBeTruthy();
+      expect(fs.existsSync(targetDestFullPath)).toBeTruthy();
       return compareFoldersFromSource(sourceFullPath, targetDestFullPath);
     }
   });
@@ -63,27 +57,16 @@ const compareFoldersFromDest = (
   srcFolder: string,
   destFolder: string,
 ): boolean => {
-  platform
-    .readdirSync(destFolder, { withFileTypes: true })
-    .forEach((dirent) => {
-      const destinationFullPath = platform.join(
-        platform.resolve(destFolder),
-        dirent.name,
-      );
-      const targetSourceFullPath = platform.join(
-        platform.resolve(srcFolder),
-        dirent.name,
-      );
-      if (dirent.isFile()) {
-        expect(platform.existsSync(targetSourceFullPath)).toBeTruthy();
-      } else {
-        expect(platform.existsSync(targetSourceFullPath)).toBeTruthy();
-        return compareFoldersFromDest(
-          targetSourceFullPath,
-          destinationFullPath,
-        );
-      }
-    });
+  fs.readdirSync(destFolder, { withFileTypes: true }).forEach((dirent) => {
+    const destinationFullPath = fs.join(fs.resolve(destFolder), dirent.name);
+    const targetSourceFullPath = fs.join(fs.resolve(srcFolder), dirent.name);
+    if (dirent.isFile()) {
+      expect(fs.existsSync(targetSourceFullPath)).toBeTruthy();
+    } else {
+      expect(fs.existsSync(targetSourceFullPath)).toBeTruthy();
+      return compareFoldersFromDest(targetSourceFullPath, destinationFullPath);
+    }
+  });
 
   return true;
 };

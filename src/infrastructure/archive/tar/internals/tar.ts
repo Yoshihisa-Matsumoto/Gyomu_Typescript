@@ -10,7 +10,7 @@ import { runSync } from 'effect/Effect';
 import { FileSystem } from 'effect/FileSystem';
 import { Path } from 'effect/Path';
 import { PlatformError } from 'effect/PlatformError';
-import { platform } from '../../../fs/index.js';
+import { fs } from '../../../fs/index.js';
 import { FileTransportInfo } from '../../../../gyomu/file/transport.js';
 import { ArchiveEntryItem } from '../../common.js';
 
@@ -286,7 +286,7 @@ export const extractTarSingleFile =
     self: Stream.Stream<Uint8Array<ArrayBufferLike>, E, R>,
   ): Effect.Effect<void, AppError | PlatformError | E, FileSystem | Path | R> =>
     Effect.gen(function* () {
-      const fs = yield* FileSystem;
+      const fileSystem = yield* FileSystem;
       const path = yield* Path;
 
       const entry = yield* self.pipe(
@@ -300,18 +300,20 @@ export const extractTarSingleFile =
         );
       }
       // 相対パスの計算 (stripPath 分を削る)
-      const fileName = platform.basename(sourceEntryFullName);
+      const fileName = fs.basename(sourceEntryFullName);
 
       const fullPath = path.join(destinationFolderName, fileName);
 
       // ファイルの場合は親ディレクトリを作ってから書き込み
-      yield* fs.makeDirectory(path.dirname(fullPath), {
+      yield* fileSystem.makeDirectory(path.dirname(fullPath), {
         recursive: true,
       });
       yield* Effect.logDebug(`Untar ${fullPath}`);
       // entry.stream (Stream) をファイルに流し込む
       // sinkUnique などを使って効率的に書き込む
-      return yield* entry.openStream().pipe(Stream.run(fs.sink(fullPath)));
+      return yield* entry
+        .openStream()
+        .pipe(Stream.run(fileSystem.sink(fullPath)));
     });
 
 export const extractTar =

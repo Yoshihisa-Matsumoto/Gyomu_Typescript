@@ -7,7 +7,7 @@ import { Effect, pipe, Stream } from 'effect';
 import { fromReadable } from '../../stream/bridge/nodeStream.js';
 import { fromPromise } from '../../../shared/effect/core.js';
 import { NodeStream } from '@effect/platform-node';
-import { platform } from '../../fs/index.js';
+import { fs } from '../../fs/index.js';
 
 // ftpClient.ts
 
@@ -99,13 +99,13 @@ export const download =
       ? () =>
           client.downloadToDir(
             transportInformation.destinationPath,
-            transportInformation.sourceFolderName.replace(platform.sep, '/'),
+            transportInformation.sourceFolderName.replace(fs.sep, '/'),
           )
       : () =>
           client
             .downloadTo(
               transportInformation.destinationFullName,
-              transportInformation.sourceFullName.replace(platform.sep, '/'),
+              transportInformation.sourceFullName.replace(fs.sep, '/'),
             )
             .then(() => undefined);
 
@@ -124,16 +124,13 @@ export const upload =
           client
             .uploadFrom(
               transportInformation.sourceFullName,
-              transportInformation.destinationFullName.replace(
-                platform.sep,
-                '/',
-              ),
+              transportInformation.destinationFullName.replace(fs.sep, '/'),
             )
             .then(() => undefined)
       : () =>
           client.uploadFromDir(
             transportInformation.sourceFullName,
-            transportInformation.destinationFullName.replace(platform.sep, '/'),
+            transportInformation.destinationFullName.replace(fs.sep, '/'),
           );
 
     return pipe(

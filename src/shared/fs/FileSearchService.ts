@@ -3,7 +3,7 @@ import { FileFilterInfo } from '../../gyomu/file/filter.js';
 import { FileCompareType, FilterType } from '../../gyomu/file/type.js';
 import { FileInfo } from '../../infrastructure/fs/fileInfo.js';
 import { compareAsc } from 'date-fns';
-import { platform } from '../../infrastructure/fs/index.js';
+import { fs } from '../../infrastructure/fs/index.js';
 import { IOError } from '../../errors.js';
 import { fromSync } from '../effect/core.js';
 
@@ -13,22 +13,19 @@ const searchFunc = (
   isRecursive: boolean = false,
 ): Effect.Effect<FileInfo[], IOError> =>
   Effect.gen(function* () {
-    if (!platform.existsSync(parentDirectory)) {
+    if (!fs.existsSync(parentDirectory)) {
       return [];
     }
 
     const dirents = yield* fromSync(
       IOError,
       `Fail to read dir ${parentDirectory}`,
-    )(() => platform.readdirSync(parentDirectory, { withFileTypes: true }));
+    )(() => fs.readdirSync(parentDirectory, { withFileTypes: true }));
 
     const results: FileInfo[] = [];
 
     for (const dirent of dirents) {
-      const fullPath = platform.join(
-        platform.resolve(parentDirectory),
-        dirent.name,
-      );
+      const fullPath = fs.join(fs.resolve(parentDirectory), dirent.name);
 
       if (dirent.isFile()) {
         const [ok, fileInfo] = isFileValid(fullPath, filterConditions);

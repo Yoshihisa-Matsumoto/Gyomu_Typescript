@@ -1,6 +1,6 @@
 import { Effect, Layer, ServiceMap } from 'effect';
 import { AccessError, TimeoutError } from '../../errors.js';
-import { platform } from '../../infrastructure/fs/index.js';
+import { fs } from '../../infrastructure/fs/index.js';
 import { fromPromise } from '../effect/core.js';
 import { isEqual } from 'date-fns';
 import { polling } from '../effect/timer.js';
@@ -9,12 +9,12 @@ const canAccessFunc = (
   fileName: string,
   readOnly?: boolean,
 ): Effect.Effect<boolean, AccessError> => {
-  if (!platform.existsSync(fileName))
+  if (!fs.existsSync(fileName))
     return Effect.fail(new AccessError(`File Not exist: ${fileName}`));
   const specialExtension = ['xls', 'xlsm', 'xlsx', 'zip'];
-  const stat = platform.statSync(fileName);
+  const stat = fs.statSync(fileName);
 
-  if (specialExtension.includes(platform.extname(fileName)) && stat.size === 0)
+  if (specialExtension.includes(fs.extname(fileName)) && stat.size === 0)
     return Effect.fail(new AccessError(`File is invalid: ${fileName}`));
   if (readOnly) return Effect.succeed(true);
 
@@ -24,7 +24,7 @@ const canAccessFunc = (
   )(async () => {
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    const stat2 = platform.statSync(fileName);
+    const stat2 = fs.statSync(fileName);
     if (
       !isEqual(stat.ctime, stat2.ctime) ||
       !isEqual(stat.mtime, stat2.mtime)

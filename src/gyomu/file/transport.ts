@@ -1,5 +1,5 @@
 import { ValueError } from '../../errors.js';
-import { platform } from '../../infrastructure/fs/index.js';
+import { fs } from '../../infrastructure/fs/index.js';
 import { FileFilterInfo } from './filter.js';
 
 export class FileTransportInfo {
@@ -84,12 +84,12 @@ export class FileTransportInfo {
   get sourceFullName(): string {
     if (!this.sourceFolderName) return this.sourceFileName;
     if (!this.sourceFileName) return this.sourceFolderName;
-    return platform.join(this.sourceFolderName, this.sourceFileName);
+    return fs.join(this.sourceFolderName, this.sourceFileName);
   }
 
   get sourceFullNameWithBasePath(): string {
     if (!this.sourceFullName) return this.basePath;
-    if (this.basePath) return platform.join(this.basePath, this.sourceFullName);
+    if (this.basePath) return fs.join(this.basePath, this.sourceFullName);
     return this.sourceFullName;
   }
 
@@ -106,6 +106,6 @@ export class FileTransportInfo {
   get destinationFullName(): string {
     if (!this.destinationPath) return this.destinationFileName;
     if (!this.destinationFileName) return this.destinationPath;
-    return platform.join(this.destinationPath, this.destinationFileName);
+    return fs.join(this.destinationPath, this.destinationFileName);
   }
 }

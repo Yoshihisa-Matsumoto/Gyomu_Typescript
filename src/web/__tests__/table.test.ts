@@ -1,4 +1,4 @@
-import { platform } from '../../infrastructure/fs/index.js';
+import { fs } from '../../infrastructure/fs/index.js';
 import { Page } from '../page.js';
 import { convertGenericElementByTagName } from '../util.js';
 import { expect, test } from 'vitest';
@@ -6,9 +6,7 @@ import { expect, test } from 'vitest';
 test('Table initialization', () => {
   const page = new Page({
     kind: 'html',
-    htmlText: platform
-      .readFileSync(platform.join('tests', 'test.html'))
-      .toString(),
+    htmlText: fs.readFileSync(fs.join('tests', 'test.html')).toString(),
   });
   const tablesDiv = page.getElementsByClassName<HTMLDivElement>(
     'component-normal-table',

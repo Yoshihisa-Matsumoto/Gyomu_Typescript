@@ -1,4 +1,4 @@
-import { platform } from './index.js';
+import { fs } from './index.js';
 
 export class FileInfo {
   readonly fileName: string;
@@ -14,20 +14,20 @@ export class FileInfo {
 
   constructor(filePath: string) {
     //console.log('FileInfo', filePath);
-    const stats = platform.statSync(filePath);
+    const stats = fs.statSync(filePath);
     this.isFile = stats.isFile();
     if (this.isFile) {
-      this.fileName = platform.basename(filePath);
-      this.fullPath = platform.resolve(filePath);
-      this.directoryName = platform.basename(platform.dirname(filePath));
-      this.directoryPath = platform.dirname(platform.resolve(filePath));
-      this.extension = platform.extname(filePath);
+      this.fileName = fs.basename(filePath);
+      this.fullPath = fs.resolve(filePath);
+      this.directoryName = fs.basename(fs.dirname(filePath));
+      this.directoryPath = fs.dirname(fs.resolve(filePath));
+      this.extension = fs.extname(filePath);
     } else {
       this.fileName = '';
       this.extension = '';
-      this.fullPath = platform.resolve(filePath);
-      this.directoryName = platform.basename(platform.dirname(filePath));
-      this.directoryPath = platform.dirname(platform.resolve(filePath));
+      this.fullPath = fs.resolve(filePath);
+      this.directoryName = fs.basename(fs.dirname(filePath));
+      this.directoryPath = fs.dirname(fs.resolve(filePath));
     }
     this.size = stats.size;
     this.createTime = stats.birthtime;

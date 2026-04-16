@@ -16,7 +16,7 @@ import {
   upload,
   uploadFromStream,
 } from './internals/sftpClient.js';
-import { platform } from '../fs/index.js';
+import { fs } from '../fs/index.js';
 import { connectEffect } from './internals/sftpClient.js';
 
 //type FtpConfig = Config.Success<typeof ftpConfigRaw>;
@@ -94,7 +94,7 @@ export class SftpService extends ServiceMap.Service<
                   username: config.user,
                   password: unwrapPassword(config.password),
                   privateKey: privateKeyFilename
-                    ? platform.readFileSync(privateKeyFilename, 'utf-8')
+                    ? fs.readFileSync(privateKeyFilename, 'utf-8')
                     : undefined,
                 });
 

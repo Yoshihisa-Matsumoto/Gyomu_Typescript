@@ -1,5 +1,5 @@
 import { beforeAll, expect, test } from 'vitest';
-import { platform } from '../fs/index.js';
+import { fs } from '../fs/index.js';
 import { gunzip, gzip } from '../archive/gz.js';
 import { fileStream, writeToFile } from '../../infrastructure/fs/fs-utils.js';
 import { compareFiles } from './baseClass.js';
@@ -13,22 +13,22 @@ const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
 let compressDirectory: string;
 let extractDirectory: string;
 beforeAll(() => {
-  const tmpPath = platform.tmpdir();
-  const sourceDirectory = platform.resolve('./tests');
-  const destinationDirectory = platform.join(tmpPath, 'compressGz');
+  const tmpPath = fs.tmpdir();
+  const sourceDirectory = fs.resolve('./tests');
+  const destinationDirectory = fs.join(tmpPath, 'compressGz');
 
-  platform.emptyDirSync(destinationDirectory);
-  platform.copySync(sourceDirectory, destinationDirectory);
+  fs.emptyDirSync(destinationDirectory);
+  fs.copySync(sourceDirectory, destinationDirectory);
   compressDirectory = destinationDirectory;
-  extractDirectory = platform.join(destinationDirectory, 'extract');
-  platform.emptyDirSync(extractDirectory);
+  extractDirectory = fs.join(destinationDirectory, 'extract');
+  fs.emptyDirSync(extractDirectory);
 });
 
 test('GZ Creation Test', async () => {
   //const extractDirectory = platform.join(compressDirectory,'extracted');
-  const sourceDirectory = platform.join(compressDirectory, 'source');
-  const gzFilename = platform.join(compressDirectory, 'test_gz_create.gz');
-  const targetSourceFilename = platform.join(sourceDirectory, 'README.md');
+  const sourceDirectory = fs.join(compressDirectory, 'source');
+  const gzFilename = fs.join(compressDirectory, 'test_gz_create.gz');
+  const targetSourceFilename = fs.join(sourceDirectory, 'README.md');
 
   await runNodeWithEnvOrThrow(
     fileStream(targetSourceFilename).pipe(gzip(), writeToFile(gzFilename)),
@@ -44,14 +44,14 @@ test('GZ Creation Test', async () => {
 
   // const checkFilename = platform.join(sourceDirectory, 'README.md');
   // //const [sourceBuffer,destinationBuffer] = getBufferG
-  const extractedFilename = platform.join(extractDirectory, 'README.md');
+  const extractedFilename = fs.join(extractDirectory, 'README.md');
   await runNodeWithEnvOrThrow(
     fileStream(gzFilename).pipe(gunzip(), writeToFile(extractedFilename)),
   );
 
   isSame = compareFiles(
     extractedFilename,
-    platform.join(sourceDirectory, 'README.md'),
+    fs.join(sourceDirectory, 'README.md'),
   );
   expect(isSame).toBeTruthy();
 });
