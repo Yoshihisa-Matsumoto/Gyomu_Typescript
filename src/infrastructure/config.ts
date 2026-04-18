@@ -1,8 +1,8 @@
 import { Config, ConfigProvider, Effect, Layer, ServiceMap } from 'effect';
 import { ConfigError } from 'effect/Config';
 import { IOError } from '../errors.js';
-import { platform } from '../platform/index.js';
-import { fromSync } from '../shared/effect.ts/core.js';
+import { fs } from './fs/index.js';
+import { fromSync } from '../shared/effect/core.js';
 // const makeConfigProvider = Effect.gen(function* () {
 //   const dotEnv = yield* ConfigProvider.fromDotEnv();
 //   return ConfigProvider.orElse(dotEnv, ConfigProvider.fromEnv());
@@ -36,7 +36,7 @@ export class ConfigService extends ServiceMap.Service<
           IOError,
           `Failed to read config from ${path}`,
         )(() => {
-          const content = platform.readFileSync(path, 'utf-8');
+          const content = fs.readFileSync(path, 'utf-8');
           return JSON.parse(content);
         });
         return ConfigProvider.fromUnknown(json);

@@ -7,6 +7,7 @@ import { KyselyService } from '../../infrastructure/db/kysely-service.js';
 import { NodeFileSystem } from '@effect/platform-node';
 import { makeRunner } from '../../infrastructure/runtime.js';
 import { MssqlService } from '../../infrastructure/db/mssql.js';
+import { LocalDate, YearMonth } from '../../schemas/date.js';
 
 const TestLayer = Layer.mergeAll(MainLayer, ConfigLayer, GyomuRepository.live)
   .pipe(Layer.provideMerge(KyselyService.live))
@@ -85,5 +86,331 @@ describe('statusHandler Repository (Integration)', () => {
     const result = await testRunner(program, TestLayer);
 
     expect(result).toBe(true);
+  });
+});
+
+describe('milestoneDaily Repository (Integration)', () => {
+  const milestoneId = 'TEST-MILESTONE';
+  //const otherMilestoneId = 'OTHER-MILESTONE';
+
+  const dailyDate = '2024-01-01' as LocalDate;
+  const otherDailyDate = '2024-01-02' as LocalDate;
+
+  const monthlyYm = '2024-01' as YearMonth;
+  const otherMonthlyYm = '2024-02' as YearMonth;
+  const testOwner = 'test-user';
+  beforeEach(async () => {
+    const program = Effect.gen(function* () {
+      const repo = yield* GyomuRepository;
+      const m = repo.milestoneDaily;
+
+      let all = yield* m.findByTargetDate(dailyDate);
+      if (all.length > 0) {
+        yield* m.deleteRecords(all.map((r) => r.id));
+      }
+      all = yield* m.findByTargetDate(otherDailyDate);
+      if (all.length > 0) {
+        yield* m.deleteRecords(all.map((r) => r.id));
+      }
+    });
+
+    await testRunner(program, TestLayer);
+  });
+
+  // -----------------------------
+  // ① findByMilestoneIdAndTargetDate
+  // -----------------------------
+
+  it('should return only daily when isMonthly=false', async () => {
+    const program = Effect.gen(function* () {
+      const repo = yield* GyomuRepository;
+      const m = repo.milestoneDaily;
+
+      yield* m.create(
+        [
+          {
+            milestoneId,
+            targetType: 'daily',
+            targetDate: LocalDate.make(dailyDate),
+            targetYm: monthlyYm,
+          },
+          {
+            milestoneId,
+            targetType: 'monthly',
+            targetDate: LocalDate.make(dailyDate),
+            targetYm: monthlyYm,
+          },
+        ],
+        testOwner,
+      );
+
+      const result = yield* m.findByMilestoneIdAndTargetDate(
+        milestoneId,
+        dailyDate as LocalDate,
+        false,
+      );
+
+      expect(result.length).toBe(1);
+      expect(result[0].targetType).toBe('daily');
+    });
+
+    await testRunner(program, TestLayer);
+  });
+
+  it('should return only monthly when isMonthly=true', async () => {
+    const program = Effect.gen(function* () {
+      const repo = yield* GyomuRepository;
+      const m = repo.milestoneDaily;
+
+      yield* m.create(
+        [
+          {
+            milestoneId,
+            targetType: 'daily',
+            targetDate: LocalDate.make(dailyDate),
+            targetYm: monthlyYm,
+          },
+          {
+            milestoneId,
+            targetType: 'monthly',
+            targetDate: LocalDate.make(otherDailyDate),
+            targetYm: monthlyYm,
+          },
+        ],
+        testOwner,
+      );
+
+      const result = yield* m.findByMilestoneIdAndTargetDate(
+        milestoneId,
+        dailyDate as LocalDate,
+        true,
+      );
+
+      expect(result.length).toBe(1);
+      expect(result[0].targetType).toBe('monthly');
+    });
+
+    await testRunner(program, TestLayer);
+  });
+
+  // -----------------------------
+  // ② findByTargetDateAndMonthlyDate
+  // -----------------------------
+
+  it('should return only daily match', async () => {
+    const program = Effect.gen(function* () {
+      const repo = yield* GyomuRepository;
+      const m = repo.milestoneDaily;
+
+      yield* m.create(
+        [
+          {
+            milestoneId,
+            targetType: 'daily',
+            targetDate: LocalDate.make(dailyDate),
+            targetYm: monthlyYm,
+          },
+          {
+            milestoneId,
+            targetType: 'monthly',
+            targetYm: otherMonthlyYm,
+            targetDate: LocalDate.make(otherDailyDate),
+          },
+        ],
+        testOwner,
+      );
+
+      const result = yield* m.findByTargetDateAndMonthlyDate(
+        dailyDate as LocalDate,
+        monthlyYm as YearMonth,
+      );
+
+      expect(result.length).toBe(1);
+      expect(result[0].targetType).toBe('daily');
+    });
+
+    await testRunner(program, TestLayer);
+  });
+
+  it('should return only monthly match', async () => {
+    const program = Effect.gen(function* () {
+      const repo = yield* GyomuRepository;
+      const m = repo.milestoneDaily;
+
+      yield* m.create(
+        [
+          {
+            milestoneId,
+            targetType: 'daily',
+            targetDate: LocalDate.make(otherDailyDate),
+            targetYm: monthlyYm,
+          },
+          {
+            milestoneId,
+            targetType: 'monthly',
+            targetYm: monthlyYm,
+            targetDate: LocalDate.make(dailyDate),
+          },
+        ],
+        testOwner,
+      );
+
+      const result = yield* m.findByTargetDateAndMonthlyDate(
+        dailyDate,
+        monthlyYm,
+      );
+
+      expect(result.length).toBe(1);
+      expect(result[0].targetType).toBe('monthly');
+    });
+
+    await testRunner(program, TestLayer);
+  });
+
+  it('should return both daily and monthly', async () => {
+    const program = Effect.gen(function* () {
+      const repo = yield* GyomuRepository;
+      const m = repo.milestoneDaily;
+
+      yield* m.create(
+        [
+          {
+            milestoneId,
+            targetType: 'daily',
+            targetDate: LocalDate.make(dailyDate),
+            targetYm: monthlyYm,
+          },
+          {
+            milestoneId,
+            targetType: 'monthly',
+            targetYm: monthlyYm,
+            targetDate: LocalDate.make(otherDailyDate),
+          },
+        ],
+        testOwner,
+      );
+
+      const result = yield* m.findByTargetDateAndMonthlyDate(
+        dailyDate,
+        monthlyYm,
+      );
+
+      expect(result.length).toBe(2);
+    });
+
+    await testRunner(program, TestLayer);
+  });
+
+  it('should return empty when no match', async () => {
+    const program = Effect.gen(function* () {
+      const repo = yield* GyomuRepository;
+      const m = repo.milestoneDaily;
+
+      const result = yield* m.findByTargetDateAndMonthlyDate(
+        dailyDate,
+        monthlyYm,
+      );
+
+      expect(result.length).toBe(0);
+    });
+
+    await testRunner(program, TestLayer);
+  });
+
+  // -----------------------------
+  // ③ deleteByMilestoneIdAndTargetDate
+  // -----------------------------
+
+  it('should delete only daily', async () => {
+    const program = Effect.gen(function* () {
+      const repo = yield* GyomuRepository;
+      const m = repo.milestoneDaily;
+
+      yield* m.create(
+        [
+          {
+            milestoneId,
+            targetType: 'daily',
+            targetDate: LocalDate.make(dailyDate),
+            targetYm: monthlyYm,
+          },
+          {
+            milestoneId,
+            targetType: 'monthly',
+            targetYm: monthlyYm,
+            targetDate: LocalDate.make(otherDailyDate),
+          },
+        ],
+        testOwner,
+      );
+
+      yield* m.deleteByMilestoneIdAndTargetDate(milestoneId, dailyDate, false);
+
+      const remain = yield* m.findByMilestoneIdAndTargetDate(
+        milestoneId,
+        dailyDate,
+        true,
+      );
+
+      expect(remain.length).toBe(1);
+      expect(remain[0].targetType).toBe('monthly');
+    });
+
+    await testRunner(program, TestLayer);
+  });
+
+  it('should delete only monthly', async () => {
+    const program = Effect.gen(function* () {
+      const repo = yield* GyomuRepository;
+      const m = repo.milestoneDaily;
+
+      yield* m.create(
+        [
+          {
+            milestoneId,
+            targetType: 'daily',
+            targetDate: LocalDate.make(dailyDate),
+            targetYm: monthlyYm,
+          },
+          {
+            milestoneId,
+            targetType: 'monthly',
+            targetYm: monthlyYm,
+            targetDate: LocalDate.make(otherDailyDate),
+          },
+        ],
+        testOwner,
+      );
+
+      yield* m.deleteByMilestoneIdAndTargetDate(milestoneId, dailyDate, true);
+
+      const remain = yield* m.findByMilestoneIdAndTargetDate(
+        milestoneId,
+        dailyDate,
+        false,
+      );
+
+      expect(remain.length).toBe(1);
+      expect(remain[0].targetType).toBe('daily');
+    });
+
+    await testRunner(program, TestLayer);
+  });
+
+  it('should return 0 when deleting non-existing', async () => {
+    const program = Effect.gen(function* () {
+      const repo = yield* GyomuRepository;
+      const m = repo.milestoneDaily;
+
+      const result = yield* m.deleteByMilestoneIdAndTargetDate(
+        'NOT_EXIST',
+        dailyDate,
+        false,
+      );
+
+      expect(Number(result)).toBe(0);
+    });
+
+    await testRunner(program, TestLayer);
   });
 });

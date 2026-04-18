@@ -3,10 +3,31 @@ import { Transform } from 'node:stream';
 import { Stream, Effect } from 'effect';
 import {
   acquireNodeStream,
+  fromReadable,
+  fromReadableControlled,
   throughNodeStream,
   throughNodeStreamScoped,
-} from '../stream/nodeStream.js';
+} from '../stream/bridge/nodeStream.js';
+import { Readable } from 'node:stream';
+import { IOError } from '../../errors.js';
+const createReadable = (chunks: string[]) => {
+  return Readable.from(chunks.map((c) => Buffer.from(c)));
+};
+const createControlledReadable = (chunks: string[]) => {
+  let index = 0;
 
+  return new Readable({
+    read() {
+      if (index < chunks.length) {
+        this.push(Buffer.from(chunks[index++]));
+      } else {
+        this.push(null); // end
+      }
+    },
+  });
+};
+const collectStream = async <T>(stream: Stream.Stream<T, IOError>) =>
+  await Effect.runPromise(Stream.runCollect(stream));
 describe('nodeStream', () => {
   describe('acquireNodeStream', () => {
     it('should acquire and release a node stream', async () => {
@@ -226,5 +247,52 @@ describe('nodeStream', () => {
 
       expect(destroySpy).toHaveBeenCalled();
     });
+  });
+});
+describe('fromReadable', () => {
+  it('ReadableをStreamに変換できる', async () => {
+    const readable = createReadable(['a', 'b', 'c']);
+
+    const stream = fromReadable(readable);
+
+    const result = await collectStream(stream);
+
+    expect(result.map((b) => b.toString())).toEqual(['a', 'b', 'c']);
+  });
+});
+
+describe('fromReadableControlled', () => {
+  it('データを読み取って終了する', async () => {
+    const readable = createControlledReadable(['hello', 'world']);
+
+    const stream = fromReadableControlled(readable);
+
+    const result = await collectStream(stream);
+
+    expect(Buffer.concat(result).toString()).toBe('helloworld');
+  });
+  it('errorイベントでfailする', async () => {
+    const readable = new Readable({
+      read() {},
+    });
+
+    const stream = fromReadableControlled(readable);
+
+    const promise = Effect.runPromise(Stream.runCollect(stream));
+    await Promise.resolve();
+    setTimeout(() => {
+      readable.emit('error', new Error('test error'));
+    }, 0);
+
+    await expect(promise).rejects.toBeDefined();
+  });
+  it('空でも正常終了する', async () => {
+    const readable = createControlledReadable([]);
+
+    const stream = fromReadableControlled(readable);
+
+    const result = await collectStream(stream);
+
+    expect(result.length).toBe(0);
   });
 });

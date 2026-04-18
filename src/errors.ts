@@ -7,9 +7,11 @@ export function unknownError<E extends AppError>(
 ): E {
   if (error instanceof ErrorType) return error;
   if (error instanceof AppError) return error as E;
-  const useMessage =
-    message ??
-    (error instanceof Error ? error.message : 'Unknown error occurred');
+  const useMessage = message
+    ? `${message} cause: ${error instanceof Error ? error.message : 'Unknown error occurred'}`
+    : error instanceof Error
+      ? error.message
+      : 'Unknown error occurred';
 
   return new ErrorType(useMessage, { cause: error });
 }

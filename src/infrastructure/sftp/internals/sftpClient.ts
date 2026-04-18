@@ -2,10 +2,10 @@ import { Client, ConnectConfig, FileEntryWithStats, SFTPWrapper } from 'ssh2';
 import { IOError, NetworkError, unknownError } from '../../../errors.js';
 import { Effect, Stream } from 'effect';
 import { AppError } from '../../../base-error.js';
-import { fromPromise, fromSync } from '../../../shared/effect.ts/core.js';
-import { platform } from '../../../platform/index.js';
-import { FileTransportInfo } from '../../../fileModel.js';
-import { fromReadable } from '../../stream/nodeStream.js';
+import { fromPromise, fromSync } from '../../../shared/effect/core.js';
+import { fs } from '../../fs/index.js';
+import { FileTransportInfo } from '../../../gyomu/file/transport.js';
+import { fromReadable } from '../../stream/bridge/nodeStream.js';
 import { Readable, Writable } from 'node:stream';
 import { NodeStream } from '@effect/platform-node';
 
@@ -165,7 +165,7 @@ const downloadDir =
       yield* fromSync(
         IOError,
         'Failed to create local directory',
-      )(() => platform.mkdirSync(localDir, { recursive: true }));
+      )(() => fs.mkdirSync(localDir, { recursive: true }));
 
       const list = yield* listInternal(sftp, remoteDir);
 
@@ -193,7 +193,7 @@ export const download =
       Effect.gen(function* () {
         if (transportInformation.isSourceDirectory) {
           const remoteDir = transportInformation.sourceFolderName.replace(
-            platform.sep,
+            fs.sep,
             '/',
           );
 
@@ -203,7 +203,7 @@ export const download =
           );
         } else {
           const remoteFile = transportInformation.sourceFullName.replace(
-            platform.sep,
+            fs.sep,
             '/',
           );
 
@@ -335,7 +335,7 @@ const uploadDir =
       const entries = yield* fromPromise(
         NetworkError,
         'Failed to read local directory',
-      )(() => platform.readdir(localDir, { withFileTypes: true }));
+      )(() => fs.readdir(localDir, { withFileTypes: true }));
 
       yield* Effect.forEach(entries, (entry) => {
         const localPath = `${localDir}/${entry.name}`;
@@ -357,7 +357,7 @@ export const upload =
     withSftp(client)((sftp) =>
       Effect.gen(function* () {
         const remoteBase = transportInformation.destinationFullName.replace(
-          platform.sep,
+          fs.sep,
           '/',
         );
 

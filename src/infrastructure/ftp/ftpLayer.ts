@@ -3,10 +3,10 @@ import { Client } from 'basic-ftp';
 import { ConfigError, withDefault } from 'effect/Config';
 import { NetworkError } from '../../errors.js';
 import { ConfigProviderLive, ConfigService } from '../config.js';
-import { fromPromise } from '../../shared/effect.ts/core.js';
+import { fromPromise } from '../../shared/effect/core.js';
 import { AppError } from '../../base-error.js';
 import { Scope } from 'effect/Scope';
-import { FileTransportInfo } from '../../fileModel.js';
+import { FileTransportInfo } from '../../gyomu/file/transport.js';
 import { Stream } from 'effect/Stream';
 import {
   download,

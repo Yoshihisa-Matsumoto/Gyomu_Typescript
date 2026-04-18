@@ -8,7 +8,6 @@ import {
   customSQLAndReturnRecords,
   makeRepositoryFromDb,
   makeCustomUpdate,
-  toSqlDate,
 } from '../infrastructure/db/common.js';
 import {
   appInfoDefinition,
@@ -34,7 +33,7 @@ import {
 } from '../schemas/gyomu.js';
 import { KyselyService } from '../infrastructure/db/kysely-service.js';
 import { DB } from '../db/db.js';
-import { fromPromise } from '../shared/effect.ts/core.js';
+import { fromPromise } from '../shared/effect/core.js';
 import { DBError } from '../errors.js';
 import { LocalDate, YearMonth } from '../schemas/date.js';
 
@@ -235,7 +234,8 @@ export class GyomuRepository extends ServiceMap.Service<
                     .selectFrom(table)
                     .selectAll()
                     .where('milestone_id', '=', milestoneId)
-                    .where('target_date', '=', toSqlDate(targetDate))
+                    .where('target_type', '=', 'daily')
+                    .where('target_date', '=', targetDate)
                     .execute(),
                 );
               }
@@ -258,7 +258,7 @@ export class GyomuRepository extends ServiceMap.Service<
                     eb.or([
                       eb.and([
                         eb('target_type', '=', 'daily'),
-                        eb('target_date', '=', toSqlDate(targetYmd)),
+                        eb('target_date', '=', targetYmd),
                       ]),
                       eb.and([
                         eb('target_type', '=', 'monthly'),
@@ -273,39 +273,39 @@ export class GyomuRepository extends ServiceMap.Service<
               milestoneId: string,
               targetDate: LocalDate,
               isMonthly: boolean,
-            ) =>
-              fromPromise(
-                DBError,
-                `fail to delete ${table} by milestone_id and target_date`,
-              )(async () => {
-                if (!isMonthly) {
-                  return makeCustomDelete(
-                    db,
-                    table,
-                    schemas,
-                  )((ctx) =>
+            ) => {
+              if (!isMonthly) {
+                return makeCustomDelete(
+                  db,
+                  table,
+                  schemas,
+                )(
+                  (ctx) =>
                     ctx.db
                       .deleteFrom(table)
                       .where('milestone_id', '=', milestoneId)
                       .where('target_type', '=', 'daily')
-                      .where('target_date', '=', toSqlDate(targetDate))
+                      .where('target_date', '=', targetDate)
                       .execute(),
-                  );
-                } else {
-                  return makeCustomDelete(
-                    db,
-                    table,
-                    schemas,
-                  )((ctx) =>
+                  `fail to delete ${table} by milestone_id and target_date for daily`,
+                );
+              } else {
+                return makeCustomDelete(
+                  db,
+                  table,
+                  schemas,
+                )(
+                  (ctx) =>
                     ctx.db
                       .deleteFrom(table)
                       .where('milestone_id', '=', milestoneId)
                       .where('target_type', '=', 'monthly')
                       .where('target_ym', '=', targetDate.slice(0, 7))
                       .execute(),
-                  );
-                }
-              }),
+                  `fail to delete ${table} by milestone_id and target_date for monthly`,
+                );
+              }
+            },
           };
         },
       ),

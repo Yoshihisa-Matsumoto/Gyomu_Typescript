@@ -8,12 +8,12 @@ import {
   DeleteResult,
   UpdateResult,
 } from 'kysely';
-import { fromPromise } from '../../shared/effect.ts/core.js';
+import { fromPromise } from '../../shared/effect/core.js';
 import {
   convertToSchemaObjectWithEffect,
   convertFromSchemaObjectWithEffect,
 } from '../../schemas/common.js';
-import { generateUuid7 } from '../../guid.js';
+import { generateUuid7 } from '../../shared/guid.js';
 import { LocalDate } from '../../schemas/date.js';
 export type TablesWithId = {
   [K in keyof DB]: DB[K] extends { id: any } ? K : never;
@@ -369,8 +369,9 @@ export const makeCustomDelete =
         DBError,
         message ?? `fail custom delete on ${table}`,
       )(async () => await f({ db, table, schemas: schema }));
+      if (!result || result.length == 0) return 0n;
       return result
-        .map((r) => r.numDeletedRows)
+        .map((r) => r.numDeletedRows ?? 0n)
         .reduce((prev, current) => prev + current, BigInt(0));
     });
 

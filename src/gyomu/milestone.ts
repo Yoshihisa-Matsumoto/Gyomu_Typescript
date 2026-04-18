@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { polling } from '../timer.js';
+import { polling } from '../shared/effect/timer.js';
 import { Effect, Layer, Schema, ServiceMap } from 'effect';
 import { GyomuRepository } from './gyomuRepository.js';
 import {
@@ -124,7 +124,7 @@ export class MilestoneService extends ServiceMap.Service<
             {
               milestoneId,
               targetType: isMonthly ? 'monthly' : 'daily',
-              targetDate: targetYmd,
+              targetDate: LocalDate.make(targetYmd),
               targetYm: targetYmd.substring(0, 7),
             },
           ]);
