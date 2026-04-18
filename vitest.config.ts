@@ -8,7 +8,6 @@ export default defineConfig({
     include: ['src/**/__tests__/**/*.test.{ts,tsx,js}'],
     environment: 'node',
     globals: true,
-    setupFiles: ['src/__tests__/baseDBClass.ts'],
     clearMocks: true,
     // onConsoleLog() {
     //   return true;
@@ -18,10 +17,5 @@ export default defineConfig({
     disableConsoleIntercept: true,
     pool: 'forks',
     fileParallelism: false,
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'html'],
-      reportsDirectory: './coverage/unit',
-    },
   },
 });

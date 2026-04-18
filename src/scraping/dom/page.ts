@@ -108,9 +108,11 @@ export class Page {
     }
     if (!fileName) {
       const titleElements = this.#xdoc.getElementsByTagName('title');
+
       if (titleElements.length > 0) {
+        console.log(titleElements.item(0));
         const titleElement = titleElements.item(0) as HTMLTitleElement;
-        fileName = titleElement.innerText;
+        fileName = titleElement.textContent ?? '';
       }
     }
     return fileName;

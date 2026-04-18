@@ -10,8 +10,10 @@ export class DOMElement {
 
   get childElements(): Array<DOMElement> {
     const children = new Array<DOMElement>();
+    const win = this.__node.ownerDocument.defaultView;
+
     for (const child of Array.from(this.__node.childNodes)) {
-      if (child instanceof HTMLElement) {
+      if (win && child instanceof win.HTMLElement) {
         const childElement = new DOMElement(child);
         children.push(childElement);
       }

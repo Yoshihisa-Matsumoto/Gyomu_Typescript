@@ -1,4 +1,4 @@
-import { GenericElement } from './element.js';
+import { GenericElement } from '../dom/element.js';
 
 export type TableColumnOption = {
   isOriginal: boolean;

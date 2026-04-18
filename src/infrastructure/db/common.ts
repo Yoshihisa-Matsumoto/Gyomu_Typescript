@@ -369,8 +369,9 @@ export const makeCustomDelete =
         DBError,
         message ?? `fail custom delete on ${table}`,
       )(async () => await f({ db, table, schemas: schema }));
+      if (!result || result.length == 0) return 0n;
       return result
-        .map((r) => r.numDeletedRows)
+        .map((r) => r.numDeletedRows ?? 0n)
         .reduce((prev, current) => prev + current, BigInt(0));
     });
 

@@ -26,6 +26,9 @@ export const TargetDateSchema = Schema.TaggedUnion({
 export type LocalDate = string & Schema.Schema<typeof LocalDateSchema>;
 export type YearMonth = string & Schema.Schema<typeof YearMonthSchema>;
 export type TargetDate = Schema.Schema<typeof TargetDateSchema>;
+export const LocalDate = {
+  make: (s: string) => Schema.decodeSync(LocalDateSchema)(s),
+};
 
 export const LocalDate2Date = (localDate: LocalDate): Date => {
   const [y, m, d] = localDate.split('-').map(Number);

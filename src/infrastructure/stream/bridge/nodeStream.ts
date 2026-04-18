@@ -156,14 +156,14 @@ export const throughNodeStreamScoped =
         throughNodeStream<I, O>(t)<E, R>(input),
       ),
     );
-export const throughNodeStreamScoped_original =
-  <I, O, E extends AppError = never, R = never>(create: () => Transform) =>
-  (input: Stream.Stream<I, E, R>) =>
-    Stream.unwrap(
-      Effect.map(acquireNodeStream(create), (t) =>
-        throughNodeStream<I, O>(t)<E, R>(input),
-      ),
-    );
+// export const throughNodeStreamScoped_original =
+//   <I, O, E extends AppError = never, R = never>(create: () => Transform) =>
+//   (input: Stream.Stream<I, E, R>) =>
+//     Stream.unwrap(
+//       Effect.map(acquireNodeStream(create), (t) =>
+//         throughNodeStream<I, O>(t)<E, R>(input),
+//       ),
+//     );
 export const fromReadable = (readable: Readable) =>
   NodeStream.fromReadable({
     evaluate: () => readable,

@@ -186,7 +186,7 @@ GO
 CREATE TABLE [dbo].[gyomu_milestone_daily](
 	[id] [uniqueidentifier]  NOT NULL,
   [target_type] [varchar](10) NOT NULL, --- 'daily' | 'monthly'  
-	[target_date] DATE NOT NULL,
+	[target_date] CHAR(10) NOT NULL,
   [target_ym] CHAR(7) NOT NULL, --- 'YYYY-MM'
 	[milestone_id] varchar(200) NOT NULL,
 	[modified_at] datetimeoffset(3) NOT NULL,
@@ -200,7 +200,7 @@ GO
 
 CREATE UNIQUE CLUSTERED INDEX [CX_gyomu_milestone_daily] ON [dbo].[gyomu_milestone_daily]
 (
-	[target_date] ASC,[milestone_id]
+	[target_date] ASC,[target_type] ASC, [milestone_id]
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
 

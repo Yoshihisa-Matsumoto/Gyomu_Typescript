@@ -1,4 +1,4 @@
-import { GenericElement } from './element.js';
+import { GenericElement } from '../dom/element.js';
 import { TableColumn } from './tableColumn.js';
 
 export class TableRow extends GenericElement<HTMLTableRowElement> {

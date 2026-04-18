@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { fs } from '../fs/index.js';
-import { writeToFile } from '../../infrastructure/fs/fs-utils.js';
-import { compareFiles, validateFolders } from './baseClass.js';
+import { fs } from '../../fs/index.js';
+import { writeToFile } from '../../fs/fs-utils.js';
+import { compareFiles, validateFolders } from '../baseClass.js';
 import { Effect, Layer, Stream } from 'effect';
 import {
   existsInZip,
@@ -9,12 +9,12 @@ import {
   // extractZipAll,
   // openZipEntries,
   exportedForTesting,
-} from '../archive/zip/internals/read.js';
-import { FileTransportInfo } from '../../gyomu/file/transport.js';
-import { ZipService } from '../archive/zip/index.js';
-import { compareZip } from '../archive/zip/compare.js';
-import { MainLayer, PlatformLayer } from '../../infrastructure/layer.js';
-import { makeRunner } from '../../infrastructure/runtime.js';
+} from '../../archive/zip/internals/read.js';
+import { FileTransportInfo } from '../../../gyomu/file/transport.js';
+import { ZipService } from '../../archive/zip/index.js';
+import { compareZip } from '../../archive/zip/compare.js';
+import { MainLayer, PlatformLayer } from '../../layer.js';
+import { makeRunner } from '../../runtime.js';
 
 const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
 const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);

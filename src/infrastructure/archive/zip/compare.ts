@@ -15,10 +15,18 @@ import { PlatformError } from 'effect/PlatformError';
 import { FileSystem } from 'effect/FileSystem';
 import { jsonToCsv } from '../../csv/write.js';
 import { ZipService } from './zipService.js';
-export type DiffSummary = {
-  path: string;
-  diff: 'Only in Source' | 'Only in Destination' | 'Different';
-};
+import {
+  DiffernceIgnoreRule,
+  DiffResult,
+  DiffSummary,
+  filterDiff,
+  handleMissingFileInComparison,
+  InterimOutputType,
+  internalCompareFileEntry,
+  isComparisionExcludeTarget,
+  shouldRunGitDiff,
+  ZipCompareOption,
+} from './internals/compare.js';
 // export type DiffDetail = {
 //   path: string;
 //   sourceValue: string;
@@ -26,55 +34,6 @@ export type DiffSummary = {
 // };
 
 const summaryFilename = '@summary.csv';
-type ZipCompareOption = {
-  sourceFilename: string;
-  destinationFilename: string;
-  resultPath: string;
-  diffIgnoreRule?: IgnoreRule[];
-  fileNameExcludeRule?: FileNameExclusionRule;
-  includeOriginalFileInDiff?: boolean;
-  recordDelimiter?: 'windows' | 'unix';
-};
-
-export type FileNameExclusionRule = {
-  [path: string]: {
-    type: 'include' | 'exclude';
-    target?: string[];
-    targetRegEx?: string[];
-  }[];
-};
-
-type DiffernceIgnoreRule = {
-  filePathRegExpression: string;
-  type: 'Different';
-  criteria: {
-    pathRegExpression: string;
-    sourceValue?: string;
-    destinationValue?: string;
-  }[];
-};
-
-type ExistInOnlyOnePartyIgnoreRule = {
-  filePathRegExpression: string;
-  type: 'Only in Source' | 'Only in Destination';
-};
-
-export type IgnoreRule = DiffernceIgnoreRule | ExistInOnlyOnePartyIgnoreRule;
-
-// export type FileEntry = {
-//   openStream: () => Stream.Stream<Uint8Array, AppError>;
-// };
-
-type DiffResult = {
-  diff: DiffDetail[];
-  diffExist: boolean;
-};
-type InterimOutputType = {
-  sourceFiles: Map<string, ZipEntryItem>;
-  destinationFiles: Map<string, ZipEntryItem>;
-  results: DiffSummary[];
-};
-
 export const compareZip = (
   option: ZipCompareOption,
   compareFunc?: (option: {
@@ -401,40 +360,6 @@ const runCompare = (
     resultPath,
   });
 
-const filterDiff = (diffResult: DiffResult, rule?: DiffernceIgnoreRule) => {
-  const diffDetailList = [...diffResult.diff];
-  const originalNumberOfDiff = diffDetailList.length;
-
-  if (!rule) {
-    return { diffDetailList, originalNumberOfDiff };
-  }
-
-  if (!rule.criteria) {
-    return { diffDetailList: [], originalNumberOfDiff };
-  }
-
-  return {
-    diffDetailList: diffDetailList.filter((diff) => {
-      return !rule.criteria!.some(
-        (c) =>
-          new RegExp(c.pathRegExpression).test(diff.path) &&
-          (!c.sourceValue || c.sourceValue === diff.sourceValue) &&
-          (!c.destinationValue || c.destinationValue === diff.destinationValue),
-      );
-    }),
-    originalNumberOfDiff,
-  };
-};
-const shouldRunGitDiff = (
-  diffDetailList: DiffDetail[],
-  originalNumberOfDiff: number,
-  diffResult: DiffResult,
-) =>
-  (originalNumberOfDiff === 0 && diffResult.diffExist) ||
-  diffDetailList.length > 5 ||
-  diffDetailList.some(
-    (d) => d.sourceValue.length > 100 || d.destinationValue.length > 100,
-  );
 const runGitDiffIfNeeded = (
   sourceFile: ZipFileEntryItem,
   destinationFile: ZipFileEntryItem,
@@ -465,7 +390,7 @@ const writeCsvIfNeeded = (
         );
       })
     : Effect.void;
-const runCompareFuncFlow = (
+export const runCompareFuncFlow = (
   sourceFile: ZipFileEntryItem,
   destinationFile: ZipFileEntryItem,
   resultPath: string,
@@ -508,124 +433,6 @@ const runCompareFuncFlow = (
       originalNumberOfDiff,
     };
   });
-};
-const internalCompareFileEntry = (
-  sourceFile: ZipFileEntryItem,
-  destinationFile: ZipFileEntryItem,
-  interimOutput: Ref.Ref<InterimOutputType>,
-  option: ZipCompareOption,
-  compareFunc?: (option: {
-    source: ZipFileEntryItem;
-    destination: ZipFileEntryItem;
-    filePath: string;
-    resultPath: string;
-  }) => Effect.Effect<DiffResult>,
-) => {
-  const { resultPath, diffIgnoreRule } = option;
-  //const { results } = interimOutput;
-  let targetIgnoreRule: IgnoreRule | undefined = undefined;
-  if (
-    sourceFile.uncompressedSize === destinationFile.uncompressedSize &&
-    sourceFile.crc32 === destinationFile.crc32
-  ) {
-    //Exact Same Content
-    return Effect.succeed(interimOutput);
-  }
-
-  //Something changed
-  const diffSummaryRecord: DiffSummary | undefined = {
-    path: sourceFile.path,
-    diff: 'Different',
-  };
-  if (diffIgnoreRule) {
-    targetIgnoreRule = diffIgnoreRule.find(
-      (r) =>
-        r.type === 'Different' &&
-        new RegExp(r.filePathRegExpression).test(sourceFile.path),
-    );
-  }
-
-  return Effect.gen(function* () {
-    if (compareFunc) {
-      yield* runCompareFuncFlow(
-        sourceFile,
-        destinationFile,
-        resultPath,
-        compareFunc,
-        targetIgnoreRule as DiffernceIgnoreRule | undefined,
-        option,
-      );
-    }
-    if (!diffSummaryRecord) return Effect.succeed(interimOutput);
-    yield* Ref.update(interimOutput, (output) => {
-      output.results.push(diffSummaryRecord);
-      return output;
-    });
-
-    if (!option.includeOriginalFileInDiff) return Effect.succeed(interimOutput);
-
-    const effects: Effect.Effect<void, AppError | PlatformError, FileSystem>[] =
-      [];
-
-    const sourcePath = fs.join(
-      resultPath,
-      sourceFile.path.replaceAll('/', '\\') + '.source',
-    );
-
-    if (!sourceFile.isDirectory) {
-      effects.push(extractSingleFileEntry(sourceFile, sourcePath));
-    }
-
-    const destinationPath = fs.join(
-      resultPath,
-      destinationFile.path.replaceAll('/', '\\') + '.destination',
-    );
-
-    effects.push(extractSingleFileEntry(destinationFile, destinationPath));
-
-    return Effect.as(Effect.all(effects), interimOutput);
-  });
-};
-const handleMissingFileInComparison = (
-  existingFile: ZipEntryItem,
-  isSourceExist: boolean,
-  interimOutput: Ref.Ref<InterimOutputType>,
-  option: ZipCompareOption,
-) => {
-  const { resultPath, diffIgnoreRule } = option;
-  const existingPart = isSourceExist ? 'Source' : 'Destination';
-
-  let targetIgnoreRule: IgnoreRule | undefined = undefined;
-  //Destination File Not Exist
-  if (diffIgnoreRule) {
-    targetIgnoreRule = diffIgnoreRule.find(
-      (r) =>
-        r.type === `Only in ${existingPart}` &&
-        new RegExp(r.filePathRegExpression).test(existingFile.path),
-    );
-  }
-  if (!targetIgnoreRule) {
-    if (existingFile.isDirectory) return Effect.succeed(interimOutput);
-
-    return Effect.gen(function* () {
-      yield* Ref.update(interimOutput, (output) => {
-        output.results.push({
-          path: existingFile.path,
-          diff: `Only in ${existingPart}`,
-        });
-        return output;
-      });
-      const filePath = fs.join(
-        resultPath,
-        existingFile.path.replaceAll('/', '\\'),
-      );
-      return yield* Effect.as(
-        extractSingleFileEntry(existingFile, filePath),
-        interimOutput,
-      );
-    });
-  }
-  return Effect.succeed(interimOutput);
 };
 const gitTempPath = fs.join(fs.tmpdir(), 'gitCompareTemp');
 const compareTextfile = (
@@ -704,69 +511,4 @@ const removeUnnecessaryLinesFromDiffFile = (diffFilename: string) => {
     fs.readFileSync(diffFilename, 'utf8').split('\n').slice(4).join('\n'),
     { flag: 'w', flush: true },
   );
-};
-
-const isComparisionExcludeTarget = (
-  filePath: string,
-  rule: FileNameExclusionRule,
-  categories: string[],
-): boolean => {
-  const directories = filePath.split('\\');
-  const fileName = directories[directories.length - 1];
-  let isPathInScope = false;
-  let targetCategry = '';
-  let isExclude = false;
-  for (const directory of directories) {
-    if (categories.includes(directory)) {
-      isPathInScope = true;
-      targetCategry = directory;
-      break;
-    }
-  }
-  if (isPathInScope) {
-    const criteriaList = rule[targetCategry];
-    for (const criteria of criteriaList) {
-      if (criteria.type === 'include') {
-        if (
-          !isExclude &&
-          criteria.target &&
-          criteria.target.length > 0 &&
-          !criteria.target.find((t) => fileName.includes(t))
-        ) {
-          isExclude = true;
-        }
-        if (
-          !isExclude &&
-          criteria.targetRegEx &&
-          criteria.targetRegEx.length > 0 &&
-          !criteria.targetRegEx.find((r) => new RegExp(r).test(fileName))
-        ) {
-          isExclude = true;
-        }
-      } else if (criteria.type === 'exclude') {
-        if (
-          !isExclude &&
-          criteria.target &&
-          criteria.target.length > 0 &&
-          criteria.target.find((t) => fileName.includes(t))
-        ) {
-          isExclude = true;
-        }
-        if (
-          !isExclude &&
-          criteria.targetRegEx &&
-          criteria.targetRegEx.length > 0 &&
-          criteria.targetRegEx.find((r) => new RegExp(r).test(fileName))
-        ) {
-          isExclude = true;
-        }
-      }
-      if (isExclude) break;
-    }
-  }
-  // if(isExclude)
-  // {
-  //   logger.info(filePath);
-  // }
-  return isExclude;
 };

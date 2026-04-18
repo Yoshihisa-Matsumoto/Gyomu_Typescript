@@ -1,11 +1,9 @@
 import { Effect, Schema, SchemaTransformation } from 'effect';
 import { decodeTo, SchemaError } from 'effect/Schema';
-import {
-  formatDateToYmd,
-  parseYmdToDate,
-} from '../infrastructure/date/dateConverter.js';
+
 import { AppError, AppErrorCtor } from '../base-error.js';
 import { unknownError } from '../errors.js';
+import { LocalDateSchema } from './date.js';
 
 export const jsonString2SchemaObjectWithoutEffect = <
   S extends Schema.Schema<any>,
@@ -78,15 +76,16 @@ const IsoDateTimeString = Schema.Date.pipe(
   ),
 );
 
-const IsoDateString = Schema.Date.pipe(
-  decodeTo(
-    Schema.String,
-    SchemaTransformation.transform({
-      decode: (date) => formatDateToYmd(date),
-      encode: (str) => parseYmdToDate(str),
-    }),
-  ),
-);
+// const IsoDateString = Schema.Date.pipe(
+//   decodeTo(
+//     Schema.String,
+//     SchemaTransformation.transform({
+//       decode: (date) => formatDateToYmd(date),
+//       encode: (str) => parseYmdToDate(str),
+//     }),
+//   ),
+// );
+//const IsoDateString = LocalDateSchema;
 
 export const db = {
   id: Schema.String.check(Schema.isUUID()),
@@ -107,10 +106,10 @@ export const db = {
   bigInt: BigIntFromDbValue,
   boolean: Schema.Boolean,
   timestampString: IsoDateTimeString,
-  dateString: IsoDateString,
+  dateString: LocalDateSchema,
   optionalBoolean: Schema.NullOr(Schema.Boolean),
   optionalTimestampString: Schema.NullOr(IsoDateTimeString),
-  optionalDateString: Schema.NullOr(IsoDateString),
+  optionalDateString: Schema.NullOr(LocalDateSchema),
   optionalId: Schema.NullOr(Schema.String.check(Schema.isUUID())),
 };
 

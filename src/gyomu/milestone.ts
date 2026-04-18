@@ -124,7 +124,7 @@ export class MilestoneService extends ServiceMap.Service<
             {
               milestoneId,
               targetType: isMonthly ? 'monthly' : 'daily',
-              targetDate: targetYmd,
+              targetDate: LocalDate.make(targetYmd),
               targetYm: targetYmd.substring(0, 7),
             },
           ]);
