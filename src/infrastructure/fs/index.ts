@@ -5,4 +5,4 @@ import { linux } from './linux.js';
 
 export const fs = os.platform() === 'win32' ? windows : linux;
 
-export * from './type.js';
+export * from './types.js';

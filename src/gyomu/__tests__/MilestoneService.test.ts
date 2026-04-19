@@ -1,7 +1,7 @@
 import { Effect, Layer, Ref } from 'effect';
-import { MilestoneService } from '../milestone.js';
+import { MilestoneService } from '../MilestoneService.js';
 import { beforeEach, describe, expect, it, test } from 'vitest';
-import { GyomuRepository } from '../gyomuRepository.js';
+import { GyomuRepository } from '../GyomuRepository.js';
 import { makeRunner } from '../../infrastructure/runtime.js';
 import { LocalDate } from '../../schemas/date.js';
 

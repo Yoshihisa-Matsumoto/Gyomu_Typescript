@@ -5,7 +5,7 @@ import {
 } from '../../infrastructure/date/dateConverter.js';
 import { beforeEach, describe, expect, test } from 'vitest';
 import { Effect, Layer } from 'effect';
-import { BusinessCalendarService } from '../../gyomu/date/holidays.js';
+import { BusinessCalendarService } from '../../gyomu/date/BusinessCalendar.js';
 import { GyomuRepositoryMock } from '../../gyomu/__tests__/baseDBClass.js';
 import { NodeFileSystem } from '@effect/platform-node';
 import { makeRunner } from '../../infrastructure/runtime.js';

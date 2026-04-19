@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { Effect, Layer, Redacted, Result, Option } from 'effect';
-import { SshService } from '../ssh/sshLayer.js';
+import { SshService } from '../ssh/SshService.js';
 import { ConfigService } from '../config.js';
 import { makeRunner, makeRunnerAsReturn } from '../runtime.js';
 import { NetworkError } from '../../errors.js';

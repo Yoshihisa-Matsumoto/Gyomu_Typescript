@@ -257,7 +257,7 @@ CREATE TABLE [dbo].[gyomu_param_master](
  	[id] [uniqueidentifier]  NOT NULL,  
 	[item_key] [varchar](50) NOT NULL,
 	[item_value] ntext NOT NULL,
-	[item_fromdate] [varchar](10) NOT NULL default ''
+	[item_fromdate] [varchar](10) NULL 
  CONSTRAINT [PK_gyomu_param_master] PRIMARY KEY NONCLUSTERED 
 (
 	[id] ASC

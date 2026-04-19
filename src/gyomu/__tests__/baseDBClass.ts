@@ -1,8 +1,9 @@
 // import { beforeEach, vi } from 'vitest';
 
 import { Effect, Layer } from 'effect';
-import { GyomuRepository } from '../gyomuRepository.js';
+import { GyomuRepository } from '../GyomuRepository.js';
 import { MarketHolidaySchema } from '../../schemas/gyomu.js';
+import { LocalDate } from '../../schemas/date.js';
 // beforeEach(() => {
 //   //console.log('beforeEach in baseDBClass', prismaMock, prisma);
 //   mockReset(prismaMock);
@@ -19,20 +20,100 @@ export const GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
   },
 } as any);
 const dummy_holidays: (typeof MarketHolidaySchema.types._select)[] = [
-  { id: testId, year: 1984, market: 'JP', holiday: '1984-01-01' },
-  { id: testId, year: 1984, market: 'JP', holiday: '1984-01-02' },
-  { id: testId, year: 1984, market: 'JP', holiday: '1984-01-15' },
-  { id: testId, year: 1984, market: 'JP', holiday: '1984-01-16' },
-  { id: testId, year: 1984, market: 'JP', holiday: '1984-02-11' },
-  { id: testId, year: 1984, market: 'JP', holiday: '1984-03-20' },
-  { id: testId, year: 1984, market: 'JP', holiday: '1984-04-29' },
-  { id: testId, year: 1984, market: 'JP', holiday: '1984-04-30' },
-  { id: testId, year: 1984, market: 'JP', holiday: '1984-05-03' },
-  { id: testId, year: 1984, market: 'JP', holiday: '1984-05-05' },
-  { id: testId, year: 1984, market: 'JP', holiday: '1984-09-15' },
-  { id: testId, year: 1984, market: 'JP', holiday: '1984-09-23' },
-  { id: testId, year: 1984, market: 'JP', holiday: '1984-09-24' },
-  { id: testId, year: 1984, market: 'JP', holiday: '1984-10-10' },
-  { id: testId, year: 1984, market: 'JP', holiday: '1984-11-03' },
-  { id: testId, year: 1984, market: 'JP', holiday: '1984-11-23' },
+  {
+    id: testId,
+    year: 1984,
+    market: 'JP',
+    holiday: LocalDate.make('1984-01-01'),
+  },
+  {
+    id: testId,
+    year: 1984,
+    market: 'JP',
+    holiday: LocalDate.make('1984-01-02'),
+  },
+  {
+    id: testId,
+    year: 1984,
+    market: 'JP',
+    holiday: LocalDate.make('1984-01-15'),
+  },
+  {
+    id: testId,
+    year: 1984,
+    market: 'JP',
+    holiday: LocalDate.make('1984-01-16'),
+  },
+  {
+    id: testId,
+    year: 1984,
+    market: 'JP',
+    holiday: LocalDate.make('1984-02-11'),
+  },
+  {
+    id: testId,
+    year: 1984,
+    market: 'JP',
+    holiday: LocalDate.make('1984-03-20'),
+  },
+  {
+    id: testId,
+    year: 1984,
+    market: 'JP',
+    holiday: LocalDate.make('1984-04-29'),
+  },
+  {
+    id: testId,
+    year: 1984,
+    market: 'JP',
+    holiday: LocalDate.make('1984-04-30'),
+  },
+  {
+    id: testId,
+    year: 1984,
+    market: 'JP',
+    holiday: LocalDate.make('1984-05-03'),
+  },
+  {
+    id: testId,
+    year: 1984,
+    market: 'JP',
+    holiday: LocalDate.make('1984-05-05'),
+  },
+  {
+    id: testId,
+    year: 1984,
+    market: 'JP',
+    holiday: LocalDate.make('1984-09-15'),
+  },
+  {
+    id: testId,
+    year: 1984,
+    market: 'JP',
+    holiday: LocalDate.make('1984-09-23'),
+  },
+  {
+    id: testId,
+    year: 1984,
+    market: 'JP',
+    holiday: LocalDate.make('1984-09-24'),
+  },
+  {
+    id: testId,
+    year: 1984,
+    market: 'JP',
+    holiday: LocalDate.make('1984-10-10'),
+  },
+  {
+    id: testId,
+    year: 1984,
+    market: 'JP',
+    holiday: LocalDate.make('1984-11-03'),
+  },
+  {
+    id: testId,
+    year: 1984,
+    market: 'JP',
+    holiday: LocalDate.make('1984-11-23'),
+  },
 ];

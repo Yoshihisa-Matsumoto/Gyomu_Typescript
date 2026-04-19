@@ -4,7 +4,7 @@ import { ConfigLayer, ConfigService } from '../config.js';
 import { MainLayer } from '../layer.js';
 import { ConfigError } from 'effect/Config';
 import { Config, Effect, Layer, Scope, ServiceMap } from 'effect';
-import { MssqlService } from './mssql.js';
+import { MssqlService } from './MssqlService.js';
 import { DBError, IOError } from '../../errors.js';
 
 export class KyselyService extends ServiceMap.Service<

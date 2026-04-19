@@ -1,7 +1,7 @@
 import { Effect } from 'effect';
 import { describe, it, expect } from 'vitest';
 import { RuntimeContext } from '../../shared/runtime/runtimeContext.js';
-import { RuntimeContextLive } from '../runtime/runtimeContextLive.js';
+import { RuntimeContextLive } from '../runtime/RuntimeContextLive.js';
 
 describe('RuntimeContextLive', () => {
   it('Layerとして取得できる', async () => {

@@ -14,7 +14,7 @@ import {
 import { PlatformError } from 'effect/PlatformError';
 import { FileSystem } from 'effect/FileSystem';
 import { jsonToCsv } from '../../csv/write.js';
-import { ZipService } from './zipService.js';
+import { ZipService } from './ZipService.js';
 import {
   DiffernceIgnoreRule,
   DiffResult,

@@ -1,6 +1,6 @@
 import { parse } from 'date-fns';
 import { ValueError } from '../../errors.js';
-import { FilterType, FileCompareType } from './type.js';
+import { FilterType, FileCompareType } from './types.js';
 
 export class FileFilterInfo {
   readonly kind: FilterType;

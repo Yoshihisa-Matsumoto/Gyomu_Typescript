@@ -3,12 +3,6 @@
  * Please do not edit it manually.
  */
 
-import type { ColumnType } from "kysely";
-
-export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
-  ? ColumnType<S, I | undefined, U>
-  : ColumnType<T, T | undefined, T>;
-
 export interface GyomuAppsInfoCdtbl {
   description: string | null;
   id: string;
@@ -41,7 +35,7 @@ export interface GyomuMilestoneDaily {
 
 export interface GyomuParamMaster {
   id: string;
-  item_fromdate: Generated<string>;
+  item_fromdate: string | null;
   item_key: string;
   item_value: string;
 }

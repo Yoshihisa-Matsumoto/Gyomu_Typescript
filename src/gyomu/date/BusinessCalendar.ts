@@ -6,7 +6,7 @@ import {
 } from '../../infrastructure/date/dateConverter.js';
 
 import { Effect, Layer, ServiceMap } from 'effect';
-import { GyomuRepository } from '../gyomuRepository.js';
+import { GyomuRepository } from '../GyomuRepository.js';
 import { DBError, GyomuError } from '../../errors.js';
 import { fromSync } from '../../shared/effect/core.js';
 import {

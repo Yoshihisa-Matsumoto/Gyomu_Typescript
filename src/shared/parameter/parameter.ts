@@ -1,6 +1,6 @@
 import { DBError } from '../../errors.js';
 import { Effect, Layer, Schedule, ServiceMap } from 'effect';
-import { GyomuRepository } from '../../gyomu/gyomuRepository.js';
+import { GyomuRepository } from '../../gyomu/GyomuRepository.js';
 import { formatDateToYmd } from '../../infrastructure/date/dateConverter.js';
 import { User } from '../../schemas/user.js';
 
@@ -80,13 +80,20 @@ export class ParameterService extends ServiceMap.Service<
           );
         }
 
-        const sorted = [...itemValues].sort((a, b) =>
-          a.itemFromDate > b.itemFromDate
-            ? 1
-            : a.itemFromDate < b.itemFromDate
-              ? -1
-              : 0,
-        );
+        // const sorted = [...itemValues].sort((a, b) =>
+        //   a.itemFromDate > b.itemFromDate
+        //     ? 1
+        //     : a.itemFromDate < b.itemFromDate
+        //       ? -1
+        //       : 0,
+        // );
+        const sorted = [...itemValues].sort((a, b) => {
+          if (a.itemFromDate == null && b.itemFromDate == null) return 0;
+          if (a.itemFromDate == null) return -1; // nullを後ろ
+          if (b.itemFromDate == null) return 1;
+
+          return a.itemFromDate.localeCompare(b.itemFromDate);
+        });
 
         for (const row of sorted) {
           if (!row.itemValue) continue;
@@ -131,7 +138,7 @@ export class ParameterService extends ServiceMap.Service<
         }
         // Insert
         yield* repo.parameterMaster.create([
-          { itemKey, itemValue, itemFromDate: '' },
+          { itemKey, itemValue, itemFromDate: null },
         ]);
         return true;
       });

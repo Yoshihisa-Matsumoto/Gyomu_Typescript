@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Effect, Layer } from 'effect';
-import { KyselyService } from '../db/kysely-service.js';
+import { KyselyService } from '../db/KyselyService.js';
 import { ConfigService } from '../config.js';
 import { ConfigError } from 'effect/Config';
 import { SourceError } from 'effect/ConfigProvider';
-import { MssqlService } from '../db/mssql.js';
+import { MssqlService } from '../db/MssqlService.js';
 
 // --- mocks ---
 const mockDb = {

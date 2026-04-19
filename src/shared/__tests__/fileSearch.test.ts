@@ -1,5 +1,5 @@
 import { FileFilterInfo } from '../../gyomu/file/filter.js';
-import { FileCompareType, FilterType } from '../../gyomu/file/type.js';
+import { FileCompareType, FilterType } from '../../gyomu/file/types.js';
 
 import { expect, test } from 'vitest';
 import { fs } from '../../infrastructure/fs/index.js';

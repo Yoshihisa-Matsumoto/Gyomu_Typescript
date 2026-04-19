@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { Effect, Layer, Redacted, Result, Stream, Option } from 'effect';
-import { SftpService } from '../sftp/sftpLayer.js';
+import { SftpService } from '../sftp/SftpService.js';
 import { ConfigService } from '../config.js';
 import { makeRunner, makeRunnerAsReturn } from '../runtime.js';
 import { NetworkError } from '../../errors.js';

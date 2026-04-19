@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { Effect, Layer, Redacted, Result, Stream } from 'effect';
-import { FtpService } from '../ftp/ftpLayer.js';
+import { FtpService } from '../ftp/FtpService.js';
 import { ConfigService } from '../config.js';
 import { makeRunner, makeRunnerAsReturn } from '../runtime.js';
 import { NetworkError } from '../../errors.js';

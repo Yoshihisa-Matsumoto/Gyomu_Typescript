@@ -3,11 +3,12 @@ import { ParameterService } from '../parameter/parameter.js';
 import { DBError } from '../../errors.js';
 import { parseYmdToDate } from '../../infrastructure/date/dateConverter.js';
 import { beforeEach, expect, it, test } from 'vitest';
-import { GyomuRepository } from '../../gyomu/gyomuRepository.js';
+import { GyomuRepository } from '../../gyomu/GyomuRepository.js';
 import { Effect, Layer } from 'effect';
 import { ParameterMasterSchema } from '../../schemas/gyomu.js';
 import { makeRunner } from '../../infrastructure/runtime.js';
 import { describe } from 'node:test';
+import { LocalDate } from '../../schemas/date.js';
 
 const testId = 'F6AE5F2D-BD14-4C5F-9CC3-3A69EF90DD5B';
 
@@ -112,19 +113,19 @@ describe('multiple parameter with different value test', () => {
       id: testId,
       itemKey: itemKey,
       itemValue: 'oldest',
-      itemFromDate: '',
+      itemFromDate: null,
     },
     {
       id: testId,
       itemKey: itemKey,
       itemValue: 'current',
-      itemFromDate: '2021-01-01',
+      itemFromDate: LocalDate.make('2021-01-01'),
     },
     {
       id: testId,
       itemKey: itemKey,
       itemValue: 'old',
-      itemFromDate: '1984-10-01',
+      itemFromDate: LocalDate.make('1984-10-01'),
     },
   ];
   const GyomuRepositoryRetrieveMock = Layer.succeed(GyomuRepository, {
@@ -169,13 +170,13 @@ test('no defaultRow test', async () => {
       id: testId,
       itemKey: itemKey,
       itemValue: 'current',
-      itemFromDate: '2021-01-01',
+      itemFromDate: LocalDate.make('2021-01-01'),
     },
     {
       id: testId,
       itemKey: itemKey,
       itemValue: 'old',
-      itemFromDate: '1984-10-01',
+      itemFromDate: LocalDate.make('1984-10-01'),
     },
   ];
   const GyomuRepositoryRetrieveMock = Layer.succeed(GyomuRepository, {
@@ -209,13 +210,13 @@ test('multiple defaultRows test', async () => {
       id: testId,
       itemKey: itemKey,
       itemValue: 'current',
-      itemFromDate: '',
+      itemFromDate: null,
     },
     {
       id: testId,
       itemKey: itemKey,
       itemValue: 'old',
-      itemFromDate: '',
+      itemFromDate: null,
     },
   ];
   const GyomuRepositoryRetrieveMock = Layer.succeed(GyomuRepository, {
@@ -242,7 +243,7 @@ async function setValueTest<T extends string | boolean | number>(itemValue: T) {
   const recordCreate: typeof ParameterMasterSchema.types._insert = {
     itemKey: itemKey,
     itemValue: itemValue.toString(),
-    itemFromDate: '',
+    itemFromDate: null,
   };
   const recordSelect: typeof ParameterMasterSchema.types._select = {
     ...recordCreate,

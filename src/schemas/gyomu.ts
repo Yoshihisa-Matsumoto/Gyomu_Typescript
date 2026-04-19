@@ -156,7 +156,7 @@ export const parameterMasterDefinition = {
   fields: {
     itemKey: db.text({ maxLength: 50 }),
     itemValue: db.text(),
-    itemFromDate: db.dateString,
+    itemFromDate: db.optionalDateString,
   },
   tags: { entity: 'ParameterMaster' },
   options: {

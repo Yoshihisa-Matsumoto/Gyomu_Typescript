@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { Effect, Layer } from 'effect';
-import { GyomuRepository } from '../gyomuRepository.js';
+import { GyomuRepository } from '../GyomuRepository.js';
 import { MainLayer } from '../../infrastructure/layer.js';
 import { ConfigLayer } from '../../infrastructure/config.js';
-import { KyselyService } from '../../infrastructure/db/kysely-service.js';
+import { KyselyService } from '../../infrastructure/db/KyselyService.js';
 import { NodeFileSystem } from '@effect/platform-node';
 import { makeRunner } from '../../infrastructure/runtime.js';
-import { MssqlService } from '../../infrastructure/db/mssql.js';
+import { MssqlService } from '../../infrastructure/db/MssqlService.js';
 import { LocalDate, YearMonth } from '../../schemas/date.js';
 
 const TestLayer = Layer.mergeAll(MainLayer, ConfigLayer, GyomuRepository.live)
