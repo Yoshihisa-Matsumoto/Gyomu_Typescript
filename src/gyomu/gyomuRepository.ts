@@ -40,8 +40,10 @@ import { LocalDate, YearMonth } from '../schemas/date.js';
 export class GyomuRepository extends ServiceMap.Service<
   GyomuRepository,
   {
-    readonly appInfo: CrudRepositoryFromSchemasWithFindAll<
-      typeof AppInfoSchema
+    readonly appInfo: CrudRepositoryFromSchemasWithFindAllAndFindByColumn<
+      typeof AppInfoSchema,
+      'description',
+      'findByDescription'
     >;
     readonly statusType: CrudRepositoryFromSchemasWithFindAll<
       typeof StatusTypeSchema
@@ -116,6 +118,10 @@ export class GyomuRepository extends ServiceMap.Service<
         schemas: AppInfoSchema,
         options: {
           findAll: true,
+          findByColumn: {
+            columnName: 'description',
+            methodName: 'findByDescription',
+          },
         },
       }),
       statusType: makeRepositoryFromDb(db, {

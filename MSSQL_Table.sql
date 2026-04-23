@@ -56,7 +56,7 @@ GO
 
 CREATE TABLE [dbo].[gyomu_apps_info_cdtbl](
   [id] [uniqueidentifier] NOT NULL,
-	[description] [varchar](50) NULL,
+	[description] [varchar](50) NOT NULL,
 	[mail_from_address] [varchar](200) NULL,
 	[mail_from_name] [varchar](200) NULL,
  CONSTRAINT [PK_gyomu_apps_info_cdtbl] PRIMARY KEY NONCLUSTERED 

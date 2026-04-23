@@ -37,6 +37,7 @@ export type CrudSchemasBase<
   readonly insertSchema: Insert;
   readonly selectSchema: Select;
   readonly updateSchema: Update;
+  readonly updatefieldNames: string[];
 };
 
 export type CrudSchemasWithAudit<
@@ -120,6 +121,7 @@ const selectRecordsByColumn =
           .where(args.columnName, '=', columnValue)
           .execute();
       });
+      if (!records) return [];
       return yield* convertToSchemaObjectWithEffect(
         DBError,
         `${args.schema.tags.entity} Array`,
@@ -161,6 +163,7 @@ export const customSQLAndReturnRecords =
         DBError,
         message ?? `fail custom query on ${table}`,
       )(async () => await f({ db, table, schemas: schema }));
+      if (!result) return [];
       return yield* convertToSchemaObjectWithEffect(
         DBError,
         `${schema.tags.entity} Array`,
@@ -184,12 +187,46 @@ const selectAllRecords =
         DBError,
         `fail to select all ${table}`,
       )(async () => await db.selectFrom(table).selectAll().execute());
+      if (!records) return [];
       return yield* convertToSchemaObjectWithEffect(
         DBError,
         `${schema.tags.entity} Array`,
       )(Schema.Array(schema.selectSchema), records);
     });
 
+const prepareForInsert =
+  <
+    Insert extends Schema.Top,
+    Select extends Schema.Top,
+    Update extends Schema.Top,
+  >(
+    schema: CrudSchemas<Insert, Select, Update>,
+  ) =>
+  (
+    data: Schema.Schema.Type<typeof schema.insertSchema>[],
+    modifiedBy?: string,
+  ) =>
+    Effect.gen(function* () {
+      if (data.length == 0) return [];
+      const encoded = yield* convertFromSchemaObjectWithEffect(
+        DBError,
+        `${schema.tags.entity} Array`,
+      )(Schema.Array(schema.insertSchema), data);
+      if (schema.includeAuditFields) {
+        if (!modifiedBy)
+          return yield* Effect.fail(
+            new ValueError(`modifiedBy is not set for audit table`),
+          );
+        encoded.forEach((item) => {
+          (item as any).modified_at = getNewTimestamp();
+          (item as any).modified_by = modifiedBy;
+        });
+      }
+      encoded.forEach((item) => {
+        (item as any).id = generateUuid7();
+      });
+      return encoded;
+    });
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type CreateRecordsFn<
   Insert extends Schema.Top,
@@ -225,24 +262,25 @@ const createRecords =
     modifiedBy?: string,
   ) =>
     Effect.gen(function* () {
-      if (data.length == 0) return [];
-      const encoded = yield* convertFromSchemaObjectWithEffect(
-        DBError,
-        `${schema.tags.entity} Array`,
-      )(Schema.Array(schema.insertSchema), data);
-      if (schema.includeAuditFields) {
-        if (!modifiedBy)
-          return yield* Effect.fail(
-            new ValueError(`modifiedBy is not set for audit table`),
-          );
-        encoded.forEach((item) => {
-          (item as any).modified_at = getNewTimestamp();
-          (item as any).modified_by = modifiedBy;
-        });
-      }
-      encoded.forEach((item) => {
-        (item as any).id = generateUuid7();
-      });
+      const encoded = yield* prepareForInsert(schema)(data, modifiedBy);
+      if (encoded.length == 0) return [];
+      // const encoded = yield* convertFromSchemaObjectWithEffect(
+      //   DBError,
+      //   `${schema.tags.entity} Array`,
+      // )(Schema.Array(schema.insertSchema), data);
+      // if (schema.includeAuditFields) {
+      //   if (!modifiedBy)
+      //     return yield* Effect.fail(
+      //       new ValueError(`modifiedBy is not set for audit table`),
+      //     );
+      //   encoded.forEach((item) => {
+      //     (item as any).modified_at = getNewTimestamp();
+      //     (item as any).modified_by = modifiedBy;
+      //   });
+      // }
+      // encoded.forEach((item) => {
+      //   (item as any).id = generateUuid7();
+      // });
       const records = yield* fromPromise(
         DBError,
         `fail to insert ${table} record`,
@@ -266,15 +304,12 @@ const createRecords =
       )(Schema.Array(schema.selectSchema), records);
     });
 
-const updateRecords =
+const prepareForUpdate =
   <
-    T extends TablesWithId,
     Insert extends Schema.Top,
     Select extends Schema.Top,
     Update extends Schema.Top,
   >(
-    db: Kysely<DB>,
-    table: T,
     schema: CrudSchemas<Insert, Select, Update>,
   ) =>
   (
@@ -297,6 +332,40 @@ const updateRecords =
           (item as any).modified_by = modifiedBy;
         });
       }
+      return encoded;
+    });
+const updateRecords =
+  <
+    T extends TablesWithId,
+    Insert extends Schema.Top,
+    Select extends Schema.Top,
+    Update extends Schema.Top,
+  >(
+    db: Kysely<DB>,
+    table: T,
+    schema: CrudSchemas<Insert, Select, Update>,
+  ) =>
+  (
+    data: Schema.Schema.Type<typeof schema.updateSchema>[],
+    modifiedBy?: string,
+  ) =>
+    Effect.gen(function* () {
+      const encoded = yield* prepareForUpdate(schema)(data, modifiedBy);
+      if (encoded.length == 0) return [];
+      // const encoded = yield* convertFromSchemaObjectWithEffect(
+      //   DBError,
+      //   `${schema.tags.entity} Array`,
+      // )(Schema.Array(schema.updateSchema), data);
+      // if (schema.includeAuditFields) {
+      //   if (!modifiedBy)
+      //     return yield* Effect.fail(
+      //       new ValueError(`modifiedBy is not set for audit table`),
+      //     );
+      //   encoded.forEach((item) => {
+      //     (item as any).modified_at = getNewTimestamp();
+      //     (item as any).modified_by = modifiedBy;
+      //   });
+      // }
       const records = yield* fromPromise(
         DBError,
         `fail to update ${table} record`,
@@ -396,6 +465,113 @@ const deleteRecords =
         .reduce((prev, current) => prev + current, BigInt(0));
     });
 
+const syncRecords =
+  <
+    T extends TablesWithId,
+    Insert extends Schema.Top,
+    Select extends Schema.Top,
+    Update extends Schema.Top,
+  >(
+    db: Kysely<DB>,
+    table: T,
+    schema: CrudSchemas<Insert, Select, Update>,
+  ) =>
+  <
+    TInsert extends Schema.Schema.Type<typeof schema.insertSchema>,
+    TSelect extends Readonly<TInsert> &
+      Readonly<{
+        id: string;
+      }> & { [field: string]: any },
+    TUpdate extends Schema.Schema.Type<typeof schema.updateSchema>,
+    TField extends keyof (TInsert | TUpdate),
+  >(args: {
+    diffResult: {
+      inserts: TInsert[];
+      updates: {
+        id: string;
+        existing: TSelect;
+        incoming: TUpdate;
+        changedFields: readonly TField[];
+        changedValues: Partial<Pick<TUpdate, TField>>;
+      }[];
+      deletes: readonly TSelect[];
+    };
+    modifiedBy?: string;
+    deleteRequired?: boolean;
+  }) => {
+    const { diffResult, modifiedBy, deleteRequired } = args;
+
+    return Effect.gen(function* () {
+      const encodedCreateRecord = yield* prepareForInsert(schema)(
+        diffResult.inserts,
+        modifiedBy,
+      );
+
+      const encodedUpdateRecord = yield* prepareForUpdate(schema)(
+        diffResult.updates.map((u) => u.incoming),
+        modifiedBy,
+      );
+      const tobeDeletedIds = !deleteRequired
+        ? []
+        : diffResult.deletes.map((d) => d.id);
+      const result = yield* fromPromise(
+        DBError,
+        `fail to sync ${table} record`,
+      )(async () => {
+        return await db.transaction().execute(async (trx) => {
+          const insertedRows: Selectable<DB[T]>[] = [];
+          for (const patch of encodedCreateRecord) {
+            const inserted = await trx
+              .insertInto(table)
+              .values(patch as Insertable<DB[T]>)
+              .outputAll('inserted')
+              .executeTakeFirst();
+            if (inserted) insertedRows.push(inserted as Selectable<DB[T]>);
+          }
+          // const insertedRows: Selectable<DB[T]>[] = await trx
+          //   .insertInto(table)
+          //   .values(encodedCreateRecord as Insertable<DB[T]>[])
+          //   .returningAll()
+          //   .execute();
+          const updatedRows: Selectable<DB[T]>[] = [];
+          for (const patch of encodedUpdateRecord as Array<{ id: string }>) {
+            const { id, ...data } = patch;
+            const query = trx.updateTable(table) as any;
+            const updated = await query
+              .set(data)
+              .where('id', '=', id)
+              .outputAll('inserted')
+              .executeTakeFirst();
+            if (updated) updatedRows.push(updated as Selectable<DB[T]>);
+          }
+          let deletedCount: bigint = 0n;
+          if (tobeDeletedIds.length == 0 || !tobeDeletedIds) {
+            deletedCount = 0n;
+          } else {
+            const deletedResult = (await (trx.deleteFrom(table) as any)
+              .where('id', 'in', tobeDeletedIds)
+              .execute()) as DeleteResult[];
+            deletedCount = deletedResult
+              .map((r) => r.numDeletedRows)
+              .reduce((prev, current) => prev + current, BigInt(0));
+          }
+
+          return { insertedRows, updatedRows, deletedCount };
+        });
+      });
+
+      const insertedRows = yield* convertToSchemaObjectWithEffect(
+        DBError,
+        `${schema.tags.entity} Array`,
+      )(Schema.Array(schema.selectSchema), result.insertedRows);
+      const updatedRows = yield* convertToSchemaObjectWithEffect(
+        DBError,
+        `${schema.tags.entity} Array`,
+      )(Schema.Array(schema.selectSchema), result.updatedRows);
+      return { insertedRows, updatedRows, deletedCount: result.deletedCount };
+    });
+  };
+
 type CrudRepository<
   Insert extends Schema.Top,
   Select extends Schema.Top,
@@ -413,6 +589,36 @@ type CrudRepository<
     modifiedBy?: string,
   ) => Effect.Effect<readonly Schema.Schema.Type<Select>[], DBError>;
   readonly deleteRecords: (ids: string[]) => Effect.Effect<bigint, DBError>;
+  readonly synchronizeRecords: <
+    TInsert extends Schema.Schema.Type<Insert>,
+    TSelect extends TInsert &
+      Readonly<{
+        id: string;
+      }> & { [field: string]: any },
+    TUpdate extends Schema.Schema.Type<Update>,
+    TField extends keyof (TInsert | TUpdate),
+  >(args: {
+    diffResult: {
+      inserts: readonly TInsert[];
+      updates: readonly {
+        id: string;
+        existing: TSelect;
+        incoming: TUpdate;
+        changedFields: readonly TField[];
+        changedValues: Partial<Pick<TUpdate, TField>>;
+      }[];
+      deletes: readonly TSelect[];
+    };
+    modifiedBy?: string;
+    deleteRequired?: boolean;
+  }) => Effect.Effect<
+    {
+      insertedRows: Schema.Schema.Type<Select>[];
+      updatedRows: Schema.Schema.Type<Select>[];
+      deletedCount: bigint;
+    },
+    DBError
+  >;
 };
 
 type WithFindAll<Select extends Schema.Top> = {
@@ -564,6 +770,7 @@ export const makeRepositoryFromDb = <
     findById: selectRecordById(db, params.table, params.schemas),
     updateRecords: updateRecords(db, params.table, params.schemas),
     deleteRecords: deleteRecords(db, params.table),
+    synchronizeRecords: syncRecords(db, params.table, params.schemas),
   };
 
   const ext = extensions

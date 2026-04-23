@@ -1,8 +1,8 @@
 export {
   Page,
-  PageOption,
-  PageResponseOption,
-  PageTextOption,
+  type PageOption,
+  type PageResponseOption,
+  type PageTextOption,
 } from './dom/page.js';
 export { Attribute } from './dom/attribute.js';
 export { DOMElement, GenericElement } from './dom/element.js';

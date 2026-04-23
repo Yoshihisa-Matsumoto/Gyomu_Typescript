@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterAll } from 'vitest';
 import { Effect, Layer } from 'effect';
 import { GyomuRepository } from '../GyomuRepository.js';
 import { MainLayer } from '../../infrastructure/layer.js';
@@ -8,6 +8,7 @@ import { NodeFileSystem } from '@effect/platform-node';
 import { makeRunner } from '../../infrastructure/runtime.js';
 import { MssqlService } from '../../infrastructure/db/MssqlService.js';
 import { LocalDate, YearMonth } from '../../schemas/date.js';
+import { AppInfoSchema } from '../../schemas/gyomu.js';
 
 const TestLayer = Layer.mergeAll(MainLayer, ConfigLayer, GyomuRepository.live)
   .pipe(Layer.provideMerge(KyselyService.live))
@@ -412,5 +413,189 @@ describe('milestoneDaily Repository (Integration)', () => {
     });
 
     await testRunner(program, TestLayer);
+  });
+});
+
+describe('appInfo Repository (Integration) ', () => {
+  const testApplication1ForUpdate = '**test1';
+  const testApplication2ForDelete = '**test2';
+  const testApplication3ForNewInTest = '**test3**';
+
+  beforeEach(async () => {
+    const program = Effect.gen(function* () {
+      const repo = yield* GyomuRepository;
+      const appInfo = repo.appInfo;
+
+      const filtered = yield* appInfo.findByDescription(
+        testApplication1ForUpdate,
+      );
+
+      if (filtered && filtered.length > 0)
+        yield* appInfo.deleteRecords(filtered.map((f) => f.id));
+
+      const filtered2 = yield* appInfo.findByDescription(
+        testApplication2ForDelete,
+      );
+
+      if (filtered2 && filtered2.length > 0)
+        yield* appInfo.deleteRecords(filtered2.map((f) => f.id));
+
+      const filtered3 = yield* appInfo.findByDescription(
+        testApplication3ForNewInTest,
+      );
+
+      if (filtered3 && filtered3.length > 0)
+        yield* appInfo.deleteRecords(filtered3.map((f) => f.id));
+      console.log('Deleted before test');
+      yield* appInfo.create([
+        {
+          description: testApplication1ForUpdate,
+          mailFromAddress: 'old@example.com',
+          mailFromName: null,
+        },
+        {
+          description: testApplication2ForDelete,
+          mailFromAddress: 'old2@example.com',
+          mailFromName: null,
+        },
+      ]);
+      console.log('Created before test');
+    });
+    await testRunner(program, TestLayer);
+  });
+  afterAll(async () => {
+    const program = Effect.gen(function* () {
+      const repo = yield* GyomuRepository;
+      const appInfo = repo.appInfo;
+
+      const filtered = yield* appInfo.findByDescription(
+        testApplication1ForUpdate,
+      );
+
+      if (filtered && filtered.length > 0)
+        yield* appInfo.deleteRecords(filtered.map((f) => f.id));
+
+      const filtered2 = yield* appInfo.findByDescription(
+        testApplication2ForDelete,
+      );
+
+      if (filtered2 && filtered2.length > 0)
+        yield* appInfo.deleteRecords(filtered2.map((f) => f.id));
+
+      const filtered3 = yield* appInfo.findByDescription(
+        testApplication3ForNewInTest,
+      );
+
+      if (filtered3 && filtered3.length > 0)
+        yield* appInfo.deleteRecords(filtered3.map((f) => f.id));
+      console.log('Deleted before test');
+    });
+    await testRunner(program, TestLayer);
+  });
+  it('insert / update / delete が正しく反映される', async () => {
+    // 初期データ
+    const program = Effect.gen(function* () {
+      const repo = yield* GyomuRepository;
+      const appInfo = repo.appInfo;
+
+      const tobeUpdated = yield* appInfo.findByDescription(
+        testApplication1ForUpdate,
+      );
+      const updatedId = tobeUpdated[0].id;
+      const tobeDeleted = yield* appInfo.findByDescription(
+        testApplication2ForDelete,
+      );
+
+      const diffResult: Parameters<
+        typeof appInfo.synchronizeRecords
+      >[0]['diffResult'] = {
+        inserts: [
+          {
+            description: testApplication3ForNewInTest,
+            mailFromAddress: 'new@example.com',
+            mailFromName: null,
+          },
+        ],
+        updates: [
+          {
+            id: updatedId,
+            existing: tobeUpdated[0] as typeof AppInfoSchema.types._select,
+            incoming: {
+              id: updatedId,
+              description: tobeUpdated[0].description,
+              mailFromName: tobeUpdated[0].mailFromName,
+              mailFromAddress: null,
+            },
+            changedFields: ['mailFromAddress'],
+            changedValues: { mailFromAddress: null },
+          },
+        ],
+        deletes: tobeDeleted,
+      } satisfies Parameters<
+        typeof appInfo.synchronizeRecords
+      >[0]['diffResult'];
+      return yield* appInfo.synchronizeRecords({
+        diffResult,
+        deleteRequired: true,
+      });
+    });
+    const result = await testRunner(program, TestLayer);
+
+    expect(result.insertedRows.length).toBe(1);
+    expect(result.updatedRows[0].mailFromAddress).toBe(null);
+    expect(result.deletedCount).toBe(1n);
+  });
+  it('insert / update が正しく反映され,Deleteは行わない', async () => {
+    // 初期データ
+    const program = Effect.gen(function* () {
+      const repo = yield* GyomuRepository;
+      const appInfo = repo.appInfo;
+
+      const tobeUpdated = yield* appInfo.findByDescription(
+        testApplication1ForUpdate,
+      );
+      const updatedId = tobeUpdated[0].id;
+      const tobeDeleted = yield* appInfo.findByDescription(
+        testApplication2ForDelete,
+      );
+
+      const diffResult: Parameters<
+        typeof appInfo.synchronizeRecords
+      >[0]['diffResult'] = {
+        inserts: [
+          {
+            description: testApplication3ForNewInTest,
+            mailFromAddress: 'new@example.com',
+            mailFromName: null,
+          },
+        ],
+        updates: [
+          {
+            id: updatedId,
+            existing: tobeUpdated[0] as typeof AppInfoSchema.types._select,
+            incoming: {
+              id: updatedId,
+              description: tobeUpdated[0].description,
+              mailFromName: tobeUpdated[0].mailFromName,
+              mailFromAddress: null,
+            },
+            changedFields: ['mailFromAddress'],
+            changedValues: { mailFromAddress: null },
+          },
+        ],
+        deletes: tobeDeleted,
+      } satisfies Parameters<
+        typeof appInfo.synchronizeRecords
+      >[0]['diffResult'];
+      return yield* appInfo.synchronizeRecords({
+        diffResult,
+        deleteRequired: false,
+      });
+    });
+    const result = await testRunner(program, TestLayer);
+
+    expect(result.insertedRows.length).toBe(1);
+    expect(result.updatedRows[0].mailFromAddress).toBe(null);
+    expect(result.deletedCount).toBe(0n);
   });
 });

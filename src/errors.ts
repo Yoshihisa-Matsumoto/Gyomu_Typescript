@@ -37,6 +37,17 @@ export class DBError extends AppError {
   }
 }
 
+export class AiError extends AppError {
+  readonly _tag = 'AiError';
+  severity = Severity.ERROR;
+  isRetryable(): boolean {
+    return false;
+  }
+  constructor(message: string, cause?: unknown) {
+    super(message, cause);
+  }
+}
+
 export class TimeoutError extends AppError {
   readonly _tag = 'TimeoutError';
   severity = Severity.ERROR;

@@ -4,7 +4,7 @@ import { TargetDateSchema } from './date.js';
 
 export const appInfoDefinition = {
   fields: {
-    description: db.optionalText({ maxLength: 50 }),
+    description: db.text({ maxLength: 50 }),
     mailFromAddress: db.optionalText({ maxLength: 200 }),
     mailFromName: db.optionalText({ maxLength: 200 }),
   },

@@ -4,7 +4,7 @@
  */
 
 export interface GyomuAppsInfoCdtbl {
-  description: string | null;
+  description: string;
   id: string;
   mail_from_address: string | null;
   mail_from_name: string | null;
