@@ -59,6 +59,7 @@ export interface BusinessCalendar {
     targetDate: LocalDate,
     dayOffset: number,
   ) => LocalDate;
+  getHolidays: (from: LocalDate, to: LocalDate) => LocalDate[];
 }
 class BusinessCalendarImpl implements BusinessCalendar {
   private static __marketHolidays: {
@@ -342,6 +343,13 @@ class BusinessCalendarImpl implements BusinessCalendar {
     const businessDay = createDateOnly(targetDate.getFullYear() + 1, 1, 1);
     if (dayOffset === 0) dayOffset = 1;
     return this.__getBusinessDay(businessDay, -dayOffset);
+  }
+  getHolidays(from: LocalDate, to: LocalDate) {
+    return this.#holidays
+      .filter((h) => {
+        return h >= from && h <= to;
+      })
+      .map((d) => d as LocalDate);
   }
 }
 

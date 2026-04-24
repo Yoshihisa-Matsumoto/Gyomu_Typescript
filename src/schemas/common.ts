@@ -5,6 +5,42 @@ import { AppError, AppErrorCtor } from '../base-error.js';
 import { unknownError } from '../errors.js';
 import { LocalDateSchema } from './date.js';
 
+export type CrudSchemasBase<
+  Insert extends Schema.Top,
+  Select extends Schema.Top,
+  Update extends Schema.Top,
+> = {
+  readonly tags: { entity: string };
+  readonly insertSchema: Insert;
+  readonly selectSchema: Select;
+  readonly updateSchema: Update;
+  readonly updatefieldNames: string[];
+};
+
+export type CrudSchemasWithAudit<
+  Insert extends Schema.Top,
+  Select extends Schema.Top,
+  Update extends Schema.Top,
+> = CrudSchemasBase<Insert, Select, Update> & {
+  includeAuditFields: true;
+};
+
+export type CrudSchemasWithoutAudit<
+  Insert extends Schema.Top,
+  Select extends Schema.Top,
+  Update extends Schema.Top,
+> = CrudSchemasBase<Insert, Select, Update> & {
+  includeAuditFields?: false;
+};
+
+export type CrudSchemas<
+  Insert extends Schema.Top,
+  Select extends Schema.Top,
+  Update extends Schema.Top,
+> =
+  | CrudSchemasWithAudit<Insert, Select, Update>
+  | CrudSchemasWithoutAudit<Insert, Select, Update>;
+
 export const jsonString2SchemaObjectWithoutEffect = <
   S extends Schema.Schema<any>,
 >(

@@ -12,6 +12,7 @@ import { fromPromise } from '../../shared/effect/core.js';
 import {
   convertToSchemaObjectWithEffect,
   convertFromSchemaObjectWithEffect,
+  CrudSchemas,
 } from '../../schemas/common.js';
 import { generateUuid7 } from '../../shared/guid.js';
 import { LocalDate } from '../../schemas/date.js';
@@ -27,42 +28,6 @@ export function toSqlDate(localDate: LocalDate): Date {
   return new Date(`${localDate}T00:00:00+09:00`);
 }
 const getNewTimestamp = () => new Date();
-
-export type CrudSchemasBase<
-  Insert extends Schema.Top,
-  Select extends Schema.Top,
-  Update extends Schema.Top,
-> = {
-  readonly tags: { entity: string };
-  readonly insertSchema: Insert;
-  readonly selectSchema: Select;
-  readonly updateSchema: Update;
-  readonly updatefieldNames: string[];
-};
-
-export type CrudSchemasWithAudit<
-  Insert extends Schema.Top,
-  Select extends Schema.Top,
-  Update extends Schema.Top,
-> = CrudSchemasBase<Insert, Select, Update> & {
-  includeAuditFields: true;
-};
-
-export type CrudSchemasWithoutAudit<
-  Insert extends Schema.Top,
-  Select extends Schema.Top,
-  Update extends Schema.Top,
-> = CrudSchemasBase<Insert, Select, Update> & {
-  includeAuditFields?: false;
-};
-
-export type CrudSchemas<
-  Insert extends Schema.Top,
-  Select extends Schema.Top,
-  Update extends Schema.Top,
-> =
-  | CrudSchemasWithAudit<Insert, Select, Update>
-  | CrudSchemasWithoutAudit<Insert, Select, Update>;
 
 const selectRecordById =
   <

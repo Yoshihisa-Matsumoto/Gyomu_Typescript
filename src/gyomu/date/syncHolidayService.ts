@@ -2,7 +2,7 @@ import { Effect } from 'effect';
 import { fetchJpxHolidays } from '../../infrastructure/holiday/jpxFetcher.js';
 import { GyomuError, unknownError } from '../../errors.js';
 import { GyomuRepository } from '../GyomuRepository.js';
-import { diffEntities } from '../../infrastructure/db/diffEntities.js';
+import { diffEntities } from '../../schemas/diffEntities.js';
 import { MarketHolidaySchema } from '../../schemas/gyomu.js';
 
 export const syncHoliday = (
