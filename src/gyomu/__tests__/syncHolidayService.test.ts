@@ -59,6 +59,13 @@ describe('syncHoliday', () => {
     repoMock.marketHoliday.findByMarket.mockReturnValue(
       Effect.succeed(mockExisting),
     );
+    repoMock.marketHoliday.synchronizeRecords.mockReturnValue(
+      Effect.succeed({
+        insertedRows: [],
+        updatedRows: [],
+        deletedCount: 0n,
+      }),
+    );
 
     const program = syncHoliday('JP', {
       retrieveMarketHoliday: () => Effect.succeed(mockIncoming),

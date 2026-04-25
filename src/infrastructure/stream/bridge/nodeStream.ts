@@ -3,7 +3,7 @@ import { Duplex, Readable, Transform } from 'node:stream';
 import { IOError, unknownError } from '../../../errors.js';
 import { AppError } from '../../../base-error.js';
 import { runSync } from 'effect/Effect';
-import { NodeStream } from '@effect/platform-node';
+//import { NodeStream } from '@effect/platform-node';
 
 export const acquireNodeStream = <T extends Duplex>(create: () => T) =>
   Effect.acquireRelease(Effect.sync(create), (stream) =>
@@ -164,11 +164,26 @@ export const throughNodeStreamScoped =
 //         throughNodeStream<I, O>(t)<E, R>(input),
 //       ),
 //     );
-export const fromReadable = (readable: Readable) =>
-  NodeStream.fromReadable({
-    evaluate: () => readable,
-    onError: (e) => unknownError(IOError, e, 'node stream error'),
-  });
+export const fromReadable = (readable: Readable) => {
+  //readable.resume();
+  return Stream.fromAsyncIterable(readable, (e) =>
+    unknownError(IOError, e, 'node stream error'),
+  ).pipe(
+    // ストリームが完了、中断、失敗した際に必ず呼び出されるクリーンアップ処理
+    Stream.ensuring(
+      Effect.sync(() => {
+        if (!readable.destroyed) {
+          readable.destroy();
+        }
+      }),
+    ),
+  );
+};
+// export const fromReadable = (readable: Readable) =>
+//   NodeStream.fromReadable({
+//     evaluate: () => readable,
+//     onError: (e) => unknownError(IOError, e, 'node stream error'),
+//   });
 
 /**
  * @deprecated こちらは backpressure 対応のための実験的な実装。安易に使用しないこと。

@@ -33,7 +33,7 @@ describe('All Schema Definitions', () => {
   it('AppInfo is consistent', () => {
     assertValidDefinition(AppInfoSchema, {
       id: testId,
-      description: null,
+      description: 'aabc',
       mailFromAddress: null,
       mailFromName: null,
     });

@@ -4,7 +4,8 @@ import { IOError, unknownError } from '../../../../errors.js';
 import { logger } from '../../../../logger.js';
 import {
   fromNodeCallback,
-  fromReadable,
+  //fromReadable,
+  fromReadableControlled,
 } from '../../../../infrastructure/stream/bridge/nodeStream.js';
 import { decode } from '../../../../shared/encoding/decode.js';
 import { AppError } from '../../../../base-error.js';
@@ -99,7 +100,7 @@ export const buildCentralDirectory = <E extends AppError, R = never>(
         } else {
           logger.debug('file');
           zip.openReadStream(entry, (err, rs) => {
-            const stream = fromReadable(rs);
+            const stream = fromReadableControlled(rs);
             runSync(
               Queue.offer(queue, {
                 _tag: 'zip',
