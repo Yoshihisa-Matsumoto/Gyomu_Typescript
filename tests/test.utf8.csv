@@ -1,7 +1,0 @@
-"UserID","UserName","Department","Category","OperationType","RecordId","RecordName"
-"0055h000008aG1SAAU","佐藤一郎","営業1部","Mitoco","Owner Change","a3m1m0000007DRAAA2","異動テスト２（申請済み）"
-"0055h000008aG1SAAU","佐藤一郎","営業1部","Mitoco","Owner Change","a3m1m0000007DR5AAM","異動テスト１(未申請）"
-"0055h000008aG1SAAU","佐藤一郎","営業1部","Mitoco","Owner Change","a3m1m0000007DRFAA2","異動テスト２（処理済み・最終承認待ち）"
-"0055h000008aG1SAAU","佐藤一郎","営業1部","Mitoco","Owner Change","a3m1m0000007DRPAA2","異動テスト（回覧）"
-"0055h000008aG1SAAU","佐藤一郎","営業1部","Mitoco","Owner Change","a3m1m0000007DRKAA2","異動テスト（最終承認済み）"
-"0055h000008aG5dAAE","西澤 智也","営業1部","Mitoco","Access Removal","a3m1m0000007DRPAA2","異動テスト（回覧）"
