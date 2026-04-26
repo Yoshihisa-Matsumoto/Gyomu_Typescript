@@ -3,7 +3,7 @@ import { Effect, Layer } from 'effect';
 
 import { syncHoliday } from '../date/syncHolidayService.js';
 import { GyomuRepository } from '../GyomuRepository.js';
-import { LocalDate } from '../../schemas/date.js';
+import { LocalDate } from '../../../../shared/src/entity/date.js';
 
 // --- モックデータ ---
 const mockIncoming = [

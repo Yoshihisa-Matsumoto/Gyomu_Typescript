@@ -7,7 +7,7 @@ import { KyselyService } from '../../infrastructure/db/KyselyService.js';
 import { NodeFileSystem } from '@effect/platform-node';
 import { makeRunner } from '../../infrastructure/runtime.js';
 import { MssqlService } from '../../infrastructure/db/MssqlService.js';
-import { LocalDate, YearMonth } from '../../schemas/date.js';
+import { LocalDate, YearMonth } from '../../../../shared/src/entity/date.js';
 import { AppInfoSchema } from '../../schemas/gyomu.js';
 
 const TestLayer = Layer.mergeAll(MainLayer, ConfigLayer, GyomuRepository.live)

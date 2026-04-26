@@ -1,9 +1,16 @@
-import { Effect, Schema, SchemaTransformation } from 'effect';
-import { decodeTo, SchemaError } from 'effect/Schema';
+import { Effect, Schema } from 'effect';
 
 import { AppError, AppErrorCtor } from '../base-error.js';
 import { unknownError } from '../errors.js';
-import { LocalDateSchema } from './date.js';
+import {
+  AuditFields,
+  EntityDefinition,
+  Fields,
+  PrimaryFields,
+  Mutable,
+  Optionalized,
+} from '@gyomu/shared/entity';
+import { SchemaError } from 'effect/Schema';
 
 export type CrudSchemasBase<
   Insert extends Schema.Top,
@@ -69,48 +76,12 @@ export const convertFromSchemaObjectWithEffect =
       ),
     );
 
-type Mutable<T> = {
-  -readonly [P in keyof T]: T[P];
-};
 export type CrudSchemaGeneratorType<
   TFields extends Fields,
   TIncludeAudit extends boolean,
 > = ReturnType<typeof defineEntityCrudSchemas<TFields, TIncludeAudit>>;
 //type InferSchema<S extends Schema.Schema<any>> =
 //  S extends Schema.Schema<infer A> ? A : never;
-type Fields = Record<string, Schema.Schema<any>>;
-
-const textRequired = (option?: { minLength?: number; maxLength?: number }) => {
-  if (!option) return Schema.String;
-  if (!option.minLength)
-    return Schema.String.check(Schema.isMaxLength(option.maxLength!));
-  if (!option.maxLength)
-    return Schema.String.check(Schema.isMinLength(option.minLength!));
-  return Schema.String.check(
-    Schema.isMaxLength(option.maxLength!),
-    Schema.isMinLength(option.minLength!),
-  );
-};
-
-const BigIntFromDbValue = Schema.String.pipe(
-  Schema.decodeTo(
-    Schema.BigInt,
-    SchemaTransformation.transform({
-      decode: (value) => BigInt(value),
-      encode: (value) => value.toString(),
-    }),
-  ),
-);
-
-const IsoDateTimeString = Schema.Date.pipe(
-  decodeTo(
-    Schema.String,
-    SchemaTransformation.transform({
-      decode: (date) => date.toISOString(),
-      encode: (str) => new Date(str),
-    }),
-  ),
-);
 
 // const IsoDateString = Schema.Date.pipe(
 //   decodeTo(
@@ -122,36 +93,6 @@ const IsoDateTimeString = Schema.Date.pipe(
 //   ),
 // );
 //const IsoDateString = LocalDateSchema;
-
-export const db = {
-  id: Schema.String.check(Schema.isUUID()),
-  text: textRequired,
-  optionalText: (option?: { minLength?: number; maxLength?: number }) =>
-    Schema.NullOr(textRequired(option)),
-  int: (option?: { min?: number; max?: number }) => {
-    if (!option) return Schema.Number.check(Schema.isInt32());
-    if (!option.min)
-      return Schema.Number.check(Schema.isLessThanOrEqualTo(option.max!));
-    if (!option.max)
-      return Schema.Number.check(Schema.isGreaterThanOrEqualTo(option.min!));
-    return Schema.Number.check(
-      Schema.isLessThanOrEqualTo(option.max!),
-      Schema.isGreaterThanOrEqualTo(option.min!),
-    );
-  },
-  bigInt: BigIntFromDbValue,
-  boolean: Schema.Boolean,
-  timestampString: IsoDateTimeString,
-  dateString: LocalDateSchema,
-  optionalBoolean: Schema.NullOr(Schema.Boolean),
-  optionalTimestampString: Schema.NullOr(IsoDateTimeString),
-  optionalDateString: Schema.NullOr(LocalDateSchema),
-  optionalId: Schema.NullOr(Schema.String.check(Schema.isUUID())),
-};
-
-type Optionalized<T extends Fields> = {
-  [K in keyof T]: ReturnType<typeof Schema.optional<T[K]>>;
-};
 
 const pickFields = <T extends Fields, K extends readonly (keyof T)[]>(
   fields: T,
@@ -172,28 +113,12 @@ const optionalizeFields = <T extends Fields>(fields: T): Optionalized<T> => {
   return result;
 };
 
-const PrimaryFields = {
-  id: db.id,
-};
-const AuditFields = {
-  modifiedAt: db.timestampString,
-  modifiedBy: db.text({ maxLength: 100 }),
-};
-
 export const defineEntityCrudSchemas = <
   TFields extends Fields,
   TIncludeAudit extends boolean,
->(args: {
-  fields: TFields;
-  tags: {
-    entity: string;
-    sensitiveFields?: readonly Extract<keyof TFields, string>[];
-  };
-  options?: {
-    includeAudit?: TIncludeAudit;
-    keyMapping?: { readonly [K in keyof TFields]?: PropertyKey };
-  };
-}) => {
+>(
+  args: EntityDefinition<TFields, TIncludeAudit>,
+) => {
   const selectFields = {
     ...PrimaryFields,
     ...args.fields,

@@ -1,7 +1,10 @@
 import { createTool } from '@mastra/core/tools';
 import { HolidayRangeSchema } from '../../../schemas/ai/holiday.js';
 import { Effect, Layer, Schema } from 'effect';
-import { LocalDate, LocalDateSchema } from '../../../schemas/date.js';
+import {
+  LocalDate,
+  LocalDateSchema,
+} from '../../../../../shared/src/entity/date.js';
 import { BusinessCalendarService } from '../../../gyomu/date/BusinessCalendar.js';
 import { MainLayer } from '../../../infrastructure/layer.js';
 import { ConfigLayer } from '../../../infrastructure/config.js';

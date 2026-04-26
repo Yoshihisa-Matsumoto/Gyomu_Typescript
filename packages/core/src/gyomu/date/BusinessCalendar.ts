@@ -13,7 +13,7 @@ import {
   Date2LocalDate,
   LocalDate,
   LocalDate2Date,
-} from '../../schemas/date.js';
+} from '../../../../shared/src/entity/date.js';
 
 export interface BusinessCalendar {
   isBusinessDay: (targetDate: LocalDate) => boolean;

@@ -12,7 +12,7 @@ import {
   Date2LocalDate,
   LocalDate,
   LocalDate2Date,
-} from '../../schemas/date.js';
+} from '../../../../shared/src/entity/date.js';
 
 const VariableType = {
   Date: 'Date',

@@ -1,0 +1,41 @@
+{
+  "name": "@gyomu/shared",
+  "version": "0.2.1",
+  "description": "",
+  "type": "module",
+  "exports": {
+    "./*": {
+      "import": "./lib/*.js",
+      "types": "./lib/*.d.ts"
+    },
+    "./entity": {
+      "import": "./lib/entity/index.js",
+      "types": "./lib/entity/index.d.ts"
+    }
+  },
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "clean": "rimraf lib && rimraf coverage",
+    "test": "vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json ",
+    "test:coverage": "vitest --config vitest.coverage.config.ts --typecheck.tsconfig ./tsconfig.vitest.json --coverage",
+    "start": "pnpm run build:live",
+    "watch": "tsc -w",
+    "build": "tsc -p .",
+    "version": "git add -A src",
+    "postversion": "git push && git push --tags",
+    "sit": "dotenv -e .env -- vitest --config=./vitest.sit.config.ts --typecheck.tsconfig=./tsconfig.vitest.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "files": [
+    "index.js",
+    "lib",
+    "!**/__tests__",
+    "!**/__sit__"
+  ],
+  "dependencies": {
+    "date-fns": "^4.1.0",
+    "effect": "4.0.0-beta.42"
+  }
+}

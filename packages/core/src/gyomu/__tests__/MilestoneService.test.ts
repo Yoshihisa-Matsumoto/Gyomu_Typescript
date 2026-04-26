@@ -3,7 +3,7 @@ import { MilestoneService } from '../MilestoneService.js';
 import { beforeEach, describe, expect, it, test } from 'vitest';
 import { GyomuRepository } from '../GyomuRepository.js';
 import { makeRunner } from '../../infrastructure/runtime.js';
-import { LocalDate } from '../../schemas/date.js';
+import { LocalDate } from '../../../../shared/src/entity/date.js';
 
 const testId = 'F6AE5F2D-BD14-4C5F-9CC3-3A69EF90DD5B';
 const testTime = '2026-10-28T00:00:00.000Z';

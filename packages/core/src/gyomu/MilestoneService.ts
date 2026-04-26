@@ -2,11 +2,7 @@ import { format } from 'date-fns';
 import { polling } from '../shared/effect/timer.js';
 import { Effect, Layer, Schema, ServiceMap } from 'effect';
 import { GyomuRepository } from './GyomuRepository.js';
-import {
-  MilestoneDailyDomainSchema,
-  MilestoneDailySchema,
-  MilestoneSchema,
-} from '../schemas/gyomu.js';
+import { MilestoneDailySchema, MilestoneSchema } from '../schemas/gyomu.js';
 import { DBError, TimeoutError, ValueError } from '../errors.js';
 import { convertToSchemaObjectWithEffect } from '../schemas/common.js';
 import {
@@ -14,7 +10,8 @@ import {
   LocalDateSchema,
   YearMonth,
   YearMonthSchema,
-} from '../schemas/date.js';
+} from '../../../shared/src/entity/date.js';
+import { MilestoneDailyDomainSchema } from '@gyomu/shared/entity';
 
 type MilestoneExistResultType =
   | {

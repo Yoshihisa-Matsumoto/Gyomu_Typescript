@@ -11,7 +11,7 @@ import { ConfigLayer } from '../../infrastructure/config.js';
 import { NodeFileSystem } from '@effect/platform-node';
 import { makeRunner } from '../../infrastructure/runtime.js';
 import { GyomuRepositoryMock } from './baseDBClass.js';
-import { LocalDate } from '../../schemas/date.js';
+import { LocalDate } from '../../../../shared/src/entity/date.js';
 //import { prismaMock } from './baseDBClass';
 
 // let mockCtx: MockContext;

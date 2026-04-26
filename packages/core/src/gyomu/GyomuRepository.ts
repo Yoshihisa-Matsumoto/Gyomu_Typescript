@@ -35,7 +35,7 @@ import { KyselyService } from '../infrastructure/db/KyselyService.js';
 import { DB } from '../db/db.js';
 import { fromPromise } from '../shared/effect/core.js';
 import { DBError } from '../errors.js';
-import { LocalDate, YearMonth } from '../schemas/date.js';
+import { LocalDate, YearMonth } from '../../../shared/src/entity/date.js';
 
 export class GyomuRepository extends ServiceMap.Service<
   GyomuRepository,
