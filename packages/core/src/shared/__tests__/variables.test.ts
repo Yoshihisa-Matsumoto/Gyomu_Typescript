@@ -11,7 +11,7 @@ import { NodeFileSystem } from '@effect/platform-node';
 import { makeRunner } from '../../infrastructure/runtime.js';
 import { MainLayer } from '../../infrastructure/layer.js';
 import { ConfigLayer } from '../../infrastructure/config.js';
-import { Date2LocalDate } from '../../../../shared/src/entity/date.js';
+import { Date2LocalDate } from '@gyomu/shared/entity';
 
 const TestLayer = Layer.mergeAll(VariableTranslatorService.live, MainLayer)
   .pipe(Layer.provideMerge(ConfigLayer))

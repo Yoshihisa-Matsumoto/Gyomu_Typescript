@@ -1,4 +1,4 @@
-import { Effect, Queue, Stream } from 'effect';
+import { Effect, Path, Queue, Stream } from 'effect';
 import yauzl, { RandomAccessReader } from 'yauzl';
 import { IOError, unknownError } from '../../../../errors.js';
 import { logger } from '../../../../logger.js';
@@ -10,11 +10,10 @@ import {
 import { decode } from '../../../../shared/encoding/decode.js';
 import { AppError } from '../../../../base-error.js';
 import { ArchiveEntryItem, massageEntryPath } from '../../common.js';
-import { writeToFile } from '../../../../infrastructure/fs/fs-utils.js';
-import { FileSystem } from 'effect/FileSystem';
+import { writeStreamToFile } from '../../../../infrastructure/fs/fs-utils.js';
+import { FileSystem } from 'effect';
 import { runSync } from 'effect/Effect';
 import { FileTransportInfo } from '../../../../gyomu/file/transport.js';
-import { fs } from '../../../fs/index.js';
 
 export type ZipEntryItem = Extract<ArchiveEntryItem, { _tag: 'zip' }>;
 export type ZipFileEntryItem = Extract<ZipEntryItem, { isDirectory: false }>;
@@ -129,7 +128,7 @@ export const buildCentralDirectory = <E extends AppError, R = never>(
 export const openZipEntries = (
   filePath: string,
   encoding?: string,
-): Stream.Stream<ZipEntryItem, AppError | IOError, FileSystem> =>
+): Stream.Stream<ZipEntryItem, AppError | IOError, FileSystem.FileSystem> =>
   Stream.unwrap(
     Effect.map(withZipFile(filePath), (zip) =>
       buildCentralDirectory(zip, encoding),
@@ -200,7 +199,10 @@ const matchTransfer = (
   return result;
 };
 
-const resolvePath = (entry: ZipEntryItem, info: FileTransportInfo): string => {
+const resolvePath = (
+  entry: ZipEntryItem,
+  info: FileTransportInfo,
+): Effect.Effect<string, never, Path.Path> => {
   const {
     sourceFolderName,
     sourceFileName,
@@ -208,50 +210,54 @@ const resolvePath = (entry: ZipEntryItem, info: FileTransportInfo): string => {
     destinationFileName,
   } = info;
 
-  //const entryPath = entry.path.split('/').join(platform.sep);
+  return Effect.gen(function* () {
+    const ps = yield* Path.Path;
 
-  if (sourceFileName) {
-    return fs.join(destinationPath, destinationFileName ?? sourceFileName);
-  }
-  const remaining = entry.path.substring(sourceFolderName.length);
-  //  if(entry.path.startsWith(sourceFolderName)){
+    //const entryPath = entry.path.split('/').join(platform.sep);
 
-  if (!remaining) return destinationPath;
-  return fs.join(destinationPath, remaining.replace(/[/\\]+$/, ''));
-  // }
+    if (sourceFileName) {
+      return ps.join(destinationPath, destinationFileName ?? sourceFileName);
+    }
+    const remaining = entry.path.substring(sourceFolderName.length);
+    //  if(entry.path.startsWith(sourceFolderName)){
 
-  // // ② destinationFileName がある場合
-  // if (destinationFileName) {
-  //   return destinationPath
-  //     ? platform.join(destinationPath, destinationFileName)
-  //     : destinationFileName;
-  // }
+    if (!remaining) return destinationPath;
+    return ps.join(destinationPath, remaining.replace(/[/\\]+$/, ''));
+    // }
 
-  // // ③ relative path を作る（ここが重要）
-  // let relativePath = entryPath;
+    // // ② destinationFileName がある場合
+    // if (destinationFileName) {
+    //   return destinationPath
+    //     ? platform.join(destinationPath, destinationFileName)
+    //     : destinationFileName;
+    // }
 
-  // if (isSourceDirectory && sourceFolderName) {
-  //   const normalizedSource = sourceFolderName.replace(/[/\\]+$/, '');
+    // // ③ relative path を作る（ここが重要）
+    // let relativePath = entryPath;
 
-  //   if (relativePath.startsWith(normalizedSource)) {
-  //     relativePath = relativePath.slice(normalizedSource.length);
+    // if (isSourceDirectory && sourceFolderName) {
+    //   const normalizedSource = sourceFolderName.replace(/[/\\]+$/, '');
 
-  //     // 先頭のセパレータを除去
-  //     if (relativePath.startsWith(platform.sep)) {
-  //       relativePath = relativePath.slice(1);
-  //     }
-  //   }
-  // }
+    //   if (relativePath.startsWith(normalizedSource)) {
+    //     relativePath = relativePath.slice(normalizedSource.length);
 
-  // // ❗ relativePath が空になるケースは directory entry
-  // if (!relativePath) {
-  //   return destinationPath;
-  // }
+    //     // 先頭のセパレータを除去
+    //     if (relativePath.startsWith(platform.sep)) {
+    //       relativePath = relativePath.slice(1);
+    //     }
+    //   }
+    // }
 
-  // // ④ destinationPath を付与
-  // return destinationPath
-  //   ? platform.join(destinationPath, relativePath)
-  //   : relativePath;
+    // // ❗ relativePath が空になるケースは directory entry
+    // if (!relativePath) {
+    //   return destinationPath;
+    // }
+
+    // // ④ destinationPath を付与
+    // return destinationPath
+    //   ? platform.join(destinationPath, relativePath)
+    //   : relativePath;
+  });
 };
 const extractEntry = (
   entry: ZipEntryItem,
@@ -259,13 +265,14 @@ const extractEntry = (
 ) => {
   logger.debug(`${entry.path} to be extracted `);
   return Effect.gen(function* () {
-    const fileSystem = yield* FileSystem;
-    const outputPath = resolvePath(entry, transferInformation);
+    const fileSystem = yield* FileSystem.FileSystem;
+    const ps = yield* Path.Path;
+    const outputPath = yield* resolvePath(entry, transferInformation);
     logger.debug(`OutputPath:${outputPath}`);
     if (entry.isDirectory) {
       return yield* fileSystem.makeDirectory(outputPath, { recursive: true });
     }
-    const dir = fs.dirname(outputPath);
+    const dir = ps.dirname(outputPath);
     yield* fileSystem.makeDirectory(dir, { recursive: true });
 
     logger.debug(`Creating file:${outputPath},entry:${entry.path}`);
@@ -274,7 +281,7 @@ const extractEntry = (
       Stream.tap((chunk) =>
         Effect.sync(() => console.log(outputPath, chunk.length)),
       ),
-      writeToFile(outputPath),
+      writeStreamToFile(outputPath),
     );
   });
 };
@@ -283,14 +290,15 @@ export const extractSingleFileEntry = (
   targetFile: ZipFileEntryItem,
   destinationFullName: string,
 ) => {
-  return extractEntry(
-    targetFile,
-    new FileTransportInfo({
-      sourceFilename: fs.basename(targetFile.path),
-      destinationFileName: fs.basename(destinationFullName),
-      destinationFolderName: fs.dirname(destinationFullName),
-    }),
-  );
+  return Effect.gen(function* () {
+    const ps = yield* Path.Path;
+    const arg = {
+      sourceFilename: ps.basename(targetFile.path),
+      destinationFileName: ps.basename(destinationFullName),
+      destinationFolderName: ps.dirname(destinationFullName),
+    };
+    yield* extractEntry(targetFile, new FileTransportInfo(arg));
+  });
 };
 export const extractZip =
   <E extends AppError, R = never>(

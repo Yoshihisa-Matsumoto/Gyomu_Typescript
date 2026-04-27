@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { writeCsv } from '../../csv/write.js';
 import { Effect, Stream, Schema } from 'effect';
-import { fs } from '../../fs/index.js';
+import { platform } from '../../fs/index.js';
 
 describe('writeCsv', () => {
   const testSchema = Schema.Struct({
@@ -64,7 +64,7 @@ describe('writeCsv', () => {
     // 実際に動かして結果を確認
     const result = await Effect.runPromise(program);
     const output = result.join('');
-    expect(output).toBe('name,age' + fs.EOL); // ヘッダーだけの出力
+    expect(output).toBe('name,age' + platform.EOL); // ヘッダーだけの出力
   });
 
   it('should handle null and undefined values in rows', async () => {

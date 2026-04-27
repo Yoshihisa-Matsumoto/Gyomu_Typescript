@@ -3,7 +3,7 @@ import {
   string2Base64String,
 } from '../encoding/base64.js';
 import { expect, test } from 'vitest';
-import { fs } from '../../infrastructure/fs/index.js';
+import fs from 'fs';
 import { decode } from '../encoding/decode.js';
 
 test('base64 encode', () => {

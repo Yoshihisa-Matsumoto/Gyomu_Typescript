@@ -8,7 +8,7 @@ import { Effect, Layer } from 'effect';
 import { ParameterMasterSchema } from '../../schemas/gyomu.js';
 import { makeRunner } from '../../infrastructure/runtime.js';
 import { describe } from 'node:test';
-import { LocalDate } from '../../../../shared/src/entity/date.js';
+import { LocalDate } from '@gyomu/shared/entity';
 
 const testId = 'F6AE5F2D-BD14-4C5F-9CC3-3A69EF90DD5B';
 

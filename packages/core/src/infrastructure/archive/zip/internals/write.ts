@@ -1,12 +1,13 @@
-import { Effect, Stream } from 'effect';
+import { Effect, Stream, FileSystem } from 'effect';
 import { IOError } from '../../../../errors.js';
 //import { Readable } from 'node:stream';
 
 import { ZipFile } from 'yazl';
-import { fs } from '../../../fs/index.js';
+import { platform } from '../../../fs/index.js';
 import { FileTransportInfo } from '../../../../gyomu/file/transport.js';
 //import { fromReadable } from '../../../nodeStream.js';
 import { NodeStream } from '@effect/platform-node';
+import { pathExists, readDirectoryDetailed } from '../../../fs/fs-utils.js';
 
 const addFile = (zip: ZipFile, fsPath: string, zipPath: string) =>
   Effect.sync(() => {
@@ -17,21 +18,18 @@ const addDirectory = (
   zip: ZipFile,
   fsPath: string,
   relativeTo: string,
-): Effect.Effect<void, IOError> =>
-  Effect.try({
-    try: () => fs.readdirSync(fsPath, { withFileTypes: true }),
-    catch: (e) => new IOError(String(e)),
-  }).pipe(
+): Effect.Effect<void, IOError, FileSystem.FileSystem> =>
+  readDirectoryDetailed(fsPath).pipe(
     Effect.flatMap((items) =>
       Effect.forEach(items, (item) => {
-        const itemPath = fs.join(fsPath, item.name);
+        const itemPath = platform.join(fsPath, item.name);
         const zipPath = (relativeTo ? relativeTo + '/' : '') + item.name;
 
-        if (item.isDirectory()) {
+        if (item.isDirectory) {
           return addDirectory(zip, itemPath, zipPath);
         }
 
-        if (item.isFile()) {
+        if (item.isFile) {
           return addFile(zip, itemPath, zipPath);
         }
 
@@ -44,7 +42,7 @@ const processTransfers = (zip: ZipFile, list: FileTransportInfo[]) =>
   Effect.forEach(list, (info) => {
     const sourcePath = info.sourceFullNameWithBasePath;
 
-    return Effect.sync(() => fs.existsSync(sourcePath)).pipe(
+    return pathExists(sourcePath).pipe(
       Effect.flatMap((exists) =>
         exists
           ? Effect.void
@@ -67,7 +65,7 @@ const processTransfers = (zip: ZipFile, list: FileTransportInfo[]) =>
 
 export const zipToStream = (
   transferInformationList: FileTransportInfo[],
-): Stream.Stream<Uint8Array, IOError> =>
+): Stream.Stream<Uint8Array, IOError, FileSystem.FileSystem> =>
   Stream.unwrap(
     Effect.gen(function* () {
       const zip = new ZipFile();

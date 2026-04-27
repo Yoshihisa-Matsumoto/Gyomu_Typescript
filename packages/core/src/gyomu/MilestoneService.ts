@@ -10,7 +10,7 @@ import {
   LocalDateSchema,
   YearMonth,
   YearMonthSchema,
-} from '../../../shared/src/entity/date.js';
+} from '@gyomu/shared/entity';
 import { MilestoneDailyDomainSchema } from '@gyomu/shared/entity';
 
 type MilestoneExistResultType =

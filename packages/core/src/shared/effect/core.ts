@@ -21,8 +21,21 @@ export function ensure<E extends AppError>(
   condition: boolean,
   ErrorType: AppErrorCtor<E>,
   message: string,
-): Effect.Effect<boolean, E> {
-  return condition
-    ? Effect.succeed(condition)
-    : Effect.fail<E>(new ErrorType(message) as E);
+): Effect.Effect<void, E> {
+  return condition ? Effect.void : Effect.fail<E>(new ErrorType(message) as E);
+}
+export function ensureEffect<E extends AppError>(
+  condition: Effect.Effect<boolean, any, any>,
+  ErrorType: AppErrorCtor<E>,
+  message: string,
+): Effect.Effect<void, E, any> {
+  return Effect.gen(function* () {
+    if (
+      yield* condition.pipe(
+        Effect.map((e) => unknownError(ErrorType, e, message)),
+      )
+    )
+      return;
+    throw new ErrorType(message);
+  });
 }

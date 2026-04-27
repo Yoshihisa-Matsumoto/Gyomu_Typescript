@@ -1,10 +1,16 @@
-import { Effect } from 'effect';
+import { Effect, FileSystem } from 'effect';
 import { Stream } from 'effect';
-import { NetworkError, IOError } from '../../errors.js';
-import { fs } from '../fs/index.js';
+import { NetworkError, IOError, unknownError } from '../../errors.js';
+import { platform } from '../fs/index.js';
 import { fromSync } from '../../shared/effect/core.js';
 import { networkStream } from '../../shared/effect/stream.js';
 import { fetchEffect } from './client.js';
+import {
+  ensureFileNotExist,
+  getFileStat,
+  pathExists,
+  writeStreamToFile,
+} from '../fs/fs-utils.js';
 
 export const webDownloadStream = (
   url: string,
@@ -25,14 +31,15 @@ export const webDownload = (
   url: string,
   destinationFilename: string,
   headers?: Record<string, string>,
-): Effect.Effect<boolean, NetworkError | IOError> =>
+): Effect.Effect<boolean, NetworkError | IOError, FileSystem.FileSystem> =>
   Effect.gen(function* () {
+    const fs = yield* FileSystem.FileSystem;
     // =====================
     // validation
     // =====================
     if (
-      fs.existsSync(destinationFilename) &&
-      destinationFilename !== fs.basename(destinationFilename)
+      (yield* pathExists(destinationFilename)) &&
+      destinationFilename !== platform.basename(destinationFilename)
     ) {
       return yield* Effect.fail(
         new IOError(`Invalid Filepath :${destinationFilename}`),
@@ -40,15 +47,15 @@ export const webDownload = (
     }
 
     if (
-      fs.existsSync(destinationFilename) &&
-      fs.lstatSync(destinationFilename).isDirectory()
+      (yield* pathExists(destinationFilename)) &&
+      (yield* getFileStat(destinationFilename)).type == 'Directory'
     ) {
       return yield* Effect.fail(
         new IOError(`This is directory:${destinationFilename}`),
       );
     }
 
-    if (!fs.extname(destinationFilename)) {
+    if (!platform.extname(destinationFilename)) {
       return yield* Effect.fail(
         new IOError(
           `file name should include extension:${destinationFilename}`,
@@ -59,18 +66,12 @@ export const webDownload = (
     // =====================
     // file prepare
     // =====================
-    yield* fromSync(
-      IOError,
-      'fail to prepare files to save',
-    )(() => {
-      fs.ensureFileSync(destinationFilename);
-      fs.removeSync(destinationFilename);
-    });
+    yield* ensureFileNotExist(destinationFilename);
 
-    const writer = yield* fromSync(
-      IOError,
-      `fail to create write stream`,
-    )(() => fs.createWriteStream(destinationFilename));
+    // const writer = yield* fromSync(
+    //   IOError,
+    //   `fail to create write stream`,
+    // )(() => fs.createWriteStream(destinationFilename));
 
     // =====================
     // download stream
@@ -88,14 +89,14 @@ export const webDownload = (
 
     //   await finished(Readable.fromWeb(stream as any).pipe(fileWriterStream));
     // });
-    yield* stream.pipe(
-      Stream.runForEach((chunk) =>
-        fromSync(
-          IOError,
-          `write failed: ${destinationFilename}`,
-        )(() => writer.write(chunk)),
-      ),
-    );
-
+    // yield* stream.pipe(
+    //   Stream.runForEach((chunk) =>
+    //     fromSync(
+    //       IOError,
+    //       `write failed: ${destinationFilename}`,
+    //     )(() => writer.write(chunk)),
+    //   ),
+    // );
+    yield* writeStreamToFile(destinationFilename)(stream);
     return true;
   });

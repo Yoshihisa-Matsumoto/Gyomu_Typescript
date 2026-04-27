@@ -1,14 +1,13 @@
-import { fs } from '../fs/index.js';
 import { CsvRow, CsvValue, CsvWriteOption } from './type.js';
 import { stringify } from 'csv';
 import { Options } from 'csv-stringify';
 import { throughNodeStreamScoped } from '../stream/bridge/nodeStream.js';
-import { Stream, Schema, Function, Effect, Console } from 'effect';
+import { Stream, Schema, Function, Effect, Console, Path, Layer } from 'effect';
 import { AppError } from '../../base-error.js';
 import { IOError, unknownError } from '../../errors.js';
-import { FileSystem } from 'effect/FileSystem';
+import { FileSystem } from 'effect';
 import { encodeUtf8ToBinaryStream } from '../../shared/stream/transform/encoding.js';
-import { NodeFileSystem } from '@effect/platform-node';
+import { NodeFileSystem, NodePath } from '@effect/platform-node';
 
 // export const CsvBoolean = Schema.BooleanFromString;
 
@@ -106,8 +105,9 @@ export const jsonToCsv = <T extends Record<string, any>>(
           return stream.pipe(Stream.runForEach(Console.log));
         case 'file':
           return Effect.gen(function* () {
-            const fileSystem = yield* FileSystem;
-            yield* fileSystem.makeDirectory(fs.dirname(output.path), {
+            const fileSystem = yield* FileSystem.FileSystem;
+            const ps = yield* Path.Path;
+            yield* fileSystem.makeDirectory(ps.dirname(output.path), {
               recursive: true,
             });
             yield* stream.pipe(
@@ -125,7 +125,7 @@ export const jusonToCsvRun = async <T extends Record<string, any>>(
 ) => {
   return Effect.runPromise(
     jsonToCsv(records, options, output).pipe(
-      Effect.provide(NodeFileSystem.layer),
+      Effect.provide(NodeFileSystem.layer.pipe(Layer.merge(NodePath.layer))),
     ),
   );
 };
@@ -136,7 +136,8 @@ const convertOption = <R>(options?: CsvWriteOption<R>): Options => {
     quoted: options?.quoted ?? false,
     bom: options?.bom ?? false,
     record_delimiter:
-      options?.recordDelimiter ?? (fs.name == 'linux' ? 'unix' : 'windows'),
+      options?.recordDelimiter ??
+      (process.platform === 'win32' ? 'windows' : 'unix'),
   };
   if (options?.fields) {
     csvOptions.columns = options.fields.map((f) => ({

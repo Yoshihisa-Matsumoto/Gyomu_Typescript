@@ -1,9 +1,11 @@
 import { describe, it, expect, vi } from 'vitest';
-import { Effect } from 'effect';
+import { Effect, Layer } from 'effect';
 import { webDownload } from '../web/download.js';
 import { mockFetch } from './fetchMock.js';
 import { Writable } from 'stream';
 import { Readable } from 'node:stream';
+import { PlatformLayer, MainLayer } from '../layer.js';
+import { makeRunner } from '../runtime.js';
 
 global.fetch = vi.fn().mockResolvedValue({
   ok: true,
@@ -27,11 +29,14 @@ vi.mock('@/platform', () => ({
   },
 }));
 
+const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
+const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
+
 describe('webDownload', () => {
   it('should download file', async () => {
     mockFetch({ a: 1 });
 
-    const result = await Effect.runPromise(
+    const result = await runNodeWithEnvOrThrow(
       webDownload('http://test', 'test.txt'),
     );
 

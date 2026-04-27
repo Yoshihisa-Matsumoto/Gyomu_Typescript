@@ -5,8 +5,8 @@ import { Stream, Schema, Effect, Layer } from 'effect';
 import { readFile } from 'node:fs/promises';
 import { NodeFileSystem } from '@effect/platform-node';
 import { IOError, unknownError } from '../../../errors.js';
-import { fs } from '../../fs/index.js';
-import { fileStream, writeTextToFile } from '../../fs/fs-utils.js';
+import { platform } from '../../fs/index.js';
+import { fileStream, writeTextStreamToFile } from '../../fs/fs-utils.js';
 import { MainLayer, PlatformLayer } from '../../layer.js';
 import { makeRunner } from '../../runtime.js';
 
@@ -144,12 +144,12 @@ describe('CSV Read/Write Integration', () => {
       Effect.gen(function* () {
         return yield* Stream.fromIterable(parsedRecords).pipe(
           writeCsv(schema),
-          writeTextToFile(path),
+          writeTextStreamToFile(path),
         );
       });
 
     await Effect.runPromise(
-      program(fs.join(fs.tmpdir(), 'output-temp.csv')).pipe(
+      program(platform.join(platform.tmpdir(), 'output-temp.csv')).pipe(
         Effect.provide(NodeFileSystem.layer),
         Effect.scoped,
       ),

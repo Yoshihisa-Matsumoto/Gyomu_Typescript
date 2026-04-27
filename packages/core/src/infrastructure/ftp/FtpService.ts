@@ -1,7 +1,14 @@
-import { Effect, Layer, ServiceMap, Redacted, Config } from 'effect';
+import {
+  Effect,
+  Layer,
+  ServiceMap,
+  Redacted,
+  Config,
+  FileSystem,
+} from 'effect';
 import { Client } from 'basic-ftp';
-import { ConfigError, withDefault } from 'effect/Config';
-import { NetworkError } from '../../errors.js';
+import { withDefault } from 'effect/Config';
+import { NetworkError, ConfigError } from '../../errors.js';
 import { ConfigProviderLive, ConfigService } from '../config.js';
 import { fromPromise } from '../../shared/effect/core.js';
 import { AppError } from '../../base-error.js';
@@ -50,7 +57,11 @@ export class FtpService extends ServiceMap.Service<
           remotePath: string,
         ): Effect.Effect<void, AppError | NetworkError, R>;
       }) => Effect.Effect<A, AppError | NetworkError | ConfigError, R>,
-    ) => Effect.Effect<A, AppError | NetworkError | ConfigError, R | Scope>;
+    ) => Effect.Effect<
+      A,
+      AppError | NetworkError | ConfigError,
+      R | Scope | FileSystem.FileSystem
+    >;
   }
 >()('FtpService', {
   make: Effect.gen(function* () {

@@ -1,6 +1,5 @@
 import { Schema } from 'effect';
 import { defineEntityCrudSchemas } from './common.js';
-import { TargetDateSchema } from '../../../shared/src/entity/date.js';
 import {
   appInfoDefinition,
   marketHolidayDefinition,

@@ -25,3 +25,6 @@ export const bufferToArrayBuffer = (buffer: Buffer): ArrayBuffer => {
   // }
   // return ab;
 };
+
+export const Uint8ArraytoBuffer = (u8: Uint8Array): Buffer =>
+  Buffer.from(u8.buffer, u8.byteOffset, u8.byteLength);

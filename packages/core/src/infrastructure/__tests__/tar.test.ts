@@ -1,14 +1,14 @@
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+// import { readFileSync } from 'node:fs';
+// import { join } from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { Effect, Layer, Result, Stream } from 'effect';
 
 import { IOError } from '../../errors.js';
-import { Option } from 'effect';
-import { fs } from '../fs/index.js';
+import { Option, FileSystem } from 'effect';
+//import { fs } from '../fs/index.js';
 import { compareFiles, validateFolders } from './baseClass.js';
 import { FileTransportInfo } from '../../gyomu/file/transport.js';
-import { fileStream } from '../../infrastructure/fs/fs-utils.js';
+import { emptyDir, fileStream } from '../../infrastructure/fs/fs-utils.js';
 import {
   existsInTar,
   filterEntries,
@@ -20,6 +20,8 @@ import {
   makeRunner,
   makeRunnerAsReturn,
 } from '../../infrastructure/runtime.js';
+import { emptydir } from 'fs-extra';
+import { platform } from '../fs/index.js';
 
 const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
 const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
@@ -28,16 +30,19 @@ const runNodeWithEnv = makeRunnerAsReturn(nodeTestLayer);
 
 let compressDirectory: string;
 let extractDirectory: string;
-beforeAll(() => {
-  const tmpPath = fs.tmpdir();
-  const sourceDirectory = fs.resolve('./tests');
-  const destinationDirectory = fs.join(tmpPath, 'compressTar');
-
-  fs.emptyDirSync(destinationDirectory);
-  fs.copySync(sourceDirectory, destinationDirectory);
-  compressDirectory = destinationDirectory;
-  extractDirectory = fs.join(destinationDirectory, 'extract');
-  fs.emptyDirSync(extractDirectory);
+beforeAll(async () => {
+  const program = Effect.gen(function* () {
+    const fs = yield* FileSystem.FileSystem;
+    const tmpPath = yield* fs.makeTempDirectory();
+    const sourceDirectory = platform.resolve('./tests');
+    const destinationDirectory = platform.join(tmpPath, 'compressTar');
+    yield* emptyDir(destinationDirectory);
+    yield* fs.copyFile(sourceDirectory, destinationDirectory);
+    compressDirectory = destinationDirectory;
+    extractDirectory = platform.join(destinationDirectory, 'extract');
+    yield* emptyDir(extractDirectory);
+  });
+  await runNodeWithEnvOrThrow(program);
 });
 
 const validateFileExistence = async (
@@ -64,32 +69,37 @@ const validateFileExistence = async (
 };
 describe('untar test', () => {
   it('untar should return entries and content from temp.tar', async () => {
-    const tarPath = join(process.cwd(), 'tests', 'compress', 'temp.tar');
-    const tarBytes = readFileSync(tarPath);
-    const tarStream = Stream.fromIterable([new Uint8Array(tarBytes)]);
-
     const entryNames: string[] = [];
     let readmeText = '';
 
-    await Effect.runPromise(
-      Effect.gen(function* () {
-        const tar = yield* TarService;
+    const program = Effect.gen(function* () {
+      const fs = yield* FileSystem.FileSystem;
+      const tarPath = platform.join(
+        process.cwd(),
+        'tests',
+        'compress',
+        'temp.tar',
+      );
+      const tarBytes = yield* fs.readFile(tarPath);
+      const tarStream = Stream.fromIterable([tarBytes]);
+      const tar = yield* TarService;
 
-        yield* Stream.runForEach(tar.unarchive(tarStream), (entry) =>
-          Stream.runCollect(entry.openStream()).pipe(
-            Effect.map((chunks) => {
-              entryNames.push(entry.path);
-              if (entry.path === 'README.md') {
-                const buffer = Buffer.concat(
-                  Array.from(chunks).map((c) => Buffer.from(c)),
-                );
-                readmeText = buffer.toString('utf8');
-              }
-            }),
-          ),
-        );
-      }).pipe(Effect.provide(TarService.live)),
-    );
+      yield* Stream.runForEach(tar.unarchive(tarStream), (entry) =>
+        Stream.runCollect(entry.openStream()).pipe(
+          Effect.map((chunks) => {
+            entryNames.push(entry.path);
+            if (entry.path === 'README.md') {
+              const buffer = Buffer.concat(
+                Array.from(chunks).map((c) => Buffer.from(c)),
+              );
+              readmeText = buffer.toString('utf8');
+            }
+          }),
+        ),
+      );
+    });
+
+    await runNodeWithEnvOrThrow(program, TarService.live);
 
     expect(entryNames).toContain('README.md');
     expect(entryNames).toContain('folder1/email_sender.py');
@@ -98,11 +108,16 @@ describe('untar test', () => {
     expect(readmeText).toContain('Gyomu');
   }, 15000);
   it('untar streaming test with filtering entries', async () => {
-    const tarPath = join(process.cwd(), 'tests', 'compress', 'temp.tar');
     // const rawRecords = await runWithEnv(
     //   Stream.runCollect(fileStream(inputFile).pipe(parseCsv())),
     // );
     const program = Effect.gen(function* () {
+      const tarPath = platform.join(
+        process.cwd(),
+        'tests',
+        'compress',
+        'temp.tar',
+      );
       const tar = yield* TarService;
       return yield* fileStream(tarPath).pipe(
         tar.unarchive,
@@ -123,8 +138,13 @@ describe('untar test', () => {
     console.log(readMe);
   });
   it('untar streaming test with mandatory require Entry', async () => {
-    const tarPath = join(process.cwd(), 'tests', 'compress', 'temp.tar');
     const program = Effect.gen(function* () {
+      const tarPath = platform.join(
+        process.cwd(),
+        'tests',
+        'compress',
+        'temp.tar',
+      );
       const tar = yield* TarService;
       return yield* fileStream(tarPath).pipe(
         tar.unarchive,
@@ -138,49 +158,48 @@ describe('untar test', () => {
     //console.log(readMe);
   });
   it('Tar2 Unarchive Folder Test', async () => {
-    const transferInformation = new FileTransportInfo({
-      sourceFolderName: 'folder1/folder 2',
-      destinationFolderName: fs.join(extractDirectory, 'folder 2'),
-    });
-    const tarFilename = fs.join(compressDirectory, 'compress/temp.tar');
-    const program = (path: string, transferInformation: FileTransportInfo) =>
-      Effect.gen(function* () {
-        const tar = yield* TarService;
-        return yield* fileStream(path).pipe(tar.extract(transferInformation));
+    const program = Effect.gen(function* () {
+      const tar = yield* TarService;
+      const transferInformation = new FileTransportInfo({
+        sourceFolderName: 'folder1/folder 2',
+        destinationFolderName: platform.join(extractDirectory, 'folder 2'),
       });
-    const result = await runNodeWithEnv(
-      program(tarFilename, transferInformation),
-      TarService.live,
-    );
+      const tarFilename = platform.join(compressDirectory, 'compress/temp.tar');
+      yield* fileStream(tarFilename).pipe(tar.extract(transferInformation));
+      validateFolders(
+        platform.join(compressDirectory, 'source/folder1/folder 2'),
+        platform.join(extractDirectory, 'folder 2'),
+      );
+    });
+    const result = await runNodeWithEnv(program, TarService.live);
     // const archive: TarArchive = new TarArchive(
     //   platform.join(compressDirectory, 'compress/temp.tar'),
     // );
     // let result = await archive.extract(transferInformation);
     //expect(result.isOk()).toBeTruthy();
     expect(Result.isSuccess(result)).toBeTruthy();
-    validateFolders(
-      fs.join(compressDirectory, 'source/folder1/folder 2'),
-      fs.join(extractDirectory, 'folder 2'),
-    );
   });
   it('Tar Creation Test', async () => {
     //const extractDirectory = platform.join(compressDirectory,'extracted');
-    const sourceDirectory = fs.join(compressDirectory, 'source');
-    const tarFileName = fs.join(compressDirectory, 'test_tar_create.tar');
 
-    const program = (path: string) =>
-      Effect.gen(function* () {
-        const tar = yield* TarService;
-        return yield* tar.create({ tarFileName: path, cwd: sourceDirectory });
+    const program = Effect.gen(function* () {
+      const sourceDirectory = platform.join(compressDirectory, 'source');
+      const tarFileName = platform.join(
+        compressDirectory,
+        'test_tar_create.tar',
+      );
+      const tar = yield* TarService;
+      yield* tar.create({
+        tarFileName: tarFileName,
+        cwd: sourceDirectory,
       });
+      return tarFileName;
+    });
     //const transferInformationList = [transferInformation];
-    const result = await runNodeWithEnvOrThrow(
-      program(tarFileName),
-      TarService.live,
-    );
+    const result = await runNodeWithEnvOrThrow(program, TarService.live);
 
     expect(result).toBeTruthy();
-
+    const tarFileName = result;
     console.log('Create Tar Done');
     await validateFileExistence(tarFileName, 'README.md', true);
     console.log('Tar Entry check done');
@@ -205,22 +224,20 @@ describe('untar test', () => {
     );
     await validateFileExistence(tarFileName, 'ユーザー噂.py', true);
 
-    const destinationRoot = fs.join(extractDirectory, 'fullTarCreate');
-    const program2 = (path: string, destination: string) =>
-      Effect.gen(function* () {
-        const tar = yield* TarService;
-        return yield* fileStream(path).pipe(
-          tar.extractDirectory({ targetDir: destination }),
-        );
-      });
+    const program2 = Effect.gen(function* () {
+      const destinationRoot = platform.join(extractDirectory, 'fullTarCreate');
+      const tar = yield* TarService;
+      yield* fileStream(tarFileName).pipe(
+        tar.extractDirectory({ targetDir: destinationRoot }),
+      );
+      validateFolders(
+        platform.join(compressDirectory, 'source'),
+        destinationRoot,
+      );
+    });
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const result2 = await runNodeWithEnvOrThrow(
-      program2(tarFileName, destinationRoot),
-      TarService.live,
-    );
+    const result2 = await runNodeWithEnvOrThrow(program2, TarService.live);
     //result = await archive.extractAll(destinationRoot);
-
-    validateFolders(fs.join(compressDirectory, 'source'), destinationRoot);
   }, 10000);
   it('Tar Unarchive Test', async () => {
     let transferInformation: FileTransportInfo;
@@ -229,24 +246,34 @@ describe('untar test', () => {
       sourceFilename: 'README.md',
       destinationFolderName: extractDirectory,
     });
-    const tarFileName = fs.join(compressDirectory, 'compress/temp.tar');
 
-    const program = (path: string, transferInformation: FileTransportInfo) =>
+    const program = (transferInformation: FileTransportInfo) =>
       Effect.gen(function* () {
         const tar = yield* TarService;
-        return yield* fileStream(path).pipe(tar.extract(transferInformation));
+        const tarFileName = platform.join(
+          compressDirectory,
+          'compress/temp.tar',
+        );
+        yield* fileStream(tarFileName).pipe(tar.extract(transferInformation));
+        return tarFileName;
       });
     let result = await runNodeWithEnvOrThrow(
-      program(tarFileName, transferInformation),
+      program(transferInformation),
       TarService.live,
     );
-    extractedFile = fs.join(extractDirectory, 'README.md');
-    expect(
-      compareFiles(
-        extractedFile,
-        fs.join(compressDirectory, 'source/README.md'),
-      ),
-    ).toBeTruthy();
+    const tarFileName = result;
+
+    await runNodeWithEnvOrThrow(
+      Effect.gen(function* () {
+        extractedFile = platform.join(extractDirectory, 'README.md');
+        expect(
+          compareFiles(
+            extractedFile,
+            platform.join(compressDirectory, 'source/README.md'),
+          ),
+        ).toBeTruthy();
+      }),
+    );
 
     transferInformation = new FileTransportInfo({
       sourceFilename: 'email_sender.py',
@@ -254,34 +281,41 @@ describe('untar test', () => {
       destinationFolderName: extractDirectory,
     });
     result = await runNodeWithEnvOrThrow(
-      program(tarFileName, transferInformation),
+      program(transferInformation),
       TarService.live,
     );
-    extractedFile = fs.join(extractDirectory, 'email_sender.py');
-    expect(
-      compareFiles(
-        extractedFile,
-        fs.join(compressDirectory, 'source/folder1/email_sender.py'),
-      ),
-    ).toBeTruthy();
 
+    await runNodeWithEnvOrThrow(
+      Effect.gen(function* () {
+        extractedFile = platform.join(extractDirectory, 'email_sender.py');
+        expect(
+          compareFiles(
+            extractedFile,
+            platform.join(compressDirectory, 'source/folder1/email_sender.py'),
+          ),
+        ).toBeTruthy();
+      }),
+    );
     await validateFileExistence(tarFileName, 'ユーザー噂.py', true);
-
     transferInformation = new FileTransportInfo({
       sourceFilename: 'ユーザー噂.py',
       destinationFolderName: extractDirectory,
     });
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     result = await runNodeWithEnvOrThrow(
-      program(tarFileName, transferInformation),
+      program(transferInformation),
       TarService.live,
     );
-    extractedFile = fs.join(extractDirectory, 'ユーザー噂.py');
-    expect(
-      compareFiles(
-        extractedFile,
-        fs.join(compressDirectory, 'source/ユーザー噂.py'),
-      ),
-    ).toBeTruthy();
+    await runNodeWithEnvOrThrow(
+      Effect.gen(function* () {
+        extractedFile = platform.join(extractDirectory, 'ユーザー噂.py');
+        expect(
+          compareFiles(
+            extractedFile,
+            platform.join(compressDirectory, 'source/ユーザー噂.py'),
+          ),
+        ).toBeTruthy();
+      }),
+    );
   }, 10000);
 });

@@ -1,8 +1,8 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { fs } from '../../fs/index.js';
-import { writeToFile } from '../../fs/fs-utils.js';
+import { platform } from '../../fs/index.js';
+import { emptyDir, writeStreamToFile } from '../../fs/fs-utils.js';
 import { compareFiles, validateFolders } from '../baseClass.js';
-import { Effect, Layer, Stream } from 'effect';
+import { Effect, Layer, Stream, FileSystem } from 'effect';
 import {
   existsInZip,
   // extractZip,
@@ -21,19 +21,24 @@ const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
 
 let compressDirectory: string;
 let extractDirectory: string;
-beforeAll(() => {
-  const tmpPath = fs.tmpdir();
-  const sourceDirectory = fs.resolve('./tests');
-  const destinationDirectory = fs.join(tmpPath, 'compressZip');
+beforeAll(async () => {
+  await runNodeWithEnvOrThrow(
+    Effect.gen(function* () {
+      const fs = yield* FileSystem.FileSystem;
+      const tmpPath = platform.tmpdir();
+      const sourceDirectory = platform.resolve('./tests');
+      const destinationDirectory = platform.join(tmpPath, 'compressZip');
 
-  fs.emptyDirSync(destinationDirectory);
-  fs.copySync(sourceDirectory, destinationDirectory);
-  compressDirectory = destinationDirectory;
-  extractDirectory = fs.join(destinationDirectory, 'extract');
-  fs.emptyDirSync(extractDirectory);
+      yield* emptyDir(destinationDirectory);
+      yield* fs.copy(sourceDirectory, destinationDirectory);
+      compressDirectory = destinationDirectory;
+      extractDirectory = platform.join(destinationDirectory, 'extract');
+      yield* emptyDir(extractDirectory);
+    }),
+  );
 });
 describe('Zip resolvePath test', () => {
-  it('resolvePath', () => {
+  it('resolvePath', async () => {
     let transferInformation: FileTransportInfo;
     let output: string;
     transferInformation = new FileTransportInfo({
@@ -41,16 +46,18 @@ describe('Zip resolvePath test', () => {
       destinationFileName: 'outputREADME.md',
       destinationFolderName: extractDirectory,
     });
-    output = exportedForTesting.resolvePath(
-      {
-        _tag: 'zip',
-        crc32: 0,
-        isDirectory: false,
-        path: 'README.md',
-        uncompressedSize: 0,
-        openStream: () => Stream.empty,
-      },
-      transferInformation,
+    output = await runNodeWithEnvOrThrow(
+      exportedForTesting.resolvePath(
+        {
+          _tag: 'zip',
+          crc32: 0,
+          isDirectory: false,
+          path: 'README.md',
+          uncompressedSize: 0,
+          openStream: () => Stream.empty,
+        },
+        transferInformation,
+      ),
     );
     expect(output).toBe(
       `C:\\Users\\yoshm\\AppData\\Local\\Temp\\compressZip\\extract\\outputREADME.md`,
@@ -61,16 +68,18 @@ describe('Zip resolvePath test', () => {
       sourceFolderName: 'folder1',
       destinationFolderName: extractDirectory,
     });
-    output = exportedForTesting.resolvePath(
-      {
-        _tag: 'zip',
-        crc32: 0,
-        isDirectory: false,
-        path: 'folder1/email_sender.py',
-        uncompressedSize: 0,
-        openStream: () => Stream.empty,
-      },
-      transferInformation,
+    output = await runNodeWithEnvOrThrow(
+      exportedForTesting.resolvePath(
+        {
+          _tag: 'zip',
+          crc32: 0,
+          isDirectory: false,
+          path: 'folder1/email_sender.py',
+          uncompressedSize: 0,
+          openStream: () => Stream.empty,
+        },
+        transferInformation,
+      ),
     );
     expect(output).toBe(
       `C:\\Users\\yoshm\\AppData\\Local\\Temp\\compressZip\\extract\\email_sender.py`,
@@ -78,31 +87,35 @@ describe('Zip resolvePath test', () => {
 
     transferInformation = new FileTransportInfo({
       sourceFolderName: 'folder1/folder 2',
-      destinationFolderName: fs.join(extractDirectory, 'folder 2'),
+      destinationFolderName: platform.join(extractDirectory, 'folder 2'),
     });
-    output = exportedForTesting.resolvePath(
-      {
-        _tag: 'zip',
-        crc32: 0,
+    output = await runNodeWithEnvOrThrow(
+      exportedForTesting.resolvePath(
+        {
+          _tag: 'zip',
+          crc32: 0,
 
-        isDirectory: false,
-        path: 'foder1/folder 2/aes_encryption.py',
-        uncompressedSize: 0,
-        openStream: () => Stream.empty,
-      },
-      transferInformation,
+          isDirectory: false,
+          path: 'foder1/folder 2/aes_encryption.py',
+          uncompressedSize: 0,
+          openStream: () => Stream.empty,
+        },
+        transferInformation,
+      ),
     );
     expect(output).toBe(
       `C:\\Users\\yoshm\\AppData\\Local\\Temp\\compressZip\\extract\\folder 2\\aes_encryption.py`,
     );
 
-    output = exportedForTesting.resolvePath(
-      {
-        _tag: 'zip',
-        isDirectory: true,
-        path: 'foder1/folder 2/folder4',
-      },
-      transferInformation,
+    output = await runNodeWithEnvOrThrow(
+      exportedForTesting.resolvePath(
+        {
+          _tag: 'zip',
+          isDirectory: true,
+          path: 'foder1/folder 2/folder4',
+        },
+        transferInformation,
+      ),
     );
     expect(output).toBe(
       `C:\\Users\\yoshm\\AppData\\Local\\Temp\\compressZip\\extract\\folder 2\\folder4`,
@@ -155,8 +168,8 @@ describe('Zip Test', () => {
   });
   it('Zip Creation Test', async () => {
     //const extractDirectory = platform.join(compressDirectory,'extracted');
-    const sourceDirectory = fs.join(compressDirectory, 'source');
-    const zipFilename = fs.join(compressDirectory, 'test_zip_create.zip');
+    const sourceDirectory = platform.join(compressDirectory, 'source');
+    const zipFilename = platform.join(compressDirectory, 'test_zip_create.zip');
     const transferInformation = new FileTransportInfo({
       basePath: sourceDirectory,
     });
@@ -168,7 +181,7 @@ describe('Zip Test', () => {
           const zip = yield* ZipService;
           yield* zip
             .create(transferInformationList)
-            .pipe(writeToFile(zipFilename));
+            .pipe(writeStreamToFile(zipFilename));
           const entries = yield* zip
             .unarchiveFromFile(zipFilename, 'shift-jis')
             .pipe(Stream.runCollect);
@@ -196,7 +209,7 @@ describe('Zip Test', () => {
       destinationFileName: 'outputREADME.md',
       destinationFolderName: extractDirectory,
     });
-    const zipFilename = fs.join(compressDirectory, 'compress/temp.zip');
+    const zipFilename = platform.join(compressDirectory, 'compress/temp.zip');
     const program = (
       zipFilename: string,
       transferInformation: FileTransportInfo,
@@ -213,11 +226,11 @@ describe('Zip Test', () => {
       program(zipFilename, transferInformation),
       ZipService.live,
     );
-    extractedFile = fs.join(extractDirectory, 'outputREADME.md');
+    extractedFile = platform.join(extractDirectory, 'outputREADME.md');
     expect(
       compareFiles(
         extractedFile,
-        fs.join(compressDirectory, 'source/README.md'),
+        platform.join(compressDirectory, 'source/README.md'),
       ),
     ).toBeTruthy();
 
@@ -231,11 +244,11 @@ describe('Zip Test', () => {
       program(zipFilename, transferInformation),
       ZipService.live,
     );
-    extractedFile = fs.join(extractDirectory, 'email_sender.py');
+    extractedFile = platform.join(extractDirectory, 'email_sender.py');
     expect(
       compareFiles(
         extractedFile,
-        fs.join(compressDirectory, 'source/folder1/email_sender.py'),
+        platform.join(compressDirectory, 'source/folder1/email_sender.py'),
       ),
     ).toBeTruthy();
 
@@ -247,11 +260,11 @@ describe('Zip Test', () => {
       program(zipFilename, transferInformation),
       ZipService.live,
     );
-    extractedFile = fs.join(extractDirectory, 'ユーザー噂.py');
+    extractedFile = platform.join(extractDirectory, 'ユーザー噂.py');
     expect(
       compareFiles(
         extractedFile,
-        fs.join(compressDirectory, 'source/ユーザー噂.py'),
+        platform.join(compressDirectory, 'source/ユーザー噂.py'),
       ),
     ).toBeTruthy();
   });
@@ -259,9 +272,9 @@ describe('Zip Test', () => {
   it('ZipEffectUnarchive Folder Test', async () => {
     const transferInformation = new FileTransportInfo({
       sourceFolderName: 'folder1/folder 2',
-      destinationFolderName: fs.join(extractDirectory, 'folder 2'),
+      destinationFolderName: platform.join(extractDirectory, 'folder 2'),
     });
-    const zipFilename = fs.join(compressDirectory, 'compress/temp.zip');
+    const zipFilename = platform.join(compressDirectory, 'compress/temp.zip');
 
     const program = (
       zipFilename: string,
@@ -280,11 +293,11 @@ describe('Zip Test', () => {
       ZipService.live,
     );
     validateFolders(
-      fs.join(compressDirectory, 'source/folder1/folder 2'),
-      fs.join(extractDirectory, 'folder 2'),
+      platform.join(compressDirectory, 'source/folder1/folder 2'),
+      platform.join(extractDirectory, 'folder 2'),
     );
 
-    const destinationRoot = fs.join(extractDirectory, 'fullZipExtract');
+    const destinationRoot = platform.join(extractDirectory, 'fullZipExtract');
     const program2 = (zipFilename: string, destinationFolder: string) =>
       Effect.scoped(
         Effect.gen(function* () {
@@ -298,23 +311,32 @@ describe('Zip Test', () => {
       program2(zipFilename, destinationRoot),
       ZipService.live,
     );
-    validateFolders(fs.join(compressDirectory, 'source'), destinationRoot);
+    validateFolders(
+      platform.join(compressDirectory, 'source'),
+      destinationRoot,
+    );
   });
 });
 describe('ZipCompare test', () => {
   it('Zip Compare Test', async () => {
     const program = await compareZip({
-      sourceFilename: fs.join(compressDirectory, 'compress\\compare1.zip'),
-      destinationFilename: fs.join(compressDirectory, 'compress\\compare2.zip'),
-      resultPath: fs.join(compressDirectory, 'zipCompare'),
+      sourceFilename: platform.join(
+        compressDirectory,
+        'compress\\compare1.zip',
+      ),
+      destinationFilename: platform.join(
+        compressDirectory,
+        'compress\\compare2.zip',
+      ),
+      resultPath: platform.join(compressDirectory, 'zipCompare'),
       recordDelimiter: 'unix',
     });
     await runNodeWithEnvOrThrow(program, ZipService.live);
 
     expect(
       compareFiles(
-        fs.join(compressDirectory, 'zipCompareResult.csv'),
-        fs.join(compressDirectory, 'zipCompare\\@summary.csv'),
+        platform.join(compressDirectory, 'zipCompareResult.csv'),
+        platform.join(compressDirectory, 'zipCompare\\@summary.csv'),
       ),
     ).toBeTruthy();
   });

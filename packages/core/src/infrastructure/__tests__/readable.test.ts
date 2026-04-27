@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { Readable } from 'stream';
+import fs from 'fs';
 import {
   readableStream2ArrayBuffer,
   readableStream2Buffer,
@@ -60,7 +61,7 @@ describe('toReadable', () => {
 
   it('should create Readable from file path (mocked)', () => {
     const path = 'tests/rsa4096';
-    const stream = fileInputToReadable(path);
+    const stream = fileInputToReadable(path, fs.createReadStream);
 
     // 中身まではテストしない（I/Oは別）
     expect(stream).toBeDefined();

@@ -3,7 +3,7 @@ import { TargetDateSchema } from '../../../shared/src/entity/date.js';
 import { EntityDefinition, Fields } from './type.js';
 import { schemaField } from './fields.js';
 
-export const appInfoDefinition: EntityDefinition<Fields, false> = {
+export const appInfoDefinition = {
   fields: {
     description: schemaField.text({ maxLength: 50 }),
     mailFromAddress: schemaField.optionalText({ maxLength: 200 }),
@@ -20,14 +20,14 @@ export const appInfoDefinition: EntityDefinition<Fields, false> = {
       mailFromName: 'mail_from_name',
     },
   },
-} as const;
-export const statusTypeDefinition: EntityDefinition<Fields, false> = {
+} as const satisfies EntityDefinition<Fields, false>;
+export const statusTypeDefinition = {
   fields: {
     description: schemaField.optionalText({ maxLength: 15 }),
   },
   tags: { entity: 'StatusType' },
-} as const;
-export const statusHandlerDefinition: EntityDefinition<Fields, false> = {
+} as const satisfies EntityDefinition<Fields, false>;
+export const statusHandlerDefinition = {
   fields: {
     applicationId: schemaField.id,
     region: schemaField.optionalText({ maxLength: 3 }),
@@ -44,9 +44,9 @@ export const statusHandlerDefinition: EntityDefinition<Fields, false> = {
       recipientType: 'recipient_type',
     },
   },
-} as const;
+} as const satisfies EntityDefinition<Fields, false>;
 
-export const statusInformationDefinition: EntityDefinition<Fields, true> = {
+export const statusInformationDefinition = {
   fields: {
     applicationId: schemaField.id,
     statusTypeId: schemaField.id,
@@ -69,18 +69,18 @@ export const statusInformationDefinition: EntityDefinition<Fields, true> = {
     },
     includeAudit: true,
   },
-} as const;
+} as const satisfies EntityDefinition<Fields, true>;
 
-export const marketHolidayDefinition: EntityDefinition<Fields, false> = {
+export const marketHolidayDefinition = {
   fields: {
     market: schemaField.text({ maxLength: 10 }),
     year: schemaField.int({ max: 65534 }),
     holiday: schemaField.dateString,
   },
   tags: { entity: 'MarketHoliday' },
-} as const;
+} as const satisfies EntityDefinition<Fields, false>;
 
-export const milestoneDefinition: EntityDefinition<Fields, false> = {
+export const milestoneDefinition = {
   fields: {
     milestoneId: schemaField.text({ maxLength: 200 }),
     description: schemaField.text({ maxLength: 1000 }),
@@ -91,8 +91,8 @@ export const milestoneDefinition: EntityDefinition<Fields, false> = {
       milestoneId: 'milestone_id',
     },
   },
-} as const;
-export const milestoneDailyDefinition: EntityDefinition<Fields, true> = {
+} as const satisfies EntityDefinition<Fields, false>;
+export const milestoneDailyDefinition = {
   fields: {
     targetType: schemaField.text({ maxLength: 10 }), // 'daily' | 'monthly'
     targetDate: schemaField.dateString,
@@ -109,7 +109,7 @@ export const milestoneDailyDefinition: EntityDefinition<Fields, true> = {
     },
     includeAudit: true,
   },
-} as const;
+} as const satisfies EntityDefinition<Fields, true>;
 
 export const MilestoneDailyDomainSchema = Schema.Struct({
   id: schemaField.id,
@@ -119,7 +119,7 @@ export const MilestoneDailyDomainSchema = Schema.Struct({
   target: TargetDateSchema,
 });
 
-export const variableParameterDefinition: EntityDefinition<Fields, false> = {
+export const variableParameterDefinition = {
   fields: {
     variableKey: schemaField.text({ maxLength: 20 }),
     description: schemaField.text({ maxLength: 200 }),
@@ -130,9 +130,9 @@ export const variableParameterDefinition: EntityDefinition<Fields, false> = {
       variableKey: 'variable_key',
     },
   },
-} as const;
+} as const satisfies EntityDefinition<Fields, false>;
 
-export const parameterMasterDefinition: EntityDefinition<Fields, false> = {
+export const parameterMasterDefinition = {
   fields: {
     itemKey: schemaField.text({ maxLength: 50 }),
     itemValue: schemaField.text(),
@@ -146,9 +146,9 @@ export const parameterMasterDefinition: EntityDefinition<Fields, false> = {
       itemFromDate: 'item_fromdate',
     },
   },
-} as const;
+} as const satisfies EntityDefinition<Fields, false>;
 
-export const taskInfoDefinition: EntityDefinition<Fields, false> = {
+export const taskInfoDefinition = {
   fields: {
     applicationId: schemaField.id,
     description: schemaField.text({ maxLength: 100 }),
@@ -164,9 +164,9 @@ export const taskInfoDefinition: EntityDefinition<Fields, false> = {
       className: 'class_name',
     },
   },
-} as const;
+} as const satisfies EntityDefinition<Fields, false>;
 
-export const taskInfoAccessListDefitniion: EntityDefinition<Fields, false> = {
+export const taskInfoAccessListDefitniion = {
   fields: {
     applicationId: schemaField.id,
     taskInformationId: schemaField.id,
@@ -183,9 +183,9 @@ export const taskInfoAccessListDefitniion: EntityDefinition<Fields, false> = {
       canAccess: 'can_access',
     },
   },
-} as const;
+} as const satisfies EntityDefinition<Fields, false>;
 
-export const taskDataDefinition: EntityDefinition<Fields, true> = {
+export const taskDataDefinition = {
   fields: {
     applicationId: schemaField.id,
     taskInformationId: schemaField.id,
@@ -201,9 +201,9 @@ export const taskDataDefinition: EntityDefinition<Fields, true> = {
     },
     includeAudit: true,
   },
-} as const;
+} as const satisfies EntityDefinition<Fields, true>;
 
-export const taskInstanceDefinition: EntityDefinition<Fields, true> = {
+export const taskInstanceDefinition = {
   fields: {
     taskDataId: schemaField.id,
     taskStatus: schemaField.text({ maxLength: 10 }),
@@ -222,20 +222,17 @@ export const taskInstanceDefinition: EntityDefinition<Fields, true> = {
     },
     includeAudit: true,
   },
-} as const;
+} as const satisfies EntityDefinition<Fields, true>;
 
-export const taskInstanceSubmitInformationDefinition: EntityDefinition<
-  Fields,
-  false
-> = {
+export const taskInstanceSubmitInformationDefinition = {
   fields: {
     taskInstanceId: schemaField.id,
     submitTo: schemaField.optionalText({ maxLength: 30 }),
   },
   tags: { entity: 'TaskInstanceSubmitInformation' },
-} as const;
+} as const satisfies EntityDefinition<Fields, false>;
 
-export const taskDataStatusDefinition: EntityDefinition<Fields, true> = {
+export const taskDataStatusDefinition = {
   fields: {
     taskDataId: schemaField.id,
     taskStatus: schemaField.text({ maxLength: 10 }),
@@ -250,9 +247,9 @@ export const taskDataStatusDefinition: EntityDefinition<Fields, true> = {
       latestTaskInstanceId: 'latest_task_instance_id',
     },
   },
-} as const;
+} as const satisfies EntityDefinition<Fields, true>;
 
-export const taskDataLogDefinition: EntityDefinition<Fields, true> = {
+export const taskDataLogDefinition = {
   fields: {
     taskDataId: schemaField.id,
     log: schemaField.text(),
@@ -264,9 +261,9 @@ export const taskDataLogDefinition: EntityDefinition<Fields, true> = {
       taskDataId: 'task_data_id',
     },
   },
-} as const;
+} as const satisfies EntityDefinition<Fields, true>;
 
-export const serviceTypeDefinition: EntityDefinition<Fields, false> = {
+export const serviceTypeDefinition = {
   fields: {
     description: schemaField.text({ maxLength: 100 }),
     assemblyName: schemaField.optionalText({ maxLength: 100 }),
@@ -279,9 +276,9 @@ export const serviceTypeDefinition: EntityDefinition<Fields, false> = {
       className: 'class_name',
     },
   },
-} as const;
+} as const satisfies EntityDefinition<Fields, false>;
 
-export const serviceDefinition: EntityDefinition<Fields, false> = {
+export const serviceDefinition = {
   fields: {
     description: schemaField.text({ maxLength: 100 }),
     serviceTypeId: schemaField.id,
@@ -293,9 +290,9 @@ export const serviceDefinition: EntityDefinition<Fields, false> = {
       serviceTypeId: 'service_type_id',
     },
   },
-} as const;
+} as const satisfies EntityDefinition<Fields, false>;
 
-export const taskSchedulerConfigDefinition: EntityDefinition<Fields, false> = {
+export const taskSchedulerConfigDefinition = {
   fields: {
     serviceId: schemaField.id,
     description: schemaField.text({ maxLength: 200 }),
@@ -318,4 +315,4 @@ export const taskSchedulerConfigDefinition: EntityDefinition<Fields, false> = {
       isEnabled: 'is_enabled',
     },
   },
-} as const;
+} as const satisfies EntityDefinition<Fields, false>;

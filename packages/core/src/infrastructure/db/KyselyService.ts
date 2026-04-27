@@ -2,10 +2,9 @@ import { Kysely } from 'kysely';
 import { DB } from '../../db/db.js';
 import { ConfigLayer, ConfigService } from '../config.js';
 import { MainLayer } from '../layer.js';
-import { ConfigError } from 'effect/Config';
-import { Config, Effect, Layer, Scope, ServiceMap } from 'effect';
+import { Config, Effect, Layer, Scope, ServiceMap, FileSystem } from 'effect';
 import { MssqlService } from './MssqlService.js';
-import { DBError, IOError } from '../../errors.js';
+import { DBError, IOError, ConfigError } from '../../errors.js';
 
 export class KyselyService extends ServiceMap.Service<
   KyselyService,
@@ -15,7 +14,7 @@ export class KyselyService extends ServiceMap.Service<
     ) => Effect.Effect<
       Kysely<DB>,
       ConfigError | DBError | IOError,
-      Scope.Scope | MssqlService
+      Scope.Scope | MssqlService | FileSystem.FileSystem
     >;
   }
 >()('KyselyService', {

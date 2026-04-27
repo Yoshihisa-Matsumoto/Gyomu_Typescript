@@ -7,12 +7,12 @@ import { AppError } from '../../../../base-error.js';
 import type { Readable } from 'node:stream';
 import { runSync } from 'effect/Effect';
 
-import { FileSystem } from 'effect/FileSystem';
-import { Path } from 'effect/Path';
-import { PlatformError } from 'effect/PlatformError';
-import { fs } from '../../../fs/index.js';
+import { FileSystem } from 'effect';
+//import { fs } from '../../../fs/index.js';
 import { FileTransportInfo } from '../../../../gyomu/file/transport.js';
 import { ArchiveEntryItem } from '../../common.js';
+import { unknown } from 'effect/SchemaAST';
+import { platform } from '../../../fs/index.js';
 
 type TarEntryItem = Extract<ArchiveEntryItem, { _tag: 'tar' }>;
 /**
@@ -95,6 +95,7 @@ export const untar = <E extends AppError, R = never>(
               ),
             );
 
+            // @effect-diagnostics-next-line floatingEffect:off
             content.pipe(Stream.ensuring(Effect.sync(() => safeNext())));
 
             // Queue.offer を使ってデータを流す (single の代わり)
@@ -222,7 +223,7 @@ export const extractTarAll =
   (destinationDirectory: string) =>
   <E extends AppError, R = never>(
     self: Stream.Stream<Uint8Array<ArrayBufferLike>, E, R>,
-  ): Effect.Effect<void, AppError | PlatformError | E, FileSystem | Path | R> =>
+  ): Effect.Effect<void, IOError | E, FileSystem.FileSystem | R> =>
     extractTarToDirectory({ targetDir: destinationDirectory })(self);
 
 /**
@@ -234,10 +235,9 @@ export const extractTarToDirectory =
   (options: { targetDir: string; stripPath?: string }) =>
   <E extends AppError, R = never>(
     self: Stream.Stream<Uint8Array<ArrayBufferLike>, E, R>,
-  ): Effect.Effect<void, AppError | PlatformError | E, FileSystem | Path | R> =>
+  ): Effect.Effect<void, IOError | E, FileSystem.FileSystem | R> =>
     Effect.gen(function* () {
-      const fs = yield* FileSystem;
-      const path = yield* Path;
+      const fs = yield* FileSystem.FileSystem;
       const { targetDir, stripPath = '' } = options;
 
       return yield* self.pipe(
@@ -257,18 +257,42 @@ export const extractTarToDirectory =
             if (!relativePath)
               return yield* Stream.runDrain(entry.openStream()); // プレフィックス自体はスキップ
 
-            const fullPath = path.join(targetDir, relativePath);
+            const fullPath = platform.join(targetDir, relativePath);
 
             // ディレクトリの場合は作成して終了
             if (entry.isDirectory) {
-              yield* fs.makeDirectory(fullPath, { recursive: true });
-              return yield* Stream.runDrain(entry.openStream());
+              yield* fs
+                .makeDirectory(fullPath, { recursive: true })
+                .pipe(
+                  Effect.mapError((e) =>
+                    unknownError(
+                      IOError,
+                      e,
+                      `Fail to make directory on ${fullPath}`,
+                    ),
+                  ),
+                );
+              return yield* Stream.runDrain(entry.openStream()).pipe(
+                Effect.mapError((e) =>
+                  unknownError(IOError, e, `Fail to save file`),
+                ),
+              );
             }
 
             // ファイルの場合は親ディレクトリを作ってから書き込み
-            yield* fs.makeDirectory(path.dirname(fullPath), {
-              recursive: true,
-            });
+            yield* fs
+              .makeDirectory(platform.dirname(fullPath), {
+                recursive: true,
+              })
+              .pipe(
+                Effect.mapError((e) =>
+                  unknownError(
+                    IOError,
+                    e,
+                    `Fail to make directory on ${platform.dirname(fullPath)}`,
+                  ),
+                ),
+              );
             yield* Effect.logDebug(`Untar ${fullPath}`);
             // entry.content (Stream) をファイルに流し込む
             // sinkUnique などを使って効率的に書き込む
@@ -277,6 +301,7 @@ export const extractTarToDirectory =
               .pipe(Stream.run(fs.sink(fullPath)));
           }),
         ),
+        Effect.mapError((e) => unknownError(IOError, e, `Fail to save file`)),
       );
     });
 
@@ -284,10 +309,9 @@ export const extractTarSingleFile =
   (sourceEntryFullName: string, destinationFolderName: string) =>
   <E extends AppError, R = never>(
     self: Stream.Stream<Uint8Array<ArrayBufferLike>, E, R>,
-  ): Effect.Effect<void, AppError | PlatformError | E, FileSystem | Path | R> =>
+  ): Effect.Effect<void, AppError | IOError | E, FileSystem.FileSystem | R> =>
     Effect.gen(function* () {
-      const fileSystem = yield* FileSystem;
-      const path = yield* Path;
+      const fileSystem = yield* FileSystem.FileSystem;
 
       const entry = yield* self.pipe(
         untar,
@@ -300,27 +324,40 @@ export const extractTarSingleFile =
         );
       }
       // 相対パスの計算 (stripPath 分を削る)
-      const fileName = fs.basename(sourceEntryFullName);
+      const fileName = platform.basename(sourceEntryFullName);
 
-      const fullPath = path.join(destinationFolderName, fileName);
+      const fullPath = platform.join(destinationFolderName, fileName);
 
       // ファイルの場合は親ディレクトリを作ってから書き込み
-      yield* fileSystem.makeDirectory(path.dirname(fullPath), {
-        recursive: true,
-      });
+      yield* fileSystem
+        .makeDirectory(platform.dirname(fullPath), {
+          recursive: true,
+        })
+        .pipe(
+          Effect.mapError((e) =>
+            unknownError(
+              IOError,
+              e,
+              `Fail to make directory on ${platform.dirname(fullPath)}`,
+            ),
+          ),
+        );
       yield* Effect.logDebug(`Untar ${fullPath}`);
       // entry.stream (Stream) をファイルに流し込む
       // sinkUnique などを使って効率的に書き込む
-      return yield* entry
-        .openStream()
-        .pipe(Stream.run(fileSystem.sink(fullPath)));
+      return yield* entry.openStream().pipe(
+        Stream.run(fileSystem.sink(fullPath)),
+        Effect.mapError((e) =>
+          unknownError(IOError, e, `Fail to save file on ${fullPath}`),
+        ),
+      );
     });
 
 export const extractTar =
   <E extends AppError, R = never>(transferInformation: FileTransportInfo) =>
   (
     self: Stream.Stream<Uint8Array<ArrayBufferLike>, E, R>,
-  ): Effect.Effect<void, AppError | PlatformError | E, FileSystem | Path | R> =>
+  ): Effect.Effect<void, AppError | E, FileSystem.FileSystem | R> =>
     Effect.gen(function* () {
       if (
         transferInformation.sourceFileName !==

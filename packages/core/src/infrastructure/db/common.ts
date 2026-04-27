@@ -15,7 +15,7 @@ import {
   CrudSchemas,
 } from '../../schemas/common.js';
 import { generateUuid7 } from '../../shared/guid.js';
-import { LocalDate } from '../../../../shared/src/entity/date.js';
+import { LocalDate } from '@gyomu/shared/entity';
 export type TablesWithId = {
   [K in keyof DB]: DB[K] extends { id: any } ? K : never;
 }[keyof DB];

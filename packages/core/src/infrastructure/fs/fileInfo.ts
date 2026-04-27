@@ -1,4 +1,7 @@
-import { fs } from './index.js';
+import { Effect, FileSystem, Option } from 'effect';
+import { platform } from './index.js';
+import { IOError } from '../../errors.js';
+import { getFileStat } from './fs-utils.js';
 
 export class FileInfo {
   readonly fileName: string;
@@ -12,26 +15,56 @@ export class FileInfo {
   readonly lastAccessTime: Date;
   readonly isFile: boolean;
 
-  constructor(filePath: string) {
-    //console.log('FileInfo', filePath);
-    const stats = fs.statSync(filePath);
-    this.isFile = stats.isFile();
-    if (this.isFile) {
-      this.fileName = fs.basename(filePath);
-      this.fullPath = fs.resolve(filePath);
-      this.directoryName = fs.basename(fs.dirname(filePath));
-      this.directoryPath = fs.dirname(fs.resolve(filePath));
-      this.extension = fs.extname(filePath);
-    } else {
-      this.fileName = '';
-      this.extension = '';
-      this.fullPath = fs.resolve(filePath);
-      this.directoryName = fs.basename(fs.dirname(filePath));
-      this.directoryPath = fs.dirname(fs.resolve(filePath));
-    }
-    this.size = stats.size;
-    this.createTime = stats.birthtime;
-    this.updateTime = stats.mtime;
-    this.lastAccessTime = stats.atime;
+  constructor(args: {
+    fileName: string;
+    fullPath: string;
+    directoryName: string;
+    directoryPath: string;
+    size: number;
+    extension: string;
+    createTime: Date;
+    updateTime: Date;
+    lastAccessTime: Date;
+    isFile: boolean;
+  }) {
+    this.fileName = args.fileName;
+    this.fullPath = args.fullPath;
+    this.directoryName = args.directoryName;
+    this.directoryPath = args.directoryPath;
+    this.size = args.size;
+    this.extension = args.extension;
+    this.createTime = args.createTime;
+    this.updateTime = args.updateTime;
+    this.lastAccessTime = args.lastAccessTime;
+    this.isFile = args.isFile;
   }
 }
+
+export const createFileInfo = (
+  filePath: string,
+): Effect.Effect<FileInfo, IOError, FileSystem.FileSystem> =>
+  Effect.gen(function* () {
+    const stats = yield* getFileStat(filePath);
+
+    const isFile = stats.type === 'File';
+
+    const fullPath = platform.resolve(filePath);
+
+    return new FileInfo({
+      isFile,
+      fileName: isFile ? platform.basename(filePath) : '',
+      extension: isFile ? platform.extname(filePath) : '',
+      fullPath,
+      directoryName: platform.basename(platform.dirname(filePath)),
+      directoryPath: platform.dirname(fullPath),
+      size: Number(stats.size),
+      createTime: Option.getOrElse(
+        Option.orElse(stats.birthtime, () => stats.mtime),
+        () => new Date(0),
+      ),
+      updateTime: Option.getOrElse(stats.mtime, () => new Date(0)),
+      lastAccessTime: Option.getOrElse(stats.atime, () =>
+        Option.getOrElse(stats.mtime, () => new Date(0)),
+      ),
+    });
+  });

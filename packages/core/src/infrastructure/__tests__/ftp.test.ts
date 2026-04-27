@@ -3,12 +3,10 @@ import { Effect, Layer, Redacted, Result, Stream } from 'effect';
 import { FtpService } from '../ftp/FtpService.js';
 import { ConfigService } from '../config.js';
 import { makeRunner, makeRunnerAsReturn } from '../runtime.js';
-import { NetworkError } from '../../errors.js';
+import { NetworkError, ConfigError } from '../../errors.js';
 import { FileTransportInfo } from '../../gyomu/file/transport.js';
 import { NodeFileSystem } from '@effect/platform-node';
 import { Readable } from 'node:stream';
-import { ConfigError } from 'effect/Config';
-import { SourceError } from 'effect/ConfigProvider';
 import { MainLayer, PlatformLayer } from '../layer.js';
 
 const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
@@ -295,7 +293,10 @@ describe('FtpService', () => {
       const failingConfigService = Layer.succeed(ConfigService, {
         load: () =>
           Effect.fail(
-            new ConfigError(new SourceError(new Error('Config load failed'))),
+            new ConfigError(
+              'Config load failed',
+              new Error('Config load failed'),
+            ),
           ),
       });
 

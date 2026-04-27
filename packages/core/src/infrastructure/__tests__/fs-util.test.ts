@@ -1,6 +1,6 @@
 import { Effect, Stream } from 'effect';
 import { describe, it } from 'vitest';
-import { FileSystem } from 'effect/FileSystem';
+import { FileSystem } from 'effect';
 import { NodeFileSystem, NodeStream } from '@effect/platform-node';
 import { IOError, unknownError } from '../../errors.js';
 import fs from 'fs';
@@ -8,7 +8,7 @@ describe('FileSystem simple test', () => {
   it('FileSystem test', async () => {
     const program = (path: string) =>
       Effect.gen(function* () {
-        const fs = yield* FileSystem;
+        const fs = yield* FileSystem.FileSystem;
 
         return fs.stream(path).pipe(
           Stream.tap(() => Effect.log('[chunk]')),

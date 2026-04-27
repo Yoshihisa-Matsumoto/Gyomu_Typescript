@@ -2,9 +2,9 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Effect, Layer } from 'effect';
 import { KyselyService } from '../db/KyselyService.js';
 import { ConfigService } from '../config.js';
-import { ConfigError } from 'effect/Config';
-import { SourceError } from 'effect/ConfigProvider';
 import { MssqlService } from '../db/MssqlService.js';
+import { NodeFileSystem } from '@effect/platform-node';
+import { ConfigError } from '../../errors.js';
 
 // --- mocks ---
 const mockDb = {
@@ -34,6 +34,7 @@ const ConfigServiceMock = Layer.succeed(ConfigService, {
 const layer = Layer.effect(KyselyService, KyselyService.make).pipe(
   Layer.provideMerge(ConfigServiceMock),
   Layer.provideMerge(MssqlMockLayer),
+  Layer.provideMerge(NodeFileSystem.layer),
 );
 
 describe('KyselyService (Effect v4)', () => {
@@ -70,7 +71,10 @@ describe('KyselyService (Effect v4)', () => {
     const ConfigServiceMock = Layer.succeed(ConfigService, {
       load: () =>
         Effect.fail(
-          new ConfigError(new SourceError(new Error('Config load failed'))),
+          new ConfigError(
+            'Config load failed',
+            new Error('Config load failed'),
+          ),
         ),
     });
 
@@ -82,6 +86,7 @@ describe('KyselyService (Effect v4)', () => {
     const layer = Layer.effect(KyselyService, KyselyService.make).pipe(
       Layer.provideMerge(ConfigServiceMock),
       Layer.provideMerge(MssqlMockLayer),
+      Layer.provideMerge(NodeFileSystem.layer),
     );
 
     await expect(

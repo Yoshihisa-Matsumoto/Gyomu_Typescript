@@ -3,9 +3,9 @@ import { Effect, Layer, Redacted, Result, Option } from 'effect';
 import { SshService } from '../ssh/SshService.js';
 import { ConfigService } from '../config.js';
 import { makeRunner, makeRunnerAsReturn } from '../runtime.js';
-import { NetworkError } from '../../errors.js';
+import { NetworkError, ConfigError } from '../../errors.js';
 import { NodeFileSystem } from '@effect/platform-node';
-import { ConfigError } from 'effect/Config';
+
 import { SourceError } from 'effect/ConfigProvider';
 import EventEmitter from 'node:events';
 import { MainLayer, PlatformLayer } from '../layer.js';
@@ -174,7 +174,10 @@ describe('SshService', () => {
       const failingConfigService = Layer.succeed(ConfigService, {
         load: () =>
           Effect.fail(
-            new ConfigError(new SourceError(new Error('Config load failed'))),
+            new ConfigError(
+              'Config load failed',
+              new Error('Config load failed'),
+            ),
           ),
       });
 

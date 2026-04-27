@@ -1,4 +1,4 @@
-import { Effect, Layer, ServiceMap, Stream } from 'effect';
+import { Effect, Layer, Path, ServiceMap, Stream } from 'effect';
 import { IOError } from '../../../errors.js';
 import { AppError } from '../../../base-error.js';
 import { PlatformError } from 'effect/PlatformError';
@@ -15,7 +15,7 @@ import {
   ZipEntryItem,
   ZipFileEntryItem,
 } from './internals/read.js';
-import { FileSystem } from 'effect/FileSystem';
+import { FileSystem } from 'effect';
 // import { Path } from 'effect/Path';
 
 export class ZipService extends ServiceMap.Service<
@@ -23,12 +23,12 @@ export class ZipService extends ServiceMap.Service<
   {
     create: (
       transferInformationList: FileTransportInfo[],
-    ) => Stream.Stream<Uint8Array, IOError>;
+    ) => Stream.Stream<Uint8Array, IOError, FileSystem.FileSystem>;
 
     unarchiveFromFile: (
       filePath: string,
       encoding?: string,
-    ) => Stream.Stream<ZipEntryItem, AppError | IOError, FileSystem>;
+    ) => Stream.Stream<ZipEntryItem, AppError | IOError, FileSystem.FileSystem>;
 
     extractAll: <E extends AppError, R = never>(
       destination: string,
@@ -37,13 +37,17 @@ export class ZipService extends ServiceMap.Service<
     ) => Effect.Effect<
       void,
       IOError | AppError | PlatformError | E,
-      FileSystem | R
+      FileSystem.FileSystem | Path.Path | R
     >;
 
     extractSingle: (
       targetFile: ZipFileEntryItem,
       destinationFullName: string,
-    ) => Effect.Effect<void, AppError | PlatformError, FileSystem>;
+    ) => Effect.Effect<
+      void,
+      AppError | PlatformError,
+      FileSystem.FileSystem | Path.Path
+    >;
 
     extract: <E extends AppError, R = never>(
       transferInformation: FileTransportInfo,
@@ -52,7 +56,7 @@ export class ZipService extends ServiceMap.Service<
     ) => Effect.Effect<
       void,
       IOError | AppError | PlatformError | E,
-      FileSystem | R
+      FileSystem.FileSystem | Path.Path | R
     >;
 
     readEntry: <R = never>(

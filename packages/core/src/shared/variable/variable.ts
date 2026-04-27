@@ -12,7 +12,7 @@ import {
   Date2LocalDate,
   LocalDate,
   LocalDate2Date,
-} from '../../../../shared/src/entity/date.js';
+} from '@gyomu/shared/entity';
 
 const VariableType = {
   Date: 'Date',

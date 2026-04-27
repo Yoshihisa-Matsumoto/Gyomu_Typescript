@@ -4,9 +4,9 @@
   "description": "",
   "type": "module",
   "exports": {
-    "./*": {
-      "import": "./lib/*.js",
-      "types": "./lib/*.d.ts"
+    "./path": {
+      "import": "./lib/path/index.js",
+      "types": "./lib/path/index.d.ts"
     },
     "./entity": {
       "import": "./lib/entity/index.js",
@@ -15,7 +15,7 @@
   },
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "clean": "rimraf lib && rimraf coverage",
+    "clean": "rimraf ./lib && rimraf ./coverage",
     "test": "vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json ",
     "test:coverage": "vitest --config vitest.coverage.config.ts --typecheck.tsconfig ./tsconfig.vitest.json --coverage",
     "start": "pnpm run build:live",

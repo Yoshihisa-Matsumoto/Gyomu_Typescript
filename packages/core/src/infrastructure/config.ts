@@ -1,8 +1,14 @@
-import { Config, ConfigProvider, Effect, Layer, ServiceMap } from 'effect';
-import { ConfigError } from 'effect/Config';
-import { IOError } from '../errors.js';
-import { fs } from './fs/index.js';
+import {
+  Config,
+  ConfigProvider,
+  Effect,
+  Layer,
+  ServiceMap,
+  FileSystem,
+} from 'effect';
+import { IOError, unknownError, ConfigError } from '../errors.js';
 import { fromSync } from '../shared/effect/core.js';
+import { option } from 'effect/Effect';
 // const makeConfigProvider = Effect.gen(function* () {
 //   const dotEnv = yield* ConfigProvider.fromDotEnv();
 //   return ConfigProvider.orElse(dotEnv, ConfigProvider.fromEnv());
@@ -23,22 +29,31 @@ export class ConfigService extends ServiceMap.Service<
     load: <A>(
       config: Config.Config<A>,
       options?: { file: string },
-    ) => Effect.Effect<A, ConfigError | IOError>;
+    ) => Effect.Effect<A, ConfigError | IOError, FileSystem.FileSystem>;
   }
 >()('ConfigService', {
   make: Effect.gen(function* () {
     const provider = yield* ConfigProvider.ConfigProvider;
     const fromJsonFile = (
       path: string,
-    ): Effect.Effect<ConfigProvider.ConfigProvider, IOError> =>
+    ): Effect.Effect<
+      ConfigProvider.ConfigProvider,
+      IOError,
+      FileSystem.FileSystem
+    > =>
       Effect.gen(function* () {
+        const fs = yield* FileSystem.FileSystem;
+        const content = yield* fs
+          .readFileString(path, 'utf-8')
+          .pipe(
+            Effect.mapError((e) =>
+              unknownError(IOError, e, `Fail to read ${path}`),
+            ),
+          );
         const json = yield* fromSync(
           IOError,
-          `Failed to read config from ${path}`,
-        )(() => {
-          const content = fs.readFileSync(path, 'utf-8');
-          return JSON.parse(content);
-        });
+          `fail to parse JSON`,
+        )(() => JSON.parse(content));
         return ConfigProvider.fromUnknown(json);
       });
     return {
@@ -46,9 +61,25 @@ export class ConfigService extends ServiceMap.Service<
         Effect.gen(function* () {
           if (options?.file) {
             const fileLoader = yield* fromJsonFile(options.file);
-            return yield* config.parse(fileLoader);
+            return yield* config
+              .parse(fileLoader)
+              .pipe(
+                Effect.mapError((e) =>
+                  unknownError(
+                    ConfigError,
+                    e,
+                    `Fail to load from file: ${options.file}`,
+                  ),
+                ),
+              );
           }
-          return yield* config.parse(provider);
+          return yield* config
+            .parse(provider)
+            .pipe(
+              Effect.mapError((e) =>
+                unknownError(ConfigError, e, `Fail to load from env/.env`),
+              ),
+            );
         }),
     };
   }),

@@ -2,12 +2,13 @@ import { Client, ConnectConfig, FileEntryWithStats, SFTPWrapper } from 'ssh2';
 import { IOError, NetworkError, unknownError } from '../../../errors.js';
 import { Effect, Stream } from 'effect';
 import { AppError } from '../../../base-error.js';
-import { fromPromise, fromSync } from '../../../shared/effect/core.js';
-import { fs } from '../../fs/index.js';
 import { FileTransportInfo } from '../../../gyomu/file/transport.js';
-import { fromReadable } from '../../stream/bridge/nodeStream.js';
-import { Readable, Writable } from 'node:stream';
-import { NodeStream } from '@effect/platform-node';
+import { toEntryPath } from '@gyomu/shared/path';
+import { FileSystem } from 'effect';
+import { readDirectoryDetailed } from '../../fs/fs-utils.js';
+import { uploadFromStreamUnderNodejs } from './upload.node.js';
+import { withSftp } from './shared.js';
+import { downloadToStreamUnderNodejs } from './download.node.js';
 
 export const connectEffect = (client: Client, config: ConnectConfig) =>
   Effect.callback<undefined, NetworkError>((resume) => {
@@ -42,27 +43,6 @@ export const connectEffect = (client: Client, config: ConnectConfig) =>
     });
   });
 
-const withSftp =
-  (client: Client) =>
-  <A, E, R = never>(
-    f: (sftp: SFTPWrapper) => Effect.Effect<A, E, R>,
-  ): Effect.Effect<A, E | NetworkError, R> =>
-    Effect.callback((resume) => {
-      client.sftp((err, sftp) => {
-        if (err || !sftp) {
-          resume(
-            Effect.fail(
-              unknownError(NetworkError, err, 'Failed to create SFTP session'),
-            ),
-          );
-          return;
-        }
-
-        // f(sftp) を実行して結果をそのまま流す
-        resume(f(sftp));
-      });
-    });
-
 export const listInternal = (sftp: SFTPWrapper, remoteDir: string) =>
   Effect.callback<FileEntryWithStats[], NetworkError>((resume) => {
     sftp.readdir(remoteDir, (err, list) => {
@@ -79,9 +59,7 @@ export const listInternal = (sftp: SFTPWrapper, remoteDir: string) =>
   });
 export const list =
   (client: Client) =>
-  <E extends AppError, R = never>(
-    path: string,
-  ): Effect.Effect<string[], E | NetworkError, R> =>
+  <R = never>(path: string): Effect.Effect<string[], NetworkError, R> =>
     withSftp(client)((sftp) =>
       listInternal(sftp, path).pipe(
         Effect.map((fileInfoList) => fileInfoList.map((f) => f.filename)),
@@ -90,7 +68,7 @@ export const list =
 
 export const getFileInfo =
   (client: Client) =>
-  <E extends AppError, R = never>(
+  <R = never>(
     path: string,
   ): Effect.Effect<
     {
@@ -98,7 +76,7 @@ export const getFileInfo =
       size: number;
       date: Date;
     },
-    E | NetworkError,
+    NetworkError,
     R
   > =>
     withSftp(client)((sftp) =>
@@ -159,13 +137,21 @@ const downloadDir =
   (
     remoteDir: string,
     localDir: string,
-  ): Effect.Effect<void, IOError | NetworkError> =>
+  ): Effect.Effect<void, IOError | NetworkError, FileSystem.FileSystem> =>
     Effect.gen(function* () {
+      const fs = yield* FileSystem.FileSystem;
       // ローカルディレクトリ作成
-      yield* fromSync(
-        IOError,
-        'Failed to create local directory',
-      )(() => fs.mkdirSync(localDir, { recursive: true }));
+      // yield* fromSync(
+      //   IOError,
+      //   'Failed to create local directory',
+      // )(() => fs.makeDirectory(localDir, { recursive: true }));
+      yield* fs
+        .makeDirectory(localDir, { recursive: true })
+        .pipe(
+          Effect.mapError((e) =>
+            unknownError(IOError, e, 'Failed to create local directory'),
+          ),
+        );
 
       const list = yield* listInternal(sftp, remoteDir);
 
@@ -188,24 +174,18 @@ export const download =
   (client: Client) =>
   (
     transportInformation: FileTransportInfo,
-  ): Effect.Effect<boolean, IOError | NetworkError> =>
+  ): Effect.Effect<boolean, IOError | NetworkError, FileSystem.FileSystem> =>
     withSftp(client)((sftp) =>
       Effect.gen(function* () {
         if (transportInformation.isSourceDirectory) {
-          const remoteDir = transportInformation.sourceFolderName.replace(
-            fs.sep,
-            '/',
-          );
+          const remoteDir = toEntryPath(transportInformation.sourceFolderName);
 
           yield* downloadDir(sftp)(
             remoteDir,
             transportInformation.destinationPath,
           );
         } else {
-          const remoteFile = transportInformation.sourceFullName.replace(
-            fs.sep,
-            '/',
-          );
+          const remoteFile = toEntryPath(transportInformation.sourceFullName);
 
           yield* downloadFile(sftp)(
             remoteFile,
@@ -219,57 +199,10 @@ export const download =
 
 export const downloadToStream =
   (client: Client) =>
-  <E extends AppError, R = never>(
+  <R = never>(
     path: string,
-  ): Stream.Stream<Uint8Array, E | IOError | NetworkError, R> =>
-    Stream.unwrap(
-      withSftp(client)((sftp) =>
-        Effect.gen(function* () {
-          const stream = yield* Effect.callback<Readable, NetworkError>(
-            (resume) => {
-              try {
-                const rs = sftp.createReadStream(path);
-
-                const onError = (err: Error) => {
-                  cleanup();
-                  resume(
-                    Effect.fail(
-                      new NetworkError(
-                        `Failed to create read stream: ${err.message}`,
-                      ),
-                    ),
-                  );
-                };
-
-                const onOpen = () => {
-                  cleanup();
-                  resume(Effect.succeed(rs));
-                };
-
-                const cleanup = () => {
-                  rs.off('error', onError);
-                  rs.off('open', onOpen);
-                };
-
-                rs.on('error', onError);
-                rs.on('open', onOpen);
-              } catch (e) {
-                resume(
-                  Effect.fail(
-                    new NetworkError(
-                      `Failed to create read stream: ${String(e)}`,
-                    ),
-                  ),
-                );
-              }
-            },
-          );
-
-          // Node Readable → Effect Stream
-          return fromReadable(stream);
-        }),
-      ),
-    );
+  ): Stream.Stream<Uint8Array, IOError | NetworkError, R> =>
+    downloadToStreamUnderNodejs(client)(path);
 
 const uploadFile = (sftp: SFTPWrapper) => (local: string, remote: string) =>
   Effect.callback<void, NetworkError>((resume) => {
@@ -328,20 +261,28 @@ const mkdirRecursive =
 
 const uploadDir =
   (sftp: SFTPWrapper) =>
-  (localDir: string, remoteDir: string): Effect.Effect<void, NetworkError> =>
+  (
+    localDir: string,
+    remoteDir: string,
+  ): Effect.Effect<void, IOError | NetworkError, FileSystem.FileSystem> =>
     Effect.gen(function* () {
       yield* mkdirRecursive(sftp)(remoteDir);
 
-      const entries = yield* fromPromise(
-        NetworkError,
-        'Failed to read local directory',
-      )(() => fs.readdir(localDir, { withFileTypes: true }));
+      const entries = yield* readDirectoryDetailed(localDir).pipe(
+        Effect.mapError((e) =>
+          unknownError(IOError, e, 'Fail to read local directory'),
+        ),
+      );
+      // const entries = yield* fromPromise(
+      //   NetworkError,
+      //   'Failed to read local directory',
+      // )(() => fs.readdir(localDir, { withFileTypes: true }));
 
       yield* Effect.forEach(entries, (entry) => {
         const localPath = `${localDir}/${entry.name}`;
         const remotePath = `${remoteDir}/${entry.name}`;
 
-        if (entry.isDirectory()) {
+        if (entry.type == 'Directory') {
           return uploadDir(sftp)(localPath, remotePath);
         } else {
           return uploadFile(sftp)(localPath, remotePath);
@@ -353,12 +294,11 @@ export const upload =
   (client: Client) =>
   (
     transportInformation: FileTransportInfo,
-  ): Effect.Effect<boolean, NetworkError> =>
+  ): Effect.Effect<boolean, IOError | NetworkError, FileSystem.FileSystem> =>
     withSftp(client)((sftp) =>
       Effect.gen(function* () {
-        const remoteBase = transportInformation.destinationFullName.replace(
-          fs.sep,
-          '/',
+        const remoteBase = toEntryPath(
+          transportInformation.destinationFullName,
         );
 
         if (transportInformation.isSourceDirectory) {
@@ -383,96 +323,4 @@ export const uploadFromStream =
     source: Stream.Stream<Uint8Array, E, R>,
     remotePath: string,
   ): Effect.Effect<void, E | NetworkError, R> =>
-    withSftp(client)((sftp) =>
-      Effect.scoped(
-        Effect.gen(function* () {
-          const readable = yield* NodeStream.toReadable(source);
-
-          const writable = yield* Effect.callback<Writable, NetworkError>(
-            (resume) => {
-              try {
-                const ws = sftp.createWriteStream(remotePath);
-
-                const onOpen = () => {
-                  cleanup();
-                  resume(Effect.succeed(ws));
-                };
-
-                const onError = (err: Error) => {
-                  cleanup();
-                  resume(
-                    Effect.fail(
-                      new NetworkError(
-                        `Failed to open remote file: ${err.message}`,
-                      ),
-                    ),
-                  );
-                };
-
-                const cleanup = () => {
-                  ws.off('open', onOpen);
-                  ws.off('error', onError);
-                };
-
-                ws.on('open', onOpen);
-                ws.on('error', onError);
-              } catch (e) {
-                resume(
-                  Effect.fail(
-                    new NetworkError(
-                      `Failed to create write stream: ${String(e)}`,
-                    ),
-                  ),
-                );
-              }
-            },
-          );
-
-          // 🔥 ここが重要
-          yield* Effect.acquireRelease(
-            Effect.sync(() => {
-              readable.pipe(writable);
-              return { readable, writable };
-            }),
-            ({ readable, writable }) =>
-              Effect.sync(() => {
-                // interrupt時も確実に閉じる
-                readable.destroy?.();
-                writable.destroy?.();
-              }),
-          ).pipe(
-            Effect.flatMap(() =>
-              Effect.callback<void, NetworkError>((resume) => {
-                const onFinish = () => {
-                  cleanup();
-                  resume(Effect.succeed(undefined));
-                };
-
-                const onError = (err: Error) => {
-                  cleanup();
-                  resume(
-                    Effect.fail(
-                      new NetworkError(`Upload failed: ${err.message}`),
-                    ),
-                  );
-                };
-
-                const cleanup = () => {
-                  readable.off('error', onError);
-                  writable.off('error', onError);
-                  writable.off('finish', onFinish);
-                  writable.off('close', onFinish); // 🔥 念のため
-                };
-
-                readable.on('error', onError);
-                writable.on('error', onError);
-                writable.on('finish', onFinish);
-                writable.on('close', onFinish);
-
-                return Effect.sync(cleanup);
-              }),
-            ),
-          );
-        }),
-      ),
-    );
+    uploadFromStreamUnderNodejs(client)(source, remotePath);

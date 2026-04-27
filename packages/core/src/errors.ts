@@ -79,6 +79,16 @@ export class AccessError extends AppError {
   }
 }
 
+export class ConfigError extends AppError {
+  readonly _tag = 'ConfigError';
+  severity = Severity.ERROR;
+  isRetryable(): boolean {
+    return false;
+  }
+  constructor(message: string, cause?: unknown) {
+    super(message, cause);
+  }
+}
 export class CriticalError extends AppError {
   readonly _tag = 'CriticalError';
   severity = Severity.FATAL;

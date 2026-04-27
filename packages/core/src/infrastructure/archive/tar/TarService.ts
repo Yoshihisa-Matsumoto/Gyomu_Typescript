@@ -3,8 +3,7 @@ import { IOError } from '../../../errors.js';
 import { ArchiveEntryItem } from '../common.js';
 import { AppError } from '../../../base-error.js';
 import { PlatformError } from 'effect/PlatformError';
-import { FileSystem } from 'effect/FileSystem';
-import { Path } from 'effect/Path';
+import { FileSystem } from 'effect';
 import {
   createTar,
   extractTar,
@@ -40,7 +39,7 @@ export class TarService extends ServiceMap.Service<
     ) => Effect.Effect<
       void,
       AppError | PlatformError | E,
-      FileSystem | Path | R
+      FileSystem.FileSystem | R
     >;
 
     extractSingle: <E extends AppError, R>(
@@ -51,7 +50,7 @@ export class TarService extends ServiceMap.Service<
     ) => Effect.Effect<
       void,
       AppError | PlatformError | E,
-      FileSystem | Path | R
+      FileSystem.FileSystem | R
     >;
 
     extractDirectory: (options: {
@@ -62,7 +61,7 @@ export class TarService extends ServiceMap.Service<
     ) => Effect.Effect<
       void,
       AppError | PlatformError | E,
-      FileSystem | Path | R
+      FileSystem.FileSystem | R
     >;
 
     extract: <E extends AppError, R = never>(
@@ -72,7 +71,7 @@ export class TarService extends ServiceMap.Service<
     ) => Effect.Effect<
       void,
       AppError | PlatformError | E,
-      FileSystem | Path | R
+      FileSystem.FileSystem | R
     >;
 
     readEntry: (entry: TarEntryItem) => Effect.Effect<Uint8Array[], AppError>;

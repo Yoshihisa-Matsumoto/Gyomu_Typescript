@@ -2,9 +2,14 @@ import { pipe, Ref, Stream } from 'effect';
 import { AppError } from '../../../base-error.js';
 import { DiffDetail } from '../../../shared/object/diff.js';
 import { Effect } from 'effect';
-import { ensure } from '../../../shared/effect/core.js';
-import { fs } from '../../fs/index.js';
-import { IOError } from '../../../errors.js';
+import {
+  ensure,
+  ensureEffect,
+  fromPromise,
+  fromSync,
+} from '../../../shared/effect/core.js';
+//import { fs } from '../../fs/index.js';
+import { IOError, unknownError } from '../../../errors.js';
 import { spawnSync } from 'node:child_process';
 import {
   extractSingleFileEntry,
@@ -12,7 +17,7 @@ import {
   ZipFileEntryItem,
 } from './internals/read.js';
 import { PlatformError } from 'effect/PlatformError';
-import { FileSystem } from 'effect/FileSystem';
+import { FileSystem, Path } from 'effect';
 import { jsonToCsv } from '../../csv/write.js';
 import { ZipService } from './ZipService.js';
 import {
@@ -27,6 +32,7 @@ import {
   shouldRunGitDiff,
   ZipCompareOption,
 } from './internals/compare.js';
+import { emptyDir } from '../../fs/fs-utils.js';
 // export type DiffDetail = {
 //   path: string;
 //   sourceValue: string;
@@ -45,29 +51,31 @@ export const compareZip = (
 ): Effect.Effect<
   DiffSummary[] | undefined,
   AppError | PlatformError,
-  FileSystem | ZipService
+  FileSystem.FileSystem | Path.Path | ZipService
 > => {
   const { sourceFilename, destinationFilename, resultPath } = option;
 
   return Effect.gen(function* () {
-    yield* ensure(
-      fs.existsSync(sourceFilename),
+    const fs = yield* FileSystem.FileSystem;
+    const ps = yield* Path.Path;
+    yield* ensureEffect(
+      fs.exists(sourceFilename),
       IOError,
       `${sourceFilename} Not exist`,
     );
-    yield* ensure(
-      fs.existsSync(destinationFilename),
+    yield* ensureEffect(
+      fs.exists(destinationFilename),
       IOError,
       `${destinationFilename} Not exist`,
     );
-
-    yield* Effect.try({
-      try: () => {
-        fs.removeSync(resultPath);
-        fs.emptyDirSync(resultPath);
-      },
-      catch: (e) => new IOError('Fail to prepare result directory', e),
-    });
+    yield* emptyDir(resultPath).pipe(
+      Effect.mapError((e) =>
+        unknownError(
+          IOError,
+          `Fail to prepare empty directory on ${resultPath}`,
+        ),
+      ),
+    );
 
     // Zip取得
     const zip = yield* ZipService;
@@ -178,7 +186,7 @@ export const compareZip = (
       },
       {
         type: 'file',
-        path: fs.join(resultPath, summaryFilename),
+        path: ps.join(resultPath, summaryFilename),
       },
     );
 
@@ -379,8 +387,9 @@ const writeCsvIfNeeded = (
 ) =>
   diffDetailList.length > 0
     ? Effect.gen(function* () {
+        const ps = yield* Path.Path;
         const filePath =
-          fs.join(resultPath, sourceFile.path.replaceAll('/', '\\')) +
+          ps.join(resultPath, sourceFile.path.replaceAll('/', '\\')) +
           '.diff.csv';
 
         yield* jsonToCsv(
@@ -434,81 +443,132 @@ export const runCompareFuncFlow = (
     };
   });
 };
-const gitTempPath = fs.join(fs.tmpdir(), 'gitCompareTemp');
+
 const compareTextfile = (
   source: ZipFileEntryItem,
   destination: ZipFileEntryItem,
   filePath: string,
   resultPath: string,
-): Effect.Effect<boolean, IOError | AppError | PlatformError, FileSystem> => {
-  const sourceFilename = fs.join(gitTempPath, 'before');
-  const destinationFilename = fs.join(gitTempPath, 'after');
-  const diffFilename = fs.join(
-    resultPath,
-    filePath.replaceAll('/', '\\') + '.diff',
-  );
-  return pipe(
-    // ① 事前準備
-    Effect.try({
-      try: () => {
-        fs.emptyDirSync(gitTempPath);
+): Effect.Effect<
+  boolean,
+  IOError | AppError | PlatformError,
+  FileSystem.FileSystem | Path.Path
+> => {
+  return Effect.gen(function* () {
+    const fs = yield* FileSystem.FileSystem;
+    const ps = yield* Path.Path;
+    const gitTempPath = ps.join(
+      yield* fs.makeTempDirectory(),
+      'gitCompareTemp',
+    );
+    const sourceFilename = ps.join(gitTempPath, 'before');
+    const destinationFilename = ps.join(gitTempPath, 'after');
+    const diffFilename = ps.join(
+      resultPath,
+      filePath.replaceAll('/', '\\') + '.diff',
+    );
 
-        fs.removeSync(sourceFilename);
-        fs.removeSync(destinationFilename);
+    yield* emptyDir(gitTempPath);
 
-        const diffFilePath = fs.dirname(diffFilename);
-        fs.ensureDirSync(diffFilePath);
-      },
-      catch: (e) => new IOError('fail to prepare files for git diff', e),
-    }),
+    yield* fs.remove(sourceFilename);
+    yield* fs.remove(destinationFilename);
+
+    const diffFilePath = ps.dirname(diffFilename);
+    yield* fs.makeDirectory(diffFilePath, { recursive: true });
 
     // ② source 展開
-    Effect.andThen(extractSingleFileEntry(source, sourceFilename)),
-
+    yield* extractSingleFileEntry(source, sourceFilename);
     // ③ destination 展開
-    Effect.andThen(extractSingleFileEntry(destination, destinationFilename)),
-
+    yield* extractSingleFileEntry(destination, destinationFilename);
     // ④ git diff 実行
-    Effect.andThen(
-      Effect.try({
-        try: () => {
-          const commandArg = [
-            'diff',
-            '--no-index',
-            '--no-prefix',
-            '--output',
-            diffFilename,
-            sourceFilename,
-            destinationFilename,
-          ];
+    const outputMessage = yield* fromSync(
+      IOError,
+      'fail to generate diff files through git diff',
+    )(() => {
+      const commandArg = [
+        'diff',
+        '--no-index',
+        '--no-prefix',
+        '--output',
+        diffFilename,
+        sourceFilename,
+        destinationFilename,
+      ];
 
-          const result = spawnSync('git', commandArg, {
-            cwd: gitTempPath,
-          });
+      const result = spawnSync('git', commandArg, {
+        cwd: gitTempPath,
+      });
 
-          if (result.error) {
-            throw result.error;
-          }
+      if (result.error) {
+        throw result.error;
+      }
+      return result.output?.toString();
+    });
 
-          if (!fs.existsSync(diffFilename)) {
-            throw new Error(result.output?.toString());
-          }
+    if (!(yield* fs.exists(diffFilename))) {
+      throw new IOError(outputMessage);
+    }
 
-          removeUnnecessaryLinesFromDiffFile(diffFilename);
+    yield* removeUnnecessaryLinesFromDiffFile(diffFilename);
 
-          return true;
-        },
-        catch: (e) =>
-          new IOError('fail to generate diff files through git diff', e),
-      }),
-    ),
-  );
+    return true;
+  });
+  // }).pipe(
+  //   Effect.mapError((e) =>
+  //     unknownError(
+  //       IOError,
+  //       e,
+  //       `Fail to compare Text file ${source.path} vs ${destination.path}`,
+  //     ),
+  //   ),
+  // );
+
+  // return pipe(
+
+  //   // ④ git diff 実行
+  //   Effect.andThen(
+  //     Effect.try({
+  //       try: () => {
+  //         const commandArg = [
+  //           'diff',
+  //           '--no-index',
+  //           '--no-prefix',
+  //           '--output',
+  //           diffFilename,
+  //           sourceFilename,
+  //           destinationFilename,
+  //         ];
+
+  //         const result = spawnSync('git', commandArg, {
+  //           cwd: gitTempPath,
+  //         });
+
+  //         if (result.error) {
+  //           throw result.error;
+  //         }
+
+  //         if (!fs.existsSync(diffFilename)) {
+  //           throw new Error(result.output?.toString());
+  //         }
+
+  //         removeUnnecessaryLinesFromDiffFile(diffFilename);
+
+  //         return true;
+  //       },
+  //       catch: (e) =>
+  //         new IOError('fail to generate diff files through git diff', e),
+  //     }),
+  //   ),
+  // );
 };
 
 const removeUnnecessaryLinesFromDiffFile = (diffFilename: string) => {
-  fs.writeFileSync(
-    diffFilename,
-    fs.readFileSync(diffFilename, 'utf8').split('\n').slice(4).join('\n'),
-    { flag: 'w', flush: true },
-  );
+  return Effect.gen(function* () {
+    const fs = yield* FileSystem.FileSystem;
+    const content = (yield* fs.readFileString(diffFilename, 'utf8'))
+      .split('\n')
+      .slice(4)
+      .join('\n');
+    yield* fs.writeFileString(diffFilename, content, { flag: 'w' });
+  });
 };

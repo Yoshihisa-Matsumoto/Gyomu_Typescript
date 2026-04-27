@@ -1,14 +1,15 @@
-import { Effect, Layer, ServiceMap, Config, Option } from 'effect';
+import { Effect, Layer, ServiceMap, Config, Option, FileSystem } from 'effect';
 import { Client } from 'ssh2';
-import { ConfigError, withDefault } from 'effect/Config';
-import { NetworkError } from '../../errors.js';
+import { withDefault } from 'effect/Config';
+import { NetworkError, ConfigError, IOError } from '../../errors.js';
 import { ConfigProviderLive, ConfigService } from '../config.js';
 import { unwrapPassword } from '../../shared/effect/option.js';
 import { AppError } from '../../base-error.js';
 import { Scope } from 'effect/Scope';
 import { execute } from './internals/sshClient.js';
-import { fs } from '../fs/index.js';
+
 import { connectEffect } from './internals/sshClient.js';
+import { readStringFromFile } from '../fs/fs-utils.js';
 
 //type FtpConfig = Config.Success<typeof ftpConfigRaw>;
 
@@ -35,7 +36,11 @@ export class SshService extends ServiceMap.Service<
           R
         >;
       }) => Effect.Effect<A, AppError | NetworkError | ConfigError, R>,
-    ) => Effect.Effect<A, AppError | NetworkError | ConfigError, R | Scope>;
+    ) => Effect.Effect<
+      A,
+      AppError | NetworkError | IOError | ConfigError,
+      R | Scope | FileSystem.FileSystem
+    >;
   }
 >()('SshService', {
   make: Effect.gen(function* () {
@@ -77,7 +82,7 @@ export class SshService extends ServiceMap.Service<
                   username: config.user,
                   password: unwrapPassword(config.password),
                   privateKey: privateKeyFilename
-                    ? fs.readFileSync(privateKeyFilename, 'utf-8')
+                    ? yield* readStringFromFile(privateKeyFilename, 'utf-8')
                     : undefined,
                 });
 

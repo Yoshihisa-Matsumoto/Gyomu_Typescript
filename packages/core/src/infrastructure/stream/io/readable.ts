@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import { fs } from '../../fs/index.js';
+//import { fs } from '../../fs/index.js';
 
 export const readableStream2ArrayBuffer = async (stream: ReadableStream) => {
   return await new Response(stream).arrayBuffer();
@@ -11,14 +11,30 @@ export const readableStream2Buffer = async (stream: ReadableStream) => {
 };
 
 export type FileInput = string | Buffer | Readable;
-export const fileInputToReadable = (input: FileInput): Readable => {
+export function fileInputToReadable(
+  input: string,
+  createReadStream: (path: string) => Readable,
+): Readable;
+
+export function fileInputToReadable(input: Buffer | Readable): Readable;
+
+export function fileInputToReadable(
+  input: FileInput,
+  createReadStream?: (path: string) => Readable,
+): Readable {
   if (typeof input === 'string') {
-    return fs.createReadStream(input);
+    if (!createReadStream) {
+      throw new Error('createReadStream required');
+    }
+    return createReadStream(input);
   }
-  if (Buffer.isBuffer(input)) return Readable.from(input);
+
+  if (Buffer.isBuffer(input)) {
+    return Readable.from(input);
+  }
 
   return input;
-};
+}
 
 export const readableToBuffer = async (
   input: Buffer | Readable,

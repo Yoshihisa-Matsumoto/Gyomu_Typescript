@@ -1,65 +1,80 @@
-import { Effect, Layer, ServiceMap } from 'effect';
+import { Effect, FileSystem, Layer, ServiceMap } from 'effect';
 import { FileFilterInfo } from '../../gyomu/file/filter.js';
 import { FileCompareType, FilterType } from '../../gyomu/file/types.js';
-import { FileInfo } from '../../infrastructure/fs/fileInfo.js';
+import { createFileInfo, FileInfo } from '../../infrastructure/fs/fileInfo.js';
 import { compareAsc } from 'date-fns';
-import { fs } from '../../infrastructure/fs/index.js';
+import { platform } from '../../infrastructure/fs/index.js';
 import { IOError } from '../../errors.js';
 import { fromSync } from '../effect/core.js';
+import {
+  pathExists,
+  readDirectoryDetailed,
+} from '../../infrastructure/fs/fs-utils.js';
 
 const searchFunc = (
   parentDirectory: string,
   filterConditions: FileFilterInfo[],
   isRecursive: boolean = false,
-): Effect.Effect<FileInfo[], IOError> =>
+): Effect.Effect<FileInfo[], IOError, FileSystem.FileSystem> =>
   Effect.gen(function* () {
-    if (!fs.existsSync(parentDirectory)) {
+    const fs = yield* FileSystem.FileSystem;
+    if (!(yield* pathExists(parentDirectory))) {
       return [];
     }
 
-    const dirents = yield* fromSync(
-      IOError,
-      `Fail to read dir ${parentDirectory}`,
-    )(() => fs.readdirSync(parentDirectory, { withFileTypes: true }));
+    const dirents = yield* readDirectoryDetailed(parentDirectory);
 
-    const results: FileInfo[] = [];
+    const results = yield* Effect.forEach(
+      dirents,
+      (dirent) =>
+        Effect.gen(function* () {
+          const fullPath = platform.join(
+            platform.resolve(parentDirectory),
+            dirent.name,
+          );
 
-    for (const dirent of dirents) {
-      const fullPath = fs.join(fs.resolve(parentDirectory), dirent.name);
+          // ファイル
+          if (dirent.isFile) {
+            const [ok, fileInfo] = yield* isFileValid(
+              fullPath,
+              filterConditions,
+            );
+            return ok ? [fileInfo] : [];
+          }
 
-      if (dirent.isFile()) {
-        const [ok, fileInfo] = isFileValid(fullPath, filterConditions);
-        if (ok) results.push(fileInfo);
-      } else if (dirent.isDirectory() && isRecursive) {
-        const childList = yield* searchFunc(
-          fullPath,
-          filterConditions,
-          isRecursive,
-        );
-        results.push(...childList);
-      }
-    }
+          // ディレクトリ（再帰）
+          if (dirent.isDirectory && isRecursive) {
+            return yield* searchFunc(fullPath, filterConditions, isRecursive);
+          }
 
-    return results;
+          return [];
+        }),
+      { concurrency: 1 }, // 順序必要なら
+    );
+
+    // flatten
+    return results.flat();
   });
 
 const isFileValid = (
   fileFullPath: string,
   filterConditions: FileFilterInfo[],
-): [boolean, FileInfo] => {
+): Effect.Effect<[boolean, FileInfo], IOError, FileSystem.FileSystem> => {
   let isMatch = true;
-  const fileInformation = new FileInfo(fileFullPath);
+  return Effect.gen(function* () {
+    const fileInformation = yield* createFileInfo(fileFullPath);
 
-  if (!fileInformation.isFile) return [false, fileInformation];
+    if (!fileInformation.isFile) return [false, fileInformation];
 
-  if (!filterConditions || filterConditions.length === 0)
-    return [true, fileInformation];
+    if (!filterConditions || filterConditions.length === 0)
+      return [true, fileInformation];
 
-  for (const filterInfo of filterConditions) {
-    isMatch = isFileValidForFileter(fileInformation, filterInfo);
-    if (!isMatch) break;
-  }
-  return [isMatch, fileInformation];
+    for (const filterInfo of filterConditions) {
+      isMatch = isFileValidForFileter(fileInformation, filterInfo);
+      if (!isMatch) break;
+    }
+    return [isMatch, fileInformation];
+  });
 };
 const isFileValidForFileter = (
   fileInformation: FileInfo,
@@ -139,7 +154,7 @@ export class FileSearchService extends ServiceMap.Service<
       parentDirectory: string,
       filterConditions: FileFilterInfo[],
       isRecursive?: boolean,
-    ) => Effect.Effect<FileInfo[], IOError>;
+    ) => Effect.Effect<FileInfo[], IOError, FileSystem.FileSystem>;
   }
 >()('FileSearchService', {
   make: Effect.succeed({

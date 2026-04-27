@@ -1,10 +1,16 @@
 import * as pki from '../crypt/pki.js';
 import * as aes from '../crypt/aes.js';
-import { fs } from '../fs/index.js';
+import fs from 'fs';
 import { bufferToArrayBuffer } from '../../shared/binary/convert.js';
 import { tmpNameSync } from 'tmp';
 import { compareFiles } from './baseClass.js';
 import { test, expect } from 'vitest';
+import { Layer } from 'effect';
+import { MainLayer, PlatformLayer } from '../layer.js';
+import { makeRunner } from '../runtime.js';
+
+const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
+const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
 
 test('aes gcm decode compatibility with other library encoded data', () => {
   const csharp_result =
@@ -55,31 +61,36 @@ test('Invalid AES Key Encrypt Test', () => {
   }).toThrow('Invalid Key Length:');
 });
 
-test('AES Encrypt/Decrypt using binary file key', () => {
+test('AES Encrypt/Decrypt using binary file key', async () => {
   const keyFilename = './tests/key-256.key.dat';
   // const keyBuffer = fs.readFileSync(keyFilename);
   // const keyBufferArrary = bufferToArrayBuffer(keyBuffer);
   const plainFilename = './tests/utf8_sample.txt';
   const plainBuffer = fs.readFileSync(plainFilename);
-  const encryptedBuffer = aes.aesEncryptBufferByKeyFile(
-    bufferToArrayBuffer(plainBuffer),
-    keyFilename,
+  const encryptedBuffer = await runNodeWithEnvOrThrow(
+    aes.aesEncryptBufferByKeyFile(
+      bufferToArrayBuffer(plainBuffer),
+      keyFilename,
+    ),
   );
-  const decryptedBuffer = aes.aesDecryptBufferByKeyFile(
-    encryptedBuffer,
-    keyFilename,
+  const decryptedBuffer = await runNodeWithEnvOrThrow(
+    aes.aesDecryptBufferByKeyFile(encryptedBuffer, keyFilename),
   );
   expect(plainBuffer).toEqual(decryptedBuffer);
 });
 
-test('PKI Encrypt/Decrypt using key pair file', () => {
+test('PKI Encrypt/Decrypt using key pair file', async () => {
   const privateKey = './tests/rsa4096';
   const publicKey = './tests/rsa4096.pub.pem.dat';
   const plainFilename = './tests/utf8_sample.txt';
   const encryptedFilename = tmpNameSync();
   const decryptedFilename = tmpNameSync();
-  pki.pkiFileEncryptToFile(publicKey, plainFilename, encryptedFilename);
-  pki.pkiFileDecryptFile(privateKey, encryptedFilename, decryptedFilename);
+  await runNodeWithEnvOrThrow(
+    pki.pkiFileEncryptToFile(publicKey, plainFilename, encryptedFilename),
+  );
+  await runNodeWithEnvOrThrow(
+    pki.pkiFileDecryptFile(privateKey, encryptedFilename, decryptedFilename),
+  );
   const isEqual = compareFiles(plainFilename, decryptedFilename);
   expect(isEqual).toBeTruthy();
 });

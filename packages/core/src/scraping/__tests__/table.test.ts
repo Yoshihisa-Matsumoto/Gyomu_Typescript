@@ -1,14 +1,26 @@
-import { fs } from '../../infrastructure/fs/index.js';
+import { platform } from '../../infrastructure/fs/index.js';
 import { Page } from '../dom/page.js';
 import { convertGenericElementByTagName } from '../convert.js';
 import { describe, expect, it, test } from 'vitest';
 import { TableRow } from '../table/tableRow.js';
 import { JSDOM } from 'jsdom';
+import { Effect, FileSystem, Layer } from 'effect';
+import { MainLayer, PlatformLayer } from '../../infrastructure/layer.js';
+import { makeRunner } from '../../infrastructure/runtime.js';
 
-test('Table initialization', () => {
+test('Table initialization', async () => {
+  const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
+  const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
+
+  const htmlText = await runNodeWithEnvOrThrow(
+    Effect.gen(function* () {
+      const fs = yield* FileSystem.FileSystem;
+      return yield* fs.readFileString(platform.join('tests', 'test.html'));
+    }),
+  );
   const page = new Page({
     kind: 'html',
-    htmlText: fs.readFileSync(fs.join('tests', 'test.html')).toString(),
+    htmlText: htmlText,
   });
   const tablesDiv = page.getElementsByClassName<HTMLDivElement>(
     'component-normal-table',

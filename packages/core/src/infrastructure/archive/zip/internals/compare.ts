@@ -1,13 +1,13 @@
-import { Effect } from 'effect';
+import { Effect, Path } from 'effect';
 import { Ref } from 'effect';
 import { DiffDetail } from '../../../../shared/object/diff.js';
-import { fs } from '../../../fs/index.js';
+
 import {
   ZipEntryItem,
   ZipFileEntryItem,
   extractSingleFileEntry,
 } from './read.js';
-import { FileSystem } from 'effect/FileSystem';
+import { FileSystem } from 'effect';
 import { PlatformError } from 'effect/PlatformError';
 import { AppError } from '../../../../base-error.js';
 import { runCompareFuncFlow } from '../compare.js';
@@ -176,6 +176,7 @@ export const handleMissingFileInComparison = (
     if (existingFile.isDirectory) return Effect.succeed(interimOutput);
 
     return Effect.gen(function* () {
+      const ps = yield* Path.Path;
       yield* Ref.update(interimOutput, (output) => {
         output.results.push({
           path: existingFile.path,
@@ -183,7 +184,7 @@ export const handleMissingFileInComparison = (
         });
         return output;
       });
-      const filePath = fs.join(
+      const filePath = ps.join(
         resultPath,
         existingFile.path.replaceAll('/', '\\'),
       );
@@ -240,6 +241,7 @@ export const internalCompareFileEntry = (
   }
 
   const result = Effect.gen(function* () {
+    const ps = yield* Path.Path;
     if (compareFunc) {
       yield* runCompareFuncFlow(
         sourceFile,
@@ -258,10 +260,13 @@ export const internalCompareFileEntry = (
 
     if (!option.includeOriginalFileInDiff) return interimOutput;
 
-    const effects: Effect.Effect<void, AppError | PlatformError, FileSystem>[] =
-      [];
+    const effects: Effect.Effect<
+      void,
+      AppError | PlatformError,
+      FileSystem.FileSystem | Path.Path
+    >[] = [];
 
-    const sourcePath = fs.join(
+    const sourcePath = ps.join(
       resultPath,
       sourceFile.path.replaceAll('/', '\\') + '.source',
     );
@@ -270,7 +275,7 @@ export const internalCompareFileEntry = (
       effects.push(extractSingleFileEntry(sourceFile, sourcePath));
     }
 
-    const destinationPath = fs.join(
+    const destinationPath = ps.join(
       resultPath,
       destinationFile.path.replaceAll('/', '\\') + '.destination',
     );

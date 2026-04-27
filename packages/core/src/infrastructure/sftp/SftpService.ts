@@ -1,7 +1,12 @@
-import { Effect, Layer, ServiceMap, Config, Option } from 'effect';
+import { Effect, Layer, ServiceMap, Config, Option, FileSystem } from 'effect';
 import { Client } from 'ssh2';
-import { ConfigError, withDefault } from 'effect/Config';
-import { NetworkError } from '../../errors.js';
+import { withDefault } from 'effect/Config';
+import {
+  IOError,
+  ConfigError,
+  NetworkError,
+  unknownError,
+} from '../../errors.js';
 import { ConfigProviderLive, ConfigService } from '../config.js';
 import { unwrapPassword } from '../../shared/effect/option.js';
 import { AppError } from '../../base-error.js';
@@ -16,7 +21,7 @@ import {
   upload,
   uploadFromStream,
 } from './internals/sftpClient.js';
-import { fs } from '../fs/index.js';
+//import { fs } from '../fs/index.js';
 import { connectEffect } from './internals/sftpClient.js';
 
 //type FtpConfig = Config.Success<typeof ftpConfigRaw>;
@@ -29,30 +34,40 @@ export class SftpService extends ServiceMap.Service<
       f: (sftp: {
         download: (
           transportInformation: FileTransportInfo,
-        ) => Effect.Effect<boolean, AppError | NetworkError, R>;
+        ) => Effect.Effect<
+          boolean,
+          IOError | NetworkError,
+          FileSystem.FileSystem
+        >;
         downloadToStream: (
           path: string,
-        ) => Stream<Uint8Array, AppError | NetworkError, R>;
-        list: (
-          path: string,
-        ) => Effect.Effect<string[], AppError | NetworkError, R>;
+        ) => Stream<Uint8Array, IOError | NetworkError, R>;
+        list: (path: string) => Effect.Effect<string[], NetworkError, R>;
         getFileInfo(path: string): Effect.Effect<
           {
             size: number;
             date: Date;
           },
-          AppError | NetworkError,
+          NetworkError,
           R
         >;
         upload: (
           transportInformation: FileTransportInfo,
-        ) => Effect.Effect<void, AppError | NetworkError, R>;
+        ) => Effect.Effect<void, IOError | NetworkError, FileSystem.FileSystem>;
         uploadFromStream(
-          source: Stream<Uint8Array, AppError | NetworkError, R>,
+          source: Stream<Uint8Array, NetworkError, R>,
           remotePath: string,
-        ): Effect.Effect<void, AppError | NetworkError, R>;
-      }) => Effect.Effect<A, AppError | NetworkError | ConfigError, R>,
-    ) => Effect.Effect<A, AppError | NetworkError | ConfigError, R | Scope>;
+        ): Effect.Effect<void, NetworkError, R>;
+      }) => Effect.Effect<
+        A,
+        NetworkError | ConfigError | IOError,
+        R | FileSystem.FileSystem
+      >,
+    ) => Effect.Effect<
+      A,
+      NetworkError | ConfigError | IOError,
+      R | Scope | FileSystem.FileSystem
+    >;
   }
 >()('SshService', {
   make: Effect.gen(function* () {
@@ -88,13 +103,24 @@ export class SftpService extends ServiceMap.Service<
           ).pipe(
             Effect.flatMap((client) =>
               Effect.gen(function* () {
+                const fs = yield* FileSystem.FileSystem;
                 yield* connectEffect(client, {
                   host: config.host,
                   port: config.port,
                   username: config.user,
                   password: unwrapPassword(config.password),
                   privateKey: privateKeyFilename
-                    ? fs.readFileSync(privateKeyFilename, 'utf-8')
+                    ? yield* fs
+                        .readFileString(privateKeyFilename, 'utf-8')
+                        .pipe(
+                          Effect.mapError((e) =>
+                            unknownError(
+                              IOError,
+                              e,
+                              'fail to read private key',
+                            ),
+                          ),
+                        )
                     : undefined,
                 });
 

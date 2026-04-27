@@ -13,7 +13,7 @@ import {
   Date2LocalDate,
   LocalDate,
   LocalDate2Date,
-} from '../../../../shared/src/entity/date.js';
+} from '@gyomu/shared/entity';
 
 export interface BusinessCalendar {
   isBusinessDay: (targetDate: LocalDate) => boolean;
