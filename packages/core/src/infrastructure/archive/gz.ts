@@ -1,6 +1,6 @@
 import { Stream } from 'effect';
 import zlib from 'zlib';
-import { AppError } from '../../base-error.js';
+import { AppError } from '@gyomu/shared';
 import { throughNodeStreamScoped } from '../stream/bridge/nodeStream.js';
 import { IOError } from '../../errors.js';
 

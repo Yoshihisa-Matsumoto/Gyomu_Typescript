@@ -1,6 +1,6 @@
 import { Effect, Schema } from 'effect';
 import { DB } from '../../db/db.js';
-import { DBError, ValueError } from '../../errors.js';
+import { DBError } from '../../errors.js';
 import {
   Insertable,
   Kysely,
@@ -8,7 +8,7 @@ import {
   DeleteResult,
   UpdateResult,
 } from 'kysely';
-import { fromPromise } from '../../shared/effect/core.js';
+import { fromPromise } from '@gyomu/shared/effect';
 import {
   convertToSchemaObjectWithEffect,
   convertFromSchemaObjectWithEffect,
@@ -16,6 +16,7 @@ import {
 } from '../../schemas/common.js';
 import { generateUuid7 } from '../../shared/guid.js';
 import { LocalDate } from '@gyomu/shared/entity';
+import { ValueError } from '@gyomu/shared';
 export type TablesWithId = {
   [K in keyof DB]: DB[K] extends { id: any } ? K : never;
 }[keyof DB];

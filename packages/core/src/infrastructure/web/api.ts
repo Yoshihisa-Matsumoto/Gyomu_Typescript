@@ -1,10 +1,11 @@
 import { pipe } from 'effect';
 import { Effect } from 'effect';
-import { NetworkError, ValueError } from '../../errors.js';
+import { NetworkError } from '../../errors.js';
 import { networkStream } from '../../shared/effect/stream.js';
 import { fetchEffect, fetchStream } from './client.js';
 import { textEffect, parseXmlEffect } from './xml.js';
 import { FetchResult, jsonEffect } from './json.js';
+import { ValueError } from '@gyomu/shared';
 
 export function postAndReceiveXml<ResponseType>(
   url: string,

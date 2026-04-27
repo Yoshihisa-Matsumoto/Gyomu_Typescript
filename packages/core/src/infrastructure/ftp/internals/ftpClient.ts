@@ -1,11 +1,11 @@
 import { FileTransportInfo } from '../../../gyomu/file/transport.js';
 import { Client } from 'basic-ftp';
 import { IOError, NetworkError } from '../../../errors.js';
-import { AppError } from '../../../base-error.js';
+import { AppError } from '@gyomu/shared';
 import { PassThrough } from 'node:stream';
 import { Effect, pipe, Stream } from 'effect';
 import { fromReadable } from '../../stream/bridge/nodeStream.js';
-import { fromPromise } from '../../../shared/effect/core.js';
+import { fromPromise } from '@gyomu/shared/effect';
 import { NodeStream } from '@effect/platform-node';
 import { toEntryPath } from '@gyomu/shared/path';
 

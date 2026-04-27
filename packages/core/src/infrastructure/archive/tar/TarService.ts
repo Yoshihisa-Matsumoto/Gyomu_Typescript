@@ -1,7 +1,7 @@
 import { Effect, Layer, ServiceMap, Stream } from 'effect';
 import { IOError } from '../../../errors.js';
 import { ArchiveEntryItem } from '../common.js';
-import { AppError } from '../../../base-error.js';
+import { AppError } from '@gyomu/shared';
 import { PlatformError } from 'effect/PlatformError';
 import { FileSystem } from 'effect';
 import {

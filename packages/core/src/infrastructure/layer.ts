@@ -2,7 +2,7 @@
 import { NodeFileSystem, NodePath } from '@effect/platform-node';
 import { Layer, Logger, References } from 'effect';
 import { fsConstants } from './fs/index.js';
-import { effectLogger } from './logger/effectLogger.js';
+import { effectLogger } from './logger/logger.js';
 
 // プロジェクトで使う標準セットをマージする
 export const PlatformLayer = Layer.mergeAll(

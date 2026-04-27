@@ -1,4 +1,4 @@
-import { ValueError } from '../../errors.js';
+import { ValueError } from '@gyomu/shared';
 import { platform } from '../../infrastructure/fs/index.js';
 import { FileFilterInfo } from './filter.js';
 

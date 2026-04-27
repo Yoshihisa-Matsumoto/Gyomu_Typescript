@@ -1,6 +1,6 @@
 import { Effect } from 'effect';
-import { AppError, AppErrorCtor } from '../../base-error.js';
-import { unknownError } from '../../errors.js';
+import { AppError, AppErrorCtor } from '../error/BaseError.js';
+import { unknownError } from '../error/BaseError.js';
 
 export const fromPromise =
   <E extends AppError>(ErrorType: AppErrorCtor<E>, message: string) =>

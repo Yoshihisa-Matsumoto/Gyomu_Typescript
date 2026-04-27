@@ -5,15 +5,15 @@ import {
   ChatMessage,
 } from '../../../gyomu/ai/client.js';
 import { Content, GoogleGenAI, Part, ToolType } from '@google/genai';
-import { AiError, unknownError } from '../../../errors.js';
-import { fromPromise } from '../../../shared/effect/core.js';
+import { AiError } from '../../../errors.js';
+import { fromPromise } from '@gyomu/shared/effect';
 import {
   ConfigLayer,
   ConfigProviderLive,
   ConfigService,
 } from '../../config.js';
 import { PlatformLayer } from '../../layer.js';
-
+import { unknownError } from '@gyomu/shared';
 export class GeminiClient extends ServiceMap.Service<GeminiClient, AiClient>()(
   'GeminiClient',
   {

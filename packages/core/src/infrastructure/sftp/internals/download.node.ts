@@ -1,7 +1,7 @@
 import { Client } from 'ssh2';
 import { IOError, NetworkError } from '../../../errors.js';
 import { Effect, Stream } from 'effect';
-import { AppError } from '../../../base-error.js';
+import { AppError } from '@gyomu/shared';
 import { withSftp } from './shared.js';
 import { Readable } from 'node:stream';
 import { fromReadable } from '../../stream/bridge/nodeStream.js';

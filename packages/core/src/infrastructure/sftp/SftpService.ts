@@ -1,15 +1,9 @@
 import { Effect, Layer, ServiceMap, Config, Option, FileSystem } from 'effect';
 import { Client } from 'ssh2';
 import { withDefault } from 'effect/Config';
-import {
-  IOError,
-  ConfigError,
-  NetworkError,
-  unknownError,
-} from '../../errors.js';
+import { IOError, ConfigError, NetworkError } from '../../errors.js';
 import { ConfigProviderLive, ConfigService } from '../config.js';
 import { unwrapPassword } from '../../shared/effect/option.js';
-import { AppError } from '../../base-error.js';
 import { Scope } from 'effect/Scope';
 import { FileTransportInfo } from '../../gyomu/file/transport.js';
 import { Stream } from 'effect/Stream';

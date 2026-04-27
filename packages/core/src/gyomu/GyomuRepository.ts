@@ -35,7 +35,7 @@ import {
 } from '@gyomu/shared/entity';
 import { KyselyService } from '../infrastructure/db/KyselyService.js';
 import { DB } from '../db/db.js';
-import { fromPromise } from '../shared/effect/core.js';
+import { fromPromise } from '@gyomu/shared/effect';
 import { DBError } from '../errors.js';
 import { LocalDate, YearMonth } from '@gyomu/shared/entity';
 

@@ -1,7 +1,7 @@
 import { Effect, Schema } from 'effect';
 
-import { AppError, AppErrorCtor } from '../base-error.js';
-import { unknownError } from '../errors.js';
+import { AppError, AppErrorCtor } from '@gyomu/shared';
+import { unknownError } from '@gyomu/shared';
 import {
   AuditFields,
   EntityDefinition,

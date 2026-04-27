@@ -2,8 +2,8 @@ import * as tar from 'tar-stream';
 import { create } from 'tar';
 import { Effect, Stream, Queue, Option } from 'effect';
 import { NodeStream } from '@effect/platform-node';
-import { IOError, unknownError } from '../../../../errors.js';
-import { AppError } from '../../../../base-error.js';
+import { IOError } from '../../../../errors.js';
+import { unknownError, AppError } from '@gyomu/shared';
 import type { Readable } from 'node:stream';
 import { runSync } from 'effect/Effect';
 

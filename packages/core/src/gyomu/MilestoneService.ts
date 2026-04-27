@@ -3,7 +3,7 @@ import { polling } from '../shared/effect/timer.js';
 import { Effect, Layer, Schema, ServiceMap } from 'effect';
 import { GyomuRepository } from './GyomuRepository.js';
 import { MilestoneDailySchema, MilestoneSchema } from '../schemas/gyomu.js';
-import { DBError, TimeoutError, ValueError } from '../errors.js';
+import { DBError, TimeoutError } from '../errors.js';
 import { convertToSchemaObjectWithEffect } from '../schemas/common.js';
 import {
   LocalDate,
@@ -12,6 +12,7 @@ import {
   YearMonthSchema,
 } from '@gyomu/shared/entity';
 import { MilestoneDailyDomainSchema } from '@gyomu/shared/entity';
+import { ValueError } from '@gyomu/shared';
 
 type MilestoneExistResultType =
   | {

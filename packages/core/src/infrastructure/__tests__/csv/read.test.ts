@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { parseCsv, readCsv, readCsvRaw } from '../../csv/read.js';
 import { Stream, Schema, Effect } from 'effect';
-import { logger } from '../../../logger.js';
+import { logger } from '../../logger/logger.js';
 
 describe('CSV Read Functions', () => {
   describe('parseCsv', () => {

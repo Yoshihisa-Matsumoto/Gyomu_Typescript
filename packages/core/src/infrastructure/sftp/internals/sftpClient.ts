@@ -1,7 +1,7 @@
 import { Client, ConnectConfig, FileEntryWithStats, SFTPWrapper } from 'ssh2';
-import { IOError, NetworkError, unknownError } from '../../../errors.js';
+import { IOError, NetworkError } from '../../../errors.js';
 import { Effect, Stream } from 'effect';
-import { AppError } from '../../../base-error.js';
+import { unknownError, AppError } from '@gyomu/shared';
 import { FileTransportInfo } from '../../../gyomu/file/transport.js';
 import { toEntryPath } from '@gyomu/shared/path';
 import { FileSystem } from 'effect';

@@ -6,10 +6,11 @@ import {
   ServiceMap,
   FileSystem,
 } from 'effect';
-import { IOError, unknownError, ConfigError } from '../errors.js';
-import { fromSync } from '../shared/effect/core.js';
+import { IOError, ConfigError } from '../errors.js';
+import { fromSync } from '@gyomu/shared/effect';
 import { option } from 'effect/Effect';
 import { readStringFromFile } from './fs/fs-utils.js';
+import { unknownError } from '@gyomu/shared';
 // const makeConfigProvider = Effect.gen(function* () {
 //   const dotEnv = yield* ConfigProvider.fromDotEnv();
 //   return ConfigProvider.orElse(dotEnv, ConfigProvider.fromEnv());

@@ -1,9 +1,10 @@
 import { Effect } from 'effect';
 import { fetchJpxHolidays } from '../../infrastructure/holiday/jpxFetcher.js';
-import { GyomuError, unknownError } from '../../errors.js';
+import { GyomuError } from '../../errors.js';
 import { GyomuRepository } from '../GyomuRepository.js';
 import { diffEntities } from '../../schemas/diffEntities.js';
 import { MarketHolidaySchema } from '../../schemas/gyomu.js';
+import { unknownError } from '@gyomu/shared';
 
 export const syncHoliday = (
   market: string,

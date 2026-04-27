@@ -1,5 +1,5 @@
 import { Schema, Stream, Function, Option, Effect } from 'effect';
-import { AppError } from '../../base-error.js';
+import { AppError } from '@gyomu/shared';
 import { IOError } from '../../errors.js';
 import { throughNodeStream } from '../stream/bridge/nodeStream.js';
 import { CsvColumn, CsvReadOption } from './type.js';

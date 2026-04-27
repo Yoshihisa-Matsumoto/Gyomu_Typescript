@@ -1,7 +1,7 @@
 import { Stream, Effect, Fiber, Queue } from 'effect';
 import { Duplex, Readable, Transform } from 'node:stream';
-import { IOError, unknownError } from '../../../errors.js';
-import { AppError } from '../../../base-error.js';
+import { IOError } from '../../../errors.js';
+import { unknownError, AppError } from '@gyomu/shared';
 import { runSync } from 'effect/Effect';
 //import { NodeStream } from '@effect/platform-node';
 

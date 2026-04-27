@@ -5,7 +5,6 @@ import { createFileInfo, FileInfo } from '../../infrastructure/fs/fileInfo.js';
 import { compareAsc } from 'date-fns';
 import { platform } from '../../infrastructure/fs/index.js';
 import { IOError } from '../../errors.js';
-import { fromSync } from '../effect/core.js';
 import {
   pathExists,
   readDirectoryDetailed,

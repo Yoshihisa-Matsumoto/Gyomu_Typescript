@@ -9,7 +9,7 @@ import {
 } from './read.js';
 import { FileSystem } from 'effect';
 import { PlatformError } from 'effect/PlatformError';
-import { AppError } from '../../../../base-error.js';
+import { AppError } from '@gyomu/shared';
 import { runCompareFuncFlow } from '../compare.js';
 import { platform } from '../../../fs/index.js';
 

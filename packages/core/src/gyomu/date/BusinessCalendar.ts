@@ -8,7 +8,7 @@ import {
 import { Effect, Layer, ServiceMap } from 'effect';
 import { GyomuRepository } from '../GyomuRepository.js';
 import { DBError, GyomuError } from '../../errors.js';
-import { fromSync } from '../../shared/effect/core.js';
+import { fromSync } from '@gyomu/shared/effect';
 import {
   Date2LocalDate,
   LocalDate,

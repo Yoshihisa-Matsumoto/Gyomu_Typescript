@@ -5,7 +5,7 @@ import {
   formatDateToYmd,
   parseYmdToDate,
 } from '../date/dateConverter.js';
-import { ValueError } from '../../errors.js';
+import { ValueError } from '@gyomu/shared';
 
 // --- createDateOnly ---
 describe('createDateOnly', () => {

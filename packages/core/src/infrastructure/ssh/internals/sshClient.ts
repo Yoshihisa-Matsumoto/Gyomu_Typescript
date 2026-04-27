@@ -1,7 +1,7 @@
 import { Client, ClientChannel, ConnectConfig } from 'ssh2';
-import { NetworkError, unknownError } from '../../../errors.js';
+import { NetworkError } from '../../../errors.js';
 import { Effect } from 'effect';
-import { AppError } from '../../../base-error.js';
+import { unknownError, AppError } from '@gyomu/shared';
 
 export const connectEffect = (client: Client, config: ConnectConfig) =>
   Effect.callback<undefined, NetworkError>((resume) => {

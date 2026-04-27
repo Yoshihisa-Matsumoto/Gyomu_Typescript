@@ -4,7 +4,7 @@ import { withDefault } from 'effect/Config';
 import { NetworkError, ConfigError, IOError } from '../../errors.js';
 import { ConfigProviderLive, ConfigService } from '../config.js';
 import { unwrapPassword } from '../../shared/effect/option.js';
-import { AppError } from '../../base-error.js';
+import { AppError } from '@gyomu/shared';
 import { Scope } from 'effect/Scope';
 import { execute } from './internals/sshClient.js';
 

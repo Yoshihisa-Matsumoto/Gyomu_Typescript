@@ -1,8 +1,7 @@
 import { Effect, FileSystem } from 'effect';
 import { Stream } from 'effect';
-import { NetworkError, IOError, unknownError } from '../../errors.js';
+import { NetworkError, IOError } from '../../errors.js';
 import { platform } from '../fs/index.js';
-import { fromSync } from '../../shared/effect/core.js';
 import { networkStream } from '../../shared/effect/stream.js';
 import { fetchEffect } from './client.js';
 import {

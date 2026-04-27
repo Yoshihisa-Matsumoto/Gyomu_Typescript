@@ -71,3 +71,4 @@ typings/
 .next
 lib/
 log/
+dist/

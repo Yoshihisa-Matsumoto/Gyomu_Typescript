@@ -3,7 +3,7 @@ import * as tarn from 'tarn';
 import { Kysely, MssqlDialect } from 'kysely';
 import { DB } from '../../db/db.js';
 import { Effect, Layer, ServiceMap } from 'effect';
-import { fromSync } from '../../shared/effect/core.js';
+import { fromSync } from '@gyomu/shared/effect';
 import { DBError } from '../../errors.js';
 
 const makeMssql = (config: {

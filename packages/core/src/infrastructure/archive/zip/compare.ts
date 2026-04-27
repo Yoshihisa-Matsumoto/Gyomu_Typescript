@@ -1,5 +1,5 @@
 import { Ref, Stream } from 'effect';
-import { AppError } from '../../../base-error.js';
+import { AppError, unknownError } from '@gyomu/shared';
 import { DiffDetail } from '../../../shared/object/diff.js';
 import { Effect } from 'effect';
 import {
@@ -7,9 +7,9 @@ import {
   ensureEffect,
   fromPromise,
   fromSync,
-} from '../../../shared/effect/core.js';
+} from '@gyomu/shared/effect';
 //import { fs } from '../../fs/index.js';
-import { IOError, unknownError } from '../../../errors.js';
+import { IOError } from '../../../errors.js';
 import { spawnSync } from 'node:child_process';
 import {
   extractSingleFileEntry,

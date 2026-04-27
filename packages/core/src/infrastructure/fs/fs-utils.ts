@@ -1,8 +1,8 @@
 import { FileSystem } from 'effect';
 import { Stream, Effect } from 'effect';
-import { IOError, unknownError } from '../../errors.js';
+import { IOError } from '../../errors.js';
 import { PlatformError } from 'effect/PlatformError';
-import { AppError } from '../../base-error.js';
+import { unknownError, AppError } from '@gyomu/shared';
 import ps from 'path';
 import { unknown } from 'effect/SchemaAST';
 

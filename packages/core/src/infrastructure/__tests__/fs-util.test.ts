@@ -2,8 +2,10 @@ import { Effect, Stream } from 'effect';
 import { describe, it } from 'vitest';
 import { FileSystem } from 'effect';
 import { NodeFileSystem, NodeStream } from '@effect/platform-node';
-import { IOError, unknownError } from '../../errors.js';
+import { IOError } from '../../errors.js';
 import fs from 'fs';
+import { unknownError } from '@gyomu/shared';
+
 describe('FileSystem simple test', () => {
   it('FileSystem test', async () => {
     const program = (path: string) =>

@@ -2,7 +2,7 @@ import { Effect } from 'effect';
 import { Stream } from 'effect';
 import xml2js from 'xml2js';
 import { NetworkError } from '../../errors.js';
-import { fromPromise } from '../../shared/effect/core.js';
+import { fromPromise } from '@gyomu/shared/effect';
 
 export const textEffect = (stream: Stream.Stream<Uint8Array, NetworkError>) =>
   stream.pipe(

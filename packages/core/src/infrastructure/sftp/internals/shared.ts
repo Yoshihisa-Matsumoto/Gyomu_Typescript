@@ -1,6 +1,7 @@
 import { Client, SFTPWrapper } from 'ssh2';
-import { NetworkError, unknownError } from '../../../errors.js';
+import { NetworkError } from '../../../errors.js';
 import { Effect } from 'effect';
+import { unknownError } from '@gyomu/shared';
 
 export const withSftp =
   (client: Client) =>

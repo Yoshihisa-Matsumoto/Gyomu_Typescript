@@ -1,5 +1,5 @@
 import { parse } from 'date-fns';
-import { ValueError } from '../../errors.js';
+import { ValueError } from '@gyomu/shared';
 import { FilterType, FileCompareType } from './types.js';
 
 export class FileFilterInfo {

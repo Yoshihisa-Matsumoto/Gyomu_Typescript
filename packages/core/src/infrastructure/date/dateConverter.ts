@@ -1,5 +1,5 @@
 import { format, parse, isValid } from 'date-fns';
-import { ValueError } from '../../errors.js';
+import { ValueError } from '@gyomu/shared';
 
 export const createDateOnly = (
   year: number,

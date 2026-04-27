@@ -1,14 +1,14 @@
 import { Effect, Queue, Stream } from 'effect';
 import yauzl, { RandomAccessReader } from 'yauzl';
-import { IOError, unknownError } from '../../../../errors.js';
-import { logger } from '../../../../logger.js';
+import { IOError } from '../../../../errors.js';
+import { logger } from '../../../logger/logger.js';
 import {
   fromNodeCallback,
   //fromReadable,
   fromReadableControlled,
 } from '../../../../infrastructure/stream/bridge/nodeStream.js';
 import { decode } from '../../../../shared/encoding/decode.js';
-import { AppError } from '../../../../base-error.js';
+import { unknownError, AppError } from '@gyomu/shared';
 import { ArchiveEntryItem, massageEntryPath } from '../../common.js';
 import {
   makeDirectory,

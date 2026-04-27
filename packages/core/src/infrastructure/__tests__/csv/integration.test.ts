@@ -4,11 +4,12 @@ import { writeCsv } from '../../csv/write.js';
 import { Stream, Schema, Effect, Layer } from 'effect';
 import { readFile } from 'node:fs/promises';
 import { NodeFileSystem } from '@effect/platform-node';
-import { IOError, unknownError } from '../../../errors.js';
+import { IOError } from '../../../errors.js';
 import { platform } from '../../fs/index.js';
 import { fileStream, writeTextStreamToFile } from '../../fs/fs-utils.js';
 import { MainLayer, PlatformLayer } from '../../layer.js';
 import { makeRunner } from '../../runtime.js';
+import { unknownError } from '@gyomu/shared';
 
 const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
 const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);

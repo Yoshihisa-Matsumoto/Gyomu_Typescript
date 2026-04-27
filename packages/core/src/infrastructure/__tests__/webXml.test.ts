@@ -2,10 +2,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Effect } from 'effect';
 
 import { postAndReceiveXml } from '../web/api.js';
-import { NetworkError, ValueError } from '../../errors.js';
+import { NetworkError } from '../../errors.js';
 import * as client from '../web/client.js';
 import * as stream from '../../shared/effect/stream.js';
 import * as xml from '../web/xml.js';
+import { ValueError } from '@gyomu/shared';
 // ===== mock =====
 vi.mock('../web/client.js', () => ({
   fetchEffect: vi.fn(),

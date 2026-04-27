@@ -1,4 +1,4 @@
-import { ValueError } from '../../errors.js';
+import { ValueError } from '../error/ValueError.js';
 
 export const addToMultiMap = <K, V>(map: Map<K, V[]>, key: K, value: V) => {
   const arr = map.get(key);

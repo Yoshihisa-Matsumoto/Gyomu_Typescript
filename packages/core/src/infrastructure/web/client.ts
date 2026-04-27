@@ -1,7 +1,7 @@
 import { Effect } from 'effect';
 import { Stream } from 'effect';
 import { NetworkError } from '../../errors.js';
-import { fromPromise } from '../../shared/effect/core.js';
+import { fromPromise } from '@gyomu/shared/effect';
 import { EnvHttpProxyAgent, setGlobalDispatcher } from 'undici';
 import { networkStream } from '../../shared/effect/stream.js';
 

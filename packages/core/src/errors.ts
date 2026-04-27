@@ -1,30 +1,4 @@
-import { AppError, AppErrorCtor, Severity } from './base-error.js';
-
-export function unknownError<E extends AppError>(
-  ErrorType: AppErrorCtor<E>,
-  error: unknown,
-  message = 'Unknown error occurred',
-): E {
-  if (error instanceof ErrorType) return error;
-  if (error instanceof AppError) return error as E;
-  const useMessage = message
-    ? `${message} cause: ${error instanceof Error ? error.message : 'Unknown error occurred'}`
-    : error instanceof Error
-      ? error.message
-      : 'Unknown error occurred';
-
-  return new ErrorType(useMessage, { cause: error });
-}
-export class ValueError extends AppError {
-  readonly _tag = 'ValueError';
-  severity = Severity.ERROR;
-  isRetryable(): boolean {
-    return false;
-  }
-  constructor(message: string, cause?: unknown) {
-    super(message, cause);
-  }
-}
+import { AppError, AppErrorCtor, Severity } from '@gyomu/shared';
 
 export class DBError extends AppError {
   readonly _tag = 'DBError';

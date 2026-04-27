@@ -66,3 +66,13 @@ export const AuditFields = {
   modifiedAt: schemaField.timestampString,
   modifiedBy: schemaField.text({ maxLength: 100 }),
 };
+
+export const BooleanFromString = Schema.String.pipe(
+  Schema.decodeTo(
+    Schema.Boolean,
+    SchemaTransformation.transform({
+      decode: (str) => str === 'true',
+      encode: (boolVal) => (boolVal ? 'true' : 'false'),
+    }),
+  ),
+);
