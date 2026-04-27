@@ -17,7 +17,6 @@ const searchFunc = (
   isRecursive: boolean = false,
 ): Effect.Effect<FileInfo[], IOError, FileSystem.FileSystem> =>
   Effect.gen(function* () {
-    const fs = yield* FileSystem.FileSystem;
     if (!(yield* pathExists(parentDirectory))) {
       return [];
     }

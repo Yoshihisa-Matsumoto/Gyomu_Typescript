@@ -4,7 +4,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { Effect, Layer, Result, Stream } from 'effect';
 
 import { IOError } from '../../errors.js';
-import { Option, FileSystem } from 'effect';
+import { Option } from 'effect';
 //import { fs } from '../fs/index.js';
 import { compareFiles, validateFolders } from './baseClass.js';
 import { FileTransportInfo } from '../../gyomu/file/transport.js';
@@ -12,6 +12,7 @@ import {
   copyFolder,
   emptyDir,
   fileStream,
+  readFromFile,
 } from '../../infrastructure/fs/fs-utils.js';
 import {
   existsInTar,
@@ -36,7 +37,6 @@ let compressDirectory: string;
 let extractDirectory: string;
 beforeAll(async () => {
   const program = Effect.gen(function* () {
-    const fs = yield* FileSystem.FileSystem;
     const tmpPath = platform.tmpdir();
     const sourceDirectory = platform.resolve('./tests');
     const destinationDirectory = platform.join(tmpPath, 'compressTar');
@@ -77,14 +77,13 @@ describe('untar test', () => {
     let readmeText = '';
 
     const program = Effect.gen(function* () {
-      const fs = yield* FileSystem.FileSystem;
       const tarPath = platform.join(
         process.cwd(),
         'tests',
         'compress',
         'temp.tar',
       );
-      const tarBytes = yield* fs.readFile(tarPath);
+      const tarBytes = yield* readFromFile(tarPath);
       const tarStream = Stream.fromIterable([tarBytes]);
       const tar = yield* TarService;
 

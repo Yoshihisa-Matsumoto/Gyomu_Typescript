@@ -5,7 +5,7 @@ import { AppError } from '../../../base-error.js';
 import { FileTransportInfo } from '../../../gyomu/file/transport.js';
 import { toEntryPath } from '@gyomu/shared/path';
 import { FileSystem } from 'effect';
-import { readDirectoryDetailed } from '../../fs/fs-utils.js';
+import { makeDirectory, readDirectoryDetailed } from '../../fs/fs-utils.js';
 import { uploadFromStreamUnderNodejs } from './upload.node.js';
 import { withSftp } from './shared.js';
 import { downloadToStreamUnderNodejs } from './download.node.js';
@@ -139,19 +139,12 @@ const downloadDir =
     localDir: string,
   ): Effect.Effect<void, IOError | NetworkError, FileSystem.FileSystem> =>
     Effect.gen(function* () {
-      const fs = yield* FileSystem.FileSystem;
       // ローカルディレクトリ作成
       // yield* fromSync(
       //   IOError,
       //   'Failed to create local directory',
       // )(() => fs.makeDirectory(localDir, { recursive: true }));
-      yield* fs
-        .makeDirectory(localDir, { recursive: true })
-        .pipe(
-          Effect.mapError((e) =>
-            unknownError(IOError, e, 'Failed to create local directory'),
-          ),
-        );
+      yield* makeDirectory(localDir);
 
       const list = yield* listInternal(sftp, remoteDir);
 

@@ -23,6 +23,7 @@ import {
 } from './internals/sftpClient.js';
 //import { fs } from '../fs/index.js';
 import { connectEffect } from './internals/sftpClient.js';
+import { readStringFromFile } from '../fs/fs-utils.js';
 
 //type FtpConfig = Config.Success<typeof ftpConfigRaw>;
 
@@ -103,24 +104,13 @@ export class SftpService extends ServiceMap.Service<
           ).pipe(
             Effect.flatMap((client) =>
               Effect.gen(function* () {
-                const fs = yield* FileSystem.FileSystem;
                 yield* connectEffect(client, {
                   host: config.host,
                   port: config.port,
                   username: config.user,
                   password: unwrapPassword(config.password),
                   privateKey: privateKeyFilename
-                    ? yield* fs
-                        .readFileString(privateKeyFilename, 'utf-8')
-                        .pipe(
-                          Effect.mapError((e) =>
-                            unknownError(
-                              IOError,
-                              e,
-                              'fail to read private key',
-                            ),
-                          ),
-                        )
+                    ? yield* readStringFromFile(privateKeyFilename, 'utf-8')
                     : undefined,
                 });
 

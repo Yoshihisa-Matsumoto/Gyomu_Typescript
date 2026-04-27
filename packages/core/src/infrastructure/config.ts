@@ -9,6 +9,7 @@ import {
 import { IOError, unknownError, ConfigError } from '../errors.js';
 import { fromSync } from '../shared/effect/core.js';
 import { option } from 'effect/Effect';
+import { readStringFromFile } from './fs/fs-utils.js';
 // const makeConfigProvider = Effect.gen(function* () {
 //   const dotEnv = yield* ConfigProvider.fromDotEnv();
 //   return ConfigProvider.orElse(dotEnv, ConfigProvider.fromEnv());
@@ -42,14 +43,8 @@ export class ConfigService extends ServiceMap.Service<
       FileSystem.FileSystem
     > =>
       Effect.gen(function* () {
-        const fs = yield* FileSystem.FileSystem;
-        const content = yield* fs
-          .readFileString(path, 'utf-8')
-          .pipe(
-            Effect.mapError((e) =>
-              unknownError(IOError, e, `Fail to read ${path}`),
-            ),
-          );
+        const content = yield* readStringFromFile(path, 'utf-8');
+
         const json = yield* fromSync(
           IOError,
           `fail to parse JSON`,

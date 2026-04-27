@@ -4,9 +4,10 @@ import { convertGenericElementByTagName } from '../convert.js';
 import { describe, expect, it, test } from 'vitest';
 import { TableRow } from '../table/tableRow.js';
 import { JSDOM } from 'jsdom';
-import { Effect, FileSystem, Layer } from 'effect';
+import { Effect, Layer } from 'effect';
 import { MainLayer, PlatformLayer } from '../../infrastructure/layer.js';
 import { makeRunner } from '../../infrastructure/runtime.js';
+import { readStringFromFile } from '../../infrastructure/fs/fs-utils.js';
 
 test('Table initialization', async () => {
   const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
@@ -14,8 +15,7 @@ test('Table initialization', async () => {
 
   const htmlText = await runNodeWithEnvOrThrow(
     Effect.gen(function* () {
-      const fs = yield* FileSystem.FileSystem;
-      return yield* fs.readFileString(platform.join('tests', 'test.html'));
+      return yield* readStringFromFile(platform.join('tests', 'test.html'));
     }),
   );
   const page = new Page({

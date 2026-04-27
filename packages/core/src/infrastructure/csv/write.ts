@@ -5,9 +5,10 @@ import { throughNodeStreamScoped } from '../stream/bridge/nodeStream.js';
 import { Stream, Schema, Function, Effect, Console, Path, Layer } from 'effect';
 import { AppError } from '../../base-error.js';
 import { IOError, unknownError } from '../../errors.js';
-import { FileSystem } from 'effect';
 import { encodeUtf8ToBinaryStream } from '../../shared/stream/transform/encoding.js';
 import { NodeFileSystem, NodePath } from '@effect/platform-node';
+import { platform } from '../fs/index.js';
+import { makeDirectory, writeStreamToFile } from '../fs/fs-utils.js';
 
 // export const CsvBoolean = Schema.BooleanFromString;
 
@@ -105,14 +106,9 @@ export const jsonToCsv = <T extends Record<string, any>>(
           return stream.pipe(Stream.runForEach(Console.log));
         case 'file':
           return Effect.gen(function* () {
-            const fileSystem = yield* FileSystem.FileSystem;
-            const ps = yield* Path.Path;
-            yield* fileSystem.makeDirectory(ps.dirname(output.path), {
-              recursive: true,
-            });
-            yield* stream.pipe(
-              encodeUtf8ToBinaryStream,
-              Stream.run(fileSystem.sink(output.path)),
+            yield* makeDirectory(platform.dirname(output.path));
+            yield* writeStreamToFile(output.path)(
+              stream.pipe(encodeUtf8ToBinaryStream),
             );
           });
       }

@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { platform } from '../../fs/index.js';
-import { emptyDir, writeStreamToFile } from '../../fs/fs-utils.js';
+import { copyFolder, emptyDir, writeStreamToFile } from '../../fs/fs-utils.js';
 import { compareFiles, validateFolders } from '../baseClass.js';
 import { Effect, Layer, Stream, FileSystem } from 'effect';
 import {
@@ -24,13 +24,12 @@ let extractDirectory: string;
 beforeAll(async () => {
   await runNodeWithEnvOrThrow(
     Effect.gen(function* () {
-      const fs = yield* FileSystem.FileSystem;
       const tmpPath = platform.tmpdir();
       const sourceDirectory = platform.resolve('./tests');
       const destinationDirectory = platform.join(tmpPath, 'compressZip');
 
       yield* emptyDir(destinationDirectory);
-      yield* fs.copy(sourceDirectory, destinationDirectory);
+      yield* copyFolder(sourceDirectory, destinationDirectory);
       compressDirectory = destinationDirectory;
       extractDirectory = platform.join(destinationDirectory, 'extract');
       yield* emptyDir(extractDirectory);

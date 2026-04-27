@@ -33,7 +33,6 @@ export const webDownload = (
   headers?: Record<string, string>,
 ): Effect.Effect<boolean, NetworkError | IOError, FileSystem.FileSystem> =>
   Effect.gen(function* () {
-    const fs = yield* FileSystem.FileSystem;
     // =====================
     // validation
     // =====================

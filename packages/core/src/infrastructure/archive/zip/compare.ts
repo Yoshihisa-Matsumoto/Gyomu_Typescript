@@ -65,14 +65,13 @@ export const compareZip = (
   const { sourceFilename, destinationFilename, resultPath } = option;
 
   return Effect.gen(function* () {
-    const fs = yield* FileSystem.FileSystem;
     yield* ensureEffect(
-      fs.exists(sourceFilename),
+      pathExists(sourceFilename),
       IOError,
       `${sourceFilename} Not exist`,
     );
     yield* ensureEffect(
-      fs.exists(destinationFilename),
+      pathExists(destinationFilename),
       IOError,
       `${destinationFilename} Not exist`,
     );

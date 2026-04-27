@@ -13,6 +13,7 @@ import { FileTransportInfo } from '../../../../gyomu/file/transport.js';
 import { ArchiveEntryItem } from '../../common.js';
 import { unknown } from 'effect/SchemaAST';
 import { platform } from '../../../fs/index.js';
+import { makeDirectory, writeStreamToFile } from '../../../fs/fs-utils.js';
 
 type TarEntryItem = Extract<ArchiveEntryItem, { _tag: 'tar' }>;
 /**
@@ -237,7 +238,6 @@ export const extractTarToDirectory =
     self: Stream.Stream<Uint8Array<ArrayBufferLike>, E, R>,
   ): Effect.Effect<void, IOError | E, FileSystem.FileSystem | R> =>
     Effect.gen(function* () {
-      const fs = yield* FileSystem.FileSystem;
       const { targetDir, stripPath = '' } = options;
 
       return yield* self.pipe(
@@ -261,17 +261,7 @@ export const extractTarToDirectory =
 
             // ディレクトリの場合は作成して終了
             if (entry.isDirectory) {
-              yield* fs
-                .makeDirectory(fullPath, { recursive: true })
-                .pipe(
-                  Effect.mapError((e) =>
-                    unknownError(
-                      IOError,
-                      e,
-                      `Fail to make directory on ${fullPath}`,
-                    ),
-                  ),
-                );
+              yield* makeDirectory(fullPath);
               return yield* Stream.runDrain(entry.openStream()).pipe(
                 Effect.mapError((e) =>
                   unknownError(IOError, e, `Fail to save file`),
@@ -280,25 +270,11 @@ export const extractTarToDirectory =
             }
 
             // ファイルの場合は親ディレクトリを作ってから書き込み
-            yield* fs
-              .makeDirectory(platform.dirname(fullPath), {
-                recursive: true,
-              })
-              .pipe(
-                Effect.mapError((e) =>
-                  unknownError(
-                    IOError,
-                    e,
-                    `Fail to make directory on ${platform.dirname(fullPath)}`,
-                  ),
-                ),
-              );
+            yield* makeDirectory(platform.dirname(fullPath));
             yield* Effect.logDebug(`Untar ${fullPath}`);
             // entry.content (Stream) をファイルに流し込む
             // sinkUnique などを使って効率的に書き込む
-            return yield* entry
-              .openStream()
-              .pipe(Stream.run(fs.sink(fullPath)));
+            return yield* writeStreamToFile(fullPath)(entry.openStream());
           }),
         ),
         Effect.mapError((e) => unknownError(IOError, e, `Fail to save file`)),
@@ -311,8 +287,6 @@ export const extractTarSingleFile =
     self: Stream.Stream<Uint8Array<ArrayBufferLike>, E, R>,
   ): Effect.Effect<void, AppError | IOError | E, FileSystem.FileSystem | R> =>
     Effect.gen(function* () {
-      const fileSystem = yield* FileSystem.FileSystem;
-
       const entry = yield* self.pipe(
         untar,
         // 1. stripPath でフィルタリング
@@ -329,28 +303,11 @@ export const extractTarSingleFile =
       const fullPath = platform.join(destinationFolderName, fileName);
 
       // ファイルの場合は親ディレクトリを作ってから書き込み
-      yield* fileSystem
-        .makeDirectory(platform.dirname(fullPath), {
-          recursive: true,
-        })
-        .pipe(
-          Effect.mapError((e) =>
-            unknownError(
-              IOError,
-              e,
-              `Fail to make directory on ${platform.dirname(fullPath)}`,
-            ),
-          ),
-        );
+      yield* makeDirectory(platform.dirname(fullPath));
       yield* Effect.logDebug(`Untar ${fullPath}`);
       // entry.stream (Stream) をファイルに流し込む
       // sinkUnique などを使って効率的に書き込む
-      return yield* entry.openStream().pipe(
-        Stream.run(fileSystem.sink(fullPath)),
-        Effect.mapError((e) =>
-          unknownError(IOError, e, `Fail to save file on ${fullPath}`),
-        ),
-      );
+      return yield* writeStreamToFile(fullPath)(entry.openStream());
     });
 
 export const extractTar =

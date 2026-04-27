@@ -3,7 +3,12 @@ import { platform } from '../fs/index.js';
 import { expect } from 'vitest';
 import { MainLayer, PlatformLayer } from '../layer.js';
 import { makeRunner } from '../runtime.js';
-import { pathExists, readDirectoryDetailed } from '../fs/fs-utils.js';
+import {
+  pathExists,
+  readDirectoryDetailed,
+  readFromFile,
+  readStringFromFile,
+} from '../fs/fs-utils.js';
 import { IOError } from '../../errors.js';
 
 export const tmpDir = () => {
@@ -27,9 +32,8 @@ export const compareFiles = async (srcFile: string, destFile: string) => {
 
 const compareFilesEffect = (srcFile: string, destFile: string) => {
   return Effect.gen(function* () {
-    const fs = yield* FileSystem.FileSystem;
-    const source = yield* fs.readFile(srcFile);
-    const destination = yield* fs.readFile(destFile);
+    const source = yield* readFromFile(srcFile);
+    const destination = yield* readFromFile(destFile);
     const result = equals(source, destination);
     if (!result) {
       console.log(srcFile, destFile);
@@ -41,15 +45,14 @@ const compareFilesEffect = (srcFile: string, destFile: string) => {
 export const validateTextFiles = async (srcFile: string, destFile: string) => {
   return await runNodeWithEnvOrThrow(
     Effect.gen(function* () {
-      const fs = yield* FileSystem.FileSystem;
-      const srcData = fs
-        .readFileString(srcFile)
-        .toString()
-        .replace(/\r\n|\r/g, '\n');
-      const destData = fs
-        .readFileString(destFile)
-        .toString()
-        .replace(/\r\n|\r/g, '\n');
+      const srcData = (yield* readStringFromFile(srcFile)).replace(
+        /\r\n|\r/g,
+        '\n',
+      );
+      const destData = (yield* readStringFromFile(destFile)).replace(
+        /\r\n|\r/g,
+        '\n',
+      );
 
       expect(srcData).toBe(destData);
     }),
@@ -80,7 +83,6 @@ const compareFoldersFromSourceEffect = (
   FileSystem.FileSystem
 > => {
   return Effect.gen(function* () {
-    const fs = yield* FileSystem.FileSystem;
     const dirs = yield* readDirectoryDetailed(srcFolder);
     yield* Effect.forEach(
       dirs,
@@ -127,8 +129,6 @@ const compareFoldersFromDestEffect = (
   FileSystem.FileSystem
 > =>
   Effect.gen(function* () {
-    const fs = yield* FileSystem.FileSystem;
-
     const dirs = yield* readDirectoryDetailed(destFolder);
 
     yield* Effect.forEach(
