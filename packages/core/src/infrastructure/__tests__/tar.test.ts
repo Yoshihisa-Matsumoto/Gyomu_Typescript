@@ -8,7 +8,11 @@ import { Option, FileSystem } from 'effect';
 //import { fs } from '../fs/index.js';
 import { compareFiles, validateFolders } from './baseClass.js';
 import { FileTransportInfo } from '../../gyomu/file/transport.js';
-import { emptyDir, fileStream } from '../../infrastructure/fs/fs-utils.js';
+import {
+  copyFolder,
+  emptyDir,
+  fileStream,
+} from '../../infrastructure/fs/fs-utils.js';
 import {
   existsInTar,
   filterEntries,
@@ -33,11 +37,11 @@ let extractDirectory: string;
 beforeAll(async () => {
   const program = Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem;
-    const tmpPath = yield* fs.makeTempDirectory();
+    const tmpPath = platform.tmpdir();
     const sourceDirectory = platform.resolve('./tests');
     const destinationDirectory = platform.join(tmpPath, 'compressTar');
     yield* emptyDir(destinationDirectory);
-    yield* fs.copyFile(sourceDirectory, destinationDirectory);
+    yield* copyFolder(sourceDirectory, destinationDirectory);
     compressDirectory = destinationDirectory;
     extractDirectory = platform.join(destinationDirectory, 'extract');
     yield* emptyDir(extractDirectory);

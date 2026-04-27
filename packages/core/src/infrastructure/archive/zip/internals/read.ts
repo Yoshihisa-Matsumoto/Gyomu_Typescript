@@ -1,4 +1,4 @@
-import { Effect, Path, Queue, Stream } from 'effect';
+import { Effect, Queue, Stream } from 'effect';
 import yauzl, { RandomAccessReader } from 'yauzl';
 import { IOError, unknownError } from '../../../../errors.js';
 import { logger } from '../../../../logger.js';
@@ -10,10 +10,14 @@ import {
 import { decode } from '../../../../shared/encoding/decode.js';
 import { AppError } from '../../../../base-error.js';
 import { ArchiveEntryItem, massageEntryPath } from '../../common.js';
-import { writeStreamToFile } from '../../../../infrastructure/fs/fs-utils.js';
+import {
+  makeDirectory,
+  writeStreamToFile,
+} from '../../../../infrastructure/fs/fs-utils.js';
 import { FileSystem } from 'effect';
 import { runSync } from 'effect/Effect';
 import { FileTransportInfo } from '../../../../gyomu/file/transport.js';
+import { platform } from '../../../fs/index.js';
 
 export type ZipEntryItem = Extract<ArchiveEntryItem, { _tag: 'zip' }>;
 export type ZipFileEntryItem = Extract<ZipEntryItem, { isDirectory: false }>;
@@ -202,7 +206,7 @@ const matchTransfer = (
 const resolvePath = (
   entry: ZipEntryItem,
   info: FileTransportInfo,
-): Effect.Effect<string, never, Path.Path> => {
+): Effect.Effect<string, never> => {
   const {
     sourceFolderName,
     sourceFileName,
@@ -211,18 +215,19 @@ const resolvePath = (
   } = info;
 
   return Effect.gen(function* () {
-    const ps = yield* Path.Path;
-
     //const entryPath = entry.path.split('/').join(platform.sep);
 
     if (sourceFileName) {
-      return ps.join(destinationPath, destinationFileName ?? sourceFileName);
+      return platform.join(
+        destinationPath,
+        destinationFileName ?? sourceFileName,
+      );
     }
     const remaining = entry.path.substring(sourceFolderName.length);
     //  if(entry.path.startsWith(sourceFolderName)){
 
     if (!remaining) return destinationPath;
-    return ps.join(destinationPath, remaining.replace(/[/\\]+$/, ''));
+    return platform.join(destinationPath, remaining.replace(/[/\\]+$/, ''));
     // }
 
     // // ② destinationFileName がある場合
@@ -265,15 +270,13 @@ const extractEntry = (
 ) => {
   logger.debug(`${entry.path} to be extracted `);
   return Effect.gen(function* () {
-    const fileSystem = yield* FileSystem.FileSystem;
-    const ps = yield* Path.Path;
     const outputPath = yield* resolvePath(entry, transferInformation);
     logger.debug(`OutputPath:${outputPath}`);
     if (entry.isDirectory) {
-      return yield* fileSystem.makeDirectory(outputPath, { recursive: true });
+      return yield* makeDirectory(outputPath);
     }
-    const dir = ps.dirname(outputPath);
-    yield* fileSystem.makeDirectory(dir, { recursive: true });
+    const dir = platform.dirname(outputPath);
+    yield* makeDirectory(dir);
 
     logger.debug(`Creating file:${outputPath},entry:${entry.path}`);
     logger.debug(transferInformation);
@@ -291,11 +294,10 @@ export const extractSingleFileEntry = (
   destinationFullName: string,
 ) => {
   return Effect.gen(function* () {
-    const ps = yield* Path.Path;
     const arg = {
-      sourceFilename: ps.basename(targetFile.path),
-      destinationFileName: ps.basename(destinationFullName),
-      destinationFolderName: ps.dirname(destinationFullName),
+      sourceFilename: platform.basename(targetFile.path),
+      destinationFileName: platform.basename(destinationFullName),
+      destinationFolderName: platform.dirname(destinationFullName),
     };
     yield* extractEntry(targetFile, new FileTransportInfo(arg));
   });

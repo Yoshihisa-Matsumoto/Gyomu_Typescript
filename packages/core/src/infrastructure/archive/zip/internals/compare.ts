@@ -1,4 +1,4 @@
-import { Effect, Path } from 'effect';
+import { Effect } from 'effect';
 import { Ref } from 'effect';
 import { DiffDetail } from '../../../../shared/object/diff.js';
 
@@ -11,6 +11,7 @@ import { FileSystem } from 'effect';
 import { PlatformError } from 'effect/PlatformError';
 import { AppError } from '../../../../base-error.js';
 import { runCompareFuncFlow } from '../compare.js';
+import { platform } from '../../../fs/index.js';
 
 export type DiffernceIgnoreRule = {
   filePathRegExpression: string;
@@ -176,7 +177,6 @@ export const handleMissingFileInComparison = (
     if (existingFile.isDirectory) return Effect.succeed(interimOutput);
 
     return Effect.gen(function* () {
-      const ps = yield* Path.Path;
       yield* Ref.update(interimOutput, (output) => {
         output.results.push({
           path: existingFile.path,
@@ -184,7 +184,7 @@ export const handleMissingFileInComparison = (
         });
         return output;
       });
-      const filePath = ps.join(
+      const filePath = platform.join(
         resultPath,
         existingFile.path.replaceAll('/', '\\'),
       );
@@ -241,7 +241,6 @@ export const internalCompareFileEntry = (
   }
 
   const result = Effect.gen(function* () {
-    const ps = yield* Path.Path;
     if (compareFunc) {
       yield* runCompareFuncFlow(
         sourceFile,
@@ -263,10 +262,10 @@ export const internalCompareFileEntry = (
     const effects: Effect.Effect<
       void,
       AppError | PlatformError,
-      FileSystem.FileSystem | Path.Path
+      FileSystem.FileSystem
     >[] = [];
 
-    const sourcePath = ps.join(
+    const sourcePath = platform.join(
       resultPath,
       sourceFile.path.replaceAll('/', '\\') + '.source',
     );
@@ -275,7 +274,7 @@ export const internalCompareFileEntry = (
       effects.push(extractSingleFileEntry(sourceFile, sourcePath));
     }
 
-    const destinationPath = ps.join(
+    const destinationPath = platform.join(
       resultPath,
       destinationFile.path.replaceAll('/', '\\') + '.destination',
     );

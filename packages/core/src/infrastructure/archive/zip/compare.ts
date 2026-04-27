@@ -1,4 +1,4 @@
-import { pipe, Ref, Stream } from 'effect';
+import { Ref, Stream } from 'effect';
 import { AppError } from '../../../base-error.js';
 import { DiffDetail } from '../../../shared/object/diff.js';
 import { Effect } from 'effect';
@@ -17,7 +17,7 @@ import {
   ZipFileEntryItem,
 } from './internals/read.js';
 import { PlatformError } from 'effect/PlatformError';
-import { FileSystem, Path } from 'effect';
+import { FileSystem } from 'effect';
 import { jsonToCsv } from '../../csv/write.js';
 import { ZipService } from './ZipService.js';
 import {
@@ -32,7 +32,16 @@ import {
   shouldRunGitDiff,
   ZipCompareOption,
 } from './internals/compare.js';
-import { emptyDir } from '../../fs/fs-utils.js';
+import {
+  emptyDir,
+  makeDirectory,
+  pathExists,
+  readStringFromFile,
+  removePath,
+  writeStringToFile,
+} from '../../fs/fs-utils.js';
+import { platform } from '../../fs/index.js';
+
 // export type DiffDetail = {
 //   path: string;
 //   sourceValue: string;
@@ -51,13 +60,12 @@ export const compareZip = (
 ): Effect.Effect<
   DiffSummary[] | undefined,
   AppError | PlatformError,
-  FileSystem.FileSystem | Path.Path | ZipService
+  FileSystem.FileSystem | ZipService
 > => {
   const { sourceFilename, destinationFilename, resultPath } = option;
 
   return Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem;
-    const ps = yield* Path.Path;
     yield* ensureEffect(
       fs.exists(sourceFilename),
       IOError,
@@ -186,7 +194,7 @@ export const compareZip = (
       },
       {
         type: 'file',
-        path: ps.join(resultPath, summaryFilename),
+        path: platform.join(resultPath, summaryFilename),
       },
     );
 
@@ -387,9 +395,8 @@ const writeCsvIfNeeded = (
 ) =>
   diffDetailList.length > 0
     ? Effect.gen(function* () {
-        const ps = yield* Path.Path;
         const filePath =
-          ps.join(resultPath, sourceFile.path.replaceAll('/', '\\')) +
+          platform.join(resultPath, sourceFile.path.replaceAll('/', '\\')) +
           '.diff.csv';
 
         yield* jsonToCsv(
@@ -449,32 +456,23 @@ const compareTextfile = (
   destination: ZipFileEntryItem,
   filePath: string,
   resultPath: string,
-): Effect.Effect<
-  boolean,
-  IOError | AppError | PlatformError,
-  FileSystem.FileSystem | Path.Path
-> => {
+): Effect.Effect<boolean, IOError | AppError, FileSystem.FileSystem> => {
   return Effect.gen(function* () {
-    const fs = yield* FileSystem.FileSystem;
-    const ps = yield* Path.Path;
-    const gitTempPath = ps.join(
-      yield* fs.makeTempDirectory(),
-      'gitCompareTemp',
-    );
-    const sourceFilename = ps.join(gitTempPath, 'before');
-    const destinationFilename = ps.join(gitTempPath, 'after');
-    const diffFilename = ps.join(
+    const gitTempPath = platform.join(platform.tmpdir(), 'gitCompareTemp');
+    const sourceFilename = platform.join(gitTempPath, 'before');
+    const destinationFilename = platform.join(gitTempPath, 'after');
+    const diffFilename = platform.join(
       resultPath,
       filePath.replaceAll('/', '\\') + '.diff',
     );
 
     yield* emptyDir(gitTempPath);
 
-    yield* fs.remove(sourceFilename);
-    yield* fs.remove(destinationFilename);
+    yield* removePath(sourceFilename);
+    yield* removePath(destinationFilename);
 
-    const diffFilePath = ps.dirname(diffFilename);
-    yield* fs.makeDirectory(diffFilePath, { recursive: true });
+    const diffFilePath = platform.dirname(diffFilename);
+    yield* makeDirectory(diffFilePath);
 
     // ② source 展開
     yield* extractSingleFileEntry(source, sourceFilename);
@@ -505,7 +503,7 @@ const compareTextfile = (
       return result.output?.toString();
     });
 
-    if (!(yield* fs.exists(diffFilename))) {
+    if (!(yield* pathExists(diffFilename))) {
       throw new IOError(outputMessage);
     }
 
@@ -564,11 +562,10 @@ const compareTextfile = (
 
 const removeUnnecessaryLinesFromDiffFile = (diffFilename: string) => {
   return Effect.gen(function* () {
-    const fs = yield* FileSystem.FileSystem;
-    const content = (yield* fs.readFileString(diffFilename, 'utf8'))
+    const content = (yield* readStringFromFile(diffFilename, 'utf8'))
       .split('\n')
       .slice(4)
       .join('\n');
-    yield* fs.writeFileString(diffFilename, content, { flag: 'w' });
+    yield* writeStringToFile(diffFilename, content, { flag: 'w' });
   });
 };

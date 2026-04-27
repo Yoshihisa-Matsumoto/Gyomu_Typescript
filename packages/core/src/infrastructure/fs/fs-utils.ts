@@ -1,9 +1,10 @@
-import { FileSystem, Path } from 'effect';
+import { FileSystem } from 'effect';
 import { Stream, Effect } from 'effect';
 import { IOError, unknownError } from '../../errors.js';
 import { PlatformError } from 'effect/PlatformError';
 import { AppError } from '../../base-error.js';
 import ps from 'path';
+import { unknown } from 'effect/SchemaAST';
 
 /**
  * パスからファイルストリームを生成する。
@@ -238,11 +239,28 @@ export const readDirectoryDetailed = (dir: string) =>
       { concurrency: 'unbounded' },
     );
   });
+export const removePath = (
+  path: string,
+  options?: {
+    readonly recursive?: boolean | undefined;
+    readonly force?: boolean | undefined;
+  },
+) =>
+  Effect.gen(function* () {
+    const fs = yield* FileSystem.FileSystem;
 
+    const exist = yield* fs.exists(path);
+    if (exist) {
+      yield* fs.remove(path, options);
+    }
+  }).pipe(
+    Effect.mapError((e) =>
+      unknownError(IOError, e, `Fail to remove path: ${path}`),
+    ),
+  );
 export const emptyDir = (dir: string) =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem;
-    const path = yield* Path.Path;
 
     const exist = yield* fs.exists(dir);
     if (exist) {
@@ -251,8 +269,23 @@ export const emptyDir = (dir: string) =>
 
     // 再作成
     yield* fs.makeDirectory(dir, { recursive: true });
-  });
+  }).pipe(
+    Effect.mapError((e) =>
+      unknownError(IOError, e, `Fail to make dir empty: ${dir}`),
+    ),
+  );
+export const makeDirectory = (dir: string) =>
+  Effect.gen(function* () {
+    const fs = yield* FileSystem.FileSystem;
 
+    yield* fs
+      .makeDirectory(dir, { recursive: true })
+      .pipe(
+        Effect.mapError((e) =>
+          unknownError(IOError, e, `Fail to make directory on ${dir}`),
+        ),
+      );
+  });
 export const ensureFile = (
   filePath: string,
 ): Effect.Effect<void, IOError, FileSystem.FileSystem> =>
