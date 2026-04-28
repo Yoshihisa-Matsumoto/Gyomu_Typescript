@@ -73,8 +73,18 @@ export const readCsv =
           if (!row.ok) options?.onInvalidRow?.(row.raw);
         }),
       ),
-      Stream.filter((row) => row.ok),
-      Stream.map((row) => row.value as A),
+      Stream.flatMap((row) =>
+        row.ok
+          ? Stream.succeed(row.value as A)
+          : options?.skipInvalidRows
+            ? Stream.empty
+            : Stream.fail(
+                new IOError('Invalid CSV row', {
+                  row: row.raw,
+                  error: row.value,
+                }),
+              ),
+      ),
       Stream.filter((row) => (options?.filter ? options.filter(row) : true)),
     );
 

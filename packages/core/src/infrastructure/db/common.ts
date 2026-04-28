@@ -15,6 +15,11 @@ import {
   CrudSchemas,
 } from '../../schemas/common.js';
 import { generateUuid7 } from '../../shared/guid.js';
+import {
+  CrudRepository,
+  WithFindAll,
+  WithFindByColumn,
+} from '../../data/crud/index.js';
 import { LocalDate } from '@gyomu/shared/entity';
 import { ValueError } from '@gyomu/shared';
 export type TablesWithId = {
@@ -538,148 +543,6 @@ const syncRecords =
     });
   };
 
-type CrudRepository<
-  Insert extends Schema.Top,
-  Select extends Schema.Top,
-  Update extends Schema.Top,
-> = {
-  readonly create: (
-    data: Schema.Schema.Type<Insert>[],
-    modifiedBy?: string,
-  ) => Effect.Effect<Schema.Schema.Type<Select>[], DBError>;
-  readonly findById: (
-    id: string,
-  ) => Effect.Effect<Schema.Schema.Type<Select> | undefined, DBError>;
-  readonly updateRecords: (
-    data: Schema.Schema.Type<Update>[],
-    modifiedBy?: string,
-  ) => Effect.Effect<readonly Schema.Schema.Type<Select>[], DBError>;
-  readonly deleteRecords: (ids: string[]) => Effect.Effect<bigint, DBError>;
-  readonly synchronizeRecords: <
-    TInsert extends Schema.Schema.Type<Insert>,
-    TSelect extends TInsert &
-      Readonly<{
-        id: string;
-      }> & { [field: string]: any },
-    TUpdate extends Schema.Schema.Type<Update>,
-    TField extends keyof (TInsert | TUpdate),
-  >(args: {
-    diffResult: {
-      inserts: readonly TInsert[];
-      updates: readonly {
-        id: string;
-        existing: TSelect;
-        incoming: TUpdate;
-        changedFields: readonly TField[];
-        changedValues: Partial<Pick<TUpdate, TField>>;
-      }[];
-      deletes: readonly TSelect[];
-    };
-    modifiedBy?: string;
-    deleteRequired?: boolean;
-  }) => Effect.Effect<
-    {
-      insertedRows: Schema.Schema.Type<Select>[];
-      updatedRows: Schema.Schema.Type<Select>[];
-      deletedCount: bigint;
-    },
-    DBError
-  >;
-};
-
-type WithFindAll<Select extends Schema.Top> = {
-  readonly findAll: () => Effect.Effect<
-    readonly Schema.Schema.Type<Select>[],
-    DBError
-  >;
-};
-
-type FindByMethod<Select extends Schema.Top, MethodName extends string> = {
-  readonly [K in MethodName]: (
-    value: string,
-  ) => Effect.Effect<readonly Schema.Schema.Type<Select>[], DBError>;
-};
-
-type FindByColumnMeta<Column extends string> = {
-  readonly findByColumnName: Column;
-};
-
-type WithFindByColumn<
-  Select extends Schema.Top,
-  Column extends string,
-  MethodName extends string,
-> = FindByMethod<Select, MethodName> & FindByColumnMeta<Column>;
-
-type CrudSchemaSet = {
-  readonly insertSchema: Schema.Top;
-  readonly selectSchema: Schema.Top;
-  readonly updateSchema: Schema.Top;
-};
-
-type CrudRepositoryWithFindAll<
-  Insert extends Schema.Top,
-  Select extends Schema.Top,
-  Update extends Schema.Top,
-> = CrudRepository<Insert, Select, Update> & WithFindAll<Select>;
-
-type CrudRepositoryWithFindByColumn<
-  Insert extends Schema.Top,
-  Select extends Schema.Top,
-  Update extends Schema.Top,
-  Column extends string,
-  MethodName extends string,
-> = CrudRepository<Insert, Select, Update> &
-  WithFindByColumn<Select, Column, MethodName>;
-
-type CrudRepositoryWithFindAllAndFindByColumn<
-  Insert extends Schema.Top,
-  Select extends Schema.Top,
-  Update extends Schema.Top,
-  Column extends string,
-  MethodName extends string,
-> = CrudRepository<Insert, Select, Update> &
-  WithFindAll<Select> &
-  WithFindByColumn<Select, Column, MethodName>;
-
-export type CrudRepositoryFromSchemas<TSchemas extends CrudSchemaSet> =
-  CrudRepository<
-    TSchemas['insertSchema'],
-    TSchemas['selectSchema'],
-    TSchemas['updateSchema']
-  >;
-
-export type CrudRepositoryFromSchemasWithFindAll<
-  TSchemas extends CrudSchemaSet,
-> = CrudRepositoryWithFindAll<
-  TSchemas['insertSchema'],
-  TSchemas['selectSchema'],
-  TSchemas['updateSchema']
->;
-
-export type CrudRepositoryFromSchemasWithFindByColumn<
-  TSchemas extends CrudSchemaSet,
-  Column extends string,
-  MethodName extends string,
-> = CrudRepositoryWithFindByColumn<
-  TSchemas['insertSchema'],
-  TSchemas['selectSchema'],
-  TSchemas['updateSchema'],
-  Column,
-  MethodName
->;
-
-export type CrudRepositoryFromSchemasWithFindAllAndFindByColumn<
-  TSchemas extends CrudSchemaSet,
-  Column extends string,
-  MethodName extends string,
-> = CrudRepositoryWithFindAllAndFindByColumn<
-  TSchemas['insertSchema'],
-  TSchemas['selectSchema'],
-  TSchemas['updateSchema'],
-  Column,
-  MethodName
->;
-
 type RepositoryFromOptions<
   Insert extends Schema.Top,
   Select extends Schema.Top,
@@ -773,52 +636,3 @@ export const makeRepositoryFromDb = <
     TExt
   >;
 };
-
-type DefinitionShape = {
-  fields: Record<string, unknown>;
-  options?: {
-    keyMapping?: Partial<Record<string, string>>;
-  };
-};
-
-type ExtractKeyMapping<TDef extends DefinitionShape> = TDef['options'] extends {
-  keyMapping?: infer KM;
-}
-  ? KM extends Partial<Record<keyof TDef['fields'] & string, string>>
-    ? KM
-    : undefined
-  : undefined;
-
-type MappedFieldKeys<
-  TFields extends Record<string, unknown>,
-  TKeyMapping extends
-    | Partial<Record<keyof TFields & string, string>>
-    | undefined,
-> = {
-  [K in keyof TFields & string]: TKeyMapping extends Record<string, string>
-    ? K extends keyof TKeyMapping
-      ? TKeyMapping[K]
-      : K
-    : K;
-}[keyof TFields & string];
-
-type KeysAreSubsetOf<A extends string, B extends string> =
-  Exclude<A, B> extends never ? true : false;
-
-type AssertDefinitionKeysExistInTable<
-  TDef extends DefinitionShape,
-  TTableKeys extends string,
-> =
-  KeysAreSubsetOf<
-    MappedFieldKeys<TDef['fields'], ExtractKeyMapping<TDef>>,
-    TTableKeys
-  > extends true
-    ? TDef
-    : never;
-
-export const assertDefinitionKeysExistInTable =
-  <TTableKeys extends string>() =>
-  <TDef extends DefinitionShape>(
-    def: AssertDefinitionKeysExistInTable<TDef, TTableKeys>,
-  ) =>
-    def;

@@ -12,6 +12,7 @@ export type CsvReadOption<R> = {
   filterRaw?: (row: Record<string, string>) => boolean;
   filter?: (row: R) => boolean;
   onInvalidRow?: (raw: unknown) => void;
+  skipInvalidRows?: boolean;
 };
 
 export type CsvWriteOption<R> = {
