@@ -1,12 +1,23 @@
-import { AppError, Severity } from './BaseError.js';
+import { Data } from 'effect';
+import { AppErrorContext, Severity, withErrorTraits } from './BaseError.js';
 
-export class ValueError extends AppError {
-  readonly _tag = 'ValueError';
-  severity = Severity.ERROR;
-  isRetryable(): boolean {
-    return false;
-  }
-  constructor(message: string, cause?: unknown) {
-    super(message, cause);
-  }
+interface ValueErrorShape extends AppErrorContext {
+  field?: string;
+  value?: unknown;
+  expected?: unknown;
 }
+
+// export class ValueError extends AppError<ValueErrorShape> {
+//   readonly severity = Severity.ERROR;
+
+//   isRetryable() {
+//     return false;
+//   }
+
+//   constructor(ctx: ValueErrorShape) {
+//     super(ctx);
+//   }
+// }
+export class ValueError extends withErrorTraits(
+  Data.TaggedError('ValueError')<ValueErrorShape>,
+) {}

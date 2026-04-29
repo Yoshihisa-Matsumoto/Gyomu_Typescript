@@ -9,7 +9,9 @@ import { NodeFileSystem } from '@effect/platform-node';
 import { SourceError } from 'effect/ConfigProvider';
 import EventEmitter from 'node:events';
 import { MainLayer, PlatformLayer } from '../layer.js';
+import { initLoggerFromEnv } from '../logger/logger.js';
 
+await initLoggerFromEnv();
 const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
 const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
 
@@ -109,7 +111,14 @@ describe('SshService', () => {
       const program = Effect.gen(function* () {
         const ssh = yield* SshService;
         return yield* ssh.withConnection('', () =>
-          Effect.fail(new NetworkError('Test error')),
+          Effect.fail(
+            new NetworkError({
+              message: 'Test error',
+              cause: undefined,
+              operation: 'connect',
+              retryable: false,
+            }),
+          ),
         );
       });
 
@@ -174,10 +183,11 @@ describe('SshService', () => {
       const failingConfigService = Layer.succeed(ConfigService, {
         load: () =>
           Effect.fail(
-            new ConfigError(
-              'Config load failed',
-              new Error('Config load failed'),
-            ),
+            new ConfigError({
+              cause: 'mock error',
+              message: 'Config load failed',
+              phase: 'load' as const,
+            }),
           ),
       });
 

@@ -20,7 +20,15 @@ export const webDownloadStream = (
       const response = yield* fetchEffect(url, { headers });
 
       if (!response.body) {
-        return yield* Effect.fail(new NetworkError('No response body'));
+        return yield* Effect.fail(
+          new NetworkError({
+            message: 'No response body',
+            endpoint: url,
+            retryable: false,
+            cause: undefined,
+            operation: 'download',
+          }),
+        );
       }
 
       return networkStream(() => response.body!, `Stream error `);
@@ -40,7 +48,13 @@ export const webDownload = (
       destinationFilename !== platform.basename(destinationFilename)
     ) {
       return yield* Effect.fail(
-        new IOError(`Invalid Filepath :${destinationFilename}`),
+        new IOError({
+          message: `Invalid Filepath`,
+          target: destinationFilename,
+          layer: 'filesystem',
+          operation: 'write',
+          cause: undefined,
+        }),
       );
     }
 
@@ -49,15 +63,25 @@ export const webDownload = (
       (yield* getFileStat(destinationFilename)).type == 'Directory'
     ) {
       return yield* Effect.fail(
-        new IOError(`This is directory:${destinationFilename}`),
+        new IOError({
+          message: 'target must be file, but it is directory',
+          target: destinationFilename,
+          cause: undefined,
+          layer: 'filesystem',
+          operation: 'write',
+        }),
       );
     }
 
     if (!platform.extname(destinationFilename)) {
       return yield* Effect.fail(
-        new IOError(
-          `file name should include extension:${destinationFilename}`,
-        ),
+        new IOError({
+          message: 'filename should include extension',
+          target: destinationFilename,
+          cause: undefined,
+          layer: 'filesystem',
+          operation: 'write',
+        }),
       );
     }
 

@@ -35,10 +35,12 @@ export const generateToken = (uid: string, option: JwtOption) =>
   Effect.gen(function* () {
     const secretOrPrivateKey = yield* readFromFile(option.keyFilepath);
     const payload = { name: uid };
-    const token = yield* fromSync(
-      IOError,
-      `Fail to generate JWT`,
-    )(() =>
+    const token = yield* fromSync(IOError, () => ({
+      message: `Fail to generate JWT`,
+      layer: 'filesystem' as const,
+      operation: 'transform' as const,
+      details: { uid, option },
+    }))(() =>
       jwt.sign(payload, Uint8ArraytoBuffer(secretOrPrivateKey), {
         expiresIn: `${option.expiryHour}Hour`,
         algorithm: 'RS256',

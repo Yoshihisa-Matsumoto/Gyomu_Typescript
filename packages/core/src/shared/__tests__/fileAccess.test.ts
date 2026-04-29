@@ -5,7 +5,9 @@ import { Effect, Layer } from 'effect';
 import { MainLayer, PlatformLayer } from '../../infrastructure/layer.js';
 import { makeRunner } from '../../infrastructure/runtime.js';
 import { FileAccessService } from '../fs/FileAccessService.js';
+import { initLoggerFromEnv } from '../../infrastructure/logger/logger.js';
 
+await initLoggerFromEnv();
 const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
 const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
 

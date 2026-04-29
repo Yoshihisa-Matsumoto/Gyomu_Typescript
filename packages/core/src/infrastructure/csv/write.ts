@@ -3,7 +3,7 @@ import { stringify } from 'csv';
 import { Options } from 'csv-stringify';
 import { throughNodeStreamScoped } from '../stream/bridge/nodeStream.js';
 import { Stream, Schema, Function, Effect, Console, Path, Layer } from 'effect';
-import { unknownError, AppError } from '@gyomu/shared';
+import { wrapInfraError } from '@gyomu/shared';
 import { IOError } from '../../errors.js';
 import { encodeUtf8ToBinaryStream } from '../../shared/stream/transform/encoding.js';
 import { NodeFileSystem, NodePath } from '@effect/platform-node';
@@ -23,9 +23,7 @@ const stringifyCsv =
     schema: Schema.Struct<S>,
     options?: CsvWriteOption<S>,
   ) =>
-  <E extends AppError = never, R = never>(
-    stream: Stream.Stream<CsvRow, E, R>,
-  ) =>
+  <R = never>(stream: Stream.Stream<CsvRow, IOError, R>) =>
     stream.pipe(
       throughNodeStreamScoped<CsvRow, string>(() =>
         stringify({
@@ -36,9 +34,9 @@ const stringifyCsv =
     );
 const stringifyCsvRaw =
   (options?: CsvWriteOption<CsvRow>) =>
-  <E extends AppError = never, R = never>(
-    stream: Stream.Stream<CsvRow, E, R>,
-  ): Stream.Stream<string, E | IOError, R> =>
+  <R = never>(
+    stream: Stream.Stream<CsvRow, IOError, R>,
+  ): Stream.Stream<string, IOError, R> =>
     Function.pipe(
       stream,
       throughNodeStreamScoped<CsvRow, string>(() =>
@@ -53,14 +51,16 @@ type StructType<F extends Schema.Struct.Fields> = Schema.Schema.Type<
 >;
 const encodeCsv =
   <F extends Schema.Struct.Fields>(schema: Schema.Struct<F>) =>
-  <E extends AppError = never, R = never>(
-    stream: Stream.Stream<StructType<F>, E, R>,
-  ) =>
+  <R = never>(stream: Stream.Stream<StructType<F>, IOError, R>) =>
     stream.pipe(
       Stream.mapEffect((r) =>
         Schema.encodeEffect(schema)(r).pipe(
           Effect.mapError((e) =>
-            unknownError(IOError, e, 'Failed to encode CSV row'),
+            wrapInfraError(IOError, e, () => ({
+              message: 'Failed to encode stream into CSV row',
+              layer: 'csv' as const,
+              operation: 'transform' as const,
+            })),
           ),
         ),
       ),
@@ -68,18 +68,18 @@ const encodeCsv =
     );
 
 export const writeCsv =
-  <F extends Schema.Struct.Fields, E extends AppError = never, R = never>(
+  <F extends Schema.Struct.Fields, R = never>(
     schema: Schema.Struct<F>,
     options?: CsvWriteOption<F>,
   ) =>
-  (stream: Stream.Stream<StructType<F>, E, R>) =>
+  (stream: Stream.Stream<StructType<F>, IOError, R>) =>
     stream.pipe(encodeCsv(schema), stringifyCsv(schema, options));
 
 export const writeCsvRaw =
-  <T extends Record<string, CsvValue>, E extends AppError = never, R = never>(
+  <T extends Record<string, CsvValue>, R = never>(
     options?: CsvWriteOption<CsvRow>,
   ) =>
-  (stream: Stream.Stream<T, E, R>) =>
+  (stream: Stream.Stream<T, IOError, R>) =>
     stream.pipe(stringifyCsvRaw(options));
 
 type CsvOutput =

@@ -61,7 +61,13 @@ export function formatDateToYmd(date: Date): string {
 export function parseYmdToDate(ymd: string): Date {
   const date = parse(ymd, 'yyyy-MM-dd', new Date());
   if (!isValid(date) || format(date, 'yyyy-MM-dd') !== ymd) {
-    throw new ValueError(`Invalid date string: ${ymd}`);
+    throw new ValueError({
+      message: 'invalid date format',
+      field: 'ymd',
+      value: ymd,
+      expected: 'yyyy-MM-dd',
+      cause: undefined,
+    });
   }
   return date;
 }

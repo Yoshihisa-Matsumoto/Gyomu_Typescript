@@ -211,6 +211,18 @@ importers:
         specifier: ^8.1.0
         version: 8.1.0
 
+  packages/data:
+    dependencies:
+      '@gyomu/core':
+        specifier: workspace:*
+        version: link:../core
+      '@gyomu/shared':
+        specifier: workspace:*
+        version: link:../shared
+      effect:
+        specifier: 4.0.0-beta.42
+        version: 4.0.0-beta.42
+
   packages/shared:
     dependencies:
       date-fns:

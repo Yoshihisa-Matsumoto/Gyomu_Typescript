@@ -15,6 +15,9 @@ import { ZipService } from '../../archive/zip/index.js';
 import { compareZip } from '../../archive/zip/compare.js';
 import { MainLayer, PlatformLayer } from '../../layer.js';
 import { makeRunner } from '../../runtime.js';
+import { initLoggerFromEnv } from '../../logger/logger.js';
+
+await initLoggerFromEnv();
 
 const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
 const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);

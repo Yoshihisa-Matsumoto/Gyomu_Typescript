@@ -1,7 +1,7 @@
 import { Client, SFTPWrapper } from 'ssh2';
-import { NetworkError } from '../../../errors.js';
+import { isRetryableNetworkError, NetworkError } from '../../../errors.js';
 import { Effect } from 'effect';
-import { unknownError } from '@gyomu/shared';
+import { wrapInfraError } from '@gyomu/shared';
 
 export const withSftp =
   (client: Client) =>
@@ -13,7 +13,12 @@ export const withSftp =
         if (err || !sftp) {
           resume(
             Effect.fail(
-              unknownError(NetworkError, err, 'Failed to create SFTP session'),
+              wrapInfraError(NetworkError, err, (e) => ({
+                message: 'Fail to create to SFTP session',
+                operation: 'connect' as const,
+                retryable: isRetryableNetworkError(e),
+                endpoint: `${JSON.stringify(sftp)}`,
+              })),
             ),
           );
           return;

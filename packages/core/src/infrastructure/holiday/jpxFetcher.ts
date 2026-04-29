@@ -2,20 +2,25 @@ import { Effect } from 'effect';
 import { fetchEffect } from '../web/client.js';
 import { convertGenericElementByTagName, Page } from '../../scraping/index.js';
 import { fromPromise } from '@gyomu/shared/effect';
-import { NetworkError } from '../../errors.js';
+import { isRetryableNetworkError, NetworkError } from '../../errors.js';
 import { enUS } from 'date-fns/locale';
 import { MarketHolidaySchema } from '../../schemas/gyomu.js';
 import { format, isValid, parse } from 'date-fns';
 
-export const fetchJpxHolidays = () =>
+export const fetchJpxHolidays = (): Effect.Effect<
+  (typeof MarketHolidaySchema.types._insert)[],
+  NetworkError
+> =>
   Effect.gen(function* () {
-    const response = yield* fetchEffect(
-      'https://www.jpx.co.jp/english/corporate/about-jpx/calendar/index.html',
-    );
-    const page = yield* fromPromise(
-      NetworkError,
-      'Fail to parse page',
-    )(() => Page.createFromResponse(response));
+    const url =
+      'https://www.jpx.co.jp/english/corporate/about-jpx/calendar/index.html';
+    const response = yield* fetchEffect(url);
+    const page = yield* fromPromise(NetworkError, (e) => ({
+      message: 'Fail to parse page',
+      operation: 'request' as const,
+      retryable: isRetryableNetworkError(e),
+      endpoint: url,
+    }))(() => Page.createFromResponse(response));
     //yield* Effect.logInfo(page);
     //console.log(JSON.stringify(page));
     const titles =

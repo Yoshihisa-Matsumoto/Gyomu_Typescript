@@ -8,10 +8,14 @@ import {
 } from 'effect';
 import { Client } from 'basic-ftp';
 import { withDefault } from 'effect/Config';
-import { NetworkError, ConfigError } from '../../errors.js';
+import {
+  NetworkError,
+  ConfigError,
+  isRetryableNetworkError,
+  IOError,
+} from '../../errors.js';
 import { ConfigProviderLive, ConfigService } from '../config.js';
 import { fromPromise } from '@gyomu/shared/effect';
-import { AppError } from '@gyomu/shared';
 import { Scope } from 'effect/Scope';
 import { FileTransportInfo } from '../../gyomu/file/transport.js';
 import { Stream } from 'effect/Stream';
@@ -34,32 +38,30 @@ export class FtpService extends ServiceMap.Service<
       f: (ftp: {
         download: (
           transportInformation: FileTransportInfo,
-        ) => Effect.Effect<boolean, AppError | NetworkError, R>;
+        ) => Effect.Effect<boolean, NetworkError, R>;
         downloadToStream: (
           path: string,
-        ) => Stream<Uint8Array, AppError | NetworkError, R>;
-        list: (
-          path: string,
-        ) => Effect.Effect<string[], AppError | NetworkError, R>;
+        ) => Stream<Uint8Array, IOError | NetworkError, R>;
+        list: (path: string) => Effect.Effect<string[], NetworkError, R>;
         getFileInfo(path: string): Effect.Effect<
           {
             size: number;
             date: Date;
           },
-          AppError | NetworkError,
+          NetworkError,
           R
         >;
         upload: (
           transportInformation: FileTransportInfo,
-        ) => Effect.Effect<void, AppError | NetworkError, R>;
+        ) => Effect.Effect<void, NetworkError, R>;
         uploadFromStream(
-          source: Stream<Uint8Array, AppError | NetworkError, R>,
+          source: Stream<Uint8Array, NetworkError, R>,
           remotePath: string,
-        ): Effect.Effect<void, AppError | NetworkError, R>;
-      }) => Effect.Effect<A, AppError | NetworkError | ConfigError, R>,
+        ): Effect.Effect<void, NetworkError, R>;
+      }) => Effect.Effect<A, NetworkError | IOError | ConfigError, R>,
     ) => Effect.Effect<
       A,
-      AppError | NetworkError | ConfigError,
+      NetworkError | IOError | ConfigError,
       R | Scope | FileSystem.FileSystem
     >;
   }
@@ -96,10 +98,14 @@ export class FtpService extends ServiceMap.Service<
               Effect.gen(function* () {
                 console.log('FTP Config:', config);
                 console.log('password raw:', config.password);
-                yield* fromPromise(
-                  NetworkError,
-                  'Failed to connect to FTP server',
-                )(() =>
+                yield* fromPromise(NetworkError, (e) => {
+                  return {
+                    message: 'Failed to connect to FTP server',
+                    operation: 'connect' as const,
+                    retryable: isRetryableNetworkError(e),
+                    endpoint: `host: ${config.host}, port: ${config.port}, user: ${config.user}, secure: ${config.secure}`,
+                  };
+                })(() =>
                   client.access({
                     host: config.host,
                     port: config.port,

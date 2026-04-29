@@ -1,5 +1,5 @@
 import { Effect, Stream } from 'effect';
-import { AiError } from '../../errors.js';
+import { AIError } from '../../errors.js';
 // export type ChatStreamEvent =
 //   | { type: 'delta'; content: string } // 部分テキスト
 //   | { type: 'done' } // 完了
@@ -22,9 +22,9 @@ export interface AiClient {
   generateText: (input: {
     messages: ChatMessage[];
     temperature?: number;
-  }) => Effect.Effect<string, AiError>;
+  }) => Effect.Effect<string, AIError>;
   streamChat: (input: {
     messages: ChatMessage[];
     temperature?: number;
-  }) => Stream.Stream<string, AiError>;
+  }) => Stream.Stream<string, AIError>;
 }

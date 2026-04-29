@@ -9,19 +9,21 @@ import {
   UpdateResult,
 } from 'kysely';
 import { fromPromise } from '@gyomu/shared/effect';
-import {
-  convertToSchemaObjectWithEffect,
-  convertFromSchemaObjectWithEffect,
-  CrudSchemas,
-} from '../../schemas/common.js';
+import { CrudSchemas } from '../../data/crud/types.js';
 import { generateUuid7 } from '../../shared/guid.js';
 import {
   CrudRepository,
   WithFindAll,
   WithFindByColumn,
 } from '../../data/crud/index.js';
-import { LocalDate } from '@gyomu/shared/entity';
+import {
+  LocalDate,
+  convertToSchemaObjectWithEffect,
+  convertFromSchemaObjectWithEffect,
+} from '@gyomu/shared/entity';
 import { ValueError } from '@gyomu/shared';
+import { SchemaValidationError } from '../../../../shared/src/error/SchemaValidationError.js';
+import { ta } from 'date-fns/locale';
 export type TablesWithId = {
   [K in keyof DB]: DB[K] extends { id: any } ? K : never;
 }[keyof DB];
@@ -48,18 +50,20 @@ const selectRecordById =
   ) =>
   (id: string) =>
     Effect.gen(function* () {
-      const record = yield* fromPromise(
-        DBError,
-        `fail to select ${table} by id = ${id}`,
-      )(async () => {
+      const record = yield* fromPromise(DBError, () => ({
+        message: `fail to select ${table} by id = ${id}`,
+        operation: 'select' as const,
+        params: id,
+        table,
+      }))(async () => {
         const query = db.selectFrom(table).selectAll();
         return await (query as any).where('id', '=', id).executeTakeFirst();
       });
       if (!record) return undefined;
-      return yield* convertToSchemaObjectWithEffect(
-        DBError,
-        schema.tags.entity,
-      )(schema.selectSchema, record);
+      return yield* convertToSchemaObjectWithEffect(schema.tags.entity)(
+        schema.selectSchema,
+        record,
+      );
     });
 
 type StringColumnKeys<T> = {
@@ -83,10 +87,12 @@ const selectRecordsByColumn =
   ) =>
   (columnValue: string) =>
     Effect.gen(function* () {
-      const records = yield* fromPromise(
-        DBError,
-        `fail to select ${args.table} by ${args.columnName} = ${columnValue}`,
-      )(async () => {
+      const records = yield* fromPromise(DBError, () => ({
+        message: `fail to select ${args.table} by ${args.columnName} = ${columnValue}`,
+        operation: 'select' as const,
+        table: args.table,
+        params: [args.columnName, columnValue],
+      }))(async () => {
         const query = db.selectFrom(args.table).selectAll();
         return await (query as any)
           .where(args.columnName, '=', columnValue)
@@ -94,7 +100,6 @@ const selectRecordsByColumn =
       });
       if (!records) return [];
       return yield* convertToSchemaObjectWithEffect(
-        DBError,
         `${args.schema.tags.entity} Array`,
       )(Schema.Array(args.schema.selectSchema), records);
     });
@@ -124,19 +129,21 @@ export const customSQLAndReturnRecords =
   ) =>
   (
     f: (ctx: RepositoryContext<T, Insert, Select, Update>) => Promise<unknown>,
+    params?: unknown[],
   ): Effect.Effect<
     readonly Select['Type'][],
-    DBError,
+    DBError | SchemaValidationError,
     Select['DecodingServices']
   > =>
     Effect.gen(function* () {
-      const result = yield* fromPromise(
-        DBError,
-        message ?? `fail custom query on ${table}`,
-      )(async () => await f({ db, table, schemas: schema }));
+      const result = yield* fromPromise(DBError, () => ({
+        message: message ?? `fail custom query on ${table}`,
+        table: table,
+        operation: 'select' as const,
+        params: params,
+      }))(async () => await f({ db, table, schemas: schema }));
       if (!result) return [];
       return yield* convertToSchemaObjectWithEffect(
-        DBError,
         `${schema.tags.entity} Array`,
       )(Schema.Array(schema.selectSchema), result);
     });
@@ -154,13 +161,13 @@ const selectAllRecords =
   ) =>
   () =>
     Effect.gen(function* () {
-      const records = yield* fromPromise(
-        DBError,
-        `fail to select all ${table}`,
-      )(async () => await db.selectFrom(table).selectAll().execute());
+      const records = yield* fromPromise(DBError, () => ({
+        message: `fail to select all ${table}`,
+        table,
+        operation: 'select' as const,
+      }))(async () => await db.selectFrom(table).selectAll().execute());
       if (!records) return [];
       return yield* convertToSchemaObjectWithEffect(
-        DBError,
         `${schema.tags.entity} Array`,
       )(Schema.Array(schema.selectSchema), records);
     });
@@ -180,13 +187,16 @@ const prepareForInsert =
     Effect.gen(function* () {
       if (data.length == 0) return [];
       const encoded = yield* convertFromSchemaObjectWithEffect(
-        DBError,
         `${schema.tags.entity} Array`,
       )(Schema.Array(schema.insertSchema), data);
       if (schema.includeAuditFields) {
         if (!modifiedBy)
           return yield* Effect.fail(
-            new ValueError(`modifiedBy is not set for audit table`),
+            new ValueError({
+              message: `modifiedBy is not set for audit table`,
+              field: 'modifiedBy',
+              cause: modifiedBy,
+            }),
           );
         encoded.forEach((item) => {
           (item as any).modified_at = getNewTimestamp();
@@ -252,10 +262,11 @@ const createRecords =
       // encoded.forEach((item) => {
       //   (item as any).id = generateUuid7();
       // });
-      const records = yield* fromPromise(
-        DBError,
-        `fail to insert ${table} record`,
-      )(async () => {
+      const records = yield* fromPromise(DBError, () => ({
+        message: `fail to insert ${table} record`,
+        operation: 'insert' as const,
+        table,
+      }))(async () => {
         return await db.transaction().execute(async (trx) => {
           const insertedRows: Selectable<DB[T]>[] = [];
           for (const patch of encoded) {
@@ -270,7 +281,6 @@ const createRecords =
         });
       });
       return yield* convertToSchemaObjectWithEffect(
-        DBError,
         `${schema.tags.entity} Array`,
       )(Schema.Array(schema.selectSchema), records);
     });
@@ -290,13 +300,16 @@ const prepareForUpdate =
     Effect.gen(function* () {
       if (data.length == 0) return [];
       const encoded = yield* convertFromSchemaObjectWithEffect(
-        DBError,
         `${schema.tags.entity} Array`,
       )(Schema.Array(schema.updateSchema), data);
       if (schema.includeAuditFields) {
         if (!modifiedBy)
           return yield* Effect.fail(
-            new ValueError(`modifiedBy is not set for audit table`),
+            new ValueError({
+              message: `modifiedBy is not set for audit table`,
+              field: 'modifiedBy',
+              cause: modifiedBy,
+            }),
           );
         encoded.forEach((item) => {
           (item as any).modified_at = getNewTimestamp();
@@ -323,24 +336,11 @@ const updateRecords =
     Effect.gen(function* () {
       const encoded = yield* prepareForUpdate(schema)(data, modifiedBy);
       if (encoded.length == 0) return [];
-      // const encoded = yield* convertFromSchemaObjectWithEffect(
-      //   DBError,
-      //   `${schema.tags.entity} Array`,
-      // )(Schema.Array(schema.updateSchema), data);
-      // if (schema.includeAuditFields) {
-      //   if (!modifiedBy)
-      //     return yield* Effect.fail(
-      //       new ValueError(`modifiedBy is not set for audit table`),
-      //     );
-      //   encoded.forEach((item) => {
-      //     (item as any).modified_at = getNewTimestamp();
-      //     (item as any).modified_by = modifiedBy;
-      //   });
-      // }
-      const records = yield* fromPromise(
-        DBError,
-        `fail to update ${table} record`,
-      )(async () => {
+      const records = yield* fromPromise(DBError, () => ({
+        message: `fail to update ${table} record`,
+        operation: 'update' as const,
+        table,
+      }))(async () => {
         return await db.transaction().execute(async (trx) => {
           const updatedRows: Selectable<DB[T]>[] = [];
           for (const patch of encoded as Array<{ id: string }>) {
@@ -357,7 +357,6 @@ const updateRecords =
         });
       });
       return yield* convertToSchemaObjectWithEffect(
-        DBError,
         `${schema.tags.entity} Array`,
       )(Schema.Array(schema.selectSchema), records);
     });
@@ -377,15 +376,16 @@ export const makeCustomUpdate =
       ctx: RepositoryContext<T, Insert, Select, Update>,
     ) => Promise<UpdateResult[]>,
     message?: string,
-  ): Effect.Effect<bigint, DBError> =>
+  ): Effect.Effect<number, DBError> =>
     Effect.gen(function* () {
-      const result = yield* fromPromise(
-        DBError,
-        message ?? `fail custom update on ${table}`,
-      )(async () => await f({ db, table, schemas: schema }));
+      const result = yield* fromPromise(DBError, () => ({
+        message: message ?? `fail custom update on ${table}`,
+        table,
+        operation: 'update' as const,
+      }))(async () => await f({ db, table, schemas: schema }));
       return result
         .map((r) => r.numUpdatedRows)
-        .reduce((prev, current) => prev + current, BigInt(0));
+        .reduce((prev, current) => prev + Number(current), 0);
     });
 export const makeCustomDelete =
   <
@@ -403,16 +403,17 @@ export const makeCustomDelete =
       ctx: RepositoryContext<T, Insert, Select, Update>,
     ) => Promise<DeleteResult[]>,
     message?: string,
-  ): Effect.Effect<bigint, DBError> =>
+  ): Effect.Effect<number, DBError> =>
     Effect.gen(function* () {
-      const result = yield* fromPromise(
-        DBError,
-        message ?? `fail custom delete on ${table}`,
-      )(async () => await f({ db, table, schemas: schema }));
-      if (!result || result.length == 0) return 0n;
+      const result = yield* fromPromise(DBError, () => ({
+        message: message ?? `fail custom delete on ${table}`,
+        table,
+        operation: 'delete' as const,
+      }))(async () => await f({ db, table, schemas: schema }));
+      if (!result || result.length == 0) return 0;
       return result
-        .map((r) => r.numDeletedRows ?? 0n)
-        .reduce((prev, current) => prev + current, BigInt(0));
+        .map((r) => Number(r.numDeletedRows) ?? 0)
+        .reduce((prev, current) => prev + current, 0);
     });
 
 const deleteRecords =
@@ -420,12 +421,14 @@ const deleteRecords =
   (ids: string[]) =>
     Effect.gen(function* () {
       if (ids.length == 0 || !ids) {
-        return 0n;
+        return 0;
       }
-      const result = yield* fromPromise(
-        DBError,
-        `fail to delete ${table} by ids = ${ids.join(',')}`,
-      )(
+      const result = yield* fromPromise(DBError, () => ({
+        message: `fail to delete ${table} by ids = ${ids.join(',')}`,
+        table,
+        params: ids,
+        operation: 'delete' as const,
+      }))(
         async () =>
           (await (db.deleteFrom(table) as any)
             .where('id', 'in', ids)
@@ -433,7 +436,7 @@ const deleteRecords =
       );
       return result
         .map((r) => r.numDeletedRows)
-        .reduce((prev, current) => prev + current, BigInt(0));
+        .reduce((prev, current) => prev + Number(current), 0);
     });
 
 const syncRecords =
@@ -485,10 +488,12 @@ const syncRecords =
       const tobeDeletedIds = !deleteRequired
         ? []
         : diffResult.deletes.map((d) => d.id);
-      const result = yield* fromPromise(
-        DBError,
-        `fail to sync ${table} record`,
-      )(async () => {
+      const result = yield* fromPromise(DBError, () => ({
+        message: `fail to sync ${table} record`,
+        table,
+        params: args.diffResult,
+        operation: 'custom' as const,
+      }))(async () => {
         return await db.transaction().execute(async (trx) => {
           const insertedRows: Selectable<DB[T]>[] = [];
           for (const patch of encodedCreateRecord) {
@@ -515,16 +520,16 @@ const syncRecords =
               .executeTakeFirst();
             if (updated) updatedRows.push(updated as Selectable<DB[T]>);
           }
-          let deletedCount: bigint = 0n;
+          let deletedCount: number = 0;
           if (tobeDeletedIds.length == 0 || !tobeDeletedIds) {
-            deletedCount = 0n;
+            deletedCount = 0;
           } else {
             const deletedResult = (await (trx.deleteFrom(table) as any)
               .where('id', 'in', tobeDeletedIds)
               .execute()) as DeleteResult[];
             deletedCount = deletedResult
               .map((r) => r.numDeletedRows)
-              .reduce((prev, current) => prev + current, BigInt(0));
+              .reduce((prev, current) => prev + Number(current), 0);
           }
 
           return { insertedRows, updatedRows, deletedCount };
@@ -532,11 +537,9 @@ const syncRecords =
       });
 
       const insertedRows = yield* convertToSchemaObjectWithEffect(
-        DBError,
         `${schema.tags.entity} Array`,
       )(Schema.Array(schema.selectSchema), result.insertedRows);
       const updatedRows = yield* convertToSchemaObjectWithEffect(
-        DBError,
         `${schema.tags.entity} Array`,
       )(Schema.Array(schema.selectSchema), result.updatedRows);
       return { insertedRows, updatedRows, deletedCount: result.deletedCount };
@@ -568,7 +571,10 @@ type RepositoryExtensions<
   db: Kysely<DB>;
   table: T;
   schemas: CrudSchemas<Insert, Select, Update>;
-}) => Record<string, (...args: any[]) => Effect.Effect<any, DBError, TEnv>>;
+}) => Record<
+  string,
+  (...args: any[]) => Effect.Effect<any, DBError | SchemaValidationError, TEnv>
+>;
 
 export const makeRepositoryFromDb = <
   const T extends TablesWithId,

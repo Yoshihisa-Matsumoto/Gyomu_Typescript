@@ -1,8 +1,9 @@
 import { DBError } from '../../errors.js';
 import { Effect, Layer, Schedule, ServiceMap } from 'effect';
 import { GyomuRepository } from '../../gyomu/GyomuRepository.js';
-import { formatDateToYmd } from '../../infrastructure/date/dateConverter.js';
+import { formatDateToYmd } from '@gyomu/shared/entity';
 import { User } from '../../schemas/user.js';
+import { SchemaValidationError } from '@gyomu/shared';
 
 type ParameterType = string | number | boolean;
 
@@ -28,7 +29,7 @@ export class ParameterService extends ServiceMap.Service<
       key: string,
       value: T,
       user?: User | undefined,
-    ) => Effect.Effect<boolean, DBError, never>;
+    ) => Effect.Effect<boolean, DBError | SchemaValidationError, never>;
     keyExists: (key: string) => Effect.Effect<boolean, DBError, never>;
   }
 >()('ParameterService', {
@@ -49,14 +50,24 @@ export class ParameterService extends ServiceMap.Service<
         );
         if (itemValues.length === 0) {
           return yield* Effect.fail(
-            new DBError(`Can not retrieve parameter value for key: ${itemKey}`),
+            new DBError({
+              message: `Can not retrieve parameter value for key`,
+              params: { key, user, itemKey, itemValues },
+              cause: undefined,
+              operation: 'select' as const,
+              table: 'parameterMaster',
+            }),
           );
         }
         if (itemValues.filter((v) => !v.itemFromDate?.trim()).length > 1) {
           return yield* Effect.fail(
-            new DBError(
-              `Multiple default values found for key: ${itemKey}. Please ensure there is only one default value without itemFromDate.`,
-            ),
+            new DBError({
+              message: `Multiple default values found. Please ensure there is only one default value without itemFromDate.`,
+              cause: undefined,
+              params: itemKey,
+              operation: 'select' as const,
+              table: 'parameterMaster',
+            }),
           );
         }
         if (!targetDate) {
@@ -74,9 +85,13 @@ export class ParameterService extends ServiceMap.Service<
 
         if (!defaultRow && targetDate) {
           return yield* Effect.fail(
-            new DBError(
-              `No default value found for key: ${itemKey} and target date: ${targetYmd}`,
-            ),
+            new DBError({
+              message: `No default value found`,
+              params: { key: itemKey, targetDate: targetYmd },
+              cause: undefined,
+              operation: 'select',
+              table: 'parameterMaster',
+            }),
           );
         }
 

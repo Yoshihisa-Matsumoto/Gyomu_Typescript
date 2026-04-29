@@ -1,7 +1,7 @@
 import { Client, ClientChannel, ConnectConfig } from 'ssh2';
-import { NetworkError } from '../../../errors.js';
+import { isRetryableNetworkError, NetworkError } from '../../../errors.js';
 import { Effect } from 'effect';
-import { unknownError, AppError } from '@gyomu/shared';
+import { wrapInfraError } from '@gyomu/shared';
 
 export const connectEffect = (client: Client, config: ConnectConfig) =>
   Effect.callback<undefined, NetworkError>((resume) => {
@@ -14,7 +14,12 @@ export const connectEffect = (client: Client, config: ConnectConfig) =>
       cleanup();
       resume(
         Effect.fail(
-          unknownError(NetworkError, err, 'Failed to connect to SFTP server'),
+          wrapInfraError(NetworkError, err, (e) => ({
+            message: 'Fail to connect to SFTP server',
+            operation: 'connect' as const,
+            retryable: isRetryableNetworkError(e),
+            endpoint: `host: ${config.host} port: ${config.port} user: ${config.username}`,
+          })),
         ),
       );
     };
@@ -59,7 +64,7 @@ export const connectEffect = (client: Client, config: ConnectConfig) =>
 
 export const execute =
   (client: Client) =>
-  <E extends AppError, R = never>(
+  <R = never>(
     command: string,
     options: {
       requireShell?: boolean;
@@ -72,7 +77,7 @@ export const execute =
       result: string;
       error: string;
     },
-    E | NetworkError,
+    NetworkError,
     R
   > =>
     Effect.callback((resume) => {
@@ -86,7 +91,12 @@ export const execute =
       const onError = (err: Error) => {
         resume(
           Effect.fail(
-            unknownError(NetworkError, err, 'Failed to execute SSH command'),
+            wrapInfraError(NetworkError, err, (e) => ({
+              message: 'Fail to execute SSH command',
+              operation: 'request' as const,
+              retryable: isRetryableNetworkError(e),
+              endpoint: `${command} on ${options?.workingDirectory ?? 'default place'}`,
+            })),
           ),
         );
       };

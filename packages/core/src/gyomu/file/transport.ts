@@ -76,9 +76,17 @@ export class FileTransportInfo {
       !this.sourceFolderName && !this.#destinationFolderName;
 
     if (!this.sourceFileName && this.#destinationFileName)
-      throw new ValueError('Invalid Parameter');
+      throw new ValueError({
+        message: 'Invalid Parameter',
+        cause: undefined,
+        value: { sourceFilename, destinationFileName },
+      });
     if (!this.basePath && !this.sourceFolderName && !this.sourceFileName)
-      throw new ValueError('Invalid Parameter');
+      throw new ValueError({
+        message: 'Invalid Parameter',
+        cause: undefined,
+        value: { basePath, sourceFolderName, sourceFilename },
+      });
   }
 
   get sourceFullName(): string {

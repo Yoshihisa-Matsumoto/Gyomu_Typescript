@@ -1,7 +1,6 @@
 import { Effect, Layer, ServiceMap, Stream } from 'effect';
 import { IOError } from '../../../errors.js';
 import { ArchiveEntryItem } from '../common.js';
-import { AppError } from '@gyomu/shared';
 import { PlatformError } from 'effect/PlatformError';
 import { FileSystem } from 'effect';
 import {
@@ -28,59 +27,59 @@ export class TarService extends ServiceMap.Service<
       gzip?: boolean;
     }) => Effect.Effect<boolean, IOError>;
 
-    unarchive: <E extends AppError, R>(
-      source: Stream.Stream<Uint8Array, E, R>,
-    ) => Stream.Stream<TarEntryItem, E | IOError, R>;
+    unarchive: <R>(
+      source: Stream.Stream<Uint8Array, IOError, R>,
+    ) => Stream.Stream<TarEntryItem, IOError, R>;
 
-    extractAll: <E extends AppError, R>(
+    extractAll: <R>(
       destination: string,
     ) => (
-      source: Stream.Stream<Uint8Array, E, R>,
+      source: Stream.Stream<Uint8Array, IOError, R>,
     ) => Effect.Effect<
       void,
-      AppError | PlatformError | E,
+      IOError | PlatformError,
       FileSystem.FileSystem | R
     >;
 
-    extractSingle: <E extends AppError, R>(
+    extractSingle: <R>(
       entryName: string,
       dest: string,
     ) => (
-      source: Stream.Stream<Uint8Array, E, R>,
+      source: Stream.Stream<Uint8Array, IOError, R>,
     ) => Effect.Effect<
       void,
-      AppError | PlatformError | E,
+      IOError | PlatformError,
       FileSystem.FileSystem | R
     >;
 
     extractDirectory: (options: {
       targetDir: string;
       stripPath?: string;
-    }) => <E extends AppError, R = never>(
-      self: Stream.Stream<Uint8Array<ArrayBufferLike>, E, R>,
+    }) => <R = never>(
+      self: Stream.Stream<Uint8Array<ArrayBufferLike>, IOError, R>,
     ) => Effect.Effect<
       void,
-      AppError | PlatformError | E,
+      PlatformError | IOError,
       FileSystem.FileSystem | R
     >;
 
-    extract: <E extends AppError, R = never>(
+    extract: <R = never>(
       transferInformation: FileTransportInfo,
     ) => (
-      self: Stream.Stream<Uint8Array<ArrayBufferLike>, E, R>,
+      self: Stream.Stream<Uint8Array<ArrayBufferLike>, IOError, R>,
     ) => Effect.Effect<
       void,
-      AppError | PlatformError | E,
+      PlatformError | IOError,
       FileSystem.FileSystem | R
     >;
 
-    readEntry: (entry: TarEntryItem) => Effect.Effect<Uint8Array[], AppError>;
+    readEntry: (entry: TarEntryItem) => Effect.Effect<Uint8Array[], IOError>;
 
-    readTextEntry: (entry: TarEntryItem) => Effect.Effect<string, AppError>;
+    readTextEntry: (entry: TarEntryItem) => Effect.Effect<string, IOError>;
 
     readEntryStream: (
       entry: TarEntryItem,
-    ) => Stream.Stream<Uint8Array, AppError>;
+    ) => Stream.Stream<Uint8Array, IOError>;
   }
 >()('tar', {
   make: Effect.succeed({

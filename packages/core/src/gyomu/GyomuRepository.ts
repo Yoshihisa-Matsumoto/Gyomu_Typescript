@@ -40,6 +40,7 @@ import {
   CrudRepositoryFromSchemasWithFindAllAndFindByColumn,
   CrudRepositoryFromSchemasWithFindByColumn,
 } from '../data/crud/index.js';
+import { SchemaValidationError } from '../../../shared/src/error/SchemaValidationError.js';
 
 export class GyomuRepository extends ServiceMap.Service<
   GyomuRepository,
@@ -67,7 +68,10 @@ export class GyomuRepository extends ServiceMap.Service<
       'market',
       'findByMarket'
     > & {
-      findDistinctMarkets: () => Effect.Effect<string[], DBError>;
+      findDistinctMarkets: () => Effect.Effect<
+        string[],
+        DBError | SchemaValidationError
+      >;
     };
     readonly milestone: CrudRepositoryFromSchemasWithFindAllAndFindByColumn<
       typeof MilestoneSchema,
@@ -85,20 +89,20 @@ export class GyomuRepository extends ServiceMap.Service<
         isMonthly: boolean,
       ) => Effect.Effect<
         (typeof MilestoneDailySchema.types._select)[],
-        DBError
+        DBError | SchemaValidationError
       >;
       findByTargetDateAndMonthlyDate: (
         targetDate: LocalDate,
         monthlyYm: YearMonth,
       ) => Effect.Effect<
         (typeof MilestoneDailySchema.types._select)[],
-        DBError
+        DBError | SchemaValidationError
       >;
       deleteByMilestoneIdAndTargetDate: (
         milestoneId: string,
         targetDate: LocalDate,
         isMonthly: boolean,
-      ) => Effect.Effect<bigint, DBError>;
+      ) => Effect.Effect<number, DBError>;
     };
     readonly parameterMaster: CrudRepositoryFromSchemasWithFindByColumn<
       typeof ParameterMasterSchema,
@@ -108,8 +112,8 @@ export class GyomuRepository extends ServiceMap.Service<
       updateValueByItemKey: (
         itemKey: string,
         newValue: string,
-      ) => Effect.Effect<bigint, DBError>;
-      deleteByItemKey: (itemKey: string) => Effect.Effect<bigint, DBError>;
+      ) => Effect.Effect<number, DBError | SchemaValidationError>;
+      deleteByItemKey: (itemKey: string) => Effect.Effect<number, DBError>;
     };
   }
 >()('GyomuRepository', {
@@ -173,10 +177,11 @@ export class GyomuRepository extends ServiceMap.Service<
         ({ db, table }) => {
           return {
             findDistinctMarkets: () => {
-              return fromPromise(
-                DBError,
-                `fail to find distinct markets from ${table}`,
-              )(async () => {
+              return fromPromise(DBError, () => ({
+                message: `fail to find distinct markets from ${table}`,
+                table,
+                operation: 'select' as const,
+              }))(async () => {
                 const markets = await db
                   .selectFrom(table)
                   .select('market')

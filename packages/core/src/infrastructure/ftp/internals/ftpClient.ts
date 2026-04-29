@@ -1,7 +1,10 @@
 import { FileTransportInfo } from '../../../gyomu/file/transport.js';
 import { Client } from 'basic-ftp';
-import { IOError, NetworkError } from '../../../errors.js';
-import { AppError } from '@gyomu/shared';
+import {
+  IOError,
+  isRetryableNetworkError,
+  NetworkError,
+} from '../../../errors.js';
 import { PassThrough } from 'node:stream';
 import { Effect, pipe, Stream } from 'effect';
 import { fromReadable } from '../../stream/bridge/nodeStream.js';
@@ -13,40 +16,47 @@ import { toEntryPath } from '@gyomu/shared/path';
 
 export const list =
   (client: Client) =>
-  <E extends AppError, R = never>(
-    path: string,
-  ): Effect.Effect<string[], E | NetworkError, R> => {
+  <R = never>(path: string): Effect.Effect<string[], NetworkError, R> => {
     const fullPath = path;
 
     const fileInfoListPromise = () => client.list(fullPath);
     return pipe(
-      fromPromise(
-        NetworkError,
-        'Fail to retrieve ftp folders',
-      )(fileInfoListPromise),
+      fromPromise(NetworkError, (e) => ({
+        message: 'Fail to retrieve ftp folders',
+        operation: 'request' as const,
+        retryable: isRetryableNetworkError(e),
+        endpoint: path,
+      }))(fileInfoListPromise),
       Effect.map((fileInfoList) => fileInfoList.map((f) => f.name)),
     );
   };
 
 export const getFileInfo =
   (client: Client) =>
-  <E extends AppError, R = never>(
+  <R = never>(
     path: string,
   ): Effect.Effect<
     {
       size: number;
       date: Date;
     },
-    E | NetworkError,
+    NetworkError,
     R
   > => {
     return pipe(
       Effect.all([
-        fromPromise(NetworkError, 'Fail to get size')(() => client.size(path)),
-        fromPromise(
-          NetworkError,
-          'Fail to get lastMod',
-        )(() => client.lastMod(path)),
+        fromPromise(NetworkError, (e) => ({
+          message: 'Fail to get size',
+          operation: 'request' as const,
+          retryable: isRetryableNetworkError(e),
+          endpoint: path,
+        }))(() => client.size(path)),
+        fromPromise(NetworkError, (e) => ({
+          message: 'Fail to get lastMod',
+          operation: 'request' as const,
+          retryable: isRetryableNetworkError(e),
+          endpoint: path,
+        }))(() => client.lastMod(path)),
       ]),
       Effect.map(([size, date]) => ({ size, date })),
     );
@@ -54,36 +64,40 @@ export const getFileInfo =
 
 export const uploadFromStream =
   (client: Client) =>
-  <E extends AppError, R>(
-    source: Stream.Stream<Uint8Array, E, R>,
+  <R>(
+    source: Stream.Stream<Uint8Array, never, R>,
     remotePath: string,
-  ): Effect.Effect<void, E | NetworkError, R> =>
+  ): Effect.Effect<void, NetworkError, R> =>
     Effect.gen(function* () {
       // Stream → Node Readable
       const readable = yield* NodeStream.toReadable(source);
 
       // FTP upload
-      yield* fromPromise(
-        NetworkError,
-        `Failed to upload file to FTP server: ${remotePath}`,
-      )(() => client.uploadFrom(readable, remotePath));
+      yield* fromPromise(NetworkError, (e) => ({
+        message: `Failed to upload file to FTP server`,
+        operation: 'upload' as const,
+        retryable: isRetryableNetworkError(e),
+        endpoint: remotePath,
+      }))(() => client.uploadFrom(readable, remotePath));
     });
 
 export const downloadToStream =
   (client: Client) =>
-  <E extends AppError, R = never>(
+  <R = never>(
     path: string,
-  ): Stream.Stream<Uint8Array, E | IOError | NetworkError, R> =>
+  ): Stream.Stream<Uint8Array, IOError | NetworkError, R> =>
     Stream.unwrap(
       Effect.gen(function* () {
         const stream = new PassThrough();
 
         // 非同期で流し込む
         yield* Effect.forkScoped(
-          Effect.tryPromise({
-            try: () => client.downloadTo(stream, path),
-            catch: (e) => new NetworkError(String(e)),
-          }),
+          fromPromise(NetworkError, (e) => ({
+            message: `Failed to downloadTo`,
+            operation: 'download' as const,
+            retryable: isRetryableNetworkError(e),
+            endpoint: path,
+          }))(() => client.downloadTo(stream, path)),
         );
 
         return fromReadable(stream);
@@ -92,9 +106,9 @@ export const downloadToStream =
 
 export const download =
   (client: Client) =>
-  <E extends AppError, R = never>(
+  <R = never>(
     transportInformation: FileTransportInfo,
-  ): Effect.Effect<boolean, E | NetworkError, R> => {
+  ): Effect.Effect<boolean, NetworkError, R> => {
     const promise = transportInformation.isSourceDirectory
       ? () =>
           client.downloadToDir(
@@ -110,15 +124,20 @@ export const download =
             .then(() => undefined);
 
     return pipe(
-      fromPromise(NetworkError, 'Fail to do ftp download')(promise),
+      fromPromise(NetworkError, (e) => ({
+        message: 'Fail to do ftp download',
+        operation: 'download' as const,
+        retryable: isRetryableNetworkError(e),
+        endpoint: `from ${transportInformation.sourceFullName} to ${transportInformation.destinationFullName}`,
+      }))(promise),
       Effect.map(() => true),
     );
   };
 export const upload =
   (client: Client) =>
-  <E extends AppError, R = never>(
+  <R = never>(
     transportInformation: FileTransportInfo,
-  ): Effect.Effect<boolean, E | NetworkError, R> => {
+  ): Effect.Effect<boolean, NetworkError, R> => {
     const promise = !transportInformation.isSourceDirectory
       ? () =>
           client
@@ -134,7 +153,12 @@ export const upload =
           );
 
     return pipe(
-      fromPromise(NetworkError, 'Fail to do ftp upload')(promise),
+      fromPromise(NetworkError, (e) => ({
+        message: 'Fail to do ftp upload',
+        operation: 'upload' as const,
+        retryable: isRetryableNetworkError(e),
+        endpoint: `from ${transportInformation.sourceFullName} to ${transportInformation.destinationFullName}`,
+      }))(promise),
       Effect.map(() => true),
     );
   };

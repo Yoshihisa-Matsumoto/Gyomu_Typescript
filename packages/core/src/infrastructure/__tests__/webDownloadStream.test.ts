@@ -60,7 +60,14 @@ describe('webDownloadStream', () => {
 
   it('fetchEffectが失敗したらそのままfail', async () => {
     vi.mocked(fetchEffect).mockReturnValue(
-      Effect.fail(new NetworkError('fetch failed')),
+      Effect.fail(
+        new NetworkError({
+          message: 'fetch fail',
+          cause: undefined,
+          operation: 'download',
+          retryable: false,
+        }),
+      ),
     );
 
     await expect(

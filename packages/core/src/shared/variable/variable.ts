@@ -1,4 +1,4 @@
-import { createDateOnly } from '../../infrastructure/date/dateConverter.js';
+import { createDateOnly } from '@gyomu/shared/entity';
 import {
   BusinessCalendar,
   BusinessCalendarService,
@@ -109,7 +109,14 @@ export class VariableTranslatorService extends ServiceMap.Service<
     //const parts = keyword.split('$');
     const initialTranslateContext = (market: string) => {
       if (!supportedMarkets.includes(market)) {
-        return Effect.fail(new ValueError(`Unsupported market: ${market}`));
+        return Effect.fail(
+          new ValueError({
+            message: `Unsupported market`,
+            field: 'market',
+            value: market,
+            cause: undefined,
+          }),
+        );
       }
       return Effect.gen(function* () {
         const marketAccess = yield* marketAccessService.get(market);
@@ -152,7 +159,11 @@ export class VariableTranslatorService extends ServiceMap.Service<
       return context.pipe(
         Effect.map((ctx) => {
           if (ctx.state.kind === 'DatePending') {
-            throw new ValueError(`Format string is required for date variable`);
+            throw new ValueError({
+              message: `Format string is required for date variable`,
+              cause: undefined,
+              value: { context: ctx, keyword: keyword },
+            });
           }
           return ctx.output.join('');
         }),
@@ -224,7 +235,13 @@ export class VariableTranslatorService extends ServiceMap.Service<
           Effect.flatMap((ctx) =>
             ctx.kind === 'done'
               ? Effect.succeed(ctx.result)
-              : Effect.fail(new ValueError('No keyword: Not supported')),
+              : Effect.fail(
+                  new ValueError({
+                    message: 'No keyword: Not supported',
+                    cause: undefined,
+                    value: { context: ctx, keyword: keyword },
+                  }),
+                ),
           ),
         );
       });
@@ -247,7 +264,11 @@ const render = (
   if (ctx.state.kind === 'DatePending') {
     if (!part) {
       return Effect.fail(
-        new ValueError(`Format string is required for date variable`),
+        new ValueError({
+          message: `Format string is required for date variable`,
+          cause: undefined,
+          value: { context: ctx, part: part },
+        }),
       );
     }
     const formatted = format(ctx.state.date, part);
@@ -271,13 +292,17 @@ const render = (
         );
         if (!part) {
           return yield* Effect.fail(
-            new ValueError(`Format string is required for date variable`),
+            new ValueError({
+              message: `Format string is required for date variable`,
+              value: { context: ctx },
+              cause: undefined,
+            }),
           );
         }
-        const formatted = yield* fromSync(
-          ValueError,
-          `Failed to translate date: ${part}`,
-        )(() => format(dateResult, part));
+        const formatted = yield* fromSync(ValueError, () => ({
+          message: `Failed to translate date`,
+          value: { dateString: dateResult, format: part },
+        }))(() => format(dateResult, part));
 
         return {
           ...ctx,
@@ -300,7 +325,11 @@ const render = (
 
       default:
         return yield* Effect.fail(
-          new ValueError(`Unsupported variable type: ${ctx.variableType}`),
+          new ValueError({
+            message: `Unsupported variable typ`,
+            value: { context: ctx, part },
+            cause: undefined,
+          }),
         );
     }
   });
@@ -441,7 +470,13 @@ const translateDate = (
         ),
       );
     default:
-      return Effect.fail(new ValueError(`${dateParameter} is not supported`));
+      return Effect.fail(
+        new ValueError({
+          message: 'Not supported DateParameter',
+          value: dateParameter,
+          cause: undefined,
+        }),
+      );
   }
 };
 
@@ -479,7 +514,11 @@ const handlePart = (
   if (part in VariableDateKeyword) {
     if (ctx.state.kind === 'DatePending') {
       return Effect.fail(
-        new ValueError(`Date keyword repeated before format: ${part}`),
+        new ValueError({
+          message: `Date keyword repeated before format`,
+          value: { ctx, part },
+          cause: undefined,
+        }),
       );
     }
     return translateDate(

@@ -6,9 +6,17 @@ import { KyselyService } from '../infrastructure/db/KyselyService.js';
 import { MssqlService } from '../infrastructure/db/MssqlService.js';
 import { NodeFileSystem } from '@effect/platform-node';
 import { makeRunner } from '../infrastructure/runtime.js';
-import { syncHoliday } from '../gyomu/date/syncHolidayService.js';
+import { syncHoliday } from '../usecase/syncHolidayService.js';
+import { JPXHolidayFetcherLayer } from '../infrastructure/holiday/JpxHolidayFetcher.js';
+import { initLoggerFromEnv } from '../infrastructure/logger/logger.js';
 
-const batchLayer = Layer.mergeAll(MainLayer, ConfigLayer, GyomuRepository.live)
+await initLoggerFromEnv();
+const batchLayer = Layer.mergeAll(
+  MainLayer,
+  ConfigLayer,
+  GyomuRepository.live,
+  JPXHolidayFetcherLayer,
+)
   .pipe(Layer.provideMerge(KyselyService.live))
   .pipe(Layer.provideMerge(MssqlService.live))
   .pipe(Layer.provideMerge(NodeFileSystem.layer));

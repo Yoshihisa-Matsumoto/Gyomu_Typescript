@@ -71,10 +71,11 @@ describe('KyselyService (Effect v4)', () => {
     const ConfigServiceMock = Layer.succeed(ConfigService, {
       load: () =>
         Effect.fail(
-          new ConfigError(
-            'Config load failed',
-            new Error('Config load failed'),
-          ),
+          new ConfigError({
+            cause: 'mock error',
+            message: 'Config load failed',
+            phase: 'load' as const,
+          }),
         ),
     });
 

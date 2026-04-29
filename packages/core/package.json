@@ -4,6 +4,10 @@
   "description": "",
   "type": "module",
   "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
     "./*": {
       "import": "./lib/*.js",
       "types": "./lib/*.d.ts"
@@ -17,6 +21,7 @@
     "start": "pnpm run build:live",
     "watch": "tsc -w",
     "build": "tsc",
+    "build:ci": "pnpm run clean && pnpm run build",
     "Sprepare": "pnpm run build",
     "version": "git add -A src",
     "postversion": "git push && git push --tags",

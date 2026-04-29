@@ -7,44 +7,49 @@ export enum Severity {
   FATAL,
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-interface AppErrorContext {}
-export abstract class AppError extends Data.Error<AppErrorContext> {
-  abstract readonly _tag: string;
-  abstract severity: Severity;
-  abstract isRetryable(): boolean;
-
+export interface AppErrorContext {
   readonly message: string;
-  readonly cause?: unknown;
-
-  protected constructor(message: string, cause?: unknown) {
-    super();
-    this.message = message;
-    this.cause = cause;
-
-    this.name = this.constructor.name;
-    if (typeof (Error as any).captureStackTrace === 'function') {
-      (Error as any).captureStackTrace(this, this.constructor);
-    }
-  }
+  readonly cause: unknown;
+  readonly context?: string; // 発生箇所
+  readonly details?: unknown; // 任意の追加情報
 }
-export type AppErrorCtor<E extends AppError = AppError> = new (
-  message: string,
-  cause?: unknown,
-) => E;
 
-export function unknownError<E extends AppError>(
-  ErrorType: AppErrorCtor<E>,
+export interface ErrorTraits<Ctx> {
+  readonly severity: Severity;
+  isRetryable(ctx: Ctx): boolean;
+}
+
+export const withErrorTraits = <T extends { new (...args: any[]): any }>(
+  Base: T,
+  traits?: Partial<ErrorTraits<ContextOfCtor<T>>>,
+) => {
+  const merged = { ...defaultTraits, ...traits };
+  return class extends Base {
+    readonly severity = merged.severity;
+    isRetryable = merged.isRetryable(this as ContextOfCtor<T>);
+  };
+};
+const defaultTraits: ErrorTraits<unknown> = {
+  severity: Severity.ERROR,
+  isRetryable: () => false,
+};
+
+type ContextOfCtor<Ctor> = Ctor extends new (ctx: infer C) => any ? C : never;
+
+export function wrapInfraError<Ctor extends new (ctx: any) => any>(
+  ErrorType: Ctor,
   error: unknown,
-  message = 'Unknown error occurred',
-): E {
+  buildContext?: (e: unknown) => Partial<ContextOfCtor<Ctor>>,
+): InstanceType<Ctor> {
   if (error instanceof ErrorType) return error;
-  if (error instanceof AppError) return error as E;
-  const useMessage = message
-    ? `${message} cause: ${error instanceof Error ? error.message : 'Unknown error occurred'}`
-    : error instanceof Error
-      ? error.message
-      : 'Unknown error occurred';
 
-  return new ErrorType(useMessage, { cause: error });
+  const base = (buildContext?.(error) ?? {}) as ContextOfCtor<Ctor>;
+
+  return new ErrorType({
+    ...base,
+    message:
+      base.message ??
+      (error instanceof Error ? error.message : 'Unknown error occurred'),
+    cause: error,
+  });
 }

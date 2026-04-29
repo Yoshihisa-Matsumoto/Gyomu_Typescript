@@ -4,7 +4,7 @@ import { Effect, Layer, Schema, ServiceMap } from 'effect';
 import { GyomuRepository } from './GyomuRepository.js';
 import { MilestoneDailySchema, MilestoneSchema } from '../schemas/gyomu.js';
 import { DBError, TimeoutError } from '../errors.js';
-import { convertToSchemaObjectWithEffect } from '../schemas/common.js';
+import { convertToSchemaObjectWithEffect } from '@gyomu/shared/entity';
 import {
   LocalDate,
   LocalDateSchema,
@@ -12,7 +12,7 @@ import {
   YearMonthSchema,
 } from '@gyomu/shared/entity';
 import { MilestoneDailyDomainSchema } from '@gyomu/shared/entity';
-import { ValueError } from '@gyomu/shared';
+import { SchemaValidationError } from '../../../shared/src/error/SchemaValidationError.js';
 
 type MilestoneExistResultType =
   | {
@@ -38,12 +38,20 @@ export class MilestoneService extends ServiceMap.Service<
       milestoneId: string,
       targetYmd: LocalDate,
       isMonthly?: boolean,
-    ) => Effect.Effect<MilestoneExistResultType, DBError, GyomuRepository>;
+    ) => Effect.Effect<
+      MilestoneExistResultType,
+      DBError | SchemaValidationError,
+      GyomuRepository
+    >;
     register: (
       milestoneId: string,
       targetYmd: LocalDate,
       isMonthly?: boolean,
-    ) => Effect.Effect<string, DBError, GyomuRepository>;
+    ) => Effect.Effect<
+      string,
+      DBError | SchemaValidationError,
+      GyomuRepository
+    >;
     wait: (
       milestoneId: string,
       targetYmd: LocalDate,
@@ -53,16 +61,16 @@ export class MilestoneService extends ServiceMap.Service<
       targetDateYmd: LocalDate,
     ) => Effect.Effect<
       Schema.Schema.Type<typeof MilestoneDailyDomainSchema>[],
-      DBError | ValueError,
+      DBError | SchemaValidationError,
       GyomuRepository
     >;
     deleteMilestoneDaily: (
       milestoneId: string,
       targetDateYmd: LocalDate,
-    ) => Effect.Effect<bigint, DBError, GyomuRepository>;
+    ) => Effect.Effect<number, DBError, GyomuRepository>;
     milestoneList: () => Effect.Effect<
       readonly (typeof MilestoneSchema.types._select)[],
-      DBError,
+      DBError | SchemaValidationError,
       GyomuRepository
     >;
     upsertMilestoneCode: (
@@ -70,7 +78,7 @@ export class MilestoneService extends ServiceMap.Service<
       description: string,
     ) => Effect.Effect<
       typeof MilestoneSchema.types._select,
-      DBError,
+      DBError | SchemaValidationError,
       GyomuRepository
     >;
     deleteMilestoneCode: (
@@ -84,7 +92,11 @@ export class MilestoneService extends ServiceMap.Service<
       milestoneId: string,
       targetYmd: LocalDate,
       isMonthly = false,
-    ): Effect.Effect<MilestoneExistResultType, DBError, GyomuRepository> => {
+    ): Effect.Effect<
+      MilestoneExistResultType,
+      DBError | SchemaValidationError,
+      GyomuRepository
+    > => {
       //const targetDateYmd = convertTargetDate(targetYmd, isMonthly);
       return repo.milestoneDaily
         .findByMilestoneIdAndTargetDate(milestoneId, targetYmd, isMonthly)
@@ -106,7 +118,11 @@ export class MilestoneService extends ServiceMap.Service<
         milestoneId: string,
         targetYmd: LocalDate,
         isMonthly = false,
-      ): Effect.Effect<string, DBError, GyomuRepository> => {
+      ): Effect.Effect<
+        string,
+        DBError | SchemaValidationError,
+        GyomuRepository
+      > => {
         //const targetYmdForRecord = convertTargetDate(targetYmd, isMonthly);
 
         return Effect.gen(function* () {
@@ -155,7 +171,7 @@ export class MilestoneService extends ServiceMap.Service<
         targetDateYmd: LocalDate,
       ): Effect.Effect<
         Schema.Schema.Type<typeof MilestoneDailyDomainSchema>[],
-        DBError | ValueError,
+        DBError | SchemaValidationError,
         GyomuRepository
       > => {
         const targetDateMonthly = targetDateYmd.substring(0, 7) as YearMonth;
@@ -172,7 +188,7 @@ export class MilestoneService extends ServiceMap.Service<
         milestoneId: string,
         targetDateYmd: LocalDate,
         isMonthly: boolean = false,
-      ): Effect.Effect<bigint, DBError, GyomuRepository> => {
+      ): Effect.Effect<number, DBError, GyomuRepository> => {
         return Effect.gen(function* () {
           return yield* repo.milestoneDaily.deleteByMilestoneIdAndTargetDate(
             milestoneId,
@@ -231,7 +247,7 @@ const toMilestoneDomain = (
   row: typeof MilestoneDailySchema.types._select,
 ): Effect.Effect<
   Schema.Schema.Type<typeof MilestoneDailyDomainSchema>,
-  ValueError
+  SchemaValidationError
 > =>
   Effect.gen(function* () {
     return {
@@ -243,17 +259,17 @@ const toMilestoneDomain = (
         row.targetType === 'daily'
           ? {
               type: 'daily',
-              date: yield* convertToSchemaObjectWithEffect(
-                ValueError,
-                'LocalDate',
-              )(LocalDateSchema, row.targetDate),
+              date: yield* convertToSchemaObjectWithEffect('LocalDate')(
+                LocalDateSchema,
+                row.targetDate,
+              ),
             }
           : {
               type: 'monthly',
-              month: yield* convertToSchemaObjectWithEffect(
-                ValueError,
-                'YearMonth',
-              )(YearMonthSchema, row.targetYm),
+              month: yield* convertToSchemaObjectWithEffect('YearMonth')(
+                YearMonthSchema,
+                row.targetYm,
+              ),
             },
     } as Schema.Schema.Type<typeof MilestoneDailyDomainSchema>;
   });

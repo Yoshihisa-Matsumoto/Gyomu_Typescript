@@ -1,5 +1,6 @@
 import { Schema, SchemaTransformation } from 'effect';
 import { LocalDateSchema } from './date.js';
+import { defineEntityCrudSchemas } from './defineEntityCrudSchemas.js';
 
 export type Fields = Record<string, Schema.Schema<any>>;
 export type EntityDefinition<
@@ -24,3 +25,8 @@ export type Mutable<T> = {
 export type Optionalized<T extends Fields> = {
   [K in keyof T]: ReturnType<typeof Schema.optional<T[K]>>;
 };
+
+export type CrudSchemaGeneratorType<
+  TFields extends Fields,
+  TIncludeAudit extends boolean,
+> = ReturnType<typeof defineEntityCrudSchemas<TFields, TIncludeAudit>>;

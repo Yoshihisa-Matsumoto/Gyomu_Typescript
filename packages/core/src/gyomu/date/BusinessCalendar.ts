@@ -3,7 +3,7 @@ import { addMonths, isBefore, isEqual } from 'date-fns';
 
 import { Effect, Layer, ServiceMap } from 'effect';
 import { GyomuRepository } from '../GyomuRepository.js';
-import { DBError, GyomuError } from '../../errors.js';
+import { DBError, GyomuError, mapGyomuReason } from '../../errors.js';
 import { fromSync } from '@gyomu/shared/effect';
 import {
   createDateOnly,
@@ -359,10 +359,12 @@ export class BusinessCalendarService extends ServiceMap.Service<
     ) => Effect.Effect<BusinessCalendar, DBError, GyomuRepository>;
   }
 >()('MarketDateService', {
-  make: fromSync(
-    GyomuError,
-    'Failed to create MarketDateService',
-  )(() => {
+  make: fromSync(GyomuError, (e) => ({
+    message: 'Failed to create MarketDateService',
+    domain: 'market',
+    operation: 'make',
+    reason: mapGyomuReason(e),
+  }))(() => {
     const cache = new Map<string, BusinessCalendar>();
     return {
       get: (market: string) => {

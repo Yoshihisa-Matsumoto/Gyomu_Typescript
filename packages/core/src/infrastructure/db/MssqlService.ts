@@ -77,10 +77,11 @@ export class MssqlService extends ServiceMap.Service<
       user: string;
       password: string;
     }) =>
-      fromSync(
-        DBError,
-        'Failed to create MSSQL connection',
-      )(() => makeMssql(config)),
+      fromSync(DBError, () => ({
+        message: 'Failed to create MSSQL connection',
+        operation: 'custom' as const,
+        params: config,
+      }))(() => makeMssql(config)),
   }),
 }) {
   static readonly live = Layer.effect(this, this.make);

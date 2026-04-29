@@ -4,7 +4,6 @@ import { withDefault } from 'effect/Config';
 import { NetworkError, ConfigError, IOError } from '../../errors.js';
 import { ConfigProviderLive, ConfigService } from '../config.js';
 import { unwrapPassword } from '../../shared/effect/option.js';
-import { AppError } from '@gyomu/shared';
 import { Scope } from 'effect/Scope';
 import { execute } from './internals/sshClient.js';
 
@@ -32,13 +31,13 @@ export class SshService extends ServiceMap.Service<
             result: string;
             error: string;
           },
-          AppError | NetworkError,
+          NetworkError,
           R
         >;
-      }) => Effect.Effect<A, AppError | NetworkError | ConfigError, R>,
+      }) => Effect.Effect<A, NetworkError | ConfigError, R>,
     ) => Effect.Effect<
       A,
-      AppError | NetworkError | IOError | ConfigError,
+      NetworkError | IOError | ConfigError,
       R | Scope | FileSystem.FileSystem
     >;
   }

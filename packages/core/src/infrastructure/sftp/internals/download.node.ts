@@ -1,16 +1,19 @@
 import { Client } from 'ssh2';
-import { IOError, NetworkError } from '../../../errors.js';
+import {
+  IOError,
+  isRetryableNetworkError,
+  NetworkError,
+} from '../../../errors.js';
 import { Effect, Stream } from 'effect';
-import { AppError } from '@gyomu/shared';
 import { withSftp } from './shared.js';
 import { Readable } from 'node:stream';
 import { fromReadable } from '../../stream/bridge/nodeStream.js';
 
 export const downloadToStreamUnderNodejs =
   (client: Client) =>
-  <E extends AppError, R = never>(
+  <R = never>(
     path: string,
-  ): Stream.Stream<Uint8Array, E | IOError | NetworkError, R> =>
+  ): Stream.Stream<Uint8Array, IOError | NetworkError, R> =>
     Stream.unwrap(
       withSftp(client)((sftp) =>
         Effect.gen(function* () {
@@ -23,9 +26,13 @@ export const downloadToStreamUnderNodejs =
                   cleanup();
                   resume(
                     Effect.fail(
-                      new NetworkError(
-                        `Failed to create read stream: ${err.message}`,
-                      ),
+                      new NetworkError({
+                        cause: err,
+                        message: `Failed to create read stream`,
+                        operation: 'download' as const,
+                        retryable: isRetryableNetworkError(err),
+                        endpoint: path,
+                      }),
                     ),
                   );
                 };
@@ -45,9 +52,13 @@ export const downloadToStreamUnderNodejs =
               } catch (e) {
                 resume(
                   Effect.fail(
-                    new NetworkError(
-                      `Failed to create read stream: ${String(e)}`,
-                    ),
+                    new NetworkError({
+                      message: 'Fail to create read stream',
+                      cause: e,
+                      operation: 'download' as const,
+                      retryable: isRetryableNetworkError(e),
+                      endpoint: path,
+                    }),
                   ),
                 );
               }

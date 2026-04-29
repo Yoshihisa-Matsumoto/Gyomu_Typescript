@@ -1,7 +1,11 @@
 import { Client, ConnectConfig, FileEntryWithStats, SFTPWrapper } from 'ssh2';
-import { IOError, NetworkError } from '../../../errors.js';
+import {
+  IOError,
+  isRetryableNetworkError,
+  NetworkError,
+} from '../../../errors.js';
 import { Effect, Stream } from 'effect';
-import { unknownError, AppError } from '@gyomu/shared';
+import { wrapInfraError } from '@gyomu/shared';
 import { FileTransportInfo } from '../../../gyomu/file/transport.js';
 import { toEntryPath } from '@gyomu/shared/path';
 import { FileSystem } from 'effect';
@@ -21,7 +25,12 @@ export const connectEffect = (client: Client, config: ConnectConfig) =>
       cleanup();
       resume(
         Effect.fail(
-          unknownError(NetworkError, err, 'Failed to connect to SFTP server'),
+          wrapInfraError(NetworkError, err, (e) => ({
+            message: 'Fail to connect to SFTP server',
+            operation: 'connect' as const,
+            retryable: isRetryableNetworkError(e),
+            endpoint: `host: ${config.host} port: ${config.port} user: ${config.username}`,
+          })),
         ),
       );
     };
@@ -49,7 +58,12 @@ export const listInternal = (sftp: SFTPWrapper, remoteDir: string) =>
       if (err || !list) {
         resume(
           Effect.fail(
-            unknownError(NetworkError, err, 'Failed to read directory'),
+            wrapInfraError(NetworkError, err, (e) => ({
+              message: 'Fail to read directory',
+              operation: 'request' as const,
+              retryable: isRetryableNetworkError(e),
+              endpoint: remoteDir,
+            })),
           ),
         );
         return;
@@ -92,11 +106,12 @@ export const getFileInfo =
           if (err || !stats) {
             resume(
               Effect.fail(
-                unknownError(
-                  NetworkError,
-                  err,
-                  'Failed to get file info from SFTP',
-                ),
+                wrapInfraError(NetworkError, err, (e) => ({
+                  message: 'Fail toget file info from SFTP',
+                  operation: 'request' as const,
+                  retryable: isRetryableNetworkError(e),
+                  endpoint: path,
+                })),
               ),
             );
             return;
@@ -119,11 +134,12 @@ const downloadFile = (sftp: SFTPWrapper) => (remote: string, local: string) =>
       if (err) {
         resume(
           Effect.fail(
-            unknownError(
-              NetworkError,
-              err,
-              `Failed to download file: ${remote}`,
-            ),
+            wrapInfraError(NetworkError, err, (e) => ({
+              message: 'Fail to download file',
+              operation: 'download' as const,
+              retryable: isRetryableNetworkError(e),
+              endpoint: remote,
+            })),
           ),
         );
         return;
@@ -203,7 +219,12 @@ const uploadFile = (sftp: SFTPWrapper) => (local: string, remote: string) =>
       if (err) {
         resume(
           Effect.fail(
-            unknownError(NetworkError, err, `Failed to upload file: ${local}`),
+            wrapInfraError(NetworkError, err, (e) => ({
+              message: 'Fail to upload file',
+              operation: 'upload' as const,
+              retryable: isRetryableNetworkError(e),
+              endpoint: `${local} -> ${remote}`,
+            })),
           ),
         );
         return;
@@ -231,11 +252,12 @@ const mkdirRecursive =
                 if (statErr || !stats) {
                   resume(
                     Effect.fail(
-                      unknownError(
-                        NetworkError,
-                        err,
-                        `Failed to mkdir: ${current}`,
-                      ),
+                      wrapInfraError(NetworkError, err, (e) => ({
+                        message: 'Fail to mkdir',
+                        operation: 'request' as const,
+                        retryable: isRetryableNetworkError(e),
+                        endpoint: current,
+                      })),
                     ),
                   );
                 } else {
@@ -263,7 +285,12 @@ const uploadDir =
 
       const entries = yield* readDirectoryDetailed(localDir).pipe(
         Effect.mapError((e) =>
-          unknownError(IOError, e, 'Fail to read local directory'),
+          wrapInfraError(IOError, e, () => ({
+            message: 'Fail to read local directory',
+            layer: 'filesystem' as const,
+            target: localDir,
+            operation: 'read' as const,
+          })),
         ),
       );
       // const entries = yield* fromPromise(
@@ -312,8 +339,8 @@ export const upload =
 
 export const uploadFromStream =
   (client: Client) =>
-  <E extends AppError, R>(
-    source: Stream.Stream<Uint8Array, E, R>,
+  <R>(
+    source: Stream.Stream<Uint8Array, IOError, R>,
     remotePath: string,
-  ): Effect.Effect<void, E | NetworkError, R> =>
+  ): Effect.Effect<void, NetworkError, R> =>
     uploadFromStreamUnderNodejs(client)(source, remotePath);

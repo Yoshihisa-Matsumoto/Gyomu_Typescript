@@ -1,5 +1,5 @@
 import { Stream } from 'effect';
-import { AppError } from '@gyomu/shared';
+import { IOError } from '../../errors.js';
 
 export const massageEntryPath = (fileName: string) => {
   return fileName ? fileName.replace(/\\/g, '/') : fileName;
@@ -11,7 +11,7 @@ export type ZipFileEntryItem = {
   crc32: number;
   uncompressedSize: number;
   isDirectory: false;
-  openStream: () => Stream.Stream<Uint8Array, AppError>;
+  openStream: () => Stream.Stream<Uint8Array, IOError>;
 };
 
 export type TarFileEntryItem = {
@@ -19,7 +19,7 @@ export type TarFileEntryItem = {
   path: string;
   uncompressedSize: number;
   isDirectory: false;
-  openStream: () => Stream.Stream<Uint8Array, AppError>;
+  openStream: () => Stream.Stream<Uint8Array, IOError>;
 };
 
 type ZipDirectoryEntryItem = {
@@ -31,7 +31,7 @@ type TarDirectoryEntryItem = {
   _tag: 'tar';
   path: string;
   isDirectory: true;
-  openStream: () => Stream.Stream<Uint8Array, AppError>;
+  openStream: () => Stream.Stream<Uint8Array, IOError>;
 };
 
 export type ArchiveEntryItem =

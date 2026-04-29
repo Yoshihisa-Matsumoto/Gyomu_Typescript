@@ -16,13 +16,21 @@ export const polling = <R = never>(
   ...args: any[]
 ): Effect.Effect<boolean, TimeoutError, R> =>
   Effect.gen(function* () {
-    const timeoutTime = Date.now() + timeoutSeconds * 1000;
+    const start = Date.now();
+    const timeoutTime = start + timeoutSeconds * 1000;
 
     const poll = (): Effect.Effect<boolean, TimeoutError, R> =>
       Effect.gen(function* () {
         const result = yield* timerFunc(...args).pipe(
           Effect.mapError(
-            (e) => new TimeoutError(`Fail on polling: ${pollingActionName}`, e),
+            (e) =>
+              new TimeoutError({
+                message: `Fail on polling: ${pollingActionName}`,
+                action: pollingActionName,
+                timeoutSeconds,
+                intervalSeconds,
+                cause: e,
+              }),
           ),
         );
 
@@ -31,6 +39,16 @@ export const polling = <R = never>(
         }
 
         if (Date.now() > timeoutTime) {
+          // return yield* Effect.fail(
+          //   new TimeoutError({
+          //     message: `Timeout on polling: ${pollingActionName}`,
+          //     action: pollingActionName,
+          //     timeoutSeconds,
+          //     intervalSeconds,
+          //     elapsedMs: Date.now() - start,
+          //     cause: undefined,
+          //   }),
+          // );
           return false;
         }
 

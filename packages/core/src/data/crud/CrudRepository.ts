@@ -17,7 +17,7 @@ export type CrudRepository<
     data: Schema.Schema.Type<Update>[],
     modifiedBy?: string,
   ) => Effect.Effect<readonly Schema.Schema.Type<Select>[], DBError>;
-  readonly deleteRecords: (ids: string[]) => Effect.Effect<bigint, DBError>;
+  readonly deleteRecords: (ids: string[]) => Effect.Effect<number, DBError>;
   readonly synchronizeRecords: <
     TInsert extends Schema.Schema.Type<Insert>,
     TSelect extends TInsert &
@@ -44,7 +44,7 @@ export type CrudRepository<
     {
       insertedRows: Schema.Schema.Type<Select>[];
       updatedRows: Schema.Schema.Type<Select>[];
-      deletedCount: bigint;
+      deletedCount: number;
     },
     DBError
   >;

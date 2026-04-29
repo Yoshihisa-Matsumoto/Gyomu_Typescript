@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Effect, Layer, Stream } from 'effect';
 import { GeminiClient } from '../ai/gemini/GeminiClient.js';
 import { ConfigService } from '../config.js';
-import { AiError } from '../../errors.js';
+import { AIError } from '../../errors.js';
 import { makeRunner } from '../runtime.js';
 
 // --- モック定義 ---
@@ -85,7 +85,7 @@ describe('GeminiClient (Unit)', () => {
     });
 
     await expect(runGeminiQAWithEnvOrThrow(program)).rejects.toBeInstanceOf(
-      AiError,
+      AIError,
     );
   });
 

@@ -4,7 +4,7 @@ import { FileSystem } from 'effect';
 import { NodeFileSystem, NodeStream } from '@effect/platform-node';
 import { IOError } from '../../errors.js';
 import fs from 'fs';
-import { unknownError } from '@gyomu/shared';
+import { wrapInfraError } from '@gyomu/shared';
 
 describe('FileSystem simple test', () => {
   it('FileSystem test', async () => {
@@ -32,7 +32,13 @@ describe('FileSystem simple test', () => {
       Effect.gen(function* () {
         return yield* NodeStream.fromReadable<Uint8Array, IOError>({
           evaluate: () => fs.createReadStream(path),
-          onError: (e) => unknownError(IOError, e, 'file read error'),
+          onError: (e) =>
+            wrapInfraError(IOError, e, () => ({
+              layer: 'stream' as const,
+              operation: 'read' as const,
+              message: 'fail to read file',
+              target: path,
+            })),
         }).pipe(
           Stream.tap(() => Effect.log('[chunk]')),
           Stream.runDrain,

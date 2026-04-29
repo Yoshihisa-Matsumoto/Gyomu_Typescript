@@ -16,9 +16,9 @@ export const jsonEffect = <T>(
     Stream.decodeText(),
     Stream.runCollect,
     Effect.flatMap((chunks) =>
-      fromSync(
-        ValueError,
-        `Invalid JSON`,
-      )(() => JSON.parse(chunks.join('')) as T),
+      fromSync(ValueError, (e) => ({
+        message: 'invalid json',
+        value: chunks,
+      }))(() => JSON.parse(chunks.join('')) as T),
     ),
   );

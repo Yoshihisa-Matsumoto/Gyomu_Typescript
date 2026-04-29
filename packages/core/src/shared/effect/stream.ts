@@ -1,5 +1,6 @@
 import { Stream } from 'effect';
-import { NetworkError } from '../../errors.js';
+import { isRetryableNetworkError, NetworkError } from '../../errors.js';
+import { wrapInfraError } from '@gyomu/shared';
 
 export const fromReadableStream =
   <E>(onError: (e: unknown) => E) =>
@@ -14,5 +15,11 @@ export const networkStream = (
 ) =>
   Stream.fromReadableStream({
     evaluate: f,
-    onError: (e) => new NetworkError(`${context}: ${String(e)}`),
+    onError: (e) =>
+      wrapInfraError(NetworkError, e, (e) => ({
+        message: 'fail to read stream',
+        operation: 'download' as const,
+        endpoint: context,
+        retryable: isRetryableNetworkError(e),
+      })),
   });

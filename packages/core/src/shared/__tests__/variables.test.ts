@@ -1,8 +1,5 @@
 import { VariableTranslatorService } from '../variable/variable.js';
-import {
-  parseYmdToDate,
-  createDateOnly,
-} from '../../infrastructure/date/dateConverter.js';
+import { parseYmdToDate, createDateOnly } from '@gyomu/shared/entity';
 import { beforeEach, describe, expect, test } from 'vitest';
 import { Effect, Layer } from 'effect';
 import { BusinessCalendarService } from '../../gyomu/date/BusinessCalendar.js';
@@ -12,7 +9,9 @@ import { makeRunner } from '../../infrastructure/runtime.js';
 import { MainLayer } from '../../infrastructure/layer.js';
 import { ConfigLayer } from '../../infrastructure/config.js';
 import { Date2LocalDate } from '@gyomu/shared/entity';
+import { initLoggerFromEnv } from '../../infrastructure/logger/logger.js';
 
+await initLoggerFromEnv();
 const TestLayer = Layer.mergeAll(VariableTranslatorService.live, MainLayer)
   .pipe(Layer.provideMerge(ConfigLayer))
   .pipe(Layer.provideMerge(BusinessCalendarService.live))

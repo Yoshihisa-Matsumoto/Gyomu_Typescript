@@ -141,7 +141,7 @@ describe('CSV Read Functions', () => {
           }),
         ),
       ).pipe(Effect.runPromise);
-      logger.info(result);
+      logger.info(result, 'readCsv result');
       // Should only contain records with age > 25
       result.forEach((record: any) => {
         expect(record.age).toBeGreaterThan(25);

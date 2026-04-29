@@ -46,7 +46,15 @@ const processTransfers = (zip: ZipFile, list: FileTransportInfo[]) =>
       Effect.flatMap((exists) =>
         exists
           ? Effect.void
-          : Effect.fail(new IOError(`File Not Found: ${sourcePath}`)),
+          : Effect.fail(
+              new IOError({
+                message: `File Not Found`,
+                cause: undefined,
+                layer: 'archive' as const,
+                operation: 'write',
+                target: sourcePath,
+              }),
+            ),
       ),
       Effect.flatMap(() => {
         if (!info.isSourceDirectory) {

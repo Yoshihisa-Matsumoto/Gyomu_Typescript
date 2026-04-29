@@ -1,15 +1,14 @@
 import { Schema, Stream, Function, Option, Effect } from 'effect';
-import { AppError } from '@gyomu/shared';
 import { IOError } from '../../errors.js';
 import { throughNodeStream } from '../stream/bridge/nodeStream.js';
 import { CsvColumn, CsvReadOption } from './type.js';
 import { parse, Options } from 'csv-parse';
 
 export const parseCsv =
-  <A, E extends AppError, R = never>(options?: CsvReadOption<A>) =>
+  <A, R = never>(options?: CsvReadOption<A>) =>
   (
-    stream: Stream.Stream<string | Buffer | Uint8Array, E | IOError, R>,
-  ): Stream.Stream<Record<string, string>, E | IOError, R> =>
+    stream: Stream.Stream<string | Buffer | Uint8Array, IOError, R>,
+  ): Stream.Stream<Record<string, string>, IOError, R> =>
     Function.pipe(
       stream,
       throughNodeStream<string | Buffer | Uint8Array, Record<string, string>>(
@@ -57,11 +56,11 @@ const decodeCsv =
     );
 
 export const readCsv =
-  <A, E extends AppError, R = never>(
+  <A, R = never>(
     schema: Schema.Schema<A>,
     options?: CsvReadOption<Schema.Schema.Type<Schema.Schema<A>>>,
   ) =>
-  (stream: Stream.Stream<string | Buffer | Uint8Array, E, R>) =>
+  (stream: Stream.Stream<string | Buffer | Uint8Array, IOError, R>) =>
     stream.pipe(
       parseCsv(options),
       Stream.filter((row) =>
@@ -79,9 +78,14 @@ export const readCsv =
           : options?.skipInvalidRows
             ? Stream.empty
             : Stream.fail(
-                new IOError('Invalid CSV row', {
-                  row: row.raw,
-                  error: row.value,
+                new IOError({
+                  message: 'Invalid CSV row',
+                  cause: {
+                    row: row.raw,
+                    error: row.value,
+                  },
+                  layer: 'csv' as const,
+                  operation: 'read' as const,
                 }),
               ),
       ),
@@ -89,10 +93,8 @@ export const readCsv =
     );
 
 export const readCsvRaw =
-  <E extends AppError, R = never>(
-    options?: CsvReadOption<Record<string, string>>,
-  ) =>
-  (stream: Stream.Stream<string | Buffer, E, R>) =>
+  <R = never>(options?: CsvReadOption<Record<string, string>>) =>
+  (stream: Stream.Stream<string | Buffer, IOError, R>) =>
     stream.pipe(
       parseCsv(options),
       Stream.filter((row) =>

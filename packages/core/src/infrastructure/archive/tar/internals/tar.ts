@@ -3,15 +3,13 @@ import { create } from 'tar';
 import { Effect, Stream, Queue, Option } from 'effect';
 import { NodeStream } from '@effect/platform-node';
 import { IOError } from '../../../../errors.js';
-import { unknownError, AppError } from '@gyomu/shared';
+import { wrapInfraError } from '@gyomu/shared';
 import type { Readable } from 'node:stream';
 import { runSync } from 'effect/Effect';
 
 import { FileSystem } from 'effect';
-//import { fs } from '../../../fs/index.js';
 import { FileTransportInfo } from '../../../../gyomu/file/transport.js';
 import { ArchiveEntryItem } from '../../common.js';
-import { unknown } from 'effect/SchemaAST';
 import { platform } from '../../../fs/index.js';
 import { makeDirectory, writeStreamToFile } from '../../../fs/fs-utils.js';
 
@@ -34,7 +32,12 @@ export const createTar = <R = never>(options: {
         },
         [''], // cwd 配下のすべてを対象とする
       ),
-    catch: (err) => new IOError('Fail to Tar archive', err as Error),
+    catch: (err) =>
+      wrapInfraError(IOError, err, () => ({
+        message: 'Fail to Tar archive',
+        layer: 'archive' as const,
+        operation: 'write' as const,
+      })),
   }).pipe(
     // 戻り値を boolean (true) に合わせる場合
     Effect.as(true),
@@ -47,9 +50,9 @@ export const createTar = <R = never>(options: {
 //   readonly stream: Stream.Stream<Uint8Array, AppError>;
 // };
 
-export const untar = <E extends AppError, R = never>(
-  source: Stream.Stream<Uint8Array, E, R>,
-): Stream.Stream<TarEntryItem, E | IOError, R> =>
+export const untar = <R = never>(
+  source: Stream.Stream<Uint8Array, IOError, R>,
+): Stream.Stream<TarEntryItem, IOError, R> =>
   Stream.scoped(
     Stream.unwrap(
       Effect.gen(function* () {
@@ -71,7 +74,7 @@ export const untar = <E extends AppError, R = never>(
 
         // 2. Stream.callback による実装
         // emit は Queue<Take<TarEntry, AppError>> のような挙動をする Queue です
-        return Stream.callback<TarEntryItem, E, R>((queue) => {
+        return Stream.callback<TarEntryItem, IOError, R>((queue) => {
           extract.on('entry', (header, stream, next) => {
             // next() を確実に呼ぶためのフラグ
             let nextCalled = false;
@@ -87,10 +90,15 @@ export const untar = <E extends AppError, R = never>(
                 Effect.sync(() => safeNext()),
               ).pipe(
                 Effect.map((s) =>
-                  NodeStream.fromReadable<Uint8Array, AppError>({
+                  NodeStream.fromReadable<Uint8Array, IOError>({
                     evaluate: () => s,
                     onError: (e) =>
-                      unknownError(IOError, e, `Read error: ${header.name}`),
+                      wrapInfraError(IOError, e, () => ({
+                        message: `Read error on header`,
+                        target: header.name,
+                        layer: 'archive' as const,
+                        operation: 'read' as const,
+                      })),
                   }),
                 ),
               ),
@@ -125,7 +133,14 @@ export const untar = <E extends AppError, R = never>(
 
           extract.on('error', (err) => {
             runSync(
-              Queue.fail(queue, unknownError(IOError, err, 'Tar Error') as E),
+              Queue.fail(
+                queue,
+                wrapInfraError(IOError, err, () => ({
+                  message: 'Tar error',
+                  layer: 'archive' as const,
+                  operation: 'read' as const,
+                })),
+              ),
             );
           });
           return Effect.void;
@@ -136,9 +151,9 @@ export const untar = <E extends AppError, R = never>(
 
 export const existsInTar =
   (entryName: string) =>
-  <E extends AppError, R = never>(
-    self: Stream.Stream<Uint8Array, E, R>,
-  ): Effect.Effect<boolean, AppError, R> =>
+  <R = never>(
+    self: Stream.Stream<Uint8Array, IOError, R>,
+  ): Effect.Effect<boolean, IOError, R> =>
     self.pipe(
       untar,
       filterEntries((h) => h.path === massageEntryPath(entryName)),
@@ -159,19 +174,18 @@ export const existsInTar =
  */
 export const readTextEntry = <R = never>(
   entry: TarEntryItem,
-): Effect.Effect<string, AppError, R> =>
+): Effect.Effect<string, IOError, R> =>
   readEntry(entry).pipe(
     Effect.map((chunks) => Buffer.concat(chunks).toString('utf8')),
   );
 export const readEntry = <R = never>(
   entry: TarEntryItem,
-): Effect.Effect<Uint8Array<ArrayBufferLike>[], AppError, R> =>
+): Effect.Effect<Uint8Array<ArrayBufferLike>[], IOError, R> =>
   Stream.runCollect(entry.openStream());
 
 export const readEntryStream = <R = never>(
   entry: TarEntryItem,
-): Stream.Stream<Uint8Array<ArrayBufferLike>, AppError, R> =>
-  entry.openStream();
+): Stream.Stream<Uint8Array<ArrayBufferLike>, IOError, R> => entry.openStream();
 
 const massageEntryPath = (fileName: string) => {
   return fileName ? fileName.replace(/\\/g, '/') : fileName;
@@ -181,12 +195,10 @@ const massageEntryPath = (fileName: string) => {
  * 条件に合わないエントリを自動で Drain し、デッドロックを防ぐ
  */
 export const filterEntries =
-  <E extends AppError = never, R = never>(
-    predicate: (entry: TarEntryItem) => boolean,
-  ) =>
+  <R = never>(predicate: (entry: TarEntryItem) => boolean) =>
   (
-    self: Stream.Stream<TarEntryItem, E, R>,
-  ): Stream.Stream<TarEntryItem, AppError | E, R> =>
+    self: Stream.Stream<TarEntryItem, IOError, R>,
+  ): Stream.Stream<TarEntryItem, IOError, R> =>
     self.pipe(
       Stream.mapEffect((entry) =>
         predicate(entry)
@@ -205,7 +217,7 @@ export const filterEntries =
  */
 export const requireEntry =
   (entryName: string) =>
-  <E extends AppError, R = never>(self: Stream.Stream<TarEntryItem, E, R>) =>
+  <R = never>(self: Stream.Stream<TarEntryItem, IOError, R>) =>
     self.pipe(
       // 1. フィルタリング（内部で Drain 済み）
       filterEntries((h) => h.path === massageEntryPath(entryName)),
@@ -215,16 +227,24 @@ export const requireEntry =
       Effect.flatMap(
         Option.match({
           onNone: () =>
-            Effect.fail(new IOError(`File not found: ${entryName}`)),
+            Effect.fail(
+              new IOError({
+                message: `File not found: ${entryName}`,
+                target: entryName,
+                layer: 'archive' as const,
+                operation: 'read' as const,
+                cause: undefined,
+              }),
+            ),
           onSome: (entry) => Effect.succeed(entry),
         }),
       ),
     );
 export const extractTarAll =
   (destinationDirectory: string) =>
-  <E extends AppError, R = never>(
-    self: Stream.Stream<Uint8Array<ArrayBufferLike>, E, R>,
-  ): Effect.Effect<void, IOError | E, FileSystem.FileSystem | R> =>
+  <R = never>(
+    self: Stream.Stream<Uint8Array<ArrayBufferLike>, IOError, R>,
+  ): Effect.Effect<void, IOError, FileSystem.FileSystem | R> =>
     extractTarToDirectory({ targetDir: destinationDirectory })(self);
 
 /**
@@ -234,9 +254,9 @@ export const extractTarAll =
  */
 export const extractTarToDirectory =
   (options: { targetDir: string; stripPath?: string }) =>
-  <E extends AppError, R = never>(
-    self: Stream.Stream<Uint8Array<ArrayBufferLike>, E, R>,
-  ): Effect.Effect<void, IOError | E, FileSystem.FileSystem | R> =>
+  <R = never>(
+    self: Stream.Stream<Uint8Array<ArrayBufferLike>, IOError, R>,
+  ): Effect.Effect<void, IOError, FileSystem.FileSystem | R> =>
     Effect.gen(function* () {
       const { targetDir, stripPath = '' } = options;
 
@@ -264,7 +284,12 @@ export const extractTarToDirectory =
               yield* makeDirectory(fullPath);
               return yield* Stream.runDrain(entry.openStream()).pipe(
                 Effect.mapError((e) =>
-                  unknownError(IOError, e, `Fail to save file`),
+                  wrapInfraError(IOError, e, () => ({
+                    message: 'fail to save file',
+                    operation: 'write' as const,
+                    layer: 'archive' as const,
+                    target: fullPath,
+                  })),
                 ),
               );
             }
@@ -277,15 +302,22 @@ export const extractTarToDirectory =
             return yield* writeStreamToFile(fullPath)(entry.openStream());
           }),
         ),
-        Effect.mapError((e) => unknownError(IOError, e, `Fail to save file`)),
+        Effect.mapError((e) =>
+          wrapInfraError(IOError, e, () => ({
+            message: 'fail to save file',
+            layer: 'archive' as const,
+            operation: 'write' as const,
+            target: targetDir,
+          })),
+        ),
       );
     });
 
 export const extractTarSingleFile =
   (sourceEntryFullName: string, destinationFolderName: string) =>
-  <E extends AppError, R = never>(
-    self: Stream.Stream<Uint8Array<ArrayBufferLike>, E, R>,
-  ): Effect.Effect<void, AppError | IOError | E, FileSystem.FileSystem | R> =>
+  <R = never>(
+    self: Stream.Stream<Uint8Array<ArrayBufferLike>, IOError, R>,
+  ): Effect.Effect<void, IOError, FileSystem.FileSystem | R> =>
     Effect.gen(function* () {
       const entry = yield* self.pipe(
         untar,
@@ -294,7 +326,13 @@ export const extractTarSingleFile =
       );
       if (entry.isDirectory) {
         return yield* Effect.fail(
-          new IOError(`${sourceEntryFullName} is a directory`),
+          new IOError({
+            message: `${sourceEntryFullName} is a directory`,
+            cause: undefined,
+            layer: 'archive' as const,
+            operation: 'read' as const,
+            target: entry.path,
+          }),
         );
       }
       // 相対パスの計算 (stripPath 分を削る)
@@ -311,17 +349,23 @@ export const extractTarSingleFile =
     });
 
 export const extractTar =
-  <E extends AppError, R = never>(transferInformation: FileTransportInfo) =>
+  <R = never>(transferInformation: FileTransportInfo) =>
   (
-    self: Stream.Stream<Uint8Array<ArrayBufferLike>, E, R>,
-  ): Effect.Effect<void, AppError | E, FileSystem.FileSystem | R> =>
+    self: Stream.Stream<Uint8Array<ArrayBufferLike>, IOError, R>,
+  ): Effect.Effect<void, IOError, FileSystem.FileSystem | R> =>
     Effect.gen(function* () {
       if (
         transferInformation.sourceFileName !==
         transferInformation.destinationFileName
       )
         return yield* Effect.fail(
-          new IOError('Destination filename must be same as original filename'),
+          new IOError({
+            message: 'Destination filename must be same as original filename',
+            cause: undefined,
+            layer: 'archive' as const,
+            operation: 'read' as const,
+            target: `source:${transferInformation.sourceFileName}, destination:${transferInformation.destinationFileName}`,
+          }),
         );
       if (!transferInformation.isSourceDirectory) {
         return yield* extractTarSingleFile(

@@ -8,7 +8,9 @@ import { FileTransportInfo } from '../../gyomu/file/transport.js';
 import { NodeFileSystem } from '@effect/platform-node';
 import { Readable, Writable } from 'node:stream';
 import { MainLayer, PlatformLayer } from '../layer.js';
+import { initLoggerFromEnv } from '../logger/logger.js';
 
+await initLoggerFromEnv();
 const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
 const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
 
@@ -169,7 +171,14 @@ describe('SftpService', () => {
       const program = Effect.gen(function* () {
         const sftp = yield* SftpService;
         return yield* sftp.withConnection('', () =>
-          Effect.fail(new NetworkError('Test error')),
+          Effect.fail(
+            new NetworkError({
+              message: 'Test error',
+              cause: undefined,
+              operation: 'connect',
+              retryable: false,
+            }),
+          ),
         );
       });
 
@@ -352,10 +361,11 @@ describe('SftpService', () => {
       const failingConfigService = Layer.succeed(ConfigService, {
         load: () =>
           Effect.fail(
-            new ConfigError(
-              'Config load failed',
-              new Error('Config load failed'),
-            ),
+            new ConfigError({
+              cause: 'mock error',
+              message: 'Config load failed',
+              phase: 'load' as const,
+            }),
           ),
       });
 

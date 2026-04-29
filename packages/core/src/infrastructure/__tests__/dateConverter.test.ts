@@ -1,11 +1,12 @@
 import { describe, it, expect } from 'vitest';
+
+import { ValueError } from '@gyomu/shared';
 import {
   createDateOnly,
   extractDateOnly,
   formatDateToYmd,
   parseYmdToDate,
-} from '../date/dateConverter.js';
-import { ValueError } from '@gyomu/shared';
+} from '@gyomu/shared/entity';
 
 // --- createDateOnly ---
 describe('createDateOnly', () => {

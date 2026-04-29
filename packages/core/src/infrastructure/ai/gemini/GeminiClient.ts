@@ -5,7 +5,7 @@ import {
   ChatMessage,
 } from '../../../gyomu/ai/client.js';
 import { Content, GoogleGenAI, Part, ToolType } from '@google/genai';
-import { AiError } from '../../../errors.js';
+import { AIError, isRetryableAiError } from '../../../errors.js';
 import { fromPromise } from '@gyomu/shared/effect';
 import {
   ConfigLayer,
@@ -13,7 +13,7 @@ import {
   ConfigService,
 } from '../../config.js';
 import { PlatformLayer } from '../../layer.js';
-import { unknownError } from '@gyomu/shared';
+import { wrapInfraError } from '@gyomu/shared';
 export class GeminiClient extends ServiceMap.Service<GeminiClient, AiClient>()(
   'GeminiClient',
   {
@@ -30,36 +30,59 @@ export class GeminiClient extends ServiceMap.Service<GeminiClient, AiClient>()(
         generateText: (input: {
           messages: ChatMessage[];
           temperature?: number;
-        }): Effect.Effect<string, AiError> => {
-          return fromPromise(
-            AiError,
-            'Fail to chat',
-          )(async () => {
+        }): Effect.Effect<string, AIError> => {
+          return fromPromise(AIError, (e) => ({
+            message: 'AI generate failed',
+            operation: 'generate' as const,
+            model: 'gemini-3-flash-preview',
+            phase: 'request' as const,
+            retryable: isRetryableAiError(e),
+          }))(async () => {
             const response = await ai.models.generateContent({
               model: 'gemini-3-flash-preview',
               contents: input.messages.map((m) => ChatMessage2Content(m)),
             });
 
-            if (!response.text) throw new AiError('Fail to chat with Gemni');
+            if (!response.text)
+              throw new AIError({
+                message: 'Empty AI response',
+                operation: 'generate' as const,
+                model: 'gemini-3-flash-preview',
+                phase: 'response' as const,
+                retryable: false,
+                cause: undefined,
+              });
             return response.text;
           });
         },
         streamChat: (input: {
           messages: ChatMessage[];
           temperature?: number;
-        }): Stream.Stream<string, AiError> => {
+        }): Stream.Stream<string, AIError> => {
           return Stream.unwrap(
-            fromPromise(
-              AiError,
-              'Fail to chat stream',
-            )(async () => {
+            fromPromise(AIError, (e) => ({
+              message: 'AI stream failed',
+              operation: 'generate' as const,
+              model: 'gemini-3-flash-preview',
+              phase: 'request' as const,
+              retryable: isRetryableAiError(e),
+            }))(async () => {
               const response = await ai.models.generateContentStream({
                 model: 'gemini-3-flash-preview',
                 contents: input.messages.map((m) => ChatMessage2Content(m)),
               });
 
-              return Stream.fromAsyncIterable(response, (e) =>
-                unknownError(AiError, e, 'Failt to chat stream with Gemini'),
+              return Stream.fromAsyncIterable(
+                response,
+                (e) =>
+                  new AIError({
+                    message: 'AI stream failed',
+                    operation: 'stream',
+                    model: 'gemini-3-flash-preview',
+                    phase: 'request',
+                    retryable: isRetryableAiError(e),
+                    cause: e,
+                  }),
               ).pipe(
                 Stream.flatMap((chunk) => {
                   const text = chunk.text;

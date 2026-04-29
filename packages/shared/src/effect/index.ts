@@ -1,41 +1,61 @@
 import { Effect } from 'effect';
-import { AppError, AppErrorCtor } from '../error/BaseError.js';
-import { unknownError } from '../error/BaseError.js';
 
+type ContextOfCtor<Ctor> = Ctor extends new (ctx: infer C) => any ? C : never;
+type WithoutCause<C> = Omit<C, 'cause'>;
 export const fromPromise =
-  <E extends AppError>(ErrorType: AppErrorCtor<E>, message: string) =>
-  <A>(f: () => Promise<A>): Effect.Effect<A, E> =>
+  <Ctor extends new (ctx: any) => any>(
+    ErrorType: Ctor,
+    buildContext: (e: unknown) => WithoutCause<ContextOfCtor<Ctor>>,
+  ) =>
+  <A>(f: () => Promise<A>): Effect.Effect<A, InstanceType<Ctor>> =>
     Effect.tryPromise({
       try: f,
-      catch: (e) => unknownError(ErrorType, e, message),
+      catch: (e) => {
+        const base = buildContext(e);
+        return new ErrorType({
+          ...base,
+          cause: e, // ✅ 強制注入
+        });
+      },
     });
-
 export const fromSync =
-  <E extends AppError>(ErrorType: AppErrorCtor<E>, message: string) =>
-  <A>(f: () => A): Effect.Effect<A, E> =>
+  <Ctor extends new (ctx: any) => any>(
+    ErrorType: Ctor,
+    buildContext: (e: unknown) => WithoutCause<ContextOfCtor<Ctor>>,
+  ) =>
+  <A>(f: () => A): Effect.Effect<A, InstanceType<Ctor>> =>
     Effect.try({
       try: f,
-      catch: (e) => unknownError(ErrorType, e, message),
+      catch: (e) => {
+        const base = buildContext(e);
+        return new ErrorType({
+          ...base,
+          cause: e, // ✅ 強制注入
+        });
+      },
     });
-export function ensure<E extends AppError>(
+export function ensure<Ctor extends new (ctx: any) => any>(
   condition: boolean,
-  ErrorType: AppErrorCtor<E>,
-  message: string,
-): Effect.Effect<void, E> {
-  return condition ? Effect.void : Effect.fail<E>(new ErrorType(message) as E);
+  ErrorType: Ctor,
+  buildContext: () => WithoutCause<ContextOfCtor<Ctor>>,
+): Effect.Effect<void, InstanceType<Ctor>> {
+  return condition ? Effect.void : Effect.fail(new ErrorType(buildContext()));
 }
-export function ensureEffect<E extends AppError>(
-  condition: Effect.Effect<boolean, any, any>,
-  ErrorType: AppErrorCtor<E>,
-  message: string,
-): Effect.Effect<void, E, any> {
-  return Effect.gen(function* () {
-    if (
-      yield* condition.pipe(
-        Effect.map((e) => unknownError(ErrorType, e, message)),
-      )
-    )
-      return;
-    throw new ErrorType(message);
-  });
+export function ensureEffect<Ctor extends new (ctx: any) => any, R = never>(
+  condition: Effect.Effect<boolean, unknown, R>,
+  ErrorType: Ctor,
+  buildContext: (e?: unknown) => ContextOfCtor<Ctor>,
+): Effect.Effect<void, InstanceType<Ctor>, R> {
+  return condition.pipe(
+    Effect.mapError((e) => {
+      const base = buildContext(e);
+      return new ErrorType({
+        ...base,
+        cause: e, // ✅ 強制注入
+      });
+    }),
+    Effect.flatMap((ok) =>
+      ok ? Effect.void : Effect.fail(new ErrorType(buildContext())),
+    ),
+  );
 }

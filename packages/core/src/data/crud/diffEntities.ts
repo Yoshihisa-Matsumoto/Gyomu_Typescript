@@ -1,5 +1,5 @@
 import { Schema } from 'effect';
-import { CrudSchemas } from './common.js';
+import { CrudSchemas } from './types.js';
 
 export const diffEntities =
   <

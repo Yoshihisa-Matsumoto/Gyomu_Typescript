@@ -23,7 +23,11 @@ export class FileFilterInfo {
         this.targetDate = parse(filter, 'yyyyMMdd', 0);
       else this.targetDate = filter;
     } else {
-      throw new ValueError('Date Parameter is invalid:' + filter);
+      throw new ValueError({
+        message: 'Date Parameter is invalid',
+        value: { kind, operator, filter },
+        cause: undefined,
+      });
     }
   }
 }

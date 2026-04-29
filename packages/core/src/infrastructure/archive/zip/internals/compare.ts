@@ -9,9 +9,9 @@ import {
 } from './read.js';
 import { FileSystem } from 'effect';
 import { PlatformError } from 'effect/PlatformError';
-import { AppError } from '@gyomu/shared';
 import { runCompareFuncFlow } from '../compare.js';
 import { platform } from '../../../fs/index.js';
+import { IOError } from '../../../../errors.js';
 
 export type DiffernceIgnoreRule = {
   filePathRegExpression: string;
@@ -214,7 +214,7 @@ export const internalCompareFileEntry = (
     destination: ZipFileEntryItem;
     filePath: string;
     resultPath: string;
-  }) => Effect.Effect<DiffResult>,
+  }) => Effect.Effect<DiffResult, IOError>,
 ) => {
   const { resultPath, diffIgnoreRule } = option;
   //const { results } = interimOutput;
@@ -261,7 +261,7 @@ export const internalCompareFileEntry = (
 
     const effects: Effect.Effect<
       void,
-      AppError | PlatformError,
+      IOError | PlatformError,
       FileSystem.FileSystem
     >[] = [];
 

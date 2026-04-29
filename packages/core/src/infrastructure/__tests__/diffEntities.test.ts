@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { diffEntities } from '../../schemas/diffEntities.js'; // パス調整
+import { diffEntities } from '../../data/crud/diffEntities.js'; // パス調整
 import { AppInfoSchema } from '../../schemas/gyomu.js';
 //import { testSchemas } from './helpers/schema';
 

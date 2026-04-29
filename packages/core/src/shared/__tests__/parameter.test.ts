@@ -1,15 +1,16 @@
 import { ParameterService } from '../parameter/parameter.js';
 
 import { DBError } from '../../errors.js';
-import { parseYmdToDate } from '../../infrastructure/date/dateConverter.js';
 import { beforeEach, expect, it, test } from 'vitest';
 import { GyomuRepository } from '../../gyomu/GyomuRepository.js';
 import { Effect, Layer } from 'effect';
 import { ParameterMasterSchema } from '../../schemas/gyomu.js';
 import { makeRunner } from '../../infrastructure/runtime.js';
 import { describe } from 'node:test';
-import { LocalDate } from '@gyomu/shared/entity';
+import { LocalDate, parseYmdToDate } from '@gyomu/shared/entity';
+import { initLoggerFromEnv } from '../../infrastructure/logger/logger.js';
 
+await initLoggerFromEnv();
 const testId = 'F6AE5F2D-BD14-4C5F-9CC3-3A69EF90DD5B';
 
 beforeEach(() => {});
@@ -22,7 +23,15 @@ test('parameter parse', async () => {
 test('db error test', async () => {
   const GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
     parameterMaster: {
-      findByItemKey: () => Effect.fail(new DBError('DB connection error')),
+      findByItemKey: () =>
+        Effect.fail(
+          new DBError({
+            message: 'DB connection error',
+            cause: undefined,
+            operation: 'select',
+            table: 'parameterMaster',
+          }),
+        ),
     },
   } as any);
   const TestLayer = ParameterService.live.pipe(
@@ -53,7 +62,7 @@ test('no parameter found', async () => {
     return yield* parameter.getValue(itemKey);
   });
   expect(async () => await testRunner(program)).rejects.toThrow(
-    `Can not retrieve parameter value for key: ${itemKey}`,
+    `Can not retrieve parameter value for key`,
   );
 });
 test('invalid number returns NaN', async () => {
@@ -197,11 +206,12 @@ test('no defaultRow test', async () => {
         parseYmdToDate(targetYmd),
       );
     });
-  await expect(testRetrieveRunner(programValue('1980-04-01'))).rejects.toThrow(
-    new DBError(
-      `No default value found for key: ${itemKey} and target date: 1980-04-01`,
-    ),
-  );
+  await expect(
+    testRetrieveRunner(programValue('1980-04-01')),
+  ).rejects.toMatchObject({
+    _tag: 'ValueError',
+    message: 'No default value found',
+  });
 });
 test('multiple defaultRows test', async () => {
   const itemKey = 'ITEM_KEY_Test$$';
@@ -232,11 +242,11 @@ test('multiple defaultRows test', async () => {
     const parameter = yield* ParameterService;
     return yield* parameter.getValue(itemKey);
   });
-  await expect(testRetrieveRunner(programValue)).rejects.toThrow(
-    new DBError(
-      `Multiple default values found for key: ${itemKey}. Please ensure there is only one default value without itemFromDate.`,
-    ),
-  );
+  await expect(testRetrieveRunner(programValue)).rejects.toMatchObject({
+    _tag: 'ValueError',
+    message:
+      'Multiple default values found. Please ensure there is only one default value without itemFromDate.',
+  });
 });
 async function setValueTest<T extends string | boolean | number>(itemValue: T) {
   const itemKey = 'ITEM_KEY_Test$$';
@@ -283,7 +293,9 @@ async function setValueTest<T extends string | boolean | number>(itemValue: T) {
     } else if (typeof itemValue === 'number') {
       return yield* parameter.numberValue(itemKey);
     } else {
-      return yield* Effect.fail(new DBError('Invalid type'));
+      return yield* Effect.fail(
+        new DBError({ message: 'Invalid type', cause: undefined }),
+      );
     }
   });
   let resultValue = await testRetrieveRunner(programValue);
@@ -295,7 +307,10 @@ async function setValueTest<T extends string | boolean | number>(itemValue: T) {
       updateValueByItemKey: () => Effect.succeed(true),
       create: () =>
         Effect.fail(
-          new DBError('Create should not be called when record exists'),
+          new DBError({
+            message: 'Create should not be called when record exists',
+            cause: undefined,
+          }),
         ),
     },
   } as any);
@@ -316,11 +331,17 @@ async function setValueTest<T extends string | boolean | number>(itemValue: T) {
       deleteByItemKey: () => Effect.succeed(true),
       updateValueByItemKey: () =>
         Effect.fail(
-          new DBError('Update should not be called when record is deleted'),
+          new DBError({
+            message: 'Update should not be called when record is deleted',
+            cause: undefined,
+          }),
         ),
       create: () =>
         Effect.fail(
-          new DBError('Create should not be called when record exists'),
+          new DBError({
+            message: 'Create should not be called when record exists',
+            cause: undefined,
+          }),
         ),
     },
   } as any);

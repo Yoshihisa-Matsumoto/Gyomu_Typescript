@@ -6,11 +6,11 @@ import {
   ServiceMap,
   FileSystem,
 } from 'effect';
-import { IOError, ConfigError } from '../errors.js';
+import { IOError, ConfigError, ConfigErrorContext } from '../errors.js';
 import { fromSync } from '@gyomu/shared/effect';
 import { option } from 'effect/Effect';
 import { readStringFromFile } from './fs/fs-utils.js';
-import { unknownError } from '@gyomu/shared';
+import { wrapInfraError } from '@gyomu/shared';
 // const makeConfigProvider = Effect.gen(function* () {
 //   const dotEnv = yield* ConfigProvider.fromDotEnv();
 //   return ConfigProvider.orElse(dotEnv, ConfigProvider.fromEnv());
@@ -46,10 +46,12 @@ export class ConfigService extends ServiceMap.Service<
       Effect.gen(function* () {
         const content = yield* readStringFromFile(path, 'utf-8');
 
-        const json = yield* fromSync(
-          IOError,
-          `fail to parse JSON`,
-        )(() => JSON.parse(content));
+        const json = yield* fromSync(IOError, () => ({
+          message: 'fail to parse JSON',
+          layer: 'filesystem' as const,
+          operation: 'transform' as const,
+          target: content,
+        }))(() => JSON.parse(content));
         return ConfigProvider.fromUnknown(json);
       });
     return {
@@ -57,25 +59,27 @@ export class ConfigService extends ServiceMap.Service<
         Effect.gen(function* () {
           if (options?.file) {
             const fileLoader = yield* fromJsonFile(options.file);
-            return yield* config
-              .parse(fileLoader)
-              .pipe(
-                Effect.mapError((e) =>
-                  unknownError(
-                    ConfigError,
-                    e,
-                    `Fail to load from file: ${options.file}`,
-                  ),
-                ),
-              );
-          }
-          return yield* config
-            .parse(provider)
-            .pipe(
+            return yield* config.parse(fileLoader).pipe(
               Effect.mapError((e) =>
-                unknownError(ConfigError, e, `Fail to load from env/.env`),
+                wrapInfraError(ConfigError, e, () => {
+                  return {
+                    message: `Fail to load from file: ${options.file}`,
+                    source: 'file' as const,
+                    phase: 'load' as const,
+                  };
+                }),
               ),
             );
+          }
+          return yield* config.parse(provider).pipe(
+            Effect.mapError((e) =>
+              wrapInfraError(ConfigError, e, () => ({
+                message: `Fail to load from env/.env`,
+                source: 'env' as const,
+                phase: 'load' as const,
+              })),
+            ),
+          );
         }),
     };
   }),

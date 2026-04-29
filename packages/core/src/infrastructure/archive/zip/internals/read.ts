@@ -8,7 +8,7 @@ import {
   fromReadableControlled,
 } from '../../../../infrastructure/stream/bridge/nodeStream.js';
 import { decode } from '../../../../shared/encoding/decode.js';
-import { unknownError, AppError } from '@gyomu/shared';
+import { wrapInfraError } from '@gyomu/shared';
 import { ArchiveEntryItem, massageEntryPath } from '../../common.js';
 import {
   makeDirectory,
@@ -66,10 +66,10 @@ export const withZipFile = (filePath: string) =>
     Effect.sync(() => zip.close()),
   );
 
-export const buildCentralDirectory = <E extends AppError, R = never>(
+export const buildCentralDirectory = <R = never>(
   zip: yauzl.ZipFile,
   encoding?: string,
-): Stream.Stream<ZipEntryItem, E | IOError, R> =>
+): Stream.Stream<ZipEntryItem, IOError, R> =>
   Stream.callback<ZipEntryItem, IOError>((queue) =>
     //const entries = new Map<string, ZipEntryItem>();
     Effect.sync(() => {
@@ -103,6 +103,10 @@ export const buildCentralDirectory = <E extends AppError, R = never>(
         } else {
           logger.debug('file');
           zip.openReadStream(entry, (err, rs) => {
+            /**
+             * fromReadableではうまくいかない。Node.js固有
+             * もしかすると、Nodejs FileSystem固有のメソッドを作ったfromReadableを作ってそっちに変えたほうがいいかもしれない
+             */
             const stream = fromReadableControlled(rs);
             runSync(
               Queue.offer(queue, {
@@ -124,7 +128,16 @@ export const buildCentralDirectory = <E extends AppError, R = never>(
       });
 
       zip.on('error', (err) => {
-        runSync(Queue.fail(queue, unknownError(IOError, err, 'Tar Error')));
+        runSync(
+          Queue.fail(
+            queue,
+            wrapInfraError(IOError, err, () => ({
+              message: 'ZIp build central directory Error',
+              layer: 'archive' as const,
+              operation: 'read' as const,
+            })),
+          ),
+        );
       });
     }),
   );
@@ -132,7 +145,7 @@ export const buildCentralDirectory = <E extends AppError, R = never>(
 export const openZipEntries = (
   filePath: string,
   encoding?: string,
-): Stream.Stream<ZipEntryItem, AppError | IOError, FileSystem.FileSystem> =>
+): Stream.Stream<ZipEntryItem, IOError, FileSystem.FileSystem> =>
   Stream.unwrap(
     Effect.map(withZipFile(filePath), (zip) =>
       buildCentralDirectory(zip, encoding),
@@ -141,9 +154,7 @@ export const openZipEntries = (
 
 export const existsInZip =
   (entryName: string) =>
-  <E extends AppError, R = never>(
-    entries: ZipEntryItem[],
-  ): Effect.Effect<boolean, E | AppError, R> => {
+  <R = never>(entries: ZipEntryItem[]): Effect.Effect<boolean, never, R> => {
     const path = massageEntryPath(entryName);
     logger.debug(`massage:${path}`);
     const entry = entries.find((e) => e.path == path);
@@ -160,19 +171,18 @@ export const existsInZip =
 export const readTextEntry = <R = never>(
   entry: ZipFileEntryItem,
   encoding: string = 'utf-8',
-): Effect.Effect<string, AppError, R> =>
+): Effect.Effect<string, IOError, R> =>
   readEntry(entry).pipe(
     Effect.map((chunks) => decode(Buffer.concat(chunks), encoding)),
   );
 export const readEntry = <R = never>(
   entry: ZipFileEntryItem,
-): Effect.Effect<Uint8Array<ArrayBufferLike>[], AppError, R> =>
+): Effect.Effect<Uint8Array<ArrayBufferLike>[], IOError, R> =>
   Stream.runCollect(entry.openStream());
 
 export const readEntryStream = <R = never>(
   entry: ZipFileEntryItem,
-): Stream.Stream<Uint8Array<ArrayBufferLike>, AppError, R> =>
-  entry.openStream();
+): Stream.Stream<Uint8Array<ArrayBufferLike>, IOError, R> => entry.openStream();
 
 const matchTransfer = (
   entry: ZipEntryItem,
@@ -194,12 +204,15 @@ const matchTransfer = (
     entry.path == targetEntryToSearch
   )
     result = true;
-  logger.debug([
-    entry.path,
-    targetEntryToSearch,
-    transferInformation.isSourceDirectory,
-    result,
-  ]);
+  logger.debug(
+    {
+      path: entry.path,
+      targetEntry: targetEntryToSearch,
+      isDirectory: transferInformation.isSourceDirectory,
+      result,
+    },
+    'debug on matchTransfer',
+  );
   return result;
 };
 
@@ -278,8 +291,11 @@ const extractEntry = (
     const dir = platform.dirname(outputPath);
     yield* makeDirectory(dir);
 
-    logger.debug(`Creating file:${outputPath},entry:${entry.path}`);
-    logger.debug(transferInformation);
+    logger.debug(
+      transferInformation,
+      `Creating file:${outputPath},entry:${entry.path}`,
+    );
+
     return yield* entry.openStream().pipe(
       Stream.tap((chunk) =>
         Effect.sync(() => console.log(outputPath, chunk.length)),
@@ -303,11 +319,11 @@ export const extractSingleFileEntry = (
   });
 };
 export const extractZip =
-  <E extends AppError, R = never>(
+  <R = never>(
     //zipFilename: string,
     transferInformation: FileTransportInfo,
   ) =>
-  (stream: Stream.Stream<ZipEntryItem, IOError | E, R>) => {
+  (stream: Stream.Stream<ZipEntryItem, IOError, R>) => {
     return stream.pipe(
       Stream.filter((entry) => matchTransfer(entry, transferInformation)),
       Stream.mapEffect((entry) => extractEntry(entry, transferInformation), {
@@ -318,13 +334,13 @@ export const extractZip =
   };
 
 export const extractZipAll =
-  <E extends AppError, R = never>(destinationDirectory: string) =>
-  (stream: Stream.Stream<ZipEntryItem, IOError | E, R>) => {
+  <R = never>(destinationDirectory: string) =>
+  (stream: Stream.Stream<ZipEntryItem, IOError, R>) => {
     const transferInformation: FileTransportInfo = new FileTransportInfo({
       basePath: 'fake',
       destinationFolderName: destinationDirectory,
     });
-    return extractZip<E, R>(transferInformation)(stream);
+    return extractZip<R>(transferInformation)(stream);
   };
 
 export const exportedForTesting = {

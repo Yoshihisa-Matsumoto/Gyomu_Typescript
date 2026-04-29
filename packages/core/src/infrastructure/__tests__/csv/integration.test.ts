@@ -9,7 +9,7 @@ import { platform } from '../../fs/index.js';
 import { fileStream, writeTextStreamToFile } from '../../fs/fs-utils.js';
 import { MainLayer, PlatformLayer } from '../../layer.js';
 import { makeRunner } from '../../runtime.js';
-import { unknownError } from '@gyomu/shared';
+import { wrapInfraError } from '@gyomu/shared';
 
 const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
 const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
@@ -181,7 +181,14 @@ describe('CSV Read/Write Integration', () => {
     const program = (path: string) =>
       Effect.gen(function* () {
         return yield* fileStream(path).pipe(
-          Stream.mapError((err) => unknownError(IOError, err)),
+          Stream.mapError((err) =>
+            wrapInfraError(IOError, err, () => ({
+              layer: 'stream' as const,
+              operation: 'read' as const,
+              message: 'upstream read',
+              target: path,
+            })),
+          ),
           readCsv(schema),
           Stream.runCollect,
         );

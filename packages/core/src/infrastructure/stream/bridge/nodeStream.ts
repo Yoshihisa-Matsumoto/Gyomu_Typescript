@@ -1,7 +1,7 @@
 import { Stream, Effect, Fiber, Queue } from 'effect';
 import { Duplex, Readable, Transform } from 'node:stream';
 import { IOError } from '../../../errors.js';
-import { unknownError, AppError } from '@gyomu/shared';
+import { wrapInfraError } from '@gyomu/shared';
 import { runSync } from 'effect/Effect';
 //import { NodeStream } from '@effect/platform-node';
 
@@ -39,7 +39,11 @@ export const throughNodeStream =
         const readable = duplex as AsyncIterable<O>;
 
         return Stream.fromAsyncIterable<O, IOError>(readable, (e) =>
-          unknownError(IOError, e, 'node stream error'),
+          wrapInfraError(IOError, e, () => ({
+            message: 'node stream error',
+            layer: 'stream' as const,
+            operation: 'transform' as const,
+          })),
         ).pipe(
           Stream.ensuring(
             Effect.gen(function* () {
@@ -148,12 +152,12 @@ export const throughNodeStream =
  */
 export const throughNodeStreamScoped =
   <I, O>(create: () => Transform) =>
-  <E extends AppError = never, R = never>(
-    input: Stream.Stream<I, E, R>,
-  ): Stream.Stream<O, E | IOError, R> =>
+  <R = never>(
+    input: Stream.Stream<I, IOError, R>,
+  ): Stream.Stream<O, IOError, R> =>
     Stream.unwrap(
       Effect.map(acquireNodeStream(create), (t) =>
-        throughNodeStream<I, O>(t)<E, R>(input),
+        throughNodeStream<I, O>(t)<IOError, R>(input),
       ),
     );
 // export const throughNodeStreamScoped_original =
@@ -167,7 +171,11 @@ export const throughNodeStreamScoped =
 export const fromReadable = (readable: Readable) => {
   //readable.resume();
   return Stream.fromAsyncIterable(readable, (e) =>
-    unknownError(IOError, e, 'node stream error'),
+    wrapInfraError(IOError, e, () => ({
+      message: 'node stream error',
+      layer: 'stream' as const,
+      operation: 'read' as const,
+    })),
   ).pipe(
     // ストリームが完了、中断、失敗した際に必ず呼び出されるクリーンアップ処理
     Stream.ensuring(
@@ -215,7 +223,16 @@ export const fromReadableControlled = (
           runSync(Queue.end(queue));
         };
         const onError = (err: unknown) => {
-          runSync(Queue.fail(queue, unknownError(IOError, err, 'Tar Error')));
+          runSync(
+            Queue.fail(
+              queue,
+              wrapInfraError(IOError, err, () => ({
+                message: 'Tar Error',
+                layer: 'stream' as const,
+                operation: 'read' as const,
+              })),
+            ),
+          );
         };
 
         readable.on('readable', onReadable);
@@ -243,7 +260,16 @@ export const fromNodeCallback = <A>(
   Effect.callback<A, IOError>((resume) => {
     f((err, result) => {
       if (err || result == null) {
-        resume(Effect.fail(new IOError(err?.message ?? 'callback failed')));
+        resume(
+          Effect.fail(
+            new IOError({
+              message: 'callback fail',
+              layer: 'stream' as const,
+              operation: 'transform' as const,
+              cause: err,
+            }),
+          ),
+        );
       } else {
         resume(Effect.succeed(result));
       }

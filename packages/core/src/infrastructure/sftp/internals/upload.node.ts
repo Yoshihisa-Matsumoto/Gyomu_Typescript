@@ -1,17 +1,20 @@
 import { Client } from 'ssh2';
-import { NetworkError } from '../../../errors.js';
+import {
+  IOError,
+  isRetryableNetworkError,
+  NetworkError,
+} from '../../../errors.js';
 import { Effect, Stream } from 'effect';
-import { AppError } from '@gyomu/shared';
 import { withSftp } from './shared.js';
 import { NodeStream } from '@effect/platform-node';
 import { Writable } from 'node:stream';
 
 export const uploadFromStreamUnderNodejs =
   (client: Client) =>
-  <E extends AppError, R>(
-    source: Stream.Stream<Uint8Array, E, R>,
+  <R>(
+    source: Stream.Stream<Uint8Array, IOError, R>,
     remotePath: string,
-  ): Effect.Effect<void, E | NetworkError, R> =>
+  ): Effect.Effect<void, NetworkError, R> =>
     withSftp(client)((sftp) =>
       Effect.scoped(
         Effect.gen(function* () {
@@ -31,9 +34,13 @@ export const uploadFromStreamUnderNodejs =
                   cleanup();
                   resume(
                     Effect.fail(
-                      new NetworkError(
-                        `Failed to open remote file: ${err.message}`,
-                      ),
+                      new NetworkError({
+                        message: `Fail to open remote file`,
+                        cause: err,
+                        retryable: isRetryableNetworkError(err),
+                        operation: 'upload',
+                        endpoint: remotePath,
+                      }),
                     ),
                   );
                 };
@@ -48,9 +55,13 @@ export const uploadFromStreamUnderNodejs =
               } catch (e) {
                 resume(
                   Effect.fail(
-                    new NetworkError(
-                      `Failed to create write stream: ${String(e)}`,
-                    ),
+                    new NetworkError({
+                      message: 'fail to create write stream',
+                      cause: e,
+                      operation: 'upload',
+                      retryable: isRetryableNetworkError(e),
+                      endpoint: remotePath,
+                    }),
                   ),
                 );
               }
@@ -81,7 +92,13 @@ export const uploadFromStreamUnderNodejs =
                   cleanup();
                   resume(
                     Effect.fail(
-                      new NetworkError(`Upload failed: ${err.message}`),
+                      new NetworkError({
+                        message: 'upload fail',
+                        cause: err,
+                        operation: 'upload',
+                        retryable: isRetryableNetworkError(err),
+                        endpoint: remotePath,
+                      }),
                     ),
                   );
                 };

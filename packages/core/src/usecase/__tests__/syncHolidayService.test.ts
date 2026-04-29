@@ -1,9 +1,10 @@
 import { describe, it, expect, vi } from 'vitest';
 import { Effect, Layer } from 'effect';
 
-import { syncHoliday } from '../date/syncHolidayService.js';
-import { GyomuRepository } from '../GyomuRepository.js';
+import { syncHoliday } from '../syncHolidayService.js';
+import { GyomuRepository } from '../../gyomu/GyomuRepository.js';
 import { LocalDate } from '@gyomu/shared/entity';
+import { HolidayFetcher } from '../../gyomu/holiday/HolidayFetcher.js';
 
 // --- モックデータ ---
 const mockIncoming = [
@@ -67,21 +68,19 @@ describe('syncHoliday', () => {
       }),
     );
 
-    const program = syncHoliday('JP', {
-      retrieveMarketHoliday: () => Effect.succeed(mockIncoming),
-    }).pipe(Effect.provide(TestLayer));
+    const HolidayFetcherMock = Layer.succeed(HolidayFetcher, {
+      fetch: (market: string) => Effect.succeed(mockIncoming),
+    } as any);
+
+    const program = syncHoliday('JP').pipe(
+      Effect.provide(Layer.mergeAll(TestLayer, HolidayFetcherMock)),
+    );
 
     await Effect.runPromise(program);
 
     // 今はlogだけなので副作用確認は難しいが、
     // 例として repository が呼ばれたか確認
     expect(repoMock.marketHoliday.findByMarket).toHaveBeenCalledWith('JP');
-  });
-
-  it('marketがJP以外ならエラー', async () => {
-    const program = syncHoliday('US').pipe(Effect.provide(TestLayer));
-
-    await expect(Effect.runPromise(program)).rejects.toBeDefined();
   });
 
   it('existingがtargetYearsでfilterされる', async () => {
@@ -95,8 +94,8 @@ describe('syncHoliday', () => {
       Effect.succeed({}),
     );
 
-    const program = syncHoliday('JP', {
-      retrieveMarketHoliday: () =>
+    const HolidayFetcherMock = Layer.succeed(HolidayFetcher, {
+      fetch: (market: string) =>
         Effect.succeed([
           {
             holiday: LocalDate.make('2024-01-01'),
@@ -105,7 +104,11 @@ describe('syncHoliday', () => {
             name: '元日',
           },
         ]),
-    }).pipe(Effect.provide(TestLayer));
+    } as any);
+
+    const program = syncHoliday('JP').pipe(
+      Effect.provide(Layer.mergeAll(TestLayer, HolidayFetcherMock)),
+    );
 
     await Effect.runPromise(program);
     //console.log(result);

@@ -9,7 +9,11 @@ export const addToMultiMap = <K, V>(map: Map<K, V[]>, key: K, value: V) => {
 export const addToNestedMap = (map: Map<any, any>, keys: any[], value: any) => {
   let current = map;
   if (keys.length === 0) {
-    throw new ValueError('keys must not be empty');
+    throw new ValueError({
+      message: 'keys must not be empty',
+      field: 'keys',
+      cause: undefined,
+    });
   }
   for (let i = 0; i < keys.length - 1; i++) {
     const key = keys[i];

@@ -27,7 +27,9 @@ import {
 } from '../../infrastructure/runtime.js';
 import { emptydir } from 'fs-extra';
 import { platform } from '../fs/index.js';
+import { initLoggerFromEnv } from '../logger/logger.js';
 
+await initLoggerFromEnv();
 const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
 const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
 
@@ -128,7 +130,16 @@ describe('untar test', () => {
         Stream.runHead,
         Effect.flatMap(
           Option.match({
-            onNone: () => Effect.fail(new IOError(`File not found: README.md`)),
+            onNone: () =>
+              Effect.fail(
+                new IOError({
+                  message: `File not found: README.md`,
+                  operation: 'read' as const,
+                  layer: 'archive' as const,
+                  cause: undefined,
+                  target: 'README.me',
+                }),
+              ),
             onSome: (entry) => Effect.succeed(entry),
           }),
         ), // ここで見つからなければ IOError

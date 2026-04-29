@@ -1,5 +1,5 @@
 import { Ref, Stream } from 'effect';
-import { AppError, unknownError } from '@gyomu/shared';
+import { wrapInfraError } from '@gyomu/shared';
 import { DiffDetail } from '../../../shared/object/diff.js';
 import { Effect } from 'effect';
 import {
@@ -59,25 +59,29 @@ export const compareZip = (
   }) => Effect.Effect<DiffResult>,
 ): Effect.Effect<
   DiffSummary[] | undefined,
-  AppError | PlatformError,
+  IOError | PlatformError,
   FileSystem.FileSystem | ZipService
 > => {
   const { sourceFilename, destinationFilename, resultPath } = option;
 
   return Effect.gen(function* () {
-    yield* ensureEffect(
-      pathExists(sourceFilename),
-      IOError,
-      `${sourceFilename} Not exist`,
-    );
-    yield* ensureEffect(
-      pathExists(destinationFilename),
-      IOError,
-      `${destinationFilename} Not exist`,
-    );
+    yield* ensureEffect(pathExists(sourceFilename), IOError, (e) => ({
+      message: 'file not exist',
+      target: sourceFilename,
+      layer: 'archive' as const,
+      operation: 'read' as const,
+      cause: e,
+    }));
+    yield* ensureEffect(pathExists(destinationFilename), IOError, (e) => ({
+      message: 'file not exist',
+      target: destinationFilename,
+      layer: 'archive' as const,
+      operation: 'read' as const,
+      cause: e,
+    }));
     yield* emptyDir(resultPath).pipe(
       Effect.mapError((e) =>
-        unknownError(
+        wrapInfraError(
           IOError,
           `Fail to prepare empty directory on ${resultPath}`,
         ),
@@ -366,7 +370,7 @@ const runCompare = (
     destination: ZipFileEntryItem;
     filePath: string;
     resultPath: string;
-  }) => Effect.Effect<DiffResult>,
+  }) => Effect.Effect<DiffResult, IOError>,
 ) =>
   compareFunc({
     source: sourceFile,
@@ -414,7 +418,7 @@ export const runCompareFuncFlow = (
     destination: ZipFileEntryItem;
     filePath: string;
     resultPath: string;
-  }) => Effect.Effect<DiffResult>,
+  }) => Effect.Effect<DiffResult, IOError>,
   targetIgnoreRule: DiffernceIgnoreRule | undefined,
   option: ZipCompareOption,
 ) => {
@@ -455,7 +459,7 @@ const compareTextfile = (
   destination: ZipFileEntryItem,
   filePath: string,
   resultPath: string,
-): Effect.Effect<boolean, IOError | AppError, FileSystem.FileSystem> => {
+): Effect.Effect<boolean, IOError, FileSystem.FileSystem> => {
   return Effect.gen(function* () {
     const gitTempPath = platform.join(platform.tmpdir(), 'gitCompareTemp');
     const sourceFilename = platform.join(gitTempPath, 'before');
@@ -478,10 +482,17 @@ const compareTextfile = (
     // ③ destination 展開
     yield* extractSingleFileEntry(destination, destinationFilename);
     // ④ git diff 実行
-    const outputMessage = yield* fromSync(
-      IOError,
-      'fail to generate diff files through git diff',
-    )(() => {
+    const outputMessage = yield* fromSync(IOError, () => ({
+      message: 'fail to generate diff files through git diff',
+      layer: 'filesystem' as const,
+      details: {
+        sourceFilename,
+        destinationFilename,
+        diffFilename,
+        gitTempPath,
+      },
+      operation: 'read' as const,
+    }))(() => {
       const commandArg = [
         'diff',
         '--no-index',
@@ -503,7 +514,13 @@ const compareTextfile = (
     });
 
     if (!(yield* pathExists(diffFilename))) {
-      throw new IOError(outputMessage);
+      throw new IOError({
+        message: 'spawn on git diff fail',
+        details: outputMessage,
+        layer: 'filesystem',
+        operation: 'read',
+        cause: diffFilename,
+      });
     }
 
     yield* removeUnnecessaryLinesFromDiffFile(diffFilename);

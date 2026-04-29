@@ -1,6 +1,6 @@
 import { pipe } from 'effect';
 import { Effect } from 'effect';
-import { NetworkError } from '../../errors.js';
+import { isRetryableNetworkError, NetworkError } from '../../errors.js';
 import { networkStream } from '../../shared/effect/stream.js';
 import { fetchEffect, fetchStream } from './client.js';
 import { textEffect, parseXmlEffect } from './xml.js';
@@ -43,7 +43,14 @@ export function postAndReceiveXml<ResponseType>(
     const statusCode = response.status;
 
     if (!response.body) {
-      return yield* Effect.fail(new NetworkError('No response body'));
+      return yield* Effect.fail(
+        new NetworkError({
+          message: 'No response body',
+          cause: undefined,
+          operation: 'request',
+          retryable: false,
+        }),
+      );
     }
 
     // =====================
@@ -60,7 +67,13 @@ export function postAndReceiveXml<ResponseType>(
     // validate
     // =====================
     if (option?.isValidData && !option.isValidData(resultData)) {
-      return yield* Effect.fail(new ValueError(`Invalid Response Data`));
+      return yield* Effect.fail(
+        new ValueError({
+          cause: undefined,
+          message: 'Invalid Response data validation fail',
+          value: resultData,
+        }),
+      );
     }
 
     return {
@@ -76,7 +89,12 @@ const validate =
     effect.pipe(
       Effect.filterOrFail(
         (a) => predicate?.(a) ?? true,
-        (a) => new ValueError(`Invalid Response Data : ${JSON.stringify(a)}`),
+        (a) =>
+          new ValueError({
+            message: `Invalid Response Data`,
+            cause: undefined,
+            value: a,
+          }),
       ),
     );
 export function fetchJson<RequestType, ResponseType>(

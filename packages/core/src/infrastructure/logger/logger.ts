@@ -8,8 +8,10 @@ import { Config, Logger, Schema, Option, Effect, Layer } from 'effect';
 import { ConfigLayer, ConfigService } from '../config.js';
 import { makeRunner } from '../runtime.js';
 import { PlatformLayer } from '../layer.js';
+type LogMeta = Record<string, unknown> | object;
 interface LeveledLogMethod {
-  (message: any, ...meta: any[]): void;
+  (message: string): void;
+  (meta: LogMeta, message: string, ...args: any[]): void;
 }
 interface Logger {
   error: LeveledLogMethod;
@@ -22,28 +24,46 @@ interface Logger {
 }
 class InternalLogger implements Logger {
   constructor(private readonly logger: PinoLogger) {}
-  info(message: any, ...meta: any[]) {
-    // console.log('logger.level =', this.logger.level);
-    // console.log(
-    //   this.logger.transports.map((t) => ({
-    //     name: t.constructor.name,
-    //     level: t.level,
-    //   })),
-    // );
-    this.logger.info(message, ...meta);
+
+  private log(
+    level: 'info' | 'debug' | 'warn' | 'error',
+    arg1: string | LogMeta,
+    arg2?: string,
+    ...args: any[]
+  ) {
+    if (typeof arg1 === 'string') {
+      return this.logger[level](arg1);
+    }
+    return this.logger[level](arg1, arg2!, ...args);
   }
-  debug(message: any, ...meta: any[]) {
-    this.logger.debug(message, ...meta);
+
+  info(message: string): void;
+  info(meta: LogMeta, message: string, ...args: any[]): void;
+  info(arg1: string | LogMeta, arg2?: string, ...args: any[]) {
+    return this.log('info', arg1, arg2, ...args);
   }
-  error(message: any, ...meta: any[]) {
-    this.logger.error(message, ...meta);
+
+  debug(message: string): void;
+  debug(meta: LogMeta, message: string, ...args: any[]): void;
+  debug(arg1: string | LogMeta, arg2?: string, ...args: any[]) {
+    return this.log('debug', arg1, arg2, ...args);
   }
-  warn(message: any, ...meta: any[]) {
-    this.logger.warn(message, ...meta);
+
+  error(message: string): void;
+  error(meta: LogMeta, message: string, ...args: any[]): void;
+  error(arg1: string | LogMeta, arg2?: string, ...args: any[]) {
+    return this.log('error', arg1, arg2, ...args);
+  }
+
+  warn(message: string): void;
+  warn(meta: LogMeta, message: string, ...args: any[]): void;
+  warn(arg1: string | LogMeta, arg2?: string, ...args: any[]) {
+    return this.log('warn', arg1, arg2, ...args);
   }
   isDebugEnabled() {
-    return this.logger.level == 'debug';
+    return this.logger.level === 'debug';
   }
+
   async end() {
     if (transport) {
       await new Promise((resolve) => {
@@ -208,13 +228,25 @@ const getLogger = () => {
   return loggerInstance!;
 };
 
-export const logger = {
-  info: (message: any, ...args: any[]) => getLogger().info(message, ...args),
-  debug: (message: any, ...args: any[]) => getLogger().debug(message, ...args),
-  error: (message: any, ...args: any[]) => getLogger().error(message, ...args),
-  warn: (message: any, ...args: any[]) => getLogger().warn(message, ...args),
-  isDebugEnabled: () => getLogger().isDebugEnabled(),
+function isMeta(arg: unknown): arg is LogMeta {
+  return typeof arg === 'object' && arg !== null && !Array.isArray(arg);
+}
+const wrap =
+  (level: 'info' | 'debug' | 'error' | 'warn') =>
+  (arg1: string | LogMeta, arg2?: string, ...args: any[]) => {
+    const l = getLogger();
+    if (typeof arg1 === 'string') {
+      return l[level](arg1);
+    }
+    return l[level](arg1, arg2!, ...args);
+  };
 
+export const logger: Logger = {
+  info: wrap('info'),
+  debug: wrap('debug'),
+  error: wrap('error'),
+  warn: wrap('warn'),
+  isDebugEnabled: () => getLogger().isDebugEnabled(),
   end: () => getLogger().end(),
 };
 
@@ -227,31 +259,39 @@ export const logDifferenceWhenDebugMode = (
     const result = reconcile(objA, objB);
     if (result.length == 0) {
       logger.debug(`Object ${objectKey} has no diff , but it's to be updated`);
-      logger.debug('Source', objA);
-      logger.debug('Destination', objB);
+      logger.debug(objA, 'Source');
+      logger.debug(objB, 'Destination');
       return;
     }
-    logger.debug(`Object ${objectKey} has difference`, result);
+    logger.debug(result, `Object ${objectKey} has difference`);
   }
 };
 
 //logger.info('test');
 export const effectLogger = Logger.make(({ logLevel, message }) => {
-  switch (logLevel) {
-    case 'Debug':
-      logger.debug(message);
-      break;
-    case 'Info':
-      logger.info(message);
-      break;
-    case 'Warn':
-      logger.warn(message);
-      break;
-    case 'Error':
-      logger.error(message);
-      break;
+  if (typeof message === 'object' && message !== null) {
+    logWithLevel(logLevel, message, 'effect log');
+  } else {
+    logWithLevel(logLevel, {}, String(message));
   }
 });
+
+function logWithLevel(level: string, meta: object, msg: string) {
+  switch (level) {
+    case 'Debug':
+      logger.debug(meta, msg);
+      break;
+    case 'Info':
+      logger.info(meta, msg);
+      break;
+    case 'Warn':
+      logger.warn(meta, msg);
+      break;
+    case 'Error':
+      logger.error(meta, msg);
+      break;
+  }
+}
 
 export const __resetLoggerForTest = () => {
   loggerInstance = null;

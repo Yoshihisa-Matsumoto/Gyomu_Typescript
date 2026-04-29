@@ -1,5 +1,5 @@
 import { Schema } from 'effect';
-import { defineEntityCrudSchemas } from './common.js';
+import { defineEntityCrudSchemas } from '@gyomu/shared/entity';
 import {
   appInfoDefinition,
   marketHolidayDefinition,
