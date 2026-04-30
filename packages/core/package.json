@@ -8,9 +8,37 @@
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./*": {
-      "import": "./lib/*.js",
-      "types": "./lib/*.d.ts"
+    "./data": {
+      "import": "./dist/data/index.js",
+      "types": "./dist/data/index.d.ts"
+    },
+    "./gyomu": {
+      "import": "./dist/gyomu/index.js",
+      "types": "./dist/gyomu/index.d.ts"
+    },
+    "./gyomu/*": {
+      "import": "./dist/gyomu/*/index.js",
+      "types": "./dist/gyomu/*/index.js"
+    },
+    "./scraping": {
+      "import": "./dist/scraping/index.js",
+      "types": "./dist/scraping/index.d.ts"
+    },
+    "./shared": {
+      "import": "./dist/shared/index.js",
+      "types": "./dist/shared/index.d.ts"
+    },
+    "./shared/*": {
+      "import": "./dist/shared/*/index.js",
+      "types": "./dist/shared/*/index.d.ts"
+    },
+    "./schemas/*": {
+      "import": "./dist/schemas/*.js",
+      "types": "./dist/schemas/*.d.ts"
+    },
+    "./usecase/*": {
+      "import": "./dist/usecase/*.js",
+      "types": "./dist/usecase/*.d.ts"
     }
   },
   "scripts": {
@@ -61,7 +89,6 @@
     "knip": "^6.4.1",
     "kysely": "^0.28.16",
     "kysely-codegen": "^0.20.0",
-    "tmp": "^0.2.5",
     "undici": "^8.1.0"
   },
   "dependencies": {
@@ -88,7 +115,6 @@
     "tarn": "^3.0.2",
     "tedious": "^19.2.1",
     "uuidv7": "^1.2.1",
-    "winston": "^3.19.0",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
     "xml2js": "^0.6.2",
     "yauzl": "^3.2.1",

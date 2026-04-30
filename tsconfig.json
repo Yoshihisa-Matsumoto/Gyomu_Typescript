@@ -5,5 +5,11 @@
     "target": "esnext"
   },
   "files": [],
-  "references": [{ "path": "packages/core" }, { "path": "packages/shared" }]
+  "references": [
+    { "path": "apps/cli" },
+    { "path": "packages/ai" },
+    { "path": "packages/core" },
+    { "path": "packages/shared" },
+    { "path": "packages/infra" }
+  ]
 }

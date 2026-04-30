@@ -1,8 +1,6 @@
 import { defineConfig } from 'vitest/config';
 import dotenv from 'dotenv';
-import { initLoggerFromEnv } from './src/infrastructure/logger/logger';
 dotenv.config({ path: '.env' });
-await initLoggerFromEnv();
 //console.log('Env', process.env);
 export default defineConfig({
   test: {
