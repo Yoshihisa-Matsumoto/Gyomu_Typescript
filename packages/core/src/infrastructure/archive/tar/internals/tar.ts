@@ -10,7 +10,7 @@ import { runSync } from 'effect/Effect';
 import { FileSystem } from 'effect';
 import { FileTransportInfo } from '../../../../gyomu/file/transport.js';
 import { ArchiveEntryItem } from '../../common.js';
-import { platform } from '../../../fs/index.js';
+import path from 'path';
 import { makeDirectory, writeStreamToFile } from '../../../fs/fs-utils.js';
 
 type TarEntryItem = Extract<ArchiveEntryItem, { _tag: 'tar' }>;
@@ -277,7 +277,7 @@ export const extractTarToDirectory =
             if (!relativePath)
               return yield* Stream.runDrain(entry.openStream()); // プレフィックス自体はスキップ
 
-            const fullPath = platform.join(targetDir, relativePath);
+            const fullPath = path.join(targetDir, relativePath);
 
             // ディレクトリの場合は作成して終了
             if (entry.isDirectory) {
@@ -295,7 +295,7 @@ export const extractTarToDirectory =
             }
 
             // ファイルの場合は親ディレクトリを作ってから書き込み
-            yield* makeDirectory(platform.dirname(fullPath));
+            yield* makeDirectory(path.dirname(fullPath));
             yield* Effect.logDebug(`Untar ${fullPath}`);
             // entry.content (Stream) をファイルに流し込む
             // sinkUnique などを使って効率的に書き込む
@@ -336,12 +336,12 @@ export const extractTarSingleFile =
         );
       }
       // 相対パスの計算 (stripPath 分を削る)
-      const fileName = platform.basename(sourceEntryFullName);
+      const fileName = path.basename(sourceEntryFullName);
 
-      const fullPath = platform.join(destinationFolderName, fileName);
+      const fullPath = path.join(destinationFolderName, fileName);
 
       // ファイルの場合は親ディレクトリを作ってから書き込み
-      yield* makeDirectory(platform.dirname(fullPath));
+      yield* makeDirectory(path.dirname(fullPath));
       yield* Effect.logDebug(`Untar ${fullPath}`);
       // entry.stream (Stream) をファイルに流し込む
       // sinkUnique などを使って効率的に書き込む

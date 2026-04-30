@@ -1,5 +1,5 @@
 import { Effect, FileSystem, Option } from 'effect';
-import { platform } from './index.js';
+import path from 'path';
 import { IOError } from '../../errors.js';
 import { getFileStat } from './fs-utils.js';
 
@@ -48,15 +48,15 @@ export const createFileInfo = (
 
     const isFile = stats.type === 'File';
 
-    const fullPath = platform.resolve(filePath);
+    const fullPath = path.resolve(filePath);
 
     return new FileInfo({
       isFile,
-      fileName: isFile ? platform.basename(filePath) : '',
-      extension: isFile ? platform.extname(filePath) : '',
+      fileName: isFile ? path.basename(filePath) : '',
+      extension: isFile ? path.extname(filePath) : '',
       fullPath,
-      directoryName: platform.basename(platform.dirname(filePath)),
-      directoryPath: platform.dirname(fullPath),
+      directoryName: path.basename(path.dirname(filePath)),
+      directoryPath: path.dirname(fullPath),
       size: Number(stats.size),
       createTime: Option.getOrElse(
         Option.orElse(stats.birthtime, () => stats.mtime),

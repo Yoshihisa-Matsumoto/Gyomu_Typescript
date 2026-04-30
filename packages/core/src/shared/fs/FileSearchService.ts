@@ -3,7 +3,7 @@ import { FileFilterInfo } from '../../gyomu/file/filter.js';
 import { FileCompareType, FilterType } from '../../gyomu/file/types.js';
 import { createFileInfo, FileInfo } from '../../infrastructure/fs/fileInfo.js';
 import { compareAsc } from 'date-fns';
-import { platform } from '../../infrastructure/fs/index.js';
+import path from 'path';
 import { IOError } from '../../errors.js';
 import {
   pathExists,
@@ -26,8 +26,8 @@ const searchFunc = (
       dirents,
       (dirent) =>
         Effect.gen(function* () {
-          const fullPath = platform.join(
-            platform.resolve(parentDirectory),
+          const fullPath = path.join(
+            path.resolve(parentDirectory),
             dirent.name,
           );
 

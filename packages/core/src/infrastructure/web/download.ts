@@ -1,7 +1,7 @@
 import { Effect, FileSystem } from 'effect';
 import { Stream } from 'effect';
 import { NetworkError, IOError } from '../../errors.js';
-import { platform } from '../fs/index.js';
+import path from 'path';
 import { networkStream } from '../../shared/effect/stream.js';
 import { fetchEffect } from './client.js';
 import {
@@ -45,7 +45,7 @@ export const webDownload = (
     // =====================
     if (
       (yield* pathExists(destinationFilename)) &&
-      destinationFilename !== platform.basename(destinationFilename)
+      destinationFilename !== path.basename(destinationFilename)
     ) {
       return yield* Effect.fail(
         new IOError({
@@ -73,7 +73,7 @@ export const webDownload = (
       );
     }
 
-    if (!platform.extname(destinationFilename)) {
+    if (!path.extname(destinationFilename)) {
       return yield* Effect.fail(
         new IOError({
           message: 'filename should include extension',
@@ -107,7 +107,7 @@ export const webDownload = (
     //   IOError,
     //   `Web Download Error:${url} into ${destinationFilename}`,
     // )(async () => {
-    //   const fileWriterStream = platform.createWriteStream(destinationFilename);
+    //   const fileWriterStream = path.createWriteStream(destinationFilename);
 
     //   await finished(Readable.fromWeb(stream as any).pipe(fileWriterStream));
     // });

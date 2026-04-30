@@ -7,7 +7,7 @@ import { wrapInfraError } from '@gyomu/shared';
 import { IOError } from '../../errors.js';
 import { encodeUtf8ToBinaryStream } from '../../shared/stream/transform/encoding.js';
 import { NodeFileSystem, NodePath } from '@effect/platform-node';
-import { platform } from '../fs/index.js';
+import path from 'path';
 import { makeDirectory, writeStreamToFile } from '../fs/fs-utils.js';
 
 // export const CsvBoolean = Schema.BooleanFromString;
@@ -106,7 +106,7 @@ export const jsonToCsv = <T extends Record<string, any>>(
           return stream.pipe(Stream.runForEach(Console.log));
         case 'file':
           return Effect.gen(function* () {
-            yield* makeDirectory(platform.dirname(output.path));
+            yield* makeDirectory(path.dirname(output.path));
             yield* writeStreamToFile(output.path)(
               stream.pipe(encodeUtf8ToBinaryStream),
             );

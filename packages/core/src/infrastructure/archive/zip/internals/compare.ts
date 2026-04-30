@@ -10,7 +10,7 @@ import {
 import { FileSystem } from 'effect';
 import { PlatformError } from 'effect/PlatformError';
 import { runCompareFuncFlow } from '../compare.js';
-import { platform } from '../../../fs/index.js';
+import path from 'path';
 import { IOError } from '../../../../errors.js';
 
 export type DiffernceIgnoreRule = {
@@ -184,7 +184,7 @@ export const handleMissingFileInComparison = (
         });
         return output;
       });
-      const filePath = platform.join(
+      const filePath = path.join(
         resultPath,
         existingFile.path.replaceAll('/', '\\'),
       );
@@ -265,7 +265,7 @@ export const internalCompareFileEntry = (
       FileSystem.FileSystem
     >[] = [];
 
-    const sourcePath = platform.join(
+    const sourcePath = path.join(
       resultPath,
       sourceFile.path.replaceAll('/', '\\') + '.source',
     );
@@ -274,7 +274,7 @@ export const internalCompareFileEntry = (
       effects.push(extractSingleFileEntry(sourceFile, sourcePath));
     }
 
-    const destinationPath = platform.join(
+    const destinationPath = path.join(
       resultPath,
       destinationFile.path.replaceAll('/', '\\') + '.destination',
     );

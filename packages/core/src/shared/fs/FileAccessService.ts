@@ -1,6 +1,6 @@
 import { Effect, FileSystem, Layer, ServiceMap, Option } from 'effect';
 import { AccessError, IOError, TimeoutError } from '../../errors.js';
-import { platform } from '../../infrastructure/fs/index.js';
+import path from 'path';
 import { ensure, ensureEffect, fromPromise } from '@gyomu/shared/effect';
 
 import { polling } from '../effect/timer.js';
@@ -27,7 +27,7 @@ const canAccessFunc = (
 
     yield* ensure(
       !(
-        specialExtension.includes(platform.extname(fileName)) &&
+        specialExtension.includes(path.extname(fileName)) &&
         stat.size === FileSystem.Size(0)
       ),
       AccessError,

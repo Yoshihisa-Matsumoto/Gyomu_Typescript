@@ -1,4 +1,4 @@
-import { platform } from '../../infrastructure/fs/index.js';
+import path from 'path';
 import { Page } from '../dom/page.js';
 import { convertGenericElementByTagName } from '../convert.js';
 import { describe, expect, it, test } from 'vitest';
@@ -15,7 +15,7 @@ test('Table initialization', async () => {
 
   const htmlText = await runNodeWithEnvOrThrow(
     Effect.gen(function* () {
-      return yield* readStringFromFile(platform.join('tests', 'test.html'));
+      return yield* readStringFromFile(path.join('tests', 'test.html'));
     }),
   );
   const page = new Page({

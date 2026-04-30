@@ -1,11 +1,13 @@
 import { expect, test } from 'vitest';
 import fs from 'fs';
-import { fsConstants, platform } from '../../infrastructure/fs/index.js';
+import { fsConstants } from '../../infrastructure/fs/index.js';
+import path from 'path';
 import { Effect, Layer } from 'effect';
 import { MainLayer, PlatformLayer } from '../../infrastructure/layer.js';
 import { makeRunner } from '../../infrastructure/runtime.js';
 import { FileAccessService } from '../fs/FileAccessService.js';
 import { initLoggerFromEnv } from '../../infrastructure/logger/logger.js';
+import { getTempFilename } from '../../infrastructure/fs/fs-utils.js';
 
 await initLoggerFromEnv();
 const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
@@ -19,8 +21,8 @@ const program = (fileName: string, timeoutSeconds: number) => {
 };
 
 test('File Exclusive Access Test', async () => {
-  //const sourceDirectory = platform.resolve('./tests');
-  let targetFilename = platform.tmpNameSync();
+  //const sourceDirectory = path.resolve('./tests');
+  let targetFilename = getTempFilename();
 
   let fileHandle = fs.openSync(
     targetFilename,
@@ -52,7 +54,7 @@ test('File Exclusive Access Test', async () => {
   expect(duration).toBeLessThan(2200);
   console.log('duration', duration);
   //console.log('test2');
-  targetFilename = platform.tmpNameSync();
+  targetFilename = getTempFilename();
 
   fileHandle = fs.openSync(
     targetFilename,

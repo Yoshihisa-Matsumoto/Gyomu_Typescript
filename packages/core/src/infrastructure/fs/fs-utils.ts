@@ -3,8 +3,9 @@ import { Stream, Effect } from 'effect';
 import { IOError, NetworkError } from '../../errors.js';
 import { PlatformError } from 'effect/PlatformError';
 import { wrapInfraError } from '@gyomu/shared';
-import ps from 'path';
-import { unknown } from 'effect/SchemaAST';
+import path from 'path';
+import { randomUUID } from 'crypto';
+import { tmpdir } from 'os';
 
 /**
  * パスからファイルストリームを生成する。
@@ -330,7 +331,7 @@ export const ensureFile = (
     const fs = yield* FileSystem.FileSystem;
 
     // 親ディレクトリ作成
-    yield* fs.makeDirectory(ps.dirname(filePath), {
+    yield* fs.makeDirectory(path.dirname(filePath), {
       recursive: true,
     });
 
@@ -359,7 +360,7 @@ export const ensureFileNotExist = (
     const fs = yield* FileSystem.FileSystem;
 
     // 親ディレクトリ作成
-    yield* fs.makeDirectory(ps.dirname(filePath), {
+    yield* fs.makeDirectory(path.dirname(filePath), {
       recursive: true,
     });
 
@@ -380,3 +381,16 @@ export const ensureFileNotExist = (
       })),
     ),
   );
+
+export const getFileExtension = (fileName: string) => {
+  const extName = path.extname(fileName);
+  if (extName.length > 0) {
+    return extName.substring(1);
+  }
+  return extName;
+};
+
+export const getTempFilename = () => {
+  const tmpFile = path.join(tmpdir(), randomUUID());
+  return tmpFile;
+};

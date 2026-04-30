@@ -3,7 +3,7 @@ import { IOError } from '../../../../errors.js';
 //import { Readable } from 'node:stream';
 
 import { ZipFile } from 'yazl';
-import { platform } from '../../../fs/index.js';
+import path from 'path';
 import { FileTransportInfo } from '../../../../gyomu/file/transport.js';
 //import { fromReadable } from '../../../nodeStream.js';
 import { NodeStream } from '@effect/platform-node';
@@ -22,7 +22,7 @@ const addDirectory = (
   readDirectoryDetailed(fsPath).pipe(
     Effect.flatMap((items) =>
       Effect.forEach(items, (item) => {
-        const itemPath = platform.join(fsPath, item.name);
+        const itemPath = path.join(fsPath, item.name);
         const zipPath = (relativeTo ? relativeTo + '/' : '') + item.name;
 
         if (item.isDirectory) {

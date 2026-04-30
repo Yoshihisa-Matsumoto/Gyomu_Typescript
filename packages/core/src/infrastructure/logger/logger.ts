@@ -1,4 +1,4 @@
-import { platform } from '../fs/index.js';
+import path from 'path';
 
 import pino from 'pino';
 import type { Logger as PinoLogger } from 'pino';
@@ -8,6 +8,7 @@ import { Config, Logger, Schema, Option, Effect, Layer } from 'effect';
 import { ConfigLayer, ConfigService } from '../config.js';
 import { makeRunner } from '../runtime.js';
 import { PlatformLayer } from '../layer.js';
+import { tmpdir } from 'os';
 type LogMeta = Record<string, unknown> | object;
 interface LeveledLogMethod {
   (message: string): void;
@@ -83,7 +84,7 @@ const loggerConfigRaw = Config.all({
     Config.boolean(`FIXED_LOGFILENAME`),
     false,
   ),
-  logPath: Config.withDefault(Config.string(`LOGPATH`), platform.tmpdir()),
+  logPath: Config.withDefault(Config.string(`LOGPATH`), tmpdir()),
   logFilename: Config.option(Config.string('LOGFILENAME')),
 });
 type ExtractConfig<T> = T extends Config.Config<infer A> ? A : never;
@@ -107,7 +108,7 @@ type loggerConfig = NormalizeOptionObject<
 //     Schema.withDecodingDefault(() => 'false'),
 //   ),
 //   logPath: Schema.String.pipe(
-//     Schema.withDecodingDefault(() => platform.tmpdir()),
+//     Schema.withDecodingDefault(() => path.tmpdir()),
 //   ),
 //   logFilename: Schema.optional(Schema.String),
 // });
@@ -124,7 +125,7 @@ type loggerConfig = NormalizeOptionObject<
 //     .optional()
 //     .transform((v) => v === 'true')
 //     .default(false),
-//   logPath: z.string().optional().default(platform.tmpdir()),
+//   logPath: z.string().optional().default(path.tmpdir()),
 //   logFilename: z.string().optional(),
 // });
 //export type LoggerConfig = z.infer<typeof loggerConfigSchema>;
@@ -161,7 +162,7 @@ export const initLoggerFromEnv = async () => {
     //     : process.env.FIXED_LOGFILENAME == 'true'
     //       ? true
     //       : false,
-    //   logPath: process.env.LOGPATH ?? platform.tmpdir(),
+    //   logPath: process.env.LOGPATH ?? path.tmpdir(),
     //   logFilename: process.env.LOGFILENAME,
     // };
     initLogger(loadedData);
@@ -180,7 +181,7 @@ export const initLogger = (config: loggerConfig) => {
   LogFileName = !config.logFilename
     ? undefined
     : LogFileDirectory +
-      platform.sep +
+      path.sep +
       (config.logFilename +
         (LogFileNameStatic
           ? ''

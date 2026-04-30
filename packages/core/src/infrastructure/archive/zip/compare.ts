@@ -40,7 +40,8 @@ import {
   removePath,
   writeStringToFile,
 } from '../../fs/fs-utils.js';
-import { platform } from '../../fs/index.js';
+import path from 'path';
+import { tmpdir } from 'os';
 
 // export type DiffDetail = {
 //   path: string;
@@ -197,7 +198,7 @@ export const compareZip = (
       },
       {
         type: 'file',
-        path: platform.join(resultPath, summaryFilename),
+        path: path.join(resultPath, summaryFilename),
       },
     );
 
@@ -206,14 +207,14 @@ export const compareZip = (
   //let interimOutput: InterimOutputType | undefined = undefined;
   // const result = result2Async(
   //   ensure(
-  //     platform.existsSync(sourceFilename),
+  //     path.existsSync(sourceFilename),
   //     IOError,
   //     `${sourceFilename} Not exist`,
   //   ),
   // )
   //   .andThen(() =>
   //     ensure(
-  //       platform.existsSync(destinationFilename),
+  //       path.existsSync(destinationFilename),
   //       IOError,
   //       `${destinationFilename} Not exist`,
   //     ),
@@ -222,8 +223,8 @@ export const compareZip = (
   //     result2Async(
   //       run(
   //         () => {
-  //           platform.removeSync(resultPath);
-  //           platform.emptyDirSync(resultPath);
+  //           path.removeSync(resultPath);
+  //           path.emptyDirSync(resultPath);
   //         },
   //         IOError,
   //         'fail to prepare files to compare',
@@ -355,7 +356,7 @@ export const compareZip = (
 
   //       bom: true,
   //       quoted: true,
-  //     },{type:'file',path: platform.join(resultPath, summaryFilename),});
+  //     },{type:'file',path: path.join(resultPath, summaryFilename),});
   //   });
   // return result;
 };
@@ -399,7 +400,7 @@ const writeCsvIfNeeded = (
   diffDetailList.length > 0
     ? Effect.gen(function* () {
         const filePath =
-          platform.join(resultPath, sourceFile.path.replaceAll('/', '\\')) +
+          path.join(resultPath, sourceFile.path.replaceAll('/', '\\')) +
           '.diff.csv';
 
         yield* jsonToCsv(
@@ -461,10 +462,10 @@ const compareTextfile = (
   resultPath: string,
 ): Effect.Effect<boolean, IOError, FileSystem.FileSystem> => {
   return Effect.gen(function* () {
-    const gitTempPath = platform.join(platform.tmpdir(), 'gitCompareTemp');
-    const sourceFilename = platform.join(gitTempPath, 'before');
-    const destinationFilename = platform.join(gitTempPath, 'after');
-    const diffFilename = platform.join(
+    const gitTempPath = path.join(tmpdir(), 'gitCompareTemp');
+    const sourceFilename = path.join(gitTempPath, 'before');
+    const destinationFilename = path.join(gitTempPath, 'after');
+    const diffFilename = path.join(
       resultPath,
       filePath.replaceAll('/', '\\') + '.diff',
     );
@@ -474,7 +475,7 @@ const compareTextfile = (
     yield* removePath(sourceFilename);
     yield* removePath(destinationFilename);
 
-    const diffFilePath = platform.dirname(diffFilename);
+    const diffFilePath = path.dirname(diffFilename);
     yield* makeDirectory(diffFilePath);
 
     // ② source 展開

@@ -17,7 +17,7 @@ import {
 import { FileSystem } from 'effect';
 import { runSync } from 'effect/Effect';
 import { FileTransportInfo } from '../../../../gyomu/file/transport.js';
-import { platform } from '../../../fs/index.js';
+import path from 'path';
 
 export type ZipEntryItem = Extract<ArchiveEntryItem, { _tag: 'zip' }>;
 export type ZipFileEntryItem = Extract<ZipEntryItem, { isDirectory: false }>;
@@ -228,25 +228,22 @@ const resolvePath = (
   } = info;
 
   return Effect.gen(function* () {
-    //const entryPath = entry.path.split('/').join(platform.sep);
+    //const entryPath = entry.path.split('/').join(path.sep);
 
     if (sourceFileName) {
-      return platform.join(
-        destinationPath,
-        destinationFileName ?? sourceFileName,
-      );
+      return path.join(destinationPath, destinationFileName ?? sourceFileName);
     }
     const remaining = entry.path.substring(sourceFolderName.length);
     //  if(entry.path.startsWith(sourceFolderName)){
 
     if (!remaining) return destinationPath;
-    return platform.join(destinationPath, remaining.replace(/[/\\]+$/, ''));
+    return path.join(destinationPath, remaining.replace(/[/\\]+$/, ''));
     // }
 
     // // ② destinationFileName がある場合
     // if (destinationFileName) {
     //   return destinationPath
-    //     ? platform.join(destinationPath, destinationFileName)
+    //     ? path.join(destinationPath, destinationFileName)
     //     : destinationFileName;
     // }
 
@@ -260,7 +257,7 @@ const resolvePath = (
     //     relativePath = relativePath.slice(normalizedSource.length);
 
     //     // 先頭のセパレータを除去
-    //     if (relativePath.startsWith(platform.sep)) {
+    //     if (relativePath.startsWith(path.sep)) {
     //       relativePath = relativePath.slice(1);
     //     }
     //   }
@@ -273,7 +270,7 @@ const resolvePath = (
 
     // // ④ destinationPath を付与
     // return destinationPath
-    //   ? platform.join(destinationPath, relativePath)
+    //   ? path.join(destinationPath, relativePath)
     //   : relativePath;
   });
 };
@@ -288,7 +285,7 @@ const extractEntry = (
     if (entry.isDirectory) {
       return yield* makeDirectory(outputPath);
     }
-    const dir = platform.dirname(outputPath);
+    const dir = path.dirname(outputPath);
     yield* makeDirectory(dir);
 
     logger.debug(
@@ -311,9 +308,9 @@ export const extractSingleFileEntry = (
 ) => {
   return Effect.gen(function* () {
     const arg = {
-      sourceFilename: platform.basename(targetFile.path),
-      destinationFileName: platform.basename(destinationFullName),
-      destinationFolderName: platform.dirname(destinationFullName),
+      sourceFilename: path.basename(targetFile.path),
+      destinationFileName: path.basename(destinationFullName),
+      destinationFolderName: path.dirname(destinationFullName),
     };
     yield* extractEntry(targetFile, new FileTransportInfo(arg));
   });

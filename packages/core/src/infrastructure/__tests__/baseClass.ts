@@ -1,5 +1,5 @@
 import { Effect, Layer, FileSystem, PlatformError } from 'effect';
-import { platform } from '../fs/index.js';
+import path from 'path';
 import { expect } from 'vitest';
 import { MainLayer, PlatformLayer } from '../layer.js';
 import { makeRunner } from '../runtime.js';
@@ -10,9 +10,10 @@ import {
   readStringFromFile,
 } from '../fs/fs-utils.js';
 import { IOError } from '../../errors.js';
+import { tmpdir } from 'os';
 
 export const tmpDir = () => {
-  return platform.tmpdir() + platform.sep;
+  return tmpdir() + path.sep;
 };
 
 const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
@@ -88,13 +89,13 @@ const compareFoldersFromSourceEffect = (
       dirs,
       (dirent) =>
         Effect.gen(function* () {
-          const sourceFullPath = platform.join(
-            platform.resolve(srcFolder),
+          const sourceFullPath = path.join(
+            path.resolve(srcFolder),
             dirent.name,
           );
 
-          const targetDestFullPath = platform.join(
-            platform.resolve(destFolder),
+          const targetDestFullPath = path.join(
+            path.resolve(destFolder),
             dirent.name,
           );
 
@@ -135,13 +136,13 @@ const compareFoldersFromDestEffect = (
       dirs,
       (dirent) =>
         Effect.gen(function* () {
-          const destinationFullPath = platform.join(
-            platform.resolve(destFolder),
+          const destinationFullPath = path.join(
+            path.resolve(destFolder),
             dirent.name,
           );
 
-          const targetSourceFullPath = platform.join(
-            platform.resolve(srcFolder),
+          const targetSourceFullPath = path.join(
+            path.resolve(srcFolder),
             dirent.name,
           );
 

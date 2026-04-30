@@ -2,7 +2,7 @@ import { FileFilterInfo } from '../../gyomu/file/filter.js';
 import { FileCompareType, FilterType } from '../../gyomu/file/types.js';
 
 import { expect, test } from 'vitest';
-import { platform } from '../../infrastructure/fs/index.js';
+import path from 'path';
 import { Effect, Layer } from 'effect';
 import { MainLayer, PlatformLayer } from '../../infrastructure/layer.js';
 import { makeRunner } from '../../infrastructure/runtime.js';
@@ -23,7 +23,7 @@ const program = (
 };
 
 test('File Whole Search Test', async () => {
-  const baseDir = platform.resolve('.');
+  const baseDir = path.resolve('.');
 
   const fileInfoList = await runNodeWithEnvOrThrow(
     program('tests', [], true),
@@ -31,7 +31,7 @@ test('File Whole Search Test', async () => {
   );
   const fullPathList = new Array<string>();
   fileInfoList.forEach((fileInfo) => {
-    fullPathList.push(platform.relative(baseDir, fileInfo.fullPath));
+    fullPathList.push(path.relative(baseDir, fileInfo.fullPath));
   });
   const expected = [
     'tests\\compress\\README.md.bz2',
@@ -77,7 +77,7 @@ test('File Whole Search Test', async () => {
 });
 
 test('File Name Exact Search Test', async () => {
-  const baseDir = platform.resolve('.');
+  const baseDir = path.resolve('.');
   let fileInfoList = await runNodeWithEnvOrThrow(
     program(
       'tests',
@@ -95,7 +95,7 @@ test('File Name Exact Search Test', async () => {
 
   let fullPathList = new Array<string>();
   fileInfoList.forEach((fileInfo) => {
-    fullPathList.push(platform.relative(baseDir, fileInfo.fullPath));
+    fullPathList.push(path.relative(baseDir, fileInfo.fullPath));
   });
   let expected = ['tests\\compress\\README.md.gz'];
   expect(fullPathList).toEqual(expect.arrayContaining(expected));
@@ -117,7 +117,7 @@ test('File Name Exact Search Test', async () => {
   );
   fullPathList = new Array<string>();
   fileInfoList.forEach((fileInfo) => {
-    fullPathList.push(platform.relative(baseDir, fileInfo.fullPath));
+    fullPathList.push(path.relative(baseDir, fileInfo.fullPath));
   });
   expected = [
     'tests\\compress\\README_aes_password.zip',
@@ -128,7 +128,7 @@ test('File Name Exact Search Test', async () => {
 });
 
 test('File Name NoExact Search Test', async () => {
-  const baseDir = platform.resolve('.');
+  const baseDir = path.resolve('.');
   let fileInfoList = await runNodeWithEnvOrThrow(
     program(
       'tests',
@@ -145,7 +145,7 @@ test('File Name NoExact Search Test', async () => {
   );
   let fullPathList = new Array<string>();
   fileInfoList.forEach((fileInfo) => {
-    fullPathList.push(platform.relative(baseDir, fileInfo.fullPath));
+    fullPathList.push(path.relative(baseDir, fileInfo.fullPath));
   });
   let expected = [
     'tests\\compress\\README_aes_password.zip',
@@ -202,7 +202,7 @@ test('File Name NoExact Search Test', async () => {
   );
   fullPathList = new Array<string>();
   fileInfoList.forEach((fileInfo) => {
-    fullPathList.push(platform.relative(baseDir, fileInfo.fullPath));
+    fullPathList.push(path.relative(baseDir, fileInfo.fullPath));
   });
   expected = [
     'tests\\compress\\ユーザー噂.py.bz2',
@@ -229,7 +229,7 @@ test('File Name NoExact Search Test', async () => {
 
   fullPathList = new Array<string>();
   fileInfoList.forEach((fileInfo) => {
-    fullPathList.push(platform.relative(baseDir, fileInfo.fullPath));
+    fullPathList.push(path.relative(baseDir, fileInfo.fullPath));
   });
   expected = [
     'tests\\compress\\README.md.bz2',
@@ -256,7 +256,7 @@ test('File Name NoExact Search Test', async () => {
 
   fullPathList = new Array<string>();
   fileInfoList.forEach((fileInfo) => {
-    fullPathList.push(platform.relative(baseDir, fileInfo.fullPath));
+    fullPathList.push(path.relative(baseDir, fileInfo.fullPath));
   });
   expected = [
     'tests\\compress\\README.md.bz2',

@@ -1,25 +1,25 @@
 import { describe, it, expect, vi } from 'vitest';
-import { platform } from '../fs/index.js'; // パス調整
-import path from 'path';
+
+import { getFileExtension } from '../fs/fs-utils.js';
 
 describe('getExtension', () => {
   it('拡張子あり（.txt → txt）', () => {
-    expect(platform.getExtension('file.txt')).toBe('txt');
+    expect(getFileExtension('file.txt')).toBe('txt');
   });
 
   it('複数ドット（.tar.gz → gz）', () => {
-    expect(platform.getExtension('archive.tar.gz')).toBe('gz');
+    expect(getFileExtension('archive.tar.gz')).toBe('gz');
   });
 
   it('拡張子なし', () => {
-    expect(platform.getExtension('file')).toBe('');
+    expect(getFileExtension('file')).toBe('');
   });
 
   it('隠しファイル（.env）', () => {
-    expect(platform.getExtension('.env')).toBe('');
+    expect(getFileExtension('.env')).toBe('');
   });
 
   it('パス付き', () => {
-    expect(platform.getExtension('/path/to/file.log')).toBe('log');
+    expect(getFileExtension('/path/to/file.log')).toBe('log');
   });
 });

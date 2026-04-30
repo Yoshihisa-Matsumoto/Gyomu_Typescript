@@ -1,8 +1,8 @@
-import os from 'os';
+// import os from 'os';
 
-import { windows } from './windows.js';
-import { linux } from './linux.js';
+// import { windows } from './windows.js';
+// import { linux } from './linux.js';
 
-export const platform = os.platform() === 'win32' ? windows : linux;
+// export const platform = os.platform() === 'win32' ? windows : linux;
 
 export * from './types.js';
