@@ -44,7 +44,7 @@ const compareFilesEffect = (srcFile: string, destFile: string) => {
     const source = yield* readFromFile(srcFile);
     const destination = yield* readFromFile(destFile);
     if (isText(srcFile)) {
-      const result = expect(equalsText(source, destination));
+      const result = equalsText(source, destination);
       if (!result) {
         console.log(srcFile, destFile);
       }
