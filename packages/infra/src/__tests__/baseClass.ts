@@ -31,15 +31,31 @@ export const compareFiles = async (srcFile: string, destFile: string) => {
   return await runNodeWithEnvOrThrow(compareFilesEffect(srcFile, destFile));
 };
 
+const normalize = (bytes: Uint8Array) =>
+  new TextDecoder().decode(bytes).replace(/\r\n/g, '\n');
+
+const equalsText = (a: Uint8Array, b: Uint8Array) => {
+  return normalize(a) === normalize(b);
+};
+const isText = (path: string) => /\.(txt|md|py|csv|html)$/i.test(path);
+
 const compareFilesEffect = (srcFile: string, destFile: string) => {
   return Effect.gen(function* () {
     const source = yield* readFromFile(srcFile);
     const destination = yield* readFromFile(destFile);
-    const result = equals(source, destination);
-    if (!result) {
-      console.log(srcFile, destFile);
+    if (isText(srcFile)) {
+      const result = expect(equalsText(source, destination));
+      if (!result) {
+        console.log(srcFile, destFile);
+      }
+      return result;
+    } else {
+      const result = equals(source, destination);
+      if (!result) {
+        console.log(srcFile, destFile);
+      }
+      return result;
     }
-    return result;
   });
 };
 

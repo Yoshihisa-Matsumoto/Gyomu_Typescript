@@ -101,9 +101,9 @@ export const initLogger = (config: loggerConfig) => {
         (LogFileNameStatic
           ? ''
           : '.' + format(new Date(), 'yyyyMMddHHmmss') + '.log'));
-  console.log(
-    `Logger initialized with level ${loggerLevel}, log file: ${LogFileName}`,
-  );
+  // console.log(
+  //   `Logger initialized with level ${loggerLevel}, log file: ${LogFileName}`,
+  // );
 
   const targets: any[] = [
     {
@@ -120,7 +120,7 @@ export const initLogger = (config: loggerConfig) => {
       options: { destination: LogFileName, mkdir: true },
     });
   }
-  console.log(targets);
+  //console.log(targets);
   transport = pino.transport({ targets: targets });
 
   const p = pino(
