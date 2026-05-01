@@ -6,13 +6,13 @@ import { GyomuRepositoryMock } from './baseDBClass.js';
 import { NodeFileSystem } from '@effect/platform-node';
 import { makeRunner } from '@gyomu/core/shared/effect';
 import { MainLayer } from '../layer.js';
-import { ConfigLayer } from '../config.js';
+import { ConfigMockLayer } from '../config.js';
 import { Date2LocalDate } from '@gyomu/shared/entity';
 import { VariableTranslatorServiceLayer } from '../shared/variable/VariableTranslatorServiceLayer.js';
 import { BusinessCalendarServiceLayer } from '../gyomu/date/BusinessCalendarServiceLayer.js';
 
 const TestLayer = Layer.mergeAll(VariableTranslatorServiceLayer, MainLayer)
-  .pipe(Layer.provideMerge(ConfigLayer))
+  .pipe(Layer.provideMerge(ConfigMockLayer))
   .pipe(Layer.provideMerge(BusinessCalendarServiceLayer))
   .pipe(Layer.provideMerge(GyomuRepositoryMock))
   // .pipe(Layer.provideMerge(KyselyService.live))

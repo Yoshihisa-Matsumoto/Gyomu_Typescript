@@ -2,7 +2,7 @@ import { FileFilterInfo } from '@gyomu/core/gyomu/file';
 import { FileCompareType, FilterType } from '@gyomu/core/gyomu/file';
 
 import { expect, test } from 'vitest';
-import path from 'path';
+import path, { join } from 'path';
 import { Effect, Layer } from 'effect';
 import { MainLayer, PlatformLayer } from '../layer.js';
 import { makeRunner } from '@gyomu/core/shared/effect';
@@ -35,42 +35,62 @@ test('File Whole Search Test', async () => {
     fullPathList.push(path.relative(baseDir, fileInfo.fullPath));
   });
   const expected = [
-    'tests\\compress\\README.md.bz2',
-    'tests\\compress\\README.md.gz',
-    'tests\\compress\\README_aes_password.zip',
-    'tests\\compress\\README_password.zip',
-    'tests\\compress\\compare1.zip',
-    'tests\\compress\\compare2.zip',
-    'tests\\compress\\temp.tar',
-    'tests\\compress\\temp.zip',
-    'tests\\compress\\ユーザー噂.py.bz2',
-    'tests\\compress\\ユーザー噂.py.gz',
-    'tests\\shiftjis_sample.txt',
-    'tests\\source\\folder1\\email_sender.py',
-    'tests\\source\\folder1\\folder 2\\aes_encryption.py',
-    'tests\\source\\folder1\\folder 2\\フォルダ噂～３\\parameter_access.py',
-    'tests\\source\\folder1\\folder 2\\フォルダ噂～３\\コンフィグ.py',
-    'tests\\source\\folder1\\folder 2\\ユーザー噂～.py',
-    'tests\\source\\folder1\\gyomu_db_model.py',
-    'tests\\source\\README.md',
-    'tests\\source\\setup.cfg',
-    'tests\\source\\ユーザー噂.py',
-    'tests\\utf8_sample.txt',
-    'tests\\test.csv.gz',
-    'tests\\test.csv.zip',
-    'tests\\test.html',
-    'tests\\test.shiftjis.csv',
-    'tests\\test.utf8.bom.csv',
-    'tests\\test.utf8.csv',
-    'tests\\key-256.key',
-    'tests\\key-256.key.dat',
-    'tests\\rsa4096',
-    'tests\\rsa4096.pem',
-    'tests\\rsa4096.pem.dat',
-    'tests\\rsa4096.pub',
-    'tests\\rsa4096.pub.pem',
-    'tests\\rsa4096.pub.pem.dat',
-    'tests\\zipCompareResult.csv',
+    join('tests', 'compress', 'README.md.bz2'),
+    join('tests', 'compress', 'README.md.gz'),
+    join('tests', 'compress', 'README_aes_password.zip'),
+    join('tests', 'compress', 'README_password.zip'),
+    join('tests', 'compress', 'compare1.zip'),
+    join('tests', 'compress', 'compare2.zip'),
+    join('tests', 'compress', 'temp.tar'),
+    join('tests', 'compress', 'temp.zip'),
+    join('tests', 'compress', 'ユーザー噂.py.bz2'),
+    join('tests', 'compress', 'ユーザー噂.py.gz'),
+
+    join('tests', 'shiftjis_sample.txt'),
+
+    join('tests', 'source', 'folder1', 'email_sender.py'),
+    join('tests', 'source', 'folder1', 'folder 2', 'aes_encryption.py'),
+    join(
+      'tests',
+      'source',
+      'folder1',
+      'folder 2',
+      'フォルダ噂～３',
+      'parameter_access.py',
+    ),
+    join(
+      'tests',
+      'source',
+      'folder1',
+      'folder 2',
+      'フォルダ噂～３',
+      'コンフィグ.py',
+    ),
+    join('tests', 'source', 'folder1', 'folder 2', 'ユーザー噂～.py'),
+    join('tests', 'source', 'folder1', 'gyomu_db_model.py'),
+    join('tests', 'source', 'README.md'),
+    join('tests', 'source', 'setup.cfg'),
+    join('tests', 'source', 'ユーザー噂.py'),
+
+    join('tests', 'utf8_sample.txt'),
+
+    join('tests', 'test.csv.gz'),
+    join('tests', 'test.csv.zip'),
+    join('tests', 'test.html'),
+    join('tests', 'test.shiftjis.csv'),
+    join('tests', 'test.utf8.bom.csv'),
+    join('tests', 'test.utf8.csv'),
+
+    join('tests', 'key-256.key'),
+    join('tests', 'key-256.key.dat'),
+    join('tests', 'rsa4096'),
+    join('tests', 'rsa4096.pem'),
+    join('tests', 'rsa4096.pem.dat'),
+    join('tests', 'rsa4096.pub'),
+    join('tests', 'rsa4096.pub.pem'),
+    join('tests', 'rsa4096.pub.pem.dat'),
+
+    join('tests', 'zipCompareResult.csv'),
   ];
   expect(fullPathList.sort()).toEqual(expected.sort());
   // expect(fullPathList).toEqual(expect.arrayContaining(expected));
@@ -149,39 +169,59 @@ test('File Name NoExact Search Test', async () => {
     fullPathList.push(path.relative(baseDir, fileInfo.fullPath));
   });
   let expected = [
-    'tests\\compress\\README_aes_password.zip',
-    'tests\\compress\\README_password.zip',
-    'tests\\compress\\compare1.zip',
-    'tests\\compress\\compare2.zip',
-    'tests\\compress\\temp.tar',
-    'tests\\compress\\temp.zip',
-    'tests\\compress\\ユーザー噂.py.bz2',
-    'tests\\compress\\ユーザー噂.py.gz',
-    'tests\\key-256.key',
-    'tests\\key-256.key.dat',
-    'tests\\rsa4096',
-    'tests\\rsa4096.pem',
-    'tests\\rsa4096.pem.dat',
-    'tests\\rsa4096.pub',
-    'tests\\rsa4096.pub.pem',
-    'tests\\rsa4096.pub.pem.dat',
-    'tests\\shiftjis_sample.txt',
-    'tests\\source\\folder1\\email_sender.py',
-    'tests\\source\\folder1\\folder 2\\aes_encryption.py',
-    'tests\\source\\folder1\\folder 2\\フォルダ噂～３\\parameter_access.py',
-    'tests\\source\\folder1\\folder 2\\フォルダ噂～３\\コンフィグ.py',
-    'tests\\source\\folder1\\folder 2\\ユーザー噂～.py',
-    'tests\\source\\folder1\\gyomu_db_model.py',
-    'tests\\source\\setup.cfg',
-    'tests\\source\\ユーザー噂.py',
-    'tests\\test.csv.gz',
-    'tests\\test.csv.zip',
-    'tests\\test.html',
-    'tests\\test.shiftjis.csv',
-    'tests\\test.utf8.bom.csv',
-    'tests\\test.utf8.csv',
-    'tests\\utf8_sample.txt',
-    'tests\\zipCompareResult.csv',
+    join('tests', 'compress', 'README_aes_password.zip'),
+    join('tests', 'compress', 'README_password.zip'),
+    join('tests', 'compress', 'compare1.zip'),
+    join('tests', 'compress', 'compare2.zip'),
+    join('tests', 'compress', 'temp.tar'),
+    join('tests', 'compress', 'temp.zip'),
+    join('tests', 'compress', 'ユーザー噂.py.bz2'),
+    join('tests', 'compress', 'ユーザー噂.py.gz'),
+
+    join('tests', 'key-256.key'),
+    join('tests', 'key-256.key.dat'),
+
+    join('tests', 'rsa4096'),
+    join('tests', 'rsa4096.pem'),
+    join('tests', 'rsa4096.pem.dat'),
+    join('tests', 'rsa4096.pub'),
+    join('tests', 'rsa4096.pub.pem'),
+    join('tests', 'rsa4096.pub.pem.dat'),
+
+    join('tests', 'shiftjis_sample.txt'),
+
+    join('tests', 'source', 'folder1', 'email_sender.py'),
+    join('tests', 'source', 'folder1', 'folder 2', 'aes_encryption.py'),
+    join(
+      'tests',
+      'source',
+      'folder1',
+      'folder 2',
+      'フォルダ噂～３',
+      'parameter_access.py',
+    ),
+    join(
+      'tests',
+      'source',
+      'folder1',
+      'folder 2',
+      'フォルダ噂～３',
+      'コンフィグ.py',
+    ),
+    join('tests', 'source', 'folder1', 'folder 2', 'ユーザー噂～.py'),
+    join('tests', 'source', 'folder1', 'gyomu_db_model.py'),
+    join('tests', 'source', 'setup.cfg'),
+    join('tests', 'source', 'ユーザー噂.py'),
+
+    join('tests', 'test.csv.gz'),
+    join('tests', 'test.csv.zip'),
+    join('tests', 'test.html'),
+    join('tests', 'test.shiftjis.csv'),
+    join('tests', 'test.utf8.bom.csv'),
+    join('tests', 'test.utf8.csv'),
+
+    join('tests', 'utf8_sample.txt'),
+    join('tests', 'zipCompareResult.csv'),
   ];
   expect(fullPathList.sort()).toEqual(expected.sort());
   // expect(fullPathList).toEqual(expect.arrayContaining(expected));
@@ -206,9 +246,9 @@ test('File Name NoExact Search Test', async () => {
     fullPathList.push(path.relative(baseDir, fileInfo.fullPath));
   });
   expected = [
-    'tests\\compress\\ユーザー噂.py.bz2',
-    'tests\\compress\\ユーザー噂.py.gz',
-    'tests\\source\\folder1\\folder 2\\ユーザー噂～.py',
+    join('tests', 'compress', 'ユーザー噂.py.bz2'),
+    join('tests', 'compress', 'ユーザー噂.py.gz'),
+    join('tests', 'source', 'folder1', 'folder 2', 'ユーザー噂～.py'),
   ];
   expect(fullPathList).toEqual(expect.arrayContaining(expected));
   expect(expected).toEqual(expect.arrayContaining(fullPathList));
@@ -233,9 +273,9 @@ test('File Name NoExact Search Test', async () => {
     fullPathList.push(path.relative(baseDir, fileInfo.fullPath));
   });
   expected = [
-    'tests\\compress\\README.md.bz2',
-    'tests\\compress\\README.md.gz',
-    'tests\\source\\README.md',
+    join('tests', 'compress', 'README.md.bz2'),
+    join('tests', 'compress', 'README.md.gz'),
+    join('tests', 'source', 'README.md'),
   ];
   expect(fullPathList).toEqual(expect.arrayContaining(expected));
   expect(expected).toEqual(expect.arrayContaining(fullPathList));
@@ -260,10 +300,10 @@ test('File Name NoExact Search Test', async () => {
     fullPathList.push(path.relative(baseDir, fileInfo.fullPath));
   });
   expected = [
-    'tests\\compress\\README.md.bz2',
-    'tests\\compress\\README.md.gz',
-    'tests\\compress\\README_aes_password.zip',
-    'tests\\source\\README.md',
+    join('tests', 'compress', 'README.md.bz2'),
+    join('tests', 'compress', 'README.md.gz'),
+    join('tests', 'compress', 'README_aes_password.zip'),
+    join('tests', 'source', 'README.md'),
   ];
   expect(fullPathList).toEqual(expect.arrayContaining(expected));
   expect(expected).toEqual(expect.arrayContaining(fullPathList));

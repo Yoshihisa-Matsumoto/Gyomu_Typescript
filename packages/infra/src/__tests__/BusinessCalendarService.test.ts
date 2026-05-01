@@ -7,7 +7,7 @@ import {
 
 import { beforeEach, expect, test } from 'vitest';
 import { MainLayer } from '../layer.js';
-import { ConfigLayer } from '../config.js';
+import { ConfigMockLayer } from '../config.js';
 import { NodeFileSystem } from '@effect/platform-node';
 import { makeRunner } from '@gyomu/core/shared/effect';
 import { GyomuRepositoryMock } from './baseDBClass.js';
@@ -20,7 +20,7 @@ let access: BusinessCalendar;
 const TestLayer = Layer.mergeAll(
   BusinessCalendarServiceLayer,
   MainLayer,
-  ConfigLayer,
+  ConfigMockLayer,
 )
   .pipe(Layer.provideMerge(GyomuRepositoryMock))
   // .pipe(Layer.provideMerge(KyselyService.live))

@@ -130,7 +130,5 @@ export class SftpService extends ServiceMap.Service<
     };
   }),
 }) {
-  static readonly live = Layer.effect(this, this.make).pipe(
-    Layer.provide(ConfigProviderLive),
-  );
+  static readonly live = Layer.effect(this, this.make);
 }

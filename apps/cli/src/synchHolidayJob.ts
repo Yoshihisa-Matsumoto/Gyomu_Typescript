@@ -18,6 +18,7 @@ const batchLayer = Layer.mergeAll(
 )
   .pipe(Layer.provideMerge(KyselyService.live))
   .pipe(Layer.provideMerge(MssqlService.live))
+  .pipe(Layer.provideMerge(ConfigLayer))
   .pipe(Layer.provideMerge(PlatformLayer));
 const runner = makeRunner(batchLayer);
 

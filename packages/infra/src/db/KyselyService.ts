@@ -40,10 +40,7 @@ export class KyselyService extends ServiceMap.Service<
     };
   }),
 }) {
-  static readonly live = Layer.effect(this, this.make).pipe(
-    Layer.provide(ConfigLayer),
-    Layer.provide(MssqlService.live),
-  );
+  static readonly live = Layer.effect(this, this.make);
 }
 
 export const DBLayer = Layer.mergeAll(

@@ -5,6 +5,7 @@ import { AIError, isRetryableAiError } from '@gyomu/core';
 import { fromPromise } from '@gyomu/shared/effect';
 import {
   ConfigLayer,
+  ConfigMockLayer,
   ConfigProviderLive,
   ConfigService,
 } from '../../config.js';
@@ -97,10 +98,7 @@ export class GeminiClient extends ServiceMap.Service<GeminiClient, AiClient>()(
     }),
   },
 ) {
-  static readonly live = Layer.effect(this, this.make).pipe(
-    Layer.provide(ConfigProviderLive),
-    Layer.provide(PlatformLayer),
-  );
+  static readonly live = Layer.effect(this, this.make);
 }
 
 export const GeminiLayer = Layer.mergeAll(GeminiClient.live).pipe(

@@ -2,18 +2,22 @@ import { describe, it, expect, beforeEach, afterAll } from 'vitest';
 import { Effect, Layer } from 'effect';
 import { GyomuRepository } from '@gyomu/core/gyomu';
 import { MainLayer, PlatformLayer } from '../layer.js';
-import { ConfigLayer } from '../config.js';
+import { ConfigLayer, ConfigMockLayer } from '../config.js';
 import { KyselyService } from '../db/KyselyService.js';
-import { NodeFileSystem } from '@effect/platform-node';
 import { makeRunner } from '@gyomu/core/shared/effect';
 import { MssqlService } from '../db/MssqlService.js';
 import { LocalDate, YearMonth } from '@gyomu/shared/entity';
 import { AppInfoSchema } from '@gyomu/core/schemas/gyomu';
 import { GyomuRepositoryLayer } from '../gyomu/GyomuRepositoryLayer.js';
 
-const TestLayer = Layer.mergeAll(MainLayer, ConfigLayer, GyomuRepositoryLayer)
+const TestLayer = Layer.mergeAll(
+  MainLayer,
+  ConfigMockLayer,
+  GyomuRepositoryLayer,
+)
   .pipe(Layer.provideMerge(KyselyService.live))
   .pipe(Layer.provideMerge(MssqlService.live))
+  .pipe(Layer.provideMerge(ConfigLayer))
   .pipe(Layer.provideMerge(PlatformLayer));
 const testRunner = makeRunner(TestLayer);
 

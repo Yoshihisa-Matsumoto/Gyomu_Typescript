@@ -4,6 +4,7 @@ import { GeminiClient } from '../ai/gemini/GeminiClient.js';
 import { ConfigService } from '../config.js';
 import { AIError } from '@gyomu/core';
 import { makeRunner } from '../runtime.js';
+import { PlatformLayer } from '../layer.js';
 
 // --- モック定義 ---
 const generateContentMock = vi.fn();
@@ -36,6 +37,7 @@ const MockConfigLayer = Layer.succeed(ConfigService, {
 
 const geminiTestLayer = Layer.mergeAll(GeminiClient.live).pipe(
   Layer.provideMerge(MockConfigLayer),
+  Layer.provideMerge(PlatformLayer),
 );
 const runGeminiQAWithEnvOrThrow = makeRunner(geminiTestLayer);
 

@@ -95,3 +95,8 @@ export const ConfigLayer = Layer.mergeAll(
   ConfigProviderLive,
   ConfigService.live,
 );
+
+export const ConfigMockLayer = Layer.mergeAll(
+  ConfigProviderTest,
+  ConfigService.live,
+);
