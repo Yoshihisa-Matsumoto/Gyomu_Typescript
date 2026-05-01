@@ -6,7 +6,7 @@ import {
   PrimaryFields,
   Mutable,
   Optionalized,
-} from '@gyomu/shared/entity';
+} from '../entity/index.js';
 
 const pickFields = <T extends Fields, K extends readonly (keyof T)[]>(
   fields: T,
