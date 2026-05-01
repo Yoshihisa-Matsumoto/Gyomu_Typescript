@@ -17,5 +17,10 @@ export default defineConfig({
     pool: 'forks',
     fileParallelism: false,
     setupFiles: ['./test/setup.ts'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html', 'json', 'lcov'],
+      reportsDirectory: './coverage',
+    },
   },
 });

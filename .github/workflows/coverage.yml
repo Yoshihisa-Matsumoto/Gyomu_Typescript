@@ -26,7 +26,7 @@ jobs:
       - run: pnpm -r build
 
       # ← あなたが作ったやつ
-      - run: pnpm coverage:all
+      - run: pnpm coverage:ci:all
 
       - name: Upload to Codecov
         uses: codecov/codecov-action@v5

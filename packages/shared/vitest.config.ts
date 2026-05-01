@@ -15,5 +15,10 @@ export default defineConfig({
     disableConsoleIntercept: true,
     pool: 'forks',
     fileParallelism: false,
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html', 'json', 'lcov'],
+      reportsDirectory: './coverage',
+    },
   },
 });
