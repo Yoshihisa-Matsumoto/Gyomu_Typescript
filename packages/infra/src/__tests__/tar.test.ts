@@ -161,7 +161,10 @@ describe('untar test', () => {
       const tarFilename = path.join(compressDirectory, 'compress/temp.tar');
       yield* fileStream(tarFilename).pipe(tar.extract(transferInformation));
       validateFolders(
-        path.join(compressDirectory, 'source/folder1/folder 2'),
+        path.join(
+          compressDirectory,
+          path.join('source', 'folder1', 'folder 2'),
+        ),
         path.join(extractDirectory, 'folder 2'),
       );
     });

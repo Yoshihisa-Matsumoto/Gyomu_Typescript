@@ -37,7 +37,7 @@ const normalize = (bytes: Uint8Array) =>
 const equalsText = (a: Uint8Array, b: Uint8Array) => {
   return normalize(a) === normalize(b);
 };
-const isText = (path: string) => /\.(txt|md|py|csv|html)$/i.test(path);
+const isText = (path: string) => /\.(txt|md|py|csv|html|cfg)$/i.test(path);
 
 const compareFilesEffect = (srcFile: string, destFile: string) => {
   return Effect.gen(function* () {
