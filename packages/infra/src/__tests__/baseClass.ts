@@ -137,6 +137,12 @@ const compareFoldersFromSourceEffect = (
     return true;
   });
 };
+
+const isEmptyDir = (path: string) =>
+  Effect.gen(function* () {
+    const entries = yield* readDirectoryDetailed(path);
+    return entries.length === 0;
+  });
 const compareFoldersFromDestEffect = (
   srcFolder: string,
   destFolder: string,
@@ -170,6 +176,13 @@ const compareFoldersFromDestEffect = (
           ).toBeTruthy();
 
           if (dirent.type !== 'File') {
+            const isEmpty = yield* isEmptyDir(destinationFullPath);
+
+            if (isEmpty) {
+              // 👇 無視
+              return;
+            }
+
             // 🔥 再帰は必ず yield*
             yield* compareFoldersFromDestEffect(
               targetSourceFullPath,
