@@ -162,7 +162,14 @@ const compareFoldersFromDestEffect = (
             path.resolve(destFolder),
             dirent.name,
           );
+          if (dirent.type !== 'File') {
+            const isEmpty = yield* isEmptyDir(destinationFullPath);
 
+            if (isEmpty) {
+              // 👇 無視
+              return;
+            }
+          }
           const targetSourceFullPath = path.join(
             path.resolve(srcFolder),
             dirent.name,
@@ -176,13 +183,6 @@ const compareFoldersFromDestEffect = (
           ).toBeTruthy();
 
           if (dirent.type !== 'File') {
-            const isEmpty = yield* isEmptyDir(destinationFullPath);
-
-            if (isEmpty) {
-              // 👇 無視
-              return;
-            }
-
             // 🔥 再帰は必ず yield*
             yield* compareFoldersFromDestEffect(
               targetSourceFullPath,
