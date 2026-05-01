@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import path from 'path';
+import path, { join } from 'path';
 import { copyFolder, emptyDir, writeStreamToFile } from '../../fs/fs-utils.js';
 import { compareFiles, validateFolders } from '../baseClass.js';
 import { Effect, Layer, Stream, FileSystem } from 'effect';
@@ -60,7 +60,7 @@ describe('Zip resolvePath test', () => {
       ),
     );
     expect(output).toBe(
-      `C:\\Users\\yoshm\\AppData\\Local\\Temp\\compressZip\\extract\\outputREADME.md`,
+      join(tmpdir(), 'compressZip', 'extract', 'outputREADME.md'),
     );
 
     transferInformation = new FileTransportInfo({
@@ -82,7 +82,7 @@ describe('Zip resolvePath test', () => {
       ),
     );
     expect(output).toBe(
-      `C:\\Users\\yoshm\\AppData\\Local\\Temp\\compressZip\\extract\\email_sender.py`,
+      join(tmpdir(), 'compressZip', 'extract', 'email_sender.py'),
     );
 
     transferInformation = new FileTransportInfo({
@@ -104,7 +104,7 @@ describe('Zip resolvePath test', () => {
       ),
     );
     expect(output).toBe(
-      `C:\\Users\\yoshm\\AppData\\Local\\Temp\\compressZip\\extract\\folder 2\\aes_encryption.py`,
+      join(tmpdir(), 'compressZip', 'extract', 'folder 2', 'aes_encryption.py'),
     );
 
     output = await runNodeWithEnvOrThrow(
@@ -118,7 +118,7 @@ describe('Zip resolvePath test', () => {
       ),
     );
     expect(output).toBe(
-      `C:\\Users\\yoshm\\AppData\\Local\\Temp\\compressZip\\extract\\folder 2\\folder4`,
+      join(tmpdir(), 'compressZip', 'extract', 'folder 2', 'folder4'),
     );
   });
 });
@@ -153,10 +153,14 @@ describe('Zip Test', () => {
           expect(yield* existsInZip('README.md')(entries)).toBeTruthy();
           expect(yield* existsInZip('README1.md')(entries)).toBeFalsy();
           expect(
-            yield* existsInZip('folder1\\folder 2\\aes_encryption.py')(entries),
+            yield* existsInZip(
+              join('folder1', 'folder 2', 'aes_encryption.py'),
+            )(entries),
           ).toBeTruthy();
           expect(
-            yield* existsInZip('folder1\\folder 3\\aes_encryption.py')(entries),
+            yield* existsInZip(
+              join('folder1', 'folder 3', 'aes_encryption.py'),
+            )(entries),
           ).toBeFalsy();
           expect(yield* existsInZip('ユーザー噂.py')(entries)).toBeTruthy();
         }),
@@ -190,10 +194,14 @@ describe('Zip Test', () => {
           expect(yield* existsInZip('README.md')(entries)).toBeTruthy();
           expect(yield* existsInZip('README1.md')(entries)).toBeFalsy();
           expect(
-            yield* existsInZip('folder1\\folder 2\\aes_encryption.py')(entries),
+            yield* existsInZip(
+              join('folder1', 'folder 2', 'aes_encryption.py'),
+            )(entries),
           ).toBeTruthy();
           expect(
-            yield* existsInZip('folder1\\folder 3\\aes_encryption.py')(entries),
+            yield* existsInZip(
+              join('folder1', 'folder 3', 'aes_encryption.py'),
+            )(entries),
           ).toBeFalsy();
           expect(yield* existsInZip('ユーザー噂.py')(entries)).toBeTruthy();
         }),
@@ -317,10 +325,11 @@ describe('Zip Test', () => {
 describe('ZipCompare test', () => {
   it('Zip Compare Test', async () => {
     const program = await compareZip({
-      sourceFilename: path.join(compressDirectory, 'compress\\compare1.zip'),
+      sourceFilename: path.join(compressDirectory, 'compress', 'compare1.zip'),
       destinationFilename: path.join(
         compressDirectory,
-        'compress\\compare2.zip',
+        'compress',
+        'compare2.zip',
       ),
       resultPath: path.join(compressDirectory, 'zipCompare'),
       recordDelimiter: 'unix',
@@ -330,7 +339,7 @@ describe('ZipCompare test', () => {
     expect(
       compareFiles(
         path.join(compressDirectory, 'zipCompareResult.csv'),
-        path.join(compressDirectory, 'zipCompare\\@summary.csv'),
+        path.join(compressDirectory, 'zipCompare', '@summary.csv'),
       ),
     ).toBeTruthy();
   });
