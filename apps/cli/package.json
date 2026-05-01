@@ -19,11 +19,13 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "devDependencies": {},
+  "devDependencies": {
+    "tsup": "^8.5.1"
+  },
   "dependencies": {
     "@gyomu/core": "workspace:*",
-    "@gyomu/shared": "workspace:*",
     "@gyomu/infra": "workspace:*",
+    "@gyomu/shared": "workspace:*",
     "effect": "4.0.0-beta.42"
   },
   "files": [

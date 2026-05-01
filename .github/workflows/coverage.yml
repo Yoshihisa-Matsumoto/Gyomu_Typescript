@@ -23,6 +23,8 @@ jobs:
 
       - run: pnpm install
 
+      - run: pnpm -r build
+
       # ← あなたが作ったやつ
       - run: pnpm coverage:all
 
