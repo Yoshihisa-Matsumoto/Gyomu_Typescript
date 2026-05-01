@@ -33,3 +33,10 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
+    status:
+      project:
+        default:
+          target: 80%
+      patch:
+        default:
+          target: 80% # ← これが超重要（差分）
