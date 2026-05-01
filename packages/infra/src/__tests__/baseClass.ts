@@ -162,7 +162,12 @@ const compareFoldersFromDestEffect = (
             dirent.name,
           );
 
-          expect(yield* pathExists(targetSourceFullPath)).toBeTruthy();
+          const exists = yield* pathExists(targetSourceFullPath);
+
+          expect(
+            exists,
+            `Missing source path: ${targetSourceFullPath} vs ${destinationFullPath}`,
+          ).toBeTruthy();
 
           if (dirent.type !== 'File') {
             // 🔥 再帰は必ず yield*
