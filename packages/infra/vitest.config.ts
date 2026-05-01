@@ -1,6 +1,4 @@
 import { defineConfig } from 'vitest/config';
-import { initLoggerFromEnv } from './src/logger/pinoLogger';
-await initLoggerFromEnv();
 //console.log('Env', process.env);
 export default defineConfig({
   test: {
@@ -16,7 +14,7 @@ export default defineConfig({
     disableConsoleIntercept: true,
     pool: 'forks',
     fileParallelism: false,
-    setupFiles: ['./test/setup.ts'],
+    setupFiles: ['./test/setupUnit.ts'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'json', 'lcov'],

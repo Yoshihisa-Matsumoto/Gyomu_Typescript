@@ -1,4 +1,8 @@
 export * from './layer.js';
 export * from './runtime.js';
-export * from './config.js';
-export * from './logger/pinoLogger.js';
+export { ConfigLayer, ConfigProviderLive, ConfigService } from './config.js';
+export {
+  LogFileName,
+  initLogger,
+  initLoggerFromEnv,
+} from './logger/pinoLogger.js';

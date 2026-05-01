@@ -1,11 +1,7 @@
 process.env.LOGFILENAME = 'test-log.log';
 console.log('env', process.env.LOGFILENAME);
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import {
-  initLoggerFromEnv,
-  __resetLoggerForTest,
-  initLogger,
-} from '../logger/pinoLogger.js';
+import { __resetLoggerForTest, initLogger } from '../logger/pinoLogger.js';
 import fs from 'fs';
 import path from 'path';
 import { tmpdir } from 'os';

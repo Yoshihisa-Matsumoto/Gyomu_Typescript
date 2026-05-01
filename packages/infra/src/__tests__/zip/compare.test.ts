@@ -15,9 +15,6 @@ import { makeRunner } from '../../runtime.js';
 import { MainLayer, PlatformLayer } from '../../layer.js';
 import { ZipEntryItem } from '../../archive/zip/internals/read.js';
 import { ZipFileEntryItem } from '../../archive/common.js';
-import { initLoggerFromEnv } from '../../logger/pinoLogger.js';
-
-await initLoggerFromEnv();
 const createMockStream = (text: string) =>
   Stream.fromIterable([new TextEncoder().encode(text)]);
 

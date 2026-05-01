@@ -4,8 +4,7 @@ import { NodeFileSystem } from '@effect/platform-node';
 import { makeRunner } from '../runtime.js';
 import { fetchJpxHolidays } from '../holiday/jpxFetcher.js';
 import { expect, test } from 'vitest';
-import { initLoggerFromEnv } from '../logger/pinoLogger.js';
-await initLoggerFromEnv();
+
 test('JPX Fetcher Test', async () => {
   const TestLayer = Layer.mergeAll(MainLayer).pipe(
     Layer.provideMerge(NodeFileSystem.layer),

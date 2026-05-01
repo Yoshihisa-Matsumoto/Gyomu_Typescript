@@ -4,10 +4,8 @@ import { beforeEach, describe, expect, it, test } from 'vitest';
 import { GyomuRepository } from '@gyomu/core/gyomu';
 import { makeRunner } from '@gyomu/core/shared/effect';
 import { LocalDate } from '@gyomu/shared/entity';
-import { initLoggerFromEnv } from '../logger/pinoLogger.js';
 import { MilestoneServiceLayer } from '../gyomu/task/MilestoneServiceLayer.js';
 
-await initLoggerFromEnv();
 const testId = 'F6AE5F2D-BD14-4C5F-9CC3-3A69EF90DD5B';
 const testTime = '2026-10-28T00:00:00.000Z';
 beforeEach(() => {});

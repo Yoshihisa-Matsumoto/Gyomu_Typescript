@@ -1,16 +1,13 @@
 import { expect, test } from 'vitest';
 import fs from 'fs';
 import { fsConstants } from '../fs/index.js';
-import path from 'path';
 import { Effect, Layer } from 'effect';
 import { MainLayer, PlatformLayer } from '../layer.js';
 import { makeRunner } from '@gyomu/core/shared/effect';
 import { FileAccessService } from '@gyomu/core/shared/fs';
-import { initLoggerFromEnv } from '../logger/pinoLogger.js';
 import { getTempFilename } from '../fs/fs-utils.js';
 import { FileAccessServiceLayer } from '../fs/FileAccessServiceLayer.js';
 
-await initLoggerFromEnv();
 const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
 const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
 

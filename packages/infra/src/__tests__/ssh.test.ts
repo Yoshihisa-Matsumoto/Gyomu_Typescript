@@ -6,12 +6,9 @@ import { makeRunner, makeRunnerAsReturn } from '../runtime.js';
 import { NetworkError, ConfigError } from '@gyomu/core';
 import { NodeFileSystem } from '@effect/platform-node';
 
-import { SourceError } from 'effect/ConfigProvider';
 import EventEmitter from 'node:events';
 import { MainLayer, PlatformLayer } from '../layer.js';
-import { initLoggerFromEnv } from '../logger/pinoLogger.js';
 
-await initLoggerFromEnv();
 const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
 const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
 

@@ -23,10 +23,8 @@ import {
 import { MainLayer, PlatformLayer } from '../layer.js';
 import { makeRunner, makeRunnerAsReturn } from '../runtime.js';
 import path from 'path';
-import { initLoggerFromEnv } from '../logger/pinoLogger.js';
 import { tmpdir } from 'os';
 
-await initLoggerFromEnv();
 const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
 const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
 

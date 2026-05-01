@@ -1,10 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { parseCsv, readCsv, readCsvRaw } from '../../csv/read.js';
 import { Stream, Schema, Effect } from 'effect';
-import { initLoggerFromEnv } from '../../logger/pinoLogger.js';
 import { logger } from '@gyomu/core';
 
-await initLoggerFromEnv();
 describe('CSV Read Functions', () => {
   describe('parseCsv', () => {
     it('should parse basic CSV data', async () => {

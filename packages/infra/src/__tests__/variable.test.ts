@@ -8,11 +8,9 @@ import { makeRunner } from '@gyomu/core/shared/effect';
 import { MainLayer } from '../layer.js';
 import { ConfigLayer } from '../config.js';
 import { Date2LocalDate } from '@gyomu/shared/entity';
-import { initLoggerFromEnv } from '../logger/pinoLogger.js';
 import { VariableTranslatorServiceLayer } from '../shared/variable/VariableTranslatorServiceLayer.js';
 import { BusinessCalendarServiceLayer } from '../gyomu/date/BusinessCalendarServiceLayer.js';
 
-await initLoggerFromEnv();
 const TestLayer = Layer.mergeAll(VariableTranslatorServiceLayer, MainLayer)
   .pipe(Layer.provideMerge(ConfigLayer))
   .pipe(Layer.provideMerge(BusinessCalendarServiceLayer))

@@ -25,6 +25,10 @@ export const ConfigProviderLive = Layer.unwrap(
     (provider) => ConfigProvider.layer(provider),
   ),
 );
+export const ConfigProviderTest = ConfigProvider.fromUnknown({
+  LOG_LEVEL: 'debug',
+}).pipe(ConfigProvider.layer);
+
 export class ConfigService extends ServiceMap.Service<
   ConfigService,
   {

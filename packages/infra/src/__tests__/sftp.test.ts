@@ -8,9 +8,7 @@ import { FileTransportInfo } from '@gyomu/core/gyomu/file';
 import { NodeFileSystem } from '@effect/platform-node';
 import { Readable, Writable } from 'node:stream';
 import { MainLayer, PlatformLayer } from '../layer.js';
-import { initLoggerFromEnv } from '../logger/pinoLogger.js';
 
-await initLoggerFromEnv();
 const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
 const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
 

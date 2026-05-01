@@ -10,9 +10,7 @@ import { MssqlService } from '../db/MssqlService.js';
 import { LocalDate, YearMonth } from '@gyomu/shared/entity';
 import { AppInfoSchema } from '@gyomu/core/schemas/gyomu';
 import { GyomuRepositoryLayer } from '../gyomu/GyomuRepositoryLayer.js';
-import { initLoggerFromEnv } from '../logger/pinoLogger.js';
 
-await initLoggerFromEnv();
 const TestLayer = Layer.mergeAll(MainLayer, ConfigLayer, GyomuRepositoryLayer)
   .pipe(Layer.provideMerge(KyselyService.live))
   .pipe(Layer.provideMerge(MssqlService.live))
