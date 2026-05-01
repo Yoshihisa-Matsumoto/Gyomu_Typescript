@@ -118,7 +118,7 @@ test('File Name Exact Search Test', async () => {
   fileInfoList.forEach((fileInfo) => {
     fullPathList.push(path.relative(baseDir, fileInfo.fullPath));
   });
-  let expected = ['tests\\compress\\README.md.gz'];
+  let expected = [join('tests', 'compress', 'README.md.gz')];
   expect(fullPathList).toEqual(expect.arrayContaining(expected));
   expect(expected).toEqual(expect.arrayContaining(fullPathList));
 
@@ -141,8 +141,8 @@ test('File Name Exact Search Test', async () => {
     fullPathList.push(path.relative(baseDir, fileInfo.fullPath));
   });
   expected = [
-    'tests\\compress\\README_aes_password.zip',
-    'tests\\source\\folder1\\folder 2\\aes_encryption.py',
+    join('tests', 'compress', 'README_aes_password.zip'),
+    join('tests', 'source', 'folder1', 'folder 2', 'aes_encryption.py'),
   ];
   expect(fullPathList).toEqual(expect.arrayContaining(expected));
   expect(expected).toEqual(expect.arrayContaining(fullPathList));

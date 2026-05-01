@@ -8,6 +8,8 @@ import { FileTransportInfo } from '@gyomu/core/gyomu/file';
 import { NodeFileSystem } from '@effect/platform-node';
 import { Readable, Writable } from 'node:stream';
 import { MainLayer, PlatformLayer } from '../layer.js';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
 const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
@@ -264,7 +266,7 @@ describe('SftpService', () => {
     it('should download directory', async () => {
       const transportInfo: FileTransportInfo = new FileTransportInfo({
         sourceFolderName: '/remote/dir',
-        destinationFolderName: '/local/dir',
+        destinationFolderName: join(tmpdir(), '/local/dir'),
       });
       // readdir.mockImplementationOnce((path, cb) => {
       //   cb(null, [{ filename: 'dir', isDirectory: () => true }]);
