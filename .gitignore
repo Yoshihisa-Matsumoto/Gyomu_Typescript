@@ -73,3 +73,5 @@ lib/
 log/
 dist/
 .tsbuildinfo
+# turborepo
+.turbo

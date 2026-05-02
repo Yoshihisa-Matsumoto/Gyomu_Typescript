@@ -12,7 +12,6 @@
   },
   "scripts": {
     "clean": "rimraf ./dist .tsbuildinfo",
-    "test": "vitest",
     "build": "tsup",
     "build:ci": "pnpm run clean && tsup --clean"
   },

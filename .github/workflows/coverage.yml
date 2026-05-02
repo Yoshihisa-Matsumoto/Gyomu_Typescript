@@ -16,6 +16,8 @@ jobs:
         with:
           version: 9
 
+      - run: git fetch origin main
+
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -23,7 +25,7 @@ jobs:
 
       - run: pnpm install
 
-      - run: pnpm -r build
+      - run: pnpm build
 
       # ← あなたが作ったやつ
       - run: pnpm coverage:ci:all
