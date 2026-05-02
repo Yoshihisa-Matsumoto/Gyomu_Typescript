@@ -15,7 +15,7 @@
     "build:clean": "tsc -b --clean && pnpm run build:all",
     "format:check": "pnpm format --check --debug-check",
     "test:coverage": "pnpm -r test:coverage",
-    "test:ci:coverage": "pnpm -r test:ci:coverage",
+    "test:ci:coverage": "pnpm -r --filter \"...[origin/main]\" test:ci:coverage",
     "coverage:merge": "istanbul-merge --out coverage/coverage-final.json packages/*/coverage/coverage-final.json",
     "coverage:report": "nyc report --reporter=html --reporter=text-summary --temp-dir coverage",
     "coverage:all": "pnpm test:coverage && pnpm coverage:merge && pnpm coverage:report",

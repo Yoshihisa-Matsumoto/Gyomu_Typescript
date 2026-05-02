@@ -279,10 +279,13 @@ describe('fromReadableControlled', () => {
     const stream = fromReadableControlled(readable);
 
     const promise = Effect.runPromise(Stream.runCollect(stream));
-    await Promise.resolve();
-    setTimeout(() => {
+    // await Promise.resolve();
+    // setTimeout(() => {
+    //   readable.emit('error', new Error('test error'));
+    // }, 0);
+    setImmediate(() => {
       readable.emit('error', new Error('test error'));
-    }, 0);
+    });
 
     await expect(promise).rejects.toBeDefined();
   });

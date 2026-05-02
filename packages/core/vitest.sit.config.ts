@@ -6,7 +6,7 @@ export default defineConfig({
     environment: 'node',
     globals: true,
     clearMocks: true,
-    pool: 'forks',
-    fileParallelism: false,
+    pool: 'threads', // forks → threads
+    fileParallelism: true, // 並列ON（デフォルトでもOK）
   },
 });

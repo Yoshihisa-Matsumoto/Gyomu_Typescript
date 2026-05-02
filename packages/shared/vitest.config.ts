@@ -12,9 +12,8 @@ export default defineConfig({
     // },
     logHeapUsage: false,
     printConsoleTrace: false,
-    disableConsoleIntercept: true,
-    pool: 'forks',
-    fileParallelism: false,
+    pool: 'threads', // forks → threads
+    fileParallelism: true, // 並列ON（デフォルトでもOK）
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'json', 'lcov'],
