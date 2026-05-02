@@ -25,6 +25,11 @@ jobs:
 
       - run: pnpm install
 
+      - name: Enable Turbo Remote Cache
+        run: |
+          echo "TURBO_TOKEN=${{ secrets.TURBO_TOKEN }}" >> $GITHUB_ENV
+          echo "TURBO_TEAM=${{ secrets.TURBO_TEAM }}" >> $GITHUB_ENV
+
       - run: pnpm build
 
       # ← あなたが作ったやつ
