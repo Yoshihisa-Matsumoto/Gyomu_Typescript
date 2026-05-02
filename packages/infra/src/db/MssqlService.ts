@@ -2,7 +2,7 @@ import * as tediuous from 'tedious';
 import * as tarn from 'tarn';
 import { Kysely, MssqlDialect } from 'kysely';
 import { DB } from '../generated/db.js';
-import { Effect, Layer, ServiceMap } from 'effect';
+import { Effect, Layer, Scope, ServiceMap } from 'effect';
 import { fromSync } from '@gyomu/shared/effect';
 import { DBError } from '@gyomu/core';
 
@@ -32,6 +32,8 @@ const makeMssql = (config: {
         options: {
           min: 0,
           max: 10,
+          idleTimeoutMillis: 1,
+          reapIntervalMillis: 1,
         },
       },
       tedious: {
@@ -66,7 +68,7 @@ export class MssqlService extends ServiceMap.Service<
       database: string;
       user: string;
       password: string;
-    }) => Effect.Effect<Kysely<DB>, DBError>;
+    }) => Effect.Effect<Kysely<DB>, DBError, Scope.Scope>;
   }
 >()('MssqlService', {
   make: Effect.succeed({
@@ -77,11 +79,20 @@ export class MssqlService extends ServiceMap.Service<
       user: string;
       password: string;
     }) =>
-      fromSync(DBError, () => ({
-        message: 'Failed to create MSSQL connection',
-        operation: 'custom' as const,
-        params: config,
-      }))(() => makeMssql(config)),
+      Effect.acquireRelease(
+        fromSync(DBError, () => ({
+          message: 'Failed to create MSSQL connection',
+          operation: 'custom' as const,
+          params: config,
+        }))(() => makeMssql(config)),
+        (db) => {
+          return Effect.promise(async () => {
+            await db.destroy();
+            await new Promise((r) => setTimeout(r, 10));
+            console.log('DB Close');
+          });
+        },
+      ),
   }),
 }) {
   static readonly live = Layer.effect(this, this.make);

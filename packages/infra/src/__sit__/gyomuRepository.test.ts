@@ -10,6 +10,11 @@ import { LocalDate, YearMonth } from '@gyomu/shared/entity';
 import { AppInfoSchema } from '@gyomu/core/schemas/gyomu';
 import { GyomuRepositoryLayer } from '../gyomu/GyomuRepositoryLayer.js';
 
+afterAll(() => {
+  // @ts-ignore
+  const handles = process._getActiveHandles?.() ?? [];
+  console.log('HANDLES:', handles);
+});
 const TestLayer = Layer.mergeAll(
   MainLayer,
   ConfigMockLayer,

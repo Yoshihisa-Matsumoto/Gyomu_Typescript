@@ -16,9 +16,10 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "clean": "rimraf ./lib && rimraf ./coverage .tsbuildinfo",
-    "test": "vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json ",
-    "test:coverage": "node --env-file=.env ../../node_modules/vitest/vitest.mjs --config vitest.coverage.config.ts --typecheck.tsconfig ./tsconfig.vitest.json --coverage",
-    "test:ci:coverage": "vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json --coverage",
+    "@test": "vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json ",
+    "test": "bunx vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json ",
+    "@test:coverage": "node --env-file=.env ../../node_modules/vitest/vitest.mjs --config vitest.coverage.config.ts --typecheck.tsconfig ./tsconfig.vitest.json --coverage",
+    "@test:ci:coverage": "vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json --coverage",
     "start": "pnpm run build:live",
     "watch": "tsc -w",
     "build": "tsc",
@@ -27,7 +28,8 @@
     "version": "git add -A src",
     "postversion": "git push && git push --tags",
     "schema-gen": "kysely-codegen --dialect mssql --env-file=.env --config-file=.kysely-codegenrc.json",
-    "sit": "node --env-file=.env ../../node_modules/vitest/vitest.mjs --config vitest.sit.config.ts --typecheck.tsconfig ./tsconfig.vitest.json"
+    "@sit": "node --env-file=.env ../../node_modules/vitest/vitest.mjs --config vitest.sit.config.ts --typecheck.tsconfig ./tsconfig.vitest.json",
+    "sit": "bunx vitest --config vitest.sit.config.ts --typecheck.tsconfig ./tsconfig.vitest.json"
   },
   "keywords": [],
   "author": "",
@@ -47,6 +49,7 @@
     "@types/xml2js": "^0.4.14",
     "@types/yauzl": "^2.10.3",
     "@types/yazl": "^3.3.1",
+    "dotenv": "^17.3.1",
     "globals": "^17.6.0",
     "jsdom": "^29.1.1",
     "kysely": "^0.28.16",

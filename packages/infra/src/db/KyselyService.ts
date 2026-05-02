@@ -34,7 +34,7 @@ export class KyselyService extends ServiceMap.Service<
           const mssql = yield* MssqlService;
 
           return yield* Effect.acquireRelease(mssql.make(dbConfig), (db) =>
-            Effect.promise(() => db.destroy()),
+            Effect.promise(async () => await db.destroy()),
           );
         }),
     };

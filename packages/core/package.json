@@ -44,9 +44,9 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "clean": "rimraf ./lib && rimraf ./coverage .tsbuildinfo",
-    "test": "vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json ",
-    "test:coverage": "vitest --config vitest.coverage.config.ts --typecheck.tsconfig ./tsconfig.vitest.json --coverage",
-    "test:ci:coverage": "vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json --coverage",
+    "test": "bunx vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json ",
+    "@test:coverage": "vitest --config vitest.coverage.config.ts --typecheck.tsconfig ./tsconfig.vitest.json --coverage",
+    "@test:ci:coverage": "vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json --coverage",
     "start": "pnpm run build:live",
     "watch": "tsc -w",
     "build": "tsc",

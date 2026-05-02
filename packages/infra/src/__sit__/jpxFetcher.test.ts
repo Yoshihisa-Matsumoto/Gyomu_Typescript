@@ -3,7 +3,13 @@ import { MainLayer } from '../layer.js';
 import { NodeFileSystem } from '@effect/platform-node';
 import { makeRunner } from '../runtime.js';
 import { fetchJpxHolidays } from '../holiday/jpxFetcher.js';
-import { expect, test } from 'vitest';
+import { afterAll, expect, test } from 'vitest';
+
+afterAll(() => {
+  // @ts-ignore
+  const handles = process._getActiveHandles?.() ?? [];
+  console.log('HANDLES:', handles);
+});
 
 test('JPX Fetcher Test', async () => {
   const TestLayer = Layer.mergeAll(MainLayer).pipe(
