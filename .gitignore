@@ -71,3 +71,5 @@ typings/
 .next
 lib/
 log/
+dist/
+.tsbuildinfo

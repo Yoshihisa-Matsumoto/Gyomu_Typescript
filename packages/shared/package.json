@@ -1,0 +1,58 @@
+{
+  "name": "@gyomu/shared",
+  "private": true,
+  "version": "0.2.1",
+  "description": "",
+  "type": "module",
+  "exports": {
+    "./path": {
+      "import": "./dist/path/index.js",
+      "types": "./dist/path/index.d.ts"
+    },
+    "./entity": {
+      "import": "./dist/entity/index.js",
+      "types": "./dist/entity/index.d.ts"
+    },
+    "./effect": {
+      "import": "./dist/effect/index.js",
+      "types": "./dist/effect/index.d.ts"
+    },
+    "./collection": {
+      "import": "./dist/collection/index.js",
+      "types": "./dist/collection/index.d.ts"
+    },
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "clean": "rimraf ./lib && rimraf ./coverage",
+    "test": "vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json ",
+    "test:coverage": "vitest --config vitest.coverage.config.ts --typecheck.tsconfig ./tsconfig.vitest.json --coverage",
+    "test:ci:coverage": "vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json --coverage",
+    "start": "pnpm run build:live",
+    "watch": "tsc -w",
+    "build": "tsc",
+    "version": "git add -A src",
+    "postversion": "git push && git push --tags",
+    "sit": "dotenv -e .env -- vitest --config=./vitest.sit.config.ts --typecheck.tsconfig=./tsconfig.vitest.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "files": [
+    "index.js",
+    "lib",
+    "!**/__tests__",
+    "!**/__sit__"
+  ],
+  "dependencies": {
+    "date-fns": "^4.1.0",
+    "effect": "4.0.0-beta.42"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.1"
+  }
+}

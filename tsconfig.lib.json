@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.node.json",
+  "compilerOptions": {
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "emitDeclarationOnly": false,
+    "composite": true,
+    "incremental": true,
+    "isolatedModules": false,
+    "verbatimModuleSyntax": false
+  }
+}

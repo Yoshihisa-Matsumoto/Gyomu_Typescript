@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.app.json",
+  "compilerOptions": {
+    "rootDir": "./src" /* Enable importing .json files */,
+    "outDir": "./dist",
+    "tsBuildInfoFile": ".tsbuildinfo",
+
+    "resolveJsonModule": true
+  },
+  "references": [
+    { "path": "../../packages/shared" },
+    { "path": "../../packages/core" },
+    { "path": "../../packages/infra" }
+  ],
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist/**/*"]
+}
