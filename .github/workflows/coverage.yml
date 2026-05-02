@@ -7,14 +7,6 @@ on:
 
 jobs:
   coverage:
-    status:
-      project:
-        default:
-          target: 80%
-      patch:
-        default:
-          target: 80% # ← これが超重要（差分）
-
     runs-on: ubuntu-latest
 
     steps:
