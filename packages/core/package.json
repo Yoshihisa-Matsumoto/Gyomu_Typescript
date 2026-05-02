@@ -74,7 +74,7 @@
     "@gyomu/shared": "workspace:*",
     "date-fns": "^4.1.0",
     "dotenv": "^17.3.1",
-    "effect": "4.0.0-beta.42",
+    "effect": "4.0.0-beta.59",
     "html-entities": "^2.6.0",
     "uuidv7": "^1.2.1"
   }
