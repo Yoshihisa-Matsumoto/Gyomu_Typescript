@@ -1,12 +1,12 @@
 import { Schema } from 'effect';
 import {
-  AuditFields,
   EntityDefinition,
   Fields,
-  PrimaryFields,
   Mutable,
   Optionalized,
-} from '../entity/index.js';
+  UIAnnotations,
+} from './type.js';
+import { PrimaryFields, AuditFields } from './fields.js';
 
 const pickFields = <T extends Fields, K extends readonly (keyof T)[]>(
   fields: T,
@@ -29,6 +29,7 @@ const optionalizeFields = <T extends Fields>(fields: T): Optionalized<T> => {
 export const defineEntityCrudSchemas = <
   TFields extends Fields,
   TIncludeAudit extends boolean,
+  TUI = UIAnnotations<TFields>,
 >(
   args: EntityDefinition<TFields, TIncludeAudit>,
 ) => {
@@ -89,5 +90,6 @@ export const defineEntityCrudSchemas = <
     includeAuditFields: args.options?.includeAudit ?? false,
     fields: args.fields,
     tags: args.tags,
+    ui: args.ui,
   };
 };

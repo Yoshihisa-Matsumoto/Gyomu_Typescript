@@ -1,0 +1,20 @@
+{
+  "extends": ["@tsconfig/strictest/tsconfig.json"],
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "lib": ["ES2022", "DOM"],
+    "module": "ESNext",
+    "target": "ES2022",
+
+    // ライブラリ用
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": false,
+
+    // ビルド戦略に応じて
+    "moduleResolution": "Bundler",
+
+    // DX
+    "skipLibCheck": true
+  }
+}

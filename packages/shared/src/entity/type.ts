@@ -6,6 +6,7 @@ export type Fields = Record<string, Schema.Schema<any>>;
 export type EntityDefinition<
   TFields extends Fields,
   TIncludeAudit extends boolean,
+  TUI = UIAnnotations<TFields>,
 > = {
   fields: TFields;
   tags: {
@@ -16,6 +17,7 @@ export type EntityDefinition<
     includeAudit?: TIncludeAudit;
     keyMapping?: { readonly [K in keyof TFields]?: PropertyKey };
   };
+  ui?: TUI;
 };
 
 export type Mutable<T> = {
@@ -30,3 +32,25 @@ export type CrudSchemaGeneratorType<
   TFields extends Fields,
   TIncludeAudit extends boolean,
 > = ReturnType<typeof defineEntityCrudSchemas<TFields, TIncludeAudit>>;
+
+export type UIAnnotation = {
+  widget?: 'text' | 'textarea' | 'select' | 'date' | 'number';
+  label?: string;
+  placeholder?: string;
+  readonly?: boolean;
+
+  format?: 'email' | 'password' | 'phone';
+  visible?: boolean;
+  order?: number;
+};
+export type UIAnnotationField =
+  | UIAnnotation
+  | {
+      default?: UIAnnotation;
+      view?: UIAnnotation;
+      update?: UIAnnotation;
+      create?: UIAnnotation;
+    };
+export type UIAnnotations<TFields> = Partial<{
+  [K in keyof TFields]?: UIAnnotationField;
+}>;

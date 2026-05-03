@@ -12,3 +12,15 @@
 ## 一括で扶養ブランチ削除
 
 - git branch --merged main | grep -v "main" | xargs git branch -d
+
+# Git Branchを途中から作る場合
+
+## （コミット前）
+
+1. git switch -c <新ブランチ名>
+
+## すでにコミットしている場合
+
+1. git switch -c <新ブランチ名>
+2. git switch main
+3. git reset --hard origin/main

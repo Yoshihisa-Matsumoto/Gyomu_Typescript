@@ -1,0 +1,206 @@
+import {
+  CrudSchemaGeneratorType,
+  Fields,
+  UIAnnotation,
+  UIAnnotationField,
+} from '@gyomu/shared/entity';
+import { AST, Check, PropertySignature } from 'effect/SchemaAST';
+import { Logger } from '@gyomu/core';
+import { FormFieldMeta } from './type.js';
+
+function getMergedAnnotations(
+  name: string,
+  schema: AST,
+  inputResult: Record<string, any>,
+  logger?: Logger,
+): Record<string, any> {
+  const ast = schema;
+  logger?.debug({ name, ast }, 'AST');
+  let result: Record<string, any> = inputResult;
+  if (ast.context) {
+    result['required'] = !ast.context.isOptional;
+  }
+  if (ast.annotations) {
+    logger?.debug(ast.annotations, 'Annotation exists');
+    Object.assign(result, ast.annotations);
+  }
+
+  const checks = ast.checks;
+  if (Array.isArray(checks)) {
+    logger?.debug(checks, 'checks exists');
+    for (const item of checks) {
+      const check: Check<any> = item;
+      if (check.annotations) {
+        logger?.debug(check.annotations, 'Check Annotation exists');
+        if (check.annotations.toArbitraryConstraint) {
+          const constraint = check.annotations.toArbitraryConstraint;
+          if (constraint.array) {
+            const parent = 'array';
+            if (constraint.array.maxLength)
+              result[`${parent}-maxLength`] = constraint.array.maxLength;
+            if (constraint.array.minLength)
+              result[`${parent}-minLength`] = constraint.array.minLength;
+            if (constraint.array.size)
+              result[`${parent}-size`] = constraint.array.size;
+          } else if (constraint.bigint) {
+            const parent = 'bigint';
+            if (constraint.bigint.max)
+              result[`${parent}-max`] = constraint.bigint.max;
+            if (constraint.bigint.min)
+              result[`${parent}-min`] = constraint.bigint.min;
+          } else if (constraint.date) {
+            const parent = 'date';
+            if (constraint.date.max)
+              result[`${parent}-max`] = constraint.date.max;
+            if (constraint.date.min)
+              result[`${parent}-min`] = constraint.date.min;
+            if (constraint.date.noInvalidDate)
+              result[`${parent}-noInvalidDate`] = constraint.date.noInvalidDate;
+          } else if (constraint.number) {
+            const parent = 'number';
+            if (constraint.number.isInteger)
+              result[`${parent}-isInteger`] = constraint.number.isInteger;
+            if (constraint.number.max)
+              result[`${parent}-max`] = constraint.number.max;
+            if (constraint.number.maxExcluded)
+              result[`${parent}-maxExcluded`] = constraint.number.maxExcluded;
+            if (constraint.number.min)
+              result[`${parent}-min`] = constraint.number.min;
+            if (constraint.number.minExcluded)
+              result[`${parent}-minExcluded`] = constraint.number.minExcluded;
+            if (constraint.number.noInteger)
+              result[`${parent}-noInteger`] = constraint.number.noInteger;
+            if (constraint.number.noDefaultInfinity)
+              result[`${parent}-noDefaultInfinity`] =
+                constraint.number.noDefaultInfinity;
+            if (constraint.number.noNaN)
+              result[`${parent}-noNaN`] = constraint.number.noNaN;
+          } else if (constraint.string) {
+            const parent = 'string';
+            if (constraint.string.maxLength)
+              result[`${parent}-maxLength`] = constraint.string.maxLength;
+            if (constraint.string.minLength)
+              result[`${parent}-minLength`] = constraint.string.minLength;
+            if (constraint.string.patterns)
+              result[`${parent}-patterns`] = constraint.string.patterns;
+            if (constraint.string.size)
+              result[`${parent}-size`] = constraint.string.size;
+          }
+        }
+        Object.assign(result, check.annotations);
+      }
+    }
+  }
+
+  if (ast._tag == 'Union') {
+    for (const tp of ast.types) {
+      result = getMergedAnnotations(name, tp, result, logger);
+    }
+  }
+  return result;
+  //return Object.keys(result).length > 0 ? result : undefined;
+}
+
+export function getStructFields<
+  TFields extends Fields,
+  TIncludeAudit extends boolean,
+>(
+  schemas: CrudSchemaGeneratorType<TFields, TIncludeAudit>,
+  schemaType: 'select' | 'insert' | 'update',
+  logger?: Logger,
+): FormFieldMeta[] {
+  //logger?.debug(JSON.stringify(schema, null, 2));
+  let properties: readonly PropertySignature[] = [];
+  switch (schemaType) {
+    case 'select':
+      properties = schemas.selectSchema.ast.propertySignatures;
+      break;
+    case 'update':
+      properties = schemas.updateSchema.ast.propertySignatures;
+      break;
+    case 'insert':
+      properties = schemas.insertSchema.ast.propertySignatures;
+      break;
+  }
+  const fields = properties;
+
+  return fields
+    .map((f) => {
+      const name = f.name.toString();
+      const result: Record<string, any> = {};
+      if (name == 'modifiedAt') {
+        logger?.debug(f, 'digging AST');
+      }
+      const annotations = getMergedAnnotations(name, f.type, result, logger);
+      const ui = schemas.ui?.[name as keyof TFields];
+      // if (!ui) {
+      //   throw new ValueError({
+      //     message: `no valid ui Annotation`,
+      //     cause: undefined,
+      //     field: name,
+      //   });
+      // }
+      // if (!annotations || Object.keys(result).length == 0) {
+      //   throw new ValueError({
+      //     message: `no valid annotation on schema`,
+      //     cause: undefined,
+      //     field: name,
+      //   });
+      // }
+      //logger?.debug(annotations);
+      return resolveUI(name, toUIContext(schemaType), annotations, ui);
+    })
+    .filter((v): v is FormFieldMeta => v != null);
+}
+function toUIContext(
+  schemaType: 'select' | 'insert' | 'update',
+): 'view' | 'create' | 'update' {
+  switch (schemaType) {
+    case 'select':
+      return 'view';
+    case 'insert':
+      return 'create';
+    case 'update':
+      return 'update';
+  }
+}
+function resolveUI(
+  name: string,
+
+  context: 'view' | 'create' | 'update',
+  annotations: Record<string, any>,
+  uiDef?: UIAnnotationField,
+): FormFieldMeta | undefined {
+  if (!uiDef) return undefined;
+
+  if ('default' in uiDef) {
+    const merged: FormFieldMeta = {
+      name,
+      ...uiDef.default,
+      ...uiDef[context],
+      required: annotations['required'] ?? false,
+      options: annotations ?? {},
+    };
+
+    if (merged.visible == false) return undefined;
+
+    return merged;
+  }
+
+  if ((uiDef as UIAnnotation).visible === false) return undefined;
+
+  return {
+    name,
+    ...uiDef,
+    required: annotations['required'] ?? false,
+    options: annotations ?? {},
+  };
+}
+// let result = getStructFields(TopicSchemas.updateSchema.ast.propertySignatures);
+// logger?.debug(result);
+
+// result = getStructFields(CategorySchemas.insertSchema.ast.propertySignatures);
+// logger?.debug(JSON.stringify(result, null, 2));
+
+// result = getStructFields(ItemSchemas.selectSchema.ast.propertySignatures);
+// logger?.debug(JSON.stringify(result, null, 2));
