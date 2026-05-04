@@ -15,6 +15,10 @@
     "moduleResolution": "Bundler",
 
     // DX
-    "skipLibCheck": true
+    "skipLibCheck": true,
+
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   }
 }

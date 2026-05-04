@@ -1,5 +1,13 @@
 import { describe, it, expect } from 'vitest';
-import { getStructFields } from '../core/dsl/schemeAttribute.js'; // パス適宜
+import { buildFormMetaFromStructSchema } from '../core/dsl/schemeAttribute.js'; // パス適宜
+import {
+  defineEntityCrudSchemas,
+  EntityDefinition,
+  Fields,
+  schemaField,
+} from '@gyomu/shared/entity';
+import { logger } from '@gyomu/core';
+//import { Schema } from 'effect';
 
 // ---- ダミーAST生成 ----
 function createAST({
@@ -47,54 +55,82 @@ function createSchemas({
 }
 
 describe('getStructFields', () => {
-  // -----------------------------
-  // ① visible制御
-  // -----------------------------
-  it('visible=false のフィールドは除外される', () => {
-    const schemas = createSchemas({
-      fields: ['a', 'b'],
-      astMap: {
-        a: createAST({}),
-        b: createAST({}),
-      },
-      ui: {
-        a: { visible: true },
-        b: { visible: false },
-      },
-    });
-
-    const result = getStructFields(schemas, 'insert');
-
-    expect(result.map((f) => f.name)).toEqual(['a']);
-  });
-
-  // -----------------------------
-  // ② context override
-  // -----------------------------
-  it('contextごとにUIが切り替わる', () => {
-    const schemas = createSchemas({
-      fields: ['a'],
-      astMap: {
-        a: createAST({}),
-      },
-      ui: {
-        a: {
-          default: { label: 'A' },
-          create: { label: 'Create A' },
+  describe('visibility', () => {
+    it('visible=false は除外される', () => {
+      const testSchemasDefinition = {
+        fields: {
+          name: schemaField.text({ maxLength: 50 }),
+          age: schemaField.int(),
         },
-      },
+        tags: {
+          entity: 'test',
+          sensitiveFields: ['name'] as const,
+        },
+
+        ui: {
+          name: { label: '名前', visible: true, widget: 'text' },
+          age: { label: '年齢', visible: false, widget: 'number' },
+        },
+      } as const satisfies EntityDefinition<Fields, false>;
+      const testSchemas = defineEntityCrudSchemas(testSchemasDefinition);
+      const result = buildFormMetaFromStructSchema({
+        schema: testSchemas.insertSchema,
+        ...(testSchemas.ui && { ui: testSchemas.ui }),
+        uiContext: 'create',
+        logger,
+      });
+
+      expect(result.map((f) => f.name)).toEqual(['name']);
     });
+    // -----------------------------
+    // ⑥ UI未定義は除外
+    // -----------------------------
+    it('UI未定義のフィールドは除外される', () => {
+      const schemas = createSchemas({
+        fields: ['a', 'b'],
+        astMap: {
+          a: createAST({}),
+          b: createAST({}),
+        },
+        ui: {
+          a: { label: 'A' },
+        },
+      });
 
-    const result = getStructFields(schemas, 'insert');
+      const result = buildFormMetaFromStructSchema({
+        schema: schemas.insertSchema,
+        uiContext: 'create',
+        logger,
+        ui: schemas.ui,
+      });
 
-    expect(result?.[0]?.label).toBe('Create A');
+      expect(result.map((f) => f.name)).toEqual(['a']);
+    });
+    it('contextごとの visible override が効く', () => {
+      const schemas = createSchemas({
+        fields: ['a'],
+        astMap: { a: createAST({}) },
+        ui: {
+          a: {
+            default: { visible: true, label: 'A' },
+            update: { visible: false },
+          },
+        },
+      });
+
+      const result = buildFormMetaFromStructSchema({
+        schema: schemas.updateSchema,
+        uiContext: 'update',
+        logger,
+        ui: schemas.ui,
+      });
+
+      expect(result.length).toBe(0);
+    });
   });
 
-  // -----------------------------
-  // ③ default fallback
-  // -----------------------------
-  it('overrideが無い場合はdefaultが使われる', () => {
-    const schemas = createSchemas({
+  describe('UI context override (default/create/update/view)', () => {
+    const baseSchemas = createSchemas({
       fields: ['a'],
       astMap: {
         a: createAST({}),
@@ -102,128 +138,260 @@ describe('getStructFields', () => {
       ui: {
         a: {
           default: { label: 'Default A' },
+          create: { label: 'Create A' },
+          update: { label: 'Update A' },
+          view: { label: 'View A' },
         },
       },
     });
 
-    const result = getStructFields(schemas, 'update');
-
-    expect(result?.[0]?.label).toBe('Default A');
-  });
-
-  // -----------------------------
-  // ④ required判定
-  // -----------------------------
-  it('requiredがASTから反映される', () => {
-    const schemas = createSchemas({
-      fields: ['a'],
-      astMap: {
-        a: createAST({ required: true }),
-      },
-      ui: {
-        a: { label: 'A' },
-      },
+    it('create → createが優先される', () => {
+      const result = buildFormMetaFromStructSchema({
+        schema: baseSchemas.insertSchema,
+        uiContext: 'create',
+        logger,
+        ui: baseSchemas.ui,
+      });
+      expect(result[0]!.label).toBe('Create A');
     });
 
-    const result = getStructFields(schemas, 'insert');
-
-    expect(result?.[0]?.required).toBe(true);
-  });
-
-  it('optionalの場合required=falseになる', () => {
-    const schemas = createSchemas({
-      fields: ['a'],
-      astMap: {
-        a: createAST({ required: false }),
-      },
-      ui: {
-        a: { label: 'A' },
-      },
+    it('update → updateが優先される', () => {
+      const result = buildFormMetaFromStructSchema({
+        schema: baseSchemas.updateSchema,
+        uiContext: 'update',
+        logger,
+        ui: baseSchemas.ui,
+      });
+      expect(result[0]!.label).toBe('Update A');
     });
 
-    const result = getStructFields(schemas, 'insert');
-
-    expect(result?.[0]?.required).toBe(false);
-  });
-
-  // -----------------------------
-  // ⑤ annotation → options
-  // -----------------------------
-  it('annotationsがoptionsにマージされる', () => {
-    const schemas = createSchemas({
-      fields: ['a'],
-      astMap: {
-        a: createAST({
-          annotations: { title: 'AAA' },
-        }),
-      },
-      ui: {
-        a: { label: 'A' },
-      },
+    it('view → viewが優先される', () => {
+      const result = buildFormMetaFromStructSchema({
+        schema: baseSchemas.selectSchema,
+        uiContext: 'view',
+        logger,
+        ui: baseSchemas.ui,
+      });
+      expect(result[0]!.label).toBe('View A');
     });
 
-    const result = getStructFields(schemas, 'insert');
-
-    expect(result?.[0]?.options['title']).toBe('AAA');
-  });
-
-  // -----------------------------
-  // ⑥ UI未定義は除外
-  // -----------------------------
-  it('UI未定義のフィールドは除外される', () => {
-    const schemas = createSchemas({
-      fields: ['a', 'b'],
-      astMap: {
-        a: createAST({}),
-        b: createAST({}),
-      },
-      ui: {
-        a: { label: 'A' },
-      },
-    });
-
-    const result = getStructFields(schemas, 'insert');
-
-    expect(result.map((f) => f.name)).toEqual(['a']);
-  });
-
-  it('string minLengthがoptionsに反映される', () => {
-    const ast = createAST({});
-    ast.checks = [
-      {
-        annotations: {
-          toArbitraryConstraint: {
-            string: { minLength: 3 },
+    it('overrideが無い場合はdefault', () => {
+      const schemas = createSchemas({
+        fields: ['a'],
+        astMap: { a: createAST({}) },
+        ui: {
+          a: {
+            default: { label: 'Default A' },
+            // create/update/viewなし
           },
         },
-      },
-    ];
+      });
 
-    const schemas = createSchemas({
-      fields: ['a'],
-      astMap: { a: ast },
-      ui: { a: { label: 'A' } },
+      const result = buildFormMetaFromStructSchema({
+        schema: schemas.updateSchema,
+        uiContext: 'update',
+        logger,
+        ui: schemas.ui,
+      });
+      expect(result[0]!.label).toBe('Default A');
     });
 
-    const result = getStructFields(schemas, 'insert');
+    // -----------------------------
+    // ② context override
+    // -----------------------------
+    it('contextごとにUIが切り替わる', () => {
+      const schemas = createSchemas({
+        fields: ['a'],
+        astMap: {
+          a: createAST({}),
+        },
+        ui: {
+          a: {
+            default: { label: 'A' },
+            create: { label: 'Create A' },
+          },
+        },
+      });
 
-    expect(result?.[0]?.options['string-minLength']).toBe(3);
+      const result = buildFormMetaFromStructSchema({
+        schema: schemas.insertSchema,
+        uiContext: 'create',
+        logger,
+        ui: schemas.ui,
+      });
+
+      expect(result?.[0]?.label).toBe('Create A');
+    });
   });
 
-  it('visible=false は除外される', () => {
-    const schemas = mockSchemas({
-      fields: {
-        name: stringSchema,
-        age: numberSchema,
-      },
-      ui: {
-        name: { label: '名前', visible: true, uiType: 'text' },
-        age: { label: '年齢', visible: false, uiType: 'number' },
-      },
+  describe('required / optional', () => {
+    // -----------------------------
+    // ④ required判定
+    // -----------------------------
+    it('requiredがASTから反映される', () => {
+      const schemas = createSchemas({
+        fields: ['a'],
+        astMap: {
+          a: createAST({ required: true }),
+        },
+        ui: {
+          a: { label: 'A' },
+        },
+      });
+
+      const result = buildFormMetaFromStructSchema({
+        schema: schemas.insertSchema,
+        uiContext: 'create',
+        logger,
+        ui: schemas.ui,
+      });
+
+      expect(result?.[0]?.required).toBe(true);
     });
 
-    const result = getStructFields(schemas, 'insert');
+    it('required が schema から反映される', () => {
+      const testSchemasDefinition = {
+        fields: {
+          name: schemaField.text({ maxLength: 50 }),
+          address: schemaField.optionalText(),
+        },
+        tags: {
+          entity: 'test',
+          sensitiveFields: ['name'] as const,
+        },
 
-    expect(result.map((f) => f.name)).toEqual(['name']);
+        ui: {
+          name: { label: '名前', visible: true, widget: 'text' },
+          address: { label: '住所', visible: true, widget: 'text' },
+        },
+      } as const satisfies EntityDefinition<Fields, false>;
+      const testSchemas = defineEntityCrudSchemas(testSchemasDefinition);
+      //type testType = typeof testSchemas.types._insert;
+      const result = buildFormMetaFromStructSchema({
+        schema: testSchemas.insertSchema,
+        uiContext: 'create',
+        logger,
+        ...(testSchemas.ui && { ui: testSchemas.ui }),
+      });
+      expect(result.find((f) => f.name === 'name')?.required).toBe(true);
+      expect(result.find((f) => f.name === 'address')?.required).toBe(false);
+    });
+  });
+
+  describe('annotation merge', () => {
+    // -----------------------------
+    // ⑤ annotation → options
+    // -----------------------------
+    it('titleがoptionsに入る', () => {
+      const schemas = createSchemas({
+        fields: ['a'],
+        astMap: {
+          a: createAST({
+            annotations: { title: 'AAA' },
+          }),
+        },
+        ui: {
+          a: { label: 'A' },
+        },
+      });
+
+      const result = buildFormMetaFromStructSchema({
+        schema: schemas.insertSchema,
+        uiContext: 'create',
+        logger,
+        ...(schemas.ui && { ui: schemas.ui }),
+      });
+
+      expect(result?.[0]?.options['title']).toBe('AAA');
+    });
+
+    it('string minLengthがoptionsに反映される', () => {
+      const ast = createAST({});
+      ast.checks = [
+        {
+          annotations: {
+            toArbitraryConstraint: {
+              string: { minLength: 3 },
+            },
+          },
+        },
+      ];
+
+      const schemas = createSchemas({
+        fields: ['a'],
+        astMap: { a: ast },
+        ui: { a: { label: 'A' } },
+      });
+
+      const result = buildFormMetaFromStructSchema({
+        schema: schemas.insertSchema,
+        uiContext: 'create',
+        logger,
+        ...(schemas.ui && { ui: schemas.ui }),
+      });
+
+      expect(result?.[0]?.options['string-minLength']).toBe(3);
+    });
+  });
+
+  describe('fallback behavior', () => {
+    it('label fallback が効く', () => {
+      const testSchemasDefinition = {
+        fields: {
+          name: schemaField.text({ maxLength: 50 }),
+          address: schemaField.optionalText(),
+        },
+        tags: {
+          entity: 'test',
+          sensitiveFields: ['name'] as const,
+        },
+
+        ui: {
+          name: { label: '名前', visible: true, widget: 'text' },
+          address: { visible: true, widget: 'number' },
+        },
+      } as const satisfies EntityDefinition<Fields, false>;
+      const testSchemas = defineEntityCrudSchemas(testSchemasDefinition);
+      // type testType = typeof testSchemas.types._insert;
+      const result = buildFormMetaFromStructSchema({
+        schema: testSchemas.insertSchema,
+        uiContext: 'create',
+        logger,
+        ...(testSchemas.ui && { ui: testSchemas.ui }),
+      });
+
+      expect(result.find((f) => f.name === 'name')?.label).toBe('名前');
+      expect(result.find((f) => f.name === 'address')?.label).toBe('address');
+    });
+    it('placeholder fallback が効く', () => {
+      const testSchemasDefinition = {
+        fields: {
+          name: schemaField.text({ maxLength: 50 }),
+          address: schemaField.optionalText(),
+        },
+        tags: {
+          entity: 'test',
+          sensitiveFields: ['name'] as const,
+        },
+
+        ui: {
+          name: { placeholder: '名前', visible: true, widget: 'text' },
+          address: { visible: true, widget: 'number' },
+        },
+      } as const satisfies EntityDefinition<Fields, false>;
+      const testSchemas = defineEntityCrudSchemas(testSchemasDefinition);
+      // type testType = typeof testSchemas.types._insert;
+      const result = buildFormMetaFromStructSchema({
+        schema: testSchemas.insertSchema,
+        uiContext: 'create',
+        logger,
+        ...(testSchemas.ui && { ui: testSchemas.ui }),
+      });
+
+      expect(result.find((f) => f.name === 'name')?.placeholder).toBe('名前');
+      expect(result.find((f) => f.name === 'address')?.placeholder).toBe(
+        'address',
+      );
+    });
   });
 });

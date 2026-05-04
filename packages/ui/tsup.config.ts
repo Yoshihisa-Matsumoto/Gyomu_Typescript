@@ -3,16 +3,19 @@ import { defineConfig } from 'tsup';
 export default defineConfig({
   entry: {
     index: 'src/index.ts',
-    'controls/table': 'src/controls/table.ts',
-    'controls/markdown': 'src/controls/markdown.ts',
-    'controls/capture': 'src/controls/capture.ts',
   },
   format: ['esm'],
-  dts: false,
+  dts: true,
   sourcemap: true,
   clean: true,
   splitting: false,
   treeshake: true,
+  esbuildOptions(options) {
+    options.loader = {
+      ...options.loader,
+      '.stories.tsx': 'tsx',
+    };
+  },
   external: [
     'react',
     'react-dom',

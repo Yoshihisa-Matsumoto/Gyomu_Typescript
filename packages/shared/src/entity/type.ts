@@ -33,6 +33,18 @@ export type CrudSchemaGeneratorType<
   TIncludeAudit extends boolean,
 > = ReturnType<typeof defineEntityCrudSchemas<TFields, TIncludeAudit>>;
 
+type InsertSchemaOf<T> = T extends { insertSchema: infer S } ? S : never;
+type UpdateSchemaOf<T> = T extends { updateSchema: infer S } ? S : never;
+type SelectSchemaOf<T> = T extends { selectSchema: infer S } ? S : never;
+
+export type CrudSchemaType<
+  TFields extends Fields,
+  TIncludeAudit extends boolean,
+> =
+  | InsertSchemaOf<CrudSchemaGeneratorType<TFields, TIncludeAudit>>
+  | UpdateSchemaOf<CrudSchemaGeneratorType<TFields, TIncludeAudit>>
+  | SelectSchemaOf<CrudSchemaGeneratorType<TFields, TIncludeAudit>>;
+
 export type UIAnnotation = {
   widget?: 'text' | 'textarea' | 'select' | 'date' | 'number';
   label?: string;
@@ -42,6 +54,14 @@ export type UIAnnotation = {
   format?: 'email' | 'password' | 'phone';
   visible?: boolean;
   order?: number;
+
+  enumAttribute?: {
+    [key: string]: {
+      label?: string | ((value: string) => string);
+      order?: number;
+      disabled?: boolean;
+    };
+  };
 };
 export type UIAnnotationField =
   | UIAnnotation

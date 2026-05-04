@@ -1,11 +1,12 @@
 import {
-  CrudSchemaGeneratorType,
+  CrudSchemaType,
   Fields,
   UIAnnotation,
   UIAnnotationField,
+  UIAnnotations,
 } from '@gyomu/shared/entity';
-import { AST, Check, PropertySignature } from 'effect/SchemaAST';
-import { Logger } from '@gyomu/core';
+import { AST, Check } from 'effect/SchemaAST';
+import { logger, Logger } from '@gyomu/core';
 import { FormFieldMeta } from './type.js';
 
 function getMergedAnnotations(
@@ -17,8 +18,8 @@ function getMergedAnnotations(
   const ast = schema;
   logger?.debug({ name, ast }, 'AST');
   let result: Record<string, any> = inputResult;
-  if (ast.context) {
-    result['required'] = !ast.context.isOptional;
+  if (ast._tag == 'Null') {
+    result['required'] = false;
   }
   if (ast.annotations) {
     logger?.debug(ast.annotations, 'Annotation exists');
@@ -101,29 +102,13 @@ function getMergedAnnotations(
   //return Object.keys(result).length > 0 ? result : undefined;
 }
 
-export function getStructFields<
-  TFields extends Fields,
-  TIncludeAudit extends boolean,
->(
-  schemas: CrudSchemaGeneratorType<TFields, TIncludeAudit>,
-  schemaType: 'select' | 'insert' | 'update',
-  logger?: Logger,
-): FormFieldMeta[] {
-  //logger?.debug(JSON.stringify(schema, null, 2));
-  let properties: readonly PropertySignature[] = [];
-  switch (schemaType) {
-    case 'select':
-      properties = schemas.selectSchema.ast.propertySignatures;
-      break;
-    case 'update':
-      properties = schemas.updateSchema.ast.propertySignatures;
-      break;
-    case 'insert':
-      properties = schemas.insertSchema.ast.propertySignatures;
-      break;
-  }
-  const fields = properties;
-
+export function buildFormMetaFromStructSchema<TFields extends Fields>(args: {
+  schema: CrudSchemaType<TFields, boolean>;
+  uiContext: 'view' | 'create' | 'update';
+  logger?: Logger;
+  ui?: UIAnnotations<TFields>;
+}): FormFieldMeta[] {
+  const fields = args.schema.ast.propertySignatures;
   return fields
     .map((f) => {
       const name = f.name.toString();
@@ -132,67 +117,168 @@ export function getStructFields<
         logger?.debug(f, 'digging AST');
       }
       const annotations = getMergedAnnotations(name, f.type, result, logger);
-      const ui = schemas.ui?.[name as keyof TFields];
-      // if (!ui) {
-      //   throw new ValueError({
-      //     message: `no valid ui Annotation`,
-      //     cause: undefined,
-      //     field: name,
-      //   });
-      // }
-      // if (!annotations || Object.keys(result).length == 0) {
-      //   throw new ValueError({
-      //     message: `no valid annotation on schema`,
-      //     cause: undefined,
-      //     field: name,
-      //   });
-      // }
-      //logger?.debug(annotations);
-      return resolveUI(name, toUIContext(schemaType), annotations, ui);
+
+      const ui = args.ui?.[name as keyof TFields];
+      const mergeUi = mergeUIAttributes(args.uiContext, ui);
+
+      if (f.type._tag == 'Union') {
+        const enums = f.type.types
+          .filter((t) => t._tag == 'Literal')
+          .map((v) => v.literal.toString());
+        if (enums && enums.length > 0)
+          validateEnumAttribute(enums, mergeUi, name);
+      }
+      return resolveUI(name, annotations, mergeUi);
     })
     .filter((v): v is FormFieldMeta => v != null);
 }
-function toUIContext(
-  schemaType: 'select' | 'insert' | 'update',
-): 'view' | 'create' | 'update' {
-  switch (schemaType) {
-    case 'select':
-      return 'view';
-    case 'insert':
-      return 'create';
-    case 'update':
-      return 'update';
+// export function buildFormMetaFromCrudSchema<
+//   TFields extends Fields,
+//   TIncludeAudit extends boolean,
+// >(
+//   schemas: CrudSchemaGeneratorType<TFields, TIncludeAudit>,
+//   schemaType: 'select' | 'insert' | 'update',
+//   logger?: Logger,
+// ): FormFieldMeta[] {
+//   //logger?.debug(JSON.stringify(schema, null, 2));
+//   let properties: readonly PropertySignature[] = [];
+//   switch (schemaType) {
+//     case 'select':
+//       properties = schemas.selectSchema.ast.propertySignatures;
+//       break;
+//     case 'update':
+//       properties = schemas.updateSchema.ast.propertySignatures;
+//       break;
+//     case 'insert':
+//       properties = schemas.insertSchema.ast.propertySignatures;
+//       break;
+//   }
+//   const fields = properties;
+
+//   return fields
+//     .map((f) => {
+//       const name = f.name.toString();
+//       const result: Record<string, any> = {};
+//       if (name == 'modifiedAt') {
+//         logger?.debug(f, 'digging AST');
+//       }
+//       const annotations = getMergedAnnotations(name, f.type, result, logger);
+
+//       const ui = schemas.ui?.[name as keyof TFields];
+//       const mergeUi = mergeUIAttributes(toUIContext(schemaType), ui);
+
+//       if (f.type._tag == 'Union') {
+//         const enums = f.type.types
+//           .filter((t) => t._tag == 'Literal')
+//           .map((v) => v.literal.toString());
+//         validateEnumAttribute(enums, mergeUi, name);
+//       }
+//       // if (!ui) {
+//       //   throw new ValueError({
+//       //     message: `no valid ui Annotation`,
+//       //     cause: undefined,
+//       //     field: name,
+//       //   });
+//       // }
+//       // if (!annotations || Object.keys(result).length == 0) {
+//       //   throw new ValueError({
+//       //     message: `no valid annotation on schema`,
+//       //     cause: undefined,
+//       //     field: name,
+//       //   });
+//       // }
+//       //logger?.debug(annotations);
+//       return resolveUI(name, annotations, mergeUi);
+//     })
+//     .filter((v): v is FormFieldMeta => v != null);
+// }
+
+function validateEnumAttribute(
+  enumValues: readonly string[] | undefined,
+  mergeUi: UIAnnotation | undefined,
+  fieldName: string,
+) {
+  if (!enumValues && !mergeUi?.enumAttribute) return;
+  if (!(enumValues && mergeUi?.enumAttribute)) {
+    throw new Error(
+      `[AutoForm] enum Attribute for "${fieldName} has conflict": schema: ${enumValues} , uiAttribute: ${mergeUi?.enumAttribute}`,
+    );
+  }
+  const enumAttribute = mergeUi?.enumAttribute;
+  if (!enumValues || !enumAttribute) {
+    throw new Error(
+      `[AutoForm] should not come here. Both Schema and UI Attribute should have value.`,
+    );
+  }
+  const missing = enumValues.filter((v) => !(v in enumAttribute));
+
+  if (missing.length > 0) {
+    throw new Error(
+      `[AutoForm] enumAttribute missing for field "${fieldName}": ${missing.join(', ')}`,
+    );
   }
 }
+const mergeUIAttributes = (
+  context: 'view' | 'create' | 'update',
+  uiDef?: UIAnnotationField,
+): UIAnnotation | undefined => {
+  if (!uiDef) return undefined;
+  if ('default' in uiDef) {
+    const merged: UIAnnotation = {
+      ...uiDef.default,
+
+      ...uiDef[context],
+    };
+    return merged;
+  }
+  return uiDef as UIAnnotation;
+};
+// function toUIContext(
+//   schemaType: 'select' | 'insert' | 'update',
+// ): 'view' | 'create' | 'update' {
+//   switch (schemaType) {
+//     case 'select':
+//       return 'view';
+//     case 'insert':
+//       return 'create';
+//     case 'update':
+//       return 'update';
+//   }
+// }
 function resolveUI(
   name: string,
-
-  context: 'view' | 'create' | 'update',
   annotations: Record<string, any>,
-  uiDef?: UIAnnotationField,
+  uiDef?: UIAnnotation,
 ): FormFieldMeta | undefined {
   if (!uiDef) return undefined;
 
-  if ('default' in uiDef) {
-    const merged: FormFieldMeta = {
-      name,
-      ...uiDef.default,
-      ...uiDef[context],
-      required: annotations['required'] ?? false,
-      options: annotations ?? {},
-    };
+  // if ('default' in uiDef) {
+  //   const merged: FormFieldMeta = {
+  //     name,
+  //     ...uiDef.default,
 
-    if (merged.visible == false) return undefined;
+  //     ...uiDef[context],
+  //     label: uiDef[context]?.label ?? uiDef.default.label ?? name,
+  //     placeholder:
+  //       uiDef[context]?.placeholder ?? uiDef.default.placeholder ?? name,
 
-    return merged;
-  }
+  //     required: annotations['required'] ?? true,
+  //     options: annotations ?? {},
+  //   };
 
-  if ((uiDef as UIAnnotation).visible === false) return undefined;
+  //   if (merged.visible == false) return undefined;
+
+  //   return merged;
+  // }
+
+  if (uiDef.visible === false) return undefined;
 
   return {
     name,
     ...uiDef,
-    required: annotations['required'] ?? false,
+    label: uiDef.label ?? name,
+    placeholder: uiDef.placeholder ?? name,
+    required: annotations['required'] ?? true,
     options: annotations ?? {},
   };
 }
@@ -204,3 +290,10 @@ function resolveUI(
 
 // result = getStructFields(ItemSchemas.selectSchema.ast.propertySignatures);
 // logger?.debug(JSON.stringify(result, null, 2));
+
+// const result = buildFormMetaFromCrudSchema(
+//   MarketHolidaySchema,
+//   'select',
+//   logger,
+// );
+// console.log(JSON.stringify(result, null, 2));

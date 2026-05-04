@@ -1,6 +1,12 @@
 import { Schema, SchemaTransformation } from 'effect';
 import { LocalDateSchema } from './date.js';
 
+type StringEnumOption = {
+  enumValues: string[];
+};
+const stringEnum = (option: StringEnumOption) => {
+  return Schema.Literals(option.enumValues);
+};
 const textRequired = (option?: { minLength?: number; maxLength?: number }) => {
   if (!option) return Schema.String;
   if (!option.minLength)
@@ -38,6 +44,9 @@ export const schemaField = {
   text: textRequired,
   optionalText: (option?: { minLength?: number; maxLength?: number }) =>
     Schema.NullOr(textRequired(option)),
+  stringEnum: stringEnum,
+  optionalStringEnum: (option: StringEnumOption) =>
+    Schema.NullOr(stringEnum(option)),
   int: (option?: { min?: number; max?: number }) => {
     if (!option) return Schema.Number.check(Schema.isInt32());
     if (!option.min)

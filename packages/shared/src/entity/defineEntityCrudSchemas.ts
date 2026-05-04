@@ -31,7 +31,7 @@ export const defineEntityCrudSchemas = <
   TIncludeAudit extends boolean,
   TUI = UIAnnotations<TFields>,
 >(
-  args: EntityDefinition<TFields, TIncludeAudit>,
+  args: EntityDefinition<TFields, TIncludeAudit, TUI>,
 ) => {
   const selectFields = {
     ...PrimaryFields,
@@ -90,6 +90,6 @@ export const defineEntityCrudSchemas = <
     includeAuditFields: args.options?.includeAudit ?? false,
     fields: args.fields,
     tags: args.tags,
-    ui: args.ui,
+    ...(args.ui ? { ui: args.ui } : {}),
   };
 };
