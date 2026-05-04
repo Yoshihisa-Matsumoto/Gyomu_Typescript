@@ -1,5 +1,5 @@
 {
-  "extends": "@tsconfig/node24/tsconfig.json",
+  "extends": ["./tsconfig.strict.json", "@tsconfig/node24/tsconfig.json"],
   "compilerOptions": {
     "verbatimModuleSyntax": true,
     "module": "nodenext",

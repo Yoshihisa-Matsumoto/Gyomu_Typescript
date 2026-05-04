@@ -47,7 +47,7 @@ export const ParameterServiceLayer = Layer.effect(
           );
         }
         if (!targetDate) {
-          return itemValues[0].itemValue;
+          return itemValues[0]!.itemValue;
         }
 
         const targetYmd = formatDateToYmd(targetDate);

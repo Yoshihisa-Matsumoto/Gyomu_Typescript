@@ -1,5 +1,5 @@
 import { Ref, Stream } from 'effect';
-import { wrapInfraError } from '@gyomu/shared';
+import { withOptional, wrapInfraError } from '@gyomu/shared';
 import { DiffDetail } from '@gyomu/core/shared/object';
 import { Effect } from 'effect';
 import {
@@ -191,11 +191,11 @@ export const compareZip = (
 
     yield* jsonToCsv(
       results,
-      {
+      withOptional({
         bom: true,
         quoted: true,
         recordDelimiter: option.recordDelimiter,
-      },
+      }),
       {
         type: 'file',
         path: path.join(resultPath, summaryFilename),
@@ -405,7 +405,11 @@ const writeCsvIfNeeded = (
 
         yield* jsonToCsv(
           diffDetailList.sort((a, b) => a.path.localeCompare(b.path)),
-          { bom: true, quoted: true, recordDelimiter: option.recordDelimiter },
+          withOptional({
+            bom: true,
+            quoted: true,
+            recordDelimiter: option.recordDelimiter,
+          }),
           { type: 'file', path: filePath },
         );
       })

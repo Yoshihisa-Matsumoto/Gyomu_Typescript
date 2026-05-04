@@ -33,7 +33,7 @@ export const LocalDate = {
 
 export const LocalDate2Date = (localDate: LocalDate): Date => {
   const [y, m, d] = localDate.split('-').map(Number);
-  return new Date(y, m - 1, d);
+  return new Date(y!, m! - 1, d);
 };
 
 export const Date2LocalDate = (date: Date): LocalDate => {

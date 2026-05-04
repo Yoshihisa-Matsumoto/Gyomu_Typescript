@@ -42,7 +42,7 @@ export const MilestoneServiceLayer = Layer.effect(
             if (records.length > 0) {
               return {
                 exists: true,
-                updateTime: records[0].modifiedAt,
+                updateTime: records[0]!.modifiedAt,
               };
             }
             return { exists: false };
@@ -79,7 +79,7 @@ export const MilestoneServiceLayer = Layer.effect(
               targetYm: targetYmd.substring(0, 7),
             },
           ]);
-          return result[0].modifiedAt;
+          return result[0]!.modifiedAt;
         });
       },
       wait: (
@@ -156,12 +156,12 @@ export const MilestoneServiceLayer = Layer.effect(
             yield* repo.milestone.findByMilestoneId(milestoneId);
           if (targetRecords.length > 0) {
             return (yield* repo.milestone.updateRecords([
-              { id: targetRecords[0].id, milestoneId, description },
-            ]))[0];
+              { id: targetRecords[0]!.id, milestoneId, description },
+            ]))[0]!;
           } else {
             return (yield* repo.milestone.create([
               { description, milestoneId },
-            ]))[0];
+            ]))[0]!;
           }
         });
       },

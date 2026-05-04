@@ -196,7 +196,7 @@ describe('internalCompareFileEntry', () => {
     const final = await runNodeWithEnvOrThrow(Ref.get(result));
 
     expect(final.results.length).toBe(1);
-    expect(final.results[0].diff).toBe('Different');
+    expect(final.results[0]!.diff).toBe('Different');
   });
 
   it('完全一致なら何もしない', async () => {

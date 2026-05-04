@@ -7,6 +7,7 @@ import {
   UIAnnotations,
 } from './type.js';
 import { PrimaryFields, AuditFields } from './fields.js';
+import { mapValues } from '../collection/mapValues.js';
 
 const pickFields = <T extends Fields, K extends readonly (keyof T)[]>(
   fields: T,
@@ -19,13 +20,9 @@ const pickFields = <T extends Fields, K extends readonly (keyof T)[]>(
   return result;
 };
 
-const optionalizeFields = <T extends Fields>(fields: T): Optionalized<T> => {
-  const result = {} as Optionalized<T>;
-  for (const key in fields) {
-    result[key] = Schema.optional(fields[key]);
-  }
-  return result;
-};
+const optionalizeFields = <T extends Fields>(fields: T): Optionalized<T> =>
+  mapValues(fields, (v) => Schema.optional(v));
+
 export const defineEntityCrudSchemas = <
   TFields extends Fields,
   TIncludeAudit extends boolean,

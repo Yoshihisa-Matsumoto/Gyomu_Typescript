@@ -4,6 +4,7 @@ import { isRetryableNetworkError, NetworkError } from '@gyomu/core';
 import { fromPromise } from '@gyomu/shared/effect';
 import { EnvHttpProxyAgent, setGlobalDispatcher } from 'undici';
 import { networkStream } from '../network/index.js';
+import { withOptional } from '@gyomu/shared';
 
 export function simpleWebAccess(url: string, isInternal: boolean = true) {
   if (!isInternal && (process.env.HTTPS_PROXY || process.env.HTTP_PROXY)) {
@@ -62,7 +63,7 @@ export const fetchEffect = (url: string, init?: RequestInit) =>
     message: 'Fetch Error',
     operation: 'request' as const,
     retryable: isRetryableNetworkError(e),
-    endpoint: `url`,
+    endpoint: url,
   }))(() => fetch(url, init));
 export const webDownloadStream = (
   url: string,
@@ -70,7 +71,10 @@ export const webDownloadStream = (
 ): Stream.Stream<Uint8Array, NetworkError> =>
   Stream.unwrap(
     Effect.gen(function* () {
-      const response = yield* fetchEffect(url, { headers });
+      const response = yield* fetchEffect(
+        url,
+        withOptional({ headers }) as RequestInit | undefined,
+      );
 
       if (!response.body) {
         return yield* Effect.fail(

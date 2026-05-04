@@ -28,7 +28,7 @@ class BusinessCalendarImpl implements BusinessCalendar {
     this.#market = market;
     //console.log('__marketHolidays', MarketDateAccess.__marketHolidays);
     if (market in BusinessCalendarImpl.__marketHolidays) {
-      this.#holidays = BusinessCalendarImpl.__marketHolidays[market];
+      this.#holidays = BusinessCalendarImpl.__marketHolidays[market]!;
       return;
     }
   }

@@ -1,5 +1,5 @@
 {
-  "extends": "./tsconfig.base.json",
+  "extends": ["./tsconfig.strict.json", "@tsconfig/strictest/tsconfig.json"],
   "compilerOptions": {
     "jsx": "react-jsx",
     "lib": ["ES2022", "DOM"]

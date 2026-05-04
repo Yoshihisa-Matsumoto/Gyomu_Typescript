@@ -18,6 +18,7 @@ import {
 //import { fs } from '../fs/index.js';
 import { connectEffect } from './internals/sftpClient.js';
 import { readStringFromFile } from '../fs/fs-utils.js';
+import { withOptional } from '@gyomu/shared';
 
 //type FtpConfig = Config.Success<typeof ftpConfigRaw>;
 
@@ -98,7 +99,7 @@ export class SftpService extends ServiceMap.Service<
           ).pipe(
             Effect.flatMap((client) =>
               Effect.gen(function* () {
-                yield* connectEffect(client, {
+                const configObj = withOptional({
                   host: config.host,
                   port: config.port,
                   username: config.user,
@@ -107,6 +108,7 @@ export class SftpService extends ServiceMap.Service<
                     ? yield* readStringFromFile(privateKeyFilename, 'utf-8')
                     : undefined,
                 });
+                yield* connectEffect(client, configObj);
 
                 const sftp = {
                   downloadToStream: (path: string) =>

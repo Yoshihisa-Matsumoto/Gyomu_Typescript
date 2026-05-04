@@ -10,6 +10,7 @@ import {
   pathExists,
   writeStreamToFile,
 } from '../fs/fs-utils.js';
+import { withOptional } from '@gyomu/shared';
 
 export const webDownloadStream = (
   url: string,
@@ -17,7 +18,10 @@ export const webDownloadStream = (
 ): Stream.Stream<Uint8Array, NetworkError> =>
   Stream.unwrap(
     Effect.gen(function* () {
-      const response = yield* fetchEffect(url, { headers });
+      const response = yield* fetchEffect(
+        url,
+        withOptional({ headers }) as RequestInit | undefined,
+      );
 
       if (!response.body) {
         return yield* Effect.fail(

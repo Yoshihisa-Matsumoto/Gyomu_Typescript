@@ -9,7 +9,7 @@ export class TableRow extends GenericElement<HTMLTableRowElement> {
     previousRow: TableRow | undefined = undefined,
   ) {
     super(node);
-    this.previousRow = previousRow;
+    if (previousRow) this.previousRow = previousRow;
     this.__build();
   }
 
@@ -35,7 +35,7 @@ export class TableRow extends GenericElement<HTMLTableRowElement> {
       }
       while (copyingIndexList.includes(index)) {
         if (this.previousRow)
-          this.columns.push(this.previousRow.columns[index].fakeCopy());
+          this.columns.push(this.previousRow.columns[index]!.fakeCopy());
         index++;
       }
     }
@@ -48,7 +48,7 @@ export class TableRow extends GenericElement<HTMLTableRowElement> {
   ): number {
     while (copyingIndexList.includes(currentIndex)) {
       if (this.previousRow) {
-        this.columns.push(this.previousRow.columns[currentIndex].fakeCopy());
+        this.columns.push(this.previousRow.columns[currentIndex]!.fakeCopy());
       }
       currentIndex++;
     }
@@ -59,14 +59,17 @@ export class TableRow extends GenericElement<HTMLTableRowElement> {
       (a) => a.name.toLowerCase() === 'rowspan',
     );
     if (rowSpans.length > 0) {
-      this.overrideColumnRange.set(currentIndex, Number(rowSpans[0].value) - 1);
+      this.overrideColumnRange.set(
+        currentIndex,
+        Number(rowSpans[0]!.value) - 1,
+      );
     }
     const colSpans = columnAttributes.filter(
       (a) => a.name.toLowerCase() === 'colspan',
     );
     let columnCount = 1;
     if (colSpans.length > 0) {
-      columnCount = Number(colSpans[0].value);
+      columnCount = Number(colSpans[0]!.value);
     }
     const columnOriginalCount = columnCount;
     while (columnCount > 0) {

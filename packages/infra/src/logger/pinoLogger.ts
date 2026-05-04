@@ -16,6 +16,7 @@ import { ConfigLayer, ConfigService } from '../config.js';
 import { makeRunner } from '../runtime.js';
 import { PlatformLayer } from '../layer.js';
 import { tmpdir } from 'os';
+import { withOptional } from '@gyomu/shared';
 
 export const createPinoLogger = (): Logger => {
   const p = pino();
@@ -56,11 +57,9 @@ type UnwrapOption<T> = T extends Option.Option<infer A> ? A | undefined : T;
 type NormalizeOptionObject<T> = {
   [K in keyof T as T[K] extends Option.Option<any>
     ? K
-    : K]: T[K] extends Option.Option<infer A> ? A | undefined : T[K];
-} & {
-  [K in keyof T as T[K] extends Option.Option<any>
-    ? K
     : never]?: T[K] extends Option.Option<infer A> ? A : never;
+} & {
+  [K in keyof T as T[K] extends Option.Option<any> ? never : K]: T[K];
 };
 type loggerConfig = NormalizeOptionObject<
   ExtractConfig<typeof loggerConfigRaw>
@@ -70,14 +69,14 @@ export const initLoggerFromEnv = async () => {
   const program = Effect.gen(function* () {
     const configService = yield* ConfigService;
     const loadedData = yield* configService.load(loggerConfigRaw).pipe(
-      Effect.map((data) => {
-        return {
+      Effect.map((data) =>
+        withOptional({
           logLevel: data.logLevel,
           fixedLogFilename: data.fixedLogFilename,
           logPath: data.logPath,
           logFilename: Option.getOrUndefined(data.logFilename),
-        };
-      }),
+        }),
+      ),
     );
 
     initLogger(loadedData);

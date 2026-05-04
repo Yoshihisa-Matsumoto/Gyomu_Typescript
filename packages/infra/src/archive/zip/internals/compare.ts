@@ -81,8 +81,8 @@ export const isComparisionExcludeTarget = (
   rule: FileNameExclusionRule,
   categories: string[],
 ): boolean => {
-  const directories = filePath.split('\\');
-  const fileName = directories[directories.length - 1];
+  const directories = filePath.split(path.sep);
+  const fileName = directories[directories.length - 1]!;
   let isPathInScope = false;
   let targetCategry = '';
   let isExclude = false;
@@ -94,7 +94,7 @@ export const isComparisionExcludeTarget = (
     }
   }
   if (isPathInScope) {
-    const criteriaList = rule[targetCategry];
+    const criteriaList = rule[targetCategry]!;
     for (const criteria of criteriaList) {
       if (criteria.type === 'include') {
         if (

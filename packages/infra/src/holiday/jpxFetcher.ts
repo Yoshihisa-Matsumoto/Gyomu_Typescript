@@ -29,13 +29,13 @@ export const fetchJpxHolidays = (): Effect.Effect<
     yield* Effect.logInfo(tablesDiv);
     const results: (typeof MarketHolidaySchema.types._insert)[] = [];
     for (let index: number = 0; index < tablesDiv.length; index++) {
-      const titleHeading = titles[index];
+      const titleHeading = titles[index]!;
       const year =
-        titleHeading.getGenericElementsByTagName('span')[0].innerText;
-      const tableDiv = tablesDiv[index];
+        titleHeading.getGenericElementsByTagName('span')[0]?.innerText;
+      const tableDiv = tablesDiv[index]!;
       const table = convertGenericElementByTagName(
         'table',
-        tableDiv.getGenericElementsByTagName('table')[0],
+        tableDiv.getGenericElementsByTagName('table')[0]!,
         { headerExist: false },
       );
       const result = table.toDictionaryArray();
@@ -47,7 +47,7 @@ export const fetchJpxHolidays = (): Effect.Effect<
         return {
           market: 'JP',
           year: Number(year),
-          holiday: convertToYmd(year, day),
+          holiday: convertToYmd(year!, day!),
         } as typeof MarketHolidaySchema.types._insert;
       });
       //yield* Effect.logInfo(records);
