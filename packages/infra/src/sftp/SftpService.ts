@@ -1,4 +1,4 @@
-import { Effect, Layer, ServiceMap, Config, Option, FileSystem } from 'effect';
+import { Effect, Layer, Context, Config, Option, FileSystem } from 'effect';
 import { Client } from 'ssh2';
 import { withDefault } from 'effect/Config';
 import { IOError, ConfigError, NetworkError } from '@gyomu/core';
@@ -22,7 +22,7 @@ import { withOptional } from '@gyomu/shared';
 
 //type FtpConfig = Config.Success<typeof ftpConfigRaw>;
 
-export class SftpService extends ServiceMap.Service<
+export class SftpService extends Context.Service<
   SftpService,
   {
     withConnection: <A, R = never>(

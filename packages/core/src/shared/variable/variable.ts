@@ -1,11 +1,11 @@
 import { BusinessCalendarService } from '../../gyomu/date/BusinessCalendar.js';
 import { DBError } from '../../errors.js';
-import { Effect, ServiceMap } from 'effect';
+import { Effect, Context } from 'effect';
 import { GyomuRepository } from '../../gyomu/GyomuRepository.js';
 import { LocalDate } from '@gyomu/shared/entity';
 import { ValueError } from '@gyomu/shared';
 
-export class VariableTranslatorService extends ServiceMap.Service<
+export class VariableTranslatorService extends Context.Service<
   VariableTranslatorService,
   {
     parse(

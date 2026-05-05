@@ -5,4 +5,5 @@ export type FieldRenderer = (props: {
   value: any;
   onChange: (v: any) => void;
   onBlur?: () => void;
+  error?: string;
 }) => React.ReactNode;

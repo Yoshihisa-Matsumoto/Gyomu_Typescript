@@ -1,11 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { Effect, Result, Schema } from 'effect';
-import { schemaField, BooleanFromString } from '../entity/fields.js';
+import { schemaField, BooleanFromString } from '../fields.js';
 import {
   convertFromSchemaObjectWithEffect,
   convertToSchemaObjectWithEffect,
-} from '../entity/convert.js';
-import { ValueError } from '../error/ValueError.js';
+} from '../convert.js';
 
 // ----------------------
 // helper

@@ -1,8 +1,8 @@
 import { Effect } from 'effect';
-import { ServiceMap } from 'effect';
+import { Context } from 'effect';
 import { User } from '../../schemas/user.js';
 
-export class UserService extends ServiceMap.Service<
+export class UserService extends Context.Service<
   UserService,
   {
     getCurrentUser(): Effect.Effect<User, Error>;

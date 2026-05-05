@@ -3,7 +3,7 @@ import {
   ConfigProvider,
   Effect,
   Layer,
-  ServiceMap,
+  Context,
   FileSystem,
 } from 'effect';
 import { IOError, ConfigError } from '@gyomu/core';
@@ -29,7 +29,7 @@ export const ConfigProviderTest = ConfigProvider.fromUnknown({
   LOG_LEVEL: 'debug',
 }).pipe(ConfigProvider.layer);
 
-export class ConfigService extends ServiceMap.Service<
+export class ConfigService extends Context.Service<
   ConfigService,
   {
     load: <A>(

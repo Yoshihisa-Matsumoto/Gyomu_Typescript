@@ -4,6 +4,7 @@ import {
   Fields,
   Mutable,
   Optionalized,
+  UIAnnotationField,
   UIAnnotations,
 } from './type.js';
 import { PrimaryFields, AuditFields } from './fields.js';
@@ -22,6 +23,23 @@ const pickFields = <T extends Fields, K extends readonly (keyof T)[]>(
 
 const optionalizeFields = <T extends Fields>(fields: T): Optionalized<T> =>
   mapValues(fields, (v) => Schema.optional(v));
+
+const PrimaryFieldsUIAnnotation = {
+  id: {
+    label: 'ID',
+    readonly: true,
+  } as UIAnnotationField,
+};
+const AuditFieldsUIAnnotation: { [field: string]: UIAnnotationField } = {
+  modifiedAt: {
+    label: 'Update Time',
+    readonly: true,
+  },
+  modifiedBy: {
+    label: 'Updated By',
+    readonly: true,
+  },
+};
 
 export const defineEntityCrudSchemas = <
   TFields extends Fields,

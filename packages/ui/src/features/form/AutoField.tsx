@@ -1,23 +1,18 @@
-import { FormFieldMeta } from '@core/dsl';
-import { FieldRenderer } from '@ui/renderer';
 import { resolveFieldType } from '@core/engine/autoForm';
 import { muiRenderer } from '@ui/renderer/mui';
 import { MuiFieldLayout } from '@ui/adapters/mui';
-import { FieldLayout } from '@ui/components/layout';
+import { AutoFieldProps } from './types';
+import { createFieldController } from './adapter';
+import { withOptional } from '@gyomu/shared';
 
-export function AutoField({
+export function AutoField<TValue>({
   fieldApi,
   meta,
   renderer = muiRenderer,
   layout: Layout = MuiFieldLayout,
-}: {
-  fieldApi: any;
-  meta: FormFieldMeta;
-  renderer?: Record<string, FieldRenderer>;
-  layout: FieldLayout;
-}) {
-  const value = fieldApi.state.value;
-
+}: AutoFieldProps<TValue>) {
+  const controller = createFieldController(fieldApi);
+  console.log(`Field: ${meta.name} Value: ${controller.value}`);
   const key = resolveFieldType(meta);
   const Component = renderer[key];
 
@@ -25,14 +20,9 @@ export function AutoField({
   return (
     <Layout
       label={meta.label ?? meta.name}
-      error={fieldApi.state.meta.touchedErrors}
+      {...withOptional({ error: controller.error })}
     >
-      <Component
-        meta={meta}
-        value={value}
-        onChange={fieldApi.handleChange}
-        onBlur={fieldApi.handleBlur}
-      />
+      <Component meta={meta} {...controller} />
     </Layout>
   );
 }

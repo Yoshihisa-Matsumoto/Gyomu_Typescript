@@ -23,7 +23,8 @@
     "coverage:report": "nyc report --reporter=html --reporter=text-summary --temp-dir coverage",
     "coverage:all": "pnpm test:coverage && pnpm coverage:merge && pnpm coverage:report",
     "coverage:ci:all": "pnpm test:ci:coverage && pnpm coverage:merge && pnpm coverage:report",
-    "dep:check": "knip"
+    "dep:check": "knip",
+    "check:sync:version": "pnpm syncpack list"
   },
   "engines": {
     "node": ">=24.0.0",

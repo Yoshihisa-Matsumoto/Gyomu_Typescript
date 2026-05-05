@@ -1,4 +1,4 @@
-import { Effect, FileSystem, Layer, ServiceMap, Option } from 'effect';
+import { Effect, FileSystem, Layer, Option } from 'effect';
 import { AccessError, IOError, TimeoutError } from '@gyomu/core';
 import path from 'path';
 import { ensure, ensureEffect, fromPromise } from '@gyomu/shared/effect';

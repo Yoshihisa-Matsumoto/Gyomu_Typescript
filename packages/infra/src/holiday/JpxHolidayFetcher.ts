@@ -1,5 +1,8 @@
 import { Effect, Layer } from 'effect';
-import { HolidayFetcher } from '@gyomu/core/gyomu/holiday';
+import {
+  HolidayFetcher,
+  HolidayFetcherService,
+} from '@gyomu/core/gyomu/holiday';
 import { fetchJpxHolidays } from './jpxFetcher.js';
 import { wrapInfraError } from '@gyomu/shared';
 import { GyomuError, gyomuExternalFailure } from '@gyomu/core';
@@ -22,7 +25,7 @@ const JPXHolidayFetcherLive = {
   },
 };
 
-export const JPXHolidayFetcherLayer = Layer.effect(
+export const JPXHolidayFetcherLayer = Layer.succeed(
   HolidayFetcher,
-  Effect.succeed(JPXHolidayFetcherLive),
+  JPXHolidayFetcherLive,
 );

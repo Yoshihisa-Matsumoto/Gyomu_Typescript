@@ -1,4 +1,4 @@
-import { Effect, FileSystem, Layer, ServiceMap } from 'effect';
+import { Effect, FileSystem, Layer } from 'effect';
 import { FileFilterInfo } from '@gyomu/core/gyomu/file';
 import { FileCompareType, FilterType } from '@gyomu/core/gyomu/file';
 import { createFileInfo, FileInfo } from './fileInfo.js';

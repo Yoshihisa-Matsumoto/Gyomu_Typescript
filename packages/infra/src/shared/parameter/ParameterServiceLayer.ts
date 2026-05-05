@@ -1,5 +1,5 @@
 import { DBError } from '@gyomu/core';
-import { Effect, Layer, Schedule, ServiceMap } from 'effect';
+import { Effect, Layer, Schedule } from 'effect';
 import { GyomuRepository } from '@gyomu/core/gyomu';
 import { formatDateToYmd } from '@gyomu/shared/entity';
 import { User } from '@gyomu/core/schemas/user';

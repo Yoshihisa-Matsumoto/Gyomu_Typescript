@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { buildFormMetaFromStructSchema } from '../core/dsl/schemeAttribute.js'; // パス適宜
+import { buildFormMetaFromStructSchema } from '../schemeAttribute.js'; // パス適宜
 import {
   defineEntityCrudSchemas,
   EntityDefinition,
@@ -56,7 +56,7 @@ function createSchemas({
 
 describe('getStructFields', () => {
   describe('visibility', () => {
-    it('visible=false は除外される', () => {
+    it('visible=false は除外されない', () => {
       const testSchemasDefinition = {
         fields: {
           name: schemaField.text({ maxLength: 50 }),
@@ -80,12 +80,13 @@ describe('getStructFields', () => {
         logger,
       });
 
-      expect(result.map((f) => f.name)).toEqual(['name']);
+      expect(result.map((f) => f.name)).toEqual(['name', 'age']);
+      expect(result.find((f) => f.name == 'age')!.visible).toBeFalsy();
     });
     // -----------------------------
     // ⑥ UI未定義は除外
     // -----------------------------
-    it('UI未定義のフィールドは除外される', () => {
+    it('UI未定義のフィールドは除外されない', () => {
       const schemas = createSchemas({
         fields: ['a', 'b'],
         astMap: {
@@ -104,7 +105,9 @@ describe('getStructFields', () => {
         ui: schemas.ui,
       });
 
-      expect(result.map((f) => f.name)).toEqual(['a']);
+      expect(result.map((f) => f.name)).toEqual(['a', 'b']);
+      const bAttribute = result.find((f) => f.name == 'b')!;
+      expect(bAttribute.visible).toBeFalsy();
     });
     it('contextごとの visible override が効く', () => {
       const schemas = createSchemas({
@@ -125,7 +128,8 @@ describe('getStructFields', () => {
         ui: schemas.ui,
       });
 
-      expect(result.length).toBe(0);
+      expect(result.length).toBe(1);
+      expect(result[0]?.visible).toBeFalsy();
     });
   });
 

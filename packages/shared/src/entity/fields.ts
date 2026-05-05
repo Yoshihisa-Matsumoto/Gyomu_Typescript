@@ -1,5 +1,6 @@
 import { Schema, SchemaTransformation } from 'effect';
 import { LocalDateSchema } from './date.js';
+import { UIAnnotationField, UIAnnotations } from './type.js';
 
 type StringEnumOption = {
   enumValues: string[];
@@ -71,6 +72,7 @@ export const schemaField = {
 export const PrimaryFields = {
   id: schemaField.id,
 };
+
 export const AuditFields = {
   modifiedAt: schemaField.timestampString,
   modifiedBy: schemaField.text({ maxLength: 100 }),

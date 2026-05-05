@@ -1,11 +1,11 @@
 import { DBError } from '../../errors.js';
-import { Effect, ServiceMap } from 'effect';
+import { Effect, Context } from 'effect';
 import { User } from '../../schemas/user.js';
 import { SchemaValidationError } from '@gyomu/shared';
 
 type ParameterType = string | number | boolean;
 
-export class ParameterService extends ServiceMap.Service<
+export class ParameterService extends Context.Service<
   ParameterService,
   {
     getValue: (

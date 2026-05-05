@@ -1,6 +1,6 @@
-import { ServiceMap } from 'effect';
+import { Context } from 'effect';
 
-export class RuntimeContext extends ServiceMap.Service<
+export class RuntimeContext extends Context.Service<
   RuntimeContext,
   {
     readonly machineName: string;

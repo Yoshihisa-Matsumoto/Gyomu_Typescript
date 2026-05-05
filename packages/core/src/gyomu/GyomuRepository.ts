@@ -1,4 +1,4 @@
-import { Effect, Layer, ServiceMap } from 'effect';
+import { Effect, Layer, Context } from 'effect';
 import {
   AppInfoSchema,
   MarketHolidaySchema,
@@ -18,7 +18,7 @@ import {
 } from '../data/crud/index.js';
 import { SchemaValidationError } from '../../../shared/src/error/SchemaValidationError.js';
 
-export class GyomuRepository extends ServiceMap.Service<
+export class GyomuRepository extends Context.Service<
   GyomuRepository,
   {
     readonly appInfo: CrudRepositoryFromSchemasWithFindAllAndFindByColumn<

@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { polling } from '../../shared/effect/timer.js';
-import { Effect, Layer, Schema, ServiceMap } from 'effect';
+import { Effect, Layer, Schema, Context } from 'effect';
 import { GyomuRepository } from '../GyomuRepository.js';
 import { MilestoneDailySchema, MilestoneSchema } from '../../schemas/gyomu.js';
 import { DBError, TimeoutError } from '../../errors.js';
@@ -31,7 +31,7 @@ export type MilestoneExistResultType =
 //   return targetDateYmD;
 // };
 
-export class MilestoneService extends ServiceMap.Service<
+export class MilestoneService extends Context.Service<
   MilestoneService,
   {
     exists: (

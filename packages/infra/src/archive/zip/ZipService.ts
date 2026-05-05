@@ -1,4 +1,4 @@
-import { Effect, Layer, ServiceMap, Stream } from 'effect';
+import { Effect, Layer, Context, Stream } from 'effect';
 import { IOError } from '@gyomu/core';
 import { PlatformError } from 'effect/PlatformError';
 import { FileTransportInfo } from '@gyomu/core/gyomu/file';
@@ -17,7 +17,7 @@ import {
 import { FileSystem } from 'effect';
 // import { Path } from 'effect/Path';
 
-export class ZipService extends ServiceMap.Service<
+export class ZipService extends Context.Service<
   ZipService,
   {
     create: (

@@ -46,7 +46,7 @@ export type CrudSchemaType<
   | SelectSchemaOf<CrudSchemaGeneratorType<TFields, TIncludeAudit>>;
 
 export type UIAnnotation = {
-  widget?: 'text' | 'textarea' | 'select' | 'date' | 'number';
+  widget?: 'text' | 'textarea' | 'select' | 'date' | 'number' | 'hidden';
   label?: string;
   placeholder?: string;
   readonly?: boolean;

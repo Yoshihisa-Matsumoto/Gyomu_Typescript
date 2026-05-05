@@ -1,4 +1,4 @@
-import { Config, Effect, Layer, ServiceMap, Stream } from 'effect';
+import { Config, Effect, Layer, Context, Stream } from 'effect';
 import { AiClient, ChatContent, ChatMessage } from '@gyomu/core/gyomu/ai';
 import { Content, GoogleGenAI, Part, ToolType } from '@google/genai';
 import { AIError, isRetryableAiError } from '@gyomu/core';
@@ -11,7 +11,7 @@ import {
 } from '../../config.js';
 import { PlatformLayer } from '../../layer.js';
 import { wrapInfraError } from '@gyomu/shared';
-export class GeminiClient extends ServiceMap.Service<GeminiClient, AiClient>()(
+export class GeminiClient extends Context.Service<GeminiClient, AiClient>()(
   'GeminiClient',
   {
     make: Effect.gen(function* () {

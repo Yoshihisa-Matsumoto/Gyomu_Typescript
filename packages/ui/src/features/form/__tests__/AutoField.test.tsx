@@ -1,7 +1,8 @@
 import { expect, it, vi } from 'vitest';
-import { AutoField } from '../features/form/AutoField';
+import { AutoField } from '../AutoField';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { SimpleFieldType } from '../types';
 
 it('rendererとlayoutが正しく呼ばれる', () => {
   const mockRenderer = {
@@ -23,7 +24,7 @@ it('rendererとlayoutが正しく呼ばれる', () => {
 
   render(
     <AutoField
-      fieldApi={fieldApi}
+      fieldApi={fieldApi as any}
       meta={{ name: 'name', label: '名前', widget: 'text', options: {} }}
       renderer={mockRenderer}
       layout={mockLayout}
@@ -46,7 +47,7 @@ it('rendererが無いとエラー', () => {
     },
     handleChange: vi.fn(),
     handleBlur: vi.fn(),
-  };
+  } as unknown as SimpleFieldType<string>;
   expect(() =>
     render(
       <AutoField

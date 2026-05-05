@@ -5,7 +5,7 @@ import {
 } from '@gyomu/core/gyomu/date';
 import { addDays, addMonths, format, subDays } from 'date-fns';
 import { DBError } from '@gyomu/core';
-import { Effect, Layer, ServiceMap } from 'effect';
+import { Effect, Layer } from 'effect';
 import { GyomuRepository } from '@gyomu/core/gyomu';
 import { fromSync } from '@gyomu/shared/effect';
 import {

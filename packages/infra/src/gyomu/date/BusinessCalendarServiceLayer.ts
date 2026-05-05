@@ -1,7 +1,7 @@
 import { addDays, subDays } from 'date-fns';
 import { addMonths, isBefore, isEqual } from 'date-fns';
 
-import { Effect, Layer, ServiceMap } from 'effect';
+import { Effect, Layer } from 'effect';
 import { GyomuRepository } from '@gyomu/core/gyomu';
 import { DBError, GyomuError, mapGyomuReason } from '@gyomu/core';
 import { fromSync } from '@gyomu/shared/effect';

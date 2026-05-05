@@ -7,7 +7,8 @@ export type FieldType =
   | 'number'
   | 'textarea'
   | 'date'
-  | 'select';
+  | 'select'
+  | 'hidden';
 
 export type FieldResolver = (meta: FormFieldMeta) => FieldType;
 
@@ -25,6 +26,8 @@ export const resolveFieldType: FieldResolver = (meta) => {
       return 'date';
     case 'select':
       return 'select';
+    case 'hidden':
+      return 'hidden';
     default:
       throw new Error('Unsupported');
   }

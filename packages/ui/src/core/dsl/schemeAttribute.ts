@@ -8,6 +8,7 @@ import {
 import { AST, Check } from 'effect/SchemaAST';
 import { logger, Logger } from '@gyomu/core';
 import { FormFieldMeta } from './type.js';
+import { withOptional } from '@gyomu/shared';
 
 function getMergedAnnotations(
   name: string,
@@ -16,23 +17,23 @@ function getMergedAnnotations(
   logger?: Logger,
 ): Record<string, any> {
   const ast = schema;
-  logger?.debug({ name, ast }, 'AST');
+  //logger?.debug({ name, ast }, 'AST');
   let result: Record<string, any> = inputResult;
   if (ast._tag == 'Null') {
     result['required'] = false;
   }
   if (ast.annotations) {
-    logger?.debug(ast.annotations, 'Annotation exists');
+    //logger?.debug(ast.annotations, 'Annotation exists');
     Object.assign(result, ast.annotations);
   }
 
   const checks = ast.checks;
   if (Array.isArray(checks)) {
-    logger?.debug(checks, 'checks exists');
+    //logger?.debug(checks, 'checks exists');
     for (const item of checks) {
       const check: Check<any> = item;
       if (check.annotations) {
-        logger?.debug(check.annotations, 'Check Annotation exists');
+        //logger?.debug(check.annotations, 'Check Annotation exists');
         if (check.annotations.toArbitraryConstraint) {
           const constraint = check.annotations.toArbitraryConstraint;
           if (constraint.array) {
@@ -132,66 +133,6 @@ export function buildFormMetaFromStructSchema<TFields extends Fields>(args: {
     })
     .filter((v): v is FormFieldMeta => v != null);
 }
-// export function buildFormMetaFromCrudSchema<
-//   TFields extends Fields,
-//   TIncludeAudit extends boolean,
-// >(
-//   schemas: CrudSchemaGeneratorType<TFields, TIncludeAudit>,
-//   schemaType: 'select' | 'insert' | 'update',
-//   logger?: Logger,
-// ): FormFieldMeta[] {
-//   //logger?.debug(JSON.stringify(schema, null, 2));
-//   let properties: readonly PropertySignature[] = [];
-//   switch (schemaType) {
-//     case 'select':
-//       properties = schemas.selectSchema.ast.propertySignatures;
-//       break;
-//     case 'update':
-//       properties = schemas.updateSchema.ast.propertySignatures;
-//       break;
-//     case 'insert':
-//       properties = schemas.insertSchema.ast.propertySignatures;
-//       break;
-//   }
-//   const fields = properties;
-
-//   return fields
-//     .map((f) => {
-//       const name = f.name.toString();
-//       const result: Record<string, any> = {};
-//       if (name == 'modifiedAt') {
-//         logger?.debug(f, 'digging AST');
-//       }
-//       const annotations = getMergedAnnotations(name, f.type, result, logger);
-
-//       const ui = schemas.ui?.[name as keyof TFields];
-//       const mergeUi = mergeUIAttributes(toUIContext(schemaType), ui);
-
-//       if (f.type._tag == 'Union') {
-//         const enums = f.type.types
-//           .filter((t) => t._tag == 'Literal')
-//           .map((v) => v.literal.toString());
-//         validateEnumAttribute(enums, mergeUi, name);
-//       }
-//       // if (!ui) {
-//       //   throw new ValueError({
-//       //     message: `no valid ui Annotation`,
-//       //     cause: undefined,
-//       //     field: name,
-//       //   });
-//       // }
-//       // if (!annotations || Object.keys(result).length == 0) {
-//       //   throw new ValueError({
-//       //     message: `no valid annotation on schema`,
-//       //     cause: undefined,
-//       //     field: name,
-//       //   });
-//       // }
-//       //logger?.debug(annotations);
-//       return resolveUI(name, annotations, mergeUi);
-//     })
-//     .filter((v): v is FormFieldMeta => v != null);
-// }
 
 function validateEnumAttribute(
   enumValues: readonly string[] | undefined,
@@ -233,24 +174,12 @@ const mergeUIAttributes = (
   }
   return uiDef as UIAnnotation;
 };
-// function toUIContext(
-//   schemaType: 'select' | 'insert' | 'update',
-// ): 'view' | 'create' | 'update' {
-//   switch (schemaType) {
-//     case 'select':
-//       return 'view';
-//     case 'insert':
-//       return 'create';
-//     case 'update':
-//       return 'update';
-//   }
-// }
 function resolveUI(
   name: string,
   annotations: Record<string, any>,
   uiDef?: UIAnnotation,
 ): FormFieldMeta | undefined {
-  if (!uiDef) return undefined;
+  //if (!uiDef) return undefined;
 
   // if ('default' in uiDef) {
   //   const merged: FormFieldMeta = {
@@ -271,13 +200,16 @@ function resolveUI(
   //   return merged;
   // }
 
-  if (uiDef.visible === false) return undefined;
+  //if (uiDef.visible === false) return undefined;
 
   return {
     name,
+    ...withOptional(
+      !uiDef ? { visible: false, widget: 'hidden' as const } : {},
+    ),
     ...uiDef,
-    label: uiDef.label ?? name,
-    placeholder: uiDef.placeholder ?? name,
+    label: uiDef?.label ?? name,
+    placeholder: uiDef?.placeholder ?? name,
     required: annotations['required'] ?? true,
     options: annotations ?? {},
   };

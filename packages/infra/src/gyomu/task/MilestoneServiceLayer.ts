@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { polling } from '@gyomu/core/shared/effect';
-import { Effect, Layer, Schema, ServiceMap } from 'effect';
+import { Effect, Layer, Schema } from 'effect';
 import { GyomuRepository } from '@gyomu/core/gyomu';
 import {
   MilestoneDailySchema,

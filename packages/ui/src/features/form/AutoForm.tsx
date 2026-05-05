@@ -1,19 +1,27 @@
-import { FieldRenderer } from '@ui/renderer/types';
+// --- React / 外部ライブラリ ---
+import React from 'react';
 import { useForm } from '@tanstack/react-form';
-import { FormLayout } from '@ui/components/layout/headless/FormLayout';
-import { MuiFormLayout } from '@ui/adapters/mui/layout/MuiFormLayout';
+
+// --- Core / Engine ---
 import { buildFormMetaFromStructSchema } from '@core/dsl';
+import { buildDefaultValues, validateWithSchema } from '@core/engine/autoForm';
+
+// --- Shared / Core (ドメイン・基盤) ---
 import { CrudSchemaType, Fields, UIAnnotations } from '@gyomu/shared/entity';
 import { Logger } from '@gyomu/core';
-import React from 'react';
-import { AutoField } from './AutoField';
-import { FieldLayout } from '@ui/components/layout/headless/FieldLayout';
-import { MuiFieldLayout } from '@ui/adapters/mui/layout/MuiFieldLayout';
-import { muiRenderer } from '@ui/renderer/mui/muiRenderer';
-import { DefaultSubmitButton } from '@ui/components/form/DefaultSubmitButton';
-import { buildDefaultValues } from '@core/engine/autoForm';
-import { validateWithSchema } from '@core/engine/autoForm';
+
+// --- UI (抽象コンポーネント) ---
+import { FormLayout, FieldLayout } from '@ui/components/layout';
+import { DefaultSubmitButton } from '@ui/components/form';
 import { SubmitButtonProps } from '@ui/components';
+import { FieldRenderer } from '@ui/renderer';
+
+// --- UI (MUI Adapter) ---
+import { MuiFormLayout, MuiFieldLayout } from '@ui/adapters/mui';
+import { muiRenderer } from '@ui/renderer/mui';
+
+// --- ローカル ---
+import { AutoField } from './AutoField';
 
 type AutoFormProps<TFields extends Fields> = {
   schema: CrudSchemaType<TFields, boolean>;
@@ -56,7 +64,7 @@ export function AutoForm<TFields extends Fields>({
       }),
     [schema, uiContext, logger, ui],
   );
-
+  console.log('Field Meta', JSON.stringify(fieldConfigs, null, 2));
   const form = useForm({
     defaultValues: buildDefaultValues(fieldConfigs, initialValues),
     onSubmit: async ({ value }) => {
@@ -90,19 +98,30 @@ export function AutoForm<TFields extends Fields>({
       </Layout>
 
       <form.Subscribe
-        selector={(state) => [state.canSubmit, state.isSubmitting]}
+        selector={(state) => ({
+          canSubmit: state.canSubmit,
+          isSubmitting: state.isSubmitting,
+        })}
       >
-        {([canSubmit, isSubmitting]) => {
-          const state = normalizeSubmitState(canSubmit, isSubmitting);
+        {(rawState) => {
+          const state = normalizeFormState(rawState);
           return <SubmitButton {...state} />;
         }}
       </form.Subscribe>
     </form>
   );
 }
-function normalizeSubmitState(canSubmit?: boolean, isSubmitting?: boolean) {
+
+type NormalizedFormState = {
+  canSubmit: boolean;
+  isSubmitting: boolean;
+};
+function normalizeFormState(state: {
+  canSubmit?: boolean;
+  isSubmitting?: boolean;
+}): NormalizedFormState {
   return {
-    canSubmit: !!canSubmit,
-    isSubmitting: !!isSubmitting,
+    canSubmit: !!state.canSubmit,
+    isSubmitting: !!state.isSubmitting,
   };
 }

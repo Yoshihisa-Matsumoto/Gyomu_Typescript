@@ -1,15 +1,24 @@
-import { Schema } from 'effect';
+import {
+  convertToSchemaObjectWithResult,
+  CrudSchemaType,
+  Fields,
+  resolveFieldErrorsFromIssue,
+} from '@gyomu/shared/entity';
+import { Result } from 'effect';
 
-export function validateWithSchema(schema: Schema.Schema<any>, value: any) {
-  try {
-    // Effect Schema の decode API に合わせて調整
-    console.log('validate', value);
-    const data = Schema.decodeSync(Schema.toType(schema))(value);
-    return { ok: true as const, data };
-  } catch (error: any) {
-    return {
-      ok: false as const,
-      errors: { _form: error.message ?? 'Validation error' },
-    };
+export function validateWithSchema<TFields extends Fields>(
+  schema: CrudSchemaType<TFields, boolean>,
+  value: unknown,
+) {
+  console.log('form', JSON.stringify(value, null, 2));
+  const result = convertToSchemaObjectWithResult(schema, value, true);
+  console.log(result, JSON.stringify(result, null, 2));
+  if (Result.isSuccess(result)) {
+    return { ok: true as const, data: result.success };
   }
+
+  return {
+    ok: false as const,
+    errors: resolveFieldErrorsFromIssue(schema, result.failure),
+  };
 }

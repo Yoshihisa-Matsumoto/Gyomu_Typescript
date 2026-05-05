@@ -38,12 +38,11 @@
     "!**/__tests__",
     "!**/__sit__"
   ],
-  "devDependencies": {},
   "dependencies": {
     "@gyomu/core": "workspace:*",
-    "@gyomu/shared": "workspace:*",
     "@gyomu/infra": "workspace:*",
+    "@gyomu/shared": "workspace:*",
     "@mastra/core": "^1.28.0",
-    "effect": "4.0.0-beta.42"
+    "effect": "4.0.0-beta.57"
   }
 }

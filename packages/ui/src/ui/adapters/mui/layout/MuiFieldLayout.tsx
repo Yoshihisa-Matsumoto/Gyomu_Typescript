@@ -12,9 +12,7 @@ export function MuiFieldLayout({ label, error, children }: FieldLayoutProps) {
       <Grid size={2}>
         {children}
 
-        {error?.length ? (
-          <div style={{ color: 'red' }}>{error.join(', ')}</div>
-        ) : null}
+        {error ? <div style={{ color: 'red' }}>{error}</div> : null}
       </Grid>
     </>
   );

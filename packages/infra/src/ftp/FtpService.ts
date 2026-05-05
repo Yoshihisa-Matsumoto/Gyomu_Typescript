@@ -1,11 +1,4 @@
-import {
-  Effect,
-  Layer,
-  ServiceMap,
-  Redacted,
-  Config,
-  FileSystem,
-} from 'effect';
+import { Effect, Layer, Context, Redacted, Config, FileSystem } from 'effect';
 import { Client } from 'basic-ftp';
 import { withDefault } from 'effect/Config';
 import {
@@ -30,7 +23,7 @@ import {
 
 //type FtpConfig = Config.Success<typeof ftpConfigRaw>;
 
-export class FtpService extends ServiceMap.Service<
+export class FtpService extends Context.Service<
   FtpService,
   {
     withConnection: <A, R = never>(

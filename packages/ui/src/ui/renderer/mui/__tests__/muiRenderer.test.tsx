@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { expect, it, vi } from 'vitest';
-import { muiRenderer } from '../ui/renderer/mui/muiRenderer';
+import { muiRenderer } from '../muiRenderer';
 
 it('text renderer が入力を onChange に渡す', () => {
   const handleChange = vi.fn();

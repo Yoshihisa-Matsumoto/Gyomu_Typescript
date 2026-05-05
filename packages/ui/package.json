@@ -21,7 +21,7 @@
     "build:ci": "pnpm run clean && tsc  -b tsconfig.json",
     "clean": "rimraf ./dist .tsbuildinfo",
     "type-check": "tsc --project tsconfig.typecheck.json",
-    "test": "vitest",
+    "test": "bunx vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json ",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
@@ -64,7 +64,7 @@
     "@types/node": "^24.10.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "effect": "4.0.0-beta.42",
+    "effect": "4.0.0-beta.57",
     "eslint-plugin-storybook": "^10.3.6",
     "highlight.js": "^11.11.1",
     "marked": "^17.0.3",

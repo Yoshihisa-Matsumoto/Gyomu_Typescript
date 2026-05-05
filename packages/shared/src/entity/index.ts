@@ -4,3 +4,4 @@ export * from './fields.js';
 export * from './date.js';
 export * from './convert.js';
 export * from './defineEntityCrudSchemas.js';
+export * from './issueAstMatcher.js';

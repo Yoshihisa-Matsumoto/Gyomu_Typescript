@@ -35,4 +35,5 @@ export const muiRenderer: Record<string, FieldRenderer> = {
       onBlur={onBlur}
     />
   ),
+  hidden: ({ value }) => <input type="hidden" value={value ?? ''} />,
 };
