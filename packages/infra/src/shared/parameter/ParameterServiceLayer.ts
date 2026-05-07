@@ -1,5 +1,5 @@
 import { DBError } from '@gyomu/core';
-import { Effect, Layer, Schedule, ServiceMap } from 'effect';
+import { Effect, Layer, Schedule } from 'effect';
 import { GyomuRepository } from '@gyomu/core/gyomu';
 import { formatDateToYmd } from '@gyomu/shared/entity';
 import { User } from '@gyomu/core/schemas/user';
@@ -47,7 +47,7 @@ export const ParameterServiceLayer = Layer.effect(
           );
         }
         if (!targetDate) {
-          return itemValues[0].itemValue;
+          return itemValues[0]!.itemValue;
         }
 
         const targetYmd = formatDateToYmd(targetDate);

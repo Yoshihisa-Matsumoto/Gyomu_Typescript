@@ -19,7 +19,7 @@ const createControlledReadable = (chunks: string[]) => {
   return new Readable({
     read() {
       if (index < chunks.length) {
-        this.push(Buffer.from(chunks[index++]));
+        this.push(Buffer.from(chunks[index++]!));
       } else {
         this.push(null); // end
       }

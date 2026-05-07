@@ -8,7 +8,7 @@ const table: { [key: string]: number } = {
   '\u301c': 0x8160,
 };
 const initTable = () => {
-  if (table.length > 3) return;
+  if (Object.keys(table).length > 3) return;
 
   const decoder = new TextDecoder('shift-jis');
   for (let i = 0x81; i <= 0xfc; i++) {

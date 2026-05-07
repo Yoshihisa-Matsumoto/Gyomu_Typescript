@@ -1,7 +1,7 @@
 import { addDays, subDays } from 'date-fns';
 import { addMonths, isBefore, isEqual } from 'date-fns';
 
-import { Effect, Layer, ServiceMap } from 'effect';
+import { Effect, Layer, Context } from 'effect';
 import { GyomuRepository } from '../GyomuRepository.js';
 import { DBError, GyomuError, mapGyomuReason } from '../../errors.js';
 import { fromSync } from '@gyomu/shared/effect';
@@ -60,7 +60,7 @@ export interface BusinessCalendar {
   getHolidays: (from: LocalDate, to: LocalDate) => LocalDate[];
 }
 
-export class BusinessCalendarService extends ServiceMap.Service<
+export class BusinessCalendarService extends Context.Service<
   BusinessCalendarService,
   {
     get: (

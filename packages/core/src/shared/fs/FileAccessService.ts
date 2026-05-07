@@ -1,7 +1,7 @@
-import { Effect, FileSystem, Layer, ServiceMap, Option } from 'effect';
+import { Effect, FileSystem, Layer, Context, Option } from 'effect';
 import { AccessError, IOError, TimeoutError } from '../../errors.js';
 
-export class FileAccessService extends ServiceMap.Service<
+export class FileAccessService extends Context.Service<
   FileAccessService,
   {
     canAccess: (

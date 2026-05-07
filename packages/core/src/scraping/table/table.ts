@@ -30,7 +30,7 @@ export class Table extends GenericElement<HTMLTableElement> {
     if (!!tHeads && tHeads.length > 0) {
       const tHead = tHeads[0];
 
-      tHead.getGenericElementsByTagName('tr').forEach((thRow) => {
+      tHead!.getGenericElementsByTagName('tr').forEach((thRow) => {
         const row = new TableRow(thRow.node, previousRow);
         this.__headers.push(row);
         previousRow = row;
@@ -54,7 +54,7 @@ export class Table extends GenericElement<HTMLTableElement> {
     if (this.__headers.length === 0 && this.#headerExist) {
       isHeaderFromRecord = true;
       if (rows.length > 0) {
-        this.__headers.push(new TableRow(rows[0].node, undefined));
+        this.__headers.push(new TableRow(rows[0]!.node, undefined));
       }
     }
     let isFirstRecord = true;
@@ -82,7 +82,7 @@ export class Table extends GenericElement<HTMLTableElement> {
     } else {
       if (this.__records.length === 0) return [{}];
       isHeaderExistInRecord = true;
-      const columnCount = this.__records[0].columns.length;
+      const columnCount = this.__records[0]!.columns.length;
       for (index = 0; index < columnCount; index++) {
         columnIndex.set(index, 'Column' + (index + 1).toString());
       }
@@ -97,7 +97,7 @@ export class Table extends GenericElement<HTMLTableElement> {
         const dictionary: { [key: string]: string } = {};
         //let index = 0;
         columnIndex.forEach((columnName, key) => {
-          dictionary[columnName] = row.columns[key].textValue;
+          dictionary[columnName] = row.columns[key]!.textValue;
         });
         //index++;
         records.push(dictionary);

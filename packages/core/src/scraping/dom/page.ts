@@ -97,11 +97,17 @@ export class Page {
           | string
           | string[];
         if (headerValue) {
-          if (Array.isArray(headerValue)) {
+          if (
+            Array.isArray(headerValue) &&
+            headerValue.length > 0 &&
+            headerValue[0]
+          ) {
             headerValue = headerValue[0];
           }
           fileName = decodeURI(
-            headerValue.substring(headerValue.indexOf('filename=') + 9),
+            (headerValue as string).substring(
+              headerValue.indexOf('filename=') + 9,
+            ),
           );
         }
       }

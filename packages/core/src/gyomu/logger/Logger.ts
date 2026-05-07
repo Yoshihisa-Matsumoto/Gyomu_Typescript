@@ -26,6 +26,24 @@ let currentLogger: Logger = {
   isDebugEnabled: () => false,
   end: async () => {},
 };
+
+const wrapConsole =
+  (level: 'info' | 'debug' | 'warn' | 'error') =>
+  (arg1: any, arg2?: any, ...args: any[]) => {
+    if (typeof arg1 === 'string') {
+      return console[level](arg1);
+    }
+    return console[level](arg1, arg2, ...args);
+  };
+const consoleLogger: Logger = {
+  error: wrapConsole('error'),
+  warn: wrapConsole('warn'),
+  debug: wrapConsole('debug'),
+  info: wrapConsole('info'),
+  isDebugEnabled: () => false,
+  end: async () => {},
+};
+currentLogger = consoleLogger;
 // 👇 差し替えポイント
 export const setLogger = (logger: Logger) => {
   currentLogger = logger;

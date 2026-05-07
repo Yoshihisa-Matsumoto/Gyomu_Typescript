@@ -2,7 +2,7 @@ import * as tediuous from 'tedious';
 import * as tarn from 'tarn';
 import { Kysely, MssqlDialect } from 'kysely';
 import { DB } from '../generated/db.js';
-import { Effect, Layer, Scope, ServiceMap } from 'effect';
+import { Effect, Layer, Scope, Context } from 'effect';
 import { fromSync } from '@gyomu/shared/effect';
 import { DBError } from '@gyomu/core';
 
@@ -59,7 +59,7 @@ const makeMssql = (config: {
     }),
   });
 };
-export class MssqlService extends ServiceMap.Service<
+export class MssqlService extends Context.Service<
   MssqlService,
   {
     make: (config: {

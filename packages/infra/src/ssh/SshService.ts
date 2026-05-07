@@ -1,4 +1,4 @@
-import { Effect, Layer, ServiceMap, Config, Option, FileSystem } from 'effect';
+import { Effect, Layer, Context, Config, Option, FileSystem } from 'effect';
 import { Client } from 'ssh2';
 import { withDefault } from 'effect/Config';
 import { NetworkError, ConfigError, IOError } from '@gyomu/core';
@@ -9,10 +9,11 @@ import { execute } from './internals/sshClient.js';
 
 import { connectEffect } from './internals/sshClient.js';
 import { readStringFromFile } from '../fs/fs-utils.js';
+import { withOptional } from '@gyomu/shared';
 
 //type FtpConfig = Config.Success<typeof ftpConfigRaw>;
 
-export class SshService extends ServiceMap.Service<
+export class SshService extends Context.Service<
   SshService,
   {
     withConnection: <A, R = never>(
@@ -75,7 +76,7 @@ export class SshService extends ServiceMap.Service<
           ).pipe(
             Effect.flatMap((client) =>
               Effect.gen(function* () {
-                yield* connectEffect(client, {
+                const configObj = withOptional({
                   host: config.host,
                   port: config.port,
                   username: config.user,
@@ -84,6 +85,7 @@ export class SshService extends ServiceMap.Service<
                     ? yield* readStringFromFile(privateKeyFilename, 'utf-8')
                     : undefined,
                 });
+                yield* connectEffect(client, configObj);
 
                 const ssh = {
                   execute: (

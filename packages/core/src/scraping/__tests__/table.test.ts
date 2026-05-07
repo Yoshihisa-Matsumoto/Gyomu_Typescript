@@ -17,7 +17,7 @@ test('Table initialization', async () => {
   );
   const table = convertGenericElementByTagName(
     'table',
-    tablesDiv[0].getGenericElementsByTagName('table')[0],
+    tablesDiv[0]!.getGenericElementsByTagName('table')[0]!,
     { headerExist: false },
   );
 
@@ -76,8 +76,8 @@ describe('TableRow', () => {
 
     const rows = dom.window.document.querySelectorAll('tr');
 
-    const row1 = new TableRow(rows[0]);
-    const row2 = new TableRow(rows[1], row1);
+    const row1 = new TableRow(rows[0]!);
+    const row2 = new TableRow(rows[1]!, row1);
 
     expect(row2.columns.length).toBe(2);
   });

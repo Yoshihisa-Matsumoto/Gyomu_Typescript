@@ -52,7 +52,7 @@ describe('diffEntities', () => {
     expect(result.deletes).toHaveLength(0);
     expect(result.unchanged).toHaveLength(1);
 
-    expect(result.unchanged[0].incoming).toEqual({
+    expect(result.unchanged[0]!.incoming).toEqual({
       id: '1',
       name: 'A',
       date: '2024-01-01',
@@ -68,7 +68,7 @@ describe('diffEntities', () => {
 
     expect(result.updates).toHaveLength(1);
 
-    const update = result.updates[0];
+    const update = result.updates[0]!;
 
     expect(update.changedFields).toEqual(['date']);
     expect(update.changedValues).toEqual({
@@ -85,7 +85,7 @@ describe('diffEntities', () => {
     });
 
     expect(result.deletes).toHaveLength(1);
-    expect(result.deletes[0].id).toBe('1');
+    expect(result.deletes[0]!.id).toBe('1');
   });
 
   it('複合ケース（insert/update/delete混在）', () => {
@@ -166,7 +166,7 @@ describe('diffEntities × AppInfoSchema (mailFromAddress)', () => {
 
     expect(result.updates).toHaveLength(1);
 
-    const update = result.updates[0];
+    const update = result.updates[0]!;
 
     expect(update.changedFields).toContain('mailFromAddress');
     expect(update.changedValues).toEqual({
@@ -198,7 +198,7 @@ describe('diffEntities × AppInfoSchema (mailFromAddress)', () => {
 
     expect(result.updates).toHaveLength(1);
 
-    const update = result.updates[0];
+    const update = result.updates[0]!;
 
     expect(update.changedFields).toContain('mailFromAddress');
     expect(update.changedValues).toEqual({
@@ -214,7 +214,6 @@ describe('diffEntities × AppInfoSchema (mailFromAddress)', () => {
         {
           id: '1',
           description: 'test',
-          mailFromAddress: undefined, // ← ここがポイント
           mailFromName: null,
         },
       ],
@@ -236,7 +235,7 @@ describe('diffEntities × AppInfoSchema (mailFromAddress)', () => {
     expect(result.unchanged).toHaveLength(1);
 
     // existingの値が維持されていること
-    expect(result.unchanged[0].existing.mailFromAddress).toBe(
+    expect(result.unchanged[0]?.existing.mailFromAddress).toBe(
       'old@example.com',
     );
   });

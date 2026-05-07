@@ -3,8 +3,9 @@ import { Effect, Schema } from 'effect';
 import {
   jsonString2SchemaObjectWithoutEffect,
   convertToSchemaObjectWithEffect,
+  convertToSchemaObjectWithResult,
   convertFromSchemaObjectWithEffect,
-} from '../entity/convert.js';
+} from '../convert.js';
 
 // ---- スキーマ ----
 const UserSchema = Schema.Struct({
@@ -79,5 +80,56 @@ describe('convertFromSchemaObjectWithEffect', () => {
     await expect(Effect.runPromise(effect)).rejects.toMatchObject({
       _tag: 'SchemaErrorContext',
     });
+  });
+});
+
+describe('convertToSchemaObjectWithResult', () => {
+  const UserSchema = Schema.Struct({
+    name: Schema.String,
+    age: Schema.Number,
+  });
+
+  it('should return success result for valid input', () => {
+    const input = { name: 'Taro', age: 20 };
+
+    const result = convertToSchemaObjectWithResult(UserSchema, input);
+
+    expect(result._tag).toBe('Success');
+    if (result._tag === 'Success') {
+      expect(result.success).toEqual(input);
+    }
+  });
+
+  it('should return failure result for invalid input (type mismatch)', () => {
+    const input = { name: 'Taro', age: '20' }; // ageがstring
+
+    const result = convertToSchemaObjectWithResult(UserSchema, input);
+
+    expect(result._tag).toBe('Failure');
+    if (result._tag === 'Failure') {
+      expect(result.failure).toBeDefined();
+    }
+  });
+
+  it('should return failure result when required field is missing', () => {
+    const input = { name: 'Taro' }; // ageなし
+
+    const result = convertToSchemaObjectWithResult(UserSchema, input);
+
+    expect(result._tag).toBe('Failure');
+  });
+
+  it('should ignore extra fields if schema allows stripping', () => {
+    const input = { name: 'Taro', age: 20, extra: 'ignore me' };
+
+    const result = convertToSchemaObjectWithResult(UserSchema, input);
+
+    expect(result._tag).toBe('Success');
+    if (result._tag === 'Success') {
+      expect(result.success).toEqual({
+        name: 'Taro',
+        age: 20,
+      });
+    }
   });
 });

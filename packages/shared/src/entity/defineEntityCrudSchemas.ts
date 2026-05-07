@@ -1,12 +1,14 @@
 import { Schema } from 'effect';
 import {
-  AuditFields,
   EntityDefinition,
   Fields,
-  PrimaryFields,
   Mutable,
   Optionalized,
-} from '../entity/index.js';
+  UIAnnotationField,
+  UIAnnotations,
+} from './type.js';
+import { PrimaryFields, AuditFields } from './fields.js';
+import { mapValues } from '../collection/mapValues.js';
 
 const pickFields = <T extends Fields, K extends readonly (keyof T)[]>(
   fields: T,
@@ -19,18 +21,35 @@ const pickFields = <T extends Fields, K extends readonly (keyof T)[]>(
   return result;
 };
 
-const optionalizeFields = <T extends Fields>(fields: T): Optionalized<T> => {
-  const result = {} as Optionalized<T>;
-  for (const key in fields) {
-    result[key] = Schema.optional(fields[key]);
-  }
-  return result;
+const optionalizeFields = <T extends Fields>(fields: T): Optionalized<T> =>
+  mapValues(fields, (v) => Schema.optional(v));
+
+const PrimaryFieldsUIAnnotation: { [field: string]: UIAnnotationField } = {
+  id: {
+    widget: 'text',
+    label: 'ID',
+    readonly: true,
+  } as UIAnnotationField,
 };
+const AuditFieldsUIAnnotation: { [field: string]: UIAnnotationField } = {
+  modifiedAt: {
+    widget: 'text',
+    label: 'Update Time',
+    readonly: true,
+  },
+  modifiedBy: {
+    widget: 'text',
+    label: 'Updated By',
+    readonly: true,
+  },
+};
+
 export const defineEntityCrudSchemas = <
   TFields extends Fields,
   TIncludeAudit extends boolean,
+  TUI = UIAnnotations<TFields>,
 >(
-  args: EntityDefinition<TFields, TIncludeAudit>,
+  args: EntityDefinition<TFields, TIncludeAudit, TUI>,
 ) => {
   const selectFields = {
     ...PrimaryFields,
@@ -89,5 +108,6 @@ export const defineEntityCrudSchemas = <
     includeAuditFields: args.options?.includeAudit ?? false,
     fields: args.fields,
     tags: args.tags,
+    ...(args.ui ? { ui: args.ui } : {}),
   };
 };

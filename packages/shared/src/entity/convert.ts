@@ -1,6 +1,9 @@
-import { Effect, Schema } from 'effect';
+import { Effect, Schema, Result } from 'effect';
 import { SchemaError } from 'effect/Schema';
 import { SchemaValidationError } from '../error/SchemaValidationError.js';
+import { CrudSchemaType, Fields } from './type.js';
+import { AST } from 'effect/SchemaAST';
+import { schema } from 'effect/Config';
 
 export const jsonString2SchemaObjectWithoutEffect = <
   S extends Schema.Schema<any>,
@@ -11,6 +14,17 @@ export const jsonString2SchemaObjectWithoutEffect = <
   Schema.decodeUnknownSync(
     schema as unknown as Schema.Decoder<Schema.Schema.Type<S>, never>,
   )(JSON.parse(content));
+
+export const convertToSchemaObjectWithResult = <S extends Schema.Schema<any>>(
+  schema: S,
+  input: unknown,
+  includeAllErrors: boolean = false,
+) => {
+  return Schema.decodeUnknownResult(Schema.toType(schema))(
+    input,
+    includeAllErrors ? { errors: 'all' } : {},
+  );
+};
 
 export const convertToSchemaObjectWithEffect =
   (schemaName: string) =>

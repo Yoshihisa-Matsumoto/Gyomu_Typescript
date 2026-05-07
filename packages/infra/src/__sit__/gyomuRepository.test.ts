@@ -59,9 +59,9 @@ describe('statusHandler Repository (Integration)', () => {
       ]);
 
       expect(created.length).toBe(1);
-      expect(created[0].applicationId).toBe(testId);
+      expect(created[0]!.applicationId).toBe(testId);
 
-      const createdId = created[0].id;
+      const createdId = created[0]!.id;
       // --- FIND BY ID ---
       const found = yield* statusHandler.findById(createdId);
       expect(found).not.toBeNull();
@@ -72,7 +72,7 @@ describe('statusHandler Repository (Integration)', () => {
         { id: createdId, region: 'JPN' },
       ]);
 
-      expect(updated[0].region).toBe('JPN');
+      expect(updated[0]!.region).toBe('JPN');
 
       // --- FIND ALL ---
       const all = yield* statusHandler.findAll();
@@ -81,7 +81,7 @@ describe('statusHandler Repository (Integration)', () => {
       // --- FIND BY COLUMN ---
       const filtered = yield* statusHandler.findByApplicationId(testId);
       expect(filtered.length).toBeGreaterThan(0);
-      console.log(filtered[0].id);
+      console.log(filtered[0]!.id);
       console.log(createdId);
       expect(filtered.every((r) => r.id == createdId)).toBe(true);
 
@@ -162,7 +162,7 @@ describe('milestoneDaily Repository (Integration)', () => {
       );
 
       expect(result.length).toBe(1);
-      expect(result[0].targetType).toBe('daily');
+      expect(result[0]!.targetType).toBe('daily');
     });
 
     await testRunner(program, TestLayer);
@@ -198,7 +198,7 @@ describe('milestoneDaily Repository (Integration)', () => {
       );
 
       expect(result.length).toBe(1);
-      expect(result[0].targetType).toBe('monthly');
+      expect(result[0]!.targetType).toBe('monthly');
     });
 
     await testRunner(program, TestLayer);
@@ -237,7 +237,7 @@ describe('milestoneDaily Repository (Integration)', () => {
       );
 
       expect(result.length).toBe(1);
-      expect(result[0].targetType).toBe('daily');
+      expect(result[0]!.targetType).toBe('daily');
     });
 
     await testRunner(program, TestLayer);
@@ -272,7 +272,7 @@ describe('milestoneDaily Repository (Integration)', () => {
       );
 
       expect(result.length).toBe(1);
-      expect(result[0].targetType).toBe('monthly');
+      expect(result[0]!.targetType).toBe('monthly');
     });
 
     await testRunner(program, TestLayer);
@@ -364,7 +364,7 @@ describe('milestoneDaily Repository (Integration)', () => {
       );
 
       expect(remain.length).toBe(1);
-      expect(remain[0].targetType).toBe('monthly');
+      expect(remain[0]!.targetType).toBe('monthly');
     });
 
     await testRunner(program, TestLayer);
@@ -402,7 +402,7 @@ describe('milestoneDaily Repository (Integration)', () => {
       );
 
       expect(remain.length).toBe(1);
-      expect(remain[0].targetType).toBe('daily');
+      expect(remain[0]!.targetType).toBe('daily');
     });
 
     await testRunner(program, TestLayer);
@@ -511,7 +511,7 @@ describe('appInfo Repository (Integration) ', () => {
       const tobeUpdated = yield* appInfo.findByDescription(
         testApplication1ForUpdate,
       );
-      const updatedId = tobeUpdated[0].id;
+      const updatedId = tobeUpdated[0]!.id;
       const tobeDeleted = yield* appInfo.findByDescription(
         testApplication2ForDelete,
       );
@@ -532,8 +532,8 @@ describe('appInfo Repository (Integration) ', () => {
             existing: tobeUpdated[0] as typeof AppInfoSchema.types._select,
             incoming: {
               id: updatedId,
-              description: tobeUpdated[0].description,
-              mailFromName: tobeUpdated[0].mailFromName,
+              description: tobeUpdated[0]!.description,
+              mailFromName: tobeUpdated[0]!.mailFromName,
               mailFromAddress: null,
             },
             changedFields: ['mailFromAddress'],
@@ -552,7 +552,7 @@ describe('appInfo Repository (Integration) ', () => {
     const result = await testRunner(program, TestLayer);
 
     expect(result.insertedRows.length).toBe(1);
-    expect(result.updatedRows[0].mailFromAddress).toBe(null);
+    expect(result.updatedRows[0]!.mailFromAddress).toBe(null);
     expect(result.deletedCount).toBe(1);
   });
   it('insert / update が正しく反映され,Deleteは行わない', async () => {
@@ -564,7 +564,7 @@ describe('appInfo Repository (Integration) ', () => {
       const tobeUpdated = yield* appInfo.findByDescription(
         testApplication1ForUpdate,
       );
-      const updatedId = tobeUpdated[0].id;
+      const updatedId = tobeUpdated[0]!.id;
       const tobeDeleted = yield* appInfo.findByDescription(
         testApplication2ForDelete,
       );
@@ -585,8 +585,8 @@ describe('appInfo Repository (Integration) ', () => {
             existing: tobeUpdated[0] as typeof AppInfoSchema.types._select,
             incoming: {
               id: updatedId,
-              description: tobeUpdated[0].description,
-              mailFromName: tobeUpdated[0].mailFromName,
+              description: tobeUpdated[0]!.description,
+              mailFromName: tobeUpdated[0]!.mailFromName,
               mailFromAddress: null,
             },
             changedFields: ['mailFromAddress'],
@@ -605,7 +605,7 @@ describe('appInfo Repository (Integration) ', () => {
     const result = await testRunner(program, TestLayer);
 
     expect(result.insertedRows.length).toBe(1);
-    expect(result.updatedRows[0].mailFromAddress).toBe(null);
+    expect(result.updatedRows[0]!.mailFromAddress).toBe(null);
     expect(result.deletedCount).toBe(0);
   });
 });

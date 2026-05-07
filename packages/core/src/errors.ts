@@ -17,19 +17,6 @@ interface DBErrorDetails {
   context?: string;
   [key: string]: unknown;
 }
-export const dbError = (params: DBErrorDetails) => {
-  const { table, message, operation, context, ...extra } = params;
-  return (e: unknown): DBErrorContext => ({
-    message: message,
-    cause: e,
-    context: context,
-    details: {
-      table: table,
-      operation: operation,
-      ...extra,
-    },
-  });
-};
 
 export type AIOperation = 'generate' | 'stream';
 

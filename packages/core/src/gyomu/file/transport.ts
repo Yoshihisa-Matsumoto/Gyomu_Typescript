@@ -68,7 +68,8 @@ export class FileTransportInfo {
     this.#destinationFolderName = destinationFolderName;
     this.deleteSourceFileAfterCompletion = deleteSourceFileAfterCompletion;
     this.overwriteDestination = overwriteDestination;
-    this.filterConditions = filterConditions;
+    if (filterConditions !== undefined)
+      this.filterConditions = filterConditions;
 
     this.isSourceDirectory = !this.sourceFileName;
     this.isDestinationDirectory = !this.destinationFileName;

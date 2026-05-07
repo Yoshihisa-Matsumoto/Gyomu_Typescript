@@ -73,11 +73,26 @@ export const statusInformationDefinition = {
 
 export const marketHolidayDefinition = {
   fields: {
-    market: schemaField.text({ maxLength: 10 }),
+    market: schemaField.stringEnum({ enumValues: ['JP', 'US'] }),
     year: schemaField.int({ max: 65534 }),
     holiday: schemaField.dateString,
   },
   tags: { entity: 'MarketHoliday' },
+  ui: {
+    market: {
+      enumAttribute: {
+        JP: { label: 'Japan', order: 1 },
+        US: { label: 'United States', order: 2 },
+      },
+      widget: 'select',
+    },
+    year: {
+      widget: 'number',
+    },
+    holiday: {
+      widget: 'text',
+    },
+  },
 } as const satisfies EntityDefinition<Fields, false>;
 
 export const milestoneDefinition = {

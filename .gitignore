@@ -75,3 +75,6 @@ dist/
 .tsbuildinfo
 # turborepo
 .turbo
+storybook-static/
+
+*storybook.log

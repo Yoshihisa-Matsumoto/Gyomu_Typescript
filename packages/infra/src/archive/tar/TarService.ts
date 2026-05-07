@@ -1,4 +1,4 @@
-import { Effect, Layer, ServiceMap, Stream } from 'effect';
+import { Effect, Layer, Context, Stream } from 'effect';
 import { IOError } from '@gyomu/core';
 import { ArchiveEntryItem } from '../common.js';
 import { PlatformError } from 'effect/PlatformError';
@@ -18,7 +18,7 @@ import { FileTransportInfo } from '@gyomu/core/gyomu/file';
 
 type TarEntryItem = Extract<ArchiveEntryItem, { _tag: 'tar' }>;
 
-export class TarService extends ServiceMap.Service<
+export class TarService extends Context.Service<
   TarService,
   {
     create: (options: {

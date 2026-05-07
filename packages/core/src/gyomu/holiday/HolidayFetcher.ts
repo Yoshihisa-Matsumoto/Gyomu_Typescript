@@ -1,16 +1,16 @@
 // core/domain/holiday/HolidayFetcher.ts
 
-import { Effect, ServiceMap } from 'effect';
+import { Effect, Context } from 'effect';
 import { MarketHolidaySchema } from '../../schemas/gyomu.js';
 import { GyomuError } from '../../errors.js';
 
-export interface HolidayFetcher {
+export interface HolidayFetcherService {
   fetch: (
     market: string,
-  ) => Effect.Effect<(typeof MarketHolidaySchema.types._select)[], GyomuError>;
+  ) => Effect.Effect<(typeof MarketHolidaySchema.types._insert)[], GyomuError>;
 }
 
-export class HolidayFetcher extends ServiceMap.Service<
+export class HolidayFetcher extends Context.Service<
   HolidayFetcher,
-  HolidayFetcher
+  HolidayFetcherService
 >()('HolidayFetcher') {}

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { Schema } from 'effect';
-import { defineEntityCrudSchemas } from '../entity/defineEntityCrudSchemas.js';
+import { defineEntityCrudSchemas } from '../defineEntityCrudSchemas.js';
 
 // // ダミー（必要に応じて import に置き換え）
 // const PrimaryFields = {

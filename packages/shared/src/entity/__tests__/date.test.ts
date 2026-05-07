@@ -7,7 +7,7 @@ import {
   formatDateToYmd,
   parseYmdToDate,
   LocalDate,
-} from '../entity/date.js';
+} from '../date.js';
 
 // ---- LocalDate2Date ----
 describe('LocalDate2Date', () => {

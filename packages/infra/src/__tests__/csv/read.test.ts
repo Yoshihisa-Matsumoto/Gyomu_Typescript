@@ -115,7 +115,7 @@ describe('CSV Read Functions', () => {
       const result = await Stream.runCollect(
         stream.pipe(
           readCsv(schema, {
-            filterRaw: (row) => parseInt(row.age) > 25,
+            filterRaw: (row) => parseInt(row.age!) > 25,
           }),
         ),
       ).pipe(Effect.runPromise);
@@ -159,7 +159,7 @@ describe('CSV Read Functions', () => {
       const result = await Stream.runCollect(
         stream.pipe(
           readCsv(schema, {
-            filterRaw: (row) => row.name.length > 3,
+            filterRaw: (row) => row.name!.length > 3,
             filter: (row) => row.age > 20,
           }),
         ),
@@ -218,7 +218,7 @@ describe('CSV Read Functions', () => {
           readCsvRaw({
             filterRaw: (row) => {
               console.log(row.age);
-              return parseInt(row.age) >= 28;
+              return parseInt(row.age!) >= 28;
             },
           }),
         ),

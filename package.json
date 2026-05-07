@@ -23,7 +23,8 @@
     "coverage:report": "nyc report --reporter=html --reporter=text-summary --temp-dir coverage",
     "coverage:all": "pnpm test:coverage && pnpm coverage:merge && pnpm coverage:report",
     "coverage:ci:all": "pnpm test:ci:coverage && pnpm coverage:merge && pnpm coverage:report",
-    "dep:check": "knip"
+    "dep:check": "knip",
+    "check:sync:version": "pnpm syncpack list"
   },
   "engines": {
     "node": ">=24.0.0",
@@ -42,6 +43,7 @@
     "@effect/language-service": "^0.85.1",
     "@eslint/js": "^10.0.1",
     "@tsconfig/node24": "^24.0.4",
+    "@tsconfig/strictest": "^2.0.8",
     "@types/node": "25.6.0",
     "@typescript-eslint/eslint-plugin": "^8.59.1",
     "@typescript-eslint/parser": "^8.59.1",
