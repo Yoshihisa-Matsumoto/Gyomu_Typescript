@@ -4,3 +4,4 @@ export * from './numberField';
 export * from './textArea';
 export * from './textField';
 export * from './tooltip';
+export * from './combobox';

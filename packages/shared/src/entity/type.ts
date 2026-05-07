@@ -45,31 +45,60 @@ export type CrudSchemaType<
   | UpdateSchemaOf<CrudSchemaGeneratorType<TFields, TIncludeAudit>>
   | SelectSchemaOf<CrudSchemaGeneratorType<TFields, TIncludeAudit>>;
 
-export type UIAnnotation = {
-  widget?: 'text' | 'textarea' | 'select' | 'date' | 'number' | 'hidden';
+type BaseUIAnnotation = {
   label?: string;
   placeholder?: string;
   readonly?: boolean;
-
-  format?: 'email' | 'password' | 'phone';
   visible?: boolean;
   order?: number;
-
-  enumAttribute?: {
-    [key: string]: {
-      label?: string | ((value: string) => string);
-      order?: number;
-      disabled?: boolean;
-    };
+};
+type UIAnnotationMap = {
+  text: {
+    format?: 'email' | 'password' | 'phone';
+  };
+  number: {};
+  textarea: {};
+  date: {};
+  hidden: {
+    readonly?: never;
+    visible?: never;
+    order?: never;
+  };
+  select: {
+    enumAttribute: Record<
+      string,
+      {
+        label?: string | ((value: string) => string);
+        order?: number;
+        disabled?: boolean;
+      }
+    >;
   };
 };
+export type UIAnnotation = {
+  [K in keyof UIAnnotationMap]: { widget: K } & Omit<
+    BaseUIAnnotation,
+    keyof UIAnnotationMap[K]
+  > & // ←衝突回避
+    UIAnnotationMap[K];
+}[keyof UIAnnotationMap];
+
+type DistributiveOmit<T, K extends keyof any> = T extends any
+  ? Omit<T, K>
+  : never;
+
+type DistributivePartial<T> = T extends any ? Partial<T> : never;
+export type UIAnnotationOverride = DistributiveOmit<
+  DistributivePartial<UIAnnotation>,
+  'widget'
+>;
 export type UIAnnotationField =
   | UIAnnotation
   | {
-      default?: UIAnnotation;
-      view?: UIAnnotation;
-      update?: UIAnnotation;
-      create?: UIAnnotation;
+      default: UIAnnotation;
+      view?: UIAnnotationOverride;
+      update?: UIAnnotationOverride;
+      create?: UIAnnotationOverride;
     };
 export type UIAnnotations<TFields> = Partial<{
   [K in keyof TFields]?: UIAnnotationField;

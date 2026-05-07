@@ -1,11 +1,32 @@
-import { CheckBox, TextArea, TextField, NumberField } from '@ui/adapters/mui';
-import { FieldRenderer } from '../types.js';
+import { Select, TextArea, TextField, NumberField } from '@ui/adapters/mui';
+import { StrictFieldPropsMap } from '@core/engine/autoForm/types.js';
+import { withOptional } from '@gyomu/shared';
 
-export const muiRenderer: Record<string, FieldRenderer> = {
+export const muiRenderer: StrictFieldPropsMap = {
   text: ({ value, onChange, onBlur, meta }) => (
     <TextField
       value={value ?? ''}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={(e) => onChange?.(e.target.value)}
+      onBlur={onBlur}
+      placeholder={meta.placeholder ?? meta.name}
+    />
+  ),
+
+  'email-text': ({ value, onChange, onBlur, meta }) => (
+    <TextField
+      type="email"
+      value={value ?? ''}
+      onChange={(e) => onChange?.(e.target.value)}
+      onBlur={onBlur}
+      placeholder={meta.placeholder ?? meta.name}
+    />
+  ),
+
+  'password-text': ({ value, onChange, onBlur, meta }) => (
+    <TextField
+      type="password"
+      value={value ?? ''}
+      onChange={(e) => onChange?.(e.target.value)}
       onBlur={onBlur}
       placeholder={meta.placeholder ?? meta.name}
     />
@@ -14,7 +35,7 @@ export const muiRenderer: Record<string, FieldRenderer> = {
   textarea: ({ value, onChange, onBlur }) => (
     <TextArea
       value={value ?? ''}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={(e) => onChange?.(e.target.value)}
       onBlur={onBlur}
     />
   ),
@@ -23,15 +44,28 @@ export const muiRenderer: Record<string, FieldRenderer> = {
     <NumberField
       value={value ?? ''}
       onChange={(e) =>
-        onChange(e.target.value === '' ? undefined : Number(e.target.value))
+        onChange?.(e.target.value === '' ? undefined : Number(e.target.value))
       }
     />
   ),
 
-  checkbox: ({ value, onChange, onBlur }) => (
-    <CheckBox
-      checked={!!value}
-      onChange={(e) => onChange(e.target.checked)}
+  select: ({ value, onChange, onBlur, options }) => (
+    <Select
+      value={(value ?? '') as string}
+      onChange={(v) => onChange?.(v)}
+      {...withOptional({ onBlur })}
+      items={options.map((opt) => ({
+        value: opt.value,
+        label: opt.label,
+      }))}
+    />
+  ),
+
+  date: ({ value, onChange, onBlur }) => (
+    <TextField
+      type="date"
+      value={value ?? ''}
+      onChange={(e) => onChange?.(e.target.value)}
       onBlur={onBlur}
     />
   ),

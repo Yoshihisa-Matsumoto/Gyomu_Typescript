@@ -1,43 +1,37 @@
+// --- Shared / Core (ドメイン・基盤) ---
+import { CrudSchemaType, Fields, UIAnnotations } from '@gyomu/shared/entity';
+import { Logger } from '@gyomu/core';
+
+// --- UI (抽象コンポーネント) ---
+import { FieldLayout, FormLayout, SubmitButtonProps } from '@ui/components';
+
+// --- ローカル ---
 import { FormFieldMeta } from '@core/dsl';
-import { FieldApi } from '@tanstack/react-form';
-import { FieldLayout } from '@ui/components';
-import { FieldRenderer } from '@ui/renderer';
+import { StrictFieldPropsMap } from '@core/engine/autoForm/types';
 
-export type FieldController<T> = {
-  value: T;
-  onChange: (value: T) => void;
-  onBlur?: () => void;
-
+export type AutoFieldProps = {
+  meta: FormFieldMeta;
+  renderer?: StrictFieldPropsMap;
+  layout: FieldLayout;
+  value?: unknown;
+  onBlur?: (v: any) => void;
+  onChange?: (v: any) => void;
   error?: string;
 };
-export type SimpleFieldType<TValue = any> = FieldApi<
-  any,
-  any,
-  TValue,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any
->;
-export type AutoFieldProps<TValue = any> = {
-  fieldApi: SimpleFieldType<TValue>;
-  meta: FormFieldMeta;
-  renderer?: Record<string, FieldRenderer>;
-  layout: FieldLayout;
+
+export type AutoFormProps<TFields extends Fields> = {
+  schema: CrudSchemaType<TFields, boolean>;
+  uiContext: 'view' | 'create' | 'update';
+  logger?: Logger;
+  ui?: UIAnnotations<TFields>;
+  initialValues?: Record<string, any>;
+  onSubmit: (data: any) => void | Promise<void>;
+
+  fieldRenderer?: StrictFieldPropsMap;
+  fieldLayout?: FieldLayout;
+  layout?: FormLayout;
+
+  components?: {
+    SubmitButton?: React.ComponentType<SubmitButtonProps>;
+  };
 };

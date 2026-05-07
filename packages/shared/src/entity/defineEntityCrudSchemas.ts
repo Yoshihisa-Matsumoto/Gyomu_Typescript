@@ -24,18 +24,21 @@ const pickFields = <T extends Fields, K extends readonly (keyof T)[]>(
 const optionalizeFields = <T extends Fields>(fields: T): Optionalized<T> =>
   mapValues(fields, (v) => Schema.optional(v));
 
-const PrimaryFieldsUIAnnotation = {
+const PrimaryFieldsUIAnnotation: { [field: string]: UIAnnotationField } = {
   id: {
+    widget: 'text',
     label: 'ID',
     readonly: true,
   } as UIAnnotationField,
 };
 const AuditFieldsUIAnnotation: { [field: string]: UIAnnotationField } = {
   modifiedAt: {
+    widget: 'text',
     label: 'Update Time',
     readonly: true,
   },
   modifiedBy: {
+    widget: 'text',
     label: 'Updated By',
     readonly: true,
   },

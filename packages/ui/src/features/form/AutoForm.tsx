@@ -4,41 +4,22 @@ import { useForm } from '@tanstack/react-form';
 
 // --- Core / Engine ---
 import { buildFormMetaFromStructSchema } from '@core/dsl';
-import { buildDefaultValues, validateWithSchema } from '@core/engine/autoForm';
+import {
+  buildDefaultValues,
+  validateField,
+  validateWithSchema,
+} from '@core/engine/autoForm';
 
 // --- Shared / Core (ドメイン・基盤) ---
-import { CrudSchemaType, Fields, UIAnnotations } from '@gyomu/shared/entity';
-import { Logger } from '@gyomu/core';
-
-// --- UI (抽象コンポーネント) ---
-import { FormLayout, FieldLayout } from '@ui/components/layout';
-import { DefaultSubmitButton } from '@ui/components/form';
-import { SubmitButtonProps } from '@ui/components';
-import { FieldRenderer } from '@ui/renderer';
-
+import { buildFieldSchemaMap, Fields } from '@gyomu/shared/entity';
 // --- UI (MUI Adapter) ---
 import { MuiFormLayout, MuiFieldLayout } from '@ui/adapters/mui';
 import { muiRenderer } from '@ui/renderer/mui';
 
 // --- ローカル ---
 import { AutoField } from './AutoField';
-
-type AutoFormProps<TFields extends Fields> = {
-  schema: CrudSchemaType<TFields, boolean>;
-  uiContext: 'view' | 'create' | 'update';
-  logger?: Logger;
-  ui?: UIAnnotations<TFields>;
-  initialValues?: Record<string, any>;
-  onSubmit: (data: any) => void | Promise<void>;
-
-  fieldRegistry?: Record<string, FieldRenderer>;
-  fieldLayout?: FieldLayout;
-  layout?: FormLayout;
-
-  components?: {
-    SubmitButton?: React.ComponentType<SubmitButtonProps>;
-  };
-};
+import { AutoFormProps } from './types';
+import { DefaultSubmitButton } from '@ui/components';
 
 export function AutoForm<TFields extends Fields>({
   schema,
@@ -47,13 +28,14 @@ export function AutoForm<TFields extends Fields>({
   initialValues,
   ui,
   onSubmit,
-  fieldRegistry = muiRenderer,
+  fieldRenderer = muiRenderer,
   fieldLayout = MuiFieldLayout,
   layout: Layout = MuiFormLayout,
   components,
 }: AutoFormProps<TFields>) {
   const SubmitButton = components?.SubmitButton ?? DefaultSubmitButton;
 
+  const fieldSchemaMap = buildFieldSchemaMap(schema);
   const fieldConfigs = React.useMemo(
     () =>
       buildFormMetaFromStructSchema({
@@ -84,15 +66,41 @@ export function AutoForm<TFields extends Fields>({
     >
       <Layout>
         {fieldConfigs.map((field) => (
-          <form.Field key={field.name} name={field.name}>
-            {(fieldApi) => (
-              <AutoField
-                meta={field}
-                fieldApi={fieldApi}
-                renderer={fieldRegistry}
-                layout={fieldLayout}
-              />
-            )}
+          <form.Field
+            key={field.name}
+            name={field.name}
+            validators={{
+              onChange: ({ value }) => {
+                const fieldSchema = fieldSchemaMap[field.name];
+                if (!fieldSchema) {
+                  console.warn(`No schema found for field: ${field.name}`);
+                  return undefined;
+                }
+                const result = validateField(fieldSchema, value);
+                if (!result.ok) {
+                  return result.errors;
+                }
+                return undefined;
+              },
+            }}
+          >
+            {(fieldApi) => {
+              const error = fieldApi.state.meta.errors
+                .map((e) => e?.message)
+                .filter((m): m is string => !!m)
+                .join(', ');
+              return (
+                <AutoField
+                  meta={field}
+                  renderer={fieldRenderer}
+                  layout={fieldLayout}
+                  value={fieldApi.state.value}
+                  onChange={fieldApi.handleChange}
+                  onBlur={fieldApi.handleBlur}
+                  error={error}
+                />
+              );
+            }}
           </form.Field>
         ))}
       </Layout>

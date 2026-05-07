@@ -26,6 +26,9 @@ const config: StorybookConfig = {
       resolve: {
         alias: {
           '@gyomu/ui': resolve(__dirname, '../src'),
+          '@ui': resolve(__dirname, '../src/ui'),
+          '@core': resolve(__dirname, '../src/core'),
+          '@features': resolve(__dirname, '../src/features'),
         },
       },
     });

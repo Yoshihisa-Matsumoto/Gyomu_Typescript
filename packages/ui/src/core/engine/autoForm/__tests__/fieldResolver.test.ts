@@ -73,7 +73,15 @@ describe('resolveFieldType', () => {
 
     it('select は select を返す', () => {
       expect(
-        resolveFieldType({ widget: 'select', name: 'jobType', options: {} }),
+        resolveFieldType({
+          widget: 'select',
+          name: 'jobType',
+          options: {},
+          enumAttribute: {
+            option1: { label: 'Option 1' },
+            option2: { label: 'Option 2' },
+          },
+        }),
       ).toBe('select');
     });
   });

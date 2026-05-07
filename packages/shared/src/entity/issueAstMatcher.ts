@@ -40,7 +40,7 @@ const resolveField = <TFields extends Fields>(
   }
 };
 
-const flattenIssues = (issue: SchemaIssue.Issue) => {
+export const flattenIssues = (issue: SchemaIssue.Issue) => {
   const result = makeFormatterStandardSchemaV1()(issue);
   return result.issues.map((f) => ({
     path: normalizePath(f.path as any as PropertyKey[] | undefined),

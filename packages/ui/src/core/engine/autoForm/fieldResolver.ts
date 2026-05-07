@@ -1,14 +1,5 @@
 import { FormFieldMeta } from '@core/dsl/type';
-
-export type FieldType =
-  | 'email-text'
-  | 'password-text'
-  | 'text'
-  | 'number'
-  | 'textarea'
-  | 'date'
-  | 'select'
-  | 'hidden';
+import { FieldType } from './fieldType';
 
 export type FieldResolver = (meta: FormFieldMeta) => FieldType;
 
@@ -28,7 +19,5 @@ export const resolveFieldType: FieldResolver = (meta) => {
       return 'select';
     case 'hidden':
       return 'hidden';
-    default:
-      throw new Error('Unsupported');
   }
 };

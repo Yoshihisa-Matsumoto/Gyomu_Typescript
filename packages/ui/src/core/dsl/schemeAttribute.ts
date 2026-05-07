@@ -3,12 +3,12 @@ import {
   Fields,
   UIAnnotation,
   UIAnnotationField,
+  UIAnnotationOverride,
   UIAnnotations,
 } from '@gyomu/shared/entity';
 import { AST, Check } from 'effect/SchemaAST';
 import { logger, Logger } from '@gyomu/core';
 import { FormFieldMeta } from './type.js';
-import { withOptional } from '@gyomu/shared';
 
 function getMergedAnnotations(
   name: string,
@@ -139,6 +139,7 @@ function validateEnumAttribute(
   mergeUi: UIAnnotation | undefined,
   fieldName: string,
 ) {
+  if (mergeUi?.widget != 'select') return;
   if (!enumValues && !mergeUi?.enumAttribute) return;
   if (!(enumValues && mergeUi?.enumAttribute)) {
     throw new Error(
@@ -159,19 +160,25 @@ function validateEnumAttribute(
     );
   }
 }
+const mergeAnnotation = <T extends UIAnnotation>(
+  base: T,
+  override?: UIAnnotationOverride,
+): T => {
+  return {
+    ...base,
+    ...override,
+  } as T;
+};
 const mergeUIAttributes = (
   context: 'view' | 'create' | 'update',
   uiDef?: UIAnnotationField,
 ): UIAnnotation | undefined => {
   if (!uiDef) return undefined;
-  if ('default' in uiDef) {
-    const merged: UIAnnotation = {
-      ...uiDef.default,
 
-      ...uiDef[context],
-    };
-    return merged;
+  if ('default' in uiDef) {
+    return mergeAnnotation(uiDef.default, uiDef[context]);
   }
+
   return uiDef as UIAnnotation;
 };
 function resolveUI(
@@ -179,37 +186,22 @@ function resolveUI(
   annotations: Record<string, any>,
   uiDef?: UIAnnotation,
 ): FormFieldMeta | undefined {
-  //if (!uiDef) return undefined;
-
-  // if ('default' in uiDef) {
-  //   const merged: FormFieldMeta = {
-  //     name,
-  //     ...uiDef.default,
-
-  //     ...uiDef[context],
-  //     label: uiDef[context]?.label ?? uiDef.default.label ?? name,
-  //     placeholder:
-  //       uiDef[context]?.placeholder ?? uiDef.default.placeholder ?? name,
-
-  //     required: annotations['required'] ?? true,
-  //     options: annotations ?? {},
-  //   };
-
-  //   if (merged.visible == false) return undefined;
-
-  //   return merged;
-  // }
-
-  //if (uiDef.visible === false) return undefined;
+  if (!uiDef) {
+    return {
+      name,
+      widget: 'hidden',
+      label: name,
+      placeholder: name,
+      required: annotations['required'] ?? true,
+      options: annotations ?? {},
+    };
+  }
 
   return {
     name,
-    ...withOptional(
-      !uiDef ? { visible: false, widget: 'hidden' as const } : {},
-    ),
     ...uiDef,
-    label: uiDef?.label ?? name,
-    placeholder: uiDef?.placeholder ?? name,
+    label: uiDef.label ?? name,
+    placeholder: uiDef.placeholder ?? name,
     required: annotations['required'] ?? true,
     options: annotations ?? {},
   };
