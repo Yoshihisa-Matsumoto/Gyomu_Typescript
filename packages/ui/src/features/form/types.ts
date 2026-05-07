@@ -7,11 +7,11 @@ import { FieldLayout, FormLayout, SubmitButtonProps } from '@ui/components';
 
 // --- ローカル ---
 import { FormFieldMeta } from '@core/dsl';
-import { StrictFieldPropsMap } from '@core/engine/autoForm/types';
+import { RendererMap } from '@core/engine/autoForm/types';
 
 export type AutoFieldProps = {
   meta: FormFieldMeta;
-  renderer?: StrictFieldPropsMap;
+  renderer?: RendererMap;
   layout: FieldLayout;
   value?: unknown;
   onBlur?: (v: any) => void;
@@ -23,11 +23,11 @@ export type AutoFormProps<TFields extends Fields> = {
   schema: CrudSchemaType<TFields, boolean>;
   uiContext: 'view' | 'create' | 'update';
   logger?: Logger;
-  ui?: UIAnnotations<TFields>;
+  ui: UIAnnotations<TFields>;
   initialValues?: Record<string, any>;
   onSubmit: (data: any) => void | Promise<void>;
 
-  fieldRenderer?: StrictFieldPropsMap;
+  fieldRenderer?: RendererMap;
   fieldLayout?: FieldLayout;
   layout?: FormLayout;
 

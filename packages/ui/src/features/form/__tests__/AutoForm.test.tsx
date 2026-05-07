@@ -14,8 +14,8 @@ describe('AutoForm Test', () => {
     options: {},
     tags: { entity: 'test' },
     ui: {
-      age: { label: 'Age', widget: 'number' },
-      name: { label: 'Name', widget: 'text' },
+      age: { label: 'Age', widget: 'number' as const },
+      name: { label: 'Name', widget: 'text' as const },
     },
   });
   it('calls onSubmit when form is valid', async () => {
@@ -24,6 +24,7 @@ describe('AutoForm Test', () => {
     render(
       <AutoForm
         schema={schema.selectSchema}
+        ui={schema.ui!}
         uiContext="view"
         initialValues={{
           name: 'Taro',
@@ -51,6 +52,7 @@ describe('AutoForm Test', () => {
     render(
       <AutoForm
         schema={schema.insertSchema}
+        ui={schema.ui!}
         uiContext="create"
         onSubmit={handleSubmit}
       />,
@@ -69,6 +71,7 @@ describe('AutoForm Test', () => {
     render(
       <AutoForm
         schema={schema.insertSchema}
+        ui={schema.ui!}
         uiContext="create"
         initialValues={{
           name: 'Taro',

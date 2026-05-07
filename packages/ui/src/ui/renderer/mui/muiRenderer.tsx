@@ -1,42 +1,43 @@
 import { Select, TextArea, TextField, NumberField } from '@ui/adapters/mui';
-import { StrictFieldPropsMap } from '@core/engine/autoForm/types.js';
+import { RendererMap } from '@core/engine/autoForm/types.js';
 import { withOptional } from '@gyomu/shared';
+import { LocalDate } from '@gyomu/shared/entity';
 
-export const muiRenderer: StrictFieldPropsMap = {
-  text: ({ value, onChange, onBlur, meta }) => (
+export const muiRenderer: RendererMap = {
+  text: ({ value, onChange, meta, onBlur }) => (
     <TextField
       value={value ?? ''}
       onChange={(e) => onChange?.(e.target.value)}
-      onBlur={onBlur}
-      placeholder={meta.placeholder ?? meta.name}
+      onBlur={(e) => onBlur?.(e.target.value)}
+      placeholder={meta.placeholder}
     />
   ),
 
-  'email-text': ({ value, onChange, onBlur, meta }) => (
-    <TextField
-      type="email"
-      value={value ?? ''}
-      onChange={(e) => onChange?.(e.target.value)}
-      onBlur={onBlur}
-      placeholder={meta.placeholder ?? meta.name}
-    />
-  ),
+  // 'email-text': ({ value, onChange, onBlur, meta }) => (
+  //   <TextField
+  //     type="email"
+  //     value={value ?? ''}
+  //     onChange={(e) => onChange?.(e.target.value)}
+  //     onBlur={onBlur}
+  //     placeholder={meta.placeholder ?? meta.name}
+  //   />
+  // ),
 
-  'password-text': ({ value, onChange, onBlur, meta }) => (
-    <TextField
-      type="password"
-      value={value ?? ''}
-      onChange={(e) => onChange?.(e.target.value)}
-      onBlur={onBlur}
-      placeholder={meta.placeholder ?? meta.name}
-    />
-  ),
+  // 'password-text': ({ value, onChange, onBlur, meta }) => (
+  //   <TextField
+  //     type="password"
+  //     value={value ?? ''}
+  //     onChange={(e) => onChange?.(e.target.value)}
+  //     onBlur={onBlur}
+  //     placeholder={meta.placeholder ?? meta.name}
+  //   />
+  // ),
 
   textarea: ({ value, onChange, onBlur }) => (
     <TextArea
       value={value ?? ''}
       onChange={(e) => onChange?.(e.target.value)}
-      onBlur={onBlur}
+      onBlur={(e) => onBlur?.(e.target.value)}
     />
   ),
 
@@ -49,14 +50,14 @@ export const muiRenderer: StrictFieldPropsMap = {
     />
   ),
 
-  select: ({ value, onChange, onBlur, options }) => (
+  select: ({ value, onChange, onBlur, meta }) => (
     <Select
       value={(value ?? '') as string}
       onChange={(v) => onChange?.(v)}
       {...withOptional({ onBlur })}
-      items={options.map((opt) => ({
-        value: opt.value,
-        label: opt.label,
+      items={Object.keys(meta.enumAttribute).map((opt) => ({
+        value: opt,
+        label: getLabel(meta.enumAttribute[opt]!, opt),
       }))}
     />
   ),
@@ -65,9 +66,21 @@ export const muiRenderer: StrictFieldPropsMap = {
     <TextField
       type="date"
       value={value ?? ''}
-      onChange={(e) => onChange?.(e.target.value)}
-      onBlur={onBlur}
+      onChange={(e) => onChange?.(e.target.value as LocalDate)}
+      onBlur={(e) => onBlur?.(e.target.value as LocalDate)}
     />
   ),
   hidden: ({ value }) => <input type="hidden" value={value ?? ''} />,
+};
+
+const getLabel = (
+  attribute: {
+    label?: string | ((value: string) => string);
+    order?: number;
+    disabled?: boolean;
+  },
+  value: string,
+) => {
+  if (typeof attribute.label === 'function') return attribute.label(value);
+  return attribute.label ?? value;
 };

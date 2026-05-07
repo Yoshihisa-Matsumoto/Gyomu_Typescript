@@ -52,7 +52,7 @@ type BaseUIAnnotation = {
   visible?: boolean;
   order?: number;
 };
-type UIAnnotationMap = {
+export type UIAnnotationMap = {
   text: {
     format?: 'email' | 'password' | 'phone';
   };
@@ -103,3 +103,8 @@ export type UIAnnotationField =
 export type UIAnnotations<TFields> = Partial<{
   [K in keyof TFields]?: UIAnnotationField;
 }>;
+
+export type UIAnnotationByWidget<K extends keyof UIAnnotationMap> = Extract<
+  UIAnnotation,
+  { widget: K }
+>;

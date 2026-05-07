@@ -1,4 +1,3 @@
-import { resolveFieldType } from '@core/engine/autoForm';
 import { muiRenderer } from '@ui/renderer/mui';
 import { MuiFieldLayout } from '@ui/adapters/mui';
 import { withOptional } from '@gyomu/shared';
@@ -14,9 +13,10 @@ export function AutoField({
   error,
 }: AutoFieldProps) {
   // const controller = createFieldController(field);
-  console.log(`Field: ${meta.name} Value: ${value}`);
-  const key = resolveFieldType(meta);
-  const Component = renderer[key] as any;
+  // console.log(
+  //   `Field: ${meta.name} Value: ${value} meta: ${JSON.stringify(meta)}`,
+  // );
+  const Component = renderer[meta.widget] as any;
 
   if (!Component) throw new Error(`No renderer for widget: ${meta.widget}`);
   return (

@@ -64,6 +64,22 @@ export const Textarea: Story = {
   },
 };
 
+export const Select: Story = {
+  args: {
+    meta: {
+      name: 'jobType',
+      label: 'Job Type',
+      widget: 'select',
+      options: {},
+      enumAttribute: {
+        option1: { label: 'Option 1' },
+        option2: { label: 'Option 2' },
+      },
+    },
+    value: 'option1',
+  },
+};
+
 export const WithError: Story = {
   args: {
     meta: {

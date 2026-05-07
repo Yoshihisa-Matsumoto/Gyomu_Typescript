@@ -1,5 +1,5 @@
 // --- React / 外部ライブラリ ---
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from '@tanstack/react-form';
 
 // --- Core / Engine ---
@@ -57,6 +57,10 @@ export function AutoForm<TFields extends Fields>({
     },
   });
 
+  useEffect(() => {
+    form.validateAllFields('change');
+  }, []);
+
   return (
     <form
       onSubmit={(e) => {
@@ -112,8 +116,15 @@ export function AutoForm<TFields extends Fields>({
         })}
       >
         {(rawState) => {
+          console.log('Raw Form State:', rawState);
           const state = normalizeFormState(rawState);
-          return <SubmitButton {...state} />;
+          console.log('Form State:', state);
+          return (
+            <SubmitButton
+              disabled={!state.canSubmit || state.isSubmitting}
+              isSubmitting={state.isSubmitting}
+            />
+          );
         }}
       </form.Subscribe>
     </form>

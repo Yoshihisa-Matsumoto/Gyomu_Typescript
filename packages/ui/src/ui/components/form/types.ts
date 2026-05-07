@@ -1,4 +1,4 @@
 export type SubmitButtonProps = {
-  canSubmit: boolean;
+  disabled: boolean;
   isSubmitting: boolean;
 };

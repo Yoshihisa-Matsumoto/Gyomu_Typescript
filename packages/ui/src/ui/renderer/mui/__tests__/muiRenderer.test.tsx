@@ -13,7 +13,7 @@ it('text renderer が入力を onChange に渡す', () => {
       value=""
       onChange={handleChange}
       onBlur={() => {}}
-      meta={{ name: 'name', label: '名前', widget: 'text', options: {} }}
+      meta={{ label: '名前', widget: 'text' as const }}
     />,
   );
 
