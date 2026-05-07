@@ -94,13 +94,13 @@ describe('isComparisionExcludeTarget', () => {
     folder: [
       {
         type: 'exclude',
-        target: ['ignore'],
+        target: ['ignore.txt'],
       },
     ],
   };
 
   it('exclude対象ならtrue', () => {
-    const result = isComparisionExcludeTarget('folder\\ignore.txt', rule, [
+    const result = isComparisionExcludeTarget('folder/ignore.txt', rule, [
       'folder',
     ]);
 
@@ -108,7 +108,7 @@ describe('isComparisionExcludeTarget', () => {
   });
 
   it('対象外ならfalse', () => {
-    const result = isComparisionExcludeTarget('folder\\keep.txt', rule, [
+    const result = isComparisionExcludeTarget('folder/keep.txt', rule, [
       'folder',
     ]);
 
