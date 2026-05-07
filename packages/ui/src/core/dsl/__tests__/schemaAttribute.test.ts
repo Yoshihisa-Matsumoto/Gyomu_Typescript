@@ -399,3 +399,269 @@ describe('getStructFields', () => {
     });
   });
 });
+
+describe('enum validation', () => {
+  it('select widget + enumAttribute が schema enum と一致する', () => {
+    const unionAst = {
+      _tag: 'Union',
+      types: [
+        { _tag: 'Literal', literal: 'admin' },
+        { _tag: 'Literal', literal: 'user' },
+      ],
+    };
+
+    const schemas = createSchemas({
+      fields: ['role'],
+      astMap: {
+        role: unionAst,
+      },
+      ui: {
+        role: {
+          widget: 'select',
+          enumAttribute: {
+            admin: { label: 'Admin' },
+            user: { label: 'User' },
+          },
+        },
+      },
+    });
+
+    expect(() =>
+      buildFormMetaFromStructSchema({
+        schema: schemas.insertSchema,
+        uiContext: 'create',
+        logger,
+        ui: schemas.ui,
+      }),
+    ).not.toThrow();
+  });
+
+  it('enumAttribute が不足していると throw', () => {
+    const unionAst = {
+      _tag: 'Union',
+      types: [
+        { _tag: 'Literal', literal: 'admin' },
+        { _tag: 'Literal', literal: 'user' },
+      ],
+    };
+
+    const schemas = createSchemas({
+      fields: ['role'],
+      astMap: {
+        role: unionAst,
+      },
+      ui: {
+        role: {
+          widget: 'select',
+          enumAttribute: {
+            admin: { label: 'Admin' },
+          },
+        },
+      },
+    });
+
+    expect(() =>
+      buildFormMetaFromStructSchema({
+        schema: schemas.insertSchema,
+        uiContext: 'create',
+        logger,
+        ui: schemas.ui,
+      }),
+    ).toThrow(/enumAttribute missing/);
+  });
+});
+
+describe('union annotation merge', () => {
+  it('Union配下の annotations が merge される', () => {
+    const schemas = createSchemas({
+      fields: ['a'],
+      astMap: {
+        a: {
+          _tag: 'Union',
+          types: [
+            {
+              _tag: 'StringKeyword',
+              annotations: {
+                title: 'AAA',
+              },
+              checks: [],
+            },
+            {
+              _tag: 'StringKeyword',
+              annotations: {
+                description: 'BBB',
+              },
+              checks: [],
+            },
+          ],
+        },
+      },
+      ui: {
+        a: { label: 'A' },
+      },
+    });
+
+    const result = buildFormMetaFromStructSchema({
+      schema: schemas.insertSchema,
+      uiContext: 'create',
+      logger,
+      ui: schemas.ui,
+    });
+
+    expect(result[0]?.options['title']).toBe('AAA');
+    expect(result[0]?.options['description']).toBe('BBB');
+  });
+});
+
+describe('null handling', () => {
+  it('Null type は required=false になる', () => {
+    const schemas = createSchemas({
+      fields: ['a'],
+      astMap: {
+        a: {
+          _tag: 'Null',
+          annotations: {},
+          checks: [],
+        },
+      },
+      ui: {
+        a: { label: 'A' },
+      },
+    });
+
+    const result = buildFormMetaFromStructSchema({
+      schema: schemas.insertSchema,
+      uiContext: 'create',
+      logger,
+      ui: schemas.ui,
+    });
+
+    expect(result[0]?.required).toBe(false);
+  });
+});
+
+describe('constraint extraction', () => {
+  it('number constraint が options に反映される', () => {
+    const ast = createAST({});
+    ast.checks = [
+      {
+        annotations: {
+          toArbitraryConstraint: {
+            number: {
+              min: 1,
+              max: 10,
+              isInteger: true,
+            },
+          },
+        },
+      },
+    ];
+
+    const schemas = createSchemas({
+      fields: ['age'],
+      astMap: { age: ast },
+      ui: {
+        age: { label: 'Age' },
+      },
+    });
+
+    const result = buildFormMetaFromStructSchema({
+      schema: schemas.insertSchema,
+      uiContext: 'create',
+      logger,
+      ui: schemas.ui,
+    });
+
+    expect(result[0]?.options['number-min']).toBe(1);
+    expect(result[0]?.options['number-max']).toBe(10);
+    expect(result[0]?.options['number-isInteger']).toBe(true);
+  });
+
+  it('array constraint が options に反映される', () => {
+    const ast = createAST({});
+    ast.checks = [
+      {
+        annotations: {
+          toArbitraryConstraint: {
+            array: {
+              minLength: 1,
+              maxLength: 5,
+            },
+          },
+        },
+      },
+    ];
+
+    const schemas = createSchemas({
+      fields: ['tags'],
+      astMap: { tags: ast },
+      ui: {
+        tags: { label: 'Tags' },
+      },
+    });
+
+    const result = buildFormMetaFromStructSchema({
+      schema: schemas.insertSchema,
+      uiContext: 'create',
+      logger,
+      ui: schemas.ui,
+    });
+
+    expect(result[0]?.options['array-minLength']).toBe(1);
+    expect(result[0]?.options['array-maxLength']).toBe(5);
+  });
+});
+
+describe('fallback hidden widget', () => {
+  it('ui未指定の場合 hidden widget になる', () => {
+    const schemas = createSchemas({
+      fields: ['a'],
+      astMap: {
+        a: createAST({}),
+      },
+    });
+
+    const result = buildFormMetaFromStructSchema({
+      schema: schemas.insertSchema,
+      uiContext: 'create',
+      logger,
+    });
+
+    expect(result[0]?.widget).toBe('hidden');
+    expect(result[0]?.label).toBe('a');
+  });
+});
+
+describe('override merge', () => {
+  it('default + override が merge される', () => {
+    const schemas = createSchemas({
+      fields: ['a'],
+      astMap: {
+        a: createAST({}),
+      },
+      ui: {
+        a: {
+          default: {
+            label: 'AAA',
+            placeholder: 'PLACE',
+            visible: true,
+          },
+          update: {
+            label: 'BBB',
+          },
+        },
+      },
+    });
+
+    const result = buildFormMetaFromStructSchema({
+      schema: schemas.updateSchema,
+      uiContext: 'update',
+      logger,
+      ui: schemas.ui,
+    });
+
+    expect(result[0]?.label).toBe('BBB');
+    expect(result[0]?.placeholder).toBe('PLACE');
+    expect(result[0]?.visible).toBe(true);
+  });
+});

@@ -139,9 +139,8 @@ function validateEnumAttribute(
   mergeUi: UIAnnotation | undefined,
   fieldName: string,
 ) {
-  if (mergeUi?.widget != 'select') return;
-  if (!enumValues && !mergeUi?.enumAttribute) return;
-  if (!(enumValues && mergeUi?.enumAttribute)) {
+  if (!mergeUi || mergeUi?.widget != 'select') return;
+  if (!enumValues) {
     throw new Error(
       `[AutoForm] enum Attribute for "${fieldName} has conflict": schema: ${enumValues} , uiAttribute: ${mergeUi?.enumAttribute}`,
     );
