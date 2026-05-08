@@ -16,7 +16,7 @@ import {
   StatusTypeSchema,
 } from '@gyomu/core/schemas/gyomu';
 import { KyselyService } from '../db/KyselyService.js';
-import { fromPromise } from '@gyomu/shared/effect';
+import { fromPromise } from '@gyomu/core/shared/effect';
 import { DBError } from '@gyomu/core';
 import {
   appInfoDefinition,
@@ -33,7 +33,7 @@ import {
   taskDataDefinition,
   taskDataLogDefinition,
   YearMonth,
-} from '@gyomu/shared/entity';
+} from '@gyomu/core/shared/entity';
 import { assertDefinitionKeysExistInTable } from '@gyomu/core/data';
 import { DB } from '../generated/db.js';
 import { GyomuRepository } from '@gyomu/core/gyomu';

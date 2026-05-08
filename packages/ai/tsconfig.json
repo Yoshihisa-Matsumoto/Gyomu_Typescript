@@ -5,11 +5,7 @@
     "outDir": "./dist",
     "tsBuildInfoFile": ".tsbuildinfo"
   },
-  "references": [
-    { "path": "../shared" },
-    { "path": "../core" },
-    { "path": "../infra" }
-  ],
+  "references": [{ "path": "../core" }, { "path": "../infra" }],
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist/**/*"]
 }

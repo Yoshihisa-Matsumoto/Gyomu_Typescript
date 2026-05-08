@@ -5,7 +5,7 @@ import {
   EntityDefinition,
   Fields,
   schemaField,
-} from '@gyomu/shared/entity';
+} from '@gyomu/core/shared/entity';
 import { logger } from '@gyomu/core';
 //import { Schema } from 'effect';
 

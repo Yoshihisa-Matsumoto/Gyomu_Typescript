@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { AutoField } from './AutoField';
-import { muiRenderer } from '@ui/renderer/mui';
-import { MuiFieldLayout } from '@ui/adapters/mui';
 import React from 'react';
+import { MuiFieldLayout } from '../../ui/adapters/mui';
+import { muiRenderer } from '../../ui/renderer';
 
 const meta: Meta<typeof AutoField> = {
   title: 'AutoForm/AutoField',

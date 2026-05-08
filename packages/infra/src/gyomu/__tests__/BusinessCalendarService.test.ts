@@ -11,7 +11,7 @@ import { ConfigMockLayer } from '../../config.js';
 import { NodeFileSystem } from '@effect/platform-node';
 import { makeRunner } from '@gyomu/core/shared/effect';
 import { GyomuRepositoryMock } from '../../__tests__/baseDBClass.js';
-import { LocalDate } from '@gyomu/shared/entity';
+import { LocalDate } from '@gyomu/core/shared/entity';
 import { BusinessCalendarServiceLayer } from '../date/BusinessCalendarServiceLayer.js';
 
 // let mockCtx: MockContext;

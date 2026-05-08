@@ -4,7 +4,7 @@ import { FileSystem } from 'effect';
 import { NodeFileSystem, NodeStream } from '@effect/platform-node';
 import { IOError } from '@gyomu/core';
 import fs from 'fs';
-import { wrapInfraError } from '@gyomu/shared';
+import { wrapInfraError } from '@gyomu/core';
 
 describe('FileSystem simple test', () => {
   it('FileSystem test', async () => {

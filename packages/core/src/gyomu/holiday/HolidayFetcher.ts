@@ -1,8 +1,8 @@
 // core/domain/holiday/HolidayFetcher.ts
 
 import { Effect, Context } from 'effect';
+import { GyomuError } from '../../error/GyomuError.js';
 import { MarketHolidaySchema } from '../../schemas/gyomu.js';
-import { GyomuError } from '../../errors.js';
 
 export interface HolidayFetcherService {
   fetch: (

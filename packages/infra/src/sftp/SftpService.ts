@@ -18,7 +18,7 @@ import {
 //import { fs } from '../fs/index.js';
 import { connectEffect } from './internals/sftpClient.js';
 import { readStringFromFile } from '../fs/fs-utils.js';
-import { withOptional } from '@gyomu/shared';
+import { withOptional } from '@gyomu/core';
 
 //type FtpConfig = Config.Success<typeof ftpConfigRaw>;
 

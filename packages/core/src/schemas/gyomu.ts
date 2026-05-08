@@ -1,26 +1,26 @@
 import { Schema } from 'effect';
-import { defineEntityCrudSchemas } from '@gyomu/shared/entity';
+import { defineEntityCrudSchemas } from '../shared/entity/defineEntityCrudSchemas.js';
 import {
   appInfoDefinition,
-  marketHolidayDefinition,
-  milestoneDailyDefinition,
-  milestoneDefinition,
-  parameterMasterDefinition,
-  serviceDefinition,
-  serviceTypeDefinition,
+  statusTypeDefinition,
   statusHandlerDefinition,
   statusInformationDefinition,
-  statusTypeDefinition,
-  taskDataDefinition,
-  taskDataLogDefinition,
-  taskDataStatusDefinition,
-  taskInfoAccessListDefitniion,
+  marketHolidayDefinition,
+  milestoneDefinition,
+  milestoneDailyDefinition,
+  variableParameterDefinition,
+  parameterMasterDefinition,
   taskInfoDefinition,
+  taskInfoAccessListDefitniion,
+  taskDataDefinition,
   taskInstanceDefinition,
   taskInstanceSubmitInformationDefinition,
+  taskDataStatusDefinition,
+  taskDataLogDefinition,
+  serviceTypeDefinition,
+  serviceDefinition,
   taskSchedulerConfigDefinition,
-  variableParameterDefinition,
-} from '@gyomu/shared/entity';
+} from '../shared/entity/gyomuDefinition.js';
 
 export const AppInfoSchema = defineEntityCrudSchemas(appInfoDefinition);
 

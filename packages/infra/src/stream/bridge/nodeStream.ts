@@ -1,7 +1,7 @@
 import { Stream, Effect, Fiber, Queue } from 'effect';
 import { Duplex, Readable, Transform } from 'node:stream';
 import { IOError } from '@gyomu/core';
-import { wrapInfraError } from '@gyomu/shared';
+import { wrapInfraError } from '@gyomu/core';
 import { runSync } from 'effect/Effect';
 //import { NodeStream } from '@effect/platform-node';
 

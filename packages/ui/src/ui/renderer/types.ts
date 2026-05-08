@@ -1,4 +1,4 @@
-import { FormFieldMeta } from '@core/dsl/type';
+import { FormFieldMeta } from '../../core/dsl/type';
 
 export type FieldRenderer = (props: {
   meta: FormFieldMeta;

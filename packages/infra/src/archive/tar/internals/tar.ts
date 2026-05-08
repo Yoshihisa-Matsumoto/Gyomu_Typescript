@@ -3,7 +3,7 @@ import { create } from 'tar';
 import { Effect, Stream, Queue, Option } from 'effect';
 import { NodeStream } from '@effect/platform-node';
 import { IOError } from '@gyomu/core';
-import { wrapInfraError } from '@gyomu/shared';
+import { wrapInfraError } from '@gyomu/core';
 import type { Readable } from 'node:stream';
 import { runSync } from 'effect/Effect';
 

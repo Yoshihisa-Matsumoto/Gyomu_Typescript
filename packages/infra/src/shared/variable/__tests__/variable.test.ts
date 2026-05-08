@@ -1,5 +1,5 @@
 import { VariableTranslatorService } from '@gyomu/core/shared/variable';
-import { parseYmdToDate, createDateOnly } from '@gyomu/shared/entity';
+import { parseYmdToDate, createDateOnly } from '@gyomu/core/shared/entity';
 import { beforeEach, describe, expect, test } from 'vitest';
 import { Effect, Layer } from 'effect';
 import { GyomuRepositoryMock } from '../../../__tests__/baseDBClass.js';
@@ -7,7 +7,7 @@ import { NodeFileSystem } from '@effect/platform-node';
 import { makeRunner } from '@gyomu/core/shared/effect';
 import { MainLayer } from '../../../layer.js';
 import { ConfigMockLayer } from '../../../config.js';
-import { Date2LocalDate } from '@gyomu/shared/entity';
+import { Date2LocalDate } from '@gyomu/core/shared/entity';
 import { VariableTranslatorServiceLayer } from '../VariableTranslatorServiceLayer.js';
 import { BusinessCalendarServiceLayer } from '../../../gyomu/date/BusinessCalendarServiceLayer.js';
 

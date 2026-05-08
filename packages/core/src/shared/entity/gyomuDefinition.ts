@@ -1,5 +1,5 @@
 import { Schema } from 'effect';
-import { TargetDateSchema } from '../../../shared/src/entity/date.js';
+import { TargetDateSchema } from './date.js';
 import { EntityDefinition, Fields } from './type.js';
 import { schemaField } from './fields.js';
 

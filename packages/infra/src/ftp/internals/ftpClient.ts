@@ -4,9 +4,9 @@ import { IOError, isRetryableNetworkError, NetworkError } from '@gyomu/core';
 import { PassThrough } from 'node:stream';
 import { Effect, pipe, Stream } from 'effect';
 import { fromReadable } from '../../stream/bridge/nodeStream.js';
-import { fromPromise } from '@gyomu/shared/effect';
+import { fromPromise } from '@gyomu/core/shared/effect';
 import { NodeStream } from '@effect/platform-node';
-import { toEntryPath } from '@gyomu/shared/path';
+import { toEntryPath } from '@gyomu/core/shared/fs';
 
 // ftpClient.ts
 

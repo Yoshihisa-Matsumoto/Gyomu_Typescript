@@ -1,6 +1,6 @@
 import { Effect } from 'effect';
-import { fromPromise } from '@gyomu/shared/effect';
-import { ValueError } from '@gyomu/shared';
+import { fromPromise } from '@gyomu/core/shared/effect';
+import { ValueError } from '@gyomu/core';
 
 export const xmlEffect = <ResponseType>(
   text: string,

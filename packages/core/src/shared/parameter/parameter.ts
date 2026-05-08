@@ -1,7 +1,7 @@
-import { DBError } from '../../errors.js';
 import { Effect, Context } from 'effect';
 import { User } from '../../schemas/user.js';
-import { SchemaValidationError } from '@gyomu/shared';
+import { DBError } from '../../error/DBError.js';
+import { SchemaValidationError } from '../../error/SchemaValidationError.js';
 
 type ParameterType = string | number | boolean;
 

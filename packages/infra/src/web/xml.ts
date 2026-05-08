@@ -2,8 +2,8 @@ import { Effect } from 'effect';
 import { Stream } from 'effect';
 import xml2js from 'xml2js';
 import { NetworkError } from '@gyomu/core';
-import { fromPromise } from '@gyomu/shared/effect';
-import { ValueError } from '@gyomu/shared';
+import { fromPromise } from '@gyomu/core/shared/effect';
+import { ValueError } from '@gyomu/core';
 
 export const textEffect = (stream: Stream.Stream<Uint8Array, NetworkError>) =>
   stream.pipe(

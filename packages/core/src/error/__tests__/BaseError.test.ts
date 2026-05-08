@@ -4,7 +4,7 @@ import {
   Severity,
   wrapInfraError,
   withErrorTraits,
-} from '../error/BaseError.js';
+} from '../BaseError.js';
 import { Data } from 'effect';
 
 export class TestError extends withErrorTraits(

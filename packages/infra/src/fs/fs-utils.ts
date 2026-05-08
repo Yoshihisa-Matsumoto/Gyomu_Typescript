@@ -2,7 +2,7 @@ import { FileSystem } from 'effect';
 import { Stream, Effect } from 'effect';
 import { IOError, NetworkError } from '@gyomu/core';
 import { PlatformError } from 'effect/PlatformError';
-import { wrapInfraError } from '@gyomu/shared';
+import { wrapInfraError } from '@gyomu/core';
 import path from 'path';
 import { randomUUID } from 'crypto';
 import { tmpdir } from 'os';

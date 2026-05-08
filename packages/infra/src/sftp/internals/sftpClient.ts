@@ -1,9 +1,9 @@
 import { Client, ConnectConfig, FileEntryWithStats, SFTPWrapper } from 'ssh2';
 import { IOError, isRetryableNetworkError, NetworkError } from '@gyomu/core';
 import { Effect, Stream } from 'effect';
-import { wrapInfraError } from '@gyomu/shared';
+import { wrapInfraError } from '@gyomu/core';
 import { FileTransportInfo } from '@gyomu/core/gyomu/file';
-import { toEntryPath } from '@gyomu/shared/path';
+import { toEntryPath } from '@gyomu/core/shared/fs';
 import { FileSystem } from 'effect';
 import { makeDirectory, readDirectoryDetailed } from '../../fs/fs-utils.js';
 import { uploadFromStreamUnderNodejs } from './upload.node.js';

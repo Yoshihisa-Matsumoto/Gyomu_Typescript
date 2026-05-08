@@ -1,6 +1,6 @@
 import * as jwt from 'jsonwebtoken';
 import { readFromFile } from '../fs/fs-utils.js';
-import { fromPromise, fromSync } from '@gyomu/shared/effect';
+import { fromPromise, fromSync } from '@gyomu/core/shared/effect';
 import { IOError } from '@gyomu/core';
 import { Effect } from 'effect';
 import { Uint8ArraytoBuffer } from '@gyomu/core/shared/binary';

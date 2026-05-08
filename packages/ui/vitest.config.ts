@@ -2,13 +2,6 @@ import { defineConfig } from 'vitest/config';
 import path from 'path';
 
 export default defineConfig(({ mode }) => ({
-  resolve: {
-    alias: {
-      '@ui': path.resolve(__dirname, 'src/ui'),
-      '@features': path.resolve(__dirname, 'src/features'),
-      '@core': path.resolve(__dirname, 'src/core'),
-    },
-  },
   test: {
     environment: 'jsdom',
     globals: true,

@@ -5,7 +5,7 @@ import { networkStream } from '../network/index.js';
 import { fetchEffect, fetchStream } from './client.js';
 import { textEffect, parseXmlEffect } from './xml.js';
 import { FetchResult, jsonEffect } from './json.js';
-import { ValueError } from '@gyomu/shared';
+import { ValueError } from '@gyomu/core';
 
 export function postAndReceiveXml<ResponseType>(
   url: string,

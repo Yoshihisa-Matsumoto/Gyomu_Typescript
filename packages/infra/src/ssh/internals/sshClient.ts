@@ -1,7 +1,7 @@
 import { Client, ClientChannel, ConnectConfig } from 'ssh2';
 import { isRetryableNetworkError, NetworkError } from '@gyomu/core';
 import { Effect } from 'effect';
-import { wrapInfraError } from '@gyomu/shared';
+import { wrapInfraError } from '@gyomu/core';
 
 export const connectEffect = (client: Client, config: ConnectConfig) =>
   Effect.callback<undefined, NetworkError>((resume) => {

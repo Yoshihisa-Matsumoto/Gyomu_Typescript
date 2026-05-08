@@ -3,23 +3,24 @@ import React, { useEffect } from 'react';
 import { useForm } from '@tanstack/react-form';
 
 // --- Core / Engine ---
-import { buildFormMetaFromStructSchema } from '@core/dsl';
+
+import { buildFormMetaFromStructSchema } from '../../core/dsl';
 import {
   buildDefaultValues,
-  validateField,
   validateWithSchema,
-} from '@core/engine/autoForm';
+  validateField,
+} from '../../core/engine';
 
 // --- Shared / Core (ドメイン・基盤) ---
-import { buildFieldSchemaMap, Fields } from '@gyomu/shared/entity';
+import { buildFieldSchemaMap, Fields } from '@gyomu/core/shared/entity';
 // --- UI (MUI Adapter) ---
-import { MuiFormLayout, MuiFieldLayout } from '@ui/adapters/mui';
-import { muiRenderer } from '@ui/renderer/mui';
+import { MuiFieldLayout, MuiFormLayout } from '../../ui/adapters/mui';
+import { muiRenderer } from '../../ui/renderer';
 
 // --- ローカル ---
 import { AutoField } from './AutoField';
 import { AutoFormProps } from './types';
-import { DefaultSubmitButton } from '@ui/components';
+import { DefaultSubmitButton } from '../../ui/components/form/DefaultSubmitButton';
 
 export function AutoForm<TFields extends Fields>({
   schema,

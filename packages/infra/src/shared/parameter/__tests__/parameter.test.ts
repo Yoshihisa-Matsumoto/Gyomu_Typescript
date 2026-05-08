@@ -7,7 +7,7 @@ import { Effect, Layer } from 'effect';
 import { ParameterMasterSchema } from '@gyomu/core/schemas/gyomu';
 import { makeRunner } from '@gyomu/core/shared/effect';
 import { describe } from 'node:test';
-import { LocalDate, parseYmdToDate } from '@gyomu/shared/entity';
+import { LocalDate, parseYmdToDate } from '@gyomu/core/shared/entity';
 import { ParameterServiceLayer } from '../ParameterServiceLayer.js';
 
 const testId = 'F6AE5F2D-BD14-4C5F-9CC3-3A69EF90DD5B';

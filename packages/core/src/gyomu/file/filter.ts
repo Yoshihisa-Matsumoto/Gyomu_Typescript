@@ -1,6 +1,6 @@
 import { parse } from 'date-fns';
-import { ValueError } from '@gyomu/shared';
 import { FilterType, FileCompareType } from './types.js';
+import { ValueError } from '../../error/ValueError.js';
 
 export class FileFilterInfo {
   readonly kind: FilterType;

@@ -3,7 +3,7 @@
 import { Effect, Layer } from 'effect';
 import { GyomuRepository } from '@gyomu/core/gyomu';
 import { MarketHolidaySchema } from '@gyomu/core/schemas/gyomu';
-import { LocalDate } from '@gyomu/shared/entity';
+import { LocalDate } from '@gyomu/core/shared/entity';
 // beforeEach(() => {
 //   //console.log('beforeEach in baseDBClass', prismaMock, prisma);
 //   mockReset(prismaMock);

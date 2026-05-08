@@ -1,7 +1,7 @@
-import { muiRenderer } from '@ui/renderer/mui';
-import { MuiFieldLayout } from '@ui/adapters/mui';
-import { withOptional } from '@gyomu/shared';
+import { withOptional } from '@gyomu/core';
 import { AutoFieldProps } from './types';
+import { muiRenderer } from '../../ui/renderer/mui/muiRenderer';
+import { MuiFieldLayout } from '../../ui/adapters/mui/layout/MuiFieldLayout';
 
 export function AutoField({
   meta,

@@ -1,5 +1,5 @@
 import { Effect, Stream } from 'effect';
-import { AIError } from '../../errors.js';
+import { AIError } from '../../error/AiError.js';
 // export type ChatStreamEvent =
 //   | { type: 'delta'; content: string } // 部分テキスト
 //   | { type: 'done' } // 完了

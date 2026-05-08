@@ -9,11 +9,17 @@ import { AutoForm } from './AutoForm';
 import { TextField } from '@mui/material';
 
 // --- Types ---
-import { defineEntityCrudSchemas, schemaField } from '@gyomu/shared/entity';
-import { RendererMap } from '@core/engine/autoForm/types';
-import { muiRenderer } from '@ui/renderer/mui';
-import { MuiFieldLayout, MuiFormLayout } from '@ui/adapters/mui/layout';
-import { MuiSubmitButton } from '@ui/adapters/mui';
+import {
+  defineEntityCrudSchemas,
+  schemaField,
+} from '@gyomu/core/shared/entity';
+import { RendererMap } from '../../core/engine/autoForm/types';
+import {
+  MuiFieldLayout,
+  MuiFormLayout,
+  MuiSubmitButton,
+} from '../../ui/adapters/mui';
+import { muiRenderer } from '../../ui/renderer';
 
 // --------------------------------------------------
 // Schema

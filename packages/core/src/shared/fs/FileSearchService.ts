@@ -1,7 +1,7 @@
 import { Effect, Context, FileSystem } from 'effect';
+import { IOError } from '../../error/IOError.js';
 import { FileFilterInfo } from '../../gyomu/file/filter.js';
-import { IOError } from '../../errors.js';
-import { FileInfo } from '../../gyomu/file/index.js';
+import { FileInfo } from '../../gyomu/file/types.js';
 
 export class FileSearchService extends Context.Service<
   FileSearchService,

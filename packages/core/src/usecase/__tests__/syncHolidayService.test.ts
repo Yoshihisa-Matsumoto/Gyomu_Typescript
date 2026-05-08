@@ -3,8 +3,8 @@ import { Effect, Layer } from 'effect';
 
 import { syncHoliday } from '../syncHolidayService.js';
 import { GyomuRepository } from '../../gyomu/GyomuRepository.js';
-import { LocalDate } from '@gyomu/shared/entity';
 import { HolidayFetcher } from '../../gyomu/holiday/HolidayFetcher.js';
+import { LocalDate } from '../../shared/entity/date.js';
 
 // --- モックデータ ---
 const mockIncoming = [

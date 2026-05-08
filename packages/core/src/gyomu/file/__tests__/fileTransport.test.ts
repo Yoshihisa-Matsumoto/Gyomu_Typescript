@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { FileTransportInfo } from '../file/transport.js';
+import { FileTransportInfo } from '../transport.js';
 import { join } from 'path';
 
 class TransportResult {

@@ -1,7 +1,7 @@
-import { Select, TextArea, TextField, NumberField } from '@ui/adapters/mui';
-import { RendererMap } from '@core/engine/autoForm/types.js';
-import { withOptional } from '@gyomu/shared';
-import { LocalDate } from '@gyomu/shared/entity';
+import { withOptional } from '@gyomu/core';
+import { LocalDate } from '@gyomu/core/shared/entity';
+import { RendererMap } from '../../../core/engine/autoForm/types';
+import { TextArea, NumberField, TextField, Select } from '../../adapters/mui';
 
 export const muiRenderer: RendererMap = {
   text: ({ value, onChange, meta, onBlur }) => (

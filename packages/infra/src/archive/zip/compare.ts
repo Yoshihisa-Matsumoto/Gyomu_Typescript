@@ -1,5 +1,5 @@
 import { Ref, Stream } from 'effect';
-import { withOptional, wrapInfraError } from '@gyomu/shared';
+import { withOptional, wrapInfraError } from '@gyomu/core';
 import { DiffDetail } from '@gyomu/core/shared/object';
 import { Effect } from 'effect';
 import {
@@ -7,7 +7,7 @@ import {
   ensureEffect,
   fromPromise,
   fromSync,
-} from '@gyomu/shared/effect';
+} from '@gyomu/core/shared/effect';
 //import { fs } from '../../fs/index.js';
 import { IOError } from '@gyomu/core';
 import { spawnSync } from 'node:child_process';

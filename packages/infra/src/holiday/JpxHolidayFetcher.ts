@@ -4,7 +4,6 @@ import {
   HolidayFetcherService,
 } from '@gyomu/core/gyomu/holiday';
 import { fetchJpxHolidays } from './jpxFetcher.js';
-import { wrapInfraError } from '@gyomu/shared';
 import { GyomuError, gyomuExternalFailure } from '@gyomu/core';
 
 const JPXHolidayFetcherLive = {

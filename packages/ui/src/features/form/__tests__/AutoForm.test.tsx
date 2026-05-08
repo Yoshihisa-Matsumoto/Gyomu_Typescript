@@ -2,8 +2,11 @@ import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, waitFor, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { AutoForm } from '../AutoForm';
-import { defineEntityCrudSchemas, schemaField } from '@gyomu/shared/entity';
-import { withOptional } from '@gyomu/shared';
+import {
+  defineEntityCrudSchemas,
+  schemaField,
+} from '@gyomu/core/shared/entity';
+import { withOptional } from '@gyomu/core';
 
 describe('AutoForm Test', () => {
   const schema = defineEntityCrudSchemas({

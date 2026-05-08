@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { addToMultiMap, addToNestedMap } from '../collection/multiMap.js';
+import { addToMultiMap, addToNestedMap } from '../multiMap.js';
 
 describe('addToMultiMap', () => {
   it('should create new entry when key does not exist', () => {

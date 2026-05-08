@@ -2,7 +2,7 @@ import {
   LocalDate,
   UIAnnotationByWidget,
   UIAnnotationMap,
-} from '@gyomu/shared/entity';
+} from '@gyomu/core/shared/entity';
 
 // type BaseFieldProps<T> = {
 //   value: T | undefined;

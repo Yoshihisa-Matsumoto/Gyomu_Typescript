@@ -1,7 +1,7 @@
 import { Client, SFTPWrapper } from 'ssh2';
 import { isRetryableNetworkError, NetworkError } from '@gyomu/core';
 import { Effect } from 'effect';
-import { wrapInfraError } from '@gyomu/shared';
+import { wrapInfraError } from '@gyomu/core';
 
 export const withSftp =
   (client: Client) =>

@@ -86,9 +86,6 @@ importers:
       '@gyomu/infra':
         specifier: workspace:*
         version: link:../../packages/infra
-      '@gyomu/shared':
-        specifier: workspace:*
-        version: link:../../packages/shared
       effect:
         specifier: 4.0.0-beta.57
         version: 4.0.0-beta.57
@@ -105,9 +102,6 @@ importers:
       '@gyomu/infra':
         specifier: workspace:*
         version: link:../infra
-      '@gyomu/shared':
-        specifier: workspace:*
-        version: link:../shared
       '@mastra/core':
         specifier: ^1.28.0
         version: 1.28.0(@standard-community/standard-json@0.3.5(@standard-schema/spec@1.1.0)(@types/json-schema@7.0.15)(effect@4.0.0-beta.57)(quansync@0.2.11)(zod-to-json-schema@3.25.2(zod@4.4.1))(zod@4.4.1))(@standard-community/standard-openapi@0.2.9(@standard-community/standard-json@0.3.5(@standard-schema/spec@1.1.0)(@types/json-schema@7.0.15)(effect@4.0.0-beta.57)(quansync@0.2.11)(zod-to-json-schema@3.25.2(zod@4.4.1))(zod@4.4.1))(@standard-schema/spec@1.1.0)(effect@4.0.0-beta.57)(openapi-types@12.1.3)(zod@4.4.1))(@types/json-schema@7.0.15)(openapi-types@12.1.3)(zod@4.4.1)
@@ -117,9 +111,6 @@ importers:
 
   packages/core:
     dependencies:
-      '@gyomu/shared':
-        specifier: workspace:*
-        version: link:../shared
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -154,9 +145,6 @@ importers:
       '@gyomu/core':
         specifier: workspace:*
         version: link:../core
-      '@gyomu/shared':
-        specifier: workspace:*
-        version: link:../shared
       basic-ftp:
         specifier: ^6.0.0
         version: 6.0.0
@@ -289,9 +277,6 @@ importers:
       '@gyomu/core':
         specifier: workspace:*
         version: link:../core
-      '@gyomu/shared':
-        specifier: workspace:*
-        version: link:../shared
       '@mui/icons-material':
         specifier: ^7.3.4
         version: 7.3.10(@mui/material@7.3.10(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.3))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(@types/react@19.2.14)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(@types/react@19.2.14)(react@19.2.3)

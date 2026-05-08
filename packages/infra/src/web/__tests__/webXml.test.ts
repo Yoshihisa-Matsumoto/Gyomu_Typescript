@@ -6,7 +6,7 @@ import { NetworkError } from '@gyomu/core';
 import * as client from '../client.js';
 import * as stream from '../../network/networkStream.js';
 import * as xml from '../xml.js';
-import { ValueError } from '@gyomu/shared';
+import { ValueError } from '@gyomu/core';
 // ===== mock =====
 vi.mock('../client.js', () => ({
   fetchEffect: vi.fn(),

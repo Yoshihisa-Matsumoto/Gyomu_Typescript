@@ -9,7 +9,7 @@ import { execute } from './internals/sshClient.js';
 
 import { connectEffect } from './internals/sshClient.js';
 import { readStringFromFile } from '../fs/fs-utils.js';
-import { withOptional } from '@gyomu/shared';
+import { withOptional } from '@gyomu/core';
 
 //type FtpConfig = Config.Success<typeof ftpConfigRaw>;
 

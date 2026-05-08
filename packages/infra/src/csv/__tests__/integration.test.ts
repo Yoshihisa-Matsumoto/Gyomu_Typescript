@@ -9,7 +9,7 @@ import path from 'path';
 import { fileStream, writeTextStreamToFile } from '../../fs/fs-utils.js';
 import { MainLayer, PlatformLayer } from '../../layer.js';
 import { makeRunner } from '../../runtime.js';
-import { wrapInfraError } from '@gyomu/shared';
+import { wrapInfraError } from '@gyomu/core';
 import { tmpdir } from 'node:os';
 
 const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);

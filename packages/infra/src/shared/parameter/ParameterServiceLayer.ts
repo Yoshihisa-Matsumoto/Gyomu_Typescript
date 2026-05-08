@@ -1,7 +1,7 @@
 import { DBError } from '@gyomu/core';
 import { Effect, Layer, Schedule } from 'effect';
 import { GyomuRepository } from '@gyomu/core/gyomu';
-import { formatDateToYmd } from '@gyomu/shared/entity';
+import { formatDateToYmd } from '@gyomu/core/shared/entity';
 import { User } from '@gyomu/core/schemas/user';
 import { ParameterService } from '@gyomu/core/shared/parameter';
 type ParameterType = string | number | boolean;

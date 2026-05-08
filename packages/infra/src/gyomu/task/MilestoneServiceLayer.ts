@@ -7,15 +7,15 @@ import {
   MilestoneSchema,
 } from '@gyomu/core/schemas/gyomu';
 import { DBError, TimeoutError } from '@gyomu/core';
-import { convertToSchemaObjectWithEffect } from '@gyomu/shared/entity';
+import { convertToSchemaObjectWithEffect } from '@gyomu/core/shared/entity';
 import {
   LocalDate,
   LocalDateSchema,
   YearMonth,
   YearMonthSchema,
-} from '@gyomu/shared/entity';
-import { MilestoneDailyDomainSchema } from '@gyomu/shared/entity';
-import { SchemaValidationError } from '@gyomu/shared';
+} from '@gyomu/core/shared/entity';
+import { MilestoneDailyDomainSchema } from '@gyomu/core/shared/entity';
+import { SchemaValidationError } from '@gyomu/core';
 import {
   MilestoneExistResultType,
   MilestoneService,

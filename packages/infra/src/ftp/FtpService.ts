@@ -8,7 +8,7 @@ import {
   IOError,
 } from '@gyomu/core';
 import { ConfigProviderLive, ConfigService } from '../config.js';
-import { fromPromise } from '@gyomu/shared/effect';
+import { fromPromise } from '@gyomu/core/shared/effect';
 import { Scope } from 'effect/Scope';
 import { FileTransportInfo } from '@gyomu/core/gyomu/file';
 import { Stream } from 'effect/Stream';

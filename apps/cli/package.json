@@ -24,7 +24,6 @@
   "dependencies": {
     "@gyomu/core": "workspace:*",
     "@gyomu/infra": "workspace:*",
-    "@gyomu/shared": "workspace:*",
     "effect": "4.0.0-beta.57"
   },
   "files": [

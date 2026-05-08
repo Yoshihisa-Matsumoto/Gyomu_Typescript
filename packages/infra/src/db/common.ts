@@ -8,7 +8,7 @@ import {
   DeleteResult,
   UpdateResult,
 } from 'kysely';
-import { fromPromise } from '@gyomu/shared/effect';
+import { fromPromise } from '@gyomu/core/shared/effect';
 import { CrudSchemas } from '@gyomu/core/data';
 import { generateUuid7 } from '@gyomu/core/shared';
 import {
@@ -20,9 +20,9 @@ import {
   LocalDate,
   convertToSchemaObjectWithEffect,
   convertFromSchemaObjectWithEffect,
-} from '@gyomu/shared/entity';
-import { ValueError } from '@gyomu/shared';
-import { SchemaValidationError } from '@gyomu/shared';
+} from '@gyomu/core/shared/entity';
+import { ValueError } from '@gyomu/core';
+import { SchemaValidationError } from '@gyomu/core';
 export type TablesWithId = {
   [K in keyof DB]: DB[K] extends { id: any } ? K : never;
 }[keyof DB];

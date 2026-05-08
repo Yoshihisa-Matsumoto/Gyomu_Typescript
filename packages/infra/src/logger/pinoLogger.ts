@@ -16,7 +16,7 @@ import { ConfigLayer, ConfigService } from '../config.js';
 import { makeRunner } from '../runtime.js';
 import { PlatformLayer } from '../layer.js';
 import { tmpdir } from 'os';
-import { withOptional } from '@gyomu/shared';
+import { withOptional } from '@gyomu/core';
 
 export const createPinoLogger = (): Logger => {
   const p = pino();

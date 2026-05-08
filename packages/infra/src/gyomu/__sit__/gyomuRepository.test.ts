@@ -6,7 +6,7 @@ import { ConfigLayer, ConfigMockLayer } from '../../config.js';
 import { KyselyService } from '../../db/KyselyService.js';
 import { makeRunner } from '@gyomu/core/shared/effect';
 import { MssqlService } from '../../db/MssqlService.js';
-import { LocalDate, YearMonth } from '@gyomu/shared/entity';
+import { LocalDate, YearMonth } from '@gyomu/core/shared/entity';
 import { AppInfoSchema } from '@gyomu/core/schemas/gyomu';
 import { GyomuRepositoryLayer } from '../GyomuRepositoryLayer.js';
 

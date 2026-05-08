@@ -10,7 +10,7 @@ import {
   pathExists,
   writeStreamToFile,
 } from '../fs/fs-utils.js';
-import { withOptional } from '@gyomu/shared';
+import { withOptional } from '@gyomu/core';
 
 export const webDownloadStream = (
   url: string,

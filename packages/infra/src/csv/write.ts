@@ -3,7 +3,7 @@ import { stringify } from 'csv';
 import { Options } from 'csv-stringify';
 import { throughNodeStreamScoped } from '../stream/bridge/nodeStream.js';
 import { Stream, Schema, Function, Effect, Console, Path, Layer } from 'effect';
-import { wrapInfraError } from '@gyomu/shared';
+import { wrapInfraError } from '@gyomu/core';
 import { IOError } from '@gyomu/core';
 import { encodeUtf8ToBinaryStream } from '@gyomu/core/shared/stream';
 import { NodeFileSystem, NodePath } from '@effect/platform-node';

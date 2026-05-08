@@ -1,5 +1,5 @@
 import { Effect, Schema } from 'effect';
-import { DBError } from '../../errors.js';
+import { DBError } from '../../error/DBError.js';
 
 export type CrudRepository<
   Insert extends Schema.Top,

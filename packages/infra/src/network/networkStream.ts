@@ -1,6 +1,6 @@
 import { Stream } from 'effect';
 import { isRetryableNetworkError, NetworkError } from '@gyomu/core';
-import { wrapInfraError } from '@gyomu/shared';
+import { wrapInfraError } from '@gyomu/core';
 
 export const networkStream = (
   f: () => ReadableStream<Uint8Array>,

@@ -3,7 +3,7 @@ import { MilestoneService } from '@gyomu/core/gyomu/task';
 import { beforeEach, describe, expect, it, test } from 'vitest';
 import { GyomuRepository } from '@gyomu/core/gyomu';
 import { makeRunner } from '@gyomu/core/shared/effect';
-import { LocalDate } from '@gyomu/shared/entity';
+import { LocalDate } from '@gyomu/core/shared/entity';
 import { MilestoneServiceLayer } from '../task/MilestoneServiceLayer.js';
 
 const testId = 'F6AE5F2D-BD14-4C5F-9CC3-3A69EF90DD5B';

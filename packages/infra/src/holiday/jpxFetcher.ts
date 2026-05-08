@@ -1,7 +1,7 @@
 import { Effect } from 'effect';
 import { fetchEffect } from '../web/client.js';
 import { convertGenericElementByTagName, Page } from '../scraping/index.js';
-import { fromPromise } from '@gyomu/shared/effect';
+import { fromPromise } from '@gyomu/core/shared/effect';
 import { isRetryableNetworkError, NetworkError } from '@gyomu/core';
 import { enUS } from 'date-fns/locale';
 import { MarketHolidaySchema } from '@gyomu/core/schemas/gyomu';

@@ -1,7 +1,7 @@
 import { Cause, Effect, Option, Schema } from 'effect';
 import { describe, it, expect } from 'vitest';
-import { convertToSchemaObjectWithEffect } from '../entity/convert.js';
-import { getFailureFromExit } from '../error/helper.js';
+import { convertToSchemaObjectWithEffect } from '../../shared/entity/convert.js';
+import { getFailureFromExit } from '../helper.js';
 
 describe('SchemaValidationError test', () => {
   it('wraps SchemaError into SchemaValidationError', async () => {

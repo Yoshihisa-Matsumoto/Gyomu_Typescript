@@ -1,6 +1,17 @@
+import path from 'path';
 import { defineConfig } from 'vitest/config';
 //console.log('Env', process.env);
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@data': path.resolve(__dirname, 'src/data'),
+      '@error': path.resolve(__dirname, 'src/error'),
+      '@gyomu': path.resolve(__dirname, 'src/gyomu'),
+      '@schemas': path.resolve(__dirname, 'src/schemas'),
+      '@shared': path.resolve(__dirname, 'src/shared'),
+      '@usecase': path.resolve(__dirname, 'src/usecase'),
+    },
+  },
   test: {
     include: [
       'src/**/__sit__/**/*.test.{ts,tsx,js}',

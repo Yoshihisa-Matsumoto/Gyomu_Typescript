@@ -8,7 +8,7 @@ import {
   fromReadableControlled,
 } from '../../../stream/bridge/nodeStream.js';
 import { decode } from '@gyomu/core/shared/encoding';
-import { wrapInfraError } from '@gyomu/shared';
+import { wrapInfraError } from '@gyomu/core';
 import { ArchiveEntryItem, massageEntryPath } from '../../common.js';
 import { makeDirectory, writeStreamToFile } from '../../../fs/fs-utils.js';
 import { FileSystem } from 'effect';

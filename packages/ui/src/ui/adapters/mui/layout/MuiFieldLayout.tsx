@@ -1,6 +1,6 @@
 import { Grid } from '@mui/material';
-import { FieldLayoutProps } from '@ui/components';
 import { Label } from '../fields/label';
+import { FieldLayoutProps } from '../../../components/layout/types';
 
 export function MuiFieldLayout({ label, error, children }: FieldLayoutProps) {
   return (

@@ -1,5 +1,8 @@
 import { Effect, FileSystem, Layer, Context, Option } from 'effect';
-import { AccessError, IOError, TimeoutError } from '../../errors.js';
+
+import { AccessError } from '../../error/AccessError.js';
+import { IOError } from '../../error/IOError.js';
+import { TimeoutError } from '../../error/TimeoutError.js';
 
 export class FileAccessService extends Context.Service<
   FileAccessService,

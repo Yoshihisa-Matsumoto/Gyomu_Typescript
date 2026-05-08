@@ -1,5 +1,9 @@
 // components/Button/Button.tsx
-import { MuiButtonAdapter, MuiFileButtonAdapter } from '@ui/adapters/mui';
+
+import {
+  MuiButtonAdapter,
+  MuiFileButtonAdapter,
+} from '../../adapters/mui/Button';
 
 export interface ButtonProps {
   label: string;

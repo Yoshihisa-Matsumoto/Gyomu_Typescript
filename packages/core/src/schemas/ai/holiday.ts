@@ -1,5 +1,5 @@
 import { Schema } from 'effect';
-import { LocalDateSchema } from '@gyomu/shared/entity';
+import { LocalDateSchema } from '../../shared/entity/date.js';
 
 export const HolidayRangeSchema = Schema.Struct({
   from: LocalDateSchema,

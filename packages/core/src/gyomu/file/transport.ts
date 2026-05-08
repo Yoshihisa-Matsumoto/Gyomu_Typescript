@@ -1,6 +1,6 @@
-import { ValueError } from '@gyomu/shared';
 import path from 'path';
 import { FileFilterInfo } from './filter.js';
+import { ValueError } from '../../error/ValueError.js';
 
 export class FileTransportInfo {
   readonly sourceFileName: string;

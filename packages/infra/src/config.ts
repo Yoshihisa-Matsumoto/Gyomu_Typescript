@@ -7,10 +7,10 @@ import {
   FileSystem,
 } from 'effect';
 import { IOError, ConfigError } from '@gyomu/core';
-import { fromSync } from '@gyomu/shared/effect';
+import { fromSync } from '@gyomu/core/shared/effect';
 import { option } from 'effect/Effect';
 import { readStringFromFile } from './fs/fs-utils.js';
-import { wrapInfraError } from '@gyomu/shared';
+import { wrapInfraError } from '@gyomu/core';
 // const makeConfigProvider = Effect.gen(function* () {
 //   const dotEnv = yield* ConfigProvider.fromDotEnv();
 //   return ConfigProvider.orElse(dotEnv, ConfigProvider.fromEnv());

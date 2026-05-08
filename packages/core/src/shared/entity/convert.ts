@@ -1,6 +1,6 @@
 import { Effect, Schema, Result } from 'effect';
 import { SchemaError } from 'effect/Schema';
-import { SchemaValidationError } from '../error/SchemaValidationError.js';
+import { SchemaValidationError } from '../../error/SchemaValidationError.js';
 import { CrudSchemaType, Fields } from './type.js';
 import { AST } from 'effect/SchemaAST';
 import { schema } from 'effect/Config';

@@ -1,10 +1,10 @@
 import { Effect } from 'effect';
 import { Stream } from 'effect';
 import { isRetryableNetworkError, NetworkError } from '@gyomu/core';
-import { fromPromise } from '@gyomu/shared/effect';
+import { fromPromise } from '@gyomu/core/shared/effect';
 import { EnvHttpProxyAgent, setGlobalDispatcher } from 'undici';
 import { networkStream } from '../network/index.js';
-import { withOptional } from '@gyomu/shared';
+import { withOptional } from '@gyomu/core';
 
 export function simpleWebAccess(url: string, isInternal: boolean = true) {
   if (!isInternal && (process.env.HTTPS_PROXY || process.env.HTTP_PROXY)) {
