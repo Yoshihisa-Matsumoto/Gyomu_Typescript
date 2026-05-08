@@ -43,7 +43,7 @@
   },
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "clean": "rimraf ./lib && rimraf ./coverage .tsbuildinfo",
+    "clean": "rimraf ./dist && rimraf ./coverage .tsbuildinfo",
     "test": "bunx vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json ",
     "@test:coverage": "vitest --config vitest.coverage.config.ts --typecheck.tsconfig ./tsconfig.vitest.json --coverage",
     "@test:ci:coverage": "vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json --coverage",
@@ -65,9 +65,7 @@
     "!**/__sit__"
   ],
   "devDependencies": {
-    "@types/jsdom": "^28.0.1",
     "dotenv-cli": "^11.0.0",
-    "jsdom": "^29.0.2",
     "knip": "^6.4.1"
   },
   "dependencies": {
