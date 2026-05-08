@@ -20,10 +20,6 @@
       "import": "./dist/gyomu/*/index.js",
       "types": "./dist/gyomu/*/index.js"
     },
-    "./scraping": {
-      "import": "./dist/scraping/index.js",
-      "types": "./dist/scraping/index.d.ts"
-    },
     "./shared": {
       "import": "./dist/shared/index.js",
       "types": "./dist/shared/index.d.ts"
