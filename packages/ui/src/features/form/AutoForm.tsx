@@ -12,7 +12,7 @@ import {
 } from '../../core/engine';
 
 // --- Shared / Core (ドメイン・基盤) ---
-import { buildFieldSchemaMap, Fields } from '@gyomu/core/shared/entity';
+import { buildFieldSchemaMap, Fields } from '@gyomu/core/entity';
 // --- UI (MUI Adapter) ---
 import { MuiFieldLayout, MuiFormLayout } from '../../ui/adapters/mui';
 import { muiRenderer } from '../../ui/renderer';

@@ -8,7 +8,7 @@ import {
   UIAnnotations,
 } from './type.js';
 import { PrimaryFields, AuditFields } from './fields.js';
-import { mapValues } from '../collection/mapValues.js';
+import { mapValues } from '../shared/collection/mapValues.js';
 
 const pickFields = <T extends Fields, K extends readonly (keyof T)[]>(
   fields: T,

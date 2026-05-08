@@ -3,7 +3,7 @@ import fs from 'fs';
 import { fsConstants } from '../index.js';
 import { Effect, Layer } from 'effect';
 import { MainLayer, PlatformLayer } from '../../layer.js';
-import { makeRunner } from '@gyomu/core/shared/effect';
+import { makeRunner } from '../../../../core/dist/effect/index.js';
 import { FileAccessService } from '@gyomu/core/shared/fs';
 import { getTempFilename } from '../fs-utils.js';
 import { FileAccessServiceLayer } from '../FileAccessServiceLayer.js';

@@ -1,7 +1,7 @@
 import { Effect } from 'effect';
 import { Stream } from 'effect';
 import { NetworkError } from '@gyomu/core';
-import { fromSync } from '@gyomu/core/shared/effect';
+import { fromSync } from '../../../core/dist/effect/index.js';
 import { ValueError } from '@gyomu/core';
 
 export type FetchResult<ResponseType> = {

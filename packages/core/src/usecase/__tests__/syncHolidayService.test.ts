@@ -4,7 +4,7 @@ import { Effect, Layer } from 'effect';
 import { syncHoliday } from '../syncHolidayService.js';
 import { GyomuRepository } from '../../gyomu/GyomuRepository.js';
 import { HolidayFetcher } from '../../gyomu/holiday/HolidayFetcher.js';
-import { LocalDate } from '../../shared/entity/date.js';
+import { LocalDate } from '../../entity/date.js';
 
 // --- モックデータ ---
 const mockIncoming = [

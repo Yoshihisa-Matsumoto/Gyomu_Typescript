@@ -1,7 +1,7 @@
 import { Effect } from 'effect';
 import { Stream } from 'effect';
 import { isRetryableNetworkError, NetworkError } from '@gyomu/core';
-import { fromPromise } from '@gyomu/core/shared/effect';
+import { fromPromise } from '../../../core/dist/effect/index.js';
 import { EnvHttpProxyAgent, setGlobalDispatcher } from 'undici';
 import { networkStream } from '../network/index.js';
 import { withOptional } from '@gyomu/core';

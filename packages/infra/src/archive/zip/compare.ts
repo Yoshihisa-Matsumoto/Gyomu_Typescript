@@ -7,7 +7,7 @@ import {
   ensureEffect,
   fromPromise,
   fromSync,
-} from '@gyomu/core/shared/effect';
+} from '../../../../core/dist/effect/index.js';
 //import { fs } from '../../fs/index.js';
 import { IOError } from '@gyomu/core';
 import { spawnSync } from 'node:child_process';

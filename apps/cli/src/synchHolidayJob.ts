@@ -3,7 +3,7 @@ import { ConfigLayer, PlatformLayer } from '@gyomu/infra';
 import { MainLayer } from '@gyomu/infra';
 import { KyselyService } from '@gyomu/infra/db';
 import { MssqlService } from '@gyomu/infra/db';
-import { makeRunner } from '@gyomu/core/shared/effect';
+import { makeRunner } from '../../../packages/core/dist/effect/index.js';
 import { syncHoliday } from '@gyomu/core/usecase/syncHolidayService';
 import { JPXHolidayFetcherLayer } from '@gyomu/infra/holiday';
 import { initLoggerFromEnv } from '@gyomu/infra';

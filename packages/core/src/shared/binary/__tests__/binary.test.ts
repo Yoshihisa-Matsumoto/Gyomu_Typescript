@@ -3,7 +3,7 @@ import {
   bufferToArrayBuffer,
   arrayBufferToString,
   stringToArrayBuffer,
-} from '../binary/convert.js';
+} from '../convert.js';
 
 // --- stringToArrayBuffer ---
 describe('stringToArrayBuffer', () => {

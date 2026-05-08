@@ -5,7 +5,7 @@ import { expect, test } from 'vitest';
 import path, { join } from 'path';
 import { Effect, Layer } from 'effect';
 import { MainLayer, PlatformLayer } from '../../layer.js';
-import { makeRunner } from '@gyomu/core/shared/effect';
+import { makeRunner } from '../../../../core/dist/effect/index.js';
 import { FileSearchService } from '@gyomu/core/shared/fs';
 import { FileSearchServiceLayer } from '../FileSearchServiceLayer.js';
 

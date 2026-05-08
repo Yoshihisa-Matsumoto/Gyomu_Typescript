@@ -2,7 +2,7 @@ import { Config, Effect, Layer, Context, Stream } from 'effect';
 import { AiClient, ChatContent, ChatMessage } from '@gyomu/core/gyomu/ai';
 import { Content, GoogleGenAI, Part, ToolType } from '@google/genai';
 import { AIError, isRetryableAiError } from '@gyomu/core';
-import { fromPromise } from '@gyomu/core/shared/effect';
+import { fromPromise } from '../../../../core/dist/effect/index.js';
 import { ConfigLayer, ConfigService } from '../../config.js';
 import { PlatformLayer } from '../../layer.js';
 export class GeminiClient extends Context.Service<GeminiClient, AiClient>()(

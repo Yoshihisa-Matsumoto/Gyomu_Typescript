@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { encodeUtf8ToShiftJisBuffer } from '../encoding/shiftjis.js';
+import { encodeUtf8ToShiftJisBuffer } from '../shiftjis.js';
 
 // --- utf8String2ShiftJisBuffer ---
 describe('utf8String2ShiftJisBuffer', () => {

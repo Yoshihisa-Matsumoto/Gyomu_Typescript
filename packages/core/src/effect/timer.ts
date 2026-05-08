@@ -1,5 +1,5 @@
 import { Duration, Effect } from 'effect';
-import { TimeoutError } from '../../error/TimeoutError.js';
+import { TimeoutError } from '../error/TimeoutError.js';
 /**
  *
  * @param pollingActionName

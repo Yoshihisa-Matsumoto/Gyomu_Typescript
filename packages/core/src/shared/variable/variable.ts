@@ -3,7 +3,7 @@ import { GyomuRepository } from '../../gyomu/GyomuRepository.js';
 import { DBError } from '../../error/DBError.js';
 import { ValueError } from '../../error/ValueError.js';
 import { BusinessCalendarService } from '../../gyomu/date/BusinessCalendar.js';
-import { LocalDate } from '../entity/date.js';
+import { LocalDate } from '../../entity/date.js';
 
 export class VariableTranslatorService extends Context.Service<
   VariableTranslatorService,

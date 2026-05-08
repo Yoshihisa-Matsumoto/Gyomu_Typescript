@@ -1,5 +1,5 @@
 import { withOptional } from '@gyomu/core';
-import { LocalDate } from '@gyomu/core/shared/entity';
+import { LocalDate } from '@gyomu/core/entity';
 import { RendererMap } from '../../../core/engine/autoForm/types';
 import { TextArea, NumberField, TextField, Select } from '../../adapters/mui';
 

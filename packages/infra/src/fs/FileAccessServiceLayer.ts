@@ -1,9 +1,13 @@
 import { Effect, FileSystem, Layer, Option } from 'effect';
 import { AccessError, IOError, TimeoutError } from '@gyomu/core';
 import path from 'path';
-import { ensure, ensureEffect, fromPromise } from '@gyomu/core/shared/effect';
+import {
+  ensure,
+  ensureEffect,
+  fromPromise,
+} from '../../../core/dist/effect/index.js';
 
-import { polling } from '@gyomu/core/shared/effect';
+import { polling } from '../../../core/dist/effect/index.js';
 import { getFileStat, pathExists } from '../fs/fs-utils.js';
 import { FileAccessService } from '@gyomu/core/shared/fs';
 

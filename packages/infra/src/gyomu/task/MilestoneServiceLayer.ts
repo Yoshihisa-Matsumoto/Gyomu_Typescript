@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { polling } from '@gyomu/core/shared/effect';
+import { polling } from '../../../../core/dist/effect/index.js';
 import { Effect, Layer, Schema } from 'effect';
 import { GyomuRepository } from '@gyomu/core/gyomu';
 import {
@@ -7,14 +7,14 @@ import {
   MilestoneSchema,
 } from '@gyomu/core/schemas/gyomu';
 import { DBError, TimeoutError } from '@gyomu/core';
-import { convertToSchemaObjectWithEffect } from '@gyomu/core/shared/entity';
+import { convertToSchemaObjectWithEffect } from '@gyomu/core/entity';
 import {
   LocalDate,
   LocalDateSchema,
   YearMonth,
   YearMonthSchema,
-} from '@gyomu/core/shared/entity';
-import { MilestoneDailyDomainSchema } from '@gyomu/core/shared/entity';
+} from '@gyomu/core/entity';
+import { MilestoneDailyDomainSchema } from '@gyomu/core/entity';
 import { SchemaValidationError } from '@gyomu/core';
 import {
   MilestoneExistResultType,

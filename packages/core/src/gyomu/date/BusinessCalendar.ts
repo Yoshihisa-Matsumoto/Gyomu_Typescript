@@ -1,7 +1,7 @@
 import { Effect, Layer, Context } from 'effect';
 import { GyomuRepository } from '../GyomuRepository.js';
 import { DBError } from '../../error/DBError.js';
-import { LocalDate } from '../../shared/entity/date.js';
+import { LocalDate } from '../../entity/date.js';
 
 export interface BusinessCalendar {
   isBusinessDay: (targetDate: LocalDate) => boolean;

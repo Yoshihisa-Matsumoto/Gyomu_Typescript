@@ -8,7 +8,7 @@ import {
   DeleteResult,
   UpdateResult,
 } from 'kysely';
-import { fromPromise } from '@gyomu/core/shared/effect';
+import { fromPromise } from '../../../core/dist/effect/index.js';
 import { CrudSchemas } from '@gyomu/core/data';
 import { generateUuid7 } from '@gyomu/core/shared';
 import {
@@ -20,7 +20,7 @@ import {
   LocalDate,
   convertToSchemaObjectWithEffect,
   convertFromSchemaObjectWithEffect,
-} from '@gyomu/core/shared/entity';
+} from '@gyomu/core/entity';
 import { ValueError } from '@gyomu/core';
 import { SchemaValidationError } from '@gyomu/core';
 export type TablesWithId = {

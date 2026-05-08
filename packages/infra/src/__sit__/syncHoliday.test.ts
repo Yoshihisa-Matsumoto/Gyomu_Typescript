@@ -6,7 +6,7 @@ import { MssqlService } from '../db/MssqlService.js';
 import { GyomuRepositoryLayer } from '../gyomu/GyomuRepositoryLayer.js';
 import { MainLayer, PlatformLayer } from '../layer.js';
 import { syncHoliday } from '@gyomu/core/usecase/syncHolidayService';
-import { makeRunner } from '@gyomu/core/shared/effect';
+import { makeRunner } from '../../../core/dist/effect/index.js';
 import { JPXHolidayFetcherLayer } from '../holiday/index.js';
 
 afterAll(() => {

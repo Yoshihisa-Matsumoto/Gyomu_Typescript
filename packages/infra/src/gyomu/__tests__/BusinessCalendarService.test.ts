@@ -9,9 +9,9 @@ import { beforeEach, expect, test } from 'vitest';
 import { MainLayer } from '../../layer.js';
 import { ConfigMockLayer } from '../../config.js';
 import { NodeFileSystem } from '@effect/platform-node';
-import { makeRunner } from '@gyomu/core/shared/effect';
+import { makeRunner } from '../../../../core/dist/effect/index.js';
 import { GyomuRepositoryMock } from '../../__tests__/baseDBClass.js';
-import { LocalDate } from '@gyomu/core/shared/entity';
+import { LocalDate } from '@gyomu/core/entity';
 import { BusinessCalendarServiceLayer } from '../date/BusinessCalendarServiceLayer.js';
 
 // let mockCtx: MockContext;

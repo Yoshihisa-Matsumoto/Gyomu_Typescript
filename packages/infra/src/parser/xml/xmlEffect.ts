@@ -1,5 +1,5 @@
 import { Effect } from 'effect';
-import { fromPromise } from '@gyomu/core/shared/effect';
+import { fromPromise } from '../../../../core/dist/effect/index.js';
 import { ValueError } from '@gyomu/core';
 
 export const xmlEffect = <ResponseType>(

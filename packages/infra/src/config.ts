@@ -7,7 +7,7 @@ import {
   FileSystem,
 } from 'effect';
 import { IOError, ConfigError } from '@gyomu/core';
-import { fromSync } from '@gyomu/core/shared/effect';
+import { fromSync } from '../../core/dist/effect/index.js';
 import { option } from 'effect/Effect';
 import { readStringFromFile } from './fs/fs-utils.js';
 import { wrapInfraError } from '@gyomu/core';

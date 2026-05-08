@@ -3,8 +3,8 @@ import { GyomuRepository } from '../GyomuRepository.js';
 import { DBError } from '../../error/DBError.js';
 import { SchemaValidationError } from '../../error/SchemaValidationError.js';
 import { MilestoneSchema } from '../../schemas/gyomu.js';
-import { LocalDate } from '../../shared/entity/date.js';
-import { MilestoneDailyDomainSchema } from '../../shared/entity/gyomuDefinition.js';
+import { LocalDate } from '../../entity/date.js';
+import { MilestoneDailyDomainSchema } from '../../entity/gyomuDefinition.js';
 import { TimeoutError } from '../../error/TimeoutError.js';
 
 export type MilestoneExistResultType =

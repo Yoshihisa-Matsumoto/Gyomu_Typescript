@@ -4,7 +4,7 @@ import {
   Fields,
   flattenIssues,
   resolveFieldErrorsFromIssue,
-} from '@gyomu/core/shared/entity';
+} from '@gyomu/core/entity';
 import { Result, Schema } from 'effect';
 
 export function validateWithSchema<TFields extends Fields>(

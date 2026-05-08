@@ -16,7 +16,7 @@ import {
 } from '../data/index.js';
 import { DBError } from '../error/DBError.js';
 import { SchemaValidationError } from '../error/SchemaValidationError.js';
-import { LocalDate, YearMonth } from '../shared/entity/date.js';
+import { LocalDate, YearMonth } from '../entity/date.js';
 
 export class GyomuRepository extends Context.Service<
   GyomuRepository,

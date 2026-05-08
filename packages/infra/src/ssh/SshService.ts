@@ -3,7 +3,7 @@ import { Client } from 'ssh2';
 import { withDefault } from 'effect/Config';
 import { NetworkError, ConfigError, IOError } from '@gyomu/core';
 import { ConfigProviderLive, ConfigService } from '../config.js';
-import { unwrapPassword } from '@gyomu/core/shared/effect';
+import { unwrapPassword } from '../../../core/dist/effect/index.js';
 import { Scope } from 'effect/Scope';
 import { execute } from './internals/sshClient.js';
 

@@ -1,5 +1,5 @@
 import { format, parse, isValid } from 'date-fns';
-import { ValueError } from '../../error/ValueError.js';
+import { ValueError } from '../error/ValueError.js';
 import { Schema } from 'effect';
 import { isPattern } from 'effect/Schema';
 

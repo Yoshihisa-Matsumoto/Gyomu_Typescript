@@ -5,7 +5,7 @@ import {
   UIAnnotationField,
   UIAnnotationOverride,
   UIAnnotations,
-} from '@gyomu/core/shared/entity';
+} from '@gyomu/core/entity';
 import { AST, Check } from 'effect/SchemaAST';
 import { logger, Logger } from '@gyomu/core';
 import { FormFieldMeta } from './type.js';

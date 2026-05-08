@@ -1,9 +1,5 @@
 // --- Shared / Core (ドメイン・基盤) ---
-import {
-  CrudSchemaType,
-  Fields,
-  UIAnnotations,
-} from '@gyomu/core/shared/entity';
+import { CrudSchemaType, Fields, UIAnnotations } from '@gyomu/core/entity';
 import { Logger } from '@gyomu/core';
 
 // --- UI (抽象コンポーネント) ---

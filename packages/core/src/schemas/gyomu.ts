@@ -1,5 +1,5 @@
 import { Schema } from 'effect';
-import { defineEntityCrudSchemas } from '../shared/entity/defineEntityCrudSchemas.js';
+import { defineEntityCrudSchemas } from '../entity/defineEntityCrudSchemas.js';
 import {
   appInfoDefinition,
   statusTypeDefinition,
@@ -20,7 +20,7 @@ import {
   serviceTypeDefinition,
   serviceDefinition,
   taskSchedulerConfigDefinition,
-} from '../shared/entity/gyomuDefinition.js';
+} from '../entity/gyomuDefinition.js';
 
 export const AppInfoSchema = defineEntityCrudSchemas(appInfoDefinition);
 

@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import * as rounding from '../number/rounding.js';
+import * as rounding from '../rounding.js';
 
 const testNumber = 12345.678901234;
 const testNumber2 = 1486.4;

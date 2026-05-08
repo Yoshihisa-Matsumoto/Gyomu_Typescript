@@ -3,7 +3,7 @@ import { Schema } from 'effect';
 import { validateWithSchema } from '../validate';
 
 // モック対象
-import * as entityModule from '@gyomu/core/shared/entity';
+import * as entityModule from '@gyomu/core/entity';
 
 describe('validateWithSchema', () => {
   const TestSchema = Schema.Struct({
