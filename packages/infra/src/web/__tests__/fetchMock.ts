@@ -1,11 +1,11 @@
 // tests/setup/fetchMock.ts
-import { vi } from 'vitest';
+import { vi } from 'vitest'
 
 export const mockFetch = (
   body: any,
   options?: {
-    ok?: boolean;
-    status?: number;
+    ok?: boolean
+    status?: number
   },
 ) => {
   global.fetch = vi.fn().mockResolvedValue({
@@ -13,9 +13,9 @@ export const mockFetch = (
     status: options?.status ?? 200,
     body: new ReadableStream({
       start(controller) {
-        controller.enqueue(new TextEncoder().encode(JSON.stringify(body)));
-        controller.close();
+        controller.enqueue(new TextEncoder().encode(JSON.stringify(body)))
+        controller.close()
       },
     }),
-  });
-};
+  })
+}

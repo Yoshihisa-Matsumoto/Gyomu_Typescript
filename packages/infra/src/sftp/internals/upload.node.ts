@@ -1,9 +1,11 @@
-import { Client } from 'ssh2';
-import { IOError, isRetryableNetworkError, NetworkError } from '@gyomu/core';
-import { Effect, Stream } from 'effect';
-import { withSftp } from './shared.js';
-import { NodeStream } from '@effect/platform-node';
-import { Writable } from 'node:stream';
+import { NetworkError, isRetryableNetworkError } from '@gyomu/core'
+import { Effect } from 'effect'
+import { NodeStream } from '@effect/platform-node'
+import { withSftp } from './shared.js'
+import type { Writable } from 'node:stream'
+import type { Client } from 'ssh2'
+import type { IOError } from '@gyomu/core'
+import type { Stream } from 'effect'
 
 export const uploadFromStreamUnderNodejs =
   (client: Client) =>
@@ -14,78 +16,76 @@ export const uploadFromStreamUnderNodejs =
     withSftp(client)((sftp) =>
       Effect.scoped(
         Effect.gen(function* () {
-          const readable = yield* NodeStream.toReadable(source);
+          const readableStream = yield* NodeStream.toReadable(source)
 
-          const writable = yield* Effect.callback<Writable, NetworkError>(
-            (resume) => {
-              try {
-                const ws = sftp.createWriteStream(remotePath);
+          const writableStream = yield* Effect.callback<Writable, NetworkError>((resume) => {
+            try {
+              const ws = sftp.createWriteStream(remotePath)
 
-                const onOpen = () => {
-                  cleanup();
-                  resume(Effect.succeed(ws));
-                };
+              const onOpen = () => {
+                cleanup()
+                resume(Effect.succeed(ws))
+              }
 
-                const onError = (err: Error) => {
-                  cleanup();
-                  resume(
-                    Effect.fail(
-                      new NetworkError({
-                        message: `Fail to open remote file`,
-                        cause: err,
-                        retryable: isRetryableNetworkError(err),
-                        operation: 'upload',
-                        endpoint: remotePath,
-                      }),
-                    ),
-                  );
-                };
-
-                const cleanup = () => {
-                  ws.off('open', onOpen);
-                  ws.off('error', onError);
-                };
-
-                ws.on('open', onOpen);
-                ws.on('error', onError);
-              } catch (e) {
+              const onError = (err: Error) => {
+                cleanup()
                 resume(
                   Effect.fail(
                     new NetworkError({
-                      message: 'fail to create write stream',
-                      cause: e,
+                      message: `Fail to open remote file`,
+                      cause: err,
+                      retryable: isRetryableNetworkError(err),
                       operation: 'upload',
-                      retryable: isRetryableNetworkError(e),
                       endpoint: remotePath,
                     }),
                   ),
-                );
+                )
               }
-            },
-          );
+
+              const cleanup = () => {
+                ws.off('open', onOpen)
+                ws.off('error', onError)
+              }
+
+              ws.on('open', onOpen)
+              ws.on('error', onError)
+            } catch (e) {
+              resume(
+                Effect.fail(
+                  new NetworkError({
+                    message: 'fail to create write stream',
+                    cause: e,
+                    operation: 'upload',
+                    retryable: isRetryableNetworkError(e),
+                    endpoint: remotePath,
+                  }),
+                ),
+              )
+            }
+          })
 
           // 🔥 ここが重要
           yield* Effect.acquireRelease(
             Effect.sync(() => {
-              readable.pipe(writable);
-              return { readable, writable };
+              readableStream.pipe(writableStream)
+              return { readable: readableStream, writable: writableStream }
             }),
             ({ readable, writable }) =>
               Effect.sync(() => {
                 // interrupt時も確実に閉じる
-                readable.destroy?.();
-                writable.destroy?.();
+                readable.destroy()
+                writable.destroy()
               }),
           ).pipe(
             Effect.flatMap(() =>
               Effect.callback<void, NetworkError>((resume) => {
                 const onFinish = () => {
-                  cleanup();
-                  resume(Effect.succeed(undefined));
-                };
+                  cleanup()
+                  resume(Effect.succeed(undefined))
+                }
 
                 const onError = (err: Error) => {
-                  cleanup();
+                  cleanup()
                   resume(
                     Effect.fail(
                       new NetworkError({
@@ -96,25 +96,25 @@ export const uploadFromStreamUnderNodejs =
                         endpoint: remotePath,
                       }),
                     ),
-                  );
-                };
+                  )
+                }
 
                 const cleanup = () => {
-                  readable.off('error', onError);
-                  writable.off('error', onError);
-                  writable.off('finish', onFinish);
-                  writable.off('close', onFinish); // 🔥 念のため
-                };
+                  readableStream.off('error', onError)
+                  writableStream.off('error', onError)
+                  writableStream.off('finish', onFinish)
+                  writableStream.off('close', onFinish) // 🔥 念のため
+                }
 
-                readable.on('error', onError);
-                writable.on('error', onError);
-                writable.on('finish', onFinish);
-                writable.on('close', onFinish);
+                readableStream.on('error', onError)
+                writableStream.on('error', onError)
+                writableStream.on('finish', onFinish)
+                writableStream.on('close', onFinish)
 
-                return Effect.sync(cleanup);
+                return Effect.sync(cleanup)
               }),
             ),
-          );
+          )
         }),
       ),
-    );
+    )

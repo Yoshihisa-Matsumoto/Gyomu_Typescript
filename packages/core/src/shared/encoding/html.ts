@@ -1,9 +1,9 @@
-import { encode, decode } from 'html-entities';
+import { decode, encode } from 'html-entities'
 
 export const htmlEncode = (text: string) => {
-  return encode(text);
-};
+  return encode(text)
+}
 
 export const htmlDecode = (htmlText: string) => {
-  return decode(htmlText);
-};
+  return decode(htmlText)
+}

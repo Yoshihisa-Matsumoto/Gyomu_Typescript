@@ -1,62 +1,57 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { Effect } from 'effect';
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { Effect } from 'effect'
 
-import { postAndReceiveXml } from '../api.js';
-import { NetworkError } from '@gyomu/core';
-import * as client from '../client.js';
-import * as stream from '../../network/networkStream.js';
-import * as xml from '../xml.js';
-import { ValueError } from '@gyomu/core';
+import { NetworkError, ValueError } from '@gyomu/core'
+import { postAndReceiveXml } from '../api.js'
+import * as client from '../client.js'
+import * as stream from '../../network/networkStream.js'
+import * as xml from '../xml.js'
 // ===== mock =====
 vi.mock('../client.js', () => ({
   fetchEffect: vi.fn(),
   fetchStream: vi.fn(),
-}));
+}))
 
 vi.mock('../../network/networkStream.js', () => ({
   networkStream: vi.fn(),
-}));
+}))
 
 vi.mock('../xml.js', () => ({
   textEffect: vi.fn(),
   parseXmlEffect: vi.fn(),
-}));
+}))
 
 vi.mock('../json.js', () => ({
   jsonEffect: vi.fn(),
-}));
+}))
 
 // ===== import mocked =====
 
 describe('postAndReceiveXml', () => {
   beforeEach(() => {
-    vi.resetAllMocks();
-  });
+    vi.resetAllMocks()
+  })
 
   it('正常系: XMLがパースされて返る', async () => {
     const mockResponse: Response = {
       status: 200,
       body: {} as any,
-    } as any as Response;
+    } as any as Response
 
-    vi.mocked(client.fetchEffect).mockReturnValue(Effect.succeed(mockResponse));
+    vi.mocked(client.fetchEffect).mockReturnValue(Effect.succeed(mockResponse))
 
-    vi.mocked(stream.networkStream).mockReturnValue('stream' as any);
-    vi.mocked(xml.textEffect).mockReturnValue(Effect.succeed('<xml></xml>'));
-    vi.mocked(xml.parseXmlEffect).mockReturnValue(
-      Effect.succeed({ result: 'ok' }),
-    );
+    vi.mocked(stream.networkStream).mockReturnValue('stream' as any)
+    vi.mocked(xml.textEffect).mockReturnValue(Effect.succeed('<xml></xml>'))
+    vi.mocked(xml.parseXmlEffect).mockReturnValue(Effect.succeed({ result: 'ok' }))
 
-    const result = await Effect.runPromise(
-      postAndReceiveXml('url', { a: '1' }),
-    );
+    const result = await Effect.runPromise(postAndReceiveXml('url', { a: '1' }))
 
     expect(result).toEqual({
       value: { result: 'ok' },
       code: 200,
       extraAttribute: undefined,
-    });
-  });
+    })
+  })
 
   it('bodyがない場合はNetworkError', async () => {
     vi.mocked(client.fetchEffect).mockReturnValue(
@@ -64,12 +59,12 @@ describe('postAndReceiveXml', () => {
         status: 200,
         body: null,
       } as any as Response),
-    );
+    )
 
-    await expect(
-      Effect.runPromise(postAndReceiveXml('url', {})),
-    ).rejects.toBeInstanceOf(NetworkError);
-  });
+    await expect(Effect.runPromise(postAndReceiveXml('url', {}))).rejects.toBeInstanceOf(
+      NetworkError,
+    )
+  })
 
   it('validateでNGの場合はValueError', async () => {
     vi.mocked(client.fetchEffect).mockReturnValue(
@@ -77,13 +72,11 @@ describe('postAndReceiveXml', () => {
         status: 200,
         body: {} as any,
       } as any as Response),
-    );
+    )
 
-    vi.mocked(stream.networkStream).mockReturnValue('stream' as any);
-    vi.mocked(xml.textEffect).mockReturnValue(Effect.succeed('<xml></xml>'));
-    vi.mocked(xml.parseXmlEffect).mockReturnValue(
-      Effect.succeed({ result: 'ng' }),
-    );
+    vi.mocked(stream.networkStream).mockReturnValue('stream' as any)
+    vi.mocked(xml.textEffect).mockReturnValue(Effect.succeed('<xml></xml>'))
+    vi.mocked(xml.parseXmlEffect).mockReturnValue(Effect.succeed({ result: 'ng' }))
 
     await expect(
       Effect.runPromise(
@@ -95,8 +88,8 @@ describe('postAndReceiveXml', () => {
           },
         ),
       ),
-    ).rejects.toBeInstanceOf(ValueError);
-  });
+    ).rejects.toBeInstanceOf(ValueError)
+  })
 
   it('extraAttributeが返る', async () => {
     vi.mocked(client.fetchEffect).mockReturnValue(
@@ -104,13 +97,11 @@ describe('postAndReceiveXml', () => {
         status: 200,
         body: {} as any,
       } as any as Response),
-    );
+    )
 
-    vi.mocked(stream.networkStream).mockReturnValue('stream' as any);
-    vi.mocked(xml.textEffect).mockReturnValue(Effect.succeed('<xml></xml>'));
-    vi.mocked(xml.parseXmlEffect).mockReturnValue(
-      Effect.succeed({ result: 'ok' }),
-    );
+    vi.mocked(stream.networkStream).mockReturnValue('stream' as any)
+    vi.mocked(xml.textEffect).mockReturnValue(Effect.succeed('<xml></xml>'))
+    vi.mocked(xml.parseXmlEffect).mockReturnValue(Effect.succeed({ result: 'ok' }))
 
     const result = await Effect.runPromise(
       postAndReceiveXml(
@@ -120,8 +111,8 @@ describe('postAndReceiveXml', () => {
           extraAttribute: { meta: 1 },
         },
       ),
-    );
+    )
 
-    expect(result.extraAttribute).toEqual({ meta: 1 });
-  });
-});
+    expect(result.extraAttribute).toEqual({ meta: 1 })
+  })
+})

@@ -1,61 +1,57 @@
 // tests/infra/holiday/JPXHolidayFetcher.test.ts
 
-import { describe, it, expect, vi } from 'vitest';
-import { Effect } from 'effect';
-import { JPXHolidayFetcherLayer } from '../JpxHolidayFetcher.js';
-import { HolidayFetcher } from '@gyomu/core/gyomu/holiday';
+import { describe, expect, it, vi } from 'vitest'
+import { Effect } from 'effect'
+import { HolidayFetcher } from '@gyomu/core/gyomu/holiday'
+import { JPXHolidayFetcherLayer } from '../JpxHolidayFetcher.js'
+
+import { fetchJpxHolidays } from '../jpxFetcher.js'
 
 // ★ モック
 vi.mock('../jpxFetcher.js', () => ({
   fetchJpxHolidays: vi.fn(),
-}));
-
-import { fetchJpxHolidays } from '../jpxFetcher.js';
+}))
 
 describe('JPXHolidayFetcher', () => {
   it('should fetch holidays when market is JP', async () => {
     // arrange
-    const mockData = [{ year: 2024, holiday: '2024-01-01' }];
-    (fetchJpxHolidays as any).mockReturnValue(Effect.succeed(mockData));
+    const mockData = [{ year: 2024, holiday: '2024-01-01' }]
+    ;(fetchJpxHolidays as any).mockReturnValue(Effect.succeed(mockData))
 
     // act
     const program = Effect.gen(function* () {
-      const fetcher = yield* HolidayFetcher;
-      return yield* fetcher.fetch('JP');
-    });
+      const fetcher = yield* HolidayFetcher
+      return yield* fetcher.fetch('JP')
+    })
 
-    const result = await Effect.runPromise(
-      program.pipe(Effect.provide(JPXHolidayFetcherLayer)),
-    );
+    const result = await Effect.runPromise(program.pipe(Effect.provide(JPXHolidayFetcherLayer)))
 
     // assert
-    expect(result).toEqual(mockData);
-    expect(fetchJpxHolidays).toHaveBeenCalled();
-  });
+    expect(result).toEqual(mockData)
+    expect(fetchJpxHolidays).toHaveBeenCalled()
+  })
 
   it('should fail when market is not JP', async () => {
     // act
     const program = Effect.gen(function* () {
-      const fetcher = yield* HolidayFetcher;
-      return yield* fetcher.fetch('US');
-    });
+      const fetcher = yield* HolidayFetcher
+      return yield* fetcher.fetch('US')
+    })
 
     // assert
     await expect(
       Effect.runPromise(program.pipe(Effect.provide(JPXHolidayFetcherLayer))),
-    ).rejects.toMatchObject({ _tag: 'GyomuError', message: 'Invalid market' });
-  });
+    ).rejects.toMatchObject({ _tag: 'GyomuError', message: 'Invalid market' })
+  })
 
   it('should map error when fetch fails', async () => {
     // arrange
-    (fetchJpxHolidays as any).mockReturnValue(
-      Effect.fail(new Error('network error')),
-    );
+    ;(fetchJpxHolidays as any).mockReturnValue(Effect.fail(new Error('network error')))
 
     const program = Effect.gen(function* () {
-      const fetcher = yield* HolidayFetcher;
-      return yield* fetcher.fetch('JP');
-    });
+      const fetcher = yield* HolidayFetcher
+      return yield* fetcher.fetch('JP')
+    })
 
     // assert
     await expect(
@@ -63,6 +59,6 @@ describe('JPXHolidayFetcher', () => {
     ).rejects.toMatchObject({
       _tag: 'GyomuError',
       message: 'fetchHoliday failed',
-    });
-  });
-});
+    })
+  })
+})

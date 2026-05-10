@@ -1,7 +1,7 @@
-import { withOptional } from '@gyomu/core';
-import { LocalDate } from '@gyomu/core/entity';
-import { RendererMap } from '../../../core/engine/autoForm/types';
-import { TextArea, NumberField, TextField, Select } from '../../adapters/mui';
+import { withOptional } from '@gyomu/core'
+import { NumberField, Select, TextArea, TextField } from '../../adapters/mui'
+import type { LocalDate } from '@gyomu/core/entity'
+import type { RendererMap } from '../../../core/engine/autoForm/types'
 
 export const muiRenderer: RendererMap = {
   text: ({ value, onChange, meta, onBlur }) => (
@@ -44,9 +44,7 @@ export const muiRenderer: RendererMap = {
   number: ({ value, onChange }) => (
     <NumberField
       value={value ?? ''}
-      onChange={(e) =>
-        onChange?.(e.target.value === '' ? undefined : Number(e.target.value))
-      }
+      onChange={(e) => onChange?.(e.target.value === '' ? undefined : Number(e.target.value))}
     />
   ),
 
@@ -55,9 +53,9 @@ export const muiRenderer: RendererMap = {
       value={(value ?? '') as string}
       onChange={(v) => onChange?.(v)}
       {...withOptional({ onBlur })}
-      items={Object.keys(meta.enumAttribute).map((opt) => ({
-        value: opt,
-        label: getLabel(meta.enumAttribute[opt]!, opt),
+      items={Object.entries(meta.enumAttribute).map(([v, attr]) => ({
+        value,
+        label: getLabel(attr, v),
       }))}
     />
   ),
@@ -71,16 +69,16 @@ export const muiRenderer: RendererMap = {
     />
   ),
   hidden: ({ value }) => <input type="hidden" value={value ?? ''} />,
-};
+}
 
 const getLabel = (
   attribute: {
-    label?: string | ((value: string) => string);
-    order?: number;
-    disabled?: boolean;
+    label?: string | ((value: string) => string)
+    order?: number
+    disabled?: boolean
   },
   value: string,
 ) => {
-  if (typeof attribute.label === 'function') return attribute.label(value);
-  return attribute.label ?? value;
-};
+  if (typeof attribute.label === 'function') return attribute.label(value)
+  return attribute.label ?? value
+}

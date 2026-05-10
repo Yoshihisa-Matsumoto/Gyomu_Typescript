@@ -1,23 +1,23 @@
-export type CsvValue = string | number | boolean | null | undefined;
-export type CsvRow = Record<string, CsvValue>;
+export type CsvValue = string | number | boolean | null | undefined
+export type CsvRow = Record<string, CsvValue>
 export type CsvColumn<A> = {
-  key: keyof A & string;
-  header: string;
-};
+  key: keyof A & string
+  header: string
+}
 
 export type CsvReadOption<R> = {
-  fields?: readonly CsvColumn<R>[];
-  bom?: boolean;
-  encoding?: string;
-  filterRaw?: (row: Record<string, string>) => boolean;
-  filter?: (row: R) => boolean;
-  onInvalidRow?: (raw: unknown) => void;
-  skipInvalidRows?: boolean;
-};
+  fields?: ReadonlyArray<CsvColumn<R>>
+  bom?: boolean
+  encoding?: string
+  filterRaw?: (row: Record<string, string>) => boolean
+  filter?: (row: R) => boolean
+  onInvalidRow?: (raw: unknown) => void
+  skipInvalidRows?: boolean
+}
 
 export type CsvWriteOption<R> = {
-  fields?: readonly CsvColumn<R>[];
-  quoted?: boolean;
-  bom?: boolean;
-  recordDelimiter?: 'windows' | 'unix';
-};
+  fields?: ReadonlyArray<CsvColumn<R>>
+  quoted?: boolean
+  bom?: boolean
+  recordDelimiter?: 'windows' | 'unix'
+}

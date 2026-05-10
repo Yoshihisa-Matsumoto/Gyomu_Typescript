@@ -1,6 +1,6 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vitest/config'
 
-//console.log('Env', process.env);
+// console.log('Env', process.env);
 export default defineConfig({
   test: {
     include: ['src/**/__tests__/**/*.test.{ts,tsx,js}'],
@@ -20,4 +20,4 @@ export default defineConfig({
       reportsDirectory: './coverage',
     },
   },
-});
+})

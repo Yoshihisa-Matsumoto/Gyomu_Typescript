@@ -1,48 +1,27 @@
-import { GenericElement } from './dom/element.js';
-import { Table, TableOption } from './table/table.js';
+import { Table } from './table/table.js'
+import type { GenericElement } from './dom/element.js'
+import type { TableOption } from './table/table.js'
 
-export type ElementGenerationOption = TableOption;
+export type ElementGenerationOption = TableOption
 
 interface ElementOptionTagNameMap {
-  table: TableOption;
+  table: TableOption
 }
 interface ElementTagNameMap {
-  table: Table;
+  table: Table
 }
 
-export function convertHTMLElementByTagName<
-  K extends keyof HTMLElementTagNameMap &
-    keyof ElementOptionTagNameMap &
-    keyof ElementTagNameMap,
->(
-  qualifiedName: K,
-  element: HTMLElementTagNameMap[K],
-  option: ElementOptionTagNameMap[K],
-): ElementTagNameMap[K] {
-  switch (qualifiedName) {
-    case 'table':
-      //const tableOption = option as ElementOptionTagNameMap[K];
-      return new Table(element, option as ElementOptionTagNameMap[K]);
-  }
-  throw new Error('Unknown Error');
+export function convertTableElement(
+  element: HTMLTableElement,
+  option: ElementOptionTagNameMap['table'],
+): ElementTagNameMap['table'] {
+  return new Table(element, option)
 }
 
-export function convertGenericElementByTagName<
-  K extends keyof HTMLElementTagNameMap &
-    keyof ElementOptionTagNameMap &
-    keyof ElementTagNameMap,
->(
-  qualifiedName: K,
-  genericElement: GenericElement<HTMLElementTagNameMap[K]>,
-  option: ElementOptionTagNameMap[K],
-): ElementTagNameMap[K] {
-  switch (qualifiedName) {
-    case 'table':
-      //const tableOption = option as ElementOptionTagNameMap[K];
-      return new Table(
-        genericElement.node,
-        option as ElementOptionTagNameMap[K],
-      );
-  }
-  throw new Error('Unknown Error');
+export function convertGenericElementByTagName(
+  qualifiedName: 'table',
+  genericElement: GenericElement<HTMLTableElement>,
+  option: ElementOptionTagNameMap['table'],
+): ElementTagNameMap['table'] {
+  return new Table(genericElement.node, option)
 }

@@ -6,4 +6,4 @@ export type FieldType =
   | 'textarea'
   | 'date'
   | 'select'
-  | 'hidden';
+  | 'hidden'

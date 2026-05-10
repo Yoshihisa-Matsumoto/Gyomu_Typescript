@@ -1,8 +1,8 @@
-import type { Preview } from '@storybook/react-vite';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider, createTheme } from '@mui/material/styles'
+import CssBaseline from '@mui/material/CssBaseline'
+import type { Preview } from '@storybook/react-vite'
 
-const theme = createTheme();
+const theme = createTheme()
 
 const preview: Preview = {
   decorators: [
@@ -21,6 +21,6 @@ const preview: Preview = {
       },
     },
   },
-};
+}
 
-export default preview;
+export default preview

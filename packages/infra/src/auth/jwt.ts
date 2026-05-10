@@ -1,10 +1,10 @@
-import * as jwt from 'jsonwebtoken';
-import { readFromFile } from '../fs/fs-utils.js';
-import { fromPromise, fromSync } from '../../../core/dist/effect/index.js';
-import { IOError } from '@gyomu/core';
-import { Effect } from 'effect';
-import { Uint8ArraytoBuffer } from '@gyomu/core/shared/binary';
-//import { fs } from '../fs/index.js';
+import * as jwt from 'jsonwebtoken'
+import { IOError } from '@gyomu/core'
+import { Effect } from 'effect'
+import { Uint8ArraytoBuffer } from '@gyomu/core/shared/binary'
+import { fromSync } from '../../../core/dist/effect/index.js'
+import { readFromFile } from '../fs/fs-utils.js'
+// import { fs } from '../fs/index.js';
 
 // let env_priv: Record<string, never> | undefined = undefined;
 // const getEnv = () => {
@@ -24,17 +24,17 @@ import { Uint8ArraytoBuffer } from '@gyomu/core/shared/binary';
 // };
 
 export type JwtOption = {
-  keyFilepath: string;
-  expiryHour: number;
-};
+  keyFilepath: string
+  expiryHour: number
+}
 export type JwtVerifyOption = {
-  keyFilepath: string;
-};
+  keyFilepath: string
+}
 
 export const generateToken = (uid: string, option: JwtOption) =>
   Effect.gen(function* () {
-    const secretOrPrivateKey = yield* readFromFile(option.keyFilepath);
-    const payload = { name: uid };
+    const secretOrPrivateKey = yield* readFromFile(option.keyFilepath)
+    const payload = { name: uid }
     const token = yield* fromSync(IOError, () => ({
       message: `Fail to generate JWT`,
       layer: 'filesystem' as const,
@@ -45,9 +45,9 @@ export const generateToken = (uid: string, option: JwtOption) =>
         expiresIn: `${option.expiryHour}Hour`,
         algorithm: 'RS256',
       }),
-    );
-    return token;
-  });
+    )
+    return token
+  })
 
 export const validateToken = (
   token: string,
@@ -58,18 +58,15 @@ export const validateToken = (
     Effect.flatMap((key) =>
       Effect.try({
         try: () => {
-          const payload = jwt.verify(
-            token,
-            Uint8ArraytoBuffer(key),
-          ) as jwt.JwtPayload;
+          const payload = jwt.verify(token, Uint8ArraytoBuffer(key)) as jwt.JwtPayload
 
-          return { result: true as const, uid: payload['name'] as string };
+          return { result: true as const, uid: payload['name'] as string }
         },
         catch: () => ({ result: false as const, uid: '' }),
       }),
     ),
     Effect.catch(() => Effect.succeed({ result: false as const, uid: '' })),
-  );
+  )
 //   try {
 //     const key = fs.readFileSync(option.keyFilepath);
 //     const accessResult = jwt.verify(token, key) as jwt.JwtPayload;
@@ -91,5 +88,5 @@ export const validateToken = (
 //   keyFilepath: './jwt_private.pem',
 // });
 // console.log(validateToken(accessToken, { keyFilepath: './jwt_public.pem' }));
-//const refreshToken = generateToken('1040235', 'RefreshToken');
-//console.log(validateToken(refreshToken, 'RefreshToken'));
+// const refreshToken = generateToken('1040235', 'RefreshToken');
+// console.log(validateToken(refreshToken, 'RefreshToken'));

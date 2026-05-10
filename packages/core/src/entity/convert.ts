@@ -1,19 +1,14 @@
-import { Effect, Schema, Result } from 'effect';
-import { SchemaError } from 'effect/Schema';
-import { SchemaValidationError } from '../error/SchemaValidationError.js';
-import { CrudSchemaType, Fields } from './type.js';
-import { AST } from 'effect/SchemaAST';
-import { schema } from 'effect/Config';
+import { Effect, Schema } from 'effect'
+import { SchemaValidationError } from '../error/SchemaValidationError.js'
+import type { SchemaError } from 'effect/Schema'
 
-export const jsonString2SchemaObjectWithoutEffect = <
-  S extends Schema.Schema<any>,
->(
+export const jsonString2SchemaObjectWithoutEffect = <S extends Schema.Schema<any>>(
   schema: S,
   content: string,
 ) =>
-  Schema.decodeUnknownSync(
-    schema as unknown as Schema.Decoder<Schema.Schema.Type<S>, never>,
-  )(JSON.parse(content));
+  Schema.decodeUnknownSync(schema as unknown as Schema.Decoder<Schema.Schema.Type<S>, never>)(
+    JSON.parse(content),
+  )
 
 export const convertToSchemaObjectWithResult = <S extends Schema.Schema<any>>(
   schema: S,
@@ -23,8 +18,8 @@ export const convertToSchemaObjectWithResult = <S extends Schema.Schema<any>>(
   return Schema.decodeUnknownResult(Schema.toType(schema))(
     input,
     includeAllErrors ? { errors: 'all' } : {},
-  );
-};
+  )
+}
 
 export const convertToSchemaObjectWithEffect =
   (schemaName: string) =>
@@ -40,7 +35,7 @@ export const convertToSchemaObjectWithEffect =
             issues: e, // ← 生の情報を保持
           }),
       ),
-    );
+    )
 
 export const convertFromSchemaObjectWithEffect =
   (schemaName: string) =>
@@ -56,4 +51,4 @@ export const convertFromSchemaObjectWithEffect =
             issues: e,
           }),
       ),
-    );
+    )

@@ -1,1 +1,1 @@
-export * from './muiRenderer';
+export * from './muiRenderer'

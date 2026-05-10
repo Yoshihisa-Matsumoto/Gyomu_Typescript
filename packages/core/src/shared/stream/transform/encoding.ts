@@ -1,5 +1,5 @@
-import { Stream } from 'effect';
-import { decode } from '../../encoding/decode.js';
+import { Stream } from 'effect'
+import { decode } from '../../encoding/decode.js'
 
 export const decodeText =
   (encoding: BufferEncoding | string) =>
@@ -7,13 +7,12 @@ export const decodeText =
     stream.pipe(
       Stream.map((chunk) => {
         if (typeof chunk === 'string') {
-          return chunk;
+          return chunk
         } else {
-          return decode(chunk, encoding);
+          return decode(chunk, encoding)
         }
       }),
-    );
+    )
 
-export const encodeUtf8ToBinaryStream = <E, R>(
-  stream: Stream.Stream<string, E, R>,
-) => stream.pipe(Stream.map((s) => new TextEncoder().encode(s)));
+export const encodeUtf8ToBinaryStream = <E, R>(stream: Stream.Stream<string, E, R>) =>
+  stream.pipe(Stream.map((s) => new TextEncoder().encode(s)))

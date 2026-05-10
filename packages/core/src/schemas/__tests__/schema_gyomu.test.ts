@@ -1,33 +1,33 @@
-import { describe, it, expect } from 'vitest';
-import { Schema } from 'effect';
+import { describe, expect, it } from 'vitest'
+import { Schema } from 'effect'
 import {
   AppInfoSchema,
-  StatusTypeSchema,
+  MarketHolidaySchema,
+  MilestoneDailySchema,
+  MilestoneSchema,
+  ParameterMasterSchema,
+  ServiceSchema,
+  ServiceTypeSchema,
   StatusHandlerSchema,
   StatusInformationSchema,
-  MarketHolidaySchema,
-  MilestoneSchema,
-  MilestoneDailySchema,
-  VariableParameterSchema,
-  ParameterMasterSchema,
-  TaskInfoSchema,
-  TaskInfoAccessListSchema,
+  StatusTypeSchema,
+  TaskDataLogSchema,
   TaskDataSchema,
+  TaskDataStatus,
+  TaskInfoAccessListSchema,
+  TaskInfoSchema,
   TaskInstanceSchema,
   TaskInstanceSubmitInformationSchema,
-  TaskDataStatus,
-  TaskDataLogSchema,
-  ServiceTypeSchema,
-  ServiceSchema,
-} from '../gyomu.js';
+  VariableParameterSchema,
+} from '../gyomu.js'
 
-const testId = 'f6ae5f2d-bd14-4c5f-9cc3-3a69ef90dd5b';
+const testId = 'f6ae5f2d-bd14-4c5f-9cc3-3a69ef90dd5b'
 
 const assertValidDefinition = (schema: any, input: any) => {
-  const encoded = Schema.encodeSync(schema.selectSchema)(input);
-  const decoded = Schema.decodeSync(schema.selectSchema)(encoded);
-  expect(decoded).toEqual(input);
-};
+  const encoded = Schema.encodeSync(schema.selectSchema)(input)
+  const decoded = Schema.decodeSync(schema.selectSchema)(encoded)
+  expect(decoded).toEqual(input)
+}
 
 describe('All Schema Definitions', () => {
   it('AppInfo is consistent', () => {
@@ -36,14 +36,14 @@ describe('All Schema Definitions', () => {
       description: 'aabc',
       mailFromAddress: null,
       mailFromName: null,
-    });
-  });
+    })
+  })
   it('StatusType', () => {
     assertValidDefinition(StatusTypeSchema, {
       id: testId,
       description: null,
-    });
-  });
+    })
+  })
 
   it('StatusHandler', () => {
     assertValidDefinition(StatusHandlerSchema, {
@@ -53,8 +53,8 @@ describe('All Schema Definitions', () => {
       statusTypeId: testId,
       recipientAddress: null,
       recipientType: null,
-    });
-  });
+    })
+  })
 
   it('StatusInformation', () => {
     assertValidDefinition(StatusInformationSchema, {
@@ -69,8 +69,8 @@ describe('All Schema Definitions', () => {
       developerInfo: null,
       modifiedAt: '2026-10-28T00:00:00.000Z',
       modifiedBy: 'test',
-    });
-  });
+    })
+  })
 
   it('MarketHoliday', () => {
     assertValidDefinition(MarketHolidaySchema, {
@@ -78,16 +78,16 @@ describe('All Schema Definitions', () => {
       market: 'JP',
       year: 2024,
       holiday: '2024-01-01',
-    });
-  });
+    })
+  })
 
   it('Milestone', () => {
     assertValidDefinition(MilestoneSchema, {
       id: testId,
       milestoneId: 'M1',
       description: 'desc',
-    });
-  });
+    })
+  })
 
   it('MilestoneDaily', () => {
     assertValidDefinition(MilestoneDailySchema, {
@@ -98,16 +98,16 @@ describe('All Schema Definitions', () => {
       milestoneId: 'M1',
       modifiedAt: '2026-10-28T00:00:00.000Z',
       modifiedBy: 'test',
-    });
-  });
+    })
+  })
 
   it('VariableParameter', () => {
     assertValidDefinition(VariableParameterSchema, {
       id: testId,
       variableKey: 'key',
       description: 'desc',
-    });
-  });
+    })
+  })
 
   it('ParameterMaster', () => {
     assertValidDefinition(ParameterMasterSchema, {
@@ -115,8 +115,8 @@ describe('All Schema Definitions', () => {
       itemKey: 'k',
       itemValue: 'v',
       itemFromDate: '2024-01-01',
-    });
-  });
+    })
+  })
 
   it('TaskInfo', () => {
     assertValidDefinition(TaskInfoSchema, {
@@ -127,8 +127,8 @@ describe('All Schema Definitions', () => {
       location: 'loc',
       className: 'cls',
       restartable: true,
-    });
-  });
+    })
+  })
 
   it('TaskInfoAccessList', () => {
     assertValidDefinition(TaskInfoAccessListSchema, {
@@ -138,8 +138,8 @@ describe('All Schema Definitions', () => {
       accountName: 'acc',
       canAccess: true,
       forbidden: false,
-    });
-  });
+    })
+  })
 
   it('TaskData', () => {
     assertValidDefinition(TaskDataSchema, {
@@ -150,8 +150,8 @@ describe('All Schema Definitions', () => {
       parameter: null,
       modifiedAt: '2026-10-28T00:00:00.000Z',
       modifiedBy: 'test',
-    });
-  });
+    })
+  })
 
   it('TaskInstance', () => {
     assertValidDefinition(TaskInstanceSchema, {
@@ -164,16 +164,16 @@ describe('All Schema Definitions', () => {
       comment: null,
       modifiedAt: '2026-10-28T00:00:00.000Z',
       modifiedBy: 'test',
-    });
-  });
+    })
+  })
 
   it('TaskInstanceSubmitInformation', () => {
     assertValidDefinition(TaskInstanceSubmitInformationSchema, {
       id: testId,
       taskInstanceId: testId,
       submitTo: null,
-    });
-  });
+    })
+  })
 
   it('TaskDataStatus', () => {
     assertValidDefinition(TaskDataStatus, {
@@ -183,8 +183,8 @@ describe('All Schema Definitions', () => {
       latestTaskInstanceId: testId,
       modifiedAt: '2026-10-28T00:00:00.000Z',
       modifiedBy: 'test',
-    });
-  });
+    })
+  })
 
   it('TaskDataLog', () => {
     assertValidDefinition(TaskDataLogSchema, {
@@ -193,8 +193,8 @@ describe('All Schema Definitions', () => {
       log: 'log',
       modifiedAt: '2026-10-28T00:00:00.000Z',
       modifiedBy: 'test',
-    });
-  });
+    })
+  })
 
   it('ServiceType', () => {
     assertValidDefinition(ServiceTypeSchema, {
@@ -202,8 +202,8 @@ describe('All Schema Definitions', () => {
       description: 'desc',
       assemblyName: null,
       className: null,
-    });
-  });
+    })
+  })
 
   it('Service', () => {
     assertValidDefinition(ServiceSchema, {
@@ -211,6 +211,6 @@ describe('All Schema Definitions', () => {
       description: 'desc',
       serviceTypeId: testId,
       parameter: null,
-    });
-  });
-});
+    })
+  })
+})

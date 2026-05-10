@@ -1,17 +1,16 @@
-import { Client, ClientChannel, ConnectConfig } from 'ssh2';
-import { isRetryableNetworkError, NetworkError } from '@gyomu/core';
-import { Effect } from 'effect';
-import { wrapInfraError } from '@gyomu/core';
+import { NetworkError, isRetryableNetworkError, wrapInfraError } from '@gyomu/core'
+import { Effect } from 'effect'
+import type { Client, ClientChannel, ConnectConfig } from 'ssh2'
 
 export const connectEffect = (client: Client, config: ConnectConfig) =>
   Effect.callback<undefined, NetworkError>((resume) => {
     const onReady = () => {
-      cleanup();
-      resume(Effect.succeed(undefined));
-    };
+      cleanup()
+      resume(Effect.succeed(undefined))
+    }
 
     const onError = (err: Error) => {
-      cleanup();
+      cleanup()
       resume(
         Effect.fail(
           wrapInfraError(NetworkError, err, (e) => ({
@@ -21,25 +20,25 @@ export const connectEffect = (client: Client, config: ConnectConfig) =>
             endpoint: `host: ${config.host} port: ${config.port} user: ${config.username}`,
           })),
         ),
-      );
-    };
+      )
+    }
 
     const cleanup = () => {
-      client.off('ready', onReady);
-      client.off('error', onError);
-    };
+      client.off('ready', onReady)
+      client.off('error', onError)
+    }
 
-    client.on('ready', onReady);
-    client.on('error', onError);
+    client.on('ready', onReady)
+    client.on('error', onError)
 
-    client.connect(config);
+    client.connect(config)
 
     // 中断時の処理（重要）
     return Effect.sync(() => {
-      cleanup();
-      client.end();
-    });
-  });
+      cleanup()
+      client.end()
+    })
+  })
 
 // const withSsh =
 //   (client: Client) =>
@@ -67,26 +66,26 @@ export const execute =
   <R = never>(
     command: string,
     options: {
-      requireShell?: boolean;
-      workingDirectory?: string;
-      noTrimOutput?: boolean;
+      requireShell?: boolean
+      workingDirectory?: string
+      noTrimOutput?: boolean
     },
   ): Effect.Effect<
     {
-      exitCode: number | null;
-      result: string;
-      error: string;
+      exitCode: number | null
+      result: string
+      error: string
     },
     NetworkError,
     R
   > =>
     Effect.callback((resume) => {
-      const cmd = options?.workingDirectory
+      const cmd = options.workingDirectory
         ? `cd ${options.workingDirectory} && ${command}`
-        : command;
+        : command
 
-      const stdout: Buffer[] = [];
-      const stderr: Buffer[] = [];
+      const stdout: Array<Buffer> = []
+      const stderr: Array<Buffer> = []
 
       const onError = (err: Error) => {
         resume(
@@ -95,54 +94,54 @@ export const execute =
               message: 'Fail to execute SSH command',
               operation: 'request' as const,
               retryable: isRetryableNetworkError(e),
-              endpoint: `${command} on ${options?.workingDirectory ?? 'default place'}`,
+              endpoint: `${command} on ${options.workingDirectory ?? 'default place'}`,
             })),
           ),
-        );
-      };
+        )
+      }
 
       const handleStream = (stream: ClientChannel) => {
-        let exitCode: number | null = null;
+        let exitCode: number | null = null
 
         stream.on('data', (data: Buffer) => {
-          stdout.push(data);
-        });
+          stdout.push(data)
+        })
 
         stream.stderr.on('data', (data: Buffer) => {
-          stderr.push(data);
-        });
+          stderr.push(data)
+        })
 
         stream.on('exit', (code: number) => {
-          exitCode = code;
-        });
+          exitCode = code
+        })
 
         stream.on('close', () => {
-          const result = Buffer.concat(stdout).toString();
-          const error = Buffer.concat(stderr).toString();
+          const result = Buffer.concat(stdout).toString()
+          const error = Buffer.concat(stderr).toString()
 
           resume(
             Effect.succeed({
               exitCode,
-              result: options?.noTrimOutput ? result : result.trim(),
-              error: options?.noTrimOutput ? error : error.trim(),
+              result: options.noTrimOutput ? result : result.trim(),
+              error: options.noTrimOutput ? error : error.trim(),
             }),
-          );
-        });
+          )
+        })
 
-        stream.on('error', onError);
-      };
+        stream.on('error', onError)
+      }
 
-      if (options?.requireShell) {
+      if (options.requireShell) {
         client.shell((err, stream) => {
-          if (err) return onError(err);
-          handleStream(stream);
+          if (err) return onError(err)
+          handleStream(stream)
 
-          stream.end(cmd + '\n');
-        });
+          stream.end(cmd + '\n')
+        })
       } else {
         client.exec(cmd, (err, stream) => {
-          if (err) return onError(err);
-          handleStream(stream);
-        });
+          if (err) return onError(err)
+          handleStream(stream)
+        })
       }
-    });
+    })

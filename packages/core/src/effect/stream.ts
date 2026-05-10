@@ -1,4 +1,4 @@
-import { Stream } from 'effect';
+import { Stream } from 'effect'
 
 export const fromReadableStream =
   <E>(onError: (e: unknown) => E) =>
@@ -6,4 +6,4 @@ export const fromReadableStream =
     Stream.fromReadableStream({
       evaluate: f,
       onError,
-    });
+    })

@@ -1,11 +1,11 @@
-import { severity } from 'effect/ErrorReporter';
-import { AppErrorContext, Severity, withErrorTraits } from './BaseError.js';
-import { Data } from 'effect';
+import { Data } from 'effect'
+import { withErrorTraits } from './BaseError.js'
+import type { AppErrorContext } from './BaseError.js'
 
 interface SchemaErrorContext extends AppErrorContext {
-  schemaName: string;
-  phase: 'decode' | 'encode';
-  issues?: unknown; // SchemaErrorの詳細
+  schemaName: string
+  phase: 'decode' | 'encode'
+  issues?: unknown // SchemaErrorの詳細
 }
 
 export class SchemaValidationError extends withErrorTraits(

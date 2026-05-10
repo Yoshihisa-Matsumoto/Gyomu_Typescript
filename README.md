@@ -28,23 +28,23 @@ pnpm install gyomu
 ### Basic Usage Example
 
 ```typescript
-import { aesEncrypt, aesDecrypt } from 'gyomu';
+import { aesEncrypt, aesDecrypt } from 'gyomu'
 
 // Encrypt data
-const plainText = 'sensitive data';
-const key = 'my-secret-key';
-const encrypted = aesEncrypt(plainText, key);
+const plainText = 'sensitive data'
+const key = 'my-secret-key'
+const encrypted = aesEncrypt(plainText, key)
 
 // Decrypt data
-const decrypted = aesDecrypt(encrypted, key);
-console.log(decrypted); // 'sensitive data'
+const decrypted = aesDecrypt(encrypted, key)
+console.log(decrypted) // 'sensitive data'
 ```
 
 ### Error Handling
 
 ```typescript
-import { ResultAsync, DBError, genericDBFunction } from 'gyomu';
-import { prisma } from './dbsingleton';
+import { ResultAsync, DBError, genericDBFunction } from 'gyomu'
+import { prisma } from './dbsingleton'
 
 // Type-safe error handling using ResultAsync
 function getUser(userId: string): ResultAsync<User, DBError> {
@@ -52,7 +52,7 @@ function getUser(userId: string): ResultAsync<User, DBError> {
     'fetch user',
     async () => prisma.users.findUnique({ where: { id: userId } }),
     [],
-  );
+  )
 }
 
 // Calling code
@@ -62,42 +62,42 @@ getUser('123')
   .match(
     (success) => console.log('Done'),
     (failure) => console.error(failure),
-  );
+  )
 ```
 
 ### File Operations
 
 ```typescript
-import { FileInfo, FileOperation } from 'gyomu';
+import { FileInfo, FileOperation } from 'gyomu'
 
 // Get file information
-const fileInfo = new FileInfo('./path/to/file.txt');
-console.log(fileInfo.size); // File size
-console.log(fileInfo.updateTime); // Update date
+const fileInfo = new FileInfo('./path/to/file.txt')
+console.log(fileInfo.size) // File size
+console.log(fileInfo.updateTime) // Update date
 
 // Search for files
 const files = FileOperation.search(
   './src',
   [new FileFilterInfo(FilterType.FileName, FileCompareType.Contains, '.ts')],
   true, // Recursive search
-);
+)
 ```
 
 ### Web DOM Operations
 
 ```typescript
-import { Page, Table } from 'gyomu/web';
-import axios from 'axios';
+import { Page, Table } from 'gyomu/web'
+import axios from 'axios'
 
 // Load and parse page
-const response = await axios.get('https://example.com');
-const page = new Page({ kind: 'response', response });
+const response = await axios.get('https://example.com')
+const page = new Page({ kind: 'response', response })
 
 // Search elements by XPath
-const tables = page.searchByXPath('//table[@class="data"]');
+const tables = page.searchByXPath('//table[@class="data"]')
 
 // Search elements by class name
-const elements = page.getElementsByClassName<HTMLTableElement>('results');
+const elements = page.getElementsByClassName<HTMLTableElement>('results')
 ```
 
 ## Architecture
@@ -252,14 +252,14 @@ import {
   ParameterAccess,
   UserFactory,
   Configurator,
-} from 'gyomu';
+} from 'gyomu'
 ```
 
 ### Web Module
 
 ```typescript
 // Web-related functionality
-import { Page, Table, DOMElement, GenericElement } from 'gyomu/web';
+import { Page, Table, DOMElement, GenericElement } from 'gyomu/web'
 ```
 
 ## Code Examples and Patterns
@@ -281,7 +281,7 @@ High-quality code examples from this project are documented in detail in [exempl
 ### Retrieve Parameters with Retry Logic
 
 ```typescript
-import { ParameterAccess } from 'gyomu';
+import { ParameterAccess } from 'gyomu'
 
 // Retrieve parameter by key (retries up to 3 times on failure)
 ParameterAccess.value('app.setting.timeout')
@@ -290,53 +290,53 @@ ParameterAccess.value('app.setting.timeout')
   .match(
     (success) => console.log(`Timeout: ${success}ms`),
     (error) => console.error(`Failed: ${error.message}`),
-  );
+  )
 ```
 
 ### File Encryption
 
 ```typescript
-import { aesEncryptFile, aesDecryptFile, getKey } from 'gyomu';
+import { aesEncryptFile, aesDecryptFile, getKey } from 'gyomu'
 
-const key = getKey('my-secret-key');
+const key = getKey('my-secret-key')
 
 // Encrypt file
-aesEncryptFile('./input.txt', './encrypted.bin', key);
+aesEncryptFile('./input.txt', './encrypted.bin', key)
 
 // Decrypt file
-aesDecryptFile('./encrypted.bin', './output.txt', key);
+aesDecryptFile('./encrypted.bin', './output.txt', key)
 ```
 
 ### Milestone Management
 
 ```typescript
-import { Milestone } from 'gyomu';
-import { createDateFromYYYYMMDD, okAsync } from 'gyomu';
+import { Milestone } from 'gyomu'
+import { createDateFromYYYYMMDD, okAsync } from 'gyomu'
 
-const targetDate = createDateFromYYYYMMDD('20240101');
+const targetDate = createDateFromYYYYMMDD('20240101')
 
 // Check milestone existence
 Milestone.exists('project-milestone-1', targetDate)
   .andThen((result) => {
     if (result.exists) {
-      console.log(`Last updated: ${result.updateTime}`);
+      console.log(`Last updated: ${result.updateTime}`)
     }
-    return okAsync(result);
+    return okAsync(result)
   })
-  .mapErr((error) => console.error(error));
+  .mapErr((error) => console.error(error))
 ```
 
 ### Type-Safe Configuration
 
 ```typescript
-import { ConfigurationFactory, UserFactory } from 'gyomu';
+import { ConfigurationFactory, UserFactory } from 'gyomu'
 
-const user = UserFactory.getCurrentUser();
-const config = ConfigurationFactory.create(user);
+const user = UserFactory.getCurrentUser()
+const config = ConfigurationFactory.create(user)
 
-console.log(`Machine: ${config.machineName}`);
-console.log(`Address: ${config.address}`);
-console.log(`Mode: ${config.mode}`);
+console.log(`Machine: ${config.machineName}`)
+console.log(`Address: ${config.address}`)
+console.log(`Mode: ${config.mode}`)
 ```
 
 ## Performance
@@ -371,17 +371,17 @@ npx prisma generate
 
 ```typescript
 // Verify key length (16 or 32 bytes)
-const key128 = 'abcdefghijklmnop'; // 16 bytes = AES-128 ✓
-const key256 = 'abcdefghijklmnopqrstuvwxyz012345'; // 32 bytes = AES-256 ✓
+const key128 = 'abcdefghijklmnop' // 16 bytes = AES-128 ✓
+const key256 = 'abcdefghijklmnopqrstuvwxyz012345' // 32 bytes = AES-256 ✓
 ```
 
 ### Invalid Key Length Error
 
 ```typescript
 // Generate a proper key from string
-import { getKey } from 'gyomu';
+import { getKey } from 'gyomu'
 
-const key = getKey('my-password'); // Automatically hashed to 32 bytes
+const key = getKey('my-password') // Automatically hashed to 32 bytes
 ```
 
 ## Contributing

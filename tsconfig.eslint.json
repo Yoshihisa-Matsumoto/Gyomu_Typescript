@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.mjs",
+    "**/*.cjs",
+    "**/.storybook/**/*.ts",
+    "**/.storybook/**/*.tsx"
+  ],
+  "exclude": [".prettierrc.ts"]
+}

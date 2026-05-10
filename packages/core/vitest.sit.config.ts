@@ -1,6 +1,6 @@
-import path from 'path';
-import { defineConfig } from 'vitest/config';
-//console.log('Env', process.env);
+import path from 'node:path'
+import { defineConfig } from 'vitest/config'
+// console.log('Env', process.env);
 export default defineConfig({
   resolve: {
     alias: {
@@ -20,4 +20,4 @@ export default defineConfig({
     pool: 'threads', // forks → threads
     fileParallelism: true, // 並列ON（デフォルトでもOK）
   },
-});
+})

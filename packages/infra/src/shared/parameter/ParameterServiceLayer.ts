@@ -1,30 +1,29 @@
-import { DBError } from '@gyomu/core';
-import { Effect, Layer, Schedule } from 'effect';
-import { GyomuRepository } from '@gyomu/core/gyomu';
-import { formatDateToYmd } from '@gyomu/core/entity';
-import { User } from '@gyomu/core/schemas/user';
-import { ParameterService } from '@gyomu/core/shared/parameter';
-type ParameterType = string | number | boolean;
+import { DBError } from '@gyomu/core'
+import { Effect, Layer, Schedule } from 'effect'
+import { GyomuRepository } from '@gyomu/core/gyomu'
+import { formatDateToYmd } from '@gyomu/core/entity'
+import { ParameterService } from '@gyomu/core/shared/parameter'
+import type { User } from '@gyomu/core/schemas/user'
+
+type ParameterType = string | number | boolean
 
 export const ParameterServiceLayer = Layer.effect(
   ParameterService,
 
   Effect.gen(function* () {
-    const repo = yield* GyomuRepository;
-    const loadParameter = (key: string) =>
-      repo.parameterMaster.findByItemKey(key);
+    const repo = yield* GyomuRepository
+    const loadParameter = (key: string) => repo.parameterMaster.findByItemKey(key)
     const exists = (key: string) =>
-      loadParameter(key).pipe(Effect.map((values) => values.length > 0));
-    const getKey = (key: string, user?: User) =>
-      user ? `${user.userId}_${key}` : key;
+      loadParameter(key).pipe(Effect.map((values) => values.length > 0))
+    const getKey = (key: string, user?: User) => (user ? `${user.userId}_${key}` : key)
     const getValue = (key: string, user?: User, targetDate?: Date) =>
       Effect.gen(function* () {
-        const itemKey = getKey(key, user);
+        const itemKey = getKey(key, user)
 
-        const itemValues = yield* loadParameter(itemKey).pipe(
-          Effect.retry(Schedule.recurs(3)),
-        );
-        if (itemValues.length === 0) {
+        const itemValues = yield* loadParameter(itemKey).pipe(Effect.retry(Schedule.recurs(3)))
+        const firstItem = itemValues[0]
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (itemValues.length === 0 || !firstItem) {
           return yield* Effect.fail(
             new DBError({
               message: `Can not retrieve parameter value for key`,
@@ -33,8 +32,9 @@ export const ParameterServiceLayer = Layer.effect(
               operation: 'select' as const,
               table: 'parameterMaster',
             }),
-          );
+          )
         }
+
         if (itemValues.filter((v) => !v.itemFromDate?.trim()).length > 1) {
           return yield* Effect.fail(
             new DBError({
@@ -44,22 +44,23 @@ export const ParameterServiceLayer = Layer.effect(
               operation: 'select' as const,
               table: 'parameterMaster',
             }),
-          );
+          )
         }
+
         if (!targetDate) {
-          return itemValues[0]!.itemValue;
+          return firstItem.itemValue
         }
 
-        const targetYmd = formatDateToYmd(targetDate);
+        const targetYmd = formatDateToYmd(targetDate)
 
-        let itemValue = '';
+        let itemValue = ''
 
-        const defaultRow = itemValues.find((v) => !v.itemFromDate?.trim());
+        const defaultRow = itemValues.find((v) => !v.itemFromDate?.trim())
         if (defaultRow) {
-          itemValue = defaultRow.itemValue;
+          itemValue = defaultRow.itemValue
         }
 
-        if (!defaultRow && targetDate) {
+        if (!defaultRow) {
           return yield* Effect.fail(
             new DBError({
               message: `No default value found`,
@@ -68,7 +69,7 @@ export const ParameterServiceLayer = Layer.effect(
               operation: 'select',
               table: 'parameterMaster',
             }),
-          );
+          )
         }
 
         // const sorted = [...itemValues].sort((a, b) =>
@@ -79,60 +80,54 @@ export const ParameterServiceLayer = Layer.effect(
         //       : 0,
         // );
         const sorted = [...itemValues].sort((a, b) => {
-          if (a.itemFromDate == null && b.itemFromDate == null) return 0;
-          if (a.itemFromDate == null) return -1; // nullを後ろ
-          if (b.itemFromDate == null) return 1;
+          if (a.itemFromDate == null && b.itemFromDate == null) return 0
+          if (a.itemFromDate == null) return -1 // nullを後ろ
+          if (b.itemFromDate == null) return 1
 
-          return a.itemFromDate.localeCompare(b.itemFromDate);
-        });
+          return a.itemFromDate.localeCompare(b.itemFromDate)
+        })
 
         for (const row of sorted) {
-          if (!row.itemValue) continue;
+          if (!row.itemValue) continue
 
           if (!row.itemFromDate?.trim()) {
-            itemValue = row.itemValue;
+            itemValue = row.itemValue
           } else if (row.itemFromDate === targetYmd) {
-            return row.itemValue;
+            return row.itemValue
           } else if (targetYmd > row.itemFromDate) {
-            itemValue = row.itemValue;
+            itemValue = row.itemValue
           } else {
-            break;
+            break
           }
         }
 
-        return itemValue;
-      });
-    const setValue = <T extends ParameterType>(
-      key: string,
-      value: T,
-      user?: User,
-    ) =>
+        return itemValue
+      })
+    const setValue = <T extends ParameterType>(key: string, value: T, user?: User) =>
       Effect.gen(function* () {
-        const itemKey = getKey(key, user);
-        const itemValue = value.toString();
+        const itemKey = getKey(key, user)
+        const itemValue = value.toString()
 
-        const existsResult = yield* exists(itemKey);
+        const existsResult = yield* exists(itemKey)
 
         if (existsResult) {
           if (!itemValue) {
             // Delete
-            yield* repo.parameterMaster.deleteByItemKey(itemKey);
-            return true;
+            yield* repo.parameterMaster.deleteByItemKey(itemKey)
+            return true
           }
           // Update
-          yield* repo.parameterMaster.updateValueByItemKey(itemKey, itemValue);
-          return true;
+          yield* repo.parameterMaster.updateValueByItemKey(itemKey, itemValue)
+          return true
         }
         if (!itemValue) {
           // nothing to do
-          return true;
+          return true
         }
         // Insert
-        yield* repo.parameterMaster.create([
-          { itemKey, itemValue, itemFromDate: null },
-        ]);
-        return true;
-      });
+        yield* repo.parameterMaster.create([{ itemKey, itemValue, itemFromDate: null }])
+        return true
+      })
 
     return {
       getValue,
@@ -144,6 +139,6 @@ export const ParameterServiceLayer = Layer.effect(
         getValue(key, user, targetDate).pipe(Effect.map((result) => +result)),
       setValue,
       keyExists: (key: string) => exists(key),
-    };
+    }
   }),
-);
+)

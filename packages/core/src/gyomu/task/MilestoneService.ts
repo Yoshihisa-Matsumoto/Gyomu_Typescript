@@ -1,20 +1,21 @@
-import { Effect, Layer, Schema, Context } from 'effect';
-import { GyomuRepository } from '../GyomuRepository.js';
-import { DBError } from '../../error/DBError.js';
-import { SchemaValidationError } from '../../error/SchemaValidationError.js';
-import { MilestoneSchema } from '../../schemas/gyomu.js';
-import { LocalDate } from '../../entity/date.js';
-import { MilestoneDailyDomainSchema } from '../../entity/gyomuDefinition.js';
-import { TimeoutError } from '../../error/TimeoutError.js';
+import { Context } from 'effect'
+import type { Effect, Schema } from 'effect'
+import type { GyomuRepository } from '../GyomuRepository.js'
+import type { DBError } from '../../error/DBError.js'
+import type { SchemaValidationError } from '../../error/SchemaValidationError.js'
+import type { MilestoneSchema } from '../../schemas/gyomu.js'
+import type { LocalDate } from '../../entity/date.js'
+import type { MilestoneDailyDomainSchema } from '../../entity/gyomuDefinition.js'
+import type { TimeoutError } from '../../error/TimeoutError.js'
 
 export type MilestoneExistResultType =
   | {
-      exists: true;
-      updateTime: string;
+      exists: true
+      updateTime: string
     }
   | {
-      exists: false;
-    };
+      exists: false
+    }
 
 // const convertTargetDate = (targetDate: string, isMonthly: boolean) => {
 //   let targetDateYmD = targetDate;
@@ -31,41 +32,33 @@ export class MilestoneService extends Context.Service<
       milestoneId: string,
       targetYmd: LocalDate,
       isMonthly?: boolean,
-    ) => Effect.Effect<
-      MilestoneExistResultType,
-      DBError | SchemaValidationError,
-      GyomuRepository
-    >;
+    ) => Effect.Effect<MilestoneExistResultType, DBError | SchemaValidationError, GyomuRepository>
     register: (
       milestoneId: string,
       targetYmd: LocalDate,
       isMonthly?: boolean,
-    ) => Effect.Effect<
-      string,
-      DBError | SchemaValidationError,
-      GyomuRepository
-    >;
+    ) => Effect.Effect<string, DBError | SchemaValidationError, GyomuRepository>
     wait: (
       milestoneId: string,
       targetYmd: LocalDate,
       timeoutSecond: number,
-    ) => Effect.Effect<boolean, TimeoutError, GyomuRepository>;
+    ) => Effect.Effect<boolean, TimeoutError, GyomuRepository>
     retrieveMilestoneDailyList: (
       targetDateYmd: LocalDate,
     ) => Effect.Effect<
-      Schema.Schema.Type<typeof MilestoneDailyDomainSchema>[],
+      Array<Schema.Schema.Type<typeof MilestoneDailyDomainSchema>>,
       DBError | SchemaValidationError,
       GyomuRepository
-    >;
+    >
     deleteMilestoneDaily: (
       milestoneId: string,
       targetDateYmd: LocalDate,
-    ) => Effect.Effect<number, DBError, GyomuRepository>;
+    ) => Effect.Effect<number, DBError, GyomuRepository>
     milestoneList: () => Effect.Effect<
-      readonly (typeof MilestoneSchema.types._select)[],
+      ReadonlyArray<typeof MilestoneSchema.types._select>,
       DBError | SchemaValidationError,
       GyomuRepository
-    >;
+    >
     upsertMilestoneCode: (
       milestoneId: string,
       description: string,
@@ -73,9 +66,7 @@ export class MilestoneService extends Context.Service<
       typeof MilestoneSchema.types._select,
       DBError | SchemaValidationError,
       GyomuRepository
-    >;
-    deleteMilestoneCode: (
-      milestoneId: string,
-    ) => Effect.Effect<void, DBError, GyomuRepository>;
+    >
+    deleteMilestoneCode: (milestoneId: string) => Effect.Effect<void, DBError, GyomuRepository>
   }
 >()('MilestoneService') {}

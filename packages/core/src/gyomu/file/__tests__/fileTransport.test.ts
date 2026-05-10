@@ -1,21 +1,21 @@
-import { expect, test } from 'vitest';
-import { FileTransportInfo } from '../transport.js';
-import { join } from 'path';
+import { join } from 'node:path'
+import { expect, test } from 'vitest'
+import { FileTransportInfo } from '../transport.js'
 
 class TransportResult {
-  index: number;
-  inputBase: string;
-  inputSourceDirectory: string;
-  inputSourceName: string;
-  inputDestinationDirectory: string;
-  inputDestinationName: string;
-  sourceFullBase: string;
-  sourceFull: string;
-  sourceDirectory: string;
-  sourceName: string;
-  destinationFull: string;
-  destinationDirectory: string;
-  destinationName: string;
+  index: number
+  inputBase: string
+  inputSourceDirectory: string
+  inputSourceName: string
+  inputDestinationDirectory: string
+  inputDestinationName: string
+  sourceFullBase: string
+  sourceFull: string
+  sourceDirectory: string
+  sourceName: string
+  destinationFull: string
+  destinationDirectory: string
+  destinationName: string
   constructor(
     index: number,
     inputBase: string,
@@ -31,23 +31,23 @@ class TransportResult {
     destinationDirectory: string,
     destinationName: string,
   ) {
-    this.index = index;
-    this.inputBase = inputBase;
-    this.inputSourceDirectory = inputSourceDirectory;
-    this.inputSourceName = inputSourceName;
-    this.inputDestinationDirectory = inputDestinationDirectory;
-    this.inputDestinationName = inputDestinationName;
-    this.sourceFullBase = sourceFullBase;
-    this.sourceFull = sourceFull;
-    this.sourceDirectory = sourceDirectory;
-    this.sourceName = sourceName;
-    this.destinationFull = destinationFull;
-    this.destinationDirectory = destinationDirectory;
-    this.destinationName = destinationName;
+    this.index = index
+    this.inputBase = inputBase
+    this.inputSourceDirectory = inputSourceDirectory
+    this.inputSourceName = inputSourceName
+    this.inputDestinationDirectory = inputDestinationDirectory
+    this.inputDestinationName = inputDestinationName
+    this.sourceFullBase = sourceFullBase
+    this.sourceFull = sourceFull
+    this.sourceDirectory = sourceDirectory
+    this.sourceName = sourceName
+    this.destinationFull = destinationFull
+    this.destinationDirectory = destinationDirectory
+    this.destinationName = destinationName
   }
 }
 
-const inputData: TransportResult[] = [
+const inputData: Array<TransportResult> = [
   new TransportResult(
     1,
     'base',
@@ -138,36 +138,8 @@ const inputData: TransportResult[] = [
     'SDir',
     '',
   ),
-  new TransportResult(
-    7,
-    'base',
-    '',
-    '',
-    '',
-    '',
-    'base',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-  ),
-  new TransportResult(
-    8,
-    'base',
-    '',
-    '',
-    'Ddir',
-    '',
-    'base',
-    '',
-    '',
-    '',
-    'Ddir',
-    'Ddir',
-    '',
-  ),
+  new TransportResult(7, 'base', '', '', '', '', 'base', '', '', '', '', '', ''),
+  new TransportResult(8, 'base', '', '', 'Ddir', '', 'base', '', '', '', 'Ddir', 'Ddir', ''),
   new TransportResult(
     9,
     'base',
@@ -303,21 +275,7 @@ const inputData: TransportResult[] = [
     'Ddir',
     '',
   ),
-  new TransportResult(
-    18,
-    '',
-    'SDir',
-    '',
-    '',
-    '',
-    'SDir',
-    'SDir',
-    'SDir',
-    '',
-    'SDir',
-    'SDir',
-    '',
-  ),
+  new TransportResult(18, '', 'SDir', '', '', '', 'SDir', 'SDir', 'SDir', '', 'SDir', 'SDir', ''),
   new TransportResult(
     19,
     '',
@@ -378,7 +336,7 @@ const inputData: TransportResult[] = [
     '',
     'Sname',
   ),
-];
+]
 
 const createTransportInformation = (result: TransportResult) => {
   return new FileTransportInfo({
@@ -387,134 +345,36 @@ const createTransportInformation = (result: TransportResult) => {
     sourceFolderName: result.inputSourceDirectory,
     destinationFileName: result.inputDestinationName,
     destinationFolderName: result.inputDestinationDirectory,
-  });
-};
+  })
+}
 const compare = (expected: TransportResult, source: FileTransportInfo) => {
-  expect(expected.sourceFullBase).toEqual(source.sourceFullNameWithBasePath);
-  expect(expected.sourceFull).toEqual(source.sourceFullName);
-  expect(expected.sourceDirectory).toEqual(source.sourceFolderName);
-  expect(expected.sourceName).toEqual(source.sourceFileName);
-  expect(expected.destinationFull).toEqual(source.destinationFullName);
-  expect(expected.destinationDirectory).toEqual(source.destinationPath);
-  expect(expected.destinationName).toEqual(source.destinationFileName);
-};
+  expect(expected.sourceFullBase).toEqual(source.sourceFullNameWithBasePath)
+  expect(expected.sourceFull).toEqual(source.sourceFullName)
+  expect(expected.sourceDirectory).toEqual(source.sourceFolderName)
+  expect(expected.sourceName).toEqual(source.sourceFileName)
+  expect(expected.destinationFull).toEqual(source.destinationFullName)
+  expect(expected.destinationDirectory).toEqual(source.destinationPath)
+  expect(expected.destinationName).toEqual(source.destinationFileName)
+}
 test.each(inputData)('Case $result.index', (result) => {
-  const info: FileTransportInfo = createTransportInformation(result);
-  compare(result, info);
-});
+  const info: FileTransportInfo = createTransportInformation(result)
+  compare(result, info)
+})
 
-const invalidInputdata: TransportResult[] = [
-  new TransportResult(
-    1,
-    'base',
-    'SDir',
-    '',
-    'Ddir',
-    'Dname',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-  ),
-  new TransportResult(
-    2,
-    'base',
-    'SDir',
-    '',
-    '',
-    'Dname',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-  ),
-  new TransportResult(
-    3,
-    'base',
-    '',
-    '',
-    'Ddir',
-    'Dname',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-  ),
-  new TransportResult(
-    4,
-    'base',
-    '',
-    '',
-    '',
-    'Dname',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-  ),
-  new TransportResult(
-    5,
-    '',
-    'SDir',
-    '',
-    'Ddir',
-    'Dname',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-  ),
-  new TransportResult(
-    6,
-    '',
-    'SDir',
-    '',
-    '',
-    'Dname',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-  ),
-  new TransportResult(
-    7,
-    '',
-    '',
-    '',
-    'Ddir',
-    'Dname',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-  ),
+const invalidInputdata: Array<TransportResult> = [
+  new TransportResult(1, 'base', 'SDir', '', 'Ddir', 'Dname', '', '', '', '', '', '', ''),
+  new TransportResult(2, 'base', 'SDir', '', '', 'Dname', '', '', '', '', '', '', ''),
+  new TransportResult(3, 'base', '', '', 'Ddir', 'Dname', '', '', '', '', '', '', ''),
+  new TransportResult(4, 'base', '', '', '', 'Dname', '', '', '', '', '', '', ''),
+  new TransportResult(5, '', 'SDir', '', 'Ddir', 'Dname', '', '', '', '', '', '', ''),
+  new TransportResult(6, '', 'SDir', '', '', 'Dname', '', '', '', '', '', '', ''),
+  new TransportResult(7, '', '', '', 'Ddir', 'Dname', '', '', '', '', '', '', ''),
   new TransportResult(8, '', '', '', 'Ddir', '', '', '', '', '', '', '', ''),
   new TransportResult(9, '', '', '', '', 'Dname', '', '', '', '', '', '', ''),
-];
+]
 
 test.each(invalidInputdata)('Invalid Case $result.index', (result) => {
   expect(() => {
-    createTransportInformation(result);
-  }).toThrow('Invalid Parameter');
-});
+    createTransportInformation(result)
+  }).toThrow('Invalid Parameter')
+})

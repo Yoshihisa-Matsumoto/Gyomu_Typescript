@@ -1,33 +1,29 @@
-import { parse } from 'date-fns';
-import { FilterType, FileCompareType } from './types.js';
-import { ValueError } from '../../error/ValueError.js';
+import { parse } from 'date-fns'
+import { ValueError } from '../../error/ValueError.js'
+import { FilterType } from './types.js'
+import type { FileCompareType } from './types.js'
 
 export class FileFilterInfo {
-  readonly kind: FilterType;
-  readonly operator: FileCompareType;
-  readonly nameFilter: string;
-  readonly targetDate: Date;
-  constructor(
-    kind: FilterType,
-    operator: FileCompareType,
-    filter: string | Date,
-  ) {
-    this.kind = kind;
-    this.operator = operator;
+  readonly kind: FilterType
+  readonly operator: FileCompareType
+  readonly nameFilter: string
+  readonly targetDate: Date
+  constructor(kind: FilterType, operator: FileCompareType, filter: string | Date) {
+    this.kind = kind
+    this.operator = operator
     if (this.kind === FilterType.FileName && typeof filter === 'string') {
-      this.nameFilter = filter;
-      this.targetDate = new Date();
+      this.nameFilter = filter
+      this.targetDate = new Date()
     } else if (this.kind !== FilterType.FileName) {
-      this.nameFilter = '';
-      if (typeof filter === 'string')
-        this.targetDate = parse(filter, 'yyyyMMdd', 0);
-      else this.targetDate = filter;
+      this.nameFilter = ''
+      if (typeof filter === 'string') this.targetDate = parse(filter, 'yyyyMMdd', 0)
+      else this.targetDate = filter
     } else {
       throw new ValueError({
         message: 'Date Parameter is invalid',
         value: { kind, operator, filter },
         cause: undefined,
-      });
+      })
     }
   }
 }

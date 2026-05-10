@@ -1,21 +1,21 @@
-import path from 'path';
-import { FileFilterInfo } from './filter.js';
-import { ValueError } from '../../error/ValueError.js';
+import path from 'node:path'
+import { ValueError } from '../../error/ValueError.js'
+import type { FileFilterInfo } from './filter.js'
 
 export class FileTransportInfo {
-  readonly sourceFileName: string;
-  readonly sourceFolderName: string;
-  readonly basePath: string;
-  readonly #destinationFileName: string;
-  readonly #destinationFolderName: string;
-  readonly deleteSourceFileAfterCompletion: boolean;
-  readonly overwriteDestination: boolean;
+  readonly sourceFileName: string
+  readonly sourceFolderName: string
+  readonly basePath: string
+  readonly #destinationFileName: string
+  readonly #destinationFolderName: string
+  readonly deleteSourceFileAfterCompletion: boolean
+  readonly overwriteDestination: boolean
 
-  readonly isSourceDirectory: boolean;
-  readonly isDestinationDirectory: boolean;
+  readonly isSourceDirectory: boolean
+  readonly isDestinationDirectory: boolean
 
-  readonly isDestinationRoot: boolean;
-  readonly filterConditions?: FileFilterInfo[];
+  readonly isDestinationRoot: boolean
+  readonly filterConditions?: Array<FileFilterInfo>
 
   /**
    * Base	Sdir	Sname	Ddir	Dname		(S)full+base	    (S)Full	    (S)path (S)name (D)full	    (D)path (D)name
@@ -52,69 +52,67 @@ export class FileTransportInfo {
     overwriteDestination = false,
     filterConditions = undefined,
   }: {
-    basePath?: string;
-    sourceFilename?: string;
-    sourceFolderName?: string;
-    destinationFileName?: string;
-    destinationFolderName?: string;
-    deleteSourceFileAfterCompletion?: boolean;
-    overwriteDestination?: boolean;
-    filterConditions?: FileFilterInfo[];
+    basePath?: string
+    sourceFilename?: string
+    sourceFolderName?: string
+    destinationFileName?: string
+    destinationFolderName?: string
+    deleteSourceFileAfterCompletion?: boolean
+    overwriteDestination?: boolean
+    filterConditions?: Array<FileFilterInfo>
   }) {
-    this.basePath = basePath;
-    this.sourceFileName = sourceFilename;
-    this.sourceFolderName = sourceFolderName;
-    this.#destinationFileName = destinationFileName;
-    this.#destinationFolderName = destinationFolderName;
-    this.deleteSourceFileAfterCompletion = deleteSourceFileAfterCompletion;
-    this.overwriteDestination = overwriteDestination;
-    if (filterConditions !== undefined)
-      this.filterConditions = filterConditions;
+    this.basePath = basePath
+    this.sourceFileName = sourceFilename
+    this.sourceFolderName = sourceFolderName
+    this.#destinationFileName = destinationFileName
+    this.#destinationFolderName = destinationFolderName
+    this.deleteSourceFileAfterCompletion = deleteSourceFileAfterCompletion
+    this.overwriteDestination = overwriteDestination
+    if (filterConditions !== undefined) this.filterConditions = filterConditions
 
-    this.isSourceDirectory = !this.sourceFileName;
-    this.isDestinationDirectory = !this.destinationFileName;
-    this.isDestinationRoot =
-      !this.sourceFolderName && !this.#destinationFolderName;
+    this.isSourceDirectory = !this.sourceFileName
+    this.isDestinationDirectory = !this.destinationFileName
+    this.isDestinationRoot = !this.sourceFolderName && !this.#destinationFolderName
 
     if (!this.sourceFileName && this.#destinationFileName)
       throw new ValueError({
         message: 'Invalid Parameter',
         cause: undefined,
         value: { sourceFilename, destinationFileName },
-      });
+      })
     if (!this.basePath && !this.sourceFolderName && !this.sourceFileName)
       throw new ValueError({
         message: 'Invalid Parameter',
         cause: undefined,
         value: { basePath, sourceFolderName, sourceFilename },
-      });
+      })
   }
 
   get sourceFullName(): string {
-    if (!this.sourceFolderName) return this.sourceFileName;
-    if (!this.sourceFileName) return this.sourceFolderName;
-    return path.join(this.sourceFolderName, this.sourceFileName);
+    if (!this.sourceFolderName) return this.sourceFileName
+    if (!this.sourceFileName) return this.sourceFolderName
+    return path.join(this.sourceFolderName, this.sourceFileName)
   }
 
   get sourceFullNameWithBasePath(): string {
-    if (!this.sourceFullName) return this.basePath;
-    if (this.basePath) return path.join(this.basePath, this.sourceFullName);
-    return this.sourceFullName;
+    if (!this.sourceFullName) return this.basePath
+    if (this.basePath) return path.join(this.basePath, this.sourceFullName)
+    return this.sourceFullName
   }
 
   get destinationFileName(): string {
-    if (!this.#destinationFileName) return this.sourceFileName;
-    return this.#destinationFileName;
+    if (!this.#destinationFileName) return this.sourceFileName
+    return this.#destinationFileName
   }
 
   get destinationPath(): string {
-    if (!this.#destinationFolderName) return this.sourceFolderName;
-    return this.#destinationFolderName;
+    if (!this.#destinationFolderName) return this.sourceFolderName
+    return this.#destinationFolderName
   }
 
   get destinationFullName(): string {
-    if (!this.destinationPath) return this.destinationFileName;
-    if (!this.destinationFileName) return this.destinationPath;
-    return path.join(this.destinationPath, this.destinationFileName);
+    if (!this.destinationPath) return this.destinationFileName
+    if (!this.destinationFileName) return this.destinationPath
+    return path.join(this.destinationPath, this.destinationFileName)
   }
 }

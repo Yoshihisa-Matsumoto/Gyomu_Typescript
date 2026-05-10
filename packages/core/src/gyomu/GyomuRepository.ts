@@ -1,5 +1,6 @@
-import { Effect, Layer, Context } from 'effect';
-import {
+import { Context } from 'effect'
+import type { Effect } from 'effect'
+import type {
   AppInfoSchema,
   MarketHolidaySchema,
   MilestoneDailySchema,
@@ -8,15 +9,15 @@ import {
   StatusHandlerSchema,
   StatusInformationSchema,
   StatusTypeSchema,
-} from '../schemas/gyomu.js';
-import {
-  CrudRepositoryFromSchemasWithFindAllAndFindByColumn,
+} from '../schemas/gyomu.js'
+import type {
   CrudRepositoryFromSchemasWithFindAll,
+  CrudRepositoryFromSchemasWithFindAllAndFindByColumn,
   CrudRepositoryFromSchemasWithFindByColumn,
-} from '../data/index.js';
-import { DBError } from '../error/DBError.js';
-import { SchemaValidationError } from '../error/SchemaValidationError.js';
-import { LocalDate, YearMonth } from '../entity/date.js';
+} from '../data/index.js'
+import type { DBError } from '../error/DBError.js'
+import type { SchemaValidationError } from '../error/SchemaValidationError.js'
+import type { LocalDate, YearMonth } from '../entity/date.js'
 
 export class GyomuRepository extends Context.Service<
   GyomuRepository,
@@ -25,35 +26,30 @@ export class GyomuRepository extends Context.Service<
       typeof AppInfoSchema,
       'description',
       'findByDescription'
-    >;
-    readonly statusType: CrudRepositoryFromSchemasWithFindAll<
-      typeof StatusTypeSchema
-    >;
+    >
+    readonly statusType: CrudRepositoryFromSchemasWithFindAll<typeof StatusTypeSchema>
     readonly statusHandler: CrudRepositoryFromSchemasWithFindAllAndFindByColumn<
       typeof StatusHandlerSchema,
       'application_id',
       'findByApplicationId'
-    >;
+    >
     readonly statusInfo: CrudRepositoryFromSchemasWithFindByColumn<
       typeof StatusInformationSchema,
       'application_id',
       'findByApplicationId'
-    >;
+    >
     readonly marketHoliday: CrudRepositoryFromSchemasWithFindByColumn<
       typeof MarketHolidaySchema,
       'market',
       'findByMarket'
     > & {
-      findDistinctMarkets: () => Effect.Effect<
-        string[],
-        DBError | SchemaValidationError
-      >;
-    };
+      findDistinctMarkets: () => Effect.Effect<Array<string>, DBError | SchemaValidationError>
+    }
     readonly milestone: CrudRepositoryFromSchemasWithFindAllAndFindByColumn<
       typeof MilestoneSchema,
       'milestone_id',
       'findByMilestoneId'
-    >;
+    >
     readonly milestoneDaily: CrudRepositoryFromSchemasWithFindByColumn<
       typeof MilestoneDailySchema,
       'target_date',
@@ -64,22 +60,22 @@ export class GyomuRepository extends Context.Service<
         targetDate: LocalDate,
         isMonthly: boolean,
       ) => Effect.Effect<
-        (typeof MilestoneDailySchema.types._select)[],
+        Array<typeof MilestoneDailySchema.types._select>,
         DBError | SchemaValidationError
-      >;
+      >
       findByTargetDateAndMonthlyDate: (
         targetDate: LocalDate,
         monthlyYm: YearMonth,
       ) => Effect.Effect<
-        (typeof MilestoneDailySchema.types._select)[],
+        Array<typeof MilestoneDailySchema.types._select>,
         DBError | SchemaValidationError
-      >;
+      >
       deleteByMilestoneIdAndTargetDate: (
         milestoneId: string,
         targetDate: LocalDate,
         isMonthly: boolean,
-      ) => Effect.Effect<number, DBError>;
-    };
+      ) => Effect.Effect<number, DBError>
+    }
     readonly parameterMaster: CrudRepositoryFromSchemasWithFindByColumn<
       typeof ParameterMasterSchema,
       'item_key',
@@ -88,8 +84,8 @@ export class GyomuRepository extends Context.Service<
       updateValueByItemKey: (
         itemKey: string,
         newValue: string,
-      ) => Effect.Effect<number, DBError | SchemaValidationError>;
-      deleteByItemKey: (itemKey: string) => Effect.Effect<number, DBError>;
-    };
+      ) => Effect.Effect<number, DBError | SchemaValidationError>
+      deleteByItemKey: (itemKey: string) => Effect.Effect<number, DBError>
+    }
   }
 >()('GyomuRepository') {}

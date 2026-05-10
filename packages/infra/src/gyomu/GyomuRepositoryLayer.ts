@@ -1,10 +1,4 @@
-import { Effect, Layer } from 'effect';
-import {
-  makeCustomDelete,
-  customSQLAndReturnRecords,
-  makeRepositoryFromDb,
-  makeCustomUpdate,
-} from '../db/common.js';
+import { Effect, Layer } from 'effect'
 import {
   AppInfoSchema,
   MarketHolidaySchema,
@@ -14,13 +8,10 @@ import {
   StatusHandlerSchema,
   StatusInformationSchema,
   StatusTypeSchema,
-} from '@gyomu/core/schemas/gyomu';
-import { KyselyService } from '../db/KyselyService.js';
-import { fromPromise } from '../../../core/dist/effect/index.js';
-import { DBError } from '@gyomu/core';
+} from '@gyomu/core/schemas/gyomu'
+import { DBError } from '@gyomu/core'
 import {
   appInfoDefinition,
-  LocalDate,
   marketHolidayDefinition,
   milestoneDailyDefinition,
   milestoneDefinition,
@@ -32,18 +23,26 @@ import {
   statusTypeDefinition,
   taskDataDefinition,
   taskDataLogDefinition,
-  YearMonth,
-} from '@gyomu/core/entity';
-import { assertDefinitionKeysExistInTable } from '@gyomu/core/data';
-import { DB } from '../generated/db.js';
-import { GyomuRepository } from '@gyomu/core/gyomu';
+} from '@gyomu/core/entity'
+import { assertDefinitionKeysExistInTable } from '@gyomu/core/data'
+import { GyomuRepository } from '@gyomu/core/gyomu'
+import { fromPromise } from '../../../core/dist/effect/index.js'
+import { KyselyService } from '../db/KyselyService.js'
+import {
+  customSQLAndReturnRecords,
+  makeCustomDelete,
+  makeCustomUpdate,
+  makeRepositoryFromDb,
+} from '../db/common.js'
+import type { DB } from '../generated/db.js'
+import type { LocalDate, YearMonth } from '@gyomu/core/entity'
 
 export const GyomuRepositoryLayer = Layer.effect(
   GyomuRepository,
 
   Effect.gen(function* () {
-    const dbService = yield* KyselyService;
-    const db = yield* dbService.withConnection('GYOMU_DB');
+    const dbService = yield* KyselyService
+    const db = yield* dbService.withConnection('GYOMU_DB')
     return {
       appInfo: makeRepositoryFromDb(db, {
         table: 'gyomu_apps_info_cdtbl',
@@ -98,7 +97,7 @@ export const GyomuRepositoryLayer = Layer.effect(
             },
           },
         },
-        ({ db, table }) => {
+        ({ db: db2, table }) => {
           return {
             findDistinctMarkets: () => {
               return fromPromise(DBError, () => ({
@@ -106,15 +105,11 @@ export const GyomuRepositoryLayer = Layer.effect(
                 table,
                 operation: 'select' as const,
               }))(async () => {
-                const markets = await db
-                  .selectFrom(table)
-                  .select('market')
-                  .distinct()
-                  .execute();
-                return markets.map((m) => m.market);
-              });
+                const markets = await db2.selectFrom(table).select('market').distinct().execute()
+                return markets.map((m) => m.market)
+              })
             },
-          };
+          }
         },
       ),
       milestone: makeRepositoryFromDb(db, {
@@ -140,7 +135,7 @@ export const GyomuRepositoryLayer = Layer.effect(
             },
           },
         },
-        ({ db, table, schemas }) => {
+        ({ db: db2, table, schemas }) => {
           return {
             findByMilestoneIdAndTargetDate: (
               milestoneId: string,
@@ -149,7 +144,7 @@ export const GyomuRepositoryLayer = Layer.effect(
             ) => {
               if (isMonthly) {
                 return customSQLAndReturnRecords(
-                  db,
+                  db2,
                   table,
                   schemas,
                   `fail to find ${table} daily recordby milestone_id and target_ymd`,
@@ -161,10 +156,10 @@ export const GyomuRepositoryLayer = Layer.effect(
                     .where('target_type', '=', 'monthly')
                     .where('target_ym', '=', targetDate.slice(0, 7))
                     .execute(),
-                );
+                )
               } else {
                 return customSQLAndReturnRecords(
-                  db,
+                  db2,
                   table,
                   schemas,
                   `fail to find ${table} by milestone_id and target_date`,
@@ -176,16 +171,13 @@ export const GyomuRepositoryLayer = Layer.effect(
                     .where('target_type', '=', 'daily')
                     .where('target_date', '=', targetDate)
                     .execute(),
-                );
+                )
               }
             },
 
-            findByTargetDateAndMonthlyDate: (
-              targetYmd: LocalDate,
-              monthlyYm: YearMonth,
-            ) =>
+            findByTargetDateAndMonthlyDate: (targetYmd: LocalDate, monthlyYm: YearMonth) =>
               customSQLAndReturnRecords(
-                db,
+                db2,
                 table,
                 schemas,
                 `fail to find ${table} by date = ${targetYmd} or  ${monthlyYm}`,
@@ -195,14 +187,8 @@ export const GyomuRepositoryLayer = Layer.effect(
                   .selectAll()
                   .where((eb) =>
                     eb.or([
-                      eb.and([
-                        eb('target_type', '=', 'daily'),
-                        eb('target_date', '=', targetYmd),
-                      ]),
-                      eb.and([
-                        eb('target_type', '=', 'monthly'),
-                        eb('target_ym', '=', monthlyYm),
-                      ]),
+                      eb.and([eb('target_type', '=', 'daily'), eb('target_date', '=', targetYmd)]),
+                      eb.and([eb('target_type', '=', 'monthly'), eb('target_ym', '=', monthlyYm)]),
                     ]),
                   )
                   .execute(),
@@ -215,7 +201,7 @@ export const GyomuRepositoryLayer = Layer.effect(
             ) => {
               if (!isMonthly) {
                 return makeCustomDelete(
-                  db,
+                  db2,
                   table,
                   schemas,
                 )(
@@ -227,10 +213,10 @@ export const GyomuRepositoryLayer = Layer.effect(
                       .where('target_date', '=', targetDate)
                       .execute(),
                   `fail to delete ${table} by milestone_id and target_date for daily`,
-                );
+                )
               } else {
                 return makeCustomDelete(
-                  db,
+                  db2,
                   table,
                   schemas,
                 )(
@@ -242,10 +228,10 @@ export const GyomuRepositoryLayer = Layer.effect(
                       .where('target_ym', '=', targetDate.slice(0, 7))
                       .execute(),
                   `fail to delete ${table} by milestone_id and target_date for monthly`,
-                );
+                )
               }
             },
-          };
+          }
         },
       ),
       parameterMaster: makeRepositoryFromDb(
@@ -261,11 +247,11 @@ export const GyomuRepositoryLayer = Layer.effect(
             },
           },
         },
-        ({ db, table, schemas }) => {
+        ({ db: db2, table, schemas }) => {
           return {
             updateValueByItemKey: (itemKey: string, newValue: string) =>
               makeCustomUpdate(
-                db,
+                db2,
                 table,
                 schemas,
               )(
@@ -283,7 +269,7 @@ export const GyomuRepositoryLayer = Layer.effect(
 
             deleteByItemKey: (itemKey: string) =>
               makeCustomDelete(
-                db,
+                db2,
                 table,
                 schemas,
               )(
@@ -295,52 +281,42 @@ export const GyomuRepositoryLayer = Layer.effect(
                     .execute(),
                 `fail to delete from ${table} by item_key=${itemKey}`,
               ),
-          };
+          }
         },
       ),
-    } as const;
+    } as const
   }),
-);
+)
 
-assertDefinitionKeysExistInTable<keyof DB['gyomu_apps_info_cdtbl'] & string>()(
-  appInfoDefinition,
-);
+assertDefinitionKeysExistInTable<keyof DB['gyomu_apps_info_cdtbl'] & string>()(appInfoDefinition)
 assertDefinitionKeysExistInTable<keyof DB['gyomu_market_holiday'] & string>()(
   marketHolidayDefinition,
-);
+)
 
-assertDefinitionKeysExistInTable<keyof DB['gyomu_milestone_cdtbl'] & string>()(
-  milestoneDefinition,
-);
+assertDefinitionKeysExistInTable<keyof DB['gyomu_milestone_cdtbl'] & string>()(milestoneDefinition)
 
 assertDefinitionKeysExistInTable<keyof DB['gyomu_milestone_daily'] & string>()(
   milestoneDailyDefinition,
-);
+)
 
 assertDefinitionKeysExistInTable<keyof DB['gyomu_param_master'] & string>()(
   parameterMasterDefinition,
-);
+)
 
-assertDefinitionKeysExistInTable<keyof DB['gyomu_service_cdtbl'] & string>()(
-  serviceDefinition,
-);
+assertDefinitionKeysExistInTable<keyof DB['gyomu_service_cdtbl'] & string>()(serviceDefinition)
 
-assertDefinitionKeysExistInTable<
-  keyof DB['gyomu_service_type_cdtbl'] & string
->()(serviceTypeDefinition);
+assertDefinitionKeysExistInTable<keyof DB['gyomu_service_type_cdtbl'] & string>()(
+  serviceTypeDefinition,
+)
 
 assertDefinitionKeysExistInTable<keyof DB['gyomu_status_handler'] & string>()(
   statusHandlerDefinition,
-);
+)
 assertDefinitionKeysExistInTable<keyof DB['gyomu_status_info'] & string>()(
   statusInformationDefinition,
-);
-assertDefinitionKeysExistInTable<
-  keyof DB['gyomu_status_type_cdtbl'] & string
->()(statusTypeDefinition);
-assertDefinitionKeysExistInTable<keyof DB['gyomu_task_data'] & string>()(
-  taskDataDefinition,
-);
-assertDefinitionKeysExistInTable<keyof DB['gyomu_task_data_log'] & string>()(
-  taskDataLogDefinition,
-);
+)
+assertDefinitionKeysExistInTable<keyof DB['gyomu_status_type_cdtbl'] & string>()(
+  statusTypeDefinition,
+)
+assertDefinitionKeysExistInTable<keyof DB['gyomu_task_data'] & string>()(taskDataDefinition)
+assertDefinitionKeysExistInTable<keyof DB['gyomu_task_data_log'] & string>()(taskDataLogDefinition)

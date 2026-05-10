@@ -1,21 +1,22 @@
-import { FileTransportInfo } from '@gyomu/core/gyomu/file';
-import { Client } from 'basic-ftp';
-import { IOError, isRetryableNetworkError, NetworkError } from '@gyomu/core';
-import { PassThrough } from 'node:stream';
-import { Effect, pipe, Stream } from 'effect';
-import { fromReadable } from '../../stream/bridge/nodeStream.js';
-import { fromPromise } from '../../../../core/dist/effect/index.js';
-import { NodeStream } from '@effect/platform-node';
-import { toEntryPath } from '@gyomu/core/shared/fs';
+import { PassThrough } from 'node:stream'
+import { NetworkError, isRetryableNetworkError } from '@gyomu/core'
+import { Effect, Stream, pipe } from 'effect'
+import { NodeStream } from '@effect/platform-node'
+import { toEntryPath } from '@gyomu/core/shared/fs'
+import { fromReadable } from '../../stream/bridge/nodeStream.js'
+import { fromPromise } from '../../../../core/dist/effect/index.js'
+import type { IOError } from '@gyomu/core'
+import type { Client } from 'basic-ftp'
+import type { FileTransportInfo } from '@gyomu/core/gyomu/file'
 
 // ftpClient.ts
 
 export const list =
   (client: Client) =>
-  <R = never>(path: string): Effect.Effect<string[], NetworkError, R> => {
-    const fullPath = path;
+  (path: string): Effect.Effect<Array<string>, NetworkError> => {
+    const fullPath = path
 
-    const fileInfoListPromise = () => client.list(fullPath);
+    const fileInfoListPromise = () => client.list(fullPath)
     return pipe(
       fromPromise(NetworkError, (e) => ({
         message: 'Fail to retrieve ftp folders',
@@ -24,20 +25,19 @@ export const list =
         endpoint: path,
       }))(fileInfoListPromise),
       Effect.map((fileInfoList) => fileInfoList.map((f) => f.name)),
-    );
-  };
+    )
+  }
 
 export const getFileInfo =
   (client: Client) =>
-  <R = never>(
+  (
     path: string,
   ): Effect.Effect<
     {
-      size: number;
-      date: Date;
+      size: number
+      date: Date
     },
-    NetworkError,
-    R
+    NetworkError
   > => {
     return pipe(
       Effect.all([
@@ -55,18 +55,18 @@ export const getFileInfo =
         }))(() => client.lastMod(path)),
       ]),
       Effect.map(([size, date]) => ({ size, date })),
-    );
-  };
+    )
+  }
 
 export const uploadFromStream =
   (client: Client) =>
-  <R>(
-    source: Stream.Stream<Uint8Array, never, R>,
+  (
+    source: Stream.Stream<Uint8Array, IOError>,
     remotePath: string,
-  ): Effect.Effect<void, NetworkError, R> =>
+  ): Effect.Effect<void, NetworkError> =>
     Effect.gen(function* () {
       // Stream → Node Readable
-      const readable = yield* NodeStream.toReadable(source);
+      const readable = yield* NodeStream.toReadable(source)
 
       // FTP upload
       yield* fromPromise(NetworkError, (e) => ({
@@ -74,17 +74,15 @@ export const uploadFromStream =
         operation: 'upload' as const,
         retryable: isRetryableNetworkError(e),
         endpoint: remotePath,
-      }))(() => client.uploadFrom(readable, remotePath));
-    });
+      }))(() => client.uploadFrom(readable, remotePath))
+    })
 
 export const downloadToStream =
   (client: Client) =>
-  <R = never>(
-    path: string,
-  ): Stream.Stream<Uint8Array, IOError | NetworkError, R> =>
+  (path: string): Stream.Stream<Uint8Array, IOError | NetworkError> =>
     Stream.unwrap(
       Effect.gen(function* () {
-        const stream = new PassThrough();
+        const stream = new PassThrough()
 
         // 非同期で流し込む
         yield* Effect.forkScoped(
@@ -94,17 +92,15 @@ export const downloadToStream =
             retryable: isRetryableNetworkError(e),
             endpoint: path,
           }))(() => client.downloadTo(stream, path)),
-        );
+        )
 
-        return fromReadable(stream);
+        return fromReadable(stream)
       }),
-    );
+    )
 
 export const download =
   (client: Client) =>
-  <R = never>(
-    transportInformation: FileTransportInfo,
-  ): Effect.Effect<boolean, NetworkError, R> => {
+  (transportInformation: FileTransportInfo): Effect.Effect<boolean, NetworkError> => {
     const promise = transportInformation.isSourceDirectory
       ? () =>
           client.downloadToDir(
@@ -117,7 +113,7 @@ export const download =
               transportInformation.destinationFullName,
               toEntryPath(transportInformation.sourceFullName),
             )
-            .then(() => undefined);
+            .then(() => undefined)
 
     return pipe(
       fromPromise(NetworkError, (e) => ({
@@ -127,13 +123,11 @@ export const download =
         endpoint: `from ${transportInformation.sourceFullName} to ${transportInformation.destinationFullName}`,
       }))(promise),
       Effect.map(() => true),
-    );
-  };
+    )
+  }
 export const upload =
   (client: Client) =>
-  <R = never>(
-    transportInformation: FileTransportInfo,
-  ): Effect.Effect<boolean, NetworkError, R> => {
+  (transportInformation: FileTransportInfo): Effect.Effect<boolean, NetworkError> => {
     const promise = !transportInformation.isSourceDirectory
       ? () =>
           client
@@ -146,7 +140,7 @@ export const upload =
           client.uploadFromDir(
             transportInformation.sourceFullName,
             toEntryPath(transportInformation.destinationFullName),
-          );
+          )
 
     return pipe(
       fromPromise(NetworkError, (e) => ({
@@ -156,5 +150,5 @@ export const upload =
         endpoint: `from ${transportInformation.sourceFullName} to ${transportInformation.destinationFullName}`,
       }))(promise),
       Effect.map(() => true),
-    );
-  };
+    )
+  }

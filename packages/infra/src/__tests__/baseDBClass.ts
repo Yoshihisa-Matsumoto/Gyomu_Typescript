@@ -1,16 +1,16 @@
 // import { beforeEach, vi } from 'vitest';
 
-import { Effect, Layer } from 'effect';
-import { GyomuRepository } from '@gyomu/core/gyomu';
-import { MarketHolidaySchema } from '@gyomu/core/schemas/gyomu';
-import { LocalDate } from '@gyomu/core/entity';
+import { Effect, Layer } from 'effect'
+import { GyomuRepository } from '@gyomu/core/gyomu'
+import { LocalDate } from '@gyomu/core/entity'
+import type { MarketHolidaySchema } from '@gyomu/core/schemas/gyomu'
 // beforeEach(() => {
 //   //console.log('beforeEach in baseDBClass', prismaMock, prisma);
 //   mockReset(prismaMock);
 
 //   prismaMock.gyomu_market_holiday.findMany.mockResolvedValue(dummy_holidays);
 // });
-const testId = 'F6AE5F2D-BD14-4C5F-9CC3-3A69EF90DD5B';
+const testId = 'F6AE5F2D-BD14-4C5F-9CC3-3A69EF90DD5B'
 
 export const GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
   marketHoliday: {
@@ -18,8 +18,8 @@ export const GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
       Effect.succeed(dummy_holidays.filter((h) => h.market === market)),
     findDistinctMarkets: () => Effect.succeed(['JP', 'US']),
   },
-} as any);
-const dummy_holidays: (typeof MarketHolidaySchema.types._select)[] = [
+} as any)
+const dummy_holidays: Array<typeof MarketHolidaySchema.types._select> = [
   {
     id: testId,
     year: 1984,
@@ -116,4 +116,4 @@ const dummy_holidays: (typeof MarketHolidaySchema.types._select)[] = [
     market: 'JP',
     holiday: LocalDate.make('1984-11-23'),
   },
-];
+]

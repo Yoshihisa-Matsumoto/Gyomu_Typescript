@@ -1,17 +1,18 @@
-import * as tediuous from 'tedious';
-import * as tarn from 'tarn';
-import { Kysely, MssqlDialect } from 'kysely';
-import { DB } from '../generated/db.js';
-import { Effect, Layer, Scope, Context } from 'effect';
-import { fromSync } from '../../../core/dist/effect/index.js';
-import { DBError } from '@gyomu/core';
+import * as tediuous from 'tedious'
+import * as tarn from 'tarn'
+import { Kysely, MssqlDialect } from 'kysely'
+import { Context, Effect, Layer } from 'effect'
+import { DBError } from '@gyomu/core'
+import { fromSync } from '../../../core/dist/effect/index.js'
+import type { DB } from '../generated/db.js'
+import type { Scope } from 'effect'
 
 const makeMssql = (config: {
-  server: string;
-  port: number;
-  database: string;
-  user: string;
-  password: string;
+  server: string
+  port: number
+  database: string
+  user: string
+  password: string
 }) => {
   // const pool = new ConnectionPool({
   //   server: config.server,
@@ -57,27 +58,27 @@ const makeMssql = (config: {
           }),
       },
     }),
-  });
-};
+  })
+}
 export class MssqlService extends Context.Service<
   MssqlService,
   {
     make: (config: {
-      server: string;
-      port: number;
-      database: string;
-      user: string;
-      password: string;
-    }) => Effect.Effect<Kysely<DB>, DBError, Scope.Scope>;
+      server: string
+      port: number
+      database: string
+      user: string
+      password: string
+    }) => Effect.Effect<Kysely<DB>, DBError, Scope.Scope>
   }
 >()('MssqlService', {
   make: Effect.succeed({
     make: (config: {
-      server: string;
-      port: number;
-      database: string;
-      user: string;
-      password: string;
+      server: string
+      port: number
+      database: string
+      user: string
+      password: string
     }) =>
       Effect.acquireRelease(
         fromSync(DBError, () => ({
@@ -87,13 +88,13 @@ export class MssqlService extends Context.Service<
         }))(() => makeMssql(config)),
         (db) => {
           return Effect.promise(async () => {
-            await db.destroy();
-            await new Promise((r) => setTimeout(r, 10));
-            console.log('DB Close');
-          });
+            await db.destroy()
+            await new Promise((r) => setTimeout(r, 10))
+            console.log('DB Close')
+          })
         },
       ),
   }),
 }) {
-  static readonly live = Layer.effect(this, this.make);
+  static readonly live = Layer.effect(this, this.make)
 }

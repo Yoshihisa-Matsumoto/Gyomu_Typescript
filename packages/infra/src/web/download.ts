@@ -1,16 +1,10 @@
-import { Effect, FileSystem } from 'effect';
-import { Stream } from 'effect';
-import { NetworkError, IOError } from '@gyomu/core';
-import path from 'path';
-import { networkStream } from '../network/index.js';
-import { fetchEffect } from './client.js';
-import {
-  ensureFileNotExist,
-  getFileStat,
-  pathExists,
-  writeStreamToFile,
-} from '../fs/fs-utils.js';
-import { withOptional } from '@gyomu/core';
+import path from 'node:path'
+import { Effect, Stream } from 'effect'
+import { IOError, NetworkError, withOptional } from '@gyomu/core'
+import { networkStream } from '../network/index.js'
+import { ensureFileNotExist, getFileStat, pathExists, writeStreamToFile } from '../fs/fs-utils.js'
+import { fetchEffect } from './client.js'
+import type { FileSystem } from 'effect'
 
 export const webDownloadStream = (
   url: string,
@@ -18,10 +12,7 @@ export const webDownloadStream = (
 ): Stream.Stream<Uint8Array, NetworkError> =>
   Stream.unwrap(
     Effect.gen(function* () {
-      const response = yield* fetchEffect(
-        url,
-        withOptional({ headers }) as RequestInit | undefined,
-      );
+      const response = yield* fetchEffect(url, withOptional({ headers }))
 
       if (!response.body) {
         return yield* Effect.fail(
@@ -32,12 +23,12 @@ export const webDownloadStream = (
             cause: undefined,
             operation: 'download',
           }),
-        );
+        )
       }
 
-      return networkStream(() => response.body!, `Stream error `);
+      return networkStream(() => response.body!, `Stream error `)
     }),
-  );
+  )
 export const webDownload = (
   url: string,
   destinationFilename: string,
@@ -59,7 +50,7 @@ export const webDownload = (
           operation: 'write',
           cause: undefined,
         }),
-      );
+      )
     }
 
     if (
@@ -74,7 +65,7 @@ export const webDownload = (
           layer: 'filesystem',
           operation: 'write',
         }),
-      );
+      )
     }
 
     if (!path.extname(destinationFilename)) {
@@ -86,13 +77,13 @@ export const webDownload = (
           layer: 'filesystem',
           operation: 'write',
         }),
-      );
+      )
     }
 
     // =====================
     // file prepare
     // =====================
-    yield* ensureFileNotExist(destinationFilename);
+    yield* ensureFileNotExist(destinationFilename)
 
     // const writer = yield* fromSync(
     //   IOError,
@@ -102,7 +93,7 @@ export const webDownload = (
     // =====================
     // download stream
     // =====================
-    const stream = webDownloadStream(url, headers);
+    const stream = webDownloadStream(url, headers)
 
     // // =====================
     // // write file
@@ -123,6 +114,6 @@ export const webDownload = (
     //     )(() => writer.write(chunk)),
     //   ),
     // );
-    yield* writeStreamToFile(destinationFilename)(stream);
-    return true;
-  });
+    yield* writeStreamToFile(destinationFilename)(stream)
+    return true
+  })

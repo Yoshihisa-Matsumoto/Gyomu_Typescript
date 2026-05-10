@@ -1,26 +1,25 @@
-import * as tar from 'tar-stream';
-import { create } from 'tar';
-import { Effect, Stream, Queue, Option } from 'effect';
-import { NodeStream } from '@effect/platform-node';
-import { IOError } from '@gyomu/core';
-import { wrapInfraError } from '@gyomu/core';
-import type { Readable } from 'node:stream';
-import { runSync } from 'effect/Effect';
+import path from 'node:path'
+import * as tar from 'tar-stream'
+import { create } from 'tar'
+import { Effect, Option, Queue, Stream } from 'effect'
+import { NodeStream } from '@effect/platform-node'
+import { IOError, wrapInfraError } from '@gyomu/core'
+import { runSync } from 'effect/Effect'
+import { makeDirectory, writeStreamToFile } from '../../../fs/fs-utils.js'
+import type { Readable } from 'node:stream'
 
-import { FileSystem } from 'effect';
-import { FileTransportInfo } from '@gyomu/core/gyomu/file';
-import { ArchiveEntryItem } from '../../common.js';
-import path from 'path';
-import { makeDirectory, writeStreamToFile } from '../../../fs/fs-utils.js';
+import type { FileSystem } from 'effect'
+import type { FileTransportInfo } from '@gyomu/core/gyomu/file'
+import type { ArchiveEntryItem } from '../../common.js'
 
-type TarEntryItem = Extract<ArchiveEntryItem, { _tag: 'tar' }>;
+type TarEntryItem = Extract<ArchiveEntryItem, { _tag: 'tar' }>
 /**
  * 指定されたディレクトリの内容を tar (または tar.gz) アーカイブとして作成する
  */
 export const createTar = <R = never>(options: {
-  tarFileName: string;
-  cwd: string;
-  gzip?: boolean;
+  tarFileName: string
+  cwd: string
+  gzip?: boolean
 }): Effect.Effect<boolean, IOError, R> =>
   Effect.tryPromise({
     try: () =>
@@ -41,7 +40,7 @@ export const createTar = <R = never>(options: {
   }).pipe(
     // 戻り値を boolean (true) に合わせる場合
     Effect.as(true),
-  );
+  )
 
 // type TarEntry = {
 //   //readonly header: tar.Headers;
@@ -56,34 +55,34 @@ export const untar = <R = never>(
   Stream.scoped(
     Stream.unwrap(
       Effect.gen(function* () {
-        const extract = tar.extract();
+        const extract = tar.extract()
 
         // 1. Source を Extract に流し込む (Scoped Fiber)
-        const nodeReadable = yield* NodeStream.toReadable(source);
+        const nodeReadable = yield* NodeStream.toReadable(source)
         yield* Effect.promise(
           () =>
             new Promise<void>((resolve, reject) => {
-              nodeReadable.pipe(extract);
-              extract.on('finish', resolve);
-              extract.on('error', reject);
+              nodeReadable.pipe(extract)
+              extract.on('finish', resolve)
+              extract.on('error', reject)
             }),
         ).pipe(
           Effect.catch((e) => Effect.logError('Tar Pipeline Error', e)),
           Effect.forkScoped,
-        );
+        )
 
         // 2. Stream.callback による実装
         // emit は Queue<Take<TarEntry, AppError>> のような挙動をする Queue です
         return Stream.callback<TarEntryItem, IOError, R>((queue) => {
           extract.on('entry', (header, stream, next) => {
             // next() を確実に呼ぶためのフラグ
-            let nextCalled = false;
+            let nextCalled = false
             const safeNext = () => {
               if (!nextCalled) {
-                nextCalled = true;
-                next();
+                nextCalled = true
+                next()
               }
-            };
+            }
             // Stream.acquireRelease の代わり: Stream.scoped + Effect.acquireRelease
             const content = Stream.unwrap(
               Effect.acquireRelease(Effect.succeed(stream as Readable), () =>
@@ -102,10 +101,10 @@ export const untar = <R = never>(
                   }),
                 ),
               ),
-            );
+            )
 
             // @effect-diagnostics-next-line floatingEffect:off
-            content.pipe(Stream.ensuring(Effect.sync(() => safeNext())));
+            content.pipe(Stream.ensuring(Effect.sync(() => safeNext())))
 
             // Queue.offer を使ってデータを流す (single の代わり)
             // Stream.callback の emit は Effect を返す関数ではなく直接 Queue.offer 的な挙動
@@ -123,13 +122,13 @@ export const untar = <R = never>(
                     path: header.name,
                     isDirectory: true,
                     openStream: () => content,
-                  };
-            runSync(Queue.offer(queue, entry));
-          });
+                  }
+            runSync(Queue.offer(queue, entry))
+          })
 
           extract.on('finish', () => {
-            runSync(Queue.end(queue)); // エンド信号 (None/undefined で終了)
-          });
+            runSync(Queue.end(queue)) // エンド信号 (None/undefined で終了)
+          })
 
           extract.on('error', (err) => {
             runSync(
@@ -141,19 +140,17 @@ export const untar = <R = never>(
                   operation: 'read' as const,
                 })),
               ),
-            );
-          });
-          return Effect.void;
-        });
+            )
+          })
+          return Effect.void
+        })
       }),
     ),
-  );
+  )
 
 export const existsInTar =
   (entryName: string) =>
-  <R = never>(
-    self: Stream.Stream<Uint8Array, IOError, R>,
-  ): Effect.Effect<boolean, IOError, R> =>
+  <R = never>(self: Stream.Stream<Uint8Array, IOError, R>): Effect.Effect<boolean, IOError, R> =>
     self.pipe(
       untar,
       filterEntries((h) => h.path === massageEntryPath(entryName)),
@@ -163,42 +160,35 @@ export const existsInTar =
           // 見つからなかった場合
           onNone: () => Effect.succeed(false),
           // 見つかった場合、そのエントリの content を空読みしてストリームを正常終了させる
-          onSome: (entry) =>
-            Stream.runDrain(entry.openStream()).pipe(Effect.as(true)),
+          onSome: (entry) => Stream.runDrain(entry.openStream()).pipe(Effect.as(true)),
         }),
       ),
-    );
+    )
 
 /**
  * TarEntry の content をすべて読み込み、文字列として返す Effect を生成する
  */
-export const readTextEntry = <R = never>(
-  entry: TarEntryItem,
-): Effect.Effect<string, IOError, R> =>
-  readEntry(entry).pipe(
-    Effect.map((chunks) => Buffer.concat(chunks).toString('utf8')),
-  );
+export const readTextEntry = <R = never>(entry: TarEntryItem): Effect.Effect<string, IOError, R> =>
+  readEntry(entry).pipe(Effect.map((chunks) => Buffer.concat(chunks).toString('utf8')))
 export const readEntry = <R = never>(
   entry: TarEntryItem,
-): Effect.Effect<Uint8Array<ArrayBufferLike>[], IOError, R> =>
-  Stream.runCollect(entry.openStream());
+): Effect.Effect<Array<Uint8Array<ArrayBufferLike>>, IOError, R> =>
+  Stream.runCollect(entry.openStream())
 
 export const readEntryStream = <R = never>(
   entry: TarEntryItem,
-): Stream.Stream<Uint8Array<ArrayBufferLike>, IOError, R> => entry.openStream();
+): Stream.Stream<Uint8Array<ArrayBufferLike>, IOError, R> => entry.openStream()
 
 const massageEntryPath = (fileName: string) => {
-  return fileName ? fileName.replace(/\\/g, '/') : fileName;
-};
+  return fileName ? fileName.replace(/\\/g, '/') : fileName
+}
 /**
  * ライブラリ利用者が楽をするためのヘルパー
  * 条件に合わないエントリを自動で Drain し、デッドロックを防ぐ
  */
 export const filterEntries =
   <R = never>(predicate: (entry: TarEntryItem) => boolean) =>
-  (
-    self: Stream.Stream<TarEntryItem, IOError, R>,
-  ): Stream.Stream<TarEntryItem, IOError, R> =>
+  (self: Stream.Stream<TarEntryItem, IOError, R>): Stream.Stream<TarEntryItem, IOError, R> =>
     self.pipe(
       Stream.mapEffect((entry) =>
         predicate(entry)
@@ -211,7 +201,7 @@ export const filterEntries =
           onSome: (v) => Stream.make(v),
         }),
       ),
-    );
+    )
 /**
  * 特定のファイルを 1 つだけ取得し、見つからなければエラーにする
  */
@@ -239,13 +229,13 @@ export const requireEntry =
           onSome: (entry) => Effect.succeed(entry),
         }),
       ),
-    );
+    )
 export const extractTarAll =
   (destinationDirectory: string) =>
   <R = never>(
     self: Stream.Stream<Uint8Array<ArrayBufferLike>, IOError, R>,
   ): Effect.Effect<void, IOError, FileSystem.FileSystem | R> =>
-    extractTarToDirectory({ targetDir: destinationDirectory })(self);
+    extractTarToDirectory({ targetDir: destinationDirectory })(self)
 
 /**
  * tar ストリームを指定したディレクトリに展開する。
@@ -258,30 +248,27 @@ export const extractTarToDirectory =
     self: Stream.Stream<Uint8Array<ArrayBufferLike>, IOError, R>,
   ): Effect.Effect<void, IOError, FileSystem.FileSystem | R> =>
     Effect.gen(function* () {
-      const { targetDir, stripPath = '' } = options;
+      const { targetDir, stripPath = '' } = options
 
       return yield* self.pipe(
         untar,
         // 1. stripPath でフィルタリング
-        filterEntries((entry) =>
-          entry.path.startsWith(massageEntryPath(stripPath)),
-        ),
+        filterEntries((entry) => entry.path.startsWith(massageEntryPath(stripPath))),
         // 2. 各エントリをファイルとして書き出す
         Stream.runForEach((entry) =>
           Effect.gen(function* () {
             // 相対パスの計算 (stripPath 分を削る)
             const relativePath = stripPath
               ? entry.path.slice(stripPath.length).replace(/^[/\\]+/, '')
-              : entry.path;
+              : entry.path
 
-            if (!relativePath)
-              return yield* Stream.runDrain(entry.openStream()); // プレフィックス自体はスキップ
+            if (!relativePath) return yield* Stream.runDrain(entry.openStream()) // プレフィックス自体はスキップ
 
-            const fullPath = path.join(targetDir, relativePath);
+            const fullPath = path.join(targetDir, relativePath)
 
             // ディレクトリの場合は作成して終了
             if (entry.isDirectory) {
-              yield* makeDirectory(fullPath);
+              yield* makeDirectory(fullPath)
               return yield* Stream.runDrain(entry.openStream()).pipe(
                 Effect.mapError((e) =>
                   wrapInfraError(IOError, e, () => ({
@@ -291,15 +278,15 @@ export const extractTarToDirectory =
                     target: fullPath,
                   })),
                 ),
-              );
+              )
             }
 
             // ファイルの場合は親ディレクトリを作ってから書き込み
-            yield* makeDirectory(path.dirname(fullPath));
-            yield* Effect.logDebug(`Untar ${fullPath}`);
+            yield* makeDirectory(path.dirname(fullPath))
+            yield* Effect.logDebug(`Untar ${fullPath}`)
             // entry.content (Stream) をファイルに流し込む
             // sinkUnique などを使って効率的に書き込む
-            return yield* writeStreamToFile(fullPath)(entry.openStream());
+            return yield* writeStreamToFile(fullPath)(entry.openStream())
           }),
         ),
         Effect.mapError((e) =>
@@ -310,8 +297,8 @@ export const extractTarToDirectory =
             target: targetDir,
           })),
         ),
-      );
-    });
+      )
+    })
 
 export const extractTarSingleFile =
   (sourceEntryFullName: string, destinationFolderName: string) =>
@@ -323,7 +310,7 @@ export const extractTarSingleFile =
         untar,
         // 1. stripPath でフィルタリング
         requireEntry(sourceEntryFullName),
-      );
+      )
       if (entry.isDirectory) {
         return yield* Effect.fail(
           new IOError({
@@ -333,20 +320,20 @@ export const extractTarSingleFile =
             operation: 'read' as const,
             target: entry.path,
           }),
-        );
+        )
       }
       // 相対パスの計算 (stripPath 分を削る)
-      const fileName = path.basename(sourceEntryFullName);
+      const fileName = path.basename(sourceEntryFullName)
 
-      const fullPath = path.join(destinationFolderName, fileName);
+      const fullPath = path.join(destinationFolderName, fileName)
 
       // ファイルの場合は親ディレクトリを作ってから書き込み
-      yield* makeDirectory(path.dirname(fullPath));
-      yield* Effect.logDebug(`Untar ${fullPath}`);
+      yield* makeDirectory(path.dirname(fullPath))
+      yield* Effect.logDebug(`Untar ${fullPath}`)
       // entry.stream (Stream) をファイルに流し込む
       // sinkUnique などを使って効率的に書き込む
-      return yield* writeStreamToFile(fullPath)(entry.openStream());
-    });
+      return yield* writeStreamToFile(fullPath)(entry.openStream())
+    })
 
 export const extractTar =
   <R = never>(transferInformation: FileTransportInfo) =>
@@ -354,10 +341,7 @@ export const extractTar =
     self: Stream.Stream<Uint8Array<ArrayBufferLike>, IOError, R>,
   ): Effect.Effect<void, IOError, FileSystem.FileSystem | R> =>
     Effect.gen(function* () {
-      if (
-        transferInformation.sourceFileName !==
-        transferInformation.destinationFileName
-      )
+      if (transferInformation.sourceFileName !== transferInformation.destinationFileName)
         return yield* Effect.fail(
           new IOError({
             message: 'Destination filename must be same as original filename',
@@ -366,16 +350,16 @@ export const extractTar =
             operation: 'read' as const,
             target: `source:${transferInformation.sourceFileName}, destination:${transferInformation.destinationFileName}`,
           }),
-        );
+        )
       if (!transferInformation.isSourceDirectory) {
         return yield* extractTarSingleFile(
           transferInformation.sourceFullName,
           transferInformation.destinationPath,
-        )(self);
+        )(self)
       } else {
         return yield* extractTarToDirectory({
           targetDir: transferInformation.destinationFullName,
           stripPath: transferInformation.sourceFullName,
-        })(self);
+        })(self)
       }
-    });
+    })

@@ -9,7 +9,6 @@
     { "path": "apps/cli" },
     { "path": "packages/ai" },
     { "path": "packages/core" },
-    { "path": "packages/shared" },
     { "path": "packages/infra" }
   ]
 }

@@ -1,8 +1,4 @@
-import {
-  LocalDate,
-  UIAnnotationByWidget,
-  UIAnnotationMap,
-} from '@gyomu/core/entity';
+import type { LocalDate, UIAnnotationByWidget, UIAnnotationMap } from '@gyomu/core/entity'
 
 // type BaseFieldProps<T> = {
 //   value: T | undefined;
@@ -37,21 +33,21 @@ import {
 // };
 
 type WidgetValueMap = {
-  text: string;
-  textarea: string;
-  number: number;
-  date: LocalDate;
-  select: string;
-  hidden: string;
-};
+  text: string
+  textarea: string
+  number: number
+  date: LocalDate
+  select: string
+  hidden: string
+}
 
-type WidgetValue<K extends keyof WidgetValueMap> = WidgetValueMap[K];
+type WidgetValue<K extends keyof WidgetValueMap> = WidgetValueMap[K]
 
 export type RendererMap = {
   [K in keyof UIAnnotationMap]: React.ComponentType<{
-    meta: UIAnnotationByWidget<K>;
-    value: WidgetValue<K>;
-    onChange?: (value: WidgetValue<K> | undefined) => void;
-    onBlur?: (value: WidgetValue<K> | undefined) => void;
-  }>;
-};
+    meta: UIAnnotationByWidget<K>
+    value: WidgetValue<K>
+    onChange?: (value: WidgetValue<K> | undefined) => void
+    onBlur?: (value: WidgetValue<K> | undefined) => void
+  }>
+}

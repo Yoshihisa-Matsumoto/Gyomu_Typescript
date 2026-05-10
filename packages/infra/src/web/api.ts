@@ -1,34 +1,33 @@
-import { pipe } from 'effect';
-import { Effect } from 'effect';
-import { isRetryableNetworkError, NetworkError } from '@gyomu/core';
-import { networkStream } from '../network/index.js';
-import { fetchEffect, fetchStream } from './client.js';
-import { textEffect, parseXmlEffect } from './xml.js';
-import { FetchResult, jsonEffect } from './json.js';
-import { ValueError } from '@gyomu/core';
+import { Effect, pipe } from 'effect'
+import { NetworkError, ValueError } from '@gyomu/core'
+import { networkStream } from '../network/index.js'
+import { fetchEffect, fetchStream } from './client.js'
+import { parseXmlEffect, textEffect } from './xml.js'
+import { jsonEffect } from './json.js'
+import type { FetchResult } from './json.js'
 
 export function postAndReceiveXml<ResponseType>(
   url: string,
   input: Record<string, string>,
   option?: {
-    headers?: Record<string, string>;
-    isValidData?: (obj: ResponseType) => boolean;
-    extraAttribute?: any;
+    headers?: Record<string, string>
+    isValidData?: (obj: ResponseType) => boolean
+    extraAttribute?: any
   },
 ): Effect.Effect<
   {
-    value: ResponseType;
-    code: number;
-    extraAttribute?: any;
+    value: ResponseType
+    code: number
+    extraAttribute?: any
   },
   NetworkError | ValueError
 > {
   const headers: Record<string, string> = {
     ...(option?.headers ?? {}),
     'Content-Type': 'application/x-www-form-urlencoded',
-  };
+  }
 
-  const body = new URLSearchParams(input).toString();
+  const body = new URLSearchParams(input).toString()
 
   return Effect.gen(function* () {
     // =====================
@@ -38,9 +37,9 @@ export function postAndReceiveXml<ResponseType>(
       method: 'POST',
       headers,
       body,
-    });
+    })
 
-    const statusCode = response.status;
+    const statusCode = response.status
 
     if (!response.body) {
       return yield* Effect.fail(
@@ -50,7 +49,7 @@ export function postAndReceiveXml<ResponseType>(
           operation: 'request',
           retryable: false,
         }),
-      );
+      )
     }
 
     // =====================
@@ -59,9 +58,9 @@ export function postAndReceiveXml<ResponseType>(
     const text = yield* pipe(
       networkStream(() => response.body!, `Fetching XML from ${url}`),
       textEffect,
-    );
+    )
 
-    const resultData = yield* parseXmlEffect<ResponseType>(text);
+    const resultData = yield* parseXmlEffect<ResponseType>(text)
 
     // =====================
     // validate
@@ -73,15 +72,15 @@ export function postAndReceiveXml<ResponseType>(
           message: 'Invalid Response data validation fail',
           value: resultData,
         }),
-      );
+      )
     }
 
     return {
       value: resultData,
       code: statusCode,
       extraAttribute: option?.extraAttribute,
-    };
-  });
+    }
+  })
 }
 const validate =
   <A>(predicate?: (a: A) => boolean) =>
@@ -96,31 +95,31 @@ const validate =
             value: a,
           }),
       ),
-    );
+    )
 export function fetchJson<RequestType, ResponseType>(
   url: string,
   method: 'GET' | 'POST' | 'DELETE' | 'PATCH',
   input: RequestType,
   option?: {
-    headers?: Record<string, string>;
-    isValidData?: (obj: ResponseType) => boolean;
-    extraAttribute?: any;
+    headers?: Record<string, string>
+    isValidData?: (obj: ResponseType) => boolean
+    extraAttribute?: any
   },
 ): Effect.Effect<FetchResult<ResponseType>, NetworkError | ValueError> {
-  let headers: Record<string, string> = {};
+  let headers: Record<string, string>
   if (!option?.headers) {
-    headers = { 'Content-Type': 'application/json' };
+    headers = { 'Content-Type': 'application/json' }
   } else {
-    headers = option.headers;
-    headers['Content-Type'] = 'application/json';
+    headers = option.headers
+    headers['Content-Type'] = 'application/json'
   }
 
   const stream = fetchStream(
     url,
     input
-      ? { method, headers, body: JSON.stringify(input) }
-      : { method, headers },
-  );
+      ? { method, headers: headers, body: JSON.stringify(input) }
+      : { method, headers: headers },
+  )
   return pipe(
     stream,
     jsonEffect<ResponseType>,
@@ -130,5 +129,5 @@ export function fetchJson<RequestType, ResponseType>(
       code: 200, // ← 後述
       extraAttribute: option?.extraAttribute,
     })),
-  );
+  )
 }

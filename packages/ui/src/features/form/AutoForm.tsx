@@ -1,26 +1,24 @@
 // --- React / 外部ライブラリ ---
-import React, { useEffect } from 'react';
-import { useForm } from '@tanstack/react-form';
+import React, { useEffect } from 'react'
+import { useForm } from '@tanstack/react-form'
 
 // --- Core / Engine ---
 
-import { buildFormMetaFromStructSchema } from '../../core/dsl';
-import {
-  buildDefaultValues,
-  validateWithSchema,
-  validateField,
-} from '../../core/engine';
+import { buildFieldSchemaMap } from '@gyomu/core/entity'
+import { buildFormMetaFromStructSchema } from '../../core/dsl'
+import { buildDefaultValues, validateField, validateWithSchema } from '../../core/engine'
 
 // --- Shared / Core (ドメイン・基盤) ---
-import { buildFieldSchemaMap, Fields } from '@gyomu/core/entity';
 // --- UI (MUI Adapter) ---
-import { MuiFieldLayout, MuiFormLayout } from '../../ui/adapters/mui';
-import { muiRenderer } from '../../ui/renderer';
+import { MuiFieldLayout, MuiFormLayout } from '../../ui/adapters/mui'
+import { muiRenderer } from '../../ui/renderer'
 
 // --- ローカル ---
-import { AutoField } from './AutoField';
-import { AutoFormProps } from './types';
-import { DefaultSubmitButton } from '../../ui/components/form/DefaultSubmitButton';
+import { DefaultSubmitButton } from '../../ui/components/form/DefaultSubmitButton'
+import { AutoField } from './AutoField'
+import type { Schema } from 'effect'
+import type { Fields } from '@gyomu/core/entity'
+import type { AutoFormProps } from './types'
 
 export function AutoForm<TFields extends Fields>({
   schema,
@@ -34,9 +32,10 @@ export function AutoForm<TFields extends Fields>({
   layout: Layout = MuiFormLayout,
   components,
 }: AutoFormProps<TFields>) {
-  const SubmitButton = components?.SubmitButton ?? DefaultSubmitButton;
+  const SubmitButton = components?.SubmitButton ?? DefaultSubmitButton
 
-  const fieldSchemaMap = buildFieldSchemaMap(schema);
+  const fieldSchemaMap: Partial<Record<keyof TFields, Schema.Schema<any>>> =
+    buildFieldSchemaMap(schema)
   const fieldConfigs = React.useMemo(
     () =>
       buildFormMetaFromStructSchema({
@@ -46,27 +45,27 @@ export function AutoForm<TFields extends Fields>({
         ...(ui && { ui: ui }),
       }),
     [schema, uiContext, logger, ui],
-  );
-  console.log('Field Meta', JSON.stringify(fieldConfigs, null, 2));
+  )
+  console.log('Field Meta', JSON.stringify(fieldConfigs, null, 2))
   const form = useForm({
     defaultValues: buildDefaultValues(fieldConfigs, initialValues),
     onSubmit: async ({ value }) => {
-      const result = validateWithSchema(schema, value);
-      if (!result.ok) return;
+      const result = validateWithSchema(schema, value)
+      if (!result.ok) return
 
-      await onSubmit(result.data);
+      await onSubmit(result.data)
     },
-  });
+  })
 
   useEffect(() => {
-    form.validateAllFields('change');
-  }, []);
+    form.validateAllFields('change')
+  }, [])
 
   return (
     <form
       onSubmit={(e) => {
-        e.preventDefault();
-        form.handleSubmit();
+        e.preventDefault()
+        form.handleSubmit()
       }}
     >
       <Layout>
@@ -76,16 +75,16 @@ export function AutoForm<TFields extends Fields>({
             name={field.name}
             validators={{
               onChange: ({ value }) => {
-                const fieldSchema = fieldSchemaMap[field.name];
+                const fieldSchema = fieldSchemaMap[field.name]
                 if (!fieldSchema) {
-                  console.warn(`No schema found for field: ${field.name}`);
-                  return undefined;
+                  console.warn(`No schema found for field: ${field.name}`)
+                  return undefined
                 }
-                const result = validateField(fieldSchema, value);
+                const result = validateField(fieldSchema, value)
                 if (!result.ok) {
-                  return result.errors;
+                  return result.errors
                 }
-                return undefined;
+                return undefined
               },
             }}
           >
@@ -93,7 +92,7 @@ export function AutoForm<TFields extends Fields>({
               const error = fieldApi.state.meta.errors
                 .map((e) => e?.message)
                 .filter((m): m is string => !!m)
-                .join(', ');
+                .join(', ')
               return (
                 <AutoField
                   meta={field}
@@ -104,7 +103,7 @@ export function AutoForm<TFields extends Fields>({
                   onBlur={fieldApi.handleBlur}
                   error={error}
                 />
-              );
+              )
             }}
           </form.Field>
         ))}
@@ -117,31 +116,31 @@ export function AutoForm<TFields extends Fields>({
         })}
       >
         {(rawState) => {
-          console.log('Raw Form State:', rawState);
-          const state = normalizeFormState(rawState);
-          console.log('Form State:', state);
+          console.log('Raw Form State:', rawState)
+          const state = normalizeFormState(rawState)
+          console.log('Form State:', state)
           return (
             <SubmitButton
               disabled={!state.canSubmit || state.isSubmitting}
               isSubmitting={state.isSubmitting}
             />
-          );
+          )
         }}
       </form.Subscribe>
     </form>
-  );
+  )
 }
 
 type NormalizedFormState = {
-  canSubmit: boolean;
-  isSubmitting: boolean;
-};
+  canSubmit: boolean
+  isSubmitting: boolean
+}
 function normalizeFormState(state: {
-  canSubmit?: boolean;
-  isSubmitting?: boolean;
+  canSubmit?: boolean
+  isSubmitting?: boolean
 }): NormalizedFormState {
   return {
     canSubmit: !!state.canSubmit,
     isSubmitting: !!state.isSubmitting,
-  };
+  }
 }

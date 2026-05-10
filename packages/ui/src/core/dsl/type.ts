@@ -1,6 +1,7 @@
-import { UIAnnotation } from '@gyomu/core/entity';
+import type { UIAnnotation } from '@gyomu/core/entity'
+
 export type FormFieldMeta = UIAnnotation & {
-  name: string;
-  options: Record<string, any>;
-  required?: boolean;
-};
+  name: string
+  options: Record<string, any>
+  required?: boolean
+}

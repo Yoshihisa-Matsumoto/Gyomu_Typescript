@@ -1,14 +1,11 @@
-import { Stream, Effect, Fiber, Queue } from 'effect';
-import { Duplex, Readable, Transform } from 'node:stream';
-import { IOError } from '@gyomu/core';
-import { wrapInfraError } from '@gyomu/core';
-import { runSync } from 'effect/Effect';
-//import { NodeStream } from '@effect/platform-node';
+import { Effect, Fiber, Queue, Stream } from 'effect'
+import { IOError, wrapInfraError } from '@gyomu/core'
+import { runSync } from 'effect/Effect'
+import type { Duplex, Readable, Transform } from 'node:stream'
+// import { NodeStream } from '@effect/platform-node';
 
 export const acquireNodeStream = <T extends Duplex>(create: () => T) =>
-  Effect.acquireRelease(Effect.sync(create), (stream) =>
-    Effect.sync(() => stream.destroy()),
-  );
+  Effect.acquireRelease(Effect.sync(create), (stream) => Effect.sync(() => stream.destroy()))
 
 export const throughNodeStream =
   <I, O>(duplex: Duplex) =>
@@ -19,24 +16,24 @@ export const throughNodeStream =
           Effect.promise<void>(
             () =>
               new Promise((resolve) => {
-                const ok = duplex.write(chunk as any);
+                const ok = duplex.write(chunk as any)
 
-                if (ok) resolve();
+                if (ok) resolve()
                 else {
-                  duplex.once('drain', resolve);
+                  duplex.once('drain', resolve)
                 }
               }),
           ),
         ).pipe(
           Effect.tap(() =>
             Effect.sync(() => {
-              duplex.end();
+              duplex.end()
             }),
           ),
           Effect.forkChild,
-        );
+        )
 
-        const readable = duplex as AsyncIterable<O>;
+        const readable = duplex as AsyncIterable<O>
 
         return Stream.fromAsyncIterable<O, IOError>(readable, (e) =>
           wrapInfraError(IOError, e, () => ({
@@ -47,15 +44,15 @@ export const throughNodeStream =
         ).pipe(
           Stream.ensuring(
             Effect.gen(function* () {
-              yield* Fiber.interrupt(writer);
+              yield* Fiber.interrupt(writer)
               if (!duplex.destroyed) {
-                duplex.destroy();
+                duplex.destroy()
               }
             }),
           ),
-        );
+        )
       }),
-    );
+    )
 
 // const HIGH_WATER_MARK = 100;
 // const LOW_WATER_MARK = 50;
@@ -152,14 +149,10 @@ export const throughNodeStream =
  */
 export const throughNodeStreamScoped =
   <I, O>(create: () => Transform) =>
-  <R = never>(
-    input: Stream.Stream<I, IOError, R>,
-  ): Stream.Stream<O, IOError, R> =>
+  <R = never>(input: Stream.Stream<I, IOError, R>): Stream.Stream<O, IOError, R> =>
     Stream.unwrap(
-      Effect.map(acquireNodeStream(create), (t) =>
-        throughNodeStream<I, O>(t)<IOError, R>(input),
-      ),
-    );
+      Effect.map(acquireNodeStream(create), (t) => throughNodeStream<I, O>(t)<IOError, R>(input)),
+    )
 // export const throughNodeStreamScoped_original =
 //   <I, O, E extends AppError = never, R = never>(create: () => Transform) =>
 //   (input: Stream.Stream<I, E, R>) =>
@@ -169,7 +162,7 @@ export const throughNodeStreamScoped =
 //       ),
 //     );
 export const fromReadable = (readable: Readable) => {
-  //readable.resume();
+  // readable.resume();
   return Stream.fromAsyncIterable(readable, (e) =>
     wrapInfraError(IOError, e, () => ({
       message: 'node stream error',
@@ -181,12 +174,12 @@ export const fromReadable = (readable: Readable) => {
     Stream.ensuring(
       Effect.sync(() => {
         if (!readable.destroyed) {
-          readable.destroy();
+          readable.destroy()
         }
       }),
     ),
-  );
-};
+  )
+}
 // export const fromReadable = (readable: Readable) =>
 //   NodeStream.fromReadable({
 //     evaluate: () => readable,
@@ -199,29 +192,26 @@ export const fromReadable = (readable: Readable) => {
  * @param options
  * @returns
  */
-export const fromReadableControlled = (
-  readable: Readable,
-  options?: { chunkSize?: number },
-) => {
-  const chunkSize = options?.chunkSize ?? 64 * 1024; // デフォルト64KB
+export const fromReadableControlled = (readable: Readable, options?: { chunkSize?: number }) => {
+  const chunkSize = options?.chunkSize ?? 64 * 1024 // デフォルト64KB
 
   return Stream.callback<Uint8Array, IOError>((queue) =>
     Effect.acquireRelease(
       Effect.sync(() => {
-        readable.pause(); // 最初は読み込みを止めておく
+        readable.pause() // 最初は読み込みを止めておく
 
         const onReadable = () => {
-          let chunk;
+          let chunk
           while ((chunk = readable.read(chunkSize)) !== null) {
-            runSync(Queue.offer(queue, chunk));
+            runSync(Queue.offer(queue, chunk))
           }
-        };
+        }
         // const onData = (chunk: Uint8Array) => {
         //   runSync(Queue.offer(queue, chunk));
         // };
         const onEnd = () => {
-          runSync(Queue.end(queue));
-        };
+          runSync(Queue.end(queue))
+        }
         const onError = (err: unknown) => {
           runSync(
             Queue.fail(
@@ -232,31 +222,29 @@ export const fromReadableControlled = (
                 operation: 'read' as const,
               })),
             ),
-          );
-        };
+          )
+        }
 
-        readable.on('readable', onReadable);
-        readable.on('end', onEnd);
-        readable.on('error', onError);
+        readable.on('readable', onReadable)
+        readable.on('end', onEnd)
+        readable.on('error', onError)
 
-        return { onReadable, onEnd, onError };
+        return { onReadable, onEnd, onError }
       }),
       ({ onReadable, onEnd, onError }) =>
         Effect.sync(() => {
-          readable.off('readable', onReadable);
-          readable.off('end', onEnd);
-          readable.off('error', onError);
+          readable.off('readable', onReadable)
+          readable.off('end', onEnd)
+          readable.off('error', onError)
 
           if (!readable.destroyed) {
-            readable.destroy();
+            readable.destroy()
           }
         }),
     ),
-  );
-};
-export const fromNodeCallback = <A>(
-  f: (cb: (err: Error | null, result?: A) => void) => void,
-) =>
+  )
+}
+export const fromNodeCallback = <A>(f: (cb: (err: Error | null, result?: A) => void) => void) =>
   Effect.callback<A, IOError>((resume) => {
     f((err, result) => {
       if (err || result == null) {
@@ -269,9 +257,9 @@ export const fromNodeCallback = <A>(
               cause: err,
             }),
           ),
-        );
+        )
       } else {
-        resume(Effect.succeed(result));
+        resume(Effect.succeed(result))
       }
-    });
-  });
+    })
+  })

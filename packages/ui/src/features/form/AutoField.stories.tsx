@@ -1,17 +1,17 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { AutoField } from './AutoField';
-import React from 'react';
-import { MuiFieldLayout } from '../../ui/adapters/mui';
-import { muiRenderer } from '../../ui/renderer';
+import React from 'react'
+import { MuiFieldLayout } from '../../ui/adapters/mui'
+import { muiRenderer } from '../../ui/renderer'
+import { AutoField } from './AutoField'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 
 const meta: Meta<typeof AutoField> = {
   title: 'AutoForm/AutoField',
   component: AutoField,
-};
+}
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof AutoField>;
+type Story = StoryObj<typeof AutoField>
 
 export const Text: Story = {
   args: {
@@ -25,7 +25,7 @@ export const Text: Story = {
     renderer: muiRenderer,
     layout: MuiFieldLayout,
   },
-};
+}
 
 export const Number: Story = {
   args: {
@@ -37,7 +37,7 @@ export const Number: Story = {
     },
     value: 20,
   },
-};
+}
 
 export const Email: Story = {
   args: {
@@ -50,7 +50,7 @@ export const Email: Story = {
     },
     value: 'test@example.com',
   },
-};
+}
 
 export const Textarea: Story = {
   args: {
@@ -62,7 +62,7 @@ export const Textarea: Story = {
     },
     value: 'long text...',
   },
-};
+}
 
 export const Select: Story = {
   args: {
@@ -78,7 +78,7 @@ export const Select: Story = {
     },
     value: 'option1',
   },
-};
+}
 
 export const WithError: Story = {
   args: {
@@ -91,22 +91,22 @@ export const WithError: Story = {
     value: '',
     error: '必須です',
   },
-};
+}
 
 export const Interactive: Story = {
   render: (args) => {
-    const [value, setValue] = React.useState(args.value);
+    const [value, setValue] = React.useState(args.value)
 
     return (
       <AutoField
         {...args}
         value={value}
         onChange={(v: any) => {
-          setValue(v);
-          args.onChange?.(v);
+          setValue(v)
+          args.onChange?.(v)
         }}
       />
-    );
+    )
   },
   args: {
     meta: {
@@ -117,7 +117,7 @@ export const Interactive: Story = {
     },
     value: 'edit me',
   },
-};
+}
 
 export const AllFields: Story = {
   render: () => (
@@ -176,4 +176,4 @@ export const AllFields: Story = {
       />
     </div>
   ),
-};
+}

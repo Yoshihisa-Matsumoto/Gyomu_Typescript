@@ -1,19 +1,19 @@
-export type SupportEncoding = 'shiftjis' | 'utf8';
+export type SupportEncoding = 'shiftjis' | 'utf8'
 
 export const string2Base64String = (plainString: string): string => {
-  return buffer2Base64String(Buffer.from(plainString));
-};
+  return buffer2Base64String(Buffer.from(plainString))
+}
 export const buffer2Base64String = (buffer: Buffer): string => {
-  return buffer.toString('base64');
-};
+  return buffer.toString('base64')
+}
 
 export const base64String2String = (encodedString: string): string => {
-  return base64String2Buffer(encodedString).toString();
-};
+  return base64String2Buffer(encodedString).toString()
+}
 
 export const base64String2Buffer = (encodedString: string): Buffer => {
-  return Buffer.from(encodedString, 'base64');
-};
+  return Buffer.from(encodedString, 'base64')
+}
 
 // export const base64String2ArrayBuffer = (
 //   encodedString: string

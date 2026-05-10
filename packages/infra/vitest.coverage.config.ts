@@ -1,10 +1,8 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vitest/config'
+
 export default defineConfig({
   test: {
-    include: [
-      'src/**/__sit__/**/*.test.{ts,tsx,js}',
-      'src/**/__tests__/**/*.test.{ts,tsx,js}',
-    ],
+    include: ['src/**/__sit__/**/*.test.{ts,tsx,js}', 'src/**/__tests__/**/*.test.{ts,tsx,js}'],
     environment: 'node',
     globals: true,
     clearMocks: true,
@@ -17,4 +15,4 @@ export default defineConfig({
     },
     setupFiles: ['./test/setup.ts'],
   },
-});
+})

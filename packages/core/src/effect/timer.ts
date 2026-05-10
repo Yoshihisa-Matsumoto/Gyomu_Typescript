@@ -1,5 +1,5 @@
-import { Duration, Effect } from 'effect';
-import { TimeoutError } from '../error/TimeoutError.js';
+import { Duration, Effect } from 'effect'
+import { TimeoutError } from '../error/TimeoutError.js'
 /**
  *
  * @param pollingActionName
@@ -12,12 +12,12 @@ export const polling = <R = never>(
   pollingActionName: string,
   timeoutSeconds: number,
   intervalSeconds: number,
-  timerFunc: (...args: any[]) => Effect.Effect<boolean, unknown, R>,
-  ...args: any[]
+  timerFunc: (...args: Array<any>) => Effect.Effect<boolean, unknown, R>,
+  ...args: Array<any>
 ): Effect.Effect<boolean, TimeoutError, R> =>
   Effect.gen(function* () {
-    const start = Date.now();
-    const timeoutTime = start + timeoutSeconds * 1000;
+    const start = Date.now()
+    const timeoutTime = start + timeoutSeconds * 1000
 
     const poll = (): Effect.Effect<boolean, TimeoutError, R> =>
       Effect.gen(function* () {
@@ -32,10 +32,10 @@ export const polling = <R = never>(
                 cause: e,
               }),
           ),
-        );
+        )
 
         if (result) {
-          return true;
+          return true
         }
 
         if (Date.now() > timeoutTime) {
@@ -49,17 +49,17 @@ export const polling = <R = never>(
           //     cause: undefined,
           //   }),
           // );
-          return false;
+          return false
         }
 
-        yield* Effect.sleep(Duration.seconds(intervalSeconds));
+        yield* Effect.sleep(Duration.seconds(intervalSeconds))
 
-        return yield* poll();
-      });
+        return yield* poll()
+      })
 
-    return yield* poll();
-  });
+    return yield* poll()
+  })
 
 export const sleep = async (second: number) => {
-  await new Promise((resolve) => setTimeout(resolve, second * 1000));
-};
+  await new Promise((resolve) => setTimeout(resolve, second * 1000))
+}

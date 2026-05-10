@@ -1,8 +1,8 @@
-import { defineConfig } from 'vitest/config';
-import dotenv from 'dotenv';
+import { defineConfig } from 'vitest/config'
+import dotenv from 'dotenv'
 
-dotenv.config({ path: '.env' });
-//console.log('Env', process.env);
+dotenv.config({ path: '.env' })
+// console.log('Env', process.env);
 export default defineConfig({
   test: {
     include: ['src/**/__sit__/**/*.test.{ts,tsx,js}'],
@@ -15,4 +15,4 @@ export default defineConfig({
     teardownTimeout: 0, // ← 重要
     hookTimeout: 0,
   },
-});
+})

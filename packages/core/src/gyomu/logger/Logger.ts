@@ -1,40 +1,40 @@
-import { Logger } from 'effect';
-import { reconcile } from '../../shared/index.js';
+import { Logger } from 'effect'
+import { reconcile } from '../../shared/index.js'
 
-type LogMeta = Record<string, unknown> | object;
+type LogMeta = Record<string, unknown> | object
 interface LeveledLogMethod {
-  (message: string): void;
-  (meta: LogMeta, message: string, ...args: any[]): void;
+  (message: string): void
+  (meta: LogMeta, message: string, ...args: Array<any>): void
 }
 export interface Logger {
-  error: LeveledLogMethod;
-  warn: LeveledLogMethod;
-  debug: LeveledLogMethod;
-  info: LeveledLogMethod;
-  isDebugEnabled(): boolean;
+  error: LeveledLogMethod
+  warn: LeveledLogMethod
+  debug: LeveledLogMethod
+  info: LeveledLogMethod
+  isDebugEnabled: () => boolean
 
-  end(): Promise<void>;
+  end: () => Promise<void>
 }
 
 let currentLogger: Logger = {
   error: () => {},
   warn: () => {},
   debug: () => {
-    console.log('something wrong');
+    console.log('something wrong')
   },
   info: () => {},
   isDebugEnabled: () => false,
   end: async () => {},
-};
+}
 
 const wrapConsole =
   (level: 'info' | 'debug' | 'warn' | 'error') =>
-  (arg1: any, arg2?: any, ...args: any[]) => {
+  (arg1: any, arg2?: any, ...args: Array<any>) => {
     if (typeof arg1 === 'string') {
-      return console[level](arg1);
+      return console[level](arg1)
     }
-    return console[level](arg1, arg2, ...args);
-  };
+    return console[level](arg1, arg2, ...args)
+  }
 const consoleLogger: Logger = {
   error: wrapConsole('error'),
   warn: wrapConsole('warn'),
@@ -42,27 +42,27 @@ const consoleLogger: Logger = {
   info: wrapConsole('info'),
   isDebugEnabled: () => false,
   end: async () => {},
-};
-currentLogger = consoleLogger;
+}
+currentLogger = consoleLogger
 // 👇 差し替えポイント
 export const setLogger = (logger: Logger) => {
-  currentLogger = logger;
-};
+  currentLogger = logger
+}
 
 const wrap = (level: 'info' | 'debug' | 'warn' | 'error'): LeveledLogMethod => {
-  function fn(message: string): void;
-  function fn(meta: LogMeta, message: string, ...args: any[]): void;
-  function fn(arg1: string | LogMeta, arg2?: string, ...args: any[]) {
-    const l = currentLogger;
+  function fn(message: string): void
+  function fn(meta: LogMeta, message: string, ...args: Array<any>): void
+  function fn(arg1: string | LogMeta, arg2?: string, ...args: Array<any>) {
+    const l = currentLogger
 
     if (typeof arg1 === 'string') {
-      return l[level](arg1);
+      return l[level](arg1)
     }
-    return l[level](arg1, arg2!, ...args);
+    return l[level](arg1, arg2!, ...args)
   }
 
-  return fn;
-};
+  return fn
+}
 // 👇 既存コードはこれを使う
 
 export const logger: Logger = {
@@ -72,46 +72,42 @@ export const logger: Logger = {
   info: wrap('info'),
   isDebugEnabled: () => currentLogger.isDebugEnabled(),
   end: () => currentLogger.end(),
-};
+}
 
-export const logDifferenceWhenDebugMode = (
-  objectKey: string,
-  objA: object,
-  objB: object,
-) => {
+export const logDifferenceWhenDebugMode = (objectKey: string, objA: object, objB: object) => {
   if (logger.isDebugEnabled()) {
-    const result = reconcile(objA, objB);
+    const result = reconcile(objA, objB)
     if (result.length == 0) {
-      logger.debug(`Object ${objectKey} has no diff , but it's to be updated`);
-      logger.debug(objA, 'Source');
-      logger.debug(objB, 'Destination');
-      return;
+      logger.debug(`Object ${objectKey} has no diff , but it's to be updated`)
+      logger.debug(objA, 'Source')
+      logger.debug(objB, 'Destination')
+      return
     }
-    logger.debug(result, `Object ${objectKey} has difference`);
+    logger.debug(result, `Object ${objectKey} has difference`)
   }
-};
-//logger.info('test');
+}
+// logger.info('test');
 
 export const effectLogger = Logger.make(({ logLevel, message }) => {
   if (typeof message === 'object' && message !== null) {
-    logWithLevel(logLevel, message, 'effect log');
+    logWithLevel(logLevel, message, 'effect log')
   } else {
-    logWithLevel(logLevel, {}, String(message));
+    logWithLevel(logLevel, {}, String(message))
   }
-});
+})
 function logWithLevel(level: string, meta: object, msg: string) {
   switch (level) {
     case 'Debug':
-      logger.debug(meta, msg);
-      break;
+      logger.debug(meta, msg)
+      break
     case 'Info':
-      logger.info(meta, msg);
-      break;
+      logger.info(meta, msg)
+      break
     case 'Warn':
-      logger.warn(meta, msg);
-      break;
+      logger.warn(meta, msg)
+      break
     case 'Error':
-      logger.error(meta, msg);
-      break;
+      logger.error(meta, msg)
+      break
   }
 }

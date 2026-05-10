@@ -1,8 +1,4 @@
-import { Effect, Layer, Context, Stream } from 'effect';
-import { IOError } from '@gyomu/core';
-import { ArchiveEntryItem } from '../common.js';
-import { PlatformError } from 'effect/PlatformError';
-import { FileSystem } from 'effect';
+import { Context, Effect, Layer } from 'effect'
 import {
   createTar,
   extractTar,
@@ -13,73 +9,59 @@ import {
   readEntryStream,
   readTextEntry,
   untar,
-} from './internals/tar.js';
-import { FileTransportInfo } from '@gyomu/core/gyomu/file';
+} from './internals/tar.js'
+import type { PlatformError } from 'effect/PlatformError'
+import type { FileTransportInfo } from '@gyomu/core/gyomu/file'
+import type { ArchiveEntryItem } from '../common.js'
+import type { IOError } from '@gyomu/core'
+import type { FileSystem, Stream } from 'effect'
 
-type TarEntryItem = Extract<ArchiveEntryItem, { _tag: 'tar' }>;
+type TarEntryItem = Extract<ArchiveEntryItem, { _tag: 'tar' }>
 
 export class TarService extends Context.Service<
   TarService,
   {
     create: (options: {
-      tarFileName: string;
-      cwd: string;
-      gzip?: boolean;
-    }) => Effect.Effect<boolean, IOError>;
+      tarFileName: string
+      cwd: string
+      gzip?: boolean
+    }) => Effect.Effect<boolean, IOError>
 
     unarchive: <R>(
       source: Stream.Stream<Uint8Array, IOError, R>,
-    ) => Stream.Stream<TarEntryItem, IOError, R>;
+    ) => Stream.Stream<TarEntryItem, IOError, R>
 
     extractAll: <R>(
       destination: string,
     ) => (
       source: Stream.Stream<Uint8Array, IOError, R>,
-    ) => Effect.Effect<
-      void,
-      IOError | PlatformError,
-      FileSystem.FileSystem | R
-    >;
+    ) => Effect.Effect<void, IOError | PlatformError, FileSystem.FileSystem | R>
 
     extractSingle: <R>(
       entryName: string,
       dest: string,
     ) => (
       source: Stream.Stream<Uint8Array, IOError, R>,
-    ) => Effect.Effect<
-      void,
-      IOError | PlatformError,
-      FileSystem.FileSystem | R
-    >;
+    ) => Effect.Effect<void, IOError | PlatformError, FileSystem.FileSystem | R>
 
     extractDirectory: (options: {
-      targetDir: string;
-      stripPath?: string;
+      targetDir: string
+      stripPath?: string
     }) => <R = never>(
       self: Stream.Stream<Uint8Array<ArrayBufferLike>, IOError, R>,
-    ) => Effect.Effect<
-      void,
-      PlatformError | IOError,
-      FileSystem.FileSystem | R
-    >;
+    ) => Effect.Effect<void, PlatformError | IOError, FileSystem.FileSystem | R>
 
     extract: <R = never>(
       transferInformation: FileTransportInfo,
     ) => (
       self: Stream.Stream<Uint8Array<ArrayBufferLike>, IOError, R>,
-    ) => Effect.Effect<
-      void,
-      PlatformError | IOError,
-      FileSystem.FileSystem | R
-    >;
+    ) => Effect.Effect<void, PlatformError | IOError, FileSystem.FileSystem | R>
 
-    readEntry: (entry: TarEntryItem) => Effect.Effect<Uint8Array[], IOError>;
+    readEntry: (entry: TarEntryItem) => Effect.Effect<Array<Uint8Array>, IOError>
 
-    readTextEntry: (entry: TarEntryItem) => Effect.Effect<string, IOError>;
+    readTextEntry: (entry: TarEntryItem) => Effect.Effect<string, IOError>
 
-    readEntryStream: (
-      entry: TarEntryItem,
-    ) => Stream.Stream<Uint8Array, IOError>;
+    readEntryStream: (entry: TarEntryItem) => Stream.Stream<Uint8Array, IOError>
   }
 >()('tar', {
   make: Effect.succeed({
@@ -94,5 +76,5 @@ export class TarService extends Context.Service<
     readEntryStream: readEntryStream,
   }),
 }) {
-  static readonly live = Layer.effect(this, this.make);
+  static readonly live = Layer.effect(this, this.make)
 }

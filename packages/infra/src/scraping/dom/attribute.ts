@@ -1,12 +1,12 @@
 export class Attribute {
-  readonly #attribute: Attr;
+  readonly #attribute: Attr
   constructor(attribute: Attr) {
-    this.#attribute = attribute;
+    this.#attribute = attribute
   }
   get name(): string {
-    return this.#attribute.name;
+    return this.#attribute.name
   }
   get value(): string {
-    return this.#attribute.value;
+    return this.#attribute.value
   }
 }

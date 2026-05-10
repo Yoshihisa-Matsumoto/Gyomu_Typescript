@@ -1,22 +1,17 @@
 // AutoForm.stories.tsx
 
-import type { Meta, StoryObj } from '@storybook/react';
-
 // --- AutoForm ---
-import { AutoForm } from './AutoForm';
 
 // --- UI ---
-import { TextField } from '@mui/material';
+import { TextField } from '@mui/material'
 
 // --- Types ---
-import { defineEntityCrudSchemas, schemaField } from '@gyomu/core/entity';
-import { RendererMap } from '../../core/engine/autoForm/types';
-import {
-  MuiFieldLayout,
-  MuiFormLayout,
-  MuiSubmitButton,
-} from '../../ui/adapters/mui';
-import { muiRenderer } from '../../ui/renderer';
+import { defineEntityCrudSchemas, schemaField } from '@gyomu/core/entity'
+import { MuiFieldLayout, MuiFormLayout, MuiSubmitButton } from '../../ui/adapters/mui'
+import { muiRenderer } from '../../ui/renderer'
+import { AutoForm } from './AutoForm'
+import type { RendererMap } from '../../core/engine/autoForm/types'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 
 // --------------------------------------------------
 // Schema
@@ -39,7 +34,7 @@ const userSchema = defineEntityCrudSchemas({
       format: 'email' as const,
     },
   },
-});
+})
 // const userSchema = Schema.Struct({
 //   name: schemaField.text({ maxLength: 10 }),
 
@@ -52,14 +47,14 @@ const userSchema = defineEntityCrudSchemas({
 // Meta
 // --------------------------------------------------
 
-const meta: Meta<typeof AutoForm> = {
+const metaStory: Meta<typeof AutoForm> = {
   title: 'Features/AutoForm',
   component: AutoForm,
-};
+}
 
-export default meta;
+export default metaStory
 
-type Story = StoryObj<typeof AutoForm>;
+type Story = StoryObj<typeof AutoForm>
 
 // --------------------------------------------------
 // Stories
@@ -71,8 +66,8 @@ export const Basic: Story = {
       schema={userSchema.insertSchema}
       ui={userSchema.ui!}
       uiContext="create"
-      onSubmit={async (data) => {
-        console.log('Submit:', data);
+      onSubmit={(data) => {
+        console.log('Submit:', data)
       }}
       fieldRenderer={muiRenderer}
       fieldLayout={MuiFieldLayout}
@@ -80,7 +75,7 @@ export const Basic: Story = {
       components={{ SubmitButton: MuiSubmitButton }}
     />
   ),
-};
+}
 
 export const Validation: Story = {
   render: () => (
@@ -94,12 +89,12 @@ export const Validation: Story = {
         age: 999,
         email: '',
       }}
-      onSubmit={async (data) => {
-        console.log('Submit:', data);
+      onSubmit={(data) => {
+        console.log('Submit:', data)
       }}
     />
   ),
-};
+}
 
 export const WithInitialValues: Story = {
   render: () => (
@@ -113,12 +108,12 @@ export const WithInitialValues: Story = {
         age: 20,
         email: 'taro@example.com',
       }}
-      onSubmit={async (data) => {
-        console.log('Submit:', data);
+      onSubmit={(data) => {
+        console.log('Submit:', data)
       }}
     />
   ),
-};
+}
 
 export const CustomRenderer: Story = {
   render: () => {
@@ -143,7 +138,7 @@ export const CustomRenderer: Story = {
         />
       ),
       hidden: () => <input type="hidden" />,
-    };
+    }
 
     return (
       <AutoForm
@@ -151,10 +146,10 @@ export const CustomRenderer: Story = {
         uiContext="create"
         ui={userSchema.ui!}
         fieldRenderer={customRenderer as any as RendererMap}
-        onSubmit={async (data) => {
-          console.log('Submit:', data);
+        onSubmit={(data) => {
+          console.log('Submit:', data)
         }}
       />
-    );
+    )
   },
-};
+}

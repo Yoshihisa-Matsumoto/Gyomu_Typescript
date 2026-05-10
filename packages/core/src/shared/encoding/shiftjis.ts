@@ -1,16 +1,16 @@
 export const encodeUtf8ToShiftJisBuffer = (source: string) => {
-  const encoded = encode2ShiftJIS(source).buffer;
-  return Buffer.from(encoded);
-};
+  const encoded = encode2ShiftJIS(source).buffer
+  return Buffer.from(encoded)
+}
 const table: { [key: string]: number } = {
   '\u00a5': 0x5c,
   '\u203e': 0x7e,
   '\u301c': 0x8160,
-};
+}
 const initTable = () => {
-  if (Object.keys(table).length > 3) return;
+  if (Object.keys(table).length > 3) return
 
-  const decoder = new TextDecoder('shift-jis');
+  const decoder = new TextDecoder('shift-jis')
   for (let i = 0x81; i <= 0xfc; i++) {
     if (
       i <= 0x84 ||
@@ -20,35 +20,35 @@ const initTable = () => {
       i >= 0xfa
     ) {
       for (let j = 0x40; j <= 0xfc; j++) {
-        const c = decoder.decode(new Uint8Array([i, j]));
+        const c = decoder.decode(new Uint8Array([i, j]))
         if (c.length === 1 && c !== '\ufffd' && !table[c]) {
-          table[c] = (i << 8) | j;
+          table[c] = (i << 8) | j
         }
       }
     }
   }
-};
+}
 
 export function encode2ShiftJIS(content: string) {
-  initTable();
-  const buffer = [];
+  initTable()
+  const buffer = []
   for (let i = 0; i < content.length; i++) {
-    const c: number = content.codePointAt(i)!;
+    const c: number = content.codePointAt(i)!
     if (c > 0xffff) {
-      i++;
+      i++
     }
     if (c < 0x80) {
-      buffer.push(c);
+      buffer.push(c)
     } else if (c >= 0xff61 && c <= 0xff9f) {
-      buffer.push(c - 0xfec0);
+      buffer.push(c - 0xfec0)
     } else {
-      const d = table[String.fromCodePoint(c)] || 0x3f;
+      const d = table[String.fromCodePoint(c)] || 0x3f
       if (d > 0xff) {
-        buffer.push((d >> 8) & 0xff, d & 0xff);
+        buffer.push((d >> 8) & 0xff, d & 0xff)
       } else {
-        buffer.push(d);
+        buffer.push(d)
       }
     }
   }
-  return Uint8Array.from(buffer);
+  return Uint8Array.from(buffer)
 }

@@ -1,33 +1,33 @@
-import { ValueError } from '../../error/ValueError.js';
+import { ValueError } from '../../error/ValueError.js'
 
-export const addToMultiMap = <K, V>(map: Map<K, V[]>, key: K, value: V) => {
-  const arr = map.get(key);
-  if (arr) arr.push(value);
-  else map.set(key, [value]);
-};
+export const addToMultiMap = <K, V>(map: Map<K, Array<V>>, key: K, value: V) => {
+  const arr = map.get(key)
+  if (arr) arr.push(value)
+  else map.set(key, [value])
+}
 
-export const addToNestedMap = (map: Map<any, any>, keys: any[], value: any) => {
-  let current = map;
+export const addToNestedMap = (map: Map<any, any>, keys: Array<any>, value: any) => {
+  let current = map
   if (keys.length === 0) {
     throw new ValueError({
       message: 'keys must not be empty',
       field: 'keys',
       cause: undefined,
-    });
+    })
   }
   for (let i = 0; i < keys.length - 1; i++) {
-    const key = keys[i];
+    const key = keys[i]
     if (!current.has(key)) {
-      current.set(key, new Map());
+      current.set(key, new Map())
     }
-    current = current.get(key);
+    current = current.get(key)
   }
 
-  const lastKey = keys[keys.length - 1];
-  const arr = current.get(lastKey);
+  const lastKey = keys[keys.length - 1]
+  const arr = current.get(lastKey)
   if (arr) {
-    arr.push(value);
+    arr.push(value)
   } else {
-    current.set(lastKey, [value]);
+    current.set(lastKey, [value])
   }
-};
+}

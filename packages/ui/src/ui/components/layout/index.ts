@@ -1,2 +1,2 @@
-export * from './types';
-export * from './headless';
+export * from './types'
+export * from './headless'

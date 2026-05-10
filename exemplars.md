@@ -47,17 +47,17 @@ This file demonstrates a well-structured error hierarchy using custom Error clas
 
 ```typescript
 export class BaseError extends Error {
-  innerError?: unknown;
+  innerError?: unknown
 
   constructor(message: string, innerError?: unknown) {
-    super(message);
-    this.innerError = innerError;
+    super(message)
+    this.innerError = innerError
   }
 }
 
 export class DBError extends BaseError {
   constructor(message: string, innerError?: unknown) {
-    super(message, innerError);
+    super(message, innerError)
   }
 }
 ```
@@ -92,7 +92,7 @@ This module demonstrates advanced functional error handling using the `neverthro
 
 ```typescript
 export function result2Async<T, E>(r: Result<T, E>): ResultAsync<T, E> {
-  return r.isOk() ? okAsync(r.value) : errAsync(r.error);
+  return r.isOk() ? okAsync(r.value) : errAsync(r.error)
 }
 ```
 
@@ -129,27 +129,23 @@ This extensive module demonstrates security best practices in TypeScript, includ
 
 ```typescript
 export const aesEncrypt = (plain: string, key: string): string => {
-  const originalBuffer = stringToArrayBuffer(plain);
-  const encryptedBuffer = aesEncryptBuffer(originalBuffer, getKey(key));
-  return buffer2Base64String(encryptedBuffer);
-};
+  const originalBuffer = stringToArrayBuffer(plain)
+  const encryptedBuffer = aesEncryptBuffer(originalBuffer, getKey(key))
+  return buffer2Base64String(encryptedBuffer)
+}
 
-export const aesEncryptBuffer = (
-  plainBuffer: ArrayBuffer,
-  keyBuffer: ArrayBuffer,
-): Buffer => {
-  const keyLength = keyBuffer.byteLength;
-  if (keyLength !== 16 && keyLength !== 32)
-    throw new Error('Invalid Key Length');
+export const aesEncryptBuffer = (plainBuffer: ArrayBuffer, keyBuffer: ArrayBuffer): Buffer => {
+  const keyLength = keyBuffer.byteLength
+  if (keyLength !== 16 && keyLength !== 32) throw new Error('Invalid Key Length')
 
-  const iv = crypto.randomBytes(16);
+  const iv = crypto.randomBytes(16)
   const cipher = crypto.createCipheriv(
     keyLength === 16 ? 'aes-128-gcm' : 'aes-256-gcm',
     encryptionKey,
     iv,
-  );
+  )
   // ... secure encryption implementation
-};
+}
 ```
 
 **Security Best Practices Demonstrated:**
@@ -201,7 +197,7 @@ export function genericDBFunction<T>(
       e instanceof Prisma.PrismaClientUnknownRequestError ||
       e instanceof Prisma.PrismaClientValidationError
     ) {
-      return new DBError(`Fail: ${actionName}`, e as Error);
+      return new DBError(`Fail: ${actionName}`, e as Error)
     }
 
     // Critical errors are re-thrown
@@ -209,11 +205,11 @@ export function genericDBFunction<T>(
       throw new CriticalError(
         'Critical error on Prisma. Need to terminate the application',
         e as Error,
-      );
+      )
     }
 
-    return new DBError(`Unknown Failure: ${actionName}`, e as Error);
-  });
+    return new DBError(`Unknown Failure: ${actionName}`, e as Error)
+  })
 }
 ```
 
@@ -256,32 +252,22 @@ export const retryResultAsync = <T, E>(
   fn: () => ResultAsync<T, E>,
   maxRetry: number,
 ): ResultAsync<T, E> => {
-  return fn().orElse((err) =>
-    maxRetry > 1 ? retryResultAsync(fn, maxRetry - 1) : errAsync(err),
-  );
-};
+  return fn().orElse((err) => (maxRetry > 1 ? retryResultAsync(fn, maxRetry - 1) : errAsync(err)))
+}
 
 export class ParameterAccess {
-  static value(
-    key: string,
-    user?: User,
-    targetDate?: Date,
-  ): ResultAsync<string, DBError> {
-    const itemKey = this.getKey(key, user);
+  static value(key: string, user?: User, targetDate?: Date): ResultAsync<string, DBError> {
+    const itemKey = this.getKey(key, user)
 
-    return retryResultAsync(() => this.#loadParameter(itemKey), 3).andThen(
-      (itemValues) => {
-        if (!itemValues || itemValues.length === 0) {
-          return errAsync(new DBError('Unknown error on retrieving parameter'));
-        }
-        return okAsync(itemValues[0].item_value);
-      },
-    );
+    return retryResultAsync(() => this.#loadParameter(itemKey), 3).andThen((itemValues) => {
+      if (!itemValues || itemValues.length === 0) {
+        return errAsync(new DBError('Unknown error on retrieving parameter'))
+      }
+      return okAsync(itemValues[0].item_value)
+    })
   }
 
-  static #loadParameter(
-    key: string,
-  ): ResultAsync<gyomu_param_master[], DBError> {
+  static #loadParameter(key: string): ResultAsync<gyomu_param_master[], DBError> {
     return genericDBFunction<gyomu_param_master[]>(
       'load gyomu_param_master',
       async (key) =>
@@ -289,7 +275,7 @@ export class ParameterAccess {
           where: { item_key: key },
         }),
       [key],
-    );
+    )
   }
 }
 ```
@@ -327,29 +313,29 @@ This module demonstrates robust domain model design:
 
 ```typescript
 export class FileInfo {
-  readonly fileName: string;
-  readonly fullPath: string;
-  readonly directoryName: string;
-  readonly directoryPath: string;
-  readonly size: number;
-  readonly extension: string;
-  readonly createTime: Date;
-  readonly updateTime: Date;
-  readonly lastAccessTime: Date;
-  readonly isFile: boolean;
+  readonly fileName: string
+  readonly fullPath: string
+  readonly directoryName: string
+  readonly directoryPath: string
+  readonly size: number
+  readonly extension: string
+  readonly createTime: Date
+  readonly updateTime: Date
+  readonly lastAccessTime: Date
+  readonly isFile: boolean
 
   constructor(filePath: string) {
-    const stats = platform.statSync(filePath);
-    this.isFile = stats.isFile();
+    const stats = platform.statSync(filePath)
+    this.isFile = stats.isFile()
     if (this.isFile) {
-      this.fileName = platform.basename(filePath);
-      this.fullPath = platform.resolve(filePath);
+      this.fileName = platform.basename(filePath)
+      this.fullPath = platform.resolve(filePath)
       // ... additional initialization
     }
-    this.size = stats.size;
-    this.createTime = stats.birthtime;
-    this.updateTime = stats.mtime;
-    this.lastAccessTime = stats.atime;
+    this.size = stats.size
+    this.createTime = stats.birthtime
+    this.updateTime = stats.mtime
+    this.lastAccessTime = stats.atime
   }
 }
 ```
@@ -362,9 +348,9 @@ export const FilterType = {
   CreateTime: 'Create Time',
   LastAccessTime: 'Last Access Time',
   LastModifiedTime: 'Last Modified Time',
-} as const;
+} as const
 
-export type FilterType = (typeof FilterType)[keyof typeof FilterType];
+export type FilterType = (typeof FilterType)[keyof typeof FilterType]
 ```
 
 This pattern creates a single source of truth for allowed values and their type.
@@ -398,23 +384,23 @@ This module exemplifies simple, focused utility functions that abstract platform
 **Exemplar Snippet:**
 
 ```typescript
-export type SupportEncoding = 'shiftjis' | 'utf8';
+export type SupportEncoding = 'shiftjis' | 'utf8'
 
 export const string2Base64String = (plainString: string): string => {
-  return buffer2Base64String(Buffer.from(plainString));
-};
+  return buffer2Base64String(Buffer.from(plainString))
+}
 
 export const buffer2Base64String = (buffer: Buffer): string => {
-  return buffer.toString('base64');
-};
+  return buffer.toString('base64')
+}
 
 export const base64String2String = (encodedString: string): string => {
-  return base64String2Buffer(encodedString).toString();
-};
+  return base64String2Buffer(encodedString).toString()
+}
 
 export const base64String2Buffer = (encodedString: string): Buffer => {
-  return Buffer.from(encodedString, 'base64');
-};
+  return Buffer.from(encodedString, 'base64')
+}
 ```
 
 **Design Benefits:**
@@ -446,25 +432,25 @@ This utility demonstrates mathematical operations with precision management:
 
 ```typescript
 export const toHalfAdjust = (targetNumber: number, digit: number): number => {
-  if (digit === 0) return Math.round(targetNumber);
+  if (digit === 0) return Math.round(targetNumber)
 
-  const adjust = Math.pow(10, digit);
-  return Math.round(targetNumber * adjust) / adjust;
-};
+  const adjust = Math.pow(10, digit)
+  return Math.round(targetNumber * adjust) / adjust
+}
 
 export const toRoundUp = (targetNumber: number, digit: number): number => {
-  if (digit === 0) return Math.ceil(targetNumber);
+  if (digit === 0) return Math.ceil(targetNumber)
 
-  const adjust = Math.pow(10, digit);
-  return Math.ceil(targetNumber * adjust) / adjust;
-};
+  const adjust = Math.pow(10, digit)
+  return Math.ceil(targetNumber * adjust) / adjust
+}
 
 export const toRoundDown = (targetNumber: number, digit: number): number => {
-  if (digit === 0) return Math.floor(targetNumber);
+  if (digit === 0) return Math.floor(targetNumber)
 
-  const adjust = Math.pow(10, digit);
-  return Math.floor(targetNumber * adjust) / adjust;
-};
+  const adjust = Math.pow(10, digit)
+  return Math.floor(targetNumber * adjust) / adjust
+}
 ```
 
 **API Design:**
@@ -496,34 +482,23 @@ This module demonstrates date/time manipulation with a focus on date-only precis
 **Exemplar Snippet:**
 
 ```typescript
-export const createDateOnly = (
-  year: number,
-  one_base_month: number,
-  day: number,
-) => {
-  const dateString = `${year}-${('00' + one_base_month).slice(-2)}-${(
-    '00' + day
-  ).slice(-2)}`;
-  return new Date(dateString);
-};
+export const createDateOnly = (year: number, one_base_month: number, day: number) => {
+  const dateString = `${year}-${('00' + one_base_month).slice(-2)}-${('00' + day).slice(-2)}`
+  return new Date(dateString)
+}
 
 export const createDateFromYYYYMMDD = (yyyyMMdd: string) => {
   const dateString =
-    yyyyMMdd.substring(0, 4) +
-    '-' +
-    yyyyMMdd.substring(4, 6) +
-    '-' +
-    yyyyMMdd.substring(6);
-  return new Date(dateString);
-};
+    yyyyMMdd.substring(0, 4) + '-' + yyyyMMdd.substring(4, 6) + '-' + yyyyMMdd.substring(6)
+  return new Date(dateString)
+}
 
 export const extractDateOnly = (date: Date) => {
-  const dateString = `${date.getFullYear()}-${(
-    '00' +
-    (date.getMonth() + 1)
-  ).slice(-2)}-${('00' + date.getDate()).slice(-2)}`;
-  return new Date(dateString);
-};
+  const dateString = `${date.getFullYear()}-${('00' + (date.getMonth() + 1)).slice(
+    -2,
+  )}-${('00' + date.getDate()).slice(-2)}`
+  return new Date(dateString)
+}
 ```
 
 **Defensive Practices:**
@@ -561,33 +536,33 @@ This test suite exemplifies thorough testing of security-sensitive code:
 
 ```typescript
 test('Normal AES Encrypt/Decrypt Test', () => {
-  const plain = 'Hello$Test';
-  const key = 'abc';
-  const encData = aes.aesEncrypt(plain, key);
-  expect(plain).toEqual(aes.aesDecrypt(encData, key));
+  const plain = 'Hello$Test'
+  const key = 'abc'
+  const encData = aes.aesEncrypt(plain, key)
+  expect(plain).toEqual(aes.aesDecrypt(encData, key))
 
-  const key2 = 'abcdefghijklmnop';
-  const encData2 = aes.aesEncrypt(plain, key2);
-  expect(plain).toEqual(aes.aesDecrypt(encData2, key2));
-});
+  const key2 = 'abcdefghijklmnop'
+  const encData2 = aes.aesEncrypt(plain, key2)
+  expect(plain).toEqual(aes.aesDecrypt(encData2, key2))
+})
 
 test('AES Decrypt Error Test', () => {
-  const plain = 'Hello$Test';
-  const key = 'abc';
-  const encData = aes.aesEncrypt(plain, key);
-  const key2 = 'abcdefghijklmnop';
+  const plain = 'Hello$Test'
+  const key = 'abc'
+  const encData = aes.aesEncrypt(plain, key)
+  const key2 = 'abcdefghijklmnop'
   expect(() => {
-    aes.aesDecrypt(encData, key2);
-  }).toThrow('Unsupported state or unable to authenticate data');
-});
+    aes.aesDecrypt(encData, key2)
+  }).toThrow('Unsupported state or unable to authenticate data')
+})
 
 test('Invalid AES Key Encrypt Test', () => {
-  const plain = 'Hello$Test';
-  const key = 'abcdefghijklmnoprstuvwxyz012345678';
+  const plain = 'Hello$Test'
+  const key = 'abcdefghijklmnoprstuvwxyz012345678'
   expect(() => {
-    aes.aesEncrypt(plain, key);
-  }).toThrow('Invalid Key Length:');
-});
+    aes.aesEncrypt(plain, key)
+  }).toThrow('Invalid Key Length:')
+})
 ```
 
 **Test Organization:**
@@ -621,19 +596,17 @@ This module provides reusable test utilities demonstrating the DRY principle:
 
 ```typescript
 export const compareFiles = (srcFile: string, destFile: string): boolean => {
-  const result = platform
-    .readFileSync(srcFile)
-    .equals(platform.readFileSync(destFile));
+  const result = platform.readFileSync(srcFile).equals(platform.readFileSync(destFile))
   if (!result) {
-    console.log(srcFile, destFile);
+    console.log(srcFile, destFile)
   }
-  return result;
-};
+  return result
+}
 
 export const validateFolders = (srcFolder: string, destFolder: string) => {
-  expect(compareFoldersFromSource(srcFolder, destFolder)).toBeTruthy();
-  expect(compareFoldersFromDest(srcFolder, destFolder)).toBeTruthy();
-};
+  expect(compareFoldersFromSource(srcFolder, destFolder)).toBeTruthy()
+  expect(compareFoldersFromDest(srcFolder, destFolder)).toBeTruthy()
+}
 ```
 
 **Design Benefits:**
@@ -675,45 +648,45 @@ This module demonstrates dependency injection and factory patterns:
 
 ```typescript
 export interface Configurator {
-  readonly machineName: string;
-  readonly address: string;
-  readonly userId: string;
-  readonly uniqueInstanceIdPerMachine: number;
-  readonly region: string;
-  readonly user: User;
-  readonly mode: string;
-  applicationId: () => number;
-  setApplicationId: (id: number) => void;
+  readonly machineName: string
+  readonly address: string
+  readonly userId: string
+  readonly uniqueInstanceIdPerMachine: number
+  readonly region: string
+  readonly user: User
+  readonly mode: string
+  applicationId: () => number
+  setApplicationId: (id: number) => void
 }
 
 class BaseConfigurator implements Configurator {
-  readonly user: User;
-  readonly userId: string;
-  readonly machineName: string;
-  readonly address: string;
-  readonly uniqueInstanceIdPerMachine: number;
-  readonly region: string;
-  readonly mode: string;
+  readonly user: User
+  readonly userId: string
+  readonly machineName: string
+  readonly address: string
+  readonly uniqueInstanceIdPerMachine: number
+  readonly region: string
+  readonly mode: string
 
   constructor(user: User, applicationId: number = -1) {
-    this.user = user;
-    this.userId = user.userId;
-    this.machineName = hostname();
+    this.user = user
+    this.userId = user.userId
+    this.machineName = hostname()
 
-    const nets = networkInterfaces();
-    const net = nets['en0']?.find((v) => v.family === 'IPv4');
-    this.address = net ? net.address : '';
-    this.#applicationId = applicationId;
-    this.uniqueInstanceIdPerMachine = pid;
-    this.region = this.user.region;
-    this.mode = env.GYOMU_COMMON_MODE || 'Development';
+    const nets = networkInterfaces()
+    const net = nets['en0']?.find((v) => v.family === 'IPv4')
+    this.address = net ? net.address : ''
+    this.#applicationId = applicationId
+    this.uniqueInstanceIdPerMachine = pid
+    this.region = this.user.region
+    this.mode = env.GYOMU_COMMON_MODE || 'Development'
   }
 
-  #applicationId: number;
-  applicationId = () => this.#applicationId;
+  #applicationId: number
+  applicationId = () => this.#applicationId
   setApplicationId = (id: number) => {
-    this.#applicationId = id;
-  };
+    this.#applicationId = id
+  }
 }
 ```
 
@@ -748,38 +721,38 @@ This module exemplifies interface-based design with factory pattern:
 
 ```typescript
 export interface User {
-  isGroup: boolean;
-  isValid: boolean;
-  userId: string;
-  isEqual: (other: User) => boolean;
-  isInMember: (groupUser: User) => boolean;
-  region: string;
+  isGroup: boolean
+  isValid: boolean
+  userId: string
+  isEqual: (other: User) => boolean
+  isInMember: (groupUser: User) => boolean
+  region: string
 }
 
 class DummyUser implements User {
-  isGroup = false;
-  isValid = true;
-  userId: string;
+  isGroup = false
+  isValid = true
+  userId: string
 
   constructor(uid: string) {
-    this.userId = uid;
+    this.userId = uid
   }
 
   isEqual = (other: User) => {
-    return this.userId === other.userId;
-  };
+    return this.userId === other.userId
+  }
 
   isInMember = () => {
-    return false;
-  };
+    return false
+  }
 
-  region: string = '';
+  region: string = ''
 }
 
 export class UserFactory {
   static getCurrentUser = (): User => {
-    return new DummyUser('testUid');
-  };
+    return new DummyUser('testUid')
+  }
 }
 ```
 
@@ -815,20 +788,18 @@ This module demonstrates type-safe DOM manipulation using TypeScript's mapped ty
 **Exemplar Snippet:**
 
 ```typescript
-export type ElementGenerationOption = TableOption;
+export type ElementGenerationOption = TableOption
 
 interface ElementOptionTagNameMap {
-  table: TableOption;
+  table: TableOption
 }
 
 interface ElementTagNameMap {
-  table: Table;
+  table: Table
 }
 
 export function convertHTMLElementByTagName<
-  K extends keyof HTMLElementTagNameMap &
-    keyof ElementOptionTagNameMap &
-    keyof ElementTagNameMap,
+  K extends keyof HTMLElementTagNameMap & keyof ElementOptionTagNameMap & keyof ElementTagNameMap,
 >(
   qualifiedName: K,
   element: HTMLElementTagNameMap[K],
@@ -836,9 +807,9 @@ export function convertHTMLElementByTagName<
 ): ElementTagNameMap[K] {
   switch (qualifiedName) {
     case 'table':
-      return new Table(element, option as ElementOptionTagNameMap[K]);
+      return new Table(element, option as ElementOptionTagNameMap[K])
   }
-  throw new Error('Unknown Error');
+  throw new Error('Unknown Error')
 }
 ```
 
@@ -864,16 +835,13 @@ This module exemplifies clean barrel exports:
 **Exemplar Pattern:**
 
 ```typescript
-export { Page, PageOption, PageResponseOption, PageTextOption } from './page';
-export { Attribute } from './attribute';
-export { DOMElement, GenericElement } from './element';
-export { Table } from './table';
-export { TableRow } from './tableRow';
-export { TableColumn } from './tableColumn';
-export {
-  convertGenericElementByTagName,
-  convertHTMLElementByTagName,
-} from './util';
+export { Page, PageOption, PageResponseOption, PageTextOption } from './page'
+export { Attribute } from './attribute'
+export { DOMElement, GenericElement } from './element'
+export { Table } from './table'
+export { TableRow } from './tableRow'
+export { TableColumn } from './tableColumn'
+export { convertGenericElementByTagName, convertHTMLElementByTagName } from './util'
 ```
 
 **Best Practices:**
@@ -899,17 +867,17 @@ This module serves as the library's main entry point, demonstrating effective mo
 **Exemplar Pattern:**
 
 ```typescript
-export * from './base64';
-export * from './buffer';
-export * from './configurator';
-export * from './dictionary';
-export * from './errors';
-export * from './fileModel';
-export * from './fileOperation';
-export * from './numberOperation';
-export * from './result';
-export * from './user';
-export * from './platform';
+export * from './base64'
+export * from './buffer'
+export * from './configurator'
+export * from './dictionary'
+export * from './errors'
+export * from './fileModel'
+export * from './fileOperation'
+export * from './numberOperation'
+export * from './result'
+export * from './user'
+export * from './platform'
 ```
 
 **Design Benefits:**
@@ -1082,19 +1050,16 @@ The codebase exhibits clear separation of concerns:
 
 ```typescript
 try {
-  const result = await dbOperation();
+  const result = await dbOperation()
 } catch (e) {
-  handleError(e);
+  handleError(e)
 }
 ```
 
 ✅ Do: Use `ResultAsync` for type-safe error handling
 
 ```typescript
-dbOperation()
-  .andThen(processResult)
-  .mapErr(handleError)
-  .match(success, failure);
+dbOperation().andThen(processResult).mapErr(handleError).match(success, failure)
 ```
 
 ### 2. **Avoid Implicit `any` Types**
@@ -1120,10 +1085,10 @@ export function parseData(input: string): Result<Data, ParseError> {
 ❌ Don't: Store state in utility modules
 
 ```typescript
-let cachedValue: any;
+let cachedValue: any
 export function getData() {
-  if (!cachedValue) cachedValue = expensiveOperation();
-  return cachedValue;
+  if (!cachedValue) cachedValue = expensiveOperation()
+  return cachedValue
 }
 ```
 
@@ -1133,7 +1098,7 @@ export function getData() {
 export function transformData(input: Data): TransformedData {
   return {
     /* transformation */
-  };
+  }
 }
 ```
 
@@ -1142,14 +1107,14 @@ export function transformData(input: Data): TransformedData {
 ❌ Don't: Include secrets in source code
 
 ```typescript
-const apiKey = 'super-secret-key-12345';
+const apiKey = 'super-secret-key-12345'
 ```
 
 ✅ Do: Load from secure configuration
 
 ```typescript
-const apiKey = process.env.API_KEY;
-if (!apiKey) throw new Error('Missing API_KEY environment variable');
+const apiKey = process.env.API_KEY
+if (!apiKey) throw new Error('Missing API_KEY environment variable')
 ```
 
 ### 5. **Avoid Weak Error Context**
@@ -1157,13 +1122,13 @@ if (!apiKey) throw new Error('Missing API_KEY environment variable');
 ❌ Don't: Generic error messages
 
 ```typescript
-throw new Error('Failed');
+throw new Error('Failed')
 ```
 
 ✅ Do: Descriptive errors with context
 
 ```typescript
-throw new DBError(`Failed to retrieve parameter: ${key}`, originalError);
+throw new DBError(`Failed to retrieve parameter: ${key}`, originalError)
 ```
 
 ### 6. **Avoid Large Single-Purpose Classes**

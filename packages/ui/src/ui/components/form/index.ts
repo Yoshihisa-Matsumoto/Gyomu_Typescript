@@ -1,2 +1,2 @@
-export * from './DefaultSubmitButton';
-export * from './types';
+export * from './DefaultSubmitButton'
+export * from './types'

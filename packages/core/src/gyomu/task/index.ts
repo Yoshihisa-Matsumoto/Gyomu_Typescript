@@ -1,1 +1,1 @@
-export * from './MilestoneService.js';
+export * from './MilestoneService.js'

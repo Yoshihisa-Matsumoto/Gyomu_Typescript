@@ -1,24 +1,18 @@
-import { describe, expect, it } from 'vitest';
-import { Schema, SchemaIssue } from 'effect';
-import { defineEntityCrudSchemas } from '../defineEntityCrudSchemas.js';
-import { schemaField } from '../fields.js';
-import {
-  defaultLeafHook,
-  getActual,
-  makeFormatterStandardSchemaV1,
-} from 'effect/SchemaIssue';
-import { resolveFieldErrorsFromIssue } from '../issueAstMatcher.js';
+import { describe, expect, it } from 'vitest'
+import { Schema } from 'effect'
+import { makeFormatterStandardSchemaV1 } from 'effect/SchemaIssue'
+import { defineEntityCrudSchemas } from '../defineEntityCrudSchemas.js'
+import { schemaField } from '../fields.js'
+import { resolveFieldErrorsFromIssue } from '../issueAstMatcher.js'
+import type { SchemaIssue } from 'effect'
 
 describe('IssueMap', () => {
   it('test', () => {
     const schemaMock = Schema.Struct({
-      age: Schema.Number.check(
-        Schema.isLessThanOrEqualTo(100),
-        Schema.isGreaterThanOrEqualTo(0),
-      ),
+      age: Schema.Number.check(Schema.isLessThanOrEqualTo(100), Schema.isGreaterThanOrEqualTo(0)),
       name: Schema.String.check(Schema.isMaxLength(10), Schema.isMinLength(3)),
       id: Schema.String.check(Schema.isUUID(7)),
-    });
+    })
 
     try {
       Schema.decodeUnknownSync(schemaMock)(
@@ -28,18 +22,16 @@ describe('IssueMap', () => {
           id: 'f6ae5f2d-bd14-4c5f-9cc3-3a69ef90dd5',
         },
         { errors: 'all' },
-      );
-      console.log('test Exception');
+      )
+      console.log('test Exception')
     } catch (e) {
-      const issue: SchemaIssue.Issue = (e as any).cause;
-      console.log(JSON.stringify(issue, null, 2));
-      console.log(
-        JSON.stringify(makeFormatterStandardSchemaV1()(issue), null, 2),
-      );
-      //console.log(JSON.stringify(redact(issue)))
+      const issue: SchemaIssue.Issue = (e as any).cause
+      console.log(JSON.stringify(issue, null, 2))
+      console.log(JSON.stringify(makeFormatterStandardSchemaV1()(issue), null, 2))
+      // console.log(JSON.stringify(redact(issue)))
     }
-  });
-});
+  })
+})
 
 describe('resolveFieldErrorsFromIssue', () => {
   const schema = defineEntityCrudSchemas({
@@ -50,10 +42,10 @@ describe('resolveFieldErrorsFromIssue', () => {
     },
     options: {},
     tags: { entity: 'test' },
-  });
+  })
 
   it('should map simple validation errors to fields', () => {
-    let issue;
+    let issue
     try {
       Schema.decodeUnknownSync(schema.selectSchema)(
         {
@@ -61,43 +53,43 @@ describe('resolveFieldErrorsFromIssue', () => {
           name: 'a',
         },
         { errors: 'all' },
-      );
+      )
     } catch (e: any) {
-      issue = e.cause;
+      issue = e.cause
     }
 
-    const result = resolveFieldErrorsFromIssue(schema.selectSchema, issue);
+    const result = resolveFieldErrorsFromIssue(schema.selectSchema, issue)
 
     // フィールドが存在すること
-    expect(result.age).toBeDefined();
-    expect(result.name).toBeDefined();
+    expect(result.get('age')).toBeDefined()
+    expect(result.get('name')).toBeDefined()
 
     // エラー件数
-    expect(result.age!.length).toBe(1);
-    expect(result.name!.length).toBeGreaterThanOrEqual(1);
+    expect(result.get('age')!.length).toBe(1)
+    expect(result.get('name')!.length).toBeGreaterThanOrEqual(1)
 
     // メッセージの中身（ゆるくチェック）
-    expect(result.age![0]).toContain('99'); // max制約
-    expect(result.name!.join(' ')).toMatch(/3|length/i);
-  });
+    expect(result.get('age')![0]).toContain('99') // max制約
+    expect(result.get('name')!.join(' ')).toMatch(/3|length/i)
+  })
 
   it('should handle missing required fields', () => {
-    let issue;
+    let issue
     try {
       Schema.decodeUnknownSync(schema.selectSchema)({
         age: 20,
-      });
+      })
     } catch (e: any) {
-      issue = e.cause;
+      issue = e.cause
     }
 
-    const result = resolveFieldErrorsFromIssue(schema.selectSchema, issue);
+    const result = resolveFieldErrorsFromIssue(schema.selectSchema, issue)
 
     // id or name が missing のはず（定義による）
-    const allMessages = Object.values(result).flat().join(' ');
+    const allMessages = Array.from(result.values()).flat().join(' ')
 
-    expect(allMessages).toMatch(/missing|required/i);
-  });
+    expect(allMessages).toMatch(/missing|required/i)
+  })
 
   // it('should ignore unknown paths', () => {
   //   // 手動でpath無しIssue相当をシミュレート
@@ -111,7 +103,7 @@ describe('resolveFieldErrorsFromIssue', () => {
   // });
 
   it('should aggregate multiple errors per field', () => {
-    let issue;
+    let issue
     try {
       Schema.decodeUnknownSync(schema.selectSchema)(
         {
@@ -119,16 +111,16 @@ describe('resolveFieldErrorsFromIssue', () => {
           name: '',
         },
         { errors: 'all' },
-      );
+      )
     } catch (e: any) {
-      issue = e.cause;
+      issue = e.cause
     }
 
-    const result = resolveFieldErrorsFromIssue(schema.selectSchema, issue);
-    //console.log(JSON.stringify(result));
+    const result = resolveFieldErrorsFromIssue(schema.selectSchema, issue)
+    // console.log(JSON.stringify(result));
     // nameは minLength + maxLength（または少なくとも1つ）
-    expect(result.name!.length).toBeGreaterThanOrEqual(1);
-  });
+    expect(result.get('name')!.length).toBeGreaterThanOrEqual(1)
+  })
 
   it('should return empty object for valid input', () => {
     const data = {
@@ -136,17 +128,14 @@ describe('resolveFieldErrorsFromIssue', () => {
       age: 20,
       name: 'valid',
       id: 'f6ae5f2d-bd14-4c5f-9cc3-3a69ef90dd5b',
-    };
-
-    const decoded = Schema.decodeUnknownExit(schema.selectSchema)(data);
-    console.log(JSON.stringify(decoded, null, 2));
-    expect(decoded._tag).toBe('Success');
-    if (decoded._tag == 'Success') {
-      const result = resolveFieldErrorsFromIssue(
-        schema.selectSchema,
-        {} as any,
-      );
-      expect(result).toEqual({});
     }
-  });
-});
+
+    const decoded = Schema.decodeUnknownExit(schema.selectSchema)(data)
+    console.log(JSON.stringify(decoded, null, 2))
+    expect(decoded._tag).toBe('Success')
+    if (decoded._tag == 'Success') {
+      const result = resolveFieldErrorsFromIssue(schema.selectSchema, {} as any)
+      expect(result).toEqual(new Map()) // エラー無しなので空のMapが返るはず
+    }
+  })
+})

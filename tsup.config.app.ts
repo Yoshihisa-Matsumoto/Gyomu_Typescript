@@ -1,4 +1,4 @@
-import { defineConfig } from 'tsup';
+import { defineConfig } from 'tsup'
 
 export const baseConfig = defineConfig({
   format: ['esm'],
@@ -11,4 +11,4 @@ export const baseConfig = defineConfig({
   splitting: false,
   outDir: 'dist',
   cjsInterop: true,
-});
+})

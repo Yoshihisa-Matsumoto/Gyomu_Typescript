@@ -1,7 +1,7 @@
-import { withOptional } from '@gyomu/core';
-import { AutoFieldProps } from './types';
-import { muiRenderer } from '../../ui/renderer/mui/muiRenderer';
-import { MuiFieldLayout } from '../../ui/adapters/mui/layout/MuiFieldLayout';
+import { withOptional } from '@gyomu/core'
+import { muiRenderer } from '../../ui/renderer/mui/muiRenderer'
+import { MuiFieldLayout } from '../../ui/adapters/mui/layout/MuiFieldLayout'
+import type { AutoFieldProps } from './types'
 
 export function AutoField({
   meta,
@@ -16,9 +16,9 @@ export function AutoField({
   // console.log(
   //   `Field: ${meta.name} Value: ${value} meta: ${JSON.stringify(meta)}`,
   // );
-  const Component = renderer[meta.widget] as any;
+  const Component = renderer[meta.widget] as any
 
-  if (!Component) throw new Error(`No renderer for widget: ${meta.widget}`);
+  if (!Component) throw new Error(`No renderer for widget: ${meta.widget}`)
   return (
     <Layout label={meta.label ?? meta.name} {...withOptional({ error: error })}>
       <Component
@@ -31,5 +31,5 @@ export function AutoField({
         })}
       />
     </Layout>
-  );
+  )
 }

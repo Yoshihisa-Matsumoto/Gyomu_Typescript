@@ -1,4 +1,4 @@
-import { JSX } from 'react';
-import { FieldLayoutProps } from '../types';
+import type { JSX } from 'react'
+import type { FieldLayoutProps } from '../types'
 
-export type FieldLayout = (props: FieldLayoutProps) => JSX.Element;
+export type FieldLayout = (props: FieldLayoutProps) => JSX.Element

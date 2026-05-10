@@ -5,6 +5,6 @@
 
 // export const platform = os.platform() === 'win32' ? windows : linux;
 
-export * from './types.js';
-export * from './fs-utils.js';
-export * from './fileInfo.js';
+export * from './types.js'
+export * from './fs-utils.js'
+export * from './fileInfo.js'

@@ -1,76 +1,63 @@
-import { Effect, FileSystem, Layer, Option } from 'effect';
-import { AccessError, IOError, TimeoutError } from '@gyomu/core';
-import path from 'path';
-import {
-  ensure,
-  ensureEffect,
-  fromPromise,
-} from '../../../core/dist/effect/index.js';
+import path from 'node:path'
+import { Effect, FileSystem, Layer, Option } from 'effect'
+import { AccessError, TimeoutError } from '@gyomu/core'
+import { FileAccessService } from '@gyomu/core/shared/fs'
+import { ensure, ensureEffect, fromPromise, polling } from '../../../core/dist/effect/index.js'
 
-import { polling } from '../../../core/dist/effect/index.js';
-import { getFileStat, pathExists } from '../fs/fs-utils.js';
-import { FileAccessService } from '@gyomu/core/shared/fs';
+import { getFileStat, pathExists } from '../fs/fs-utils.js'
+import type { IOError } from '@gyomu/core'
 
 const canAccessFunc = (
   fileName: string,
   readOnly?: boolean,
-): Effect.Effect<
-  boolean,
-  AccessError | IOError | TimeoutError,
-  FileSystem.FileSystem
-> => {
+): Effect.Effect<boolean, AccessError | IOError | TimeoutError, FileSystem.FileSystem> => {
   return Effect.gen(function* () {
     yield* ensureEffect(pathExists(fileName), AccessError, () => ({
       cause: undefined,
       message: 'File does not exist',
       reason: 'not_exist' as const,
       resource: fileName,
-    }));
+    }))
 
-    const specialExtension = ['xls', 'xlsm', 'xlsx', 'zip'];
-    const stat = yield* getFileStat(fileName);
+    const specialExtension = ['xls', 'xlsm', 'xlsx', 'zip']
+    const stat = yield* getFileStat(fileName)
 
     yield* ensure(
-      !(
-        specialExtension.includes(path.extname(fileName)) &&
-        stat.size === FileSystem.Size(0)
-      ),
+      !(specialExtension.includes(path.extname(fileName)) && stat.size === FileSystem.Size(0)),
       AccessError,
       () => ({
         message: 'File size must not be zero + not an Excel/Zip',
         reason: 'invalid' as const,
         resource: fileName,
       }),
-    );
+    )
 
-    if (readOnly) return true;
+    if (readOnly) return true
 
     yield* fromPromise(TimeoutError, () => ({
       message: 'setTimeout error',
       action: 'setTimeout',
       timeoutSeconds: 0.1,
-    }))(() => new Promise((resolve) => setTimeout(resolve, 100)));
+    }))(() => new Promise((resolve) => setTimeout(resolve, 100)))
 
-    const stat2 = yield* getFileStat(fileName);
+    const stat2 = yield* getFileStat(fileName)
 
-    const getTime = (opt: Option.Option<Date>) =>
-      Option.getOrElse(opt, () => new Date(0));
+    const getTime = (opt: Option.Option<Date>) => Option.getOrElse(opt, () => new Date(0))
 
     const isChanged =
       stat.size !== stat2.size ||
-      getTime(stat.birthtime).getTime() !==
-        getTime(stat2.birthtime).getTime() ||
-      getTime(stat.mtime).getTime() !== getTime(stat2.mtime).getTime();
+      getTime(stat.birthtime).getTime() !== getTime(stat2.birthtime).getTime() ||
+      getTime(stat.mtime).getTime() !== getTime(stat2.mtime).getTime()
 
     yield* ensure(!isChanged, AccessError, () => ({
       message: `File is under operation`,
       reason: 'in_use' as const,
       resource: fileName,
-    }));
+    }))
 
-    return true;
-  });
-};
+    return true
+  })
+}
 
 export const FileAccessServiceLayer = Layer.effect(
   FileAccessService,
@@ -83,9 +70,9 @@ export const FileAccessServiceLayer = Layer.effect(
         0.5,
         (): Effect.Effect<boolean, AccessError, FileSystem.FileSystem> =>
           canAccessFunc(fileName, false).pipe(
-            Effect.catch((e) => {
-              //console.log(e);
-              return Effect.succeed(false);
+            Effect.catch(() => {
+              // console.log(e);
+              return Effect.succeed(false)
             }),
           ),
         fileName,
@@ -99,7 +86,7 @@ export const FileAccessServiceLayer = Layer.effect(
               cause: error,
             }),
         ),
-      );
+      )
     },
   }),
-);
+)

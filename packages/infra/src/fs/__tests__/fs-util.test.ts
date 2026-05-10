@@ -1,22 +1,20 @@
-import { Effect, Stream } from 'effect';
-import { describe, it } from 'vitest';
-import { FileSystem } from 'effect';
-import { NodeFileSystem, NodeStream } from '@effect/platform-node';
-import { IOError } from '@gyomu/core';
-import fs from 'fs';
-import { wrapInfraError } from '@gyomu/core';
+import { createReadStream } from 'node:fs'
+import { Effect, FileSystem, Stream } from 'effect'
+import { describe, it } from 'vitest'
+import { NodeFileSystem, NodeStream } from '@effect/platform-node'
+import { IOError, wrapInfraError } from '@gyomu/core'
 
 describe('FileSystem simple test', () => {
   it('FileSystem test', async () => {
     const program = (path: string) =>
       Effect.gen(function* () {
-        const fs = yield* FileSystem.FileSystem;
+        const fs = yield* FileSystem.FileSystem
 
         return fs.stream(path).pipe(
           Stream.tap(() => Effect.log('[chunk]')),
           Stream.runDrain,
-        );
-      });
+        )
+      })
 
     // 実行例
     await Effect.runPromise(
@@ -25,13 +23,13 @@ describe('FileSystem simple test', () => {
         Effect.provide(NodeFileSystem.layer),
         Effect.scoped,
       ),
-    );
-  });
+    )
+  })
   it('NodeStream.fromReadable test', async () => {
     const program = (path: string) =>
       Effect.gen(function* () {
         return yield* NodeStream.fromReadable<Uint8Array, IOError>({
-          evaluate: () => fs.createReadStream(path),
+          evaluate: () => createReadStream(path),
           onError: (e) =>
             wrapInfraError(IOError, e, () => ({
               layer: 'stream' as const,
@@ -42,15 +40,12 @@ describe('FileSystem simple test', () => {
         }).pipe(
           Stream.tap(() => Effect.log('[chunk]')),
           Stream.runDrain,
-        );
-      });
+        )
+      })
 
     // 実行例
     await Effect.runPromise(
-      program('tests/test.utf8.csv').pipe(
-        Effect.provide(NodeFileSystem.layer),
-        Effect.scoped,
-      ),
-    );
-  });
-});
+      program('tests/test.utf8.csv').pipe(Effect.provide(NodeFileSystem.layer), Effect.scoped),
+    )
+  })
+})

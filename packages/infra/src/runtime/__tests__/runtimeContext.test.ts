@@ -1,20 +1,18 @@
-import { Effect } from 'effect';
-import { describe, it, expect } from 'vitest';
-import { RuntimeContext } from '@gyomu/core/shared';
-import { RuntimeContextLive } from '../RuntimeContextLive.js';
+import { Effect } from 'effect'
+import { describe, expect, it } from 'vitest'
+import { RuntimeContext } from '@gyomu/core/shared'
+import { RuntimeContextLive } from '../RuntimeContextLive.js'
 
 describe('RuntimeContextLive', () => {
   it('Layerとして取得できる', async () => {
     const program = Effect.gen(function* () {
-      return yield* RuntimeContext;
-    });
+      return yield* RuntimeContext
+    })
 
-    const result = await Effect.runPromise(
-      program.pipe(Effect.provide(RuntimeContextLive)),
-    );
+    const result = await Effect.runPromise(program.pipe(Effect.provide(RuntimeContextLive)))
 
-    expect(result).toHaveProperty('machineName');
-    expect(result).toHaveProperty('address');
-    expect(result).toHaveProperty('pid');
-  });
-});
+    expect(result).toHaveProperty('machineName')
+    expect(result).toHaveProperty('address')
+    expect(result).toHaveProperty('pid')
+  })
+})

@@ -1,1 +1,1 @@
-export * from './autoForm';
+export * from './autoForm'

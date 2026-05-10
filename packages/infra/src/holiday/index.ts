@@ -1,2 +1,2 @@
-export * from './JpxHolidayFetcher.js';
-export * from './jpxFetcher.js';
+export * from './JpxHolidayFetcher.js'
+export * from './jpxFetcher.js'

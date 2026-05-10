@@ -27,11 +27,13 @@ description: ワンライナーや小規模スクリプトでのデータ処理�
 ### 基本
 
 **PowerShell:**
+
 ```powershell
 "console.log('Hello');" | tsx
 ```
 
 **Bash:**
+
 ```bash
 echo "console.log('Hello');" | tsx
 ```
@@ -39,6 +41,7 @@ echo "console.log('Hello');" | tsx
 ### 複数行
 
 **PowerShell:**
+
 ```powershell
 @'
 const greet = (name: string): string => `Hello, ${name}!`;
@@ -47,6 +50,7 @@ console.log(greet("World"));
 ```
 
 **Bash:**
+
 ```bash
 tsx  << 'EOF'
 const greet = (name: string): string => `Hello, ${name}!`;
@@ -59,33 +63,38 @@ EOF
 ### JSON処理（パッケージ不要）
 
 `json.ts`:
+
 ```typescript
-type User = { id: number; name: string; email: string; active?: boolean };
+type User = { id: number; name: string; email: string; active?: boolean }
 
 // サンプル JSON をコード内に文字列で保持（外部ファイルを使わない）
 const jsonString = `[
   {"id":1,"name":"Alice","email":"alice@example.com","active":true},
   {"id":2,"name":"Bob","email":"bob@example.com","active":false},
   {"id":3,"name":"Carol","email":"carol@example.com"}
-]`;
+]`
 
 async function main() {
   // パース（実際には同期だが async 関数にしておくと将来の拡張が楽）
-  const users = JSON.parse(jsonString) as User[];
+  const users = JSON.parse(jsonString) as User[]
 
   // active が false のものを除外して必要なフィールドだけ残す
   const active = users
-    .filter(u => u.active !== false)
-    .map(({ id, name, email }) => ({ id, name, email }));
+    .filter((u) => u.active !== false)
+    .map(({ id, name, email }) => ({ id, name, email }))
 
   // 結果を JSON 文字列にして出力
-  console.log(JSON.stringify(active, null, 2));
+  console.log(JSON.stringify(active, null, 2))
 }
 
-main().catch(err => { console.error(err); process.exit(1); });
+main().catch((err) => {
+  console.error(err)
+  process.exit(1)
+})
 ```
 
 実行:
+
 ```powershell
 '{"name":"太郎"}' | dotnet json.cs
 ```
@@ -148,35 +157,41 @@ if (!file) { console.error("usage: node readExcel.js <file.xlsx>"); process.exit
 
 ## よく使うライブラリ
 
-| 用途 | パッケージ | 備考 |
-|------|---------------|------|
-| JSON処理 | （不要） | 標準でできる|
-| CSV処理 | csv csv-parse | |
-| Excel処理 | exceljs | |
+| 用途      | パッケージ    | 備考         |
+| --------- | ------------- | ------------ |
+| JSON処理  | （不要）      | 標準でできる |
+| CSV処理   | csv csv-parse |              |
+| Excel処理 | exceljs       |              |
 
 ## 実用パターン
 
 ### 標準入力とファイル引数の両対応
 
 ```typescript
-import fs from "fs/promises";
+import fs from 'fs/promises'
 
-const [file] = process.argv.slice(2);
+const [file] = process.argv.slice(2)
 
 async function main() {
-  const input = file ? await fs.readFile(file, "utf-8") : await new Promise<string>(r => {
-    let s = "";
-    process.stdin.setEncoding("utf8");
-    process.stdin.on("data", c => s += c);
-    process.stdin.on("end", () => r(s));
-  });
-  console.log(input.toUpperCase());
+  const input = file
+    ? await fs.readFile(file, 'utf-8')
+    : await new Promise<string>((r) => {
+        let s = ''
+        process.stdin.setEncoding('utf8')
+        process.stdin.on('data', (c) => (s += c))
+        process.stdin.on('end', () => r(s))
+      })
+  console.log(input.toUpperCase())
 }
 
-main().catch(e => { console.error(e); process.exit(1); });
+main().catch((e) => {
+  console.error(e)
+  process.exit(1)
+})
 ```
 
 使い方:
+
 ```powershell
 # ファイルから
 tsx script.ts -- input.txt

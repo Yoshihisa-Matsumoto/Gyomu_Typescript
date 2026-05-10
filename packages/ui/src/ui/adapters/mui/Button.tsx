@@ -1,11 +1,9 @@
-import { styled } from '@mui/material/styles';
-import {
-  Button as MUIButton,
-  ButtonProps as MUIButtonProps,
-} from '@mui/material';
+import { styled } from '@mui/material/styles'
+import { Button as MUIButton } from '@mui/material'
+import type { ButtonProps as MUIButtonProps } from '@mui/material'
 
 interface ButtonProps extends MUIButtonProps {
-  label: string;
+  label: string
 }
 
 export const MuiButtonAdapter = ({ label, ...props }: ButtonProps) => {
@@ -13,8 +11,8 @@ export const MuiButtonAdapter = ({ label, ...props }: ButtonProps) => {
     <MUIButton variant="contained" {...props}>
       {label}
     </MUIButton>
-  );
-};
+  )
+}
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -26,21 +24,13 @@ const VisuallyHiddenInput = styled('input')({
   left: 0,
   whiteSpace: 'nowrap',
   width: 1,
-});
+})
 
 export const MuiFileButtonAdapter = ({ label, ...props }: ButtonProps) => {
   return (
-    <MUIButton
-      component="label"
-      role={undefined}
-      variant="contained"
-      {...props}
-    >
+    <MUIButton component="label" role={undefined} variant="contained" {...props}>
       {label}
-      <VisuallyHiddenInput
-        type="file"
-        onChange={(event) => console.log(event.target.files)}
-      />
+      <VisuallyHiddenInput type="file" onChange={(event) => console.log(event.target.files)} />
     </MUIButton>
-  );
-};
+  )
+}

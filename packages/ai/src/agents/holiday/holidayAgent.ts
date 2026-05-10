@@ -1,5 +1,5 @@
-import { Agent } from '@mastra/core/agent';
-import { getHolidayTool } from '../../tools/businessCalendar/getHolidayTool.js';
+import { Agent } from '@mastra/core/agent'
+import { getHolidayTool } from '../../tools/businessCalendar/getHolidayTool.js'
 
 export const holidayAgent = new Agent({
   id: 'holiday-agent',
@@ -10,7 +10,7 @@ export const holidayAgent = new Agent({
   `,
   model: 'google/gemini-3-flash-preview',
   tools: { getHolidayTool },
-});
+})
 
 // const result = await holidayAgent.generate('2026年1月の祝日を教えて');
 

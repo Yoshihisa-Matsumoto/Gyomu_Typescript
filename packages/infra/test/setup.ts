@@ -1,3 +1,3 @@
-import { initLoggerFromEnv } from '../src/logger/pinoLogger';
+import { initLoggerFromEnv } from '../src/logger/pinoLogger'
 
-await initLoggerFromEnv();
+await initLoggerFromEnv()

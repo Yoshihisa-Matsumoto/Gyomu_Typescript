@@ -1,6 +1,5 @@
-import { Effect } from 'effect';
-import { Layer } from 'effect';
-import { UserService } from '@gyomu/core/gyomu';
+import { Effect, Layer } from 'effect'
+import { UserService } from '@gyomu/core/gyomu'
 
 export const DummyUserLayer = Layer.effect(
   UserService,
@@ -19,4 +18,4 @@ export const DummyUserLayer = Layer.effect(
       }),
     isMember: () => Effect.succeed(false),
   }),
-);
+)

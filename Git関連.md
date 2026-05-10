@@ -1,3 +1,7 @@
+# Gitブランチ作成
+
+git switch -c ＜新ブランチ名＞
+
 # GitHubでマージ終わったら
 
 1. git statusで未コミットないことの確認

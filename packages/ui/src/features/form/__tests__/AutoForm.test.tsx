@@ -1,9 +1,9 @@
-import { describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, waitFor, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import { AutoForm } from '../AutoForm';
-import { defineEntityCrudSchemas, schemaField } from '@gyomu/core/entity';
-import { withOptional } from '@gyomu/core';
+import { describe, expect, it, vi } from 'vitest'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import '@testing-library/jest-dom'
+import { defineEntityCrudSchemas, schemaField } from '@gyomu/core/entity'
+import { withOptional } from '@gyomu/core'
+import { AutoForm } from '../AutoForm'
 
 describe('AutoForm Test', () => {
   const schema = defineEntityCrudSchemas({
@@ -17,9 +17,9 @@ describe('AutoForm Test', () => {
       age: { label: 'Age', widget: 'number' as const },
       name: { label: 'Name', widget: 'text' as const },
     },
-  });
+  })
   it('calls onSubmit when form is valid', async () => {
-    const handleSubmit = vi.fn();
+    const handleSubmit = vi.fn()
 
     render(
       <AutoForm
@@ -34,20 +34,20 @@ describe('AutoForm Test', () => {
         onSubmit={handleSubmit}
         {...withOptional({ ui: schema.ui })}
       />,
-    );
+    )
 
     // 入力（必要なら）
     // fireEvent.change(...)
-    const form = document.querySelector('form')!;
-    fireEvent.submit(form);
+    const form = document.querySelector('form')!
+    fireEvent.submit(form)
 
     await waitFor(() => {
-      expect(handleSubmit).toHaveBeenCalled();
-    });
-  });
+      expect(handleSubmit).toHaveBeenCalled()
+    })
+  })
 
   it('does not call onSubmit when validation fails', async () => {
-    const handleSubmit = vi.fn();
+    const handleSubmit = vi.fn()
 
     render(
       <AutoForm
@@ -56,16 +56,16 @@ describe('AutoForm Test', () => {
         uiContext="create"
         onSubmit={handleSubmit}
       />,
-    );
+    )
 
     // invalidな入力
-    const form = document.querySelector('form')!;
-    fireEvent.submit(form);
+    const form = document.querySelector('form')!
+    fireEvent.submit(form)
 
     await waitFor(() => {
-      expect(handleSubmit).not.toHaveBeenCalled();
-    });
-  });
+      expect(handleSubmit).not.toHaveBeenCalled()
+    })
+  })
 
   it('renders fields from schema', () => {
     render(
@@ -80,8 +80,8 @@ describe('AutoForm Test', () => {
         }}
         onSubmit={() => {}}
       />,
-    );
+    )
 
-    expect(screen.getByDisplayValue('Taro')).toBeInTheDocument();
-  });
-});
+    expect(screen.getByDisplayValue('Taro')).toBeInTheDocument()
+  })
+})

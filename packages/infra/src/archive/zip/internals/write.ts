@@ -1,18 +1,19 @@
-import { Effect, Stream, FileSystem } from 'effect';
-import { IOError } from '@gyomu/core';
-//import { Readable } from 'node:stream';
+import path from 'node:path'
+import { Effect, Stream } from 'effect'
+import { IOError } from '@gyomu/core'
+// import { Readable } from 'node:stream';
 
-import { ZipFile } from 'yazl';
-import path from 'path';
-import { FileTransportInfo } from '@gyomu/core/gyomu/file';
-//import { fromReadable } from '../../../nodeStream.js';
-import { NodeStream } from '@effect/platform-node';
-import { pathExists, readDirectoryDetailed } from '../../../fs/fs-utils.js';
+import { ZipFile } from 'yazl'
+// import { fromReadable } from '../../../nodeStream.js';
+import { NodeStream } from '@effect/platform-node'
+import { pathExists, readDirectoryDetailed } from '../../../fs/fs-utils.js'
+import type { FileTransportInfo } from '@gyomu/core/gyomu/file'
+import type { FileSystem } from 'effect'
 
 const addFile = (zip: ZipFile, fsPath: string, zipPath: string) =>
   Effect.sync(() => {
-    zip.addFile(fsPath, zipPath);
-  });
+    zip.addFile(fsPath, zipPath)
+  })
 
 const addDirectory = (
   zip: ZipFile,
@@ -22,25 +23,25 @@ const addDirectory = (
   readDirectoryDetailed(fsPath).pipe(
     Effect.flatMap((items) =>
       Effect.forEach(items, (item) => {
-        const itemPath = path.join(fsPath, item.name);
-        const zipPath = (relativeTo ? relativeTo + '/' : '') + item.name;
+        const itemPath = path.join(fsPath, item.name)
+        const zipPath = (relativeTo ? relativeTo + '/' : '') + item.name
 
         if (item.isDirectory) {
-          return addDirectory(zip, itemPath, zipPath);
+          return addDirectory(zip, itemPath, zipPath)
         }
 
         if (item.isFile) {
-          return addFile(zip, itemPath, zipPath);
+          return addFile(zip, itemPath, zipPath)
         }
 
-        return Effect.void;
+        return Effect.void
       }),
     ),
-  );
+  )
 
-const processTransfers = (zip: ZipFile, list: FileTransportInfo[]) =>
+const processTransfers = (zip: ZipFile, list: Array<FileTransportInfo>) =>
   Effect.forEach(list, (info) => {
-    const sourcePath = info.sourceFullNameWithBasePath;
+    const sourcePath = info.sourceFullNameWithBasePath
 
     return pathExists(sourcePath).pipe(
       Effect.flatMap((exists) =>
@@ -58,31 +59,29 @@ const processTransfers = (zip: ZipFile, list: FileTransportInfo[]) =>
       ),
       Effect.flatMap(() => {
         if (!info.isSourceDirectory) {
-          const zipPath = info.destinationFullName.replace(/\\/g, '/');
-          return addFile(zip, sourcePath, zipPath);
+          const zipPath = info.destinationFullName.replace(/\\/g, '/')
+          return addFile(zip, sourcePath, zipPath)
         }
 
-        const destRoot = info.destinationPath
-          ? info.destinationPath.replace(/\\/g, '/')
-          : '';
+        const destRoot = info.destinationPath ? info.destinationPath.replace(/\\/g, '/') : ''
 
-        return addDirectory(zip, sourcePath, destRoot);
+        return addDirectory(zip, sourcePath, destRoot)
       }),
-    );
-  });
+    )
+  })
 
 export const zipToStream = (
-  transferInformationList: FileTransportInfo[],
+  transferInformationList: Array<FileTransportInfo>,
 ): Stream.Stream<Uint8Array, IOError, FileSystem.FileSystem> =>
   Stream.unwrap(
     Effect.gen(function* () {
-      const zip = new ZipFile();
+      const zip = new ZipFile()
 
-      yield* processTransfers(zip, transferInformationList);
+      yield* processTransfers(zip, transferInformationList)
 
       // 👇 ここ重要（Stream開始前にend）
-      zip.end();
+      zip.end()
 
-      return NodeStream.fromReadable({ evaluate: () => zip.outputStream });
+      return NodeStream.fromReadable({ evaluate: () => zip.outputStream })
     }),
-  );
+  )

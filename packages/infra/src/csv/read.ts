@@ -1,8 +1,9 @@
-import { Schema, Stream, Function, Option, Effect } from 'effect';
-import { IOError } from '@gyomu/core';
-import { throughNodeStream } from '../stream/bridge/nodeStream.js';
-import { CsvColumn, CsvReadOption } from './type.js';
-import { parse, Options } from 'csv-parse';
+import { Effect, Function, Option, Schema, Stream } from 'effect'
+import { IOError } from '@gyomu/core'
+import { parse } from 'csv-parse'
+import { throughNodeStream } from '../stream/bridge/nodeStream.js'
+import type { Options } from 'csv-parse'
+import type { CsvColumn, CsvReadOption } from './type.js'
 
 export const parseCsv =
   <A, R = never>(options?: CsvReadOption<A>) =>
@@ -14,7 +15,7 @@ export const parseCsv =
       throughNodeStream<string | Buffer | Uint8Array, Record<string, string>>(
         parse(convertReadOption(options)),
       ),
-    );
+    )
 
 // const decodeCsv_Old =
 //   <A>(schema: Schema.Schema<A>, skipInvalid?: boolean) =>
@@ -45,15 +46,15 @@ const decodeCsv =
   <E, R>(stream: Stream.Stream<unknown, E, R>) =>
     stream.pipe(
       Stream.map((input) => {
-        const opt = Schema.decodeUnknownOption(schema as any)(input);
+        const opt = Schema.decodeUnknownOption(schema as any)(input)
 
         return {
           ok: Option.isSome(opt),
           value: Option.getOrUndefined(opt),
           raw: input,
-        };
+        }
       }),
-    );
+    )
 
 export const readCsv =
   <A, R = never>(
@@ -63,13 +64,11 @@ export const readCsv =
   (stream: Stream.Stream<string | Buffer | Uint8Array, IOError, R>) =>
     stream.pipe(
       parseCsv(options),
-      Stream.filter((row) =>
-        options?.filterRaw ? options.filterRaw(row) : true,
-      ),
+      Stream.filter((row) => (options?.filterRaw ? options.filterRaw(row) : true)),
       decodeCsv(schema),
       Stream.tap((row) =>
         Effect.sync(() => {
-          if (!row.ok) options?.onInvalidRow?.(row.raw);
+          if (!row.ok) options?.onInvalidRow?.(row.raw)
         }),
       ),
       Stream.flatMap((row) =>
@@ -90,17 +89,15 @@ export const readCsv =
               ),
       ),
       Stream.filter((row) => (options?.filter ? options.filter(row) : true)),
-    );
+    )
 
 export const readCsvRaw =
   <R = never>(options?: CsvReadOption<Record<string, string>>) =>
   (stream: Stream.Stream<string | Buffer, IOError, R>) =>
     stream.pipe(
       parseCsv(options),
-      Stream.filter((row) =>
-        options?.filterRaw ? options.filterRaw(row) : true,
-      ),
-    );
+      Stream.filter((row) => (options?.filterRaw ? options.filterRaw(row) : true)),
+    )
 
 const convertReadOption = <R>(options?: CsvReadOption<R>) => {
   const inputCsvOption: Options = {
@@ -108,25 +105,24 @@ const convertReadOption = <R>(options?: CsvReadOption<R>) => {
     bom: false,
     skip_empty_lines: true,
     trim: true,
-  };
+  }
 
   if (options?.bom) {
-    inputCsvOption.bom = true;
+    inputCsvOption.bom = true
   }
   if (options?.fields) {
-    const fields = options.fields;
-    inputCsvOption.columns = (headers) =>
-      headers.map((h) => buildHeaderMap(fields)[h] ?? h);
+    const fields = options.fields
+    inputCsvOption.columns = (headers) => headers.map((h) => buildHeaderMap(fields)[h] ?? h)
   }
-  return inputCsvOption;
-};
+  return inputCsvOption
+}
 
-function buildHeaderMap<R>(fields: readonly CsvColumn<R>[]) {
-  const map: Record<string, string> = {};
+function buildHeaderMap<R>(fields: ReadonlyArray<CsvColumn<R>>) {
+  const map: Record<string, string> = {}
 
   for (const f of fields) {
-    map[f.header ?? f.key] = f.key;
+    map[f.header || f.key] = f.key
   }
 
-  return map;
+  return map
 }

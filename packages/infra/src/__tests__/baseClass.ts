@@ -1,197 +1,156 @@
-import { Effect, Layer, FileSystem, PlatformError } from 'effect';
-import path from 'path';
-import { expect } from 'vitest';
-import { MainLayer, PlatformLayer } from '../layer.js';
-import { makeRunner } from '../runtime.js';
+import { join, resolve, sep } from 'node:path'
+import { tmpdir } from 'node:os'
+import { Effect, Layer } from 'effect'
+import { expect } from 'vitest'
+import { MainLayer, PlatformLayer } from '../layer.js'
+import { makeRunner } from '../runtime.js'
 import {
   pathExists,
   readDirectoryDetailed,
   readFromFile,
   readStringFromFile,
-} from '../fs/fs-utils.js';
-import { IOError } from '@gyomu/core';
-import { tmpdir } from 'os';
+} from '../fs/fs-utils.js'
+import type { IOError } from '@gyomu/core'
+import type { FileSystem, PlatformError } from 'effect'
 
 export const tmpDir = () => {
-  return tmpdir() + path.sep;
-};
+  return tmpdir() + sep
+}
 
-const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer);
-const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer);
+const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer)
+const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer)
 const equals = (a: Uint8Array, b: Uint8Array): boolean => {
-  if (a.length !== b.length) return false;
+  if (a.length !== b.length) return false
 
   for (let i = 0; i < a.length; i++) {
-    if (a[i] !== b[i]) return false;
+    if (a[i] !== b[i]) return false
   }
 
-  return true;
-};
+  return true
+}
 export const compareFiles = async (srcFile: string, destFile: string) => {
-  return await runNodeWithEnvOrThrow(compareFilesEffect(srcFile, destFile));
-};
+  return await runNodeWithEnvOrThrow(compareFilesEffect(srcFile, destFile))
+}
 
-const normalize = (bytes: Uint8Array) =>
-  new TextDecoder().decode(bytes).replace(/\r\n/g, '\n');
+const normalize = (bytes: Uint8Array) => new TextDecoder().decode(bytes).replace(/\r\n/g, '\n')
 
 const equalsText = (a: Uint8Array, b: Uint8Array) => {
-  return normalize(a) === normalize(b);
-};
-const isText = (path: string) => /\.(txt|md|py|csv|html|cfg)$/i.test(path);
+  return normalize(a) === normalize(b)
+}
+const isText = (path: string) => /\.(txt|md|py|csv|html|cfg)$/i.test(path)
 
 const compareFilesEffect = (srcFile: string, destFile: string) => {
   return Effect.gen(function* () {
-    const source = yield* readFromFile(srcFile);
-    const destination = yield* readFromFile(destFile);
+    const source = yield* readFromFile(srcFile)
+    const destination = yield* readFromFile(destFile)
     if (isText(srcFile)) {
-      const result = equalsText(source, destination);
+      const result = equalsText(source, destination)
       if (!result) {
-        console.log(srcFile, destFile);
+        console.log(srcFile, destFile)
       }
-      return result;
+      return result
     } else {
-      const result = equals(source, destination);
+      const result = equals(source, destination)
       if (!result) {
-        console.log(srcFile, destFile);
+        console.log(srcFile, destFile)
       }
-      return result;
+      return result
     }
-  });
-};
+  })
+}
 
 export const validateTextFiles = async (srcFile: string, destFile: string) => {
   return await runNodeWithEnvOrThrow(
     Effect.gen(function* () {
-      const srcData = (yield* readStringFromFile(srcFile)).replace(
-        /\r\n|\r/g,
-        '\n',
-      );
-      const destData = (yield* readStringFromFile(destFile)).replace(
-        /\r\n|\r/g,
-        '\n',
-      );
+      const srcData = (yield* readStringFromFile(srcFile)).replace(/\r\n|\r/g, '\n')
+      const destData = (yield* readStringFromFile(destFile)).replace(/\r\n|\r/g, '\n')
 
-      expect(srcData).toBe(destData);
+      expect(srcData).toBe(destData)
     }),
-  );
-};
+  )
+}
 
-export const validateFolders = async (
-  srcFolder: string,
-  destFolder: string,
-) => {
+export const validateFolders = async (srcFolder: string, destFolder: string) => {
   return await runNodeWithEnvOrThrow(
     Effect.gen(function* () {
-      expect(
-        yield* compareFoldersFromSourceEffect(srcFolder, destFolder),
-      ).toBeTruthy();
-      expect(
-        yield* compareFoldersFromDestEffect(srcFolder, destFolder),
-      ).toBeTruthy();
+      expect(yield* compareFoldersFromSourceEffect(srcFolder, destFolder)).toBeTruthy()
+      expect(yield* compareFoldersFromDestEffect(srcFolder, destFolder)).toBeTruthy()
     }),
-  );
-};
+  )
+}
 const compareFoldersFromSourceEffect = (
   srcFolder: string,
   destFolder: string,
-): Effect.Effect<
-  boolean,
-  PlatformError.PlatformError | IOError,
-  FileSystem.FileSystem
-> => {
+): Effect.Effect<boolean, PlatformError.PlatformError | IOError, FileSystem.FileSystem> => {
   return Effect.gen(function* () {
-    const dirs = yield* readDirectoryDetailed(srcFolder);
+    const dirs = yield* readDirectoryDetailed(srcFolder)
     yield* Effect.forEach(
       dirs,
       (dirent) =>
         Effect.gen(function* () {
-          const sourceFullPath = path.join(
-            path.resolve(srcFolder),
-            dirent.name,
-          );
+          const sourceFullPath = join(resolve(srcFolder), dirent.name)
 
-          const targetDestFullPath = path.join(
-            path.resolve(destFolder),
-            dirent.name,
-          );
+          const targetDestFullPath = join(resolve(destFolder), dirent.name)
 
           if (dirent.type === 'File') {
-            expect(yield* pathExists(targetDestFullPath)).toBeTruthy();
+            expect(yield* pathExists(targetDestFullPath)).toBeTruthy()
 
-            expect(
-              yield* compareFilesEffect(sourceFullPath, targetDestFullPath),
-            ).toBeTruthy();
+            expect(yield* compareFilesEffect(sourceFullPath, targetDestFullPath)).toBeTruthy()
           } else {
-            expect(yield* pathExists(targetDestFullPath)).toBeTruthy();
+            expect(yield* pathExists(targetDestFullPath)).toBeTruthy()
 
             // 🔥 再帰もちゃんと yield*
-            yield* compareFoldersFromSourceEffect(
-              sourceFullPath,
-              targetDestFullPath,
-            );
+            yield* compareFoldersFromSourceEffect(sourceFullPath, targetDestFullPath)
           }
         }),
       { concurrency: 1 }, // ← テストなので順序保証
-    );
+    )
 
-    return true;
-  });
-};
+    return true
+  })
+}
 
 const isEmptyDir = (path: string) =>
   Effect.gen(function* () {
-    const entries = yield* readDirectoryDetailed(path);
-    return entries.length === 0;
-  });
+    const entries = yield* readDirectoryDetailed(path)
+    return entries.length === 0
+  })
 const compareFoldersFromDestEffect = (
   srcFolder: string,
   destFolder: string,
-): Effect.Effect<
-  boolean,
-  PlatformError.PlatformError | IOError,
-  FileSystem.FileSystem
-> =>
+): Effect.Effect<boolean, PlatformError.PlatformError | IOError, FileSystem.FileSystem> =>
   Effect.gen(function* () {
-    const dirs = yield* readDirectoryDetailed(destFolder);
+    const dirs = yield* readDirectoryDetailed(destFolder)
 
     yield* Effect.forEach(
       dirs,
       (dirent) =>
         Effect.gen(function* () {
-          const destinationFullPath = path.join(
-            path.resolve(destFolder),
-            dirent.name,
-          );
+          const destinationFullPath = join(resolve(destFolder), dirent.name)
           if (dirent.type !== 'File') {
-            const isEmpty = yield* isEmptyDir(destinationFullPath);
+            const isEmpty = yield* isEmptyDir(destinationFullPath)
 
             if (isEmpty) {
               // 👇 無視
-              return;
+              return
             }
           }
-          const targetSourceFullPath = path.join(
-            path.resolve(srcFolder),
-            dirent.name,
-          );
+          const targetSourceFullPath = join(resolve(srcFolder), dirent.name)
 
-          const exists = yield* pathExists(targetSourceFullPath);
+          const exists = yield* pathExists(targetSourceFullPath)
 
           expect(
             exists,
             `Missing source path: ${targetSourceFullPath} vs ${destinationFullPath}`,
-          ).toBeTruthy();
+          ).toBeTruthy()
 
           if (dirent.type !== 'File') {
             // 🔥 再帰は必ず yield*
-            yield* compareFoldersFromDestEffect(
-              targetSourceFullPath,
-              destinationFullPath,
-            );
+            yield* compareFoldersFromDestEffect(targetSourceFullPath, destinationFullPath)
           }
         }),
       { concurrency: 1 }, // テストなので順序保証
-    );
+    )
 
-    return true;
-  });
+    return true
+  })

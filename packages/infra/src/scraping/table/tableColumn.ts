@@ -1,23 +1,23 @@
-import { GenericElement } from '../dom/element.js';
+import { GenericElement } from '../dom/element.js'
 
 export type TableColumnOption = {
-  isOriginal: boolean;
-};
+  isOriginal: boolean
+}
 
 export class TableColumn extends GenericElement<HTMLTableCellElement> {
-  isOriginal: boolean;
+  isOriginal: boolean
   constructor(node: HTMLTableCellElement, isOriginal = false) {
-    super(node);
-    this.isOriginal = isOriginal;
+    super(node)
+    this.isOriginal = isOriginal
   }
   get textValue(): string {
     if (this.isOriginal) {
-      return this.innerText.replace('\t', '').replace('\n', '');
+      return this.innerText.replace('\t', '').replace('\n', '')
     }
-    return '';
+    return ''
   }
   fakeCopy(): TableColumn {
-    const copy: TableColumn = new TableColumn(this.node, false);
-    return copy;
+    const copy: TableColumn = new TableColumn(this.node, false)
+    return copy
   }
 }

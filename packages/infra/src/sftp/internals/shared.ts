@@ -1,7 +1,6 @@
-import { Client, SFTPWrapper } from 'ssh2';
-import { isRetryableNetworkError, NetworkError } from '@gyomu/core';
-import { Effect } from 'effect';
-import { wrapInfraError } from '@gyomu/core';
+import { NetworkError, isRetryableNetworkError, wrapInfraError } from '@gyomu/core'
+import { Effect } from 'effect'
+import type { Client, SFTPWrapper } from 'ssh2'
 
 export const withSftp =
   (client: Client) =>
@@ -10,7 +9,7 @@ export const withSftp =
   ): Effect.Effect<A, E | NetworkError, R> =>
     Effect.callback((resume) => {
       client.sftp((err, sftp) => {
-        if (err || !sftp) {
+        if (err) {
           resume(
             Effect.fail(
               wrapInfraError(NetworkError, err, (e) => ({
@@ -20,11 +19,11 @@ export const withSftp =
                 endpoint: `${JSON.stringify(sftp)}`,
               })),
             ),
-          );
-          return;
+          )
+          return
         }
 
         // f(sftp) を実行して結果をそのまま流す
-        resume(f(sftp));
-      });
-    });
+        resume(f(sftp))
+      })
+    })

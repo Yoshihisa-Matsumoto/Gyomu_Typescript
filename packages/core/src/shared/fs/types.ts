@@ -1,2 +1,2 @@
-export type FsPath = string;
-export type EntryPath = string;
+export type FsPath = string
+export type EntryPath = string

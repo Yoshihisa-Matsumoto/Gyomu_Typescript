@@ -1,39 +1,40 @@
-import path from 'path';
-import { Page } from '../dom/page.js';
-import { convertGenericElementByTagName } from '../convert.js';
-import { describe, expect, it, test } from 'vitest';
-import { TableRow } from '../table/tableRow.js';
-import { JSDOM } from 'jsdom';
-import { readFileSync } from 'fs';
-test('Table initialization', async () => {
-  const htmlText = readFileSync(path.join('tests', 'test.html')).toString();
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
+import path from 'node:path'
+import { readFileSync } from 'node:fs'
+import { describe, expect, it, test } from 'vitest'
+import { JSDOM } from 'jsdom'
+import { Page } from '../dom/page.js'
+import { convertGenericElementByTagName } from '../convert.js'
+import { TableRow } from '../table/tableRow.js'
+
+test('Table initialization', () => {
+  const htmlText = readFileSync(path.join('tests', 'test.html')).toString()
 
   const page = new Page({
     kind: 'html',
     htmlText: htmlText,
-  });
-  const tablesDiv = page.getElementsByClassName<HTMLDivElement>(
-    'component-normal-table',
-  );
+  })
+  const tablesDiv = page.getElementsByClassName<HTMLDivElement>('component-normal-table')
   const table = convertGenericElementByTagName(
     'table',
-    tablesDiv[0]!.getGenericElementsByTagName('table')[0]!,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+    tablesDiv[0]?.getGenericElementsByTagName('table')[0]!,
     { headerExist: false },
-  );
+  )
 
-  const dictionaryArray = table.toDictionaryArray();
-  //console.log(dictionaryArray);
+  const dictionaryArray = table.toDictionaryArray()
+  // console.log(dictionaryArray);
   expect(dictionaryArray).toEqual([
     { Column1: '1', Column2: 'A' },
     { Column1: '2', Column2: 'B' },
     { Column1: '3', Column2: 'C' },
-  ]);
-});
+  ])
+})
 
 const createRow = (html: string) => {
-  const dom = new JSDOM(`<table>${html}</table>`);
-  return dom.window.document.querySelector('tr')!;
-};
+  const dom = new JSDOM(`<table>${html}</table>`)
+  return dom.window.document.querySelector('tr')!
+}
 
 describe('TableRow', () => {
   it('単純な行をパースできる', () => {
@@ -42,24 +43,24 @@ describe('TableRow', () => {
         <td>A</td>
         <td>B</td>
       </tr>
-    `);
+    `)
 
-    const row = new TableRow(tr);
+    const row = new TableRow(tr)
 
-    expect(row.columns.length).toBe(2);
-  });
+    expect(row.columns.length).toBe(2)
+  })
 
   it('colspanを展開できる', () => {
     const tr = createRow(`
       <tr>
         <td colspan="2">A</td>
       </tr>
-    `);
+    `)
 
-    const row = new TableRow(tr);
+    const row = new TableRow(tr)
 
-    expect(row.columns.length).toBe(2);
-  });
+    expect(row.columns.length).toBe(2)
+  })
 
   it('rowspanが次の行に引き継がれる', () => {
     const dom = new JSDOM(`
@@ -72,13 +73,13 @@ describe('TableRow', () => {
           <td>C</td>
         </tr>
       </table>
-    `);
+    `)
 
-    const rows = dom.window.document.querySelectorAll('tr');
+    const rows = dom.window.document.querySelectorAll('tr')
 
-    const row1 = new TableRow(rows[0]!);
-    const row2 = new TableRow(rows[1]!, row1);
+    const row1 = new TableRow(rows[0]!)
+    const row2 = new TableRow(rows[1]!, row1)
 
-    expect(row2.columns.length).toBe(2);
-  });
-});
+    expect(row2.columns.length).toBe(2)
+  })
+})

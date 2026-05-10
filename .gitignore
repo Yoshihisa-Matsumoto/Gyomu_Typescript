@@ -78,3 +78,18 @@ dist/
 storybook-static/
 
 *storybook.log
+
+
+# tanstack start 
+
+dist-ssr
+*.local
+count.txt
+
+.nitro
+.tanstack
+.wrangler
+.output
+.vinxi
+__unconfig*
+todos.json

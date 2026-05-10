@@ -1,1 +1,1 @@
-export * from './GyomuRepositoryLayer.js';
+export * from './GyomuRepositoryLayer.js'

@@ -1,18 +1,14 @@
-import { Stream } from 'effect';
-import { isRetryableNetworkError, NetworkError } from '@gyomu/core';
-import { wrapInfraError } from '@gyomu/core';
+import { Stream } from 'effect'
+import { NetworkError, isRetryableNetworkError, wrapInfraError } from '@gyomu/core'
 
-export const networkStream = (
-  f: () => ReadableStream<Uint8Array>,
-  context: string,
-) =>
+export const networkStream = (f: () => ReadableStream<Uint8Array>, context: string) =>
   Stream.fromReadableStream({
     evaluate: f,
     onError: (e) =>
-      wrapInfraError(NetworkError, e, (e) => ({
+      wrapInfraError(NetworkError, e, (e2) => ({
         message: 'fail to read stream',
         operation: 'download' as const,
         endpoint: context,
-        retryable: isRetryableNetworkError(e),
+        retryable: isRetryableNetworkError(e2),
       })),
-  });
+  })

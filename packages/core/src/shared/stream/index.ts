@@ -1,1 +1,1 @@
-export * from './transform/encoding.js';
+export * from './transform/encoding.js'

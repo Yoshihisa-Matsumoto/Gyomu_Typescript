@@ -1,5 +1,5 @@
-import { FsPath } from './types.js';
+import type { FsPath } from './types.js'
 
-export const joinEntryPath = (...parts: FsPath[]): string =>
-  parts.join('/').replace(/\/+/g, '/');
-export const toEntryPath = (p: FsPath): string => p.replace(/\\/g, '/');
+export const joinEntryPath = (...parts: Array<FsPath>): string =>
+  parts.join('/').replace(/\/+/g, '/')
+export const toEntryPath = (p: FsPath): string => p.replace(/\\/g, '/')

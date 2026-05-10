@@ -1,1 +1,1 @@
-export * from './HolidayFetcher.js';
+export * from './HolidayFetcher.js'

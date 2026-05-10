@@ -1,10 +1,11 @@
-import { Data } from 'effect';
-import { AppErrorContext, Severity, withErrorTraits } from './BaseError.js';
+import { Data } from 'effect'
+import { withErrorTraits } from './BaseError.js'
+import type { AppErrorContext } from './BaseError.js'
 
 interface ValueErrorShape extends AppErrorContext {
-  field?: string;
-  value?: unknown;
-  expected?: unknown;
+  field?: string
+  value?: unknown
+  expected?: unknown
 }
 
 // export class ValueError extends AppError<ValueErrorShape> {
@@ -18,6 +19,4 @@ interface ValueErrorShape extends AppErrorContext {
 //     super(ctx);
 //   }
 // }
-export class ValueError extends withErrorTraits(
-  Data.TaggedError('ValueError')<ValueErrorShape>,
-) {}
+export class ValueError extends withErrorTraits(Data.TaggedError('ValueError')<ValueErrorShape>) {}

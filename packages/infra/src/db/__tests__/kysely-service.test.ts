@@ -1,15 +1,15 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { Effect, Layer } from 'effect';
-import { KyselyService } from '../KyselyService.js';
-import { ConfigService } from '../../config.js';
-import { MssqlService } from '../MssqlService.js';
-import { NodeFileSystem } from '@effect/platform-node';
-import { ConfigError } from '@gyomu/core';
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { Effect, Layer } from 'effect'
+import { NodeFileSystem } from '@effect/platform-node'
+import { ConfigError } from '@gyomu/core'
+import { KyselyService } from '../KyselyService.js'
+import { ConfigService } from '../../config.js'
+import { MssqlService } from '../MssqlService.js'
 
 // --- mocks ---
 const mockDb = {
   destroy: () => Promise.resolve(),
-};
+}
 // const { makeMssqlMock } = vi.hoisted(() => {
 //   return {
 //     makeMssqlMock: vi.fn(() => mockDb),
@@ -18,7 +18,7 @@ const mockDb = {
 
 const MssqlMockLayer = Layer.succeed(MssqlService, {
   make: () => Effect.succeed(mockDb),
-} as any);
+} as any)
 
 const mockConfig = {
   server: 'localhost',
@@ -26,49 +26,47 @@ const mockConfig = {
   database: 'testdb',
   user: 'sa',
   password: 'pass',
-};
+}
 const ConfigServiceMock = Layer.succeed(ConfigService, {
   load: <A>() => Effect.succeed(mockConfig as unknown as A),
-});
+})
 
 const layer = Layer.effect(KyselyService, KyselyService.make).pipe(
   Layer.provideMerge(ConfigServiceMock),
   Layer.provideMerge(MssqlMockLayer),
   Layer.provideMerge(NodeFileSystem.layer),
-);
+)
 
 describe('KyselyService (Effect v4)', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-  });
+    vi.clearAllMocks()
+  })
 
   it('should create connection', async () => {
     const program = Effect.gen(function* () {
-      const service = yield* KyselyService;
-      return yield* service.withConnection('test');
-    });
+      const service = yield* KyselyService
+      return yield* service.withConnection('test')
+    })
 
-    const result = await Effect.runPromise(
-      program.pipe(Effect.provide(layer), Effect.scoped),
-    );
+    const result = await Effect.runPromise(program.pipe(Effect.provide(layer), Effect.scoped))
 
-    //expect(makeMssqlMock).toHaveBeenCalledWith(mockConfig);
-    expect(result).toBe(mockDb);
-  });
+    // expect(makeMssqlMock).toHaveBeenCalledWith(mockConfig);
+    expect(result).toBe(mockDb)
+  })
 
   it('should call destroy on release', async () => {
     const program = Effect.gen(function* () {
-      const service = yield* KyselyService;
-      yield* service.withConnection('test');
-    });
+      const service = yield* KyselyService
+      yield* service.withConnection('test')
+    })
 
-    await Effect.runPromise(program.pipe(Effect.provide(layer), Effect.scoped));
+    await Effect.runPromise(program.pipe(Effect.provide(layer), Effect.scoped))
 
-    //expect(mockDb.destroy).toHaveBeenCalled();
-  });
+    // expect(mockDb.destroy).toHaveBeenCalled();
+  })
 
   it('should fail if config fails', async () => {
-    const ConfigServiceMock = Layer.succeed(ConfigService, {
+    const ConfigServiceMock2 = Layer.succeed(ConfigService, {
       load: () =>
         Effect.fail(
           new ConfigError({
@@ -77,21 +75,21 @@ describe('KyselyService (Effect v4)', () => {
             phase: 'load' as const,
           }),
         ),
-    });
+    })
 
     const program = Effect.gen(function* () {
-      const service = yield* KyselyService;
-      yield* service.withConnection('test');
-    });
+      const service = yield* KyselyService
+      yield* service.withConnection('test')
+    })
 
-    const layer = Layer.effect(KyselyService, KyselyService.make).pipe(
-      Layer.provideMerge(ConfigServiceMock),
+    const layer2 = Layer.effect(KyselyService, KyselyService.make).pipe(
+      Layer.provideMerge(ConfigServiceMock2),
       Layer.provideMerge(MssqlMockLayer),
       Layer.provideMerge(NodeFileSystem.layer),
-    );
+    )
 
     await expect(
-      Effect.runPromise(program.pipe(Effect.provide(layer), Effect.scoped)),
-    ).rejects.toThrow();
-  });
-});
+      Effect.runPromise(program.pipe(Effect.provide(layer2), Effect.scoped)),
+    ).rejects.toThrow()
+  })
+})

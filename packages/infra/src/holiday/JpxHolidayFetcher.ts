@@ -1,10 +1,7 @@
-import { Effect, Layer } from 'effect';
-import {
-  HolidayFetcher,
-  HolidayFetcherService,
-} from '@gyomu/core/gyomu/holiday';
-import { fetchJpxHolidays } from './jpxFetcher.js';
-import { GyomuError, gyomuExternalFailure } from '@gyomu/core';
+import { Effect, Layer } from 'effect'
+import { HolidayFetcher } from '@gyomu/core/gyomu/holiday'
+import { GyomuError, gyomuExternalFailure } from '@gyomu/core'
+import { fetchJpxHolidays } from './jpxFetcher.js'
 
 const JPXHolidayFetcherLive = {
   fetch: (market: string) => {
@@ -17,14 +14,9 @@ const JPXHolidayFetcherLive = {
           reason: 'invalid_input',
           cause: undefined,
         }),
-      );
-    return fetchJpxHolidays().pipe(
-      Effect.mapError(gyomuExternalFailure('fetchHoliday', 'market')),
-    );
+      )
+    return fetchJpxHolidays().pipe(Effect.mapError(gyomuExternalFailure('fetchHoliday', 'market')))
   },
-};
+}
 
-export const JPXHolidayFetcherLayer = Layer.succeed(
-  HolidayFetcher,
-  JPXHolidayFetcherLive,
-);
+export const JPXHolidayFetcherLayer = Layer.succeed(HolidayFetcher, JPXHolidayFetcherLive)

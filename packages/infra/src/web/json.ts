@@ -1,14 +1,13 @@
-import { Effect } from 'effect';
-import { Stream } from 'effect';
-import { NetworkError } from '@gyomu/core';
-import { fromSync } from '../../../core/dist/effect/index.js';
-import { ValueError } from '@gyomu/core';
+import { Effect, Stream } from 'effect'
+import { fromSync } from '@gyomu/core/effect'
+import { ValueError } from '@gyomu/core'
+import type { NetworkError } from '@gyomu/core'
 
 export type FetchResult<ResponseType> = {
-  value: ResponseType;
-  code: number;
-  extraAttribute?: any;
-};
+  value: ResponseType
+  code: number
+  extraAttribute?: any
+}
 export const jsonEffect = <T>(
   stream: Stream.Stream<Uint8Array, NetworkError>,
 ): Effect.Effect<T, NetworkError | ValueError> =>
@@ -16,9 +15,9 @@ export const jsonEffect = <T>(
     Stream.decodeText(),
     Stream.runCollect,
     Effect.flatMap((chunks) =>
-      fromSync(ValueError, (e) => ({
+      fromSync(ValueError, () => ({
         message: 'invalid json',
         value: chunks,
       }))(() => JSON.parse(chunks.join('')) as T),
     ),
-  );
+  )

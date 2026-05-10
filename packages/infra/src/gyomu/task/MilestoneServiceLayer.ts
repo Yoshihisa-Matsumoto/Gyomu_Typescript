@@ -1,30 +1,25 @@
-import { format } from 'date-fns';
-import { polling } from '../../../../core/dist/effect/index.js';
-import { Effect, Layer, Schema } from 'effect';
-import { GyomuRepository } from '@gyomu/core/gyomu';
-import {
-  MilestoneDailySchema,
-  MilestoneSchema,
-} from '@gyomu/core/schemas/gyomu';
-import { DBError, TimeoutError } from '@gyomu/core';
-import { convertToSchemaObjectWithEffect } from '@gyomu/core/entity';
+import { format } from 'date-fns'
+import { Effect, Layer } from 'effect'
+import { GyomuRepository } from '@gyomu/core/gyomu'
 import {
   LocalDate,
   LocalDateSchema,
-  YearMonth,
   YearMonthSchema,
-} from '@gyomu/core/entity';
-import { MilestoneDailyDomainSchema } from '@gyomu/core/entity';
-import { SchemaValidationError } from '@gyomu/core';
-import {
-  MilestoneExistResultType,
-  MilestoneService,
-} from '@gyomu/core/gyomu/task';
+  convertToSchemaObjectWithEffect,
+} from '@gyomu/core/entity'
+import { MilestoneService } from '@gyomu/core/gyomu/task'
+import { polling } from '@gyomu/core/effect'
+import { DBError } from '@gyomu/core'
+import type { MilestoneExistResultType } from '@gyomu/core/gyomu/task'
+import type { MilestoneDailyDomainSchema, YearMonth } from '@gyomu/core/entity'
+import type { SchemaValidationError, TimeoutError } from '@gyomu/core'
+import type { MilestoneDailySchema, MilestoneSchema } from '@gyomu/core/schemas/gyomu'
+import type { Schema } from 'effect'
 
 export const MilestoneServiceLayer = Layer.effect(
   MilestoneService,
   Effect.gen(function* () {
-    const repo = yield* GyomuRepository;
+    const repo = yield* GyomuRepository
     const existFunc = (
       milestoneId: string,
       targetYmd: LocalDate,
@@ -34,7 +29,7 @@ export const MilestoneServiceLayer = Layer.effect(
       DBError | SchemaValidationError,
       GyomuRepository
     > => {
-      //const targetDateYmd = convertTargetDate(targetYmd, isMonthly);
+      // const targetDateYmd = convertTargetDate(targetYmd, isMonthly);
       return repo.milestoneDaily
         .findByMilestoneIdAndTargetDate(milestoneId, targetYmd, isMonthly)
         .pipe(
@@ -42,34 +37,27 @@ export const MilestoneServiceLayer = Layer.effect(
             if (records.length > 0) {
               return {
                 exists: true,
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
                 updateTime: records[0]!.modifiedAt,
-              };
+              }
             }
-            return { exists: false };
+            return { exists: false }
           }),
-        );
-    };
+        )
+    }
     return {
       exists: existFunc,
       register: (
         milestoneId: string,
         targetYmd: LocalDate,
         isMonthly = false,
-      ): Effect.Effect<
-        string,
-        DBError | SchemaValidationError,
-        GyomuRepository
-      > => {
-        //const targetYmdForRecord = convertTargetDate(targetYmd, isMonthly);
+      ): Effect.Effect<string, DBError | SchemaValidationError, GyomuRepository> => {
+        // const targetYmdForRecord = convertTargetDate(targetYmd, isMonthly);
 
         return Effect.gen(function* () {
-          const existsResult = yield* existFunc(
-            milestoneId,
-            targetYmd,
-            isMonthly,
-          );
+          const existsResult = yield* existFunc(milestoneId, targetYmd, isMonthly)
           if (existsResult.exists) {
-            return existsResult.updateTime;
+            return existsResult.updateTime
           }
           const result = yield* repo.milestoneDaily.create([
             {
@@ -78,48 +66,42 @@ export const MilestoneServiceLayer = Layer.effect(
               targetDate: LocalDate.make(targetYmd),
               targetYm: targetYmd.substring(0, 7),
             },
-          ]);
-          return result[0]!.modifiedAt;
-        });
+          ])
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+          return result[0]!.modifiedAt
+        })
       },
       wait: (
         milestoneId: string,
         targetYmd: LocalDate,
         timeoutSecond: number,
       ): Effect.Effect<boolean, TimeoutError, GyomuRepository> => {
-        const interval = timeoutSecond < 60 ? 1 : 5;
+        const interval = timeoutSecond < 60 ? 1 : 5
 
         return polling(
-          `Wait for milestone ${milestoneId} on ${format(
-            targetYmd,
-            'yyyyMMdd',
-          )} to be on`,
+          `Wait for milestone ${milestoneId} on ${format(targetYmd, 'yyyyMMdd')} to be on`,
           timeoutSecond,
           interval,
-          (milestoneId, targetYmd) =>
-            existFunc(milestoneId, targetYmd).pipe(
-              Effect.map((result) => result.exists),
-            ),
+          (milestoneId2, targetYmd2) =>
+            existFunc(milestoneId2, targetYmd2).pipe(Effect.map((result) => result.exists)),
           milestoneId,
           targetYmd,
-        );
+        )
       },
       retrieveMilestoneDailyList: (
         targetDateYmd: LocalDate,
       ): Effect.Effect<
-        Schema.Schema.Type<typeof MilestoneDailyDomainSchema>[],
+        Array<Schema.Schema.Type<typeof MilestoneDailyDomainSchema>>,
         DBError | SchemaValidationError,
         GyomuRepository
       > => {
-        const targetDateMonthly = targetDateYmd.substring(0, 7) as YearMonth;
+        const targetDateMonthly = targetDateYmd.substring(0, 7) as YearMonth
 
         return Effect.gen(function* () {
           return yield* repo.milestoneDaily
             .findByTargetDateAndMonthlyDate(targetDateYmd, targetDateMonthly)
-            .pipe(
-              Effect.flatMap((rows) => Effect.forEach(rows, toMilestoneDomain)),
-            );
-        });
+            .pipe(Effect.flatMap((rows) => Effect.forEach(rows, toMilestoneDomain)))
+        })
       },
       deleteMilestoneDaily: (
         milestoneId: string,
@@ -131,59 +113,71 @@ export const MilestoneServiceLayer = Layer.effect(
             milestoneId,
             targetDateYmd,
             isMonthly,
-          );
-        });
+          )
+        })
       },
       milestoneList: (): Effect.Effect<
-        readonly (typeof MilestoneSchema.types._select)[],
+        ReadonlyArray<typeof MilestoneSchema.types._select>,
         DBError,
         GyomuRepository
       > => {
         return Effect.gen(function* () {
-          return yield* repo.milestone.findAll();
-        });
+          return yield* repo.milestone.findAll()
+        })
       },
       upsertMilestoneCode: (
         milestoneId: string,
         description: string,
-      ): Effect.Effect<
-        typeof MilestoneSchema.types._select,
-        DBError,
-        GyomuRepository
-      > => {
+      ): Effect.Effect<typeof MilestoneSchema.types._select, DBError, GyomuRepository> => {
         return Effect.gen(function* () {
-          const targetRecords =
-            yield* repo.milestone.findByMilestoneId(milestoneId);
+          const targetRecords = yield* repo.milestone.findByMilestoneId(milestoneId)
           if (targetRecords.length > 0) {
-            return (yield* repo.milestone.updateRecords([
+            const updated = yield* repo.milestone.updateRecords([
+              // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
               { id: targetRecords[0]!.id, milestoneId, description },
-            ]))[0]!;
+            ])
+            if (!updated[0]) {
+              return yield* Effect.fail(
+                new DBError({
+                  operation: 'update' as const,
+                  message: 'Failed to update milestone code',
+                  cause: undefined,
+                  params: { milestoneId, description },
+                  table: 'milestone',
+                }),
+              )
+            }
+            return updated[0]
           } else {
-            return (yield* repo.milestone.create([
-              { description, milestoneId },
-            ]))[0]!;
+            const created = yield* repo.milestone.create([{ description, milestoneId }])
+            if (!created[0]) {
+              return yield* Effect.fail(
+                new DBError({
+                  operation: 'insert' as const,
+                  message: 'Failed to create milestone code',
+                  cause: undefined,
+                  params: { milestoneId, description },
+                  table: 'milestone',
+                }),
+              )
+            }
+            return created[0]
           }
-        });
+        })
       },
-      deleteMilestoneCode: (
-        milestoneId: string,
-      ): Effect.Effect<void, DBError, GyomuRepository> => {
+      deleteMilestoneCode: (milestoneId: string): Effect.Effect<void, DBError, GyomuRepository> => {
         return Effect.gen(function* () {
-          const targetRecords =
-            yield* repo.milestone.findByMilestoneId(milestoneId);
-          yield* repo.milestone.deleteRecords(targetRecords.map((r) => r.id));
-        });
+          const targetRecords = yield* repo.milestone.findByMilestoneId(milestoneId)
+          yield* repo.milestone.deleteRecords(targetRecords.map((r) => r.id))
+        })
       },
-    };
+    }
   }),
-);
+)
 
 const toMilestoneDomain = (
   row: typeof MilestoneDailySchema.types._select,
-): Effect.Effect<
-  Schema.Schema.Type<typeof MilestoneDailyDomainSchema>,
-  SchemaValidationError
-> =>
+): Effect.Effect<Schema.Schema.Type<typeof MilestoneDailyDomainSchema>, SchemaValidationError> =>
   Effect.gen(function* () {
     return {
       id: row.id,
@@ -206,5 +200,5 @@ const toMilestoneDomain = (
                 row.targetYm,
               ),
             },
-    } as Schema.Schema.Type<typeof MilestoneDailyDomainSchema>;
-  });
+    } as Schema.Schema.Type<typeof MilestoneDailyDomainSchema>
+  })

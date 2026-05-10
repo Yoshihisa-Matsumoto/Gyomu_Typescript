@@ -1,81 +1,62 @@
-import { Schema } from 'effect';
-import { defineEntityCrudSchemas } from '../entity/defineEntityCrudSchemas.js';
+import { defineEntityCrudSchemas } from '../entity/defineEntityCrudSchemas.js'
 import {
   appInfoDefinition,
-  statusTypeDefinition,
+  marketHolidayDefinition,
+  milestoneDailyDefinition,
+  milestoneDefinition,
+  parameterMasterDefinition,
+  serviceDefinition,
+  serviceTypeDefinition,
   statusHandlerDefinition,
   statusInformationDefinition,
-  marketHolidayDefinition,
-  milestoneDefinition,
-  milestoneDailyDefinition,
-  variableParameterDefinition,
-  parameterMasterDefinition,
-  taskInfoDefinition,
-  taskInfoAccessListDefitniion,
+  statusTypeDefinition,
   taskDataDefinition,
+  taskDataLogDefinition,
+  taskDataStatusDefinition,
+  taskInfoAccessListDefitniion,
+  taskInfoDefinition,
   taskInstanceDefinition,
   taskInstanceSubmitInformationDefinition,
-  taskDataStatusDefinition,
-  taskDataLogDefinition,
-  serviceTypeDefinition,
-  serviceDefinition,
   taskSchedulerConfigDefinition,
-} from '../entity/gyomuDefinition.js';
-
-export const AppInfoSchema = defineEntityCrudSchemas(appInfoDefinition);
-
-export const StatusTypeSchema = defineEntityCrudSchemas(statusTypeDefinition);
-
-export const StatusHandlerSchema = defineEntityCrudSchemas(
-  statusHandlerDefinition,
-);
-
-export const StatusInformationSchema = defineEntityCrudSchemas(
-  statusInformationDefinition,
-);
-
-export const MarketHolidaySchema = defineEntityCrudSchemas(
-  marketHolidayDefinition,
-);
-
-export const MilestoneSchema = defineEntityCrudSchemas(milestoneDefinition);
-
-export const MilestoneDailySchema = defineEntityCrudSchemas(
-  milestoneDailyDefinition,
-);
-
-export const VariableParameterSchema = defineEntityCrudSchemas(
   variableParameterDefinition,
-);
+} from '../entity/gyomuDefinition.js'
 
-export const ParameterMasterSchema = defineEntityCrudSchemas(
-  parameterMasterDefinition,
-);
+export const AppInfoSchema = defineEntityCrudSchemas(appInfoDefinition)
 
-export const TaskInfoSchema = defineEntityCrudSchemas(taskInfoDefinition);
+export const StatusTypeSchema = defineEntityCrudSchemas(statusTypeDefinition)
 
-export const TaskInfoAccessListSchema = defineEntityCrudSchemas(
-  taskInfoAccessListDefitniion,
-);
+export const StatusHandlerSchema = defineEntityCrudSchemas(statusHandlerDefinition)
 
-export const TaskDataSchema = defineEntityCrudSchemas(taskDataDefinition);
+export const StatusInformationSchema = defineEntityCrudSchemas(statusInformationDefinition)
 
-export const TaskInstanceSchema = defineEntityCrudSchemas(
-  taskInstanceDefinition,
-);
+export const MarketHolidaySchema = defineEntityCrudSchemas(marketHolidayDefinition)
+
+export const MilestoneSchema = defineEntityCrudSchemas(milestoneDefinition)
+
+export const MilestoneDailySchema = defineEntityCrudSchemas(milestoneDailyDefinition)
+
+export const VariableParameterSchema = defineEntityCrudSchemas(variableParameterDefinition)
+
+export const ParameterMasterSchema = defineEntityCrudSchemas(parameterMasterDefinition)
+
+export const TaskInfoSchema = defineEntityCrudSchemas(taskInfoDefinition)
+
+export const TaskInfoAccessListSchema = defineEntityCrudSchemas(taskInfoAccessListDefitniion)
+
+export const TaskDataSchema = defineEntityCrudSchemas(taskDataDefinition)
+
+export const TaskInstanceSchema = defineEntityCrudSchemas(taskInstanceDefinition)
 
 export const TaskInstanceSubmitInformationSchema = defineEntityCrudSchemas(
   taskInstanceSubmitInformationDefinition,
-);
+)
 
-export const TaskDataStatus = defineEntityCrudSchemas(taskDataStatusDefinition);
+export const TaskDataStatus = defineEntityCrudSchemas(taskDataStatusDefinition)
 
-export const TaskDataLogSchema = defineEntityCrudSchemas(taskDataLogDefinition);
+export const TaskDataLogSchema = defineEntityCrudSchemas(taskDataLogDefinition)
 
-export const ServiceTypeSchema = defineEntityCrudSchemas(serviceTypeDefinition);
+export const ServiceTypeSchema = defineEntityCrudSchemas(serviceTypeDefinition)
 
-export const ServiceSchema = defineEntityCrudSchemas(serviceDefinition);
+export const ServiceSchema = defineEntityCrudSchemas(serviceDefinition)
 
-export const TaskSchedulerConfigSchema = defineEntityCrudSchemas(
-  taskSchedulerConfigDefinition,
-);
+export const TaskSchedulerConfigSchema = defineEntityCrudSchemas(taskSchedulerConfigDefinition)

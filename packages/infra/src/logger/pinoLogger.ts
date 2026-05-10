@@ -1,34 +1,26 @@
-import path from 'path';
+import path from 'node:path'
 
-import pino from 'pino';
-import { Logger, setLogger } from '@gyomu/core';
-import { reconcile } from '@gyomu/core/shared';
-import { format } from 'date-fns';
-import {
-  Config,
-  Logger as EffectLogger,
-  Schema,
-  Option,
-  Effect,
-  Layer,
-} from 'effect';
-import { ConfigLayer, ConfigService } from '../config.js';
-import { makeRunner } from '../runtime.js';
-import { PlatformLayer } from '../layer.js';
-import { tmpdir } from 'os';
-import { withOptional } from '@gyomu/core';
+import { tmpdir } from 'node:os'
+import pino from 'pino'
+import { setLogger, withOptional } from '@gyomu/core'
+import { format } from 'date-fns'
+import { Config, Effect, Layer, Option } from 'effect'
+import { ConfigLayer, ConfigService } from '../config.js'
+import { makeRunner } from '../runtime.js'
+import { PlatformLayer } from '../layer.js'
+import type { Logger } from '@gyomu/core'
 
 export const createPinoLogger = (): Logger => {
-  const p = pino();
+  const p = pino()
 
   const wrap =
     (level: 'info' | 'debug' | 'warn' | 'error') =>
-    (arg1: any, arg2?: any, ...args: any[]) => {
+    (arg1: any, arg2?: any, ...args: Array<any>) => {
       if (typeof arg1 === 'string') {
-        return p[level](arg1);
+        return p[level](arg1)
       }
-      return p[level](arg1, arg2, ...args);
-    };
+      return p[level](arg1, arg2, ...args)
+    }
 
   return {
     info: wrap('info'),
@@ -37,37 +29,34 @@ export const createPinoLogger = (): Logger => {
     error: wrap('error'),
     isDebugEnabled: () => p.level === 'debug',
     end: async () => {},
-  };
-};
-let transport: ReturnType<typeof pino.transport> | undefined = undefined;
-export let LogFileName: string | undefined = undefined;
+  }
+}
+let transport: ReturnType<typeof pino.transport> | undefined = undefined
+export let LogFileName: string | undefined = undefined
 
 const loggerConfigRaw = Config.all({
   logLevel: Config.withDefault(Config.string(`LOGGER_LEVEL`), 'info'),
-  fixedLogFilename: Config.withDefault(
-    Config.boolean(`FIXED_LOGFILENAME`),
-    false,
-  ),
+  fixedLogFilename: Config.withDefault(Config.boolean(`FIXED_LOGFILENAME`), false),
   logPath: Config.withDefault(Config.string(`LOGPATH`), tmpdir()),
   logFilename: Config.option(Config.string('LOGFILENAME')),
-});
-type ExtractConfig<T> = T extends Config.Config<infer A> ? A : never;
-type UnwrapOption<T> = T extends Option.Option<infer A> ? A | undefined : T;
+})
+type ExtractConfig<T> = T extends Config.Config<infer A> ? A : never
+// type UnwrapOption<T> = T extends Option.Option<infer A> ? A | undefined : T;
 
 type NormalizeOptionObject<T> = {
-  [K in keyof T as T[K] extends Option.Option<any>
-    ? K
-    : never]?: T[K] extends Option.Option<infer A> ? A : never;
+  [K in keyof T as T[K] extends Option.Option<any> ? K : never]?: T[K] extends Option.Option<
+    infer A
+  >
+    ? A
+    : never
 } & {
-  [K in keyof T as T[K] extends Option.Option<any> ? never : K]: T[K];
-};
-type loggerConfig = NormalizeOptionObject<
-  ExtractConfig<typeof loggerConfigRaw>
->;
+  [K in keyof T as T[K] extends Option.Option<any> ? never : K]: T[K]
+}
+type loggerConfig = NormalizeOptionObject<ExtractConfig<typeof loggerConfigRaw>>
 
 export const initLoggerFromEnv = async () => {
   const program = Effect.gen(function* () {
-    const configService = yield* ConfigService;
+    const configService = yield* ConfigService
     const loadedData = yield* configService.load(loggerConfigRaw).pipe(
       Effect.map((data) =>
         withOptional({
@@ -77,50 +66,46 @@ export const initLoggerFromEnv = async () => {
           logFilename: Option.getOrUndefined(data.logFilename),
         }),
       ),
-    );
+    )
 
-    initLogger(loadedData);
-  });
-  const loggerConfigLayer = Layer.mergeAll(ConfigLayer).pipe(
-    Layer.provideMerge(PlatformLayer),
-  );
-  const runner = makeRunner(loggerConfigLayer);
-  await runner(program);
-};
+    initLogger(loadedData)
+  })
+  const loggerConfigLayer = Layer.mergeAll(ConfigLayer).pipe(Layer.provideMerge(PlatformLayer))
+  const runner = makeRunner(loggerConfigLayer)
+  await runner(program)
+}
 
 export const initLogger = (config: loggerConfig) => {
-  const loggerLevel = config.logLevel;
-  const LogFileNameStatic = config.fixedLogFilename;
-  const LogFileDirectory = config.logPath;
+  const loggerLevel = config.logLevel
+  const LogFileNameStatic = config.fixedLogFilename
+  const LogFileDirectory = config.logPath
   LogFileName = !config.logFilename
     ? undefined
     : LogFileDirectory +
       path.sep +
       (config.logFilename +
-        (LogFileNameStatic
-          ? ''
-          : '.' + format(new Date(), 'yyyyMMddHHmmss') + '.log'));
+        (LogFileNameStatic ? '' : '.' + format(new Date(), 'yyyyMMddHHmmss') + '.log'))
   // console.log(
   //   `Logger initialized with level ${loggerLevel}, log file: ${LogFileName}`,
   // );
 
-  const targets: any[] = [
+  const targets: Array<any> = [
     {
       target: 'pino/file',
       level: loggerLevel,
       options: { destination: 1 }, // 1=stdout
     },
-  ];
+  ]
 
   if (LogFileName) {
     targets.push({
       target: 'pino/file',
       level: loggerLevel,
       options: { destination: LogFileName, mkdir: true },
-    });
+    })
   }
-  //console.log(targets);
-  transport = pino.transport({ targets: targets });
+  // console.log(targets);
+  transport = pino.transport({ targets: targets })
 
   const p = pino(
     {
@@ -128,16 +113,16 @@ export const initLogger = (config: loggerConfig) => {
       timestamp: pino.stdTimeFunctions.isoTime,
     },
     transport,
-  );
+  )
 
   const wrap =
     (level: 'info' | 'debug' | 'warn' | 'error') =>
-    (arg1: any, arg2?: any, ...args: any[]) => {
+    (arg1: any, arg2?: any, ...args: Array<any>) => {
       if (typeof arg1 === 'string') {
-        return p[level](arg1);
+        return p[level](arg1)
       }
-      return p[level](arg1, arg2, ...args);
-    };
+      return p[level](arg1, arg2, ...args)
+    }
 
   setLogger({
     info: wrap('info'),
@@ -148,13 +133,13 @@ export const initLogger = (config: loggerConfig) => {
     end: async () => {
       if (transport) {
         await new Promise((resolve) => {
-          transport?.end();
-          transport?.on('close', resolve);
-        });
+          transport?.end()
+          transport?.on('close', resolve)
+        })
       }
     },
-  });
-};
+  })
+}
 
 export const __resetLoggerForTest = () => {
   // loggerInstance = null;
@@ -165,6 +150,6 @@ export const __resetLoggerForTest = () => {
     info: () => {},
     isDebugEnabled: () => false,
     end: async () => {},
-  });
-  transport = undefined;
-};
+  })
+  transport = undefined
+}

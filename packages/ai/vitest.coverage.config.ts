@@ -1,11 +1,8 @@
-import { defineConfig } from 'vitest/config';
-//console.log('Env', process.env);
+import { defineConfig } from 'vitest/config'
+// console.log('Env', process.env);
 export default defineConfig({
   test: {
-    include: [
-      'src/**/__sit__/**/*.test.{ts,tsx,js}',
-      'src/**/__tests__/**/*.test.{ts,tsx,js}',
-    ],
+    include: ['src/**/__sit__/**/*.test.{ts,tsx,js}', 'src/**/__tests__/**/*.test.{ts,tsx,js}'],
     environment: 'node',
     globals: true,
     clearMocks: true,
@@ -17,4 +14,4 @@ export default defineConfig({
       reportsDirectory: './coverage',
     },
   },
-});
+})

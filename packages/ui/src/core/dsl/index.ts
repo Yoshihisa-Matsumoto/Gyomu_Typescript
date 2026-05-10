@@ -1,2 +1,2 @@
-export * from './schemeAttribute';
-export * from './type';
+export * from './schemeAttribute'
+export * from './type'

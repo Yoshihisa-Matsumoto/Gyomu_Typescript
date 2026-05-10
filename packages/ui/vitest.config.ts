@@ -1,5 +1,4 @@
-import { defineConfig } from 'vitest/config';
-import path from 'path';
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig(({ mode }) => ({
   test: {
@@ -35,4 +34,4 @@ export default defineConfig(({ mode }) => ({
     },
     restoreMocks: mode === 'sit' ? false : true,
   },
-}));
+}))

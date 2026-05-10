@@ -1,23 +1,21 @@
-import { ChangeEvent, useEffect, useState } from 'react';
-import TextField, { TextFieldProps } from '@mui/material/TextField';
+import { useEffect, useState } from 'react'
+import TextField from '@mui/material/TextField'
+import type { ChangeEvent } from 'react'
+import type { TextFieldProps } from '@mui/material/TextField'
 
-const positiveDigitsRegex = /^\d*$/g; // positive digits
-const signedDigitsRegex = /^-?\d*$/g; // negative/positive digits
-const positiveFloatingDigitsRegex = /^\d*\.?\d*$/g; // positive floating digits. Allows "11." scenario
-const signedFloatingDigitsRegex = /^-?\d*\.?\d*$/g; // negative/positive floating digits. Allows "-11." scenario
+const positiveDigitsRegex = /^\d*$/g // positive digits
+const signedDigitsRegex = /^-?\d*$/g // negative/positive digits
+const positiveFloatingDigitsRegex = /^\d*\.?\d*$/g // positive floating digits. Allows "11." scenario
+const signedFloatingDigitsRegex = /^-?\d*\.?\d*$/g // negative/positive floating digits. Allows "-11." scenario
 
 export type NumberFieldProps = TextFieldProps & {
-  onValueChange?: (
-    value: string,
-    fieldErrors: string[],
-    fieldName: string,
-  ) => void;
-  allowNegative?: boolean;
-  allowFloat?: boolean;
-  maxValue?: number;
-  minValue?: number;
-  decimalLimit?: number;
-};
+  onValueChange?: (value: string, fieldErrors: Array<string>, fieldName: string) => void
+  allowNegative?: boolean
+  allowFloat?: boolean
+  maxValue?: number
+  minValue?: number
+  decimalLimit?: number
+}
 
 /**
  * ### NumberField ###
@@ -45,55 +43,46 @@ export function NumberField({
   inputProps,
   ...props
 }: NumberFieldProps) {
-  let validationRegex: RegExp; // regex for formatting value depending on properties
+  let validationRegex: RegExp // regex for formatting value depending on properties
 
   if (allowNegative) {
-    validationRegex = allowFloat
-      ? signedFloatingDigitsRegex
-      : signedDigitsRegex;
+    validationRegex = allowFloat ? signedFloatingDigitsRegex : signedDigitsRegex
   } else {
-    validationRegex = allowFloat
-      ? positiveFloatingDigitsRegex
-      : positiveDigitsRegex;
+    validationRegex = allowFloat ? positiveFloatingDigitsRegex : positiveDigitsRegex
   }
 
   // NOTE - Format of "props.value" should be in sync with "allowNegative" and "allowFloat" flags, else field's content couldn't be edited unless cleared.
-  const [fieldValue, setFieldValue] = useState<string>((value || '') as string);
+  const [fieldValue, setFieldValue] = useState<string>((value || '') as string)
 
   useEffect(() => {
-    setFieldValue((value || '') as string);
-  }, [value]);
+    setFieldValue((value || '') as string)
+  }, [value])
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const { value: inputValue, name } = e.target;
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { value: inputValue, name } = e.target
 
-    if (!inputValue.match(validationRegex)) return;
+    if (!inputValue.match(validationRegex)) return
 
-    const inputNumber = parseFloat(inputValue);
+    const inputNumber = parseFloat(inputValue)
 
-    if (!Number.isNaN(maxValue) && inputNumber && inputNumber >= maxValue)
-      return; // limit maximum allowed value
-    if (!Number.isNaN(minValue) && inputNumber && inputNumber <= minValue)
-      return; // limit minimum allowed value
+    if (!Number.isNaN(maxValue) && inputNumber && inputNumber >= maxValue) return // limit maximum allowed value
+    if (!Number.isNaN(minValue) && inputNumber && inputNumber <= minValue) return // limit minimum allowed value
 
     if (allowFloat && !Number.isNaN(decimalLimit)) {
       // check for the length of decimal digits
-      const [, decimals] = inputValue.split('.');
+      const [, decimals] = inputValue.split('.')
 
-      if (decimals?.length ?? 0 > decimalLimit) return;
+      if (decimals && decimals.length > decimalLimit) return
     }
 
-    setFieldValue(inputValue);
+    setFieldValue(inputValue)
 
     // check for required field error
-    const fieldErrors =
-      props.required && !inputValue ? ['Value is required'] : [];
+    const fieldErrors = props.required && !inputValue ? ['Value is required'] : []
 
-    if (onValueChange) onValueChange(inputValue, fieldErrors, name);
-    if (props.onChange) props.onChange(e);
-  };
+    if (onValueChange) onValueChange(inputValue, fieldErrors, name)
+    if (props.onChange) props.onChange(e)
+  }
 
   return (
     <TextField
@@ -111,5 +100,5 @@ export function NumberField({
         },
       }}
     />
-  );
+  )
 }
