@@ -69,7 +69,6 @@ typings/
 .env*
 .env.*
 .next
-lib/
 log/
 dist/
 .tsbuildinfo
