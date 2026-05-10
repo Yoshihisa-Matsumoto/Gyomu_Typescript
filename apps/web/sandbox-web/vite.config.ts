@@ -11,9 +11,7 @@ const config = defineConfig({
     devtools(),
     nitro(),
     // this is the plugin that enables path aliases
-    viteTsConfigPaths({
-      projects: ['./tsconfig.json'],
-    }),
+    viteTsConfigPaths(),
     tailwindcss(),
     tanstackStart(),
     viteReact(),
