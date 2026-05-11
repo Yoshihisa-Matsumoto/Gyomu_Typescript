@@ -20,7 +20,7 @@ export function AutoField({
 
   if (!Component) throw new Error(`No renderer for widget: ${meta.widget}`)
   return (
-    <Layout label={meta.label ?? meta.name} {...withOptional({ error: error })}>
+    <Layout meta={meta} label={meta.label ?? meta.name} {...withOptional({ error: error })}>
       <Component
         meta={meta}
         {...withOptional({

@@ -7,10 +7,10 @@ import { TextField } from '@mui/material'
 
 // --- Types ---
 import { defineEntityCrudSchemas, schemaField } from '@gyomu/schema/entity'
-import { MuiFieldLayout, MuiFormLayout, MuiSubmitButton } from '../../ui/adapters/mui'
-import { muiRenderer } from '../../ui/renderer'
-import { AutoForm } from './AutoForm'
-import type { RendererMap } from '../../core/engine/autoForm/types'
+import { MuiFieldLayout, MuiFormLayout, MuiSubmitButton } from '..'
+import { muiRenderer } from '../../../renderer/mui'
+import { AutoForm } from '../../../../features/form/AutoForm'
+import type { RendererMap } from '../../../../core/engine/autoForm/types'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 // --------------------------------------------------
@@ -48,7 +48,7 @@ const userSchema = defineEntityCrudSchemas({
 // --------------------------------------------------
 
 const metaStory: Meta<typeof AutoForm> = {
-  title: 'Features/AutoForm',
+  title: 'MUI Features/AutoForm',
   component: AutoForm,
 }
 

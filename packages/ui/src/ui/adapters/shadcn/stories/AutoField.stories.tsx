@@ -1,11 +1,13 @@
 import React from 'react'
-import { MuiFieldLayout } from '../../ui/adapters/mui'
-import { muiRenderer } from '../../ui/renderer'
-import { AutoField } from './AutoField'
+import { ShadcnFieldLayout } from '..'
+import { shadcnRenderer } from '../../../renderer/shadcn'
+import { AutoField } from '../../../../features/form/AutoField'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
+import '../../../../theme/styles/globals.css'
+
 const meta: Meta<typeof AutoField> = {
-  title: 'AutoForm/AutoField',
+  title: 'Shadcn/UI AutoForm/AutoField',
   component: AutoField,
 }
 
@@ -22,8 +24,8 @@ export const Text: Story = {
       options: {},
     },
     value: 'hello',
-    renderer: muiRenderer,
-    layout: MuiFieldLayout,
+    renderer: shadcnRenderer,
+    layout: ShadcnFieldLayout,
   },
 }
 
@@ -36,6 +38,8 @@ export const Number: Story = {
       options: {},
     },
     value: 20,
+    renderer: shadcnRenderer,
+    layout: ShadcnFieldLayout,
   },
 }
 
@@ -49,6 +53,8 @@ export const Email: Story = {
       options: {},
     },
     value: 'test@example.com',
+    renderer: shadcnRenderer,
+    layout: ShadcnFieldLayout,
   },
 }
 
@@ -61,6 +67,8 @@ export const Textarea: Story = {
       options: {},
     },
     value: 'long text...',
+    renderer: shadcnRenderer,
+    layout: ShadcnFieldLayout,
   },
 }
 
@@ -77,6 +85,8 @@ export const Select: Story = {
       },
     },
     value: 'option1',
+    renderer: shadcnRenderer,
+    layout: ShadcnFieldLayout,
   },
 }
 
@@ -90,6 +100,8 @@ export const WithError: Story = {
     },
     value: '',
     error: '必須です',
+    renderer: shadcnRenderer,
+    layout: ShadcnFieldLayout,
   },
 }
 
@@ -105,6 +117,8 @@ export const Interactive: Story = {
           setValue(v)
           args.onChange?.(v)
         }}
+        layout={ShadcnFieldLayout}
+        renderer={shadcnRenderer}
       />
     )
   },
@@ -125,7 +139,8 @@ export const AllFields: Story = {
       <AutoField
         meta={{ name: 'text', label: 'Text', widget: 'text', options: {} }}
         value="text"
-        layout={MuiFieldLayout}
+        layout={ShadcnFieldLayout}
+        renderer={shadcnRenderer}
       />
       <AutoField
         meta={{
@@ -135,7 +150,8 @@ export const AllFields: Story = {
           options: {},
         }}
         value={123}
-        layout={MuiFieldLayout}
+        layout={ShadcnFieldLayout}
+        renderer={shadcnRenderer}
       />
       <AutoField
         meta={{
@@ -146,7 +162,8 @@ export const AllFields: Story = {
           options: {},
         }}
         value="test@test.com"
-        layout={MuiFieldLayout}
+        layout={ShadcnFieldLayout}
+        renderer={shadcnRenderer}
       />
       <AutoField
         meta={{
@@ -157,7 +174,8 @@ export const AllFields: Story = {
           options: {},
         }}
         value="secret"
-        layout={MuiFieldLayout}
+        layout={ShadcnFieldLayout}
+        renderer={shadcnRenderer}
       />
       <AutoField
         meta={{
@@ -167,12 +185,14 @@ export const AllFields: Story = {
           options: {},
         }}
         value="long text"
-        layout={MuiFieldLayout}
+        layout={ShadcnFieldLayout}
+        renderer={shadcnRenderer}
       />
       <AutoField
         meta={{ name: 'date', label: 'Date', widget: 'date', options: {} }}
         value="2026-01-01"
-        layout={MuiFieldLayout}
+        layout={ShadcnFieldLayout}
+        renderer={shadcnRenderer}
       />
     </div>
   ),

@@ -11,14 +11,34 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./*": {
-      "types": "./dist/*.d.ts",
-      "import": "./dist/*.js"
+    "./mui": {
+      "types": "./dist/adapters/mui/index.d.ts",
+      "import": "./dist/adapters/mui/index.js"
+    },
+    "./shadcn": {
+      "types": "./dist/adapters/shadcn/index.d.ts",
+      "import": "./dist/adapters/shadcn/index.js"
+    },
+    "./components": {
+      "types": "./dist/components/index.d.ts",
+      "import": "./dist/components/index.js"
+    },
+    "./primitives": {
+      "types": "./dist/primitives/index.d.ts",
+      "import": "./dist/primitives/index.js"
+    },
+    "./renderer": {
+      "types": "./dist/renderer/index.d.ts",
+      "import": "./dist/renderer/index.js"
+    },
+    "./theme": {
+      "types": "./dist/theme/index.d.ts",
+      "import": "./dist/theme/index.js"
     }
   },
   "scripts": {
-    "build": "pnpm run clean && tsc -b tsconfig.json",
-    "build:ci": "pnpm run clean && tsc  -b tsconfig.json",
+    "build": "tsc -p tsconfig.build.json",
+    "build:ci": "pnpm run clean && pnpm run build",
     "clean": "rimraf ./dist .tsbuildinfo",
     "type-check": "tsc --project tsconfig.typecheck.json",
     "test": "bunx vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json ",
@@ -77,6 +97,7 @@
     "vitest": "4.1.5"
   },
   "dependencies": {
+    "@fontsource-variable/inter": "^5.2.8",
     "@tailwindcss/vite": "^4.3.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

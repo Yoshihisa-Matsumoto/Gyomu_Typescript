@@ -11,7 +11,7 @@ import { buildDefaultValues, validateField, validateWithSchema } from '../../cor
 // --- Shared / Core (ドメイン・基盤) ---
 // --- UI (MUI Adapter) ---
 import { MuiFieldLayout, MuiFormLayout } from '../../ui/adapters/mui'
-import { muiRenderer } from '../../ui/renderer'
+import { muiRenderer } from '../../ui/renderer/mui'
 
 // --- ローカル ---
 import { DefaultSubmitButton } from '../../ui/components/form/DefaultSubmitButton'

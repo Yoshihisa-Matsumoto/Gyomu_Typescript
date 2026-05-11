@@ -8,7 +8,7 @@
   "references": [
     { "path": "apps/cli" },
     { "path": "packages/ai" },
-    { "path": "packages/core" },
+    { "path": "packages/schema" },
     { "path": "packages/infra" }
   ]
 }
