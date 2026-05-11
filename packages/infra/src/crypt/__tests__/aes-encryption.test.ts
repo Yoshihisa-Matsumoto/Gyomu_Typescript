@@ -1,5 +1,5 @@
 import fs from 'node:fs'
-import { bufferToArrayBuffer } from '@gyomu/core/shared/binary'
+import { bufferToArrayBuffer } from '@gyomu/schema/shared/binary'
 
 import { expect, test } from 'vitest'
 import { Layer } from 'effect'

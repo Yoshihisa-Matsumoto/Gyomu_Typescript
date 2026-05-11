@@ -2,8 +2,8 @@ import { dirname, extname, join } from 'node:path'
 import { randomUUID } from 'node:crypto'
 import { tmpdir } from 'node:os'
 import { Effect, FileSystem, Stream } from 'effect'
-import { IOError, wrapInfraError } from '@gyomu/core'
-import type { NetworkError } from '@gyomu/core'
+import { IOError, wrapInfraError } from '@gyomu/schema'
+import type { NetworkError } from '@gyomu/schema'
 import type { PlatformError } from 'effect/PlatformError'
 
 /**

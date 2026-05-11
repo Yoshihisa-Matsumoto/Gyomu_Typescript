@@ -1,13 +1,13 @@
 import path from 'node:path'
 import { Effect, Stream } from 'effect'
-import { IOError } from '@gyomu/core'
+import { IOError } from '@gyomu/schema'
 // import { Readable } from 'node:stream';
 
 import { ZipFile } from 'yazl'
 // import { fromReadable } from '../../../nodeStream.js';
 import { NodeStream } from '@effect/platform-node'
 import { pathExists, readDirectoryDetailed } from '../../../fs/fs-utils.js'
-import type { FileTransportInfo } from '@gyomu/core/gyomu/file'
+import type { FileTransportInfo } from '@gyomu/schema/gyomu/file'
 import type { FileSystem } from 'effect'
 
 const addFile = (zip: ZipFile, fsPath: string, zipPath: string) =>

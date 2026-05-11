@@ -8,7 +8,7 @@ import {
   throughNodeStream,
   throughNodeStreamScoped,
 } from '../bridge/nodeStream.js'
-import type { IOError } from '@gyomu/core'
+import type { IOError } from '@gyomu/schema'
 
 const createReadable = (chunks: Array<string>) => {
   return Readable.from(chunks.map((c) => Buffer.from(c)))

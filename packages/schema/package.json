@@ -1,0 +1,82 @@
+{
+  "name": "@gyomu/schema",
+  "version": "0.2.1",
+  "description": "",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./data": {
+      "import": "./dist/data/index.js",
+      "types": "./dist/data/index.d.ts"
+    },
+    "./effect": {
+      "import": "./dist/effect/index.js",
+      "types": "./dist/effect/index.d.ts"
+    },
+    "./entity": {
+      "import": "./dist/entity/index.js",
+      "types": "./dist/entity/index.d.ts"
+    },
+    "./gyomu": {
+      "import": "./dist/gyomu/index.js",
+      "types": "./dist/gyomu/index.d.ts"
+    },
+    "./gyomu/*": {
+      "import": "./dist/gyomu/*/index.js",
+      "types": "./dist/gyomu/*/index.js"
+    },
+    "./shared": {
+      "import": "./dist/shared/index.js",
+      "types": "./dist/shared/index.d.ts"
+    },
+    "./shared/*": {
+      "import": "./dist/shared/*/index.js",
+      "types": "./dist/shared/*/index.d.ts"
+    },
+    "./schemas/*": {
+      "import": "./dist/schemas/*.js",
+      "types": "./dist/schemas/*.d.ts"
+    },
+    "./usecase/*": {
+      "import": "./dist/usecase/*.js",
+      "types": "./dist/usecase/*.d.ts"
+    }
+  },
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "clean": "rimraf ./dist && rimraf ./coverage .tsbuildinfo",
+    "test": "bunx vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json ",
+    "@test:coverage": "vitest --config vitest.coverage.config.ts --typecheck.tsconfig ./tsconfig.vitest.json --coverage",
+    "@test:ci:coverage": "vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json --coverage",
+    "start": "pnpm run build:live",
+    "watch": "tsc -w",
+    "build": "tsc",
+    "build:ci": "pnpm run clean && pnpm run build",
+    "version": "git add -A src",
+    "postversion": "git push && git push --tags",
+    "sit": "dotenv -e .env -- vitest --config=./vitest.sit.config.ts --typecheck.tsconfig=./tsconfig.vitest.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "files": [
+    "index.js",
+    "lib",
+    "!**/__tests__",
+    "!**/__sit__"
+  ],
+  "devDependencies": {
+    "dotenv-cli": "^11.0.0",
+    "knip": "^6.4.1"
+  },
+  "dependencies": {
+    "date-fns": "^4.1.0",
+    "dotenv": "^17.3.1",
+    "effect": "4.0.0-beta.57",
+    "html-entities": "^2.6.0",
+    "uuidv7": "^1.2.1"
+  }
+}

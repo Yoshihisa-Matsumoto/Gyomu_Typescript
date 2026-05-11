@@ -1,11 +1,11 @@
 import { Config, Context, Effect, Layer, Stream } from 'effect'
 import { GoogleGenAI, ToolType } from '@google/genai'
-import { AIError, isRetryableAiError } from '@gyomu/core'
-import { fromPromise } from '../../../../core/dist/effect/index.js'
+import { AIError, isRetryableAiError } from '@gyomu/schema'
+import { fromPromise } from '@gyomu/schema/effect'
 import { ConfigLayer, ConfigService } from '../../config.js'
 import { PlatformLayer } from '../../layer.js'
 import type { Content, Part } from '@google/genai'
-import type { AiClient, ChatContent, ChatMessage } from '@gyomu/core/gyomu/ai'
+import type { AiClient, ChatContent, ChatMessage } from '@gyomu/schema/gyomu/ai'
 
 export class GeminiClient extends Context.Service<GeminiClient, AiClient>()('GeminiClient', {
   make: Effect.gen(function* () {

@@ -1,4 +1,4 @@
-import type { LocalDate, UIAnnotationByWidget, UIAnnotationMap } from '@gyomu/core/entity'
+import type { LocalDate, UIAnnotationByWidget, UIAnnotationMap } from '@gyomu/schema/entity'
 
 // type BaseFieldProps<T> = {
 //   value: T | undefined;

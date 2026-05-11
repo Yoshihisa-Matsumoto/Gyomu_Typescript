@@ -1,11 +1,11 @@
 import path from 'node:path'
 import { Effect, FileSystem, Layer, Option } from 'effect'
-import { AccessError, TimeoutError } from '@gyomu/core'
-import { FileAccessService } from '@gyomu/core/shared/fs'
-import { ensure, ensureEffect, fromPromise, polling } from '../../../core/dist/effect/index.js'
+import { AccessError, TimeoutError } from '@gyomu/schema'
+import { FileAccessService } from '@gyomu/schema/shared/fs'
+import { ensure, ensureEffect, fromPromise, polling } from '@gyomu/schema/effect'
 
 import { getFileStat, pathExists } from '../fs/fs-utils.js'
-import type { IOError } from '@gyomu/core'
+import type { IOError } from '@gyomu/schema'
 
 const canAccessFunc = (
   fileName: string,

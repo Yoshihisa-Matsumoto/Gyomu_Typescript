@@ -1,5 +1,5 @@
 import { Effect, pipe } from 'effect'
-import { NetworkError, ValueError } from '@gyomu/core'
+import { NetworkError, ValueError } from '@gyomu/schema'
 import { networkStream } from '../network/index.js'
 import { fetchEffect, fetchStream } from './client.js'
 import { parseXmlEffect, textEffect } from './xml.js'

@@ -1,7 +1,7 @@
 import { pid } from 'node:process'
 import { hostname, networkInterfaces } from 'node:os'
 import { Layer } from 'effect'
-import { RuntimeContext } from '@gyomu/core/shared'
+import { RuntimeContext } from '@gyomu/schema/shared'
 
 export const RuntimeContextLive = Layer.sync(RuntimeContext, () => {
   const nets = networkInterfaces()

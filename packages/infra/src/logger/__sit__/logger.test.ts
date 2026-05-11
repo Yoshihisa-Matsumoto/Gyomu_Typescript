@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { tmpdir } from 'node:os'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { logger } from '@gyomu/core'
+import { logger } from '@gyomu/schema'
 import { __resetLoggerForTest, initLogger } from '../pinoLogger.js'
 
 process.env.LOGFILENAME = 'test-log.log'

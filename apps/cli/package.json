@@ -22,7 +22,7 @@
     "tsup": "^8.5.1"
   },
   "dependencies": {
-    "@gyomu/core": "workspace:*",
+    "@gyomu/schema": "workspace:*",
     "@gyomu/infra": "workspace:*",
     "effect": "4.0.0-beta.57"
   },

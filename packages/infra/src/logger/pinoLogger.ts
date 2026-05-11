@@ -2,13 +2,13 @@ import path from 'node:path'
 
 import { tmpdir } from 'node:os'
 import pino from 'pino'
-import { setLogger, withOptional } from '@gyomu/core'
+import { setLogger, withOptional } from '@gyomu/schema'
 import { format } from 'date-fns'
 import { Config, Effect, Layer, Option } from 'effect'
 import { ConfigLayer, ConfigService } from '../config.js'
 import { makeRunner } from '../runtime.js'
 import { PlatformLayer } from '../layer.js'
-import type { Logger } from '@gyomu/core'
+import type { Logger } from '@gyomu/schema'
 
 export const createPinoLogger = (): Logger => {
   const p = pino()

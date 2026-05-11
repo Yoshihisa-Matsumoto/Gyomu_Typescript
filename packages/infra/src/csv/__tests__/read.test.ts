@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import { describe, expect, it } from 'vitest'
 import { Effect, Schema, Stream } from 'effect'
-import { logger } from '@gyomu/core'
+import { logger } from '@gyomu/schema'
 import { parseCsv, readCsv, readCsvRaw } from '../read.js'
 
 describe('CSV Read Functions', () => {

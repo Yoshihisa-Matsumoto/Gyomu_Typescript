@@ -1,4 +1,4 @@
-import type { UIAnnotation } from '@gyomu/core/entity'
+import type { UIAnnotation } from '@gyomu/schema/entity'
 
 export type FormFieldMeta = UIAnnotation & {
   name: string

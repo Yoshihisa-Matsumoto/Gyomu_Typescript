@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useForm } from '@tanstack/react-form'
 import { Schema } from 'effect'
-import { schemaField } from '@gyomu/core/entity'
+import { schemaField } from '@gyomu/schema/entity'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'

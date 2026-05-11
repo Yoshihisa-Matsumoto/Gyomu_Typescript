@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { defineEntityCrudSchemas, schemaField } from '@gyomu/core/entity'
-import { logger } from '@gyomu/core'
+import { defineEntityCrudSchemas, schemaField } from '@gyomu/schema/entity'
+import { logger } from '@gyomu/schema'
 import { buildFormMetaFromStructSchema } from '../schemeAttribute.js' // パス適宜
-import type { EntityDefinition, Fields } from '@gyomu/core/entity'
+import type { EntityDefinition, Fields } from '@gyomu/schema/entity'
 // import { Schema } from 'effect';
 
 // ---- ダミーAST生成 ----

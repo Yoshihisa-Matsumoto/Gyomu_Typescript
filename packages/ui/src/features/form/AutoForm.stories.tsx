@@ -6,7 +6,7 @@
 import { TextField } from '@mui/material'
 
 // --- Types ---
-import { defineEntityCrudSchemas, schemaField } from '@gyomu/core/entity'
+import { defineEntityCrudSchemas, schemaField } from '@gyomu/schema/entity'
 import { MuiFieldLayout, MuiFormLayout, MuiSubmitButton } from '../../ui/adapters/mui'
 import { muiRenderer } from '../../ui/renderer'
 import { AutoForm } from './AutoForm'

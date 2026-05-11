@@ -1,15 +1,15 @@
 import path from 'node:path'
 import { Effect, Layer } from 'effect'
 import { compareAsc } from 'date-fns'
-import { FileSearchService } from '@gyomu/core/shared/fs'
-import { FileCompareType, FilterType } from '@gyomu/core/gyomu/file'
+import { FileSearchService } from '@gyomu/schema/shared/fs'
+import { FileCompareType, FilterType } from '@gyomu/schema/gyomu/file'
 import { createFileInfo } from './fileInfo.js'
 import { pathExists, readDirectoryDetailed } from './fs-utils.js'
-import type { FileFilterInfo } from '@gyomu/core/gyomu/file'
+import type { FileFilterInfo } from '@gyomu/schema/gyomu/file'
 import type { FileSystem } from 'effect'
 
 import type { FileInfo } from './fileInfo.js'
-import type { IOError } from '@gyomu/core'
+import type { IOError } from '@gyomu/schema'
 
 const searchFunc = (
   parentDirectory: string,

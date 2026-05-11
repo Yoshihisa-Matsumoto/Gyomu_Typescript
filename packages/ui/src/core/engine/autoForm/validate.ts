@@ -2,9 +2,9 @@ import {
   convertToSchemaObjectWithResult,
   flattenIssues,
   resolveFieldErrorsFromIssue,
-} from '@gyomu/core/entity'
+} from '@gyomu/schema/entity'
 import { Result } from 'effect'
-import type { CrudSchemaType, Fields } from '@gyomu/core/entity'
+import type { CrudSchemaType, Fields } from '@gyomu/schema/entity'
 import type { Schema } from 'effect'
 
 export function validateWithSchema<TFields extends Fields>(

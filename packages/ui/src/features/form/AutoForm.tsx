@@ -4,7 +4,7 @@ import { useForm } from '@tanstack/react-form'
 
 // --- Core / Engine ---
 
-import { buildFieldSchemaMap } from '@gyomu/core/entity'
+import { buildFieldSchemaMap } from '@gyomu/schema/entity'
 import { buildFormMetaFromStructSchema } from '../../core/dsl'
 import { buildDefaultValues, validateField, validateWithSchema } from '../../core/engine'
 
@@ -17,7 +17,7 @@ import { muiRenderer } from '../../ui/renderer'
 import { DefaultSubmitButton } from '../../ui/components/form/DefaultSubmitButton'
 import { AutoField } from './AutoField'
 import type { Schema } from 'effect'
-import type { Fields } from '@gyomu/core/entity'
+import type { Fields } from '@gyomu/schema/entity'
 import type { AutoFormProps } from './types'
 
 export function AutoForm<TFields extends Fields>({

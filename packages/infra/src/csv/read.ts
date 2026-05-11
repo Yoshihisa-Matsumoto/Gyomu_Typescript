@@ -1,5 +1,5 @@
 import { Effect, Function, Option, Schema, Stream } from 'effect'
-import { IOError } from '@gyomu/core'
+import { IOError } from '@gyomu/schema'
 import { parse } from 'csv-parse'
 import { throughNodeStream } from '../stream/bridge/nodeStream.js'
 import type { Options } from 'csv-parse'

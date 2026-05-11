@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Effect, Layer, Stream } from 'effect'
-import { AIError } from '@gyomu/core'
+import { AIError } from '@gyomu/schema'
 import { GeminiClient } from '../GeminiClient.js'
 import { ConfigService } from '../../../config.js'
 import { makeRunner } from '../../../runtime.js'

@@ -1,6 +1,6 @@
-import { withOptional } from '@gyomu/core'
+import { withOptional } from '@gyomu/schema'
 import { NumberField, Select, TextArea, TextField } from '../../adapters/mui'
-import type { LocalDate } from '@gyomu/core/entity'
+import type { LocalDate } from '@gyomu/schema/entity'
 import type { RendererMap } from '../../../core/engine/autoForm/types'
 
 export const muiRenderer: RendererMap = {

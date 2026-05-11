@@ -1,7 +1,7 @@
 import { Effect, Stream } from 'effect'
-import { fromSync } from '@gyomu/core/effect'
-import { ValueError } from '@gyomu/core'
-import type { NetworkError } from '@gyomu/core'
+import { fromSync } from '@gyomu/schema/effect'
+import { ValueError } from '@gyomu/schema'
+import type { NetworkError } from '@gyomu/schema'
 
 export type FetchResult<ResponseType> = {
   value: ResponseType

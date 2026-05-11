@@ -1,4 +1,4 @@
-import { NetworkError, isRetryableNetworkError, wrapInfraError } from '@gyomu/core'
+import { NetworkError, isRetryableNetworkError, wrapInfraError } from '@gyomu/schema'
 import { Effect } from 'effect'
 import type { Client, SFTPWrapper } from 'ssh2'
 

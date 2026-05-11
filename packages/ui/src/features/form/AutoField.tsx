@@ -1,4 +1,4 @@
-import { withOptional } from '@gyomu/core'
+import { withOptional } from '@gyomu/schema'
 import { muiRenderer } from '../../ui/renderer/mui/muiRenderer'
 import { MuiFieldLayout } from '../../ui/adapters/mui/layout/MuiFieldLayout'
 import type { AutoFieldProps } from './types'

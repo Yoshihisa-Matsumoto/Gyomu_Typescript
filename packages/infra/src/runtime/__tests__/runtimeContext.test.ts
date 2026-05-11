@@ -1,6 +1,6 @@
 import { Effect } from 'effect'
 import { describe, expect, it } from 'vitest'
-import { RuntimeContext } from '@gyomu/core/shared'
+import { RuntimeContext } from '@gyomu/schema/shared'
 import { RuntimeContextLive } from '../RuntimeContextLive.js'
 
 describe('RuntimeContextLive', () => {

@@ -1,6 +1,6 @@
 // --- Shared / Core (ドメイン・基盤) ---
-import type { CrudSchemaType, Fields, UIAnnotations } from '@gyomu/core/entity'
-import type { Logger } from '@gyomu/core'
+import type { CrudSchemaType, Fields, UIAnnotations } from '@gyomu/schema/entity'
+import type { Logger } from '@gyomu/schema'
 
 // --- UI (抽象コンポーネント) ---
 import type { FieldLayout, FormLayout, SubmitButtonProps } from '../../ui/components'

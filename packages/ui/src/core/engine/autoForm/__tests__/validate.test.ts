@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { Schema } from 'effect'
-import * as entityModule from '@gyomu/core/entity'
+import * as entityModule from '@gyomu/schema/entity'
 import { validateWithSchema } from '../validate'
 
 // モック対象

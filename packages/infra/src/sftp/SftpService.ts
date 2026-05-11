@@ -1,9 +1,9 @@
 import { Config, Context, Effect, Layer, Option } from 'effect'
 import { Client } from 'ssh2'
 import { withDefault } from 'effect/Config'
-import { withOptional } from '@gyomu/core'
+import { withOptional } from '@gyomu/schema'
+import { unwrapPassword } from '@gyomu/schema/effect'
 import { ConfigService } from '../config.js'
-import { unwrapPassword } from '../../../core/dist/effect/index.js'
 import { readStringFromFile } from '../fs/fs-utils.js'
 import {
   connectEffect,
@@ -15,8 +15,8 @@ import {
   uploadFromStream,
 } from './internals/sftpClient.js'
 import type { Scope } from 'effect/Scope'
-import type { ConfigError, IOError, NetworkError } from '@gyomu/core'
-import type { FileTransportInfo } from '@gyomu/core/gyomu/file'
+import type { ConfigError, IOError, NetworkError } from '@gyomu/schema'
+import type { FileTransportInfo } from '@gyomu/schema/gyomu/file'
 import type { Stream } from 'effect/Stream'
 // import { fs } from '../fs/index.js';
 import type { FileSystem } from 'effect'

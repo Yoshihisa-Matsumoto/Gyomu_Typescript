@@ -1,14 +1,14 @@
 import { describe } from 'node:test'
-import { ParameterService } from '@gyomu/core/shared/parameter'
+import { ParameterService } from '@gyomu/schema/shared/parameter'
 
-import { DBError } from '@gyomu/core'
+import { DBError } from '@gyomu/schema'
 import { beforeEach, expect, it, test } from 'vitest'
-import { GyomuRepository } from '@gyomu/core/gyomu'
+import { GyomuRepository } from '@gyomu/schema/gyomu'
 import { Effect, Layer } from 'effect'
-import { LocalDate, parseYmdToDate } from '@gyomu/core/entity'
-import { makeRunner } from '../../../../../core/dist/effect/index.js'
+import { LocalDate, parseYmdToDate } from '@gyomu/schema/entity'
+import { makeRunner } from '@gyomu/schema/effect'
 import { ParameterServiceLayer } from '../ParameterServiceLayer.js'
-import type { ParameterMasterSchema } from '@gyomu/core/schemas/gyomu'
+import type { ParameterMasterSchema } from '@gyomu/schema/schemas/gyomu'
 
 const testId = 'F6AE5F2D-BD14-4C5F-9CC3-3A69EF90DD5B'
 

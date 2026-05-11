@@ -1,6 +1,6 @@
 import path from 'node:path'
 import { Effect, Stream } from 'effect'
-import { IOError, NetworkError, withOptional } from '@gyomu/core'
+import { IOError, NetworkError, withOptional } from '@gyomu/schema'
 import { networkStream } from '../network/index.js'
 import { ensureFileNotExist, getFileStat, pathExists, writeStreamToFile } from '../fs/fs-utils.js'
 import { fetchEffect } from './client.js'

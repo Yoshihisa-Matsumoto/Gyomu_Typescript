@@ -2,7 +2,7 @@
 import EventEmitter from 'node:events'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { Effect, Layer, Option, Redacted, Result } from 'effect'
-import { ConfigError, NetworkError } from '@gyomu/core'
+import { ConfigError, NetworkError } from '@gyomu/schema'
 import { NodeFileSystem } from '@effect/platform-node'
 import { SshService } from '../SshService.js'
 import { ConfigService } from '../../config.js'

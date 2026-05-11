@@ -1,7 +1,7 @@
 import { Effect, Stream } from 'effect'
-import { NetworkError, isRetryableNetworkError, withOptional } from '@gyomu/core'
+import { NetworkError, isRetryableNetworkError, withOptional } from '@gyomu/schema'
 import { EnvHttpProxyAgent, setGlobalDispatcher } from 'undici'
-import { fromPromise } from '../../../core/dist/effect/index.js'
+import { fromPromise } from '@gyomu/schema/effect'
 import { networkStream } from '../network/index.js'
 
 export function simpleWebAccess(url: string, isInternal: boolean = true) {

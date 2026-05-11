@@ -1,14 +1,14 @@
 import { createTool } from '@mastra/core/tools'
-import { HolidayRangeSchema } from '@gyomu/core/schemas/ai/holiday'
+import { HolidayRangeSchema } from '@gyomu/schema/schemas/ai/holiday'
 import { Effect, Layer, Schema } from 'effect'
-import { LocalDateSchema } from '@gyomu/core/entity'
-import { BusinessCalendarService } from '@gyomu/core/gyomu/date'
+import { LocalDateSchema } from '@gyomu/schema/entity'
+import { BusinessCalendarService } from '@gyomu/schema/gyomu/date'
 import { ConfigLayer, MainLayer, PlatformLayer } from '@gyomu/infra'
 import { KyselyService, MssqlService } from '@gyomu/infra/db'
 import { BusinessCalendarServiceLayer } from '@gyomu/infra/gyomu/date'
 import { GyomuRepositoryLayer } from '@gyomu/infra/gyomu'
-import { makeRunner } from '../../../../core/dist/effect/index.js'
-import type { LocalDate } from '@gyomu/core/entity'
+import { makeRunner } from '@gyomu/schema/effect'
+import type { LocalDate } from '@gyomu/schema/entity'
 
 const targetLayer = Layer.mergeAll(
   BusinessCalendarServiceLayer,

@@ -1,5 +1,5 @@
 import { Effect, Fiber, Queue, Stream } from 'effect'
-import { IOError, wrapInfraError } from '@gyomu/core'
+import { IOError, wrapInfraError } from '@gyomu/schema'
 import { runSync } from 'effect/Effect'
 import type { Duplex, Readable, Transform } from 'node:stream'
 // import { NodeStream } from '@effect/platform-node';

@@ -1,6 +1,6 @@
 import crypto from 'node:crypto'
-import { buffer2Base64String } from '@gyomu/core/shared/encoding'
-import { Uint8ArraytoBuffer } from '@gyomu/core/shared/binary'
+import { buffer2Base64String } from '@gyomu/schema/shared/encoding'
+import { Uint8ArraytoBuffer } from '@gyomu/schema/shared/binary'
 import { Effect } from 'effect'
 import { readFromFile, writeToFile } from '../fs/fs-utils.js'
 // import { fs } from '../fs/index.js';

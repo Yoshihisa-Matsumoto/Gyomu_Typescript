@@ -1,16 +1,16 @@
 // import { gyomu_market_holiday } from '@prisma/client';
 import { Effect, Layer } from 'effect'
-import { BusinessCalendarService } from '@gyomu/core/gyomu/date'
+import { BusinessCalendarService } from '@gyomu/schema/gyomu/date'
 
 import { beforeEach, expect, test } from 'vitest'
 import { NodeFileSystem } from '@effect/platform-node'
+import { makeRunner } from '@gyomu/schema/effect'
 import { MainLayer } from '../../layer.js'
 import { ConfigMockLayer } from '../../config.js'
-import { makeRunner } from '../../../../core/dist/effect/index.js'
 import { GyomuRepositoryMock } from '../../__tests__/baseDBClass.js'
 import { BusinessCalendarServiceLayer } from '../date/BusinessCalendarServiceLayer.js'
-import type { LocalDate } from '@gyomu/core/entity'
-import type { BusinessCalendar } from '@gyomu/core/gyomu/date'
+import type { LocalDate } from '@gyomu/schema/entity'
+import type { BusinessCalendar } from '@gyomu/schema/gyomu/date'
 
 // let mockCtx: MockContext;
 // let ctx: Context;

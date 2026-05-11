@@ -1,10 +1,10 @@
-import { NetworkError, isRetryableNetworkError } from '@gyomu/core'
+import { NetworkError, isRetryableNetworkError } from '@gyomu/schema'
 import { Effect } from 'effect'
 import { NodeStream } from '@effect/platform-node'
 import { withSftp } from './shared.js'
 import type { Writable } from 'node:stream'
 import type { Client } from 'ssh2'
-import type { IOError } from '@gyomu/core'
+import type { IOError } from '@gyomu/schema'
 import type { Stream } from 'effect'
 
 export const uploadFromStreamUnderNodejs =

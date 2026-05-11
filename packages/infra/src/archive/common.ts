@@ -1,5 +1,5 @@
 import type { Stream } from 'effect'
-import type { IOError } from '@gyomu/core'
+import type { IOError } from '@gyomu/schema'
 
 export const massageEntryPath = (fileName: string) => {
   return fileName ? fileName.replace(/\\/g, '/') : fileName

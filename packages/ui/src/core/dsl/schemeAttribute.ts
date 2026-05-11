@@ -5,9 +5,9 @@ import type {
   UIAnnotationField,
   UIAnnotationOverride,
   UIAnnotations,
-} from '@gyomu/core/entity'
+} from '@gyomu/schema/entity'
 import type { AST, Check } from 'effect/SchemaAST'
-import type { Logger } from '@gyomu/core'
+import type { Logger } from '@gyomu/schema'
 import type { FormFieldMeta } from './type.js'
 
 function getMergedAnnotations(

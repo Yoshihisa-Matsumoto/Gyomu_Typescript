@@ -1,8 +1,8 @@
 import { Config, Context, Effect, Layer, Redacted } from 'effect'
 import { Client } from 'basic-ftp'
 import { withDefault } from 'effect/Config'
-import { NetworkError, isRetryableNetworkError } from '@gyomu/core'
-import { fromPromise } from '../../../core/dist/effect/index.js'
+import { NetworkError, isRetryableNetworkError } from '@gyomu/schema'
+import { fromPromise } from '@gyomu/schema/effect'
 import { ConfigService } from '../config.js'
 import {
   download,
@@ -13,9 +13,9 @@ import {
   uploadFromStream,
 } from './internals/ftpClient.js'
 import type { Scope } from 'effect/Scope'
-import type { FileTransportInfo } from '@gyomu/core/gyomu/file'
+import type { FileTransportInfo } from '@gyomu/schema/gyomu/file'
 import type { Stream } from 'effect/Stream'
-import type { ConfigError, IOError } from '@gyomu/core'
+import type { ConfigError, IOError } from '@gyomu/schema'
 import type { FileSystem } from 'effect'
 
 // type FtpConfig = Config.Success<typeof ftpConfigRaw>;
