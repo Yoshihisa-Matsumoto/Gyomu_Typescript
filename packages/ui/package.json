@@ -20,8 +20,8 @@
       "import": "./dist/adapters/shadcn/index.js"
     },
     "./components": {
-      "types": "./dist/components/index.d.ts",
-      "import": "./dist/components/index.js"
+      "types": "./dist/ui/components/index.d.ts",
+      "import": "./dist/ui/components/index.js"
     },
     "./primitives": {
       "types": "./dist/primitives/index.d.ts",
