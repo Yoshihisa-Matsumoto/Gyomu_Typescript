@@ -11,11 +11,7 @@ export const fromPromise =
     Effect.tryPromise({
       try: f,
       catch: (e) => {
-        const base = buildContext(e)
-        return new ErrorType({
-          ...base,
-          cause: e, // ✅ 強制注入
-        })
+        return wrapError(ErrorType, e, buildContext)
       },
     })
 export const fromSync =
@@ -27,13 +23,25 @@ export const fromSync =
     Effect.try({
       try: f,
       catch: (e) => {
-        const base = buildContext(e)
-        return new ErrorType({
-          ...base,
-          cause: e, // ✅ 強制注入
-        })
+        return wrapError(ErrorType, e, buildContext)
       },
     })
+
+function wrapError<Ctor extends new (ctx: any) => any>(
+  ErrorType: Ctor,
+  error: unknown,
+  buildContext?: (e: unknown) => WithoutCause<ContextOfCtor<Ctor>>,
+): InstanceType<Ctor> {
+  if (error instanceof ErrorType) return error
+
+  const base = (buildContext?.(error) ?? {}) as ContextOfCtor<Ctor>
+
+  return new ErrorType({
+    ...base,
+    message: base.message ?? (error instanceof Error ? error.message : 'Unknown error occurred'),
+    cause: error,
+  })
+}
 export function ensure<Ctor extends new (ctx: any) => any>(
   condition: boolean,
   ErrorType: Ctor,

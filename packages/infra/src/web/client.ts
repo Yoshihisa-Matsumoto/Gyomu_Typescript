@@ -1,8 +1,7 @@
 import { Effect, Stream } from 'effect'
-import { NetworkError, isRetryableNetworkError, withOptional } from '@gyomu/schema'
+import { NetworkError, isRetryableNetworkError } from '@gyomu/schema'
 import { EnvHttpProxyAgent, setGlobalDispatcher } from 'undici'
 import { fromPromise } from '@gyomu/schema/effect'
-import { networkStream } from '../network/index.js'
 
 export function simpleWebAccess(url: string, isInternal: boolean = true) {
   if (!isInternal && (process.env.HTTPS_PROXY || process.env.HTTP_PROXY)) {
@@ -63,26 +62,3 @@ export const fetchEffect = (url: string, init?: RequestInit) =>
     retryable: isRetryableNetworkError(e),
     endpoint: url,
   }))(() => fetch(url, init))
-export const webDownloadStream = (
-  url: string,
-  headers?: Record<string, string>,
-): Stream.Stream<Uint8Array, NetworkError> =>
-  Stream.unwrap(
-    Effect.gen(function* () {
-      const response = yield* fetchEffect(url, withOptional({ headers }))
-
-      if (!response.body) {
-        return yield* Effect.fail(
-          new NetworkError({
-            message: 'No response body',
-            retryable: false,
-            cause: undefined,
-            operation: 'request',
-            endpoint: url,
-          }),
-        )
-      }
-
-      return networkStream(() => response.body!, `Stream error `)
-    }),
-  )

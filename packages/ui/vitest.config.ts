@@ -1,8 +1,15 @@
+import path from 'node:path'
 import { defineConfig } from 'vitest/config'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig(({ mode }) => ({
   plugins: [tailwindcss()],
+  resolve: {
+    alias: {
+      react: path.resolve(__dirname, '../../node_modules/react'),
+      'react-dom': path.resolve(__dirname, '../../node_modules/react-dom'),
+    },
+  },
   test: {
     environment: 'jsdom',
     globals: true,
