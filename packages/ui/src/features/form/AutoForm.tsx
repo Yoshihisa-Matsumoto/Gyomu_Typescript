@@ -1,5 +1,5 @@
 // --- React / 外部ライブラリ ---
-import React, { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useForm } from '@tanstack/react-form'
 
 // --- Core / Engine ---
@@ -36,7 +36,7 @@ export function AutoForm<TFields extends Fields>({
 
   const fieldSchemaMap: Partial<Record<keyof TFields, Schema.Schema<any>>> =
     buildFieldSchemaMap(schema)
-  const fieldConfigs = React.useMemo(
+  const fieldConfigs = useMemo(
     () =>
       buildFormMetaFromStructSchema({
         schema,

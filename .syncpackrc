@@ -12,14 +12,17 @@
       ]
     },
     {
-      "label": "それ以外の全パッケージを無視",
-      "packages": [
-        "**"
-      ],
       "dependencies": [
-        "**"
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom"
       ],
-      "isIgnored": true
+      "dependencyTypes": [
+        "dependencies",
+        "devDependencies"
+      ],
+      "pinVersion": "19.2.4"
     }
   ]
 }

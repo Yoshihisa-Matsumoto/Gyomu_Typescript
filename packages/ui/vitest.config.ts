@@ -9,10 +9,12 @@ export default defineConfig(({ mode }) => ({
       react: path.resolve(__dirname, '../../node_modules/react'),
       'react-dom': path.resolve(__dirname, '../../node_modules/react-dom'),
     },
+    dedupe: ['react', 'react-dom'],
   },
   test: {
     environment: 'jsdom',
     globals: true,
+    isolate: false,
     include:
       mode === 'sit'
         ? ['src/**/__sit__/**/?(*.)+(spec|test).+(ts|tsx|js)']

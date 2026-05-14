@@ -39,9 +39,9 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "build:ci": "pnpm run clean && pnpm run build",
-    "clean": "rimraf ./dist .tsbuildinfo",
+    "clean": "rimraf ./dist ./coverage ./.turbo ./.tsbuildinfo",
     "type-check": "tsc --project tsconfig.typecheck.json",
-    "test": "bunx vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json ",
+    "test": "vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
@@ -89,8 +89,8 @@
     "marked": "^17.0.3",
     "material-react-table": "^3.2.1",
     "mermaid": "^11.12.3",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
     "storybook": "^10.3.6",
     "tsup": "8.5.1",
     "vite": "^8.0.10",
