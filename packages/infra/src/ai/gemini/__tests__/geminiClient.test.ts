@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Effect, Layer, Stream } from 'effect'
-import { AIError } from '@gyomu/schema'
+import { AiError } from '@gyomu/schema'
 import { GeminiClient } from '../GeminiClient.js'
 import { ConfigService } from '../../../config.js'
 import { makeRunner } from '../../../runtime.js'
@@ -86,7 +86,7 @@ describe('GeminiClient (Unit)', () => {
       })
     })
 
-    await expect(runGeminiQAWithEnvOrThrow(program)).rejects.toBeInstanceOf(AIError)
+    await expect(runGeminiQAWithEnvOrThrow(program)).rejects.toBeInstanceOf(AiError)
   })
 
   it('streamChat: 正常系（文字分割される）', async () => {

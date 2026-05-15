@@ -2,7 +2,7 @@ import { Data } from 'effect'
 import { withErrorTraits } from './BaseError.js'
 import { AccessError } from './AccessError.js'
 import { ConfigError } from './ConfigError.js'
-import { AIError } from './AiError.js'
+import { AiError } from './AiError.js'
 import { DBError } from './DBError.js'
 import { IOError } from './IOError.js'
 import { NetworkError } from './NetworkError.js'
@@ -19,7 +19,7 @@ const isAccessError = (e: unknown) => e instanceof AccessError
 const isConfigError = (e: unknown) => e instanceof ConfigError
 const isNetworkError = (e: unknown) => e instanceof NetworkError
 const isIOError = (e: unknown) => e instanceof IOError
-const isAIError = (e: unknown) => e instanceof AIError
+const isAIError = (e: unknown) => e instanceof AiError
 const isDBError = (e: unknown) => e instanceof DBError
 export const mapGyomuReason = (e: unknown): GyomuErrorContext['reason'] => {
   if (isAccessError(e)) return 'invalid_input'

@@ -2,12 +2,15 @@ import { Data } from 'effect'
 import { withErrorTraits } from './BaseError.js'
 import type { AppErrorContext } from './BaseError.js'
 
-export type AIOperation = 'generate' | 'stream'
+export type AIOperation = 'generate' | 'stream' | 'embedding'
 
 export type AIPhase =
   | 'request' // API呼び出し
   | 'response' // レスポンス受信
   | 'decode' // 内容不正
+  | 'rate-limit'
+  | 'tool-call'
+  | 'stream'
 
 export interface AIErrorContext extends AppErrorContext {
   readonly operation: AIOperation
@@ -15,7 +18,7 @@ export interface AIErrorContext extends AppErrorContext {
   readonly phase: AIPhase
   readonly retryable: boolean
 }
-export class AIError extends withErrorTraits(Data.TaggedError('Ai Error')<AIErrorContext>, {
+export class AiError extends withErrorTraits(Data.TaggedError('AiError')<AIErrorContext>, {
   isRetryable: (ctx) => {
     return ctx.retryable
   },
