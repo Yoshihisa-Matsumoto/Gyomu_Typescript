@@ -75,8 +75,8 @@ export const useGyomuChat = (options?: UseGyomuChatOptions): GyomuChatHandle => 
       onError: options?.onError,
 
       onFinish: options?.onFinish
-        ? ({ message }: { message: UIMessage }) => {
-            options.onFinish?.(mapAiSdkMessageToGyomuMessage(message))
+        ? async ({ message }: { message: UIMessage }) => {
+            await options.onFinish?.(mapAiSdkMessageToGyomuMessage(message))
           }
         : undefined,
     }),
