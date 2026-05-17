@@ -8,6 +8,10 @@
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
+    "./ai": {
+      "import": "./dist/ai/index.js",
+      "types": "./dist/ai/index.d.ts"
+    },
     "./conversation": {
       "import": "./dist/conversation/index.js",
       "types": "./dist/conversation/index.d.ts"

@@ -1,13 +1,10 @@
 import { Context } from 'effect'
 import type { Effect, Schema } from 'effect'
-import type {
-  EmbeddingModel,
-  GenerateTextResult,
-  LanguageModel,
-  ModelMessage,
-  StreamTextResult,
-} from 'ai'
+import type { EmbeddingModel, GenerateTextResult, LanguageModel, StreamTextResult } from 'ai'
 import type { AiError } from '@gyomu/schema'
+import type { Message } from '@gyomu/schema/conversation'
+
+export type { StreamTextResult } from 'ai'
 /**
  * =========================================
  * Request Types
@@ -19,7 +16,7 @@ type PromptInput =
       readonly messages?: never
     }
   | {
-      readonly messages: ReadonlyArray<ModelMessage>
+      readonly messages: ReadonlyArray<Message>
       readonly prompt?: never
     }
 export type GenerateTextParams = {
@@ -35,7 +32,7 @@ export interface StreamTextParams {
   readonly model: LanguageModel
   readonly system?: string
   readonly prompt?: string
-  readonly messages?: ReadonlyArray<ModelMessage>
+  readonly messages?: ReadonlyArray<Message>
 
   readonly temperature?: number
   readonly maxTokens?: number
@@ -48,7 +45,7 @@ export interface GenerateObjectParams<TSchema extends EffectSchema> {
 
   readonly system?: string
   readonly prompt?: string
-  readonly messages?: ReadonlyArray<ModelMessage>
+  readonly messages?: ReadonlyArray<Message>
 
   readonly temperature?: number
   readonly abortSignal?: AbortSignal

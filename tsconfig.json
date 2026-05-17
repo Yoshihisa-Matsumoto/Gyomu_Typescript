@@ -7,8 +7,10 @@
   "files": [],
   "references": [
     { "path": "apps/cli" },
-    { "path": "packages/ai" },
+    { "path": "packages/ai-agent" },
+    { "path": "packages/ai-react" },
     { "path": "packages/schema" },
-    { "path": "packages/infra" }
+    { "path": "packages/infra" },
+    { "path": "packages/ui" }
   ]
 }
