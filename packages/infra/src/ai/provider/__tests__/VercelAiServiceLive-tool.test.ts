@@ -5,19 +5,25 @@ import * as ai from 'ai'
 import { makeAiService } from '../VercelAiServiceLive.js'
 import type { AiTool } from '../../tool/ai-tool.js'
 
-vi.mock('ai', () => ({
-  generateText: vi.fn(),
+vi.mock('ai', async (importOriginal) => {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+  const actual = await importOriginal<typeof import('ai')>()
 
-  streamText: vi.fn(),
+  return {
+    ...actual,
 
-  embed: vi.fn(),
+    generateText: vi.fn(),
+    streamText: vi.fn(),
+    embed: vi.fn(),
 
-  Output: {
-    object: vi.fn(),
-  },
+    Output: {
+      ...actual.Output,
+      object: vi.fn(),
+    },
 
-  tool: vi.fn((x) => x),
-}))
+    tool: actual.tool, // ← ここ重要（むやみに壊さない）
+  }
+})
 const generateTextMock = vi.mocked(ai.generateText) as any
 const InputSchema = Schema.Struct({
   name: Schema.String,
