@@ -1,8 +1,16 @@
 import { Context } from 'effect'
 import type { Effect, Schema } from 'effect'
-import type { EmbeddingModel, GenerateTextResult, LanguageModel, StreamTextResult } from 'ai'
+import type {
+  EmbeddingModel,
+  GenerateTextResult,
+  LanguageModel,
+  StreamTextResult,
+  ToolSet,
+} from 'ai'
 import type { AiError } from '@gyomu/schema'
 import type { Message } from '@gyomu/schema/conversation'
+import type { AiTool } from '../tool/ai-tool.js'
+import type { EffectSchema } from '@gyomu/schema/entity'
 
 export type { StreamTextResult } from 'ai'
 /**
@@ -26,6 +34,8 @@ export type GenerateTextParams = {
   readonly temperature?: number
   readonly maxTokens?: number
   readonly abortSignal?: AbortSignal
+
+  readonly tools?: ReadonlyArray<AiTool<string, any, any>>
 } & PromptInput
 
 export interface StreamTextParams {
@@ -37,8 +47,9 @@ export interface StreamTextParams {
   readonly temperature?: number
   readonly maxTokens?: number
   readonly abortSignal?: AbortSignal
+  readonly tools?: ReadonlyArray<AiTool<string, any, any>>
 }
-export type EffectSchema = Parameters<typeof Schema.toStandardSchemaV1>[0]
+
 export interface GenerateObjectParams<TSchema extends EffectSchema> {
   readonly model: LanguageModel
   readonly schema: TSchema
@@ -49,6 +60,7 @@ export interface GenerateObjectParams<TSchema extends EffectSchema> {
 
   readonly temperature?: number
   readonly abortSignal?: AbortSignal
+  readonly tools?: ReadonlyArray<AiTool<string, any, any>>
 }
 
 export interface EmbedParams<TValue> {
@@ -70,7 +82,7 @@ export interface AiObjectResult<T> {
 export interface AiService {
   readonly generateText: (
     params: GenerateTextParams,
-  ) => Effect.Effect<GenerateTextResult<Record<string, never>, never>, AiError>
+  ) => Effect.Effect<GenerateTextResult<ToolSet, never>, AiError>
 
   readonly streamText: (
     params: StreamTextParams,

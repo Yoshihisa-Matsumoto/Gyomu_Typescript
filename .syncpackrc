@@ -23,6 +23,20 @@
         "devDependencies"
       ],
       "pinVersion": "19.2.4"
+    },
+    {
+      "label": "vercel-ai-sdk-core",
+      "dependencies": [
+        "ai"
+      ],
+      "pinVersion": "^6.0.182"
+    },
+    {
+      "label": "vercel-ai-sdk-providers-v3",
+      "dependencies": [
+        "@ai-sdk/*"
+      ],
+      "pinVersion": "^3"
     }
   ]
 }

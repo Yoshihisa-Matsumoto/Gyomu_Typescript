@@ -4,15 +4,16 @@ import { AiError, withOptional } from '@gyomu/schema'
 
 import { fromPromise, fromSync } from '@gyomu/schema/effect'
 import { AiService } from '../service/AiService.js'
+import { toVercelTool } from '../tool/adapter/to-vercel-tool.js'
 import type { ModelMessage } from 'ai'
 import type {
-  EffectSchema,
   EmbedParams,
   GenerateObjectParams,
   GenerateTextParams,
   StreamTextParams,
 } from '../service/AiService.js'
 import type { Message } from '@gyomu/schema/conversation'
+import type { EffectSchema } from '@gyomu/schema/entity'
 
 /**
  * =========================================
@@ -56,9 +57,13 @@ const buildPrompt = (params: {
  * =========================================
  */
 
-const makeAiService = (): AiService => ({
-  generateText: (params: GenerateTextParams) =>
-    fromPromise(AiError, () => ({
+export const makeAiService = (): AiService => ({
+  generateText: (params: GenerateTextParams) => {
+    const tools = params.tools
+      ? Object.fromEntries(params.tools.map((toolDef) => [toolDef.name, toVercelTool(toolDef)]))
+      : undefined
+
+    return fromPromise(AiError, () => ({
       message: 'fail to generate text',
       model: params.model.toString(),
       operation: 'generate' as const,
@@ -76,12 +81,17 @@ const makeAiService = (): AiService => ({
           maxTokens: params.maxTokens,
 
           abortSignal: params.abortSignal,
+          tools,
         }),
       })
-    }),
+    })
+  },
 
-  streamText: (params: StreamTextParams) =>
-    fromSync(AiError, () => ({
+  streamText: (params: StreamTextParams) => {
+    const tools = params.tools
+      ? Object.fromEntries(params.tools.map((toolDef) => [toolDef.name, toVercelTool(toolDef)]))
+      : undefined
+    return fromSync(AiError, () => ({
       message: 'fail to generate stream',
       model: params.model.toString(),
       operation: 'stream' as const,
@@ -98,12 +108,17 @@ const makeAiService = (): AiService => ({
           maxTokens: params.maxTokens,
 
           abortSignal: params.abortSignal,
+          tools,
         }),
       }),
-    ),
+    )
+  },
 
-  generateObject: <TSchema extends EffectSchema>(params: GenerateObjectParams<TSchema>) =>
-    fromPromise(AiError, () => ({
+  generateObject: <TSchema extends EffectSchema>(params: GenerateObjectParams<TSchema>) => {
+    const tools = params.tools
+      ? Object.fromEntries(params.tools.map((toolDef) => [toolDef.name, toVercelTool(toolDef)]))
+      : undefined
+    return fromPromise(AiError, () => ({
       message: 'fail to generate structured object',
       model: params.model.toString(),
       operation: 'generate' as const,
@@ -124,13 +139,15 @@ const makeAiService = (): AiService => ({
           temperature: params.temperature,
 
           abortSignal: params.abortSignal,
+          tools,
         }),
       })
       return {
         object: result.output as Schema.Schema.Type<TSchema>,
         text: result.text,
       }
-    }),
+    })
+  },
 
   embed: <TValue>(params: EmbedParams<TValue>) =>
     fromPromise(AiError, () => ({
