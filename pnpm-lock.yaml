@@ -242,9 +242,19 @@ importers:
       '@gyomu/ui-core':
         specifier: workspace:*
         version: link:../ui-core
+      ai:
+        specifier: ^6.0.182
+        version: 6.0.184(zod@4.4.3)
       effect:
         specifier: 4.0.0-beta.57
         version: 4.0.0-beta.57
+      react:
+        specifier: 19.2.4
+        version: 19.2.4
+    devDependencies:
+      '@types/react':
+        specifier: ^19
+        version: 19.2.14
 
   packages/infra:
     dependencies:
