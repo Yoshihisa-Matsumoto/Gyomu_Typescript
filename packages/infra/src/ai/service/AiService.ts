@@ -27,41 +27,54 @@ type PromptInput =
       readonly messages: ReadonlyArray<Message>
       readonly prompt?: never
     }
-export type GenerateTextParams = {
+export type ToolLoopPolicy =
+  | {
+      readonly type: 'maxSteps'
+
+      readonly maxSteps: number
+    }
+  | {
+      readonly type: 'untilToolCalled'
+
+      readonly toolName: string
+    }
+  | {
+      readonly type: 'untilFinished'
+    }
+
+type ToolConfig =
+  | {
+      readonly tools?: never
+      readonly toolLoopPolicy?: never
+    }
+  | {
+      readonly tools: ReadonlyArray<AiTool<string, any, any>>
+
+      readonly toolLoopPolicy: ToolLoopPolicy
+    }
+type BaseAiParams = {
   readonly model: LanguageModel
+
   readonly system?: string
 
   readonly temperature?: number
-  readonly maxTokens?: number
+
   readonly abortSignal?: AbortSignal
-
-  readonly tools?: ReadonlyArray<AiTool<string, any, any>>
-} & PromptInput
-
-export interface StreamTextParams {
-  readonly model: LanguageModel
-  readonly system?: string
-  readonly prompt?: string
-  readonly messages?: ReadonlyArray<Message>
-
-  readonly temperature?: number
+}
+type TextGenerationParams = BaseAiParams & PromptInput & ToolConfig
+export type GenerateTextParams = TextGenerationParams & {
   readonly maxTokens?: number
-  readonly abortSignal?: AbortSignal
-  readonly tools?: ReadonlyArray<AiTool<string, any, any>>
 }
 
-export interface GenerateObjectParams<TSchema extends EffectSchema> {
-  readonly model: LanguageModel
-  readonly schema: TSchema
-
-  readonly system?: string
-  readonly prompt?: string
-  readonly messages?: ReadonlyArray<Message>
-
-  readonly temperature?: number
-  readonly abortSignal?: AbortSignal
-  readonly tools?: ReadonlyArray<AiTool<string, any, any>>
+export type StreamTextParams = TextGenerationParams & {
+  readonly maxTokens?: number
 }
+
+export type GenerateObjectParams<TSchema extends EffectSchema> = BaseAiParams &
+  PromptInput &
+  ToolConfig & {
+    readonly schema: TSchema
+  }
 
 export interface EmbedParams<TValue> {
   readonly model: EmbeddingModel

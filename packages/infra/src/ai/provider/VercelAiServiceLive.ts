@@ -4,7 +4,7 @@ import { AiError, withOptional } from '@gyomu/schema'
 
 import { fromPromise, fromSync } from '@gyomu/schema/effect'
 import { AiService } from '../service/AiService.js'
-import { toVercelTool } from '../tool/adapter/to-vercel-tool.js'
+import { buildToolRuntimeConfig } from './buildToolRuntimeConfig.js'
 import type { ModelMessage } from 'ai'
 import type {
   EmbedParams,
@@ -59,10 +59,6 @@ const buildPrompt = (params: {
 
 export const makeAiService = (): AiService => ({
   generateText: (params: GenerateTextParams) => {
-    const tools = params.tools
-      ? Object.fromEntries(params.tools.map((toolDef) => [toolDef.name, toVercelTool(toolDef)]))
-      : undefined
-
     return fromPromise(AiError, () => ({
       message: 'fail to generate text',
       model: params.model.toString(),
@@ -81,16 +77,13 @@ export const makeAiService = (): AiService => ({
           maxTokens: params.maxTokens,
 
           abortSignal: params.abortSignal,
-          tools,
         }),
+        ...withOptional(buildToolRuntimeConfig(params)),
       })
     })
   },
 
   streamText: (params: StreamTextParams) => {
-    const tools = params.tools
-      ? Object.fromEntries(params.tools.map((toolDef) => [toolDef.name, toVercelTool(toolDef)]))
-      : undefined
     return fromSync(AiError, () => ({
       message: 'fail to generate stream',
       model: params.model.toString(),
@@ -108,16 +101,13 @@ export const makeAiService = (): AiService => ({
           maxTokens: params.maxTokens,
 
           abortSignal: params.abortSignal,
-          tools,
         }),
+        ...withOptional(buildToolRuntimeConfig(params)),
       }),
     )
   },
 
   generateObject: <TSchema extends EffectSchema>(params: GenerateObjectParams<TSchema>) => {
-    const tools = params.tools
-      ? Object.fromEntries(params.tools.map((toolDef) => [toolDef.name, toVercelTool(toolDef)]))
-      : undefined
     return fromPromise(AiError, () => ({
       message: 'fail to generate structured object',
       model: params.model.toString(),
@@ -139,8 +129,8 @@ export const makeAiService = (): AiService => ({
           temperature: params.temperature,
 
           abortSignal: params.abortSignal,
-          tools,
         }),
+        ...withOptional(buildToolRuntimeConfig(params)),
       })
       return {
         object: result.output as Schema.Schema.Type<TSchema>,

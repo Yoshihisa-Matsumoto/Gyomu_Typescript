@@ -23,9 +23,9 @@ const InputSchema = Schema.Struct({
   name: Schema.String,
 })
 
-const outputDataSchema = Schema.Struct({
-  message: Schema.String,
-})
+type outputDataType = {
+  message: string
+}
 
 // const OutputSchema = createResultSchema(outputDataSchema)
 
@@ -39,7 +39,7 @@ const execute = vi.fn(
     },
 )
 
-const testTool: AiTool<string, typeof InputSchema, typeof outputDataSchema> = {
+const testTool: AiTool<string, typeof InputSchema, outputDataType> = {
   name: 'testTool',
 
   description: 'test',
@@ -64,6 +64,7 @@ describe('generateText tool support', () => {
         prompt: 'hello',
 
         tools: [testTool],
+        toolLoopPolicy: { type: 'untilFinished' },
       }),
     )
 

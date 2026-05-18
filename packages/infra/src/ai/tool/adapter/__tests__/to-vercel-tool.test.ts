@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
 import { Schema } from 'effect'
-import { createResultSchema } from '@gyomu/schema'
 import { toVercelTool } from '../to-vercel-tool.js'
 import type { AiTool } from '../../ai-tool.js'
 
@@ -10,9 +9,8 @@ describe('toVercelTool', () => {
     const TestSchema = Schema.Struct({
       name: Schema.String,
     })
-    const outputSchema = Schema.Struct({ message: Schema.String })
-    const TestOutSchema = createResultSchema(outputSchema)
-    const toolDef: AiTool<string, typeof TestSchema, typeof outputSchema> = {
+    type outputType = { message: string }
+    const toolDef: AiTool<string, typeof TestSchema, outputType> = {
       name: 'test',
       description: 'desc',
 

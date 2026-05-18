@@ -9,6 +9,7 @@ import { AI_MODELS } from '../../models/AiModels.js'
 import { MainLayer, PlatformLayer } from '../../../layer.js'
 import { ConfigLayer } from '../../../config.js'
 import 'dotenv/config'
+import type { AiTool } from '../../tool/ai-tool.js'
 
 const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(Layer.provideMerge(PlatformLayer))
 const runVercelQAWithEnvOrThrow = makeRunner(AiServiceLive)
@@ -105,6 +106,42 @@ describeIfApiKey('VercelAiServiceLive Integration', () => {
       }
 
       expect(fullText.length).toBeGreaterThan(0)
+    }, 30_000)
+  })
+
+  describe('tool', () => {
+    it('text  tool ', async () => {
+      const citySchema = Schema.Struct({ city: Schema.String })
+      type weatherType = { weather: string }
+      const weatherTool: AiTool<string, typeof citySchema, weatherType> = {
+        name: 'weather',
+        description: 'Get weather for city',
+        inputSchema: citySchema,
+        execute: async ({ city }) => {
+          console.log('tool called')
+          return await {
+            success: true as const,
+
+            data: {
+              weather: `Sunny in ${city}`,
+            },
+          }
+        },
+      }
+      const result = await runVercelQAWithEnvOrThrow(
+        Effect.gen(function* () {
+          const service = yield* AiService
+          return yield* service.generateText({
+            model: AI_MODELS.fast,
+            prompt: 'What is the weather in Tokyo?',
+            tools: [weatherTool],
+            toolLoopPolicy: { type: 'maxSteps', maxSteps: 2 },
+          })
+        }),
+        layer,
+      )
+      console.log('Output', JSON.stringify(result, null, 2))
+      expect(result.text.toLowerCase()).toContain('sunny')
     }, 30_000)
   })
 })

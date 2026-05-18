@@ -23,11 +23,19 @@ export const createSuccessSchema = <T extends Schema.Schema<any>>(dataSchema: T)
 
 export const createResultSchema = <T extends Schema.Schema<any>>(dataSchema: T) =>
   Schema.Union([createSuccessSchema(dataSchema), FailureSchema])
-
-export type ResultType<T extends Schema.Schema<any>> =
+export type ResultSchemaType<T extends Schema.Schema<any>> =
   | {
       readonly success: true
       readonly data: Schema.Schema.Type<T>
+    }
+  | {
+      readonly success: false
+      readonly error: PublicError
+    }
+export type ToolResult<T> =
+  | {
+      readonly success: true
+      readonly data: T
     }
   | {
       readonly success: false
