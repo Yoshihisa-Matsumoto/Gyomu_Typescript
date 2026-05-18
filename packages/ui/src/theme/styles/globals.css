@@ -1,0 +1,6 @@
+/* globals.css */
+
+@import './shadcn.css';
+@import '../shadcn/nova.css';
+@import './tokens.css';
+@import './base.css';

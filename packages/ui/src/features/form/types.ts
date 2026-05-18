@@ -1,13 +1,13 @@
 // --- Shared / Core (ドメイン・基盤) ---
-import type { CrudSchemaType, Fields, UIAnnotations } from '@gyomu/core/entity'
-import type { Logger } from '@gyomu/core'
+import type { CrudSchemaType, Fields, UIAnnotations } from '@gyomu/schema/entity'
+import type { Logger } from '@gyomu/schema'
 
 // --- UI (抽象コンポーネント) ---
 import type { FieldLayout, FormLayout, SubmitButtonProps } from '../../ui/components'
 
 // --- ローカル ---
-import type { FormFieldMeta } from '../../core/dsl/type'
-import type { RendererMap } from '../../core/engine/autoForm/types'
+import type { FormFieldMeta } from '@gyomu/ui-core/dsl'
+import type { RendererMap } from '@gyomu/ui-core/engine'
 
 export type AutoFieldProps = {
   meta: FormFieldMeta

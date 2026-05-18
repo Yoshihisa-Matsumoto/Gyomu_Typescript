@@ -1,11 +1,11 @@
 import { Config, Context, Effect, Layer, Stream } from 'effect'
 import { GoogleGenAI, ToolType } from '@google/genai'
-import { AIError, isRetryableAiError } from '@gyomu/core'
-import { fromPromise } from '../../../../core/dist/effect/index.js'
+import { AiError, isRetryableAiError } from '@gyomu/schema'
+import { fromPromise } from '@gyomu/schema/effect'
 import { ConfigLayer, ConfigService } from '../../config.js'
 import { PlatformLayer } from '../../layer.js'
 import type { Content, Part } from '@google/genai'
-import type { AiClient, ChatContent, ChatMessage } from '@gyomu/core/gyomu/ai'
+import type { AiClient, ChatContent, ChatMessage } from '@gyomu/schema/gyomu/ai'
 
 export class GeminiClient extends Context.Service<GeminiClient, AiClient>()('GeminiClient', {
   make: Effect.gen(function* () {
@@ -21,8 +21,8 @@ export class GeminiClient extends Context.Service<GeminiClient, AiClient>()('Gem
       generateText: (input: {
         messages: Array<ChatMessage>
         temperature?: number
-      }): Effect.Effect<string, AIError> => {
-        return fromPromise(AIError, (e) => ({
+      }): Effect.Effect<string, AiError> => {
+        return fromPromise(AiError, (e) => ({
           message: 'AI generate failed',
           operation: 'generate' as const,
           model: 'gemini-3-flash-preview',
@@ -35,7 +35,7 @@ export class GeminiClient extends Context.Service<GeminiClient, AiClient>()('Gem
           })
 
           if (!response.text)
-            throw new AIError({
+            throw new AiError({
               message: 'Empty AI response',
               operation: 'generate' as const,
               model: 'gemini-3-flash-preview',
@@ -49,9 +49,9 @@ export class GeminiClient extends Context.Service<GeminiClient, AiClient>()('Gem
       streamChat: (input: {
         messages: Array<ChatMessage>
         temperature?: number
-      }): Stream.Stream<string, AIError> => {
+      }): Stream.Stream<string, AiError> => {
         return Stream.unwrap(
-          fromPromise(AIError, (e) => ({
+          fromPromise(AiError, (e) => ({
             message: 'AI stream failed',
             operation: 'generate' as const,
             model: 'gemini-3-flash-preview',
@@ -66,7 +66,7 @@ export class GeminiClient extends Context.Service<GeminiClient, AiClient>()('Gem
             return Stream.fromAsyncIterable(
               response,
               (e) =>
-                new AIError({
+                new AiError({
                   message: 'AI stream failed',
                   operation: 'stream',
                   model: 'gemini-3-flash-preview',

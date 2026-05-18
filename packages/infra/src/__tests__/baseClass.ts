@@ -10,7 +10,7 @@ import {
   readFromFile,
   readStringFromFile,
 } from '../fs/fs-utils.js'
-import type { IOError } from '@gyomu/core'
+import type { IOError } from '@gyomu/schema'
 import type { FileSystem, PlatformError } from 'effect'
 
 export const tmpDir = () => {

@@ -1,9 +1,16 @@
 import { defineConfig } from 'vitest/config'
+import tailwindcss from '@tailwindcss/vite'
+import react from '@vitejs/plugin-react'
 
 export default defineConfig(({ mode }) => ({
+  plugins: [react(), tailwindcss()],
+  resolve: {
+    dedupe: ['react', 'react-dom'],
+  },
   test: {
     environment: 'jsdom',
     globals: true,
+    isolate: false,
     include:
       mode === 'sit'
         ? ['src/**/__sit__/**/?(*.)+(spec|test).+(ts|tsx|js)']

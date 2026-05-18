@@ -8,8 +8,8 @@ import {
   StatusHandlerSchema,
   StatusInformationSchema,
   StatusTypeSchema,
-} from '@gyomu/core/schemas/gyomu'
-import { DBError } from '@gyomu/core'
+} from '@gyomu/schema/schemas/gyomu'
+import { DBError } from '@gyomu/schema'
 import {
   appInfoDefinition,
   marketHolidayDefinition,
@@ -23,10 +23,10 @@ import {
   statusTypeDefinition,
   taskDataDefinition,
   taskDataLogDefinition,
-} from '@gyomu/core/entity'
-import { assertDefinitionKeysExistInTable } from '@gyomu/core/data'
-import { GyomuRepository } from '@gyomu/core/gyomu'
-import { fromPromise } from '../../../core/dist/effect/index.js'
+} from '@gyomu/schema/entity'
+import { assertDefinitionKeysExistInTable } from '@gyomu/schema/data'
+import { GyomuRepository } from '@gyomu/schema/gyomu'
+import { fromPromise } from '@gyomu/schema/effect'
 import { KyselyService } from '../db/KyselyService.js'
 import {
   customSQLAndReturnRecords,
@@ -35,7 +35,7 @@ import {
   makeRepositoryFromDb,
 } from '../db/common.js'
 import type { DB } from '../generated/db.js'
-import type { LocalDate, YearMonth } from '@gyomu/core/entity'
+import type { LocalDate, YearMonth } from '@gyomu/schema/entity'
 
 export const GyomuRepositoryLayer = Layer.effect(
   GyomuRepository,

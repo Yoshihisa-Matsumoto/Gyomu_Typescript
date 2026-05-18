@@ -3,13 +3,13 @@ import * as tar from 'tar-stream'
 import { create } from 'tar'
 import { Effect, Option, Queue, Stream } from 'effect'
 import { NodeStream } from '@effect/platform-node'
-import { IOError, wrapInfraError } from '@gyomu/core'
+import { IOError, wrapInfraError } from '@gyomu/schema'
 import { runSync } from 'effect/Effect'
 import { makeDirectory, writeStreamToFile } from '../../../fs/fs-utils.js'
 import type { Readable } from 'node:stream'
 
 import type { FileSystem } from 'effect'
-import type { FileTransportInfo } from '@gyomu/core/gyomu/file'
+import type { FileTransportInfo } from '@gyomu/schema/gyomu/file'
 import type { ArchiveEntryItem } from '../../common.js'
 
 type TarEntryItem = Extract<ArchiveEntryItem, { _tag: 'tar' }>

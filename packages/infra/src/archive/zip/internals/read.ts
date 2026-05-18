@@ -1,10 +1,10 @@
 import path from 'node:path'
 import { Effect, Queue, Stream } from 'effect'
 import yauzl from 'yauzl'
-import { IOError, logger, wrapInfraError } from '@gyomu/core'
-import { decode } from '@gyomu/core/shared/encoding'
+import { IOError, logger, wrapInfraError } from '@gyomu/schema'
+import { decode } from '@gyomu/schema/shared/encoding'
 import { runSync } from 'effect/Effect'
-import { FileTransportInfo } from '@gyomu/core/gyomu/file'
+import { FileTransportInfo } from '@gyomu/schema/gyomu/file'
 import { massageEntryPath } from '../../common.js'
 import {
   fromNodeCallback,

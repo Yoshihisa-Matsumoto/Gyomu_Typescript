@@ -2,8 +2,8 @@ import { spawnSync } from 'node:child_process'
 import path from 'node:path'
 import { tmpdir } from 'node:os'
 import { Effect, Ref, Stream } from 'effect'
-import { IOError, withOptional, wrapInfraError } from '@gyomu/core'
-import { ensureEffect, fromSync } from '../../../../core/dist/effect/index.js'
+import { IOError, withOptional, wrapInfraError } from '@gyomu/schema'
+import { ensureEffect, fromSync } from '@gyomu/schema/effect'
 import { jsonToCsv } from '../../csv/write.js'
 import {
   emptyDir,
@@ -22,7 +22,7 @@ import {
   isComparisionExcludeTarget,
   shouldRunGitDiff,
 } from './internals/compare.js'
-import type { DiffDetail } from '@gyomu/core/shared/object'
+import type { DiffDetail } from '@gyomu/schema/shared/object'
 // import { fs } from '../../fs/index.js';
 import type { ZipEntryItem, ZipFileEntryItem } from './internals/read.js'
 import type { PlatformError } from 'effect/PlatformError'

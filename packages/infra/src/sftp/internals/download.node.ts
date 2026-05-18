@@ -1,8 +1,8 @@
-import { NetworkError, isRetryableNetworkError } from '@gyomu/core'
+import { NetworkError, isRetryableNetworkError } from '@gyomu/schema'
 import { Effect, Stream } from 'effect'
 import { fromReadable } from '../../stream/bridge/nodeStream.js'
 import { withSftp } from './shared.js'
-import type { IOError } from '@gyomu/core'
+import type { IOError } from '@gyomu/schema'
 import type { Client } from 'ssh2'
 import type { Readable } from 'node:stream'
 

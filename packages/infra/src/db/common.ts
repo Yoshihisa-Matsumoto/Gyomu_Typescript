@@ -1,15 +1,15 @@
 import { Effect, Schema } from 'effect'
-import { DBError, ValueError } from '@gyomu/core'
-import { generateUuid7 } from '@gyomu/core/shared'
+import { DBError, ValueError } from '@gyomu/schema'
+import { generateUuid7 } from '@gyomu/schema/shared'
 import {
   convertFromSchemaObjectWithEffect,
   convertToSchemaObjectWithEffect,
-} from '@gyomu/core/entity'
-import { fromPromise } from '../../../core/dist/effect/index.js'
-import type { LocalDate } from '@gyomu/core/entity'
-import type { CrudRepository, CrudSchemas, WithFindAll, WithFindByColumn } from '@gyomu/core/data'
+} from '@gyomu/schema/entity'
+import { fromPromise } from '@gyomu/schema/effect'
+import type { LocalDate } from '@gyomu/schema/entity'
+import type { CrudRepository, CrudSchemas, WithFindAll, WithFindByColumn } from '@gyomu/schema/data'
 import type { DeleteResult, Insertable, Kysely, Selectable, UpdateResult } from 'kysely'
-import type { SchemaValidationError } from '@gyomu/core'
+import type { SchemaValidationError } from '@gyomu/schema'
 import type { DB } from '../generated/db.js'
 
 export type TablesWithId = {

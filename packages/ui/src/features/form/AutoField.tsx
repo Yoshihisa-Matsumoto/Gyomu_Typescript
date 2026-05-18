@@ -1,4 +1,4 @@
-import { withOptional } from '@gyomu/core'
+import { withOptional } from '@gyomu/schema'
 import { muiRenderer } from '../../ui/renderer/mui/muiRenderer'
 import { MuiFieldLayout } from '../../ui/adapters/mui/layout/MuiFieldLayout'
 import type { AutoFieldProps } from './types'
@@ -20,7 +20,7 @@ export function AutoField({
 
   if (!Component) throw new Error(`No renderer for widget: ${meta.widget}`)
   return (
-    <Layout label={meta.label ?? meta.name} {...withOptional({ error: error })}>
+    <Layout meta={meta} label={meta.label ?? meta.name} {...withOptional({ error: error })}>
       <Component
         meta={meta}
         {...withOptional({

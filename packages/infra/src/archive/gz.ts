@@ -1,7 +1,7 @@
 import zlib from 'node:zlib'
 import { throughNodeStreamScoped } from '../stream/bridge/nodeStream.js'
 import type { Stream } from 'effect'
-import type { IOError } from '@gyomu/core'
+import type { IOError } from '@gyomu/schema'
 
 export const gzip =
   <R = never>() =>

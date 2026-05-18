@@ -1,5 +1,5 @@
 import { Effect, Layer } from 'effect'
-import { UserService } from '@gyomu/core/gyomu'
+import { UserService } from '@gyomu/schema/gyomu'
 
 export const DummyUserLayer = Layer.effect(
   UserService,

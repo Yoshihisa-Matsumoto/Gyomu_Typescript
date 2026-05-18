@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Effect } from 'effect'
 
-import { NetworkError, ValueError } from '@gyomu/core'
+import { NetworkError, ValueError } from '@gyomu/schema'
 import { postAndReceiveXml } from '../api.js'
 import * as client from '../client.js'
 import * as stream from '../../network/networkStream.js'

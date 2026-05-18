@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
-import { defineEntityCrudSchemas, schemaField } from '@gyomu/core/entity'
-import { withOptional } from '@gyomu/core'
+import { defineEntityCrudSchemas, schemaField } from '@gyomu/schema/entity'
+
 import { AutoForm } from '../AutoForm'
 
 describe('AutoForm Test', () => {
@@ -32,7 +32,6 @@ describe('AutoForm Test', () => {
           id: 'f6ae5f2d-bd14-4c5f-9cc3-3a69ef90dd5b',
         }}
         onSubmit={handleSubmit}
-        {...withOptional({ ui: schema.ui })}
       />,
     )
 

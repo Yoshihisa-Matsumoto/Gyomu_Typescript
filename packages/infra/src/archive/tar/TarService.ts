@@ -11,9 +11,9 @@ import {
   untar,
 } from './internals/tar.js'
 import type { PlatformError } from 'effect/PlatformError'
-import type { FileTransportInfo } from '@gyomu/core/gyomu/file'
+import type { FileTransportInfo } from '@gyomu/schema/gyomu/file'
 import type { ArchiveEntryItem } from '../common.js'
-import type { IOError } from '@gyomu/core'
+import type { IOError } from '@gyomu/schema'
 import type { FileSystem, Stream } from 'effect'
 
 type TarEntryItem = Extract<ArchiveEntryItem, { _tag: 'tar' }>

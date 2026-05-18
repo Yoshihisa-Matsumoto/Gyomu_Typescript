@@ -1,0 +1,9 @@
+:root {
+  --gyomu-form-label-width: 12rem;
+
+  --gyomu-form-row-gap: 1rem;
+
+  --gyomu-form-section-gap: 2rem;
+
+  --gyomu-table-row-height: 2.5rem;
+}

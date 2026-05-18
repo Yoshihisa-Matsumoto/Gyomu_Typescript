@@ -2,7 +2,7 @@ import { createReadStream } from 'node:fs'
 import { Effect, FileSystem, Stream } from 'effect'
 import { describe, it } from 'vitest'
 import { NodeFileSystem, NodeStream } from '@effect/platform-node'
-import { IOError, wrapInfraError } from '@gyomu/core'
+import { IOError, wrapInfraError } from '@gyomu/schema'
 
 describe('FileSystem simple test', () => {
   it('FileSystem test', async () => {

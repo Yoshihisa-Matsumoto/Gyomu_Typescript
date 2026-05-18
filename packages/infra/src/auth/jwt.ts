@@ -1,8 +1,8 @@
 import * as jwt from 'jsonwebtoken'
-import { IOError } from '@gyomu/core'
+import { IOError } from '@gyomu/schema'
 import { Effect } from 'effect'
-import { Uint8ArraytoBuffer } from '@gyomu/core/shared/binary'
-import { fromSync } from '../../../core/dist/effect/index.js'
+import { Uint8ArraytoBuffer } from '@gyomu/schema/shared/binary'
+import { fromSync } from '@gyomu/schema/effect'
 import { readFromFile } from '../fs/fs-utils.js'
 // import { fs } from '../fs/index.js';
 

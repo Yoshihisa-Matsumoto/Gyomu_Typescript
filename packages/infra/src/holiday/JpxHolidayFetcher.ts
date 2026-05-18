@@ -1,6 +1,6 @@
 import { Effect, Layer } from 'effect'
-import { HolidayFetcher } from '@gyomu/core/gyomu/holiday'
-import { GyomuError, gyomuExternalFailure } from '@gyomu/core'
+import { HolidayFetcher } from '@gyomu/schema/gyomu/holiday'
+import { GyomuError, gyomuExternalFailure } from '@gyomu/schema'
 import { fetchJpxHolidays } from './jpxFetcher.js'
 
 const JPXHolidayFetcherLive = {

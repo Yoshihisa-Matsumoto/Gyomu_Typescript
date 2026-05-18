@@ -10,9 +10,9 @@ import {
   readTextEntry,
 } from './internals/read.js'
 import type { FileSystem, Stream } from 'effect'
-import type { IOError } from '@gyomu/core'
+import type { IOError } from '@gyomu/schema'
 import type { PlatformError } from 'effect/PlatformError'
-import type { FileTransportInfo } from '@gyomu/core/gyomu/file'
+import type { FileTransportInfo } from '@gyomu/schema/gyomu/file'
 import type { ZipEntryItem, ZipFileEntryItem } from './internals/read.js'
 // import { Path } from 'effect/Path';
 

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Effect, Stream } from 'effect'
 
-import { NetworkError } from '@gyomu/core'
+import { NetworkError } from '@gyomu/schema'
 import { webDownloadStream } from '../download.js'
 
 // ===== import mocked =====

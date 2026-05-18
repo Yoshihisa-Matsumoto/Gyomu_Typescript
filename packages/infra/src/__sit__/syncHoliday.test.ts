@@ -1,12 +1,12 @@
 import { Layer } from 'effect'
 import { afterAll, expect, test } from 'vitest'
-import { syncHoliday } from '@gyomu/core/usecase/syncHolidayService'
+import { syncHoliday } from '@gyomu/schema/usecase/syncHolidayService'
+import { makeRunner } from '@gyomu/schema/effect'
 import { ConfigLayer } from '../config.js'
 import { KyselyService } from '../db/KyselyService.js'
 import { MssqlService } from '../db/MssqlService.js'
 import { GyomuRepositoryLayer } from '../gyomu/GyomuRepositoryLayer.js'
 import { MainLayer, PlatformLayer } from '../layer.js'
-import { makeRunner } from '../../../core/dist/effect/index.js'
 import { JPXHolidayFetcherLayer } from '../holiday/index.js'
 
 afterAll(() => {

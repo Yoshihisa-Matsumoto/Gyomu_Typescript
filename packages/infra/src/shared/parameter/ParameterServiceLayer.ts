@@ -1,9 +1,9 @@
-import { DBError } from '@gyomu/core'
+import { DBError } from '@gyomu/schema'
 import { Effect, Layer, Schedule } from 'effect'
-import { GyomuRepository } from '@gyomu/core/gyomu'
-import { formatDateToYmd } from '@gyomu/core/entity'
-import { ParameterService } from '@gyomu/core/shared/parameter'
-import type { User } from '@gyomu/core/schemas/user'
+import { GyomuRepository } from '@gyomu/schema/gyomu'
+import { formatDateToYmd } from '@gyomu/schema/entity'
+import { ParameterService } from '@gyomu/schema/shared/parameter'
+import type { User } from '@gyomu/schema/schemas/user'
 
 type ParameterType = string | number | boolean
 

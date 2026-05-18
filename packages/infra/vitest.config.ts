@@ -18,6 +18,7 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html', 'json', 'lcov'],
       reportsDirectory: './coverage',
+      exclude: ['**/__tests__/baseClass.ts', '**/__tests__/baseDBClass.ts'],
     },
   },
 })

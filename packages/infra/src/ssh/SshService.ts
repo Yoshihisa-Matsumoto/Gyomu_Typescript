@@ -1,14 +1,14 @@
 import { Config, Context, Effect, Layer, Option } from 'effect'
 import { Client } from 'ssh2'
 import { withDefault } from 'effect/Config'
-import { withOptional } from '@gyomu/core'
+import { withOptional } from '@gyomu/schema'
+import { unwrapPassword } from '@gyomu/schema/effect'
 import { ConfigService } from '../config.js'
-import { unwrapPassword } from '../../../core/dist/effect/index.js'
 import { readStringFromFile } from '../fs/fs-utils.js'
 import { connectEffect, execute } from './internals/sshClient.js'
 
 import type { Scope } from 'effect/Scope'
-import type { ConfigError, IOError, NetworkError } from '@gyomu/core'
+import type { ConfigError, IOError, NetworkError } from '@gyomu/schema'
 import type { FileSystem } from 'effect'
 
 // type FtpConfig = Config.Success<typeof ftpConfigRaw>;

@@ -1,23 +1,23 @@
 // --- React / 外部ライブラリ ---
-import React, { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useForm } from '@tanstack/react-form'
 
 // --- Core / Engine ---
 
-import { buildFieldSchemaMap } from '@gyomu/core/entity'
-import { buildFormMetaFromStructSchema } from '../../core/dsl'
-import { buildDefaultValues, validateField, validateWithSchema } from '../../core/engine'
+import { buildFieldSchemaMap } from '@gyomu/schema/entity'
+import { buildFormMetaFromStructSchema } from '@gyomu/ui-core/dsl'
+import { buildDefaultValues, validateField, validateWithSchema } from '@gyomu/ui-core/engine'
 
 // --- Shared / Core (ドメイン・基盤) ---
 // --- UI (MUI Adapter) ---
 import { MuiFieldLayout, MuiFormLayout } from '../../ui/adapters/mui'
-import { muiRenderer } from '../../ui/renderer'
+import { muiRenderer } from '../../ui/renderer/mui'
 
 // --- ローカル ---
 import { DefaultSubmitButton } from '../../ui/components/form/DefaultSubmitButton'
 import { AutoField } from './AutoField'
 import type { Schema } from 'effect'
-import type { Fields } from '@gyomu/core/entity'
+import type { Fields } from '@gyomu/schema/entity'
 import type { AutoFormProps } from './types'
 
 export function AutoForm<TFields extends Fields>({
@@ -36,7 +36,7 @@ export function AutoForm<TFields extends Fields>({
 
   const fieldSchemaMap: Partial<Record<keyof TFields, Schema.Schema<any>>> =
     buildFieldSchemaMap(schema)
-  const fieldConfigs = React.useMemo(
+  const fieldConfigs = useMemo(
     () =>
       buildFormMetaFromStructSchema({
         schema,

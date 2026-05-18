@@ -1,10 +1,10 @@
 import fs from 'node:fs'
 import { expect, test } from 'vitest'
 import { Effect, Layer } from 'effect'
-import { FileAccessService } from '@gyomu/core/shared/fs'
+import { FileAccessService } from '@gyomu/schema/shared/fs'
+import { makeRunner } from '@gyomu/schema/effect'
 import { fsConstants } from '../index.js'
 import { MainLayer, PlatformLayer } from '../../layer.js'
-import { makeRunner } from '../../../../core/dist/effect/index.js'
 import { getTempFilename } from '../fs-utils.js'
 import { FileAccessServiceLayer } from '../FileAccessServiceLayer.js'
 

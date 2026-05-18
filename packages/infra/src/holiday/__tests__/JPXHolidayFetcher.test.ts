@@ -2,7 +2,7 @@
 
 import { describe, expect, it, vi } from 'vitest'
 import { Effect } from 'effect'
-import { HolidayFetcher } from '@gyomu/core/gyomu/holiday'
+import { HolidayFetcher } from '@gyomu/schema/gyomu/holiday'
 import { JPXHolidayFetcherLayer } from '../JpxHolidayFetcher.js'
 
 import { fetchJpxHolidays } from '../jpxFetcher.js'

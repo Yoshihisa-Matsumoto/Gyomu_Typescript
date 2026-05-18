@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Effect, Layer } from 'effect'
 import { NodeFileSystem } from '@effect/platform-node'
-import { ConfigError } from '@gyomu/core'
+import { ConfigError } from '@gyomu/schema'
 import { KyselyService } from '../KyselyService.js'
 import { ConfigService } from '../../config.js'
 import { MssqlService } from '../MssqlService.js'

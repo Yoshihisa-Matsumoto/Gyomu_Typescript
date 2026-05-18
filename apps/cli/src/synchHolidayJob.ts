@@ -1,10 +1,10 @@
 import { Layer } from 'effect'
 import { ConfigLayer, MainLayer, PlatformLayer, initLoggerFromEnv } from '@gyomu/infra'
 import { KyselyService, MssqlService } from '@gyomu/infra/db'
-import { syncHoliday } from '@gyomu/core/usecase/syncHolidayService'
+import { syncHoliday } from '@gyomu/schema/usecase/syncHolidayService'
 import { JPXHolidayFetcherLayer } from '@gyomu/infra/holiday'
 import { GyomuRepositoryLayer } from '@gyomu/infra/gyomu'
-import { makeRunner } from '../../../packages/core/dist/effect/index.js'
+import { makeRunner } from '@gyomu/schema/effect'
 
 const main = async () => {
   await initLoggerFromEnv()

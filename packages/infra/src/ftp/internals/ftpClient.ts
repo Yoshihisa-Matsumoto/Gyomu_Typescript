@@ -1,13 +1,13 @@
 import { PassThrough } from 'node:stream'
-import { NetworkError, isRetryableNetworkError } from '@gyomu/core'
+import { NetworkError, isRetryableNetworkError } from '@gyomu/schema'
 import { Effect, Stream, pipe } from 'effect'
 import { NodeStream } from '@effect/platform-node'
-import { toEntryPath } from '@gyomu/core/shared/fs'
+import { toEntryPath } from '@gyomu/schema/shared/fs'
+import { fromPromise } from '@gyomu/schema/effect'
 import { fromReadable } from '../../stream/bridge/nodeStream.js'
-import { fromPromise } from '../../../../core/dist/effect/index.js'
-import type { IOError } from '@gyomu/core'
+import type { IOError } from '@gyomu/schema'
 import type { Client } from 'basic-ftp'
-import type { FileTransportInfo } from '@gyomu/core/gyomu/file'
+import type { FileTransportInfo } from '@gyomu/schema/gyomu/file'
 
 // ftpClient.ts
 

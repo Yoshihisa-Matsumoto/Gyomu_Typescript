@@ -1,11 +1,11 @@
 import path, { join } from 'node:path'
-import { FileCompareType, FileFilterInfo, FilterType } from '@gyomu/core/gyomu/file'
+import { FileCompareType, FileFilterInfo, FilterType } from '@gyomu/schema/gyomu/file'
 
 import { expect, test } from 'vitest'
 import { Effect, Layer } from 'effect'
-import { FileSearchService } from '@gyomu/core/shared/fs'
+import { FileSearchService } from '@gyomu/schema/shared/fs'
+import { makeRunner } from '@gyomu/schema/effect'
 import { MainLayer, PlatformLayer } from '../../layer.js'
-import { makeRunner } from '../../../../core/dist/effect/index.js'
 import { FileSearchServiceLayer } from '../FileSearchServiceLayer.js'
 
 const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer)

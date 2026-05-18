@@ -2,7 +2,7 @@ import path, { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { beforeAll, describe, expect, it } from 'vitest'
 import { Effect, Layer, Stream } from 'effect'
-import { FileTransportInfo } from '@gyomu/core/gyomu/file'
+import { FileTransportInfo } from '@gyomu/schema/gyomu/file'
 import { copyFolder, emptyDir, writeStreamToFile } from '../../../fs/fs-utils.js'
 import { compareFiles, validateFolders } from '../../../__tests__/baseClass.js'
 import {

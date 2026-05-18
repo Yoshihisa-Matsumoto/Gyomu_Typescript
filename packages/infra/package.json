@@ -15,7 +15,7 @@
   },
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "clean": "rimraf ./lib && rimraf ./coverage .tsbuildinfo",
+    "clean": "rimraf ./dist ./coverage ./.turbo ./.tsbuildinfo",
     "@test": "vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json ",
     "test": "bunx vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json ",
     "@test:coverage": "node --env-file=.env ../../node_modules/vitest/vitest.mjs --config vitest.coverage.config.ts --typecheck.tsconfig ./tsconfig.vitest.json --coverage",
@@ -56,9 +56,13 @@
     "undici": "^8.2.0"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.77",
+    "@ai-sdk/google": "^3.0.73",
+    "@ai-sdk/openai": "^3.0.63",
     "@effect/platform-node": "4.0.0-beta.57",
     "@google/genai": "^1.51.0",
-    "@gyomu/core": "workspace:*",
+    "@gyomu/schema": "workspace:*",
+    "ai": "^6.0.182",
     "basic-ftp": "^6.0.0",
     "csv": "^6.5.1",
     "csv-parse": "^6.2.1",

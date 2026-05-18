@@ -1,11 +1,11 @@
 import { Effect } from 'effect'
-import { NetworkError, isRetryableNetworkError } from '@gyomu/core'
+import { NetworkError, isRetryableNetworkError } from '@gyomu/schema'
 import { enUS } from 'date-fns/locale'
 import { format, isValid, parse } from 'date-fns'
-import { fromPromise } from '../../../core/dist/effect/index.js'
+import { fromPromise } from '@gyomu/schema/effect'
 import { Page, convertGenericElementByTagName } from '../scraping/index.js'
 import { fetchEffect } from '../web/client.js'
-import type { MarketHolidaySchema } from '@gyomu/core/schemas/gyomu'
+import type { MarketHolidaySchema } from '@gyomu/schema/schemas/gyomu'
 
 export const fetchJpxHolidays = (): Effect.Effect<
   Array<typeof MarketHolidaySchema.types._insert>,

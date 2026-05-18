@@ -3,11 +3,11 @@ import { Effect, Ref } from 'effect'
 import { runCompareFuncFlow } from '../compare.js'
 import { extractSingleFileEntry } from './read.js'
 import type { FileSystem } from 'effect'
-import type { DiffDetail } from '@gyomu/core/shared/object'
+import type { DiffDetail } from '@gyomu/schema/shared/object'
 
 import type { ZipEntryItem, ZipFileEntryItem } from './read.js'
 import type { PlatformError } from 'effect/PlatformError'
-import type { IOError } from '@gyomu/core'
+import type { IOError } from '@gyomu/schema'
 
 export type DiffernceIgnoreRule = {
   filePathRegExpression: string

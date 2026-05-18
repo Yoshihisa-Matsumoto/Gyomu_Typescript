@@ -5,7 +5,7 @@ import { MssqlService } from './MssqlService.js'
 import type { DB } from '../generated/db.js'
 import type { FileSystem, Scope } from 'effect'
 import type { Kysely } from 'kysely'
-import type { ConfigError, DBError, IOError } from '@gyomu/core'
+import type { ConfigError, DBError, IOError } from '@gyomu/schema'
 
 export class KyselyService extends Context.Service<
   KyselyService,

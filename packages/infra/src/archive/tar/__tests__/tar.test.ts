@@ -5,9 +5,9 @@ import { tmpdir } from 'node:os'
 import { beforeAll, describe, expect, it } from 'vitest'
 import { Effect, Layer, Option, Result, Stream } from 'effect'
 
-import { IOError } from '@gyomu/core'
+import { IOError } from '@gyomu/schema'
 // import { fs } from '../fs/index.js';
-import { FileTransportInfo } from '@gyomu/core/gyomu/file'
+import { FileTransportInfo } from '@gyomu/schema/gyomu/file'
 import { compareFiles, validateFolders } from '../../../__tests__/baseClass.js'
 import { copyFolder, emptyDir, fileStream, readFromFile } from '../../../fs/fs-utils.js'
 import { TarService, existsInTar, filterEntries, requireEntry } from '../index.js'

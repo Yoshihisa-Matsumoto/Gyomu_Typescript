@@ -1,19 +1,19 @@
 import { format } from 'date-fns'
 import { Effect, Layer } from 'effect'
-import { GyomuRepository } from '@gyomu/core/gyomu'
+import { GyomuRepository } from '@gyomu/schema/gyomu'
 import {
   LocalDate,
   LocalDateSchema,
   YearMonthSchema,
   convertToSchemaObjectWithEffect,
-} from '@gyomu/core/entity'
-import { MilestoneService } from '@gyomu/core/gyomu/task'
-import { polling } from '@gyomu/core/effect'
-import { DBError } from '@gyomu/core'
-import type { MilestoneExistResultType } from '@gyomu/core/gyomu/task'
-import type { MilestoneDailyDomainSchema, YearMonth } from '@gyomu/core/entity'
-import type { SchemaValidationError, TimeoutError } from '@gyomu/core'
-import type { MilestoneDailySchema, MilestoneSchema } from '@gyomu/core/schemas/gyomu'
+} from '@gyomu/schema/entity'
+import { MilestoneService } from '@gyomu/schema/gyomu/task'
+import { polling } from '@gyomu/schema/effect'
+import { DBError } from '@gyomu/schema'
+import type { MilestoneExistResultType } from '@gyomu/schema/gyomu/task'
+import type { MilestoneDailyDomainSchema, YearMonth } from '@gyomu/schema/entity'
+import type { SchemaValidationError, TimeoutError } from '@gyomu/schema'
+import type { MilestoneDailySchema, MilestoneSchema } from '@gyomu/schema/schemas/gyomu'
 import type { Schema } from 'effect'
 
 export const MilestoneServiceLayer = Layer.effect(

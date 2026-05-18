@@ -2,6 +2,7 @@ import { dirname, resolve } from 'node:path'
 
 import { fileURLToPath } from 'node:url'
 import { mergeConfig } from 'vite'
+import tailwindcss from '@tailwindcss/vite'
 import type { StorybookConfig } from '@storybook/react-vite'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -20,6 +21,7 @@ const config: StorybookConfig = {
   framework: getAbsolutePath('@storybook/react-vite'),
   viteFinal(baseConfig) {
     return mergeConfig(baseConfig, {
+      plugins: [tailwindcss()],
       resolve: {
         alias: {
           '@gyomu/ui': resolve(__dirname, '../src'),

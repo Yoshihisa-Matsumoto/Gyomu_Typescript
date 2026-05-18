@@ -1,14 +1,14 @@
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 import { Effect, Layer } from 'effect'
-import { GyomuRepository } from '@gyomu/core/gyomu'
-import { LocalDate } from '@gyomu/core/entity'
+import { GyomuRepository } from '@gyomu/schema/gyomu'
+import { LocalDate } from '@gyomu/schema/entity'
+import { makeRunner } from '@gyomu/schema/effect'
 import { MainLayer, PlatformLayer } from '../../layer.js'
 import { ConfigLayer, ConfigMockLayer } from '../../config.js'
 import { KyselyService } from '../../db/KyselyService.js'
-import { makeRunner } from '../../../../core/dist/effect/index.js'
 import { MssqlService } from '../../db/MssqlService.js'
 import { GyomuRepositoryLayer } from '../GyomuRepositoryLayer.js'
-import type { YearMonth } from '@gyomu/core/entity'
+import type { YearMonth } from '@gyomu/schema/entity'
 
 afterAll(() => {
   // @ts-ignore - Node.jsの内部APIを使用して、すべてのアクティブなハンドルをログに出力

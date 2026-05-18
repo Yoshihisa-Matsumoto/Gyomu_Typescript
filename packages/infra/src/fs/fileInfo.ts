@@ -2,7 +2,7 @@ import path from 'node:path'
 import { Effect, Option } from 'effect'
 import { getFileStat } from './fs-utils.js'
 import type { FileSystem } from 'effect'
-import type { IOError } from '@gyomu/core'
+import type { IOError } from '@gyomu/schema'
 
 export class FileInfo {
   readonly fileName: string

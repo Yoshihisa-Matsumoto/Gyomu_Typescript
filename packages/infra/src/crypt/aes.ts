@@ -1,13 +1,13 @@
 import crypto from 'node:crypto'
-import { base64String2Buffer, buffer2Base64String } from '@gyomu/core/shared/encoding'
+import { base64String2Buffer, buffer2Base64String } from '@gyomu/schema/shared/encoding'
 import {
   arrayBufferToString,
   bufferToArrayBuffer,
   stringToArrayBuffer,
-} from '@gyomu/core/shared/binary'
+} from '@gyomu/schema/shared/binary'
 import { Effect } from 'effect'
 import { readFromFile } from '../fs/fs-utils.js'
-import type { IOError } from '@gyomu/core'
+import type { IOError } from '@gyomu/schema'
 import type { FileSystem } from 'effect'
 
 export const aesEncrypt = (plain: string, key: string): string => {
