@@ -4,15 +4,16 @@ import { AiError, withOptional } from '@gyomu/schema'
 
 import { fromPromise, fromSync } from '@gyomu/schema/effect'
 import { AiService } from '../service/AiService.js'
+import { buildToolRuntimeConfig } from './buildToolRuntimeConfig.js'
 import type { ModelMessage } from 'ai'
 import type {
-  EffectSchema,
   EmbedParams,
   GenerateObjectParams,
   GenerateTextParams,
   StreamTextParams,
 } from '../service/AiService.js'
 import type { Message } from '@gyomu/schema/conversation'
+import type { EffectSchema } from '@gyomu/schema/entity'
 
 /**
  * =========================================
@@ -56,9 +57,9 @@ const buildPrompt = (params: {
  * =========================================
  */
 
-const makeAiService = (): AiService => ({
-  generateText: (params: GenerateTextParams) =>
-    fromPromise(AiError, () => ({
+export const makeAiService = (): AiService => ({
+  generateText: (params: GenerateTextParams) => {
+    return fromPromise(AiError, () => ({
       message: 'fail to generate text',
       model: params.model.toString(),
       operation: 'generate' as const,
@@ -77,11 +78,13 @@ const makeAiService = (): AiService => ({
 
           abortSignal: params.abortSignal,
         }),
+        ...withOptional(buildToolRuntimeConfig(params)),
       })
-    }),
+    })
+  },
 
-  streamText: (params: StreamTextParams) =>
-    fromSync(AiError, () => ({
+  streamText: (params: StreamTextParams) => {
+    return fromSync(AiError, () => ({
       message: 'fail to generate stream',
       model: params.model.toString(),
       operation: 'stream' as const,
@@ -99,11 +102,13 @@ const makeAiService = (): AiService => ({
 
           abortSignal: params.abortSignal,
         }),
+        ...withOptional(buildToolRuntimeConfig(params)),
       }),
-    ),
+    )
+  },
 
-  generateObject: <TSchema extends EffectSchema>(params: GenerateObjectParams<TSchema>) =>
-    fromPromise(AiError, () => ({
+  generateObject: <TSchema extends EffectSchema>(params: GenerateObjectParams<TSchema>) => {
+    return fromPromise(AiError, () => ({
       message: 'fail to generate structured object',
       model: params.model.toString(),
       operation: 'generate' as const,
@@ -125,12 +130,14 @@ const makeAiService = (): AiService => ({
 
           abortSignal: params.abortSignal,
         }),
+        ...withOptional(buildToolRuntimeConfig(params)),
       })
       return {
         object: result.output as Schema.Schema.Type<TSchema>,
         text: result.text,
       }
-    }),
+    })
+  },
 
   embed: <TValue>(params: EmbedParams<TValue>) =>
     fromPromise(AiError, () => ({

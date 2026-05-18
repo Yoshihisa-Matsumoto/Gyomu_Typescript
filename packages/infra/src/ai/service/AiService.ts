@@ -1,8 +1,16 @@
 import { Context } from 'effect'
 import type { Effect, Schema } from 'effect'
-import type { EmbeddingModel, GenerateTextResult, LanguageModel, StreamTextResult } from 'ai'
+import type {
+  EmbeddingModel,
+  GenerateTextResult,
+  LanguageModel,
+  StreamTextResult,
+  ToolSet,
+} from 'ai'
 import type { AiError } from '@gyomu/schema'
 import type { Message } from '@gyomu/schema/conversation'
+import type { AiTool } from '../tool/ai-tool.js'
+import type { EffectSchema } from '@gyomu/schema/entity'
 
 export type { StreamTextResult } from 'ai'
 /**
@@ -19,37 +27,54 @@ type PromptInput =
       readonly messages: ReadonlyArray<Message>
       readonly prompt?: never
     }
-export type GenerateTextParams = {
+export type ToolLoopPolicy =
+  | {
+      readonly type: 'maxSteps'
+
+      readonly maxSteps: number
+    }
+  | {
+      readonly type: 'untilToolCalled'
+
+      readonly toolName: string
+    }
+  | {
+      readonly type: 'untilFinished'
+    }
+
+type ToolConfig =
+  | {
+      readonly tools?: never
+      readonly toolLoopPolicy?: never
+    }
+  | {
+      readonly tools: ReadonlyArray<AiTool<string, any, any>>
+
+      readonly toolLoopPolicy: ToolLoopPolicy
+    }
+type BaseAiParams = {
   readonly model: LanguageModel
+
   readonly system?: string
 
   readonly temperature?: number
-  readonly maxTokens?: number
-  readonly abortSignal?: AbortSignal
-} & PromptInput
 
-export interface StreamTextParams {
-  readonly model: LanguageModel
-  readonly system?: string
-  readonly prompt?: string
-  readonly messages?: ReadonlyArray<Message>
-
-  readonly temperature?: number
-  readonly maxTokens?: number
   readonly abortSignal?: AbortSignal
 }
-export type EffectSchema = Parameters<typeof Schema.toStandardSchemaV1>[0]
-export interface GenerateObjectParams<TSchema extends EffectSchema> {
-  readonly model: LanguageModel
-  readonly schema: TSchema
-
-  readonly system?: string
-  readonly prompt?: string
-  readonly messages?: ReadonlyArray<Message>
-
-  readonly temperature?: number
-  readonly abortSignal?: AbortSignal
+type TextGenerationParams = BaseAiParams & PromptInput & ToolConfig
+export type GenerateTextParams = TextGenerationParams & {
+  readonly maxTokens?: number
 }
+
+export type StreamTextParams = TextGenerationParams & {
+  readonly maxTokens?: number
+}
+
+export type GenerateObjectParams<TSchema extends EffectSchema> = BaseAiParams &
+  PromptInput &
+  ToolConfig & {
+    readonly schema: TSchema
+  }
 
 export interface EmbedParams<TValue> {
   readonly model: EmbeddingModel
@@ -70,7 +95,7 @@ export interface AiObjectResult<T> {
 export interface AiService {
   readonly generateText: (
     params: GenerateTextParams,
-  ) => Effect.Effect<GenerateTextResult<Record<string, never>, never>, AiError>
+  ) => Effect.Effect<GenerateTextResult<ToolSet, never>, AiError>
 
   readonly streamText: (
     params: StreamTextParams,
