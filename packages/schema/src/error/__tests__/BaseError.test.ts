@@ -51,6 +51,7 @@ describe('BaseError Test', () => {
 
   it('handles non-Error values', () => {
     const result = wrapInfraError(TestError, 'string error')
-    expect(result.cause).toBe('string error')
+    expect(result.cause).toBeInstanceOf(Error)
+    expect((result.cause as Error).message).toBe('string error')
   })
 })
