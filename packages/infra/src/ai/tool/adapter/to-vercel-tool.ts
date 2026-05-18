@@ -10,7 +10,7 @@ export const toVercelTool = <Input extends EffectSchema, Output extends JsonValu
   return tool({
     description: toolDef.description,
 
-    inputSchema: Schema.toStandardJSONSchemaV1(Schema.toStandardSchemaV1(toolDef.inputSchema)),
+    inputSchema: Schema.toStandardSchemaV1(Schema.toStandardJSONSchemaV1(toolDef.inputSchema)),
 
     execute: (input) => toolDef.execute(input as Schema.Schema.Type<Input>),
   })

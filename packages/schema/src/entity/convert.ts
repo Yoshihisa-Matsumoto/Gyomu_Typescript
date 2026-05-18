@@ -54,11 +54,11 @@ export const convertFromSchemaObjectWithEffect =
     )
 
 export type EffectSchema = Parameters<typeof Schema.toStandardSchemaV1>[0]
-export type StandardizedSchema<S extends EffectSchema> = ReturnType<
-  typeof Schema.toStandardSchemaV1<S>
->
-export const convertToStandardSchema = <S extends EffectSchema>(schema: S): StandardizedSchema<S> =>
-  Schema.toStandardSchemaV1(Schema.toStandardJSONSchemaV1(schema))
+// export type StandardizedSchema<S extends EffectSchema> = ReturnType<
+//   typeof Schema.toStandardSchemaV1<S>
+// >
+// export const convertToStandardSchema = <S extends EffectSchema>(schema: S) =>
+//   Schema.toStandardSchemaV1(Schema.toStandardJSONSchemaV1(schema))
 
 // export const convertToStandardSchema = <Fields extends Schema.Struct.Fields>(
 //   schema: Schema.Struct<Fields>,
