@@ -1,5 +1,5 @@
+import type { ComponentType } from 'react'
 import type { LocalDate, UIAnnotationByWidget, UIAnnotationMap } from '@gyomu/schema/entity'
-import type React from 'react'
 
 // type BaseFieldProps<T> = {
 //   value: T | undefined;
@@ -45,7 +45,7 @@ type WidgetValueMap = {
 type WidgetValue<K extends keyof WidgetValueMap> = WidgetValueMap[K]
 
 export type RendererMap = {
-  [K in keyof UIAnnotationMap]: React.ComponentType<{
+  [K in keyof UIAnnotationMap]: ComponentType<{
     meta: UIAnnotationByWidget<K>
     value: WidgetValue<K>
     onChange?: (value: WidgetValue<K> | undefined) => void
