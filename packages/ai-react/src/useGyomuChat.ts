@@ -2,8 +2,11 @@ import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import { useMemo } from 'react'
 import { withOptional } from '@gyomu/schema'
+import { PublicErrorException } from './public-error.exception.js'
+import { createGyomuFetch } from './create-gyomu-fetch.js'
+import { mapAiSdkMessageToGyomuMessage, mapStatus } from './message-mapper.js'
 import type { PublicError } from '@gyomu/schema'
-import type { Message, MessageRole, SendMessageInput } from '@gyomu/schema/conversation'
+import type { Message, SendMessageInput } from '@gyomu/schema/conversation'
 import type { UIMessage } from 'ai'
 import type { UiErrorHandling } from '@gyomu/ui-core'
 
@@ -40,54 +43,33 @@ export interface GyomuChatHandle {
 
   readonly stop: () => void
 }
-export const getPlainTextFromUiMessage = (message: UIMessage): string => {
-  return message.parts
-    .flatMap((part) => {
-      switch (part.type) {
-        case 'text':
-          return [part.text]
 
-        default:
-          return []
-      }
-    })
-    .join('')
-}
-const mapAiSdkMessageToGyomuMessage = (message: UIMessage): Message => ({
-  id: message.id,
-  role: message.role as MessageRole,
-  content: getPlainTextFromUiMessage(message),
-})
-const mapStatus = (status: string): GyomuChatStatus => {
-  switch (status) {
-    case 'submitted':
-      return 'submitting'
-
-    case 'streaming':
-      return 'streaming'
-
-    case 'error':
-      return 'error'
-
-    default:
-      return 'idle'
-  }
-}
-
-export class PublicErrorException extends Error {
-  constructor(readonly publicError: PublicError) {
-    super(publicError.message)
-  }
-}
 export const useGyomuChat = (options: UseGyomuChatOptions): GyomuChatHandle => {
+  const pushUiError = (error: PublicError) => {
+    const policy = options.mapUiPolicy(error)
+    options.showUiError?.(policy)
+  }
+  const transport = useMemo(
+    () =>
+      new DefaultChatTransport({
+        api: options.endpoint ?? 'api/chat',
+        fetch: createGyomuFetch(),
+      }),
+    [options.endpoint],
+  )
+
   const chat = useChat({
-    transport: new DefaultChatTransport({
-      api: options.endpoint ?? 'api/chat',
-    }),
+    transport,
+    onError: (error) => {
+      if (error instanceof PublicErrorException) {
+        const publicError = error.publicError
 
+        pushUiError(publicError)
+
+        options.onError?.(publicError)
+      }
+    },
     ...withOptional({
-      onError: options.onError,
-
       onFinish: options.onFinish
         ? async ({ message }: { message: UIMessage }) => {
             await options.onFinish?.(mapAiSdkMessageToGyomuMessage(message))
@@ -98,10 +80,8 @@ export const useGyomuChat = (options: UseGyomuChatOptions): GyomuChatHandle => {
 
   const messages = useMemo(() => chat.messages.map(mapAiSdkMessageToGyomuMessage), [chat.messages])
 
-  const pushUiError = (error: PublicError) => {
-    const policy = options.mapUiPolicy(error)
-    options.showUiError?.(policy)
-  }
+  const publicError =
+    chat.error instanceof PublicErrorException ? chat.error.publicError : undefined
 
   return {
     messages,
@@ -109,7 +89,7 @@ export const useGyomuChat = (options: UseGyomuChatOptions): GyomuChatHandle => {
     status: mapStatus(chat.status),
 
     ...withOptional({
-      error: chat.error,
+      error: publicError,
     }),
 
     sendMessage: async (input) => {

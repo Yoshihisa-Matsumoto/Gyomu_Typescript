@@ -46,6 +46,6 @@ export function wrapInfraError<Ctor extends new (ctx: any) => any>(
   return new ErrorType({
     ...base,
     message: base.message ?? (error instanceof Error ? error.message : 'Unknown error occurred'),
-    cause: error,
+    cause: error instanceof Error ? error : new Error(String(error)),
   })
 }

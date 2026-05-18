@@ -1,7 +1,7 @@
 import { Result, Schema } from 'effect'
 import type { GyomuError } from '../error/GyomuError.js'
 
-const PublicErrorSchema = Schema.Struct({
+export const PublicErrorSchema = Schema.Struct({
   code: Schema.String,
   message: Schema.String,
   retryable: Schema.Boolean,
