@@ -5,8 +5,8 @@ import { useForm } from '@tanstack/react-form'
 // --- Core / Engine ---
 
 import { buildFieldSchemaMap } from '@gyomu/schema/entity'
-import { buildFormMetaFromStructSchema } from '../../core/dsl'
-import { buildDefaultValues, validateField, validateWithSchema } from '../../core/engine'
+import { buildFormMetaFromStructSchema } from '@gyomu/ui-core/dsl'
+import { buildDefaultValues, validateField, validateWithSchema } from '@gyomu/ui-core/engine'
 
 // --- Shared / Core (ドメイン・基盤) ---
 // --- UI (MUI Adapter) ---

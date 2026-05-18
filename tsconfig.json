@@ -11,6 +11,7 @@
     { "path": "packages/ai-react" },
     { "path": "packages/schema" },
     { "path": "packages/infra" },
-    { "path": "packages/ui" }
+    { "path": "packages/ui" },
+    { "path": "packages/ui-core" }
   ]
 }

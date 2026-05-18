@@ -1,5 +1,5 @@
 export type ErrorOperationalPolicy = {
-  readonly notifyParent?: boolean
+  readonly notifySystemAdmin?: boolean
 
   readonly logLevel: 'info' | 'warn' | 'error'
 

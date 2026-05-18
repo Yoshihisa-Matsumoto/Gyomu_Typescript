@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { Schema } from 'effect'
 import * as entityModule from '@gyomu/schema/entity'
-import { validateWithSchema } from '../validate'
+import { validateWithSchema } from '../validate.js'
 
 // モック対象
 

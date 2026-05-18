@@ -1,4 +1,5 @@
-import { Schema } from 'effect'
+import { Result, Schema } from 'effect'
+import type { GyomuError } from '../error/GyomuError.js'
 
 const PublicErrorSchema = Schema.Struct({
   code: Schema.String,
@@ -22,3 +23,35 @@ export const createSuccessSchema = <T extends Schema.Schema<any>>(dataSchema: T)
 
 export const createResultSchema = <T extends Schema.Schema<any>>(dataSchema: T) =>
   Schema.Union([createSuccessSchema(dataSchema), FailureSchema])
+
+export const executePublicApiWithSchema = async <T extends Schema.Schema<any>>(
+  dataSchema: T,
+  effectResult: () => Promise<Result.Result<Schema.Schema.Type<T>, GyomuError>>,
+  mapError: (error: GyomuError) => PublicError,
+) => {
+  const result = await effectResult()
+  if (Result.isSuccess(result)) {
+    return {
+      success: true as const,
+      data: result.success,
+    }
+  } else {
+    return {
+      success: false as const,
+      error: mapError(result.failure),
+    }
+  }
+}
+
+export const executeStreamingPublicApi = async (
+  effectResult: () => Promise<Result.Result<Response, GyomuError>>,
+  mapError: (error: GyomuError) => PublicError,
+) => {
+  const result = await effectResult()
+  if (Result.isSuccess(result)) {
+    return result.success
+  } else {
+    const publicError = mapError(result.failure)
+    return Response.json(publicError, { status: 500 })
+  }
+}

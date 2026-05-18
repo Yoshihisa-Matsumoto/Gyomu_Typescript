@@ -1,5 +1,5 @@
 {
-  "name": "@gyomu/ai-react",
+  "name": "@gyomu/ui-core",
   "version": "0.2.1",
   "description": "",
   "type": "module",
@@ -8,9 +8,13 @@
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./*": {
-      "import": "./dist/*.js",
-      "types": "./dist/*.d.ts"
+    "./dsl": {
+      "import": "./dist/dsl/index.js",
+      "types": "./dist/dsl/index.d.ts"
+    },
+    "./engine": {
+      "import": "./dist/engine/index.js",
+      "types": "./dist/engine/index.d.ts"
     }
   },
   "scripts": {
@@ -24,7 +28,6 @@
     "Sprepare": "pnpm run build",
     "version": "git add -A src",
     "postversion": "git push && git push --tags",
-    "schema-gen": "kysely-codegen --dialect mssql --env-file=.env --config-file=.kysely-codegenrc.json",
     "sit": "dotenv -e .env -- vitest --config=./vitest.sit.config.ts --typecheck.tsconfig=./tsconfig.vitest.json"
   },
   "keywords": [],
@@ -36,9 +39,10 @@
     "!**/__sit__"
   ],
   "dependencies": {
-    "@ai-sdk/react": "^3.0.186",
     "@gyomu/schema": "workspace:*",
-    "@gyomu/ui-core": "workspace:*",
     "effect": "4.0.0-beta.57"
+  },
+  "devDependencies": {
+    "react": "19.2.4"
   }
 }

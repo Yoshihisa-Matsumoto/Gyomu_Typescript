@@ -1,4 +1,4 @@
-import type { FormFieldMeta } from '../../dsl/type'
+import type { FormFieldMeta } from '../../dsl/type.js'
 
 export function buildDefaultValues(
   fieldConfigs: Array<FormFieldMeta>,

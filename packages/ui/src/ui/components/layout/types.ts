@@ -1,4 +1,4 @@
-import type { FormFieldMeta } from '../../../core/dsl/type'
+import type { FormFieldMeta } from '@gyomu/ui-core/dsl'
 
 export type FieldLayoutProps = {
   meta: FormFieldMeta

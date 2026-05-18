@@ -239,6 +239,9 @@ importers:
       '@gyomu/schema':
         specifier: workspace:*
         version: link:../schema
+      '@gyomu/ui-core':
+        specifier: workspace:*
+        version: link:../ui-core
       effect:
         specifier: 4.0.0-beta.57
         version: 4.0.0-beta.57
@@ -446,6 +449,9 @@ importers:
       '@gyomu/schema':
         specifier: workspace:*
         version: link:../schema
+      '@gyomu/ui-core':
+        specifier: workspace:*
+        version: link:../ui-core
       '@mui/icons-material':
         specifier: ^7.3.4
         version: 7.3.11(@mui/material@7.3.11(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))(@types/react@19.2.14)(react@19.2.4))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/react@19.2.14)(react@19.2.4)
@@ -527,6 +533,19 @@ importers:
       vitest:
         specifier: 4.1.5
         version: 4.1.5(@opentelemetry/api@1.9.1)(@types/node@24.12.4)(@vitest/coverage-v8@4.1.5)(jsdom@29.1.1(@noble/hashes@1.8.0))(msw@2.14.6(@types/node@24.12.4)(typescript@6.0.3))(vite@8.0.13(@types/node@24.12.4)(esbuild@0.27.7)(jiti@2.7.0)(yaml@2.9.0))
+
+  packages/ui-core:
+    dependencies:
+      '@gyomu/schema':
+        specifier: workspace:*
+        version: link:../schema
+      effect:
+        specifier: 4.0.0-beta.57
+        version: 4.0.0-beta.57
+    devDependencies:
+      react:
+        specifier: 19.2.4
+        version: 19.2.4
 
 packages:
 

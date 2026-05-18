@@ -11,7 +11,7 @@ import {
   Textarea,
 } from '../../components/ui/index.js'
 import type { LocalDate } from '@gyomu/schema/entity'
-import type { RendererMap } from '../../../core/engine/autoForm/types'
+import type { RendererMap } from '@gyomu/ui-core/engine'
 
 export const shadcnRenderer: RendererMap = {
   text: ({ value, onChange, meta, onBlur }) => (

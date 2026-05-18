@@ -6,8 +6,8 @@ import type { Logger } from '@gyomu/schema'
 import type { FieldLayout, FormLayout, SubmitButtonProps } from '../../ui/components'
 
 // --- ローカル ---
-import type { FormFieldMeta } from '../../core/dsl/type'
-import type { RendererMap } from '../../core/engine/autoForm/types'
+import type { FormFieldMeta } from '@gyomu/ui-core/dsl'
+import type { RendererMap } from '@gyomu/ui-core/engine'
 
 export type AutoFieldProps = {
   meta: FormFieldMeta

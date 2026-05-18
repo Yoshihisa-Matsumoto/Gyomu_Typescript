@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { buildDefaultValues } from '../buildDefaultValues' // パスは適宜調整
-import type { FormFieldMeta } from '../../../dsl/type'
+import { buildDefaultValues } from '../buildDefaultValues.js' // パスは適宜調整
+import type { FormFieldMeta } from '../../../dsl/type.js'
 
 describe('buildDefaultValues', () => {
   it('initialValuesがある場合はそれを優先する', () => {
