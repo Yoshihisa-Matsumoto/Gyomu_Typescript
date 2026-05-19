@@ -3,53 +3,19 @@ import { Output, embed, generateText, streamText } from 'ai'
 import { AiError, withOptional } from '@gyomu/schema'
 
 import { fromPromise, fromSync } from '@gyomu/schema/effect'
-import { AiService } from '../service/AiService.js'
+import { AiModelService } from '../types/AiModelService.js'
 import { buildToolRuntimeConfig } from './buildToolRuntimeConfig.js'
-import type { ModelMessage } from 'ai'
+import { mapGenerateTextResultToAiGenerateTextResult } from './mapResult.js'
+import { buildPrompt } from './buildPrompt.js'
+import type { Effect } from 'effect'
 import type {
+  AiGenerateTextResult,
   EmbedParams,
   GenerateObjectParams,
   GenerateTextParams,
   StreamTextParams,
-} from '../service/AiService.js'
-import type { Message } from '@gyomu/schema/conversation'
+} from '../types/AiModelService.js'
 import type { EffectSchema } from '@gyomu/schema/entity'
-
-/**
- * =========================================
- * Error Normalize
- * =========================================
- */
-
-const buildPrompt = (params: {
-  readonly prompt?: string
-  readonly messages?: ReadonlyArray<Message>
-}): { readonly prompt: string } | { readonly messages: Array<ModelMessage> } => {
-  if (params.messages) {
-    return {
-      messages: params.messages.map(
-        (m) => ({ role: m.role, content: m.content }) satisfies ModelMessage,
-      ),
-    }
-  }
-
-  if (params.prompt) {
-    return {
-      prompt: params.prompt,
-    }
-  }
-
-  throw new AiError({
-    message: 'prompt or messages is required',
-
-    operation: 'generate',
-    model: 'unknown',
-    phase: 'request',
-
-    retryable: false,
-    cause: undefined,
-  })
-}
 
 /**
  * =========================================
@@ -57,8 +23,8 @@ const buildPrompt = (params: {
  * =========================================
  */
 
-export const makeAiService = (): AiService => ({
-  generateText: (params: GenerateTextParams) => {
+export const makeAiService = (): AiModelService => ({
+  generateText: (params: GenerateTextParams): Effect.Effect<AiGenerateTextResult, AiError> => {
     return fromPromise(AiError, () => ({
       message: 'fail to generate text',
       model: params.model.toString(),
@@ -67,7 +33,7 @@ export const makeAiService = (): AiService => ({
       retryable: false,
     }))(async () => {
       console.log('generateText')
-      return generateText({
+      const result = await generateText({
         model: params.model,
         ...buildPrompt(params),
         ...withOptional({
@@ -80,6 +46,7 @@ export const makeAiService = (): AiService => ({
         }),
         ...withOptional(buildToolRuntimeConfig(params)),
       })
+      return mapGenerateTextResultToAiGenerateTextResult(result)
     })
   },
 
@@ -165,4 +132,4 @@ export const makeAiService = (): AiService => ({
  * =========================================
  */
 
-export const AiServiceLive = Layer.succeed(AiService, makeAiService())
+export const VercelAiModelServiceLive = Layer.succeed(AiModelService, makeAiService())

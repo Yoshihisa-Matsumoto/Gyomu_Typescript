@@ -4,10 +4,10 @@ import { Effect, Schema } from 'effect'
 import { embed, generateText, streamText } from 'ai'
 
 import { makeRunner } from '@gyomu/schema/effect'
-import { AiService } from '../../service/AiService.js'
-import { AiServiceLive } from '../VercelAiServiceLive.js'
+import { AiModelService } from '../../types/AiModelService.js'
+import { VercelAiModelServiceLive } from '../VercelAiModelServiceLive.js'
 
-const runVercelQAWithEnvOrThrow = makeRunner(AiServiceLive)
+const runVercelQAWithEnvOrThrow = makeRunner(VercelAiModelServiceLive)
 /**
  * =========================================
  * Mock ai sdk
@@ -47,7 +47,7 @@ describe('VercelAiServiceLive', () => {
 
       const result = await runVercelQAWithEnvOrThrow(
         Effect.gen(function* () {
-          const service = yield* AiService
+          const service = yield* AiModelService
           return yield* service.generateText({
             model: mockModel,
             prompt: 'hi',
@@ -55,7 +55,7 @@ describe('VercelAiServiceLive', () => {
         }),
       )
 
-      expect(result.text).toBe('hello')
+      expect(result.message.parts.find((m) => m.type == 'text')?.text).toBe('hello')
 
       expect(generateText).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -70,7 +70,7 @@ describe('VercelAiServiceLive', () => {
       await expect(
         runVercelQAWithEnvOrThrow(
           Effect.gen(function* () {
-            const service = yield* AiService
+            const service = yield* AiModelService
             return yield* service.generateText({
               model: mockModel,
               prompt: 'hi',
@@ -99,7 +99,7 @@ describe('VercelAiServiceLive', () => {
 
       const result = await runVercelQAWithEnvOrThrow(
         Effect.gen(function* () {
-          const service = yield* AiService
+          const service = yield* AiModelService
           return yield* service.generateObject({
             model: mockModel,
             prompt: 'generate user',
@@ -124,7 +124,7 @@ describe('VercelAiServiceLive', () => {
 
       const result = await runVercelQAWithEnvOrThrow(
         Effect.gen(function* () {
-          const service = yield* AiService
+          const service = yield* AiModelService
           return yield* service.embed({
             model: mockModel,
             value: 'hello',
@@ -144,7 +144,7 @@ describe('VercelAiServiceLive', () => {
 
       const result = await runVercelQAWithEnvOrThrow(
         Effect.gen(function* () {
-          const service = yield* AiService
+          const service = yield* AiModelService
           return yield* service.streamText({
             model: mockModel,
             prompt: 'hi',

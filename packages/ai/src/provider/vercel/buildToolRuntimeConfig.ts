@@ -1,7 +1,7 @@
 import { hasToolCall, isLoopFinished, stepCountIs } from 'ai'
-import { toVercelTool } from '../tool/adapter/to-vercel-tool.js'
-import type { AiTool } from '../tool/ai-tool.js'
-import type { ToolLoopPolicy } from '../service/AiService.js'
+import { toVercelTool } from '../../tool/adapter/vercel/to-vercel-tool.js'
+import type { AiTool } from '../../tool/ai-tool.js'
+import type { ToolLoopPolicy } from '../types/AiModelService.js'
 
 type AnyAiTool = AiTool<string, any, any>
 

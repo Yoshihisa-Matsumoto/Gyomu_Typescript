@@ -35,10 +35,7 @@
   "author": "",
   "license": "ISC",
   "files": [
-    "index.js",
-    "lib",
-    "!**/__tests__",
-    "!**/__sit__"
+    "dist"
   ],
   "devDependencies": {
     "@tediousjs/connection-string": "^1.1.0",

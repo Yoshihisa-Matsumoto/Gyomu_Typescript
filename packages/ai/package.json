@@ -1,5 +1,5 @@
 {
-  "name": "@gyomu/ai-agent",
+  "name": "@gyomu/ai",
   "version": "0.2.1",
   "description": "",
   "type": "module",
@@ -8,9 +8,9 @@
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./*": {
-      "import": "./lib/*.js",
-      "types": "./lib/*.d.ts"
+    "./provider/vercel": {
+      "import": "./dist/provider/vercel/index.js",
+      "types": "./dist/provider/vercel/index.d.ts"
     }
   },
   "scripts": {
@@ -39,6 +39,9 @@
     "!**/__sit__"
   ],
   "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.77",
+    "@ai-sdk/google": "^3.0.73",
+    "@ai-sdk/openai": "^3.0.63",
     "@gyomu/infra": "workspace:*",
     "@gyomu/schema": "workspace:*",
     "@mastra/core": "^1.28.0",

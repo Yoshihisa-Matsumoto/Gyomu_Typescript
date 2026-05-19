@@ -2,17 +2,16 @@ import { describe, expect, it } from 'vitest'
 import { Effect, Layer, Schema } from 'effect'
 
 import { makeRunner } from '@gyomu/schema/effect'
-import { AiService } from '../../service/AiService.js'
-import { AiServiceLive } from '../VercelAiServiceLive.js'
+import { ConfigLayer, MainLayer, PlatformLayer } from '@gyomu/infra'
+import { AiModelService } from '../../types/AiModelService.js'
+import { VercelAiModelServiceLive } from '../VercelAiModelServiceLive.js'
 
-import { AI_MODELS } from '../../models/AiModels.js'
-import { MainLayer, PlatformLayer } from '../../../layer.js'
-import { ConfigLayer } from '../../../config.js'
+import { AI_MODELS } from '../../../model/AiModels.js'
 import 'dotenv/config'
-import type { AiTool } from '../../tool/ai-tool.js'
+import type { AiTool } from '../../../tool/ai-tool.js'
 
 const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(Layer.provideMerge(PlatformLayer))
-const runVercelQAWithEnvOrThrow = makeRunner(AiServiceLive)
+const runVercelQAWithEnvOrThrow = makeRunner(VercelAiModelServiceLive)
 /**
  * =========================================
  * Test Guard
@@ -26,7 +25,7 @@ describeIfApiKey('VercelAiServiceLive Integration', () => {
     it('generates text', async () => {
       const result = await runVercelQAWithEnvOrThrow(
         Effect.gen(function* () {
-          const service = yield* AiService
+          const service = yield* AiModelService
           return yield* service.generateText({
             model: AI_MODELS.fast,
             prompt: 'Return exactly: hello world',
@@ -34,8 +33,8 @@ describeIfApiKey('VercelAiServiceLive Integration', () => {
         }),
         layer,
       )
-      console.log(result.text)
-      expect(result.text).toContain('hello')
+      console.log(result)
+      expect(result.message.parts.find((m) => m.type == 'text')?.text).toContain('hello')
     }, 30_000)
   })
 
@@ -48,7 +47,7 @@ describeIfApiKey('VercelAiServiceLive Integration', () => {
 
       const result = await runVercelQAWithEnvOrThrow(
         Effect.gen(function* () {
-          const service = yield* AiService
+          const service = yield* AiModelService
           return yield* service.generateObject({
             model: AI_MODELS.fast,
 
@@ -73,7 +72,7 @@ describeIfApiKey('VercelAiServiceLive Integration', () => {
     it('generates embeddings', async () => {
       const result = await runVercelQAWithEnvOrThrow(
         Effect.gen(function* () {
-          const service = yield* AiService
+          const service = yield* AiModelService
           return yield* service.embed({
             model: AI_MODELS.embedding,
             value: 'hello world',
@@ -91,7 +90,7 @@ describeIfApiKey('VercelAiServiceLive Integration', () => {
     it('streams text', async () => {
       const result = await runVercelQAWithEnvOrThrow(
         Effect.gen(function* () {
-          const service = yield* AiService
+          const service = yield* AiModelService
           return yield* service.streamText({
             model: AI_MODELS.fast,
             prompt: 'Say hello in one short sentence',
@@ -130,7 +129,7 @@ describeIfApiKey('VercelAiServiceLive Integration', () => {
       }
       const result = await runVercelQAWithEnvOrThrow(
         Effect.gen(function* () {
-          const service = yield* AiService
+          const service = yield* AiModelService
           return yield* service.generateText({
             model: AI_MODELS.fast,
             prompt: 'What is the weather in Tokyo?',
@@ -141,7 +140,7 @@ describeIfApiKey('VercelAiServiceLive Integration', () => {
         layer,
       )
       console.log('Output', JSON.stringify(result, null, 2))
-      expect(result.text.toLowerCase()).toContain('sunny')
+      expect(result.message.parts.find((m) => m.type == 'text')?.text).toContain('sunny')
     }, 30_000)
   })
 })

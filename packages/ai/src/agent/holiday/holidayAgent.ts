@@ -1,5 +1,5 @@
 import { Agent } from '@mastra/core/agent'
-import { getHolidayTool } from '../../tools/businessCalendar/getHolidayTool.js'
+import { getHolidayTool } from '../../tool/businessCalendar/getHolidayTool.js'
 
 export const holidayAgent = new Agent({
   id: 'holiday-agent',

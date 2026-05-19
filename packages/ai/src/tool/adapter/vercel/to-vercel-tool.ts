@@ -3,7 +3,7 @@ import { Schema } from 'effect'
 import type { Tool } from 'ai'
 import type { StandardJSONSchemaV1 } from '@standard-schema/spec'
 import type { EffectSchema } from '@gyomu/schema/entity'
-import type { AiTool } from '../ai-tool.js'
+import type { AiTool } from '../../ai-tool.js'
 import type { JsonValue } from 'effect/testing/FastCheck'
 import type { ToolResult } from '@gyomu/schema'
 

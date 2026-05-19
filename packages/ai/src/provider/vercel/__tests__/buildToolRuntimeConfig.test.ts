@@ -3,7 +3,7 @@ import { Schema } from 'effect'
 
 import { hasToolCall, isLoopFinished, stepCountIs } from 'ai'
 import { buildToolRuntimeConfig } from '../buildToolRuntimeConfig.js'
-import { toVercelTool } from '../../tool/adapter/to-vercel-tool.js'
+import { toVercelTool } from '../../../tool/adapter/vercel/to-vercel-tool.js'
 
 vi.mock('ai', () => ({
   stepCountIs: vi.fn((count) => ({
@@ -21,7 +21,7 @@ vi.mock('ai', () => ({
   })),
 }))
 
-vi.mock('../../tool/adapter/to-vercel-tool.js', () => ({
+vi.mock('../../../tool/adapter/vercel/to-vercel-tool.js', () => ({
   toVercelTool: vi.fn((tool) => ({
     wrapped: tool.name,
   })),

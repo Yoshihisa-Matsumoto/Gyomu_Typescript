@@ -2,8 +2,8 @@ import { describe, expect, it, vi } from 'vitest'
 import { Effect, Schema } from 'effect'
 
 import * as ai from 'ai'
-import { makeAiService } from '../VercelAiServiceLive.js'
-import type { AiTool } from '../../tool/ai-tool.js'
+import { makeAiService } from '../VercelAiModelServiceLive.js'
+import type { AiTool } from '../../../tool/ai-tool.js'
 
 vi.mock('ai', async (importOriginal) => {
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
