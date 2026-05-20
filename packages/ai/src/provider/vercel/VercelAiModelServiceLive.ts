@@ -43,6 +43,7 @@ export const makeAiService = (): AiModelService => ({
           maxTokens: params.maxTokens,
 
           abortSignal: params.abortSignal,
+          headers: params.headers,
         }),
         ...withOptional(buildToolRuntimeConfig(params)),
       })
@@ -68,6 +69,7 @@ export const makeAiService = (): AiModelService => ({
           maxTokens: params.maxTokens,
 
           abortSignal: params.abortSignal,
+          headers: params.headers,
         }),
         ...withOptional(buildToolRuntimeConfig(params)),
       }),
@@ -96,7 +98,9 @@ export const makeAiService = (): AiModelService => ({
           temperature: params.temperature,
 
           abortSignal: params.abortSignal,
+          headers: params.headers,
         }),
+
         ...withOptional(buildToolRuntimeConfig(params)),
       })
       return {
@@ -119,6 +123,7 @@ export const makeAiService = (): AiModelService => ({
         value: params.value as string,
         ...withOptional({
           abortSignal: params.abortSignal,
+          headers: params.headers,
         }),
       })
 

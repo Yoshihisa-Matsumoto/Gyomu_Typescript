@@ -42,9 +42,10 @@
     "@ai-sdk/anthropic": "^3.0.77",
     "@ai-sdk/google": "^3.0.73",
     "@ai-sdk/openai": "^3.0.63",
-    "@gyomu/infra": "workspace:*",
-    "@gyomu/schema": "workspace:*",
+    "@gyomu/infra": "workspace:^",
+    "@gyomu/schema": "workspace:^",
     "@mastra/core": "^1.28.0",
+    "@standard-schema/spec": "^1.1.0",
     "ai": "^6.0.184",
     "effect": "4.0.0-beta.57"
   }

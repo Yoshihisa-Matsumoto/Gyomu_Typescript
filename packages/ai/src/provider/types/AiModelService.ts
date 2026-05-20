@@ -54,6 +54,8 @@ type BaseAiParams = {
   readonly temperature?: number
 
   readonly abortSignal?: AbortSignal
+
+  readonly headers?: Record<string, string>
 }
 type TextGenerationParams = BaseAiParams & PromptInput & ToolConfig
 export type GenerateTextParams = TextGenerationParams & {
@@ -74,6 +76,7 @@ export interface EmbedParams<TValue> {
   readonly model: EmbeddingModel
   readonly value: TValue
   readonly abortSignal?: AbortSignal
+  readonly headers?: Record<string, string>
 }
 
 export interface AiObjectResult<T> {

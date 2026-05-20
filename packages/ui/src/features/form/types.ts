@@ -34,4 +34,5 @@ export type AutoFormProps<TFields extends Fields> = {
   components?: {
     SubmitButton?: React.ComponentType<SubmitButtonProps>
   }
+  showActions?: boolean
 }

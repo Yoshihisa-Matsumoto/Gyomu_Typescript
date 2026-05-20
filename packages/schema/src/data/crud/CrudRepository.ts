@@ -18,7 +18,7 @@ export type CrudRepository<
   readonly deleteRecords: (ids: Array<string>) => Effect.Effect<number, DBError>
   readonly synchronizeRecords: <
     TInsert extends Schema.Schema.Type<Insert>,
-    TSelect extends TInsert &
+    TSelect extends Schema.Schema.Type<Select> &
       Readonly<{
         id: string
       }> & { [field: string]: any },

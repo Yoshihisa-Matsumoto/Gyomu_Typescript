@@ -17,6 +17,10 @@
       "types": "./dist/core/index.d.ts",
       "import": "./dist/core/index.js"
     },
+    "./features": {
+      "types": "./dist/features/index.d.ts",
+      "import": "./dist/features/index.js"
+    },
     "./mui": {
       "types": "./dist/ui/adapters/mui/index.d.ts",
       "import": "./dist/ui/adapters/mui/index.js"

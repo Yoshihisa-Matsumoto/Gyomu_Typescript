@@ -1,5 +1,5 @@
 // --- React / 外部ライブラリ ---
-import { useEffect, useMemo } from 'react'
+import React, { useEffect, useImperativeHandle, useMemo } from 'react'
 import { useForm } from '@tanstack/react-form'
 
 // --- Core / Engine ---
@@ -20,116 +20,138 @@ import type { Schema } from 'effect'
 import type { Fields } from '@gyomu/schema/entity'
 import type { AutoFormProps } from './types'
 
-export function AutoForm<TFields extends Fields>({
-  schema,
-  uiContext,
-  logger,
-  initialValues,
-  ui,
-  onSubmit,
-  fieldRenderer = muiRenderer,
-  fieldLayout = MuiFieldLayout,
-  layout: Layout = MuiFormLayout,
-  components,
-}: AutoFormProps<TFields>) {
-  const SubmitButton = components?.SubmitButton ?? DefaultSubmitButton
+export type AutoFormHandle = {
+  submit: () => void
+}
 
-  const fieldSchemaMap: Partial<Record<keyof TFields, Schema.Schema<any>>> =
-    buildFieldSchemaMap(schema)
-  const fieldConfigs = useMemo(
-    () =>
-      buildFormMetaFromStructSchema({
-        schema,
-        uiContext,
-        ...(logger && { logger }),
-        ...(ui && { ui: ui }),
+export const AutoForm = React.forwardRef<AutoFormHandle, AutoFormProps<any>>(
+  function AutoFormInternal<TFields extends Fields>(
+    {
+      schema,
+      uiContext,
+      logger,
+      initialValues,
+      ui,
+      onSubmit,
+      fieldRenderer = muiRenderer,
+      fieldLayout = MuiFieldLayout,
+      layout: Layout = MuiFormLayout,
+      components,
+      showActions = true,
+    }: AutoFormProps<TFields>,
+    ref: React.ForwardedRef<AutoFormHandle>,
+  ) {
+    const SubmitButton = components?.SubmitButton ?? DefaultSubmitButton
+
+    const fieldSchemaMap: Partial<Record<keyof TFields, Schema.Schema<any>>> =
+      buildFieldSchemaMap(schema)
+    const fieldConfigs = useMemo(
+      () =>
+        buildFormMetaFromStructSchema({
+          schema,
+          uiContext,
+          ...(logger && { logger }),
+          ...(ui && { ui: ui }),
+        }),
+      [schema, uiContext, logger, ui],
+    )
+    console.log('Field Meta', JSON.stringify(fieldConfigs, null, 2))
+    const form = useForm({
+      defaultValues: buildDefaultValues(fieldConfigs, initialValues),
+      onSubmit: async ({ value }) => {
+        const result = validateWithSchema(schema, value)
+        if (!result.ok) return
+
+        await onSubmit(result.data)
+      },
+    })
+
+    useImperativeHandle(
+      ref,
+      () => ({
+        submit: () => {
+          form.handleSubmit()
+        },
       }),
-    [schema, uiContext, logger, ui],
-  )
-  console.log('Field Meta', JSON.stringify(fieldConfigs, null, 2))
-  const form = useForm({
-    defaultValues: buildDefaultValues(fieldConfigs, initialValues),
-    onSubmit: async ({ value }) => {
-      const result = validateWithSchema(schema, value)
-      if (!result.ok) return
+      [form],
+    )
 
-      await onSubmit(result.data)
-    },
-  })
+    useEffect(() => {
+      form.validateAllFields('change')
+    }, [])
 
-  useEffect(() => {
-    form.validateAllFields('change')
-  }, [])
-
-  return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault()
-        form.handleSubmit()
-      }}
-    >
-      <Layout>
-        {fieldConfigs.map((field) => (
-          <form.Field
-            key={field.name}
-            name={field.name}
-            validators={{
-              onChange: ({ value }) => {
-                const fieldSchema = fieldSchemaMap[field.name]
-                if (!fieldSchema) {
-                  console.warn(`No schema found for field: ${field.name}`)
+    return (
+      <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          form.handleSubmit()
+        }}
+      >
+        <Layout>
+          {fieldConfigs.map((field) => (
+            <form.Field
+              key={field.name}
+              name={field.name}
+              validators={{
+                onChange: ({ value }) => {
+                  const fieldSchema = fieldSchemaMap[field.name]
+                  if (!fieldSchema) {
+                    console.warn(`No schema found for field: ${field.name}`)
+                    return undefined
+                  }
+                  const result = validateField(fieldSchema, value)
+                  if (!result.ok) {
+                    return result.errors
+                  }
                   return undefined
-                }
-                const result = validateField(fieldSchema, value)
-                if (!result.ok) {
-                  return result.errors
-                }
-                return undefined
-              },
-            }}
+                },
+              }}
+            >
+              {(fieldApi) => {
+                const error = fieldApi.state.meta.errors
+                  .map((e) => e?.message)
+                  .filter((m): m is string => !!m)
+                  .join(', ')
+                return (
+                  <AutoField
+                    meta={field}
+                    renderer={fieldRenderer}
+                    layout={fieldLayout}
+                    value={fieldApi.state.value}
+                    onChange={fieldApi.handleChange}
+                    onBlur={fieldApi.handleBlur}
+                    error={error}
+                  />
+                )
+              }}
+            </form.Field>
+          ))}
+        </Layout>
+
+        {showActions && (
+          <form.Subscribe
+            selector={(state) => ({
+              canSubmit: state.canSubmit,
+              isSubmitting: state.isSubmitting,
+            })}
           >
-            {(fieldApi) => {
-              const error = fieldApi.state.meta.errors
-                .map((e) => e?.message)
-                .filter((m): m is string => !!m)
-                .join(', ')
+            {(rawState) => {
+              console.log('Raw Form State:', rawState)
+              const state = normalizeFormState(rawState)
+              console.log('Form State:', state)
               return (
-                <AutoField
-                  meta={field}
-                  renderer={fieldRenderer}
-                  layout={fieldLayout}
-                  value={fieldApi.state.value}
-                  onChange={fieldApi.handleChange}
-                  onBlur={fieldApi.handleBlur}
-                  error={error}
+                <SubmitButton
+                  disabled={!state.canSubmit || state.isSubmitting}
+                  isSubmitting={state.isSubmitting}
                 />
               )
             }}
-          </form.Field>
-        ))}
-      </Layout>
-
-      <form.Subscribe
-        selector={(state) => ({
-          canSubmit: state.canSubmit,
-          isSubmitting: state.isSubmitting,
-        })}
-      >
-        {(rawState) => {
-          console.log('Raw Form State:', rawState)
-          const state = normalizeFormState(rawState)
-          console.log('Form State:', state)
-          return (
-            <SubmitButton
-              disabled={!state.canSubmit || state.isSubmitting}
-              isSubmitting={state.isSubmitting}
-            />
-          )
-        }}
-      </form.Subscribe>
-    </form>
-  )
-}
+          </form.Subscribe>
+        )}
+      </form>
+    )
+  },
+)
 
 type NormalizedFormState = {
   canSubmit: boolean

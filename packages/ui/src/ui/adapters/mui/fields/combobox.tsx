@@ -2,6 +2,7 @@ import { MenuItem as MUIMenuItem, Select as MUISelect } from '@mui/material'
 import Box from '@mui/material/Box'
 import InputLabel from '@mui/material/InputLabel'
 import FormControl from '@mui/material/FormControl'
+import { withOptional } from '@gyomu/schema'
 import type { MenuItemProps as MUIMenuItemProps, SelectChangeEvent } from '@mui/material'
 
 /* =========================
@@ -54,17 +55,19 @@ export const Select = <T extends string | number = string>({
 
   return (
     <Box sx={{ minWidth: 250 }}>
-      <FormControl fullWidth disabled={disabled}>
+      <FormControl fullWidth {...withOptional({ disabled })}>
         {label && <InputLabel id={labelId}>{label}</InputLabel>}
 
         <MUISelect
-          labelId={labelId}
-          id={selectId}
           value={String(value)}
           label={label}
           variant="outlined"
-          className={className}
-          style={style}
+          {...withOptional({
+            labelId,
+            id: selectId,
+            className,
+            style,
+          })}
           onChange={(e: SelectChangeEvent) => {
             onChange(e.target.value as T)
           }}
