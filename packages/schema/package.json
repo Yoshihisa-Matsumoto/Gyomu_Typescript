@@ -1,8 +1,11 @@
 {
   "name": "@gyomu/schema",
-  "version": "0.2.1",
+  "version": "0.2.3-beta.0",
   "description": "",
   "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
   "exports": {
     ".": {
       "import": "./dist/index.js",
@@ -71,10 +74,7 @@
   "author": "",
   "license": "ISC",
   "files": [
-    "index.js",
-    "lib",
-    "!**/__tests__",
-    "!**/__sit__"
+    "dist"
   ],
   "devDependencies": {
     "dotenv-cli": "^11.0.0",

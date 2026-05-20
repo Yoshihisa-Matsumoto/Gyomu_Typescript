@@ -1,8 +1,11 @@
 {
   "name": "@gyomu/infra",
-  "version": "0.2.1",
+  "version": "0.2.3-beta.0",
   "description": "",
   "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
   "exports": {
     ".": {
       "import": "./dist/index.js",
