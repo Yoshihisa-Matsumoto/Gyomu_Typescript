@@ -2,4 +2,4 @@
 '@gyomu/schema': patch
 ---
 
-dummy
+beta test

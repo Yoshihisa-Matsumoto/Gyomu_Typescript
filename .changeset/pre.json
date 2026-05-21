@@ -2,17 +2,15 @@
   "mode": "pre",
   "tag": "beta",
   "initialVersions": {
-    "cli": "0.2.2",
-    "@gyomu/ai": "0.2.2",
-    "@gyomu/ai-react": "0.2.2",
-    "@gyomu/infra": "0.2.2",
-    "@gyomu/schema": "0.2.2",
-    "@gyomu/ui": "0.2.2",
-    "@gyomu/ui-core": "0.2.2"
+    "cli": "0.2.3",
+    "@gyomu/ai": "0.2.3",
+    "@gyomu/ai-react": "0.2.3",
+    "@gyomu/infra": "0.2.3",
+    "@gyomu/schema": "0.2.3",
+    "@gyomu/ui": "0.2.3",
+    "@gyomu/ui-core": "0.2.3"
   },
   "changesets": [
-    "forty-mirrors-act",
-    "orange-bags-happen",
-    "silent-parrots-build"
+    "brave-drinks-study"
   ]
 }

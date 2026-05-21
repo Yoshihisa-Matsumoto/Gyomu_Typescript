@@ -1,5 +1,20 @@
 # @gyomu/schema
 
+## 0.2.4-beta.0
+
+### Patch Changes
+
+- beta test
+
+## 0.2.3
+
+### Patch Changes
+
+- 4e2e269: version + tag release check
+- c7e324a: feat: update JWT handling to use 'jose' library and improve token generation and validation
+- 2c2a1a4: feat: enhance AI model service with error handling and new features in UI components
+- be96696: dummy
+
 ## 0.2.3-beta.2
 
 ### Patch Changes
