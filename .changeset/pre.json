@@ -11,6 +11,7 @@
     "@gyomu/ui-core": "0.2.2"
   },
   "changesets": [
+    "forty-mirrors-act",
     "orange-bags-happen",
     "silent-parrots-build"
   ]

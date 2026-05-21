@@ -39,4 +39,5 @@ git switch -c ＜新ブランチ名＞
 2. 開発
 3. pnpm changeset でコミットメッセージのようなものを用意しておく
 4. git commit
-5. pnpm release:beta
+5. npm whoami でLoginされていることを確認。されてなければnpm login
+6. pnpm release:beta

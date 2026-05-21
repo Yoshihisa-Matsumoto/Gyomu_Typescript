@@ -1,5 +1,13 @@
 # @gyomu/ai-react
 
+## 0.2.3-beta.2
+
+### Patch Changes
+
+- Updated dependencies [c7e324a]
+  - @gyomu/schema@0.2.3-beta.2
+  - @gyomu/ui-core@0.2.3-beta.2
+
 ## 0.2.3-beta.1
 
 ### Patch Changes
