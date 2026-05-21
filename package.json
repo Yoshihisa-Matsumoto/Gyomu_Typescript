@@ -32,7 +32,7 @@
     "changeset:pre:exit": "changeset pre exit",
     "changeset:version": "changeset version",
     "changeset:publish": "changeset publish",
-    "changeset:publish:beta": "changeset publish",
+    "changeset:publish:beta": "changeset publish --tag beta",
     "release:beta": "pnpm build:clean && pnpm changeset:version && pnpm changeset:publish:beta",
     "release:stable": "pnpm changeset:pre:exit && pnpm changeset:version && pnpm changeset:publish"
   },

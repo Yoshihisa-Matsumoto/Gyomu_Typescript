@@ -32,3 +32,11 @@ git switch -c ＜新ブランチ名＞
 1. git switch -c <新ブランチ名>
 2. git switch main
 3. git reset --hard origin/main
+
+## Packaging まで (beta)
+
+1. 必要ならブランチ作業
+2. 開発
+3. pnpm changeset でコミットメッセージのようなものを用意しておく
+4. git commit
+5. pnpm release:beta
