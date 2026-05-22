@@ -73,7 +73,7 @@ export const AI_MODELS: AiModelRegistry = {
 }
 
 export class AiModels extends Context.Service<AiModels, AiModelRegistry>()('AiModels') {}
-const makeGoogleModelRegistry = (): Effect.Effect<AiModelRegistry, AiProviderError> => {
+export const makeGoogleModelRegistry = (): Effect.Effect<AiModelRegistry, AiProviderError> => {
   return Effect.succeed(AI_MODELS)
 }
 export const MyGoogleModelsLayer = Layer.effect(AiModels, makeGoogleModelRegistry())

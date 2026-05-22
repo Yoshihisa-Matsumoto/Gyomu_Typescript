@@ -42,7 +42,7 @@ type ToolConfig =
       readonly toolLoopPolicy?: never
     }
   | {
-      readonly tools: ReadonlyArray<AiTool<string, any, any>>
+      readonly tools: ReadonlyArray<AiTool<any, any, any>>
 
       readonly toolLoopPolicy: ToolLoopPolicy
     }

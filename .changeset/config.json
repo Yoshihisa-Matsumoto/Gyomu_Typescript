@@ -3,7 +3,15 @@
   "changelog": "@changesets/cli/changelog",
   "commit": false,
   "fixed": [
-    ["@gyomu/schema", "@gyomu/ai", "@gyomu/ai-react", "@gyomu/infra", "@gyomu/ui", "@gyomu/ui-core"]
+    [
+      "@gyomu/schema",
+      "@gyomu/ai",
+      "@gyomu/ai-react",
+      "@gyomu/infra",
+      "@gyomu/ui",
+      "@gyomu/ui-core",
+      "@gyomu/approval-core"
+    ]
   ],
   "linked": [],
   "access": "public",
