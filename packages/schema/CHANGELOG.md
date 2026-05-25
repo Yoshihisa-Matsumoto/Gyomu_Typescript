@@ -1,5 +1,12 @@
 # @gyomu/schema
 
+## 0.2.4-beta.1
+
+### Patch Changes
+
+- 93ccf0c: @gyomu/config setup
+- 3e0f2d0: @gyomu/approval-core initialization
+
 ## 0.2.4-beta.0
 
 ### Patch Changes

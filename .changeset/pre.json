@@ -8,9 +8,13 @@
     "@gyomu/infra": "0.2.3",
     "@gyomu/schema": "0.2.3",
     "@gyomu/ui": "0.2.3",
-    "@gyomu/ui-core": "0.2.3"
+    "@gyomu/ui-core": "0.2.3",
+    "@gyomu/approval-core": "0.2.4-beta.0",
+    "@gyomu/config": "0.2.4-beta.0"
   },
   "changesets": [
-    "brave-drinks-study"
+    "big-dodos-relate",
+    "brave-drinks-study",
+    "crisp-socks-own"
   ]
 }
