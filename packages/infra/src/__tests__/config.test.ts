@@ -2,8 +2,11 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { describe, expect, it } from 'vitest'
-import { Config, Effect, Layer } from 'effect'
+import { Config, Effect, Exit, Layer } from 'effect'
 import { NodeFileSystem } from '@effect/platform-node'
+import { ConfigError } from '@gyomu/schema'
+import { getFailureFromExit } from '@gyomu/schema/effect'
+
 import { ConfigProviderTest, ConfigService } from '../config.js'
 
 describe('ConfigService', () => {
@@ -11,13 +14,14 @@ describe('ConfigService', () => {
     logLevel: Config.string('LOG_LEVEL'),
     port: Config.number('PORT').pipe(Config.withDefault(3000)),
   })
+
   const TestLayer = ConfigService.live.pipe(Layer.provide(ConfigProviderTest))
+
   const makeRuntime = () => Layer.mergeAll(TestLayer, NodeFileSystem.layer)
 
   it('環境変数から設定をロードできる', async () => {
     const program = Effect.gen(function* () {
       const service = yield* ConfigService
-
       return yield* service.load(TestConfig)
     })
 
@@ -60,7 +64,7 @@ describe('ConfigService', () => {
     })
   })
 
-  it('存在しないJSONファイルの場合 IOError で失敗する', async () => {
+  it('存在しないJSONファイルの場合 ConfigError(load) で失敗する', async () => {
     const program = Effect.gen(function* () {
       const service = yield* ConfigService
 
@@ -69,12 +73,19 @@ describe('ConfigService', () => {
       })
     })
 
-    const result = await Effect.runPromiseExit(program.pipe(Effect.provide(makeRuntime())))
+    const exit = await Effect.runPromiseExit(program.pipe(Effect.provide(makeRuntime())))
 
-    expect(result._tag).toBe('Failure')
+    expect(exit._tag).toBe('Failure')
+
+    if (Exit.isFailure(exit)) {
+      const error = getFailureFromExit(exit)
+
+      expect(error).toBeInstanceOf(ConfigError)
+      expect(error.phase).toBe('load')
+    }
   })
 
-  it('不正なJSONの場合 IOError で失敗する', async () => {
+  it('不正なJSONの場合 ConfigError(parse) で失敗する', async () => {
     const dir = join(tmpdir(), `config-test-invalid-${Date.now()}`)
     mkdirSync(dir, { recursive: true })
 
@@ -90,12 +101,19 @@ describe('ConfigService', () => {
       })
     })
 
-    const result = await Effect.runPromiseExit(program.pipe(Effect.provide(makeRuntime())))
+    const exit = await Effect.runPromiseExit(program.pipe(Effect.provide(makeRuntime())))
 
-    expect(result._tag).toBe('Failure')
+    expect(exit._tag).toBe('Failure')
+
+    if (Exit.isFailure(exit)) {
+      const error = getFailureFromExit(exit)
+
+      expect(error).toBeInstanceOf(ConfigError)
+      expect(error.phase).toBe('parse')
+    }
   })
 
-  it('必須設定が不足している場合 ConfigError で失敗する', async () => {
+  it('必須設定が不足している場合 ConfigError(decode) で失敗する', async () => {
     const MissingConfig = Config.all({
       apiKey: Config.string('API_KEY'),
     })
@@ -106,8 +124,15 @@ describe('ConfigService', () => {
       return yield* service.load(MissingConfig)
     })
 
-    const result = await Effect.runPromiseExit(program.pipe(Effect.provide(makeRuntime())))
+    const exit = await Effect.runPromiseExit(program.pipe(Effect.provide(makeRuntime())))
 
-    expect(result._tag).toBe('Failure')
+    expect(exit._tag).toBe('Failure')
+
+    if (Exit.isFailure(exit)) {
+      const error = getFailureFromExit(exit)
+
+      expect(error).toBeInstanceOf(ConfigError)
+      expect(error.phase).toBe('decode')
+    }
   })
 })

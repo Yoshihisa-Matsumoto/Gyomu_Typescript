@@ -10,6 +10,33 @@ import { makeRunner } from '../runtime.js'
 import { PlatformLayer } from '../layer.js'
 import type { Logger } from '@gyomu/schema'
 
+export const normalizeLogValue = (value: unknown): unknown => {
+  if (value instanceof Map) {
+    return Object.fromEntries(
+      [...value.entries()].map(([k, v]) => [String(k), normalizeLogValue(v)]),
+    )
+  }
+
+  if (value instanceof Set) {
+    return [...value].map(normalizeLogValue)
+  }
+
+  if (Array.isArray(value)) {
+    return value.map(normalizeLogValue)
+  }
+
+  if (
+    value !== null &&
+    typeof value === 'object' &&
+    !(value instanceof Date) &&
+    !(value instanceof Error)
+  ) {
+    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, normalizeLogValue(v)]))
+  }
+
+  return value
+}
+
 export const createPinoLogger = (): Logger => {
   const p = pino()
 
@@ -19,7 +46,7 @@ export const createPinoLogger = (): Logger => {
       if (typeof arg1 === 'string') {
         return p[level](arg1)
       }
-      return p[level](arg1, arg2, ...args)
+      return p[level](normalizeLogValue(arg1), arg2, ...args.map(normalizeLogValue))
     }
 
   return {
@@ -85,9 +112,7 @@ export const initLogger = (config: loggerConfig) => {
       path.sep +
       (config.logFilename +
         (LogFileNameStatic ? '' : '.' + format(new Date(), 'yyyyMMddHHmmss') + '.log'))
-  // console.log(
-  //   `Logger initialized with level ${loggerLevel}, log file: ${LogFileName}`,
-  // );
+  console.log(`Logger initialized with level ${loggerLevel}, log file: ${LogFileName}`)
 
   const targets: Array<any> = [
     {
@@ -121,7 +146,7 @@ export const initLogger = (config: loggerConfig) => {
       if (typeof arg1 === 'string') {
         return p[level](arg1)
       }
-      return p[level](arg1, arg2, ...args)
+      return p[level](normalizeLogValue(arg1), arg2, ...args.map(normalizeLogValue))
     }
 
   setLogger({

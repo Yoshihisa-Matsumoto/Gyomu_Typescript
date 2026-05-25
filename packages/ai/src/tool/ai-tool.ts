@@ -14,15 +14,17 @@ export type ToolResult<T> =
     }
 
 export interface AiTool<
-  ConfigSchema extends EffectSchema,
   Input extends EffectSchema,
   Output extends JsonValue,
+  ConfigSchema extends EffectSchema = never,
 > {
   readonly name: string
 
   readonly description: string
 
   readonly inputSchema: Input
+
+  readonly config?: AiToolConfig<ConfigSchema>
 
   readonly execute: (
     context: AiToolContext<ConfigSchema>,

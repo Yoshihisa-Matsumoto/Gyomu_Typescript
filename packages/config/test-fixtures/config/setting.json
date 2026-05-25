@@ -1,0 +1,33 @@
+{
+  "sales": {
+    "invoice": {
+      "host": "global-sales-invoice",
+      "port": 3000,
+      "logLevel": "info",
+      "timeout": 3000,
+      "features": {
+        "audit": false,
+        "beta": false
+      },
+      "database": {
+        "host": "global-db",
+        "port": 5432
+      }
+    },
+
+    "quotation": {
+      "host": "global-sales-quotation",
+      "port": 3100
+    }
+  },
+
+  "invoice": {
+    "host": "global-invoice",
+    "port": 3200,
+    "logLevel": "info"
+  },
+
+  "host": "global-root",
+  "port": 3300,
+  "logLevel": "warn"
+}

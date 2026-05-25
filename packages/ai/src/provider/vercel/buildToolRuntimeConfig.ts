@@ -2,8 +2,9 @@ import { hasToolCall, isLoopFinished, stepCountIs } from 'ai'
 import { toVercelTool } from '../../tool/adapter/vercel/to-vercel-tool.js'
 import type { AiTool } from '../../tool/ai-tool.js'
 import type { ToolLoopPolicy } from '../types/AiModelService.js'
+import type { EffectSchema } from '@gyomu/schema/entity'
 
-type AnyAiTool = AiTool<string, any, any>
+type AnyAiTool = AiTool<EffectSchema, any, any>
 
 type ToolRuntimeConfig = {
   readonly tools?: Record<string, unknown>

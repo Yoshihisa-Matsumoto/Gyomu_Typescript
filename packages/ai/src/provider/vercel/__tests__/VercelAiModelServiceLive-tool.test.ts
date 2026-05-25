@@ -45,7 +45,7 @@ const execute = vi.fn(
     },
 )
 
-const testTool: AiTool<string, typeof InputSchema, outputDataType> = {
+const testTool: AiTool<typeof InputSchema, outputDataType> = {
   name: 'testTool',
 
   description: 'test',

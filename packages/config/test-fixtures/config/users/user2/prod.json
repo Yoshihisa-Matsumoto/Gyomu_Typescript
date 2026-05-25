@@ -1,0 +1,7 @@
+{
+  "invoice": {
+    "host": "user2-prod-invoice"
+  },
+
+  "host": "user2-prod-root"
+}

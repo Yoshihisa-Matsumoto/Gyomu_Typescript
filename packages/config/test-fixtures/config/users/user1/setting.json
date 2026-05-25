@@ -1,0 +1,13 @@
+{
+  "sales": {
+    "invoice": {
+      "host": "user1-sales-invoice",
+      "port": 4000
+    }
+  },
+
+  "invoice": {
+    "host": "user1-invoice",
+    "timeout": 5000
+  }
+}

@@ -112,7 +112,7 @@ describeIfApiKey('VercelAiServiceLive Integration', () => {
     it('text  tool ', async () => {
       const citySchema = Schema.Struct({ city: Schema.String })
       type weatherType = { weather: string }
-      const weatherTool: AiTool<string, typeof citySchema, weatherType> = {
+      const weatherTool: AiTool<typeof citySchema, weatherType> = {
         name: 'weather',
         description: 'Get weather for city',
         inputSchema: citySchema,

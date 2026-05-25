@@ -1,0 +1,15 @@
+{
+  "invoice": {
+    "host": "dev-invoice",
+    "logLevel": "debug",
+    "features": {
+      "beta": true
+    }
+  },
+
+  "host": "dev-root",
+
+  "database": {
+    "host": "dev-db"
+  }
+}

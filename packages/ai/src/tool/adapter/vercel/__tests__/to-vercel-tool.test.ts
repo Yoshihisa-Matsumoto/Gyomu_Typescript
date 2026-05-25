@@ -10,7 +10,7 @@ describe('toVercelTool', () => {
       name: Schema.String,
     })
     type outputType = { message: string }
-    const toolDef: AiTool<string, typeof TestSchema, outputType> = {
+    const toolDef: AiTool<typeof TestSchema, outputType> = {
       name: 'test',
       description: 'desc',
 
