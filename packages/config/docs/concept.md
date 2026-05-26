@@ -435,10 +435,6 @@ type ConfigRequest<ConfigSchema extends EffectSchema> =
 
 設定競合時の解決ルールを定義する。
 
-```ts
-export type ConfigResolutionStrategy = 'override' | 'restrictive' | 'permissive'
-```
-
 ---
 
 ## override
@@ -449,62 +445,6 @@ export type ConfigResolutionStrategy = 'override' | 'restrictive' | 'permissive'
 base
  ↓
 payload
-```
-
----
-
-## restrictive
-
-より厳しい設定を採用する。
-
-例
-
-```json
-base:
-{
-  "maxTokens": 1000
-}
-
-payload:
-{
-  "maxTokens": 2000
-}
-```
-
-結果
-
-```json
-{
-  "maxTokens": 1000
-}
-```
-
----
-
-## permissive
-
-より緩い設定を採用する。
-
-例
-
-```json
-base:
-{
-  "maxTokens": 1000
-}
-
-payload:
-{
-  "maxTokens": 2000
-}
-```
-
-結果
-
-```json
-{
-  "maxTokens": 2000
-}
 ```
 
 ---

@@ -6,14 +6,14 @@ import { excludeOptionFromRawConfig } from './excludeOptionFromRawConfig.js'
 import type { ConfigError } from '@gyomu/schema'
 import type { FileSystem } from 'effect'
 import type { StaticConfigResolveRequest } from '../types/ConfigResolveRequest.js'
-import type { LoadedConfig } from '../types/LoadedConfig.js'
+import type { RawLoadedConfig } from '../types/RawLoadedConfig.js'
 import type { EffectSchema } from '@gyomu/schema/entity'
 import type { ConfigRawConfig } from '../types/ConfigRawConfig.js'
 
 export const loadEnvConfig = <ConfigSchema extends EffectSchema, RawConfig extends ConfigRawConfig>(
   request: StaticConfigResolveRequest<ConfigSchema, RawConfig>,
 ): Effect.Effect<
-  LoadedConfig<RawConfig> | undefined,
+  RawLoadedConfig<RawConfig> | undefined,
   ConfigResolutionError,
   ConfigService | FileSystem.FileSystem
 > =>

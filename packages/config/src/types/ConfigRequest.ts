@@ -1,10 +1,9 @@
-import type { Config, Schema } from 'effect'
+import type { Config } from 'effect'
 import type { ConfigQuery } from '../ConfigQuery.js'
 import type { EffectSchema } from '@gyomu/schema/entity'
-import type { ConfigResolutionStrategy } from './ConfigResolutionStrategy.js'
-import type { ConfigViolationMode } from './ConfigResolveOption.js'
 import type { StaticResolutionMode } from './ConfigResolutionMode.js'
 import type { ConfigRawConfig } from './ConfigRawConfig.js'
+import type { AppConfig } from './AppConfig.js'
 
 /**
  * Common options shared by all configuration resolution requests.
@@ -47,28 +46,31 @@ interface BaseConfigRequest<ConfigSchema extends EffectSchema, RawConfig extends
   readonly payload?: RawConfig
 
   /**
-   * Strategy used when runtime values conflict with resolved settings.
+   * Custom strategy used to merge two loaded configurations.
    *
-   * Examples:
+   * The resolver applies configurations in order and invokes this function
+   * whenever a new configuration is merged into the current result.
    *
-   * - override
-   * - restrictive
-   * - permissive
+   * If omitted, the default override strategy is used, where values from
+   * `next` replace values from `current`.
+   *
+   * @param current - The configuration accumulated so far.
+   * @param next - The next configuration to merge.
+   * @returns The merged configuration.
    */
-  readonly strategy?: ConfigResolutionStrategy
+  readonly mergeStrategy?: (
+    current: AppConfig<ConfigSchema>,
+    next: Partial<AppConfig<ConfigSchema>>,
+  ) => AppConfig<ConfigSchema>
 
   /**
-   * Behavior applied when a runtime value violates a configured policy.
+   * Default configuration values used when a setting is not provided by any
+   * configuration source.
    *
-   * Examples:
-   *
-   * - ignore
-   * - adjust
-   * - reject
+   * These values are applied before validation and can be overridden by
+   * values loaded from configuration sources.
    */
-  readonly violationMode?: ConfigViolationMode
-
-  readonly defaultConfig: Schema.Schema.Type<ConfigSchema>
+  readonly defaultConfig: AppConfig<ConfigSchema>
 }
 
 /**

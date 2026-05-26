@@ -6,6 +6,7 @@ import type { AppErrorContext } from '@gyomu/schema'
 export type ConfigResolutionPhase =
   | 'path-resolve'
   | 'config-load'
+  | 'config-decode'
   | 'config-merge'
   | 'group-resolve'
   | 'function-resolve'

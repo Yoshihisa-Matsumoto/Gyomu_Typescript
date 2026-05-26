@@ -6,7 +6,7 @@ import type { ConfigService } from '@gyomu/infra'
 import type { EffectSchema } from '@gyomu/schema/entity'
 import type { ConfigLayer } from '../../types/ConfigLayer.js'
 import type { StaticConfigResolveRequest } from '../../types/ConfigResolveRequest.js'
-import type { LoadedConfig } from '../../types/LoadedConfig.js'
+import type { RawLoadedConfig } from '../../types/RawLoadedConfig.js'
 
 /**
  * Resolves a configuration section from a JSON settings file.
@@ -39,7 +39,7 @@ export const resolveJsonConfig = <
   layer: ConfigLayer,
   settingFilePath: string,
 ): Effect.Effect<
-  LoadedConfig<RawConfig> | undefined,
+  RawLoadedConfig<RawConfig> | undefined,
   ConfigResolutionError,
   ConfigService | FileSystem.FileSystem
 > => {
@@ -60,7 +60,7 @@ export const resolveJsonConfig = <
     )
     if (!settingFileExists) return undefined
     const { scope: scope, function: functionName } = request.query
-    let loadedConfig: LoadedConfig<RawConfig> | undefined
+    let loadedConfig: RawLoadedConfig<RawConfig> | undefined
     switch (layer) {
       case 'global':
       case 'user':

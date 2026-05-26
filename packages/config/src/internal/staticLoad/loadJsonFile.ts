@@ -8,7 +8,7 @@ import type { FileSystem } from 'effect'
 import type { EffectSchema } from '@gyomu/schema/entity'
 import type { ConfigLayer } from '../../types/ConfigLayer.js'
 import type { StaticConfigResolveRequest } from '../../types/ConfigResolveRequest.js'
-import type { LoadedConfig } from '../../types/LoadedConfig.js'
+import type { RawLoadedConfig } from '../../types/RawLoadedConfig.js'
 import type { ConfigRawConfig } from '../../types/ConfigRawConfig.js'
 
 export const loadJsonFile = <ConfigSchema extends EffectSchema, RawConfig extends ConfigRawConfig>(
@@ -20,7 +20,7 @@ export const loadJsonFile = <ConfigSchema extends EffectSchema, RawConfig extend
     function?: string
   },
 ): Effect.Effect<
-  LoadedConfig<RawConfig> | undefined,
+  RawLoadedConfig<RawConfig> | undefined,
   ConfigResolutionError,
   ConfigService | FileSystem.FileSystem
 > => {

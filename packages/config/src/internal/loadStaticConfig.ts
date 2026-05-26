@@ -12,7 +12,7 @@ import type { ConfigRootDirectory } from '../services/ConfigRootDirectory.js'
 import type { ConfigLayer } from '../types/ConfigLayer.js'
 import type { ConfigRawConfig } from '../types/ConfigRawConfig.js'
 import type { StaticConfigResolveRequest } from '../types/ConfigResolveRequest.js'
-import type { LoadedConfig } from '../types/LoadedConfig.js'
+import type { RawLoadedConfig } from '../types/RawLoadedConfig.js'
 
 export const loadStaticConfig = <
   ConfigSchema extends EffectSchema,
@@ -20,7 +20,7 @@ export const loadStaticConfig = <
 >(
   request: StaticConfigResolveRequest<ConfigSchema, RawConfig>,
 ): Effect.Effect<
-  ReadonlyArray<LoadedConfig<RawConfig>>,
+  ReadonlyArray<RawLoadedConfig<RawConfig>>,
   ConfigResolutionError,
   ConfigService | FileSystem.FileSystem | ConfigRootDirectory
 > =>
@@ -35,5 +35,7 @@ export const loadStaticConfig = <
         resolveJsonConfig(request, layer, configPath),
     )
     logger.debug(loadedConfigs, 'resolveJsonConfig')
-    return loadedConfigs.filter((config): config is LoadedConfig<RawConfig> => config !== undefined)
+    return loadedConfigs.filter(
+      (config): config is RawLoadedConfig<RawConfig> => config !== undefined,
+    )
   })

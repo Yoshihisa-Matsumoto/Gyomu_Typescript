@@ -1,5 +1,6 @@
-type DeepPartial<T> = {
-  [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K]
-}
+import type { ExtractConfig, NormalizeOptionObject } from '@gyomu/schema'
+import type { Config } from 'effect'
 
-export type ConfigRawConfig = DeepPartial<Record<string, unknown>>
+export type RawConfigType = Config.Config<Record<string, unknown>>
+
+export type ConfigRawConfig = ExtractConfig<NormalizeOptionObject<RawConfigType>>
