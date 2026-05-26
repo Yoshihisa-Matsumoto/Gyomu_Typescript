@@ -3,7 +3,7 @@ import { Effect } from 'effect'
 
 import { convertToSchemaObjectWithEffect } from '@gyomu/schema/entity'
 import { SchemaValidationError } from '@gyomu/schema'
-import { decodeLoadedConfigs } from '../decodeRawLoadedConfig.js'
+import { decodeRawLoadedConfigs } from '../decodeRawLoadedConfig.js'
 
 vi.mock('@gyomu/schema/entity', async () => {
   const actual = await vi.importActual('@gyomu/schema/entity')
@@ -45,9 +45,9 @@ describe('decodeRawLoadedConfig test', () => {
       return (schema: any, config: any) => Effect.succeed({ host: 'localhost' })
     })
 
-    const result = await decodeLoadedConfigs(request, configs).pipe(Effect.runPromise)
+    const result = await decodeRawLoadedConfigs(request, configs).pipe(Effect.runPromise)
 
-    expect(result).toEqual([{ host: 'localhost' }])
+    expect(result).toEqual([{ layer: 'global', source: 'file', values: { host: 'localhost' } }])
 
     expect(mockedConvert).toHaveBeenCalledTimes(1)
   })
@@ -66,9 +66,12 @@ describe('decodeRawLoadedConfig test', () => {
         return (schema: any, config: any) => Effect.succeed({ b: 2 })
       })
 
-    const result = await decodeLoadedConfigs(request, configs).pipe(Effect.runPromise)
+    const result = await decodeRawLoadedConfigs(request, configs).pipe(Effect.runPromise)
 
-    expect(result).toEqual([{ a: 1 }, { b: 2 }])
+    expect(result).toEqual([
+      { layer: 'global', source: 'file', values: { a: 1 } },
+      { layer: 'scope', source: 'file', values: { b: 2 } },
+    ])
   })
 
   it('wraps decode error into ConfigResolutionError', async () => {
@@ -92,7 +95,7 @@ describe('decodeRawLoadedConfig test', () => {
     })
 
     await expect(
-      decodeLoadedConfigs(request, configs).pipe(Effect.runPromise),
+      decodeRawLoadedConfigs(request, configs).pipe(Effect.runPromise),
     ).rejects.toMatchObject({
       _tag: 'ConfigResolutionError',
     })

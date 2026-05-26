@@ -1,7 +1,8 @@
-import { withOptional } from '@gyomu/schema'
+import { logger, withOptional } from '@gyomu/schema'
 import { Effect, FileSystem } from 'effect'
 import { ConfigResolutionError } from '../../errors/ConfigResolutionError.js'
 import { loadJsonFile } from './loadJsonFile.js'
+import type { RawConfigType } from '../../types/ConfigRawConfig.js'
 import type { ConfigService } from '@gyomu/infra'
 import type { EffectSchema } from '@gyomu/schema/entity'
 import type { ConfigLayer } from '../../types/ConfigLayer.js'
@@ -33,7 +34,7 @@ import type { RawLoadedConfig } from '../../types/RawLoadedConfig.js'
  */
 export const resolveJsonConfig = <
   ConfigSchema extends EffectSchema,
-  RawConfig extends Record<string, unknown>,
+  RawConfig extends RawConfigType,
 >(
   request: StaticConfigResolveRequest<ConfigSchema, RawConfig>,
   layer: ConfigLayer,
@@ -70,6 +71,7 @@ export const resolveJsonConfig = <
             scope,
             function: functionName,
           })
+          if (loadedConfig) logger.debug(loadedConfig, 'load Global/User with scope+function')
           if (loadedConfig) return loadedConfig
         }
 

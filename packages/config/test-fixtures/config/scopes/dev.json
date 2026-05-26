@@ -3,7 +3,8 @@
     "host": "dev-invoice",
     "logLevel": "debug",
     "features": {
-      "beta": true
+      "audit": true,
+      "beta": false
     }
   },
 

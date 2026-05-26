@@ -19,7 +19,7 @@ vi.mock('../internal/loadStaticConfig.js', () => ({
 }))
 
 vi.mock('../internal/decodeRawLoadedConfig.js', () => ({
-  decodeLoadedConfigs: vi.fn(),
+  decodeRawLoadedConfigs: vi.fn(),
 }))
 
 vi.mock('../internal/mergeSources.js', () => ({
@@ -28,7 +28,7 @@ vi.mock('../internal/mergeSources.js', () => ({
 
 const mockedEnv = vi.mocked(loadEnvConfigMod.loadEnvConfig)
 const mockedStatic = vi.mocked(loadStaticConfigMod.loadStaticConfig)
-const mockedDecode = vi.mocked(decodeMod.decodeLoadedConfigs)
+const mockedDecode = vi.mocked(decodeMod.decodeRawLoadedConfigs)
 const mockedMerge = vi.mocked(mergeMod.mergeSources)
 
 beforeEach(() => {
@@ -59,7 +59,9 @@ describe('ConfigResolver', () => {
       values: { host: 'localhost' },
     }
 
-    const decoded = [{ host: 'localhost' }]
+    const decoded = [
+      { layer: 'global' as const, source: 'env' as const, values: { host: 'localhost' } },
+    ]
     const merged = { host: 'localhost' }
 
     mockedEnv.mockReturnValue(Effect.succeed(envConfig) as any)
@@ -99,7 +101,9 @@ describe('ConfigResolver', () => {
       ]),
     )
 
-    mockedDecode.mockReturnValue(Effect.succeed([{ a: 1 }]))
+    mockedDecode.mockReturnValue(
+      Effect.succeed([{ layer: 'global' as const, source: 'file' as const, values: { a: 1 } }]),
+    )
 
     mockedMerge.mockReturnValue({ a: 1 })
 

@@ -1,8 +1,8 @@
 import { Option } from 'effect'
 import type { ExcludeOption } from '../types/ExcludeOption.js'
-import type { ConfigRawConfig } from '../types/ConfigRawConfig.js'
+import type { ConfigRawConfig, RawConfigType } from '../types/ConfigRawConfig.js'
 
-export const excludeOptionFromRawConfig = <RawConfig extends ConfigRawConfig>(
+export const excludeOptionFromRawConfig = <RawConfig extends ConfigRawConfig<RawConfigType>>(
   record: RawConfig,
 ): ExcludeOption<RawConfig> => {
   const convert = (value: unknown): unknown => {

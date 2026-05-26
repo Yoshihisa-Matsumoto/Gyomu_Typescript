@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from 'vitest'
 
 import { mergeSources } from '../mergeSources.js'
+import type { EffectSchema } from '@gyomu/schema/entity'
+import type { AppLoadedConfig } from '../../types/AppConfig.js'
 
 describe('mergeSources', () => {
   it('merges using overrideMerge when no strategy is provided', () => {
@@ -8,7 +10,10 @@ describe('mergeSources', () => {
       defaultConfig: { a: 1 },
     } as any
 
-    const configs = [{ b: 2 }, { c: 3 }] as any
+    const configs = [
+      { layer: 'global', source: 'file', values: { b: 2 } },
+      { layer: 'user', source: 'file', values: { c: 3 } },
+    ] as Array<AppLoadedConfig<EffectSchema>>
 
     const result = mergeSources(request, configs)
 
@@ -31,7 +36,10 @@ describe('mergeSources', () => {
       mergeStrategy,
     } as any
 
-    const configs = [{ b: 2 }, { c: 3 }] as any
+    const configs = [
+      { layer: 'global', source: 'file', values: { b: 2 } },
+      { layer: 'user', source: 'file', values: { c: 3 } },
+    ] as Array<AppLoadedConfig<EffectSchema>>
 
     const result = mergeSources(request, configs)
 
@@ -49,8 +57,11 @@ describe('mergeSources', () => {
     const request = {
       defaultConfig: { value: 0 },
     } as any
-
-    const configs = [{ value: 1 }, { value: 2 }, { value: 3 }] as any
+    const configs = [
+      { layer: 'global', source: 'file', values: { value: 1 } },
+      { layer: 'user', source: 'file', values: { value: 2 } },
+      { layer: 'user-scope', source: 'file', values: { value: 3 } },
+    ] as Array<AppLoadedConfig<EffectSchema>>
 
     const result = mergeSources(request, configs)
 

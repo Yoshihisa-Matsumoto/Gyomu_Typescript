@@ -8,9 +8,10 @@ import type { FileSystem } from 'effect'
 import type { StaticConfigResolveRequest } from '../types/ConfigResolveRequest.js'
 import type { RawLoadedConfig } from '../types/RawLoadedConfig.js'
 import type { EffectSchema } from '@gyomu/schema/entity'
-import type { ConfigRawConfig } from '../types/ConfigRawConfig.js'
+import type { ConfigRawConfig, RawConfigType } from '../types/ConfigRawConfig.js'
+import type { ExcludeOption } from '../types/ExcludeOption.js'
 
-export const loadEnvConfig = <ConfigSchema extends EffectSchema, RawConfig extends ConfigRawConfig>(
+export const loadEnvConfig = <ConfigSchema extends EffectSchema, RawConfig extends RawConfigType>(
   request: StaticConfigResolveRequest<ConfigSchema, RawConfig>,
 ): Effect.Effect<
   RawLoadedConfig<RawConfig> | undefined,
@@ -31,7 +32,7 @@ export const loadEnvConfig = <ConfigSchema extends EffectSchema, RawConfig exten
     return {
       layer: 'global' as const,
       source: 'env' as const,
-      values: excludeOptionFromRawConfig(dataBlock),
+      values: excludeOptionFromRawConfig(dataBlock) as ExcludeOption<ConfigRawConfig<RawConfig>>,
     }
   }).pipe(
     Effect.mapError(

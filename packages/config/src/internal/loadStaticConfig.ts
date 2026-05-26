@@ -10,13 +10,13 @@ import type { EffectSchema } from '@gyomu/schema/entity'
 import type { ConfigResolutionError } from '../errors/ConfigResolutionError.js'
 import type { ConfigRootDirectory } from '../services/ConfigRootDirectory.js'
 import type { ConfigLayer } from '../types/ConfigLayer.js'
-import type { ConfigRawConfig } from '../types/ConfigRawConfig.js'
+import type { RawConfigType } from '../types/ConfigRawConfig.js'
 import type { StaticConfigResolveRequest } from '../types/ConfigResolveRequest.js'
 import type { RawLoadedConfig } from '../types/RawLoadedConfig.js'
 
 export const loadStaticConfig = <
   ConfigSchema extends EffectSchema,
-  RawConfig extends ConfigRawConfig,
+  RawConfig extends RawConfigType,
 >(
   request: StaticConfigResolveRequest<ConfigSchema, RawConfig>,
 ): Effect.Effect<

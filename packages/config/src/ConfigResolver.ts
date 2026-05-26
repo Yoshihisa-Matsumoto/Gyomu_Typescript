@@ -1,16 +1,18 @@
 import { Context, Effect, Layer } from 'effect'
+import { logger } from '@gyomu/schema'
 import { loadEnvConfig } from './internal/loadEnvConfig.js'
 import { loadStaticConfig } from './internal/loadStaticConfig.js'
-import { decodeLoadedConfigs } from './internal/decodeRawLoadedConfig.js'
+import { decodeRawLoadedConfigs } from './internal/decodeRawLoadedConfig.js'
 import { mergeSources } from './internal/mergeSources.js'
+import { sortAppLoadedConfigArray } from './internal/layerOrder.js'
+import type { AppLoadedConfig } from './types/AppConfig.js'
 import type { ConfigService } from '@gyomu/infra'
 import type { ConfigResolutionError } from './errors/ConfigResolutionError.js'
 import type { FileSystem, Schema } from 'effect'
 import type { EffectSchema } from '@gyomu/schema/entity'
 import type { ConfigRequest } from './types/ConfigRequest.js'
-import type { ConfigRawConfig } from './types/ConfigRawConfig.js'
+import type { RawConfigType } from './types/ConfigRawConfig.js'
 import type { RawLoadedConfig } from './types/RawLoadedConfig.js'
-import type { ExcludeOption } from './types/ExcludeOption.js'
 import type { ConfigRootDirectory } from './services/ConfigRootDirectory.js'
 
 /**
@@ -52,7 +54,7 @@ export interface ConfigResolverService {
    *
    * @returns A typed configuration value.
    */
-  readonly get: <ConfigSchema extends EffectSchema, RawConfig extends ConfigRawConfig>(
+  readonly get: <ConfigSchema extends EffectSchema, RawConfig extends RawConfigType>(
     request: ConfigRequest<ConfigSchema, RawConfig>,
   ) => Effect.Effect<
     Schema.Schema.Type<ConfigSchema>,
@@ -75,11 +77,13 @@ export const ConfigResolverLive = Layer.effect(
   ConfigResolver,
 
   Effect.succeed({
-    get: <ConfigSchema extends EffectSchema, RawConfig extends ConfigRawConfig>(
+    get: <ConfigSchema extends EffectSchema, RawConfig extends RawConfigType>(
       request: ConfigRequest<ConfigSchema, RawConfig>,
     ) => {
       return Effect.gen(function* () {
         const configs: Array<RawLoadedConfig<RawConfig>> = []
+        logger.debug(request, 'Request')
+        let userPayload: AppLoadedConfig<ConfigSchema> | undefined = undefined
         if (request.resolutionMode != 'runtime') {
           if (request.resolutionMode == 'env') {
             const result = yield* loadEnvConfig(request)
@@ -91,16 +95,21 @@ export const ConfigResolverLive = Layer.effect(
         }
         if (request.resolutionMode == 'runtime' || request.resolutionMode == 'mixed') {
           if (request.payload)
-            configs.push({
+            userPayload = {
               layer: 'user' as const,
               source: 'runtime' as const,
-              values: request.payload as ExcludeOption<RawConfig>,
-            })
+              values: request.payload,
+            }
         }
-        if (configs.length == 0) return request.defaultConfig
+        logger.debug(configs, 'loadStaticConfig')
+        if (configs.length == 0 && !request.payload) return request.defaultConfig
 
-        const appConfigs = yield* decodeLoadedConfigs(request, configs)
-        return mergeSources(request, appConfigs)
+        const appConfigs = yield* decodeRawLoadedConfigs(request, configs)
+        logger.debug(appConfigs, 'App Configs')
+        const sortedAppConfigs = sortAppLoadedConfigArray(appConfigs)
+        if (userPayload) sortedAppConfigs.push(userPayload)
+        logger.debug(sortedAppConfigs, 'Sorted App Configs')
+        return mergeSources(request, sortedAppConfigs)
       })
     },
   }),

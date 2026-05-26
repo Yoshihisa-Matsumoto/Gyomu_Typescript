@@ -28,7 +28,7 @@ describe('toVercelTool', () => {
       { messages: [], toolCallId: '' },
     )
 
-    expect(execute).toHaveBeenCalledWith({
+    expect(execute).toHaveBeenCalledWith(undefined, {
       name: 'x',
     })
   })

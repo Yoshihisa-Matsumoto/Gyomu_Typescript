@@ -1,8 +1,7 @@
-import type { Config } from 'effect'
 import type { ConfigQuery } from '../ConfigQuery.js'
 import type { EffectSchema } from '@gyomu/schema/entity'
 import type { StaticResolutionMode } from './ConfigResolutionMode.js'
-import type { ConfigRawConfig } from './ConfigRawConfig.js'
+import type { RawConfigType } from './ConfigRawConfig.js'
 import type { AppConfig } from './AppConfig.js'
 
 /**
@@ -21,7 +20,7 @@ import type { AppConfig } from './AppConfig.js'
  *
  * @typeParam ConfigSchema - Schema describing the final resolved configuration.
  */
-interface BaseConfigRequest<ConfigSchema extends EffectSchema, RawConfig extends ConfigRawConfig> {
+interface BaseConfigRequest<ConfigSchema extends EffectSchema> {
   /**
    * Schema used to validate and decode the final resolved configuration.
    */
@@ -43,7 +42,7 @@ interface BaseConfigRequest<ConfigSchema extends EffectSchema, RawConfig extends
    * - Workflow parameters
    * - AI generated options
    */
-  readonly payload?: RawConfig
+  readonly payload?: Partial<AppConfig<ConfigSchema>>
 
   /**
    * Custom strategy used to merge two loaded configurations.
@@ -88,8 +87,7 @@ interface BaseConfigRequest<ConfigSchema extends EffectSchema, RawConfig extends
  */
 export interface RuntimeConfigRequest<
   ConfigSchema extends EffectSchema,
-  RawConfig extends ConfigRawConfig,
-> extends BaseConfigRequest<ConfigSchema, RawConfig> {
+> extends BaseConfigRequest<ConfigSchema> {
   /**
    * Use runtime payload only.
    */
@@ -117,11 +115,11 @@ export interface RuntimeConfigRequest<
  */
 export interface StaticConfigRequest<
   ConfigSchema extends EffectSchema,
-  RawConfig extends ConfigRawConfig,
-> extends BaseConfigRequest<ConfigSchema, RawConfig> {
+  RawConfig extends RawConfigType,
+> extends BaseConfigRequest<ConfigSchema> {
   readonly resolutionMode: StaticResolutionMode
 
-  readonly rawConfig: Config.Config<RawConfig>
+  readonly rawConfig: RawConfig
 }
 
 /**
@@ -134,6 +132,6 @@ export interface StaticConfigRequest<
  *
  * @typeParam ConfigSchema - Schema describing the final resolved configuration.
  */
-export type ConfigRequest<ConfigSchema extends EffectSchema, RawConfig extends ConfigRawConfig> =
-  | RuntimeConfigRequest<ConfigSchema, RawConfig>
+export type ConfigRequest<ConfigSchema extends EffectSchema, RawConfig extends RawConfigType> =
+  | RuntimeConfigRequest<ConfigSchema>
   | StaticConfigRequest<ConfigSchema, RawConfig>

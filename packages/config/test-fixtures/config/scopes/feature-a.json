@@ -1,5 +1,6 @@
 {
   "invoice": {
+    "timeout": 12345,
     "features": {
       "featureA": false
     }

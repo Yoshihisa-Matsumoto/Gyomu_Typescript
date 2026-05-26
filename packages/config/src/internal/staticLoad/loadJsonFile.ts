@@ -1,5 +1,5 @@
 import { ConfigService } from '@gyomu/infra'
-import { withOptional } from '@gyomu/schema'
+import { logger, withOptional } from '@gyomu/schema'
 import { Config, Effect } from 'effect'
 import { ConfigResolutionError } from '../../errors/ConfigResolutionError.js'
 import { excludeOptionFromRawConfig } from '../excludeOptionFromRawConfig.js'
@@ -9,9 +9,10 @@ import type { EffectSchema } from '@gyomu/schema/entity'
 import type { ConfigLayer } from '../../types/ConfigLayer.js'
 import type { StaticConfigResolveRequest } from '../../types/ConfigResolveRequest.js'
 import type { RawLoadedConfig } from '../../types/RawLoadedConfig.js'
-import type { ConfigRawConfig } from '../../types/ConfigRawConfig.js'
+import type { ConfigRawConfig, RawConfigType } from '../../types/ConfigRawConfig.js'
+import type { ExcludeOption } from '../../types/ExcludeOption.js'
 
-export const loadJsonFile = <ConfigSchema extends EffectSchema, RawConfig extends ConfigRawConfig>(
+export const loadJsonFile = <ConfigSchema extends EffectSchema, RawConfig extends RawConfigType>(
   request: StaticConfigResolveRequest<ConfigSchema, RawConfig>,
   layer: ConfigLayer,
   settingFilePath: string,
@@ -26,11 +27,12 @@ export const loadJsonFile = <ConfigSchema extends EffectSchema, RawConfig extend
 > => {
   let rawConfig = request.rawConfig
   if (nestingOption.function) {
-    rawConfig = Config.nested(rawConfig, nestingOption.function)
+    rawConfig = Config.nested(rawConfig, nestingOption.function) as RawConfig
     if (nestingOption.scope) {
-      rawConfig = Config.nested(rawConfig, nestingOption.scope)
+      rawConfig = Config.nested(rawConfig, nestingOption.scope) as RawConfig
     }
   }
+  logger.debug(rawConfig, 'Target Config')
   return Effect.gen(function* () {
     const configService = yield* ConfigService
 
@@ -40,13 +42,12 @@ export const loadJsonFile = <ConfigSchema extends EffectSchema, RawConfig extend
         () => Effect.succeed(undefined),
       ),
     )
-
     if (dataBlock == undefined || isAllUndefined(dataBlock)) return undefined
 
     return {
       layer,
       source: 'file' as const,
-      values: excludeOptionFromRawConfig(dataBlock),
+      values: excludeOptionFromRawConfig(dataBlock) as ExcludeOption<ConfigRawConfig<RawConfig>>,
     }
   }).pipe(
     Effect.mapError(

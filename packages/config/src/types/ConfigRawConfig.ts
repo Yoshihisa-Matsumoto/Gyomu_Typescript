@@ -3,4 +3,6 @@ import type { Config } from 'effect'
 
 export type RawConfigType = Config.Config<Record<string, unknown>>
 
-export type ConfigRawConfig = ExtractConfig<NormalizeOptionObject<RawConfigType>>
+export type ConfigRawConfig<ConfigType extends RawConfigType> = ExtractConfig<
+  NormalizeOptionObject<ConfigType>
+>
