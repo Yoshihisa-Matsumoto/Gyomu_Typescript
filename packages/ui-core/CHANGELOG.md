@@ -1,5 +1,12 @@
 # @gyomu/ui-core
 
+## 0.2.4-beta.2
+
+### Patch Changes
+
+- Updated dependencies [0de91a9]
+  - @gyomu/schema@0.2.4-beta.2
+
 ## 0.2.4-beta.1
 
 ### Patch Changes
