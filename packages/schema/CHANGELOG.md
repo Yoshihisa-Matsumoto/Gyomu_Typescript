@@ -1,5 +1,11 @@
 # @gyomu/schema
 
+## 0.2.4-beta.3
+
+### Patch Changes
+
+- add several method to public on @gyomu/infra
+
 ## 0.2.4-beta.2
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @gyomu/ai
 
+## 0.2.4-beta.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @gyomu/schema@0.2.4-beta.3
+  - @gyomu/infra@0.2.4-beta.3
+  - @gyomu/approval-core@0.2.4-beta.3
+
 ## 0.2.4-beta.2
 
 ### Patch Changes
