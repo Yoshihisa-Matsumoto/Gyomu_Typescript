@@ -21,6 +21,7 @@ import type { ConfigRootDirectory } from './services/ConfigRootDirectory.js'
  * The resolver combines configuration from multiple scopes and returns a
  * validated, strongly typed result.
  *
+ * @remarks
  * Resolution order:
  *
  * ```text

@@ -7,7 +7,7 @@
   "files": [],
   "references": [
     { "path": "apps/cli" },
-
+    { "path": "packages/agent" },
     { "path": "packages/ai" },
     { "path": "packages/ai-react" },
     { "Path": "packages/approval-core" },

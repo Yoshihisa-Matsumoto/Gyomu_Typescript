@@ -92,3 +92,6 @@ count.txt
 .vinxi
 __unconfig*
 todos.json
+
+# gyomu ai related
+.gyomu

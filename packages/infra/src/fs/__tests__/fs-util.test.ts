@@ -1,8 +1,10 @@
 import { createReadStream } from 'node:fs'
-import { Effect, FileSystem, Stream } from 'effect'
-import { describe, it } from 'vitest'
+import { Effect, FileSystem, Result, Stream } from 'effect'
+import { describe, expect, it } from 'vitest'
 import { NodeFileSystem, NodeStream } from '@effect/platform-node'
 import { IOError, wrapInfraError } from '@gyomu/schema'
+import { makeRunnerAsReturn } from '@gyomu/schema/effect'
+import { readStringFromFile } from '../fs-utils.js'
 
 describe('FileSystem simple test', () => {
   it('FileSystem test', async () => {
@@ -47,5 +49,18 @@ describe('FileSystem simple test', () => {
     await Effect.runPromise(
       program('tests/test.utf8.csv').pipe(Effect.provide(NodeFileSystem.layer), Effect.scoped),
     )
+  })
+  it('readStringFromFile not existence check', async () => {
+    const program = () =>
+      Effect.gen(function* () {
+        return yield* readStringFromFile('unknownaabc/dakfa.tst')
+      })
+
+    // 実行例
+    const result = await makeRunnerAsReturn(NodeFileSystem.layer)(program())
+    expect(Result.isFailure(result)).toBeTruthy()
+    if (Result.isFailure(result)) {
+      expect(result.failure.reason).toBe('NotFound')
+    }
   })
 })

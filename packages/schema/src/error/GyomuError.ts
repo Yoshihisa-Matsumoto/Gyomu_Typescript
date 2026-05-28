@@ -11,7 +11,13 @@ import type { AppErrorContext } from './BaseError.js'
 export interface GyomuErrorContext extends AppErrorContext {
   readonly operation: string // fetchHoliday
   readonly domain: string // market / file / ai
-  readonly reason: 'invalid_input' | 'not_found' | 'external_failure' | 'unexpected'
+  readonly reason:
+    | 'invalid_input'
+    | 'not_found'
+    | 'external_failure'
+    | 'unexpected'
+    | 'concurrent_modification'
+    | 'out_of_bounds'
   readonly retryable?: boolean
 }
 

@@ -1,5 +1,4 @@
 export const FilterType = {
-  FileName: 'Name',
   CreateTime: 'Create Time',
   LastAccessTime: 'Last Access Time',
   LastModifiedTime: 'Last Modified Time',

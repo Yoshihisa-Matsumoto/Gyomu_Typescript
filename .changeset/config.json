@@ -11,7 +11,8 @@
       "@gyomu/infra",
       "@gyomu/ui",
       "@gyomu/ui-core",
-      "@gyomu/approval-core"
+      "@gyomu/approval-core",
+      "@gyomu/agent"
     ]
   ],
   "linked": [],

@@ -10,7 +10,10 @@ import { makeRunner } from '../runtime.js'
 import { PlatformLayer } from '../layer.js'
 import type { Logger } from '@gyomu/schema'
 
-export const normalizeLogValue = (value: unknown): unknown => {
+export const normalizeLogValue = (value: unknown, index: number = 0): unknown => {
+  index++
+  if (index > 5) return '(limit)'
+
   if (value instanceof Map) {
     return Object.fromEntries(
       [...value.entries()].map(([k, v]) => [String(k), normalizeLogValue(v)]),
@@ -31,7 +34,9 @@ export const normalizeLogValue = (value: unknown): unknown => {
     !(value instanceof Date) &&
     !(value instanceof Error)
   ) {
-    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, normalizeLogValue(v)]))
+    return Object.fromEntries(
+      Object.entries(value).map(([k, v]) => [k, normalizeLogValue(v, index)]),
+    )
   }
 
   return value

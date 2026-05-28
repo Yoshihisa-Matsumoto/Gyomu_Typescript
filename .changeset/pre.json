@@ -10,13 +10,15 @@
     "@gyomu/ui": "0.2.3",
     "@gyomu/ui-core": "0.2.3",
     "@gyomu/approval-core": "0.2.4-beta.0",
-    "@gyomu/config": "0.2.4-beta.0"
+    "@gyomu/config": "0.2.4-beta.0",
+    "@gyomu/agent": "0.2.4-beta.3"
   },
   "changesets": [
     "big-dodos-relate",
     "brave-drinks-study",
     "crisp-socks-own",
     "gentle-fans-rhyme",
-    "shiny-balloons-walk"
+    "shiny-balloons-walk",
+    "sparkly-spoons-argue"
   ]
 }

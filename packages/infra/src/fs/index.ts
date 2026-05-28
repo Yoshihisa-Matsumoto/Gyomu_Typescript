@@ -8,3 +8,4 @@
 export * from './types.js'
 export * from './fs-utils.js'
 export * from './fileInfo.js'
+export * from './FileSearchServiceLayer.js'

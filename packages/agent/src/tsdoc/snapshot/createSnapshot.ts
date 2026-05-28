@@ -1,0 +1,39 @@
+import { Effect } from 'effect'
+
+import { createFileHashEntry } from './createFileHashEntry.js'
+import { enumerateTargetFiles } from './enumerateTargetFiles.js'
+import { GYOMU_VERSION } from './types/ProjectWorkspaceManifest.js'
+import type { FileSystem } from 'effect'
+import type { IOError } from '@gyomu/schema'
+
+import type { FileHashSnapshot } from './types/FileHashSnapshot.js'
+import type { FileSearchService } from '@gyomu/schema/shared/fs'
+
+/**
+ * Creates a snapshot of project source files.
+ *
+ * This process:
+ *
+ * 1. Enumerates target files
+ * 2. Generates raw hashes
+ * 3. Builds snapshot entries
+ *
+ * Phase1 does not generate semantic hashes.
+ *
+ * @param rootDirectory Project root directory
+ */
+export const createSnapshot = (
+  rootDirectory: string,
+): Effect.Effect<FileHashSnapshot, IOError, FileSearchService | FileSystem.FileSystem> =>
+  Effect.gen(function* () {
+    const files = yield* enumerateTargetFiles(rootDirectory)
+
+    const entries = yield* Effect.forEach(files, createFileHashEntry, {
+      concurrency: 'unbounded',
+    })
+
+    return {
+      version: GYOMU_VERSION,
+      files: entries,
+    }
+  })
