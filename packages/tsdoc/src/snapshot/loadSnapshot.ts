@@ -15,7 +15,7 @@ export const loadSnapshot = (
 ): Effect.Effect<FileHashSnapshot | null, IOError, FileSystem.FileSystem> =>
   Effect.gen(function* () {
     const json = yield* readStringFromFile(path).pipe(
-      Effect.catchTag('IOError', (e) => {
+      Effect.catchTag('@gyomu/schema/IOError', (e) => {
         if (e.reason == 'NotFound') {
           return Effect.succeed(null)
         }

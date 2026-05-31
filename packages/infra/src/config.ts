@@ -111,7 +111,10 @@ function wrapConfigError(
     message: options?.file
       ? `Fail to load from file: ${options.file}`
       : `Fail to load from env/.env`,
-    phase: error._tag == 'IOError' || error.cause._tag == 'SourceError' ? 'load' : 'decode',
+    phase:
+      error._tag == '@gyomu/schema/IOError' || error.cause._tag == 'SourceError'
+        ? 'load'
+        : 'decode',
     schema: rawConfig,
   })
 }
