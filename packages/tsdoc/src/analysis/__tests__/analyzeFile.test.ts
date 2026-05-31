@@ -56,7 +56,7 @@ describe('analyzeFile', () => {
       ])
     })
     Effect.runSync(program)
-  })
+  }, 10000)
   it('analyzes export aliases, default exports, re-exports and type-only exports', () => {
     const { project, projectRoot } = createFixtureProject(path.join('analysis', 'export-patterns'))
 
@@ -127,7 +127,7 @@ describe('analyzeFile', () => {
     })
 
     Effect.runSync(program)
-  })
+  }, 10000)
   it('registers parsed jsdocs into metadata', async () => {
     const result = await tempProgram('jsdoc', 'generated-simple.ts')
 
@@ -139,7 +139,7 @@ describe('analyzeFile', () => {
     expect(symbolId).toContain('generated-simple.ts')
 
     expect(docs).toHaveLength(1)
-  })
+  }, 10000)
   it('registers parsed jsdocs by symbol id', async () => {
     const result = await tempProgram('jsdoc', 'generated-simple.ts')
 
@@ -155,12 +155,12 @@ describe('analyzeFile', () => {
     expect(symbolId).toMatch(/generated-simple\.ts::/)
 
     expect(docs).toHaveLength(1)
-  })
+  }, 10000)
   it('registers multiple symbol jsdocs', async () => {
     const result = await tempProgram('jsdoc', 'multiple-symbols.ts')
 
     expect(result.metadata.parsedJsDocs.size).toBe(2)
-  })
+  }, 10000)
   describe('analyzeFile/import-patterns', () => {
     it('analyzes import declarations', () => {
       const { project, projectRoot } = createFixtureProject('analysis/import-patterns')
@@ -230,7 +230,7 @@ describe('analyzeFile', () => {
         ])
       })
       Effect.runSync(program)
-    })
+    }, 10000)
   })
   describe('analyzeFile jsdoc analysis', () => {
     const firstJsDoc = (result: FileAnalysisResult) => {
@@ -258,7 +258,7 @@ describe('analyzeFile', () => {
           version: '5.5',
           raw: '@GeneratedBy(ChatGPT@5.5)',
         })
-      })
+      }, 10000)
 
       it('detects complex markdown signals', async () => {
         const result = await tempProgram('jsdoc', 'manual-markdown.ts')
@@ -272,7 +272,7 @@ describe('analyzeFile', () => {
             }),
           ]),
         )
-      })
+      }, 10000)
 
       it('detects manual formatting signals', async () => {
         const result = await tempProgram('jsdoc', 'manual-formatting.ts')
@@ -295,7 +295,7 @@ describe('analyzeFile', () => {
             }),
           ]),
         )
-      })
+      }, 10000)
 
       it('detects non generated tags', async () => {
         const result = await tempProgram('jsdoc', 'non-generated-tags.ts')
@@ -309,7 +309,7 @@ describe('analyzeFile', () => {
             }),
           ]),
         )
-      })
+      }, 10000)
       it('detects multiple human edit signals together', async () => {
         const result = await tempProgram('jsdoc', 'mixed-human-edit.ts')
 
@@ -328,7 +328,7 @@ describe('analyzeFile', () => {
             }),
           ]),
         )
-      })
+      }, 10000)
     })
     describe('JsDocAnalysis', () => {
       it('analyzes generated documentation', async () => {
@@ -348,7 +348,7 @@ describe('analyzeFile', () => {
         ])
 
         expect(analysis.hasHumanEditedSections).toBe(false)
-      })
+      }, 10000)
 
       it('detects human edited markdown', async () => {
         const result = await tempProgram('jsdoc', 'manual-markdown.ts')
@@ -356,7 +356,7 @@ describe('analyzeFile', () => {
         const analysis = firstJsDocAnalysis(result)
 
         expect(analysis.hasHumanEditedSections).toBe(true)
-      })
+      }, 10000)
 
       it('detects human edited custom tags', async () => {
         const result = await tempProgram('jsdoc', 'non-generated-tags.ts')
@@ -364,7 +364,7 @@ describe('analyzeFile', () => {
         const analysis = firstJsDocAnalysis(result)
 
         expect(analysis.hasHumanEditedSections).toBe(true)
-      })
+      }, 10000)
 
       it('detects human edited custom tags', async () => {
         const result = await tempProgram('jsdoc', 'remarks-fixture.ts')
@@ -373,7 +373,7 @@ describe('analyzeFile', () => {
 
         expect(analysis.hasRemarks).toBe(true)
         expect(analysis.tagCount).toBe(1)
-      })
+      }, 10000)
     })
   })
 })

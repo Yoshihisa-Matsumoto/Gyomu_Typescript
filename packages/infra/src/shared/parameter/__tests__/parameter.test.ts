@@ -184,7 +184,7 @@ test('no defaultRow test', async () => {
       return yield* parameter.getValue(itemKey, undefined, parseYmdToDate(targetYmd))
     })
   await expect(testRetrieveRunner(programValue('1980-04-01'))).rejects.toMatchObject({
-    _tag: 'ValueError',
+    _tag: '@gyomu/schema/DBError',
     message: 'No default value found',
   })
 })
@@ -216,7 +216,7 @@ test('multiple defaultRows test', async () => {
     return yield* parameter.getValue(itemKey)
   })
   await expect(testRetrieveRunner(programValue)).rejects.toMatchObject({
-    _tag: 'ValueError',
+    _tag: '@gyomu/schema/DBError',
     message:
       'Multiple default values found. Please ensure there is only one default value without itemFromDate.',
   })

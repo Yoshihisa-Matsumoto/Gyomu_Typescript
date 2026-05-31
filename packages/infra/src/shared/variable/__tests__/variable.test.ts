@@ -68,7 +68,7 @@ describe('VariableTranslatorService', () => {
         expect(result).toEqual(expected)
       })
       await expect(testRunner(program)).rejects.toMatchObject({
-        _tag: 'ValueError',
+        _tag: '@gyomu/schema/ValueError',
       })
     })
     test('repeated date keyword', async () => {
@@ -81,7 +81,7 @@ describe('VariableTranslatorService', () => {
         expect(result).toEqual(expected)
       })
       await expect(testRunner(program)).rejects.toMatchObject({
-        _tag: 'ValueError',
+        _tag: '@gyomu/schema/ValueError',
       })
     })
     test('no format', async () => {
@@ -94,7 +94,7 @@ describe('VariableTranslatorService', () => {
         expect(result).toEqual(expected)
       })
       await expect(testRunner(program)).rejects.toMatchObject({
-        _tag: 'ValueError',
+        _tag: '@gyomu/schema/ValueError',
       })
     })
     test('invalid market', async () => {
@@ -107,7 +107,7 @@ describe('VariableTranslatorService', () => {
         expect(result).toEqual(expected)
       })
       await expect(testRunner(program)).rejects.toMatchObject({
-        _tag: 'ValueError',
+        _tag: '@gyomu/schema/ValueError',
       })
     })
   })
