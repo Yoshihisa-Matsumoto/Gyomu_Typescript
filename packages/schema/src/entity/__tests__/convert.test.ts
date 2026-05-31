@@ -50,7 +50,7 @@ describe('convertToSchemaObjectWithEffect', () => {
     const effect = convert(UserSchema, { id: 'invalid', name: 'Bob' })
 
     await expect(Effect.runPromise(effect)).rejects.toMatchObject({
-      _tag: 'SchemaErrorContext',
+      _tag: '@gyomu/schema/SchemaErrorContext',
     })
   })
 })
@@ -74,7 +74,7 @@ describe('convertFromSchemaObjectWithEffect', () => {
     const effect = convert(UserSchema, invalidInput)
 
     await expect(Effect.runPromise(effect)).rejects.toMatchObject({
-      _tag: 'SchemaErrorContext',
+      _tag: '@gyomu/schema/SchemaErrorContext',
     })
   })
 })
