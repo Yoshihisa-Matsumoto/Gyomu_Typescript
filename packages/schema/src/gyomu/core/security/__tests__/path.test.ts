@@ -74,5 +74,13 @@ describe('resolvePathWithinBase', () => {
 
       expect(Result.isFailure(result)).toBe(true)
     })
+    it.each(['/etc/passwd', 'C:/Windows/System32', 'C:\\Windows\\System32'])(
+      'blocks absolute path: %s',
+      (input) => {
+        const result = run(resolvePathWithinBase(basePath, input))
+
+        expect(Result.isFailure(result)).toBe(true)
+      },
+    )
   })
 })

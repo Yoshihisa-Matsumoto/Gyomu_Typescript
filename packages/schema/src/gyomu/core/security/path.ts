@@ -1,4 +1,4 @@
-import { isAbsolute, relative, resolve } from 'node:path'
+import { isAbsolute, relative, resolve, win32 } from 'node:path'
 import { GyomuError } from '../../../error/GyomuError.js'
 import { fromSync } from '../../../effect/utility.js'
 import type { Effect } from 'effect'
@@ -48,6 +48,17 @@ export const resolvePathWithinBase = (
     reason: 'out_of_bounds' as const,
     message: 'targetPath escapes basePath',
   }))(() => {
+    const isAbsolutePath = isAbsolute(targetPath) || win32.isAbsolute(targetPath)
+    if (isAbsolutePath) {
+      throw new GyomuError({
+        cause: undefined,
+        domain: 'path.security',
+        operation: 'resolveWithinBase',
+        reason: 'out_of_bounds' as const,
+        message: 'targetPath need to be relative path',
+      })
+    }
+
     const baseResolved = resolve(basePath)
     const targetResolved = resolve(baseResolved, targetPath)
 
