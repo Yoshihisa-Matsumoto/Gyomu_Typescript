@@ -61,7 +61,7 @@ it('analyzeProjectChange integration test', async () => {
   const program = Effect.gen(function* () {
     const rootPath = yield* prepareTestWorkspaceForInit()
 
-    const result = yield* analyzeProjectChanges({ repoRoot: rootPath, projectPath: rootPath })
+    const result = yield* analyzeProjectChanges({ repoRoot: rootPath, projectPath: '.' })
     logger.debug(result, 'analyzeProjectChange initialized')
     expect(result.previousSnapshot).toBeNull()
     const initialStatus = result.currentSnapshot
@@ -135,7 +135,7 @@ it('analyzeProjectChange integration concurrency test', async () => {
   const program = Effect.gen(function* () {
     const rootPath = yield* prepareTestWorkspaceForInit()
 
-    const result = yield* analyzeProjectChanges({ repoRoot: rootPath, projectPath: rootPath })
+    const result = yield* analyzeProjectChanges({ repoRoot: rootPath, projectPath: '.' })
     logger.debug(result, 'analyzeProjectChange initialized')
     expect(result.previousSnapshot).toBeNull()
     const initialStatus = result.currentSnapshot

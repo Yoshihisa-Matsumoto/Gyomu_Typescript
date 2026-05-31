@@ -30,6 +30,7 @@ import { loadSnapshot } from '../loadSnapshot.js'
 import { createSnapshot } from '../createSnapshot.js'
 import { diffSnapshot } from '../diffSnapshot.js'
 import { GYOMU_VERSION } from '../types/ProjectWorkspaceManifest.js'
+import { toProjectAbsolutePath } from '../../shared/path/toProjectAbsolutePath.js'
 import type { FileHashSnapshot } from '../types/FileHashSnapshot.js'
 
 const run = <A, E>(eff: Effect.Effect<A, E, FileSystem.FileSystem | FileSearchService>) =>
@@ -109,7 +110,7 @@ describe('analyzeProjectChanges', () => {
 
     run(analyzeProjectChanges({ repoRoot, projectPath }))
 
-    expect(createSnapshot).toHaveBeenCalledWith(projectPath)
+    expect(createSnapshot).toHaveBeenCalledWith(toProjectAbsolutePath(projectPath, repoRoot))
   })
 
   it('propagates workspace data correctly', () => {
