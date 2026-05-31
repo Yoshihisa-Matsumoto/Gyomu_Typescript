@@ -1,5 +1,3 @@
-import path from 'node:path'
-
 /**
  * Converts an absolute file path into a project-relative path.
  *
@@ -23,6 +21,16 @@ import path from 'node:path'
  * This path format is intended to be used as the canonical project-internal
  * path representation.
  */
-export const toProjectRelativePath = (filePath: string, projectRoot: string): string => {
-  return path.relative(projectRoot, filePath).replaceAll('\\', '/')
+export const toProjectRelativePath = (filePath: string, basePath: string): string => {
+  const normalize = (p: string) => p.replace(/\\/g, '/').replace(/^[a-zA-Z]:/, '') // C: を除去
+
+  const normalizedFile = normalize(filePath)
+  const normalizedBase = normalize(basePath)
+
+  // base削除
+  const relative = normalizedFile.startsWith(normalizedBase)
+    ? normalizedFile.slice(normalizedBase.length)
+    : normalizedFile
+
+  return relative.replace(/^\/+/, '') // 先頭スラッシュ除去
 }
