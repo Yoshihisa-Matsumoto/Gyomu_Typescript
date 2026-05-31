@@ -19,4 +19,6 @@ interface ValueErrorShape extends AppErrorContext {
 //     super(ctx);
 //   }
 // }
-export class ValueError extends withErrorTraits(Data.TaggedError('ValueError')<ValueErrorShape>) {}
+export class ValueError extends withErrorTraits(
+  Data.TaggedError('@gyomu/schema/ValueError')<ValueErrorShape>,
+) {}

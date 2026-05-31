@@ -13,6 +13,7 @@
     { "Path": "packages/approval-core" },
     { "path": "packages/schema" },
     { "path": "packages/infra" },
+    { "path": "packages/tsdoc" },
     { "path": "packages/ui" },
     { "path": "packages/ui-core" }
   ]

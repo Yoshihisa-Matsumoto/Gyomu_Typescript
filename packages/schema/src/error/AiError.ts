@@ -18,11 +18,14 @@ export interface AIErrorContext extends AppErrorContext {
   readonly phase: AIPhase
   readonly retryable: boolean
 }
-export class AiError extends withErrorTraits(Data.TaggedError('AiError')<AIErrorContext>, {
-  isRetryable: (ctx) => {
-    return ctx.retryable
+export class AiError extends withErrorTraits(
+  Data.TaggedError('@gyomu/schema/AiError')<AIErrorContext>,
+  {
+    isRetryable: (ctx) => {
+      return ctx.retryable
+    },
   },
-}) {}
+) {}
 
 export const isRetryableAiError = (e: unknown): boolean => {
   if (!(e instanceof Error)) return false

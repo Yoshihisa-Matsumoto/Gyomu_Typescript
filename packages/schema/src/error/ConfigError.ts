@@ -11,5 +11,5 @@ export interface ConfigErrorContext extends AppErrorContext {
   readonly phase: ConfigPhase
 }
 export class ConfigError extends withErrorTraits(
-  Data.TaggedError('ConfigError')<ConfigErrorContext>,
+  Data.TaggedError('@gyomu/schema/ConfigError')<ConfigErrorContext>,
 ) {}

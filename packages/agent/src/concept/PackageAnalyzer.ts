@@ -3,7 +3,7 @@ import { GyomuError, wrapInfraError } from '@gyomu/schema'
 import { Effect, FileSystem } from 'effect'
 import { readStringFromFile } from '@gyomu/infra/fs'
 import { fromSync } from '@gyomu/schema/effect'
-import { resolveSourceEntry } from './resolveSourceEntry.js'
+import { mapOutputPathToSourcePath } from '@gyomu/tsdoc'
 
 export const parseProjectExports = (projectPath: string) => {
   return Effect.gen(function* () {
@@ -102,7 +102,9 @@ export const parseProjectExports = (projectPath: string) => {
       const exportPathArray: Array<string> = []
       for (const [entry, item] of Object.entries(exports)) {
         if (typeof item == 'string') {
-          exportPathArray.push(resolveSourceEntry(item, { rootDir, outDir, cwd: projectPath }))
+          exportPathArray.push(
+            mapOutputPathToSourcePath(item, { rootDir, outDir, cwd: projectPath }),
+          )
         } else {
           const entries = item as { [entryType: string]: string }
           const importPath = entries.import
@@ -116,7 +118,7 @@ export const parseProjectExports = (projectPath: string) => {
             })
           }
           exportPathArray.push(
-            resolveSourceEntry(importPath, { rootDir, outDir, cwd: projectPath }),
+            mapOutputPathToSourcePath(importPath, { rootDir, outDir, cwd: projectPath }),
           )
         }
       }

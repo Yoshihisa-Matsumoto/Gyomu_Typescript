@@ -37,11 +37,14 @@ export const mapGyomuReason = (e: unknown): GyomuErrorContext['reason'] => {
 
   return 'unexpected'
 }
-export class GyomuError extends withErrorTraits(Data.TaggedError('GyomuError')<GyomuErrorContext>, {
-  isRetryable: (ctx) => {
-    return ctx.retryable ?? false
+export class GyomuError extends withErrorTraits(
+  Data.TaggedError('@gyomu/schema/GyomuError')<GyomuErrorContext>,
+  {
+    isRetryable: (ctx) => {
+      return ctx.retryable ?? false
+    },
   },
-}) {}
+) {}
 
 export const gyomuExternalFailure = (operation: string, domain: string) => (e: unknown) =>
   new GyomuError({

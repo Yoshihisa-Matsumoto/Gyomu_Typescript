@@ -22,7 +22,7 @@ export const isRetryableNetworkError = (e: unknown): boolean => {
   )
 }
 export class NetworkError extends withErrorTraits(
-  Data.TaggedError('NetworkError')<NetworkErrorContext>,
+  Data.TaggedError('@gyomu/schema/NetworkError')<NetworkErrorContext>,
   {
     isRetryable: (ctx) => {
       return ctx.retryable

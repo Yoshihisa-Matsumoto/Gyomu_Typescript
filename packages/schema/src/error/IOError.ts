@@ -15,11 +15,14 @@ export interface IOErrorContext extends AppErrorContext {
   readonly retryable?: boolean
   readonly reason?: string
 }
-export class IOError extends withErrorTraits(Data.TaggedError('IOError')<IOErrorContext>, {
-  isRetryable: (ctx) => {
-    return ctx.retryable ?? false
+export class IOError extends withErrorTraits(
+  Data.TaggedError('@gyomu/schema/IOError')<IOErrorContext>,
+  {
+    isRetryable: (ctx) => {
+      return ctx.retryable ?? false
+    },
   },
-}) {}
+) {}
 
 export function wrapIOError(
   error: unknown,
