@@ -1,5 +1,6 @@
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { randomUUID } from 'node:crypto'
 import { FileSearchServiceLayer, copyFolder, emptyDir } from '@gyomu/infra/fs'
 import { Effect, Result } from 'effect'
 import { expect, it } from 'vitest'
@@ -12,26 +13,53 @@ import { GYOMU_VERSION } from '../types/ProjectWorkspaceManifest.js'
 
 const TestCategory = 'analyze-project-changes'
 
-const getTempDirectory = (initializeRootPath: boolean = false) => {
-  const targetDirectory = join(tmpdir(), TestCategory)
-  const srcDirectory = join(targetDirectory, 'src')
-  return emptyDir(initializeRootPath ? targetDirectory : srcDirectory).pipe(
-    Effect.map(() => targetDirectory),
-  )
-}
-const prepareTestWorkspace = (mode: 'initialized' | 'updated' | 'added' | 'deleted') => {
+const getTempDirectoryForInit = () => {
   return Effect.gen(function* () {
-    const rootPath = yield* getTempDirectory(mode == 'initialized')
-    const srcFolder = join('./test-fixtures', TestCategory, mode)
+    const base = join(tmpdir(), TestCategory)
+
+    // ★ここがポイント：毎回ユニークディレクトリ
+    const id = randomUUID()
+    const targetDirectory = join(base, id)
+
+    const rootDir = targetDirectory
+
+    yield* emptyDir(rootDir)
+
+    return targetDirectory
+  })
+}
+
+const getTempDirectoryForOther = (targetDirectory: string) => {
+  return Effect.gen(function* () {
+    const rootDir = join(targetDirectory, 'src')
+
+    yield* emptyDir(rootDir)
+
+    return targetDirectory
+  })
+}
+const prepareTestWorkspaceForInit = () => {
+  return Effect.gen(function* () {
+    const rootPath = yield* getTempDirectoryForInit()
+    const srcFolder = join('./test-fixtures', TestCategory, 'initialized')
     yield* copyFolder(srcFolder, rootPath, { overwrite: true })
 
     return rootPath
   })
 }
+const prepareTestWorkspaceForOther = (mode: 'updated' | 'added' | 'deleted', rootPath: string) => {
+  return Effect.gen(function* () {
+    const targetPath = yield* getTempDirectoryForOther(rootPath)
+    const srcFolder = join('./test-fixtures', TestCategory, mode)
+    yield* copyFolder(srcFolder, rootPath, { overwrite: true })
+
+    return targetPath
+  })
+}
 
 it('analyzeProjectChange integration test', async () => {
   const program = Effect.gen(function* () {
-    const rootPath = yield* prepareTestWorkspace('initialized')
+    const rootPath = yield* prepareTestWorkspaceForInit()
 
     const result = yield* analyzeProjectChanges({ repoRoot: rootPath, projectPath: rootPath })
     logger.debug(result, 'analyzeProjectChange initialized')
@@ -46,7 +74,7 @@ it('analyzeProjectChange integration test', async () => {
       repoRoot: rootPath,
     })
 
-    yield* prepareTestWorkspace('updated')
+    yield* prepareTestWorkspaceForOther('updated', rootPath)
     const resultUpdated = yield* analyzeProjectChanges({
       repoRoot: rootPath,
       projectPath: rootPath,
@@ -64,7 +92,7 @@ it('analyzeProjectChange integration test', async () => {
       repoRoot: rootPath,
     })
 
-    yield* prepareTestWorkspace('added')
+    yield* prepareTestWorkspaceForOther('added', rootPath)
     const resultAdded = yield* analyzeProjectChanges({
       repoRoot: rootPath,
       projectPath: rootPath,
@@ -82,7 +110,7 @@ it('analyzeProjectChange integration test', async () => {
       repoRoot: rootPath,
     })
 
-    yield* prepareTestWorkspace('deleted')
+    yield* prepareTestWorkspaceForOther('deleted', rootPath)
     const resultDeleted = yield* analyzeProjectChanges({
       repoRoot: rootPath,
       projectPath: rootPath,
@@ -105,7 +133,7 @@ it('analyzeProjectChange integration test', async () => {
 })
 it('analyzeProjectChange integration concurrency test', async () => {
   const program = Effect.gen(function* () {
-    const rootPath = yield* prepareTestWorkspace('initialized')
+    const rootPath = yield* prepareTestWorkspaceForInit()
 
     const result = yield* analyzeProjectChanges({ repoRoot: rootPath, projectPath: rootPath })
     logger.debug(result, 'analyzeProjectChange initialized')
