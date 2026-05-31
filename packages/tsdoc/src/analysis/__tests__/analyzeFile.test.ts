@@ -5,8 +5,18 @@ import { analyzeFile } from '../analyzeFile.js'
 import { createFixtureProject } from './createFixtureProject.js'
 import type { FileAnalysisResult } from '../file/FileAnalysisResult.js'
 
-const tempProgram = (fixtureRootPath: string, sourceFile: string) => {
-  const { project, projectRoot } = createFixtureProject(path.join('analysis', fixtureRootPath))
+const timeout = 20000
+
+const basicExportFixture = createFixtureProject(path.join('analysis', 'basic-export'))
+
+const exportPatternsFixture = createFixtureProject(path.join('analysis', 'export-patterns'))
+
+const jsDocFixture = createFixtureProject(path.join('analysis', 'jsdoc'))
+
+const importPatternsFixture = createFixtureProject(path.join('analysis', 'import-patterns'))
+
+const tempJsdocProgram = (sourceFile: string) => {
+  const { project, projectRoot } = jsDocFixture
 
   const filePath = path.join(projectRoot, path.join('src', sourceFile))
   return Effect.runSync(
@@ -17,220 +27,240 @@ const tempProgram = (fixtureRootPath: string, sourceFile: string) => {
 }
 
 describe('analyzeFile', () => {
-  it('extracts exported symbols from basic-export fixture', () => {
-    const { project, projectRoot } = createFixtureProject(path.join('analysis', 'basic-export'))
+  it(
+    'extracts exported symbols from basic-export fixture',
+    () => {
+      const { project, projectRoot } = basicExportFixture
 
-    const filePath = path.join(projectRoot, path.join('src', 'index.ts'))
-    const program = Effect.gen(function* () {
-      const result = yield* analyzeFile({ project, projectRoot }, filePath)
-
-      expect(result.analysis.exports).toHaveLength(5)
-
-      console.log(JSON.stringify(result, null, 2))
-      expect(
-        result.analysis.exports.map((x) => ({
-          exportedName: x.exportedName,
-          kind: x.symbol.kind,
-        })),
-      ).toEqual([
-        {
-          exportedName: 'add',
-          kind: 'function',
-        },
-        {
-          exportedName: 'User',
-          kind: 'interface',
-        },
-        {
-          exportedName: 'UserService',
-          kind: 'class',
-        },
-        {
-          exportedName: 'UserId',
-          kind: 'type',
-        },
-        {
-          exportedName: 'VERSION',
-          kind: 'const',
-        },
-      ])
-    })
-    Effect.runSync(program)
-  }, 10000)
-  it('analyzes export aliases, default exports, re-exports and type-only exports', () => {
-    const { project, projectRoot } = createFixtureProject(path.join('analysis', 'export-patterns'))
-
-    const filePath = path.join(projectRoot, 'src/index.ts')
-
-    const program = Effect.gen(function* () {
-      const result = yield* analyzeFile({ project, projectRoot }, filePath)
-
-      console.log(JSON.stringify(result, null, 2))
-
-      expect(
-        result.analysis.exports.map((x) => ({
-          exportedName: x.exportedName,
-          kind: x.symbol.kind,
-          symbolName: x.symbol.name,
-          isDefault: x.isDefault,
-          isTypeOnly: x.isTypeOnly,
-        })),
-      ).toEqual([
-        {
-          exportedName: 'value',
-          symbolName: 'internalValue',
-          kind: 'const',
-          isDefault: false,
-          isTypeOnly: false,
-        },
-
-        {
-          exportedName: 'default',
-          symbolName: 'UserService',
-          kind: 'class',
-          isDefault: true,
-          isTypeOnly: false,
-        },
-
-        {
-          exportedName: 'User',
-          symbolName: 'User',
-          kind: 'interface',
-          isDefault: false,
-          isTypeOnly: true,
-        },
-
-        {
-          exportedName: 'foo',
-          symbolName: 'foo',
-          kind: 'const',
-          isDefault: false,
-          isTypeOnly: false,
-        },
-
-        {
-          exportedName: 'foo2',
-          symbolName: 'foo2',
-          kind: 'const',
-          isDefault: false,
-          isTypeOnly: false,
-        },
-
-        {
-          exportedName: 'UserRole',
-          symbolName: 'UserRole',
-          kind: 'enum',
-          isDefault: false,
-          isTypeOnly: false,
-        },
-      ])
-    })
-
-    Effect.runSync(program)
-  }, 10000)
-  it('registers parsed jsdocs into metadata', async () => {
-    const result = await tempProgram('jsdoc', 'generated-simple.ts')
-
-    expect(result.metadata.parsedJsDocs.size).toBe(1)
-
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const [symbolId, docs] = [...result.metadata.parsedJsDocs.entries()][0]!
-
-    expect(symbolId).toContain('generated-simple.ts')
-
-    expect(docs).toHaveLength(1)
-  }, 10000)
-  it('registers parsed jsdocs by symbol id', async () => {
-    const result = await tempProgram('jsdoc', 'generated-simple.ts')
-
-    expect(result.metadata.parsedJsDocs.size).toBe(1)
-
-    const entries = [...result.metadata.parsedJsDocs.entries()]
-
-    expect(entries).toHaveLength(1)
-
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const [symbolId, docs] = entries[0]!
-
-    expect(symbolId).toMatch(/generated-simple\.ts::/)
-
-    expect(docs).toHaveLength(1)
-  }, 10000)
-  it('registers multiple symbol jsdocs', async () => {
-    const result = await tempProgram('jsdoc', 'multiple-symbols.ts')
-
-    expect(result.metadata.parsedJsDocs.size).toBe(2)
-  }, 10000)
-  describe('analyzeFile/import-patterns', () => {
-    it('analyzes import declarations', () => {
-      const { project, projectRoot } = createFixtureProject('analysis/import-patterns')
-
-      const filePath = path.join(projectRoot, 'src/index.ts')
+      const filePath = path.join(projectRoot, path.join('src', 'index.ts'))
       const program = Effect.gen(function* () {
         const result = yield* analyzeFile({ project, projectRoot }, filePath)
 
-        console.log(JSON.stringify(result, null, 2))
-        expect(result.analysis.imports).toEqual([
+        expect(result.analysis.exports).toHaveLength(5)
+
+        expect(
+          result.analysis.exports.map((x) => ({
+            exportedName: x.exportedName,
+            kind: x.symbol.kind,
+          })),
+        ).toEqual([
           {
-            moduleSpecifier: './default-value.js',
-
-            defaultImport: 'DefaultValue',
-
-            namedImports: [],
-          },
-
-          {
-            moduleSpecifier: './types.js',
-
-            namedImports: [
-              {
-                importedName: 'VERSION',
-
-                localName: 'VERSION',
-
-                isTypeOnly: false,
-              },
-              {
-                importedName: 'createUser',
-
-                localName: 'buildUser',
-
-                isTypeOnly: false,
-              },
-            ],
-          },
-
-          {
-            moduleSpecifier: './types.js',
-
-            namespaceImport: 'Types',
-
-            namedImports: [],
+            exportedName: 'add',
+            kind: 'function',
           },
           {
-            moduleSpecifier: './types.js',
-
-            namedImports: [
-              {
-                importedName: 'User',
-
-                localName: 'User',
-
-                isTypeOnly: true,
-              },
-              {
-                importedName: 'UserId',
-
-                localName: 'UserId',
-
-                isTypeOnly: true,
-              },
-            ],
+            exportedName: 'User',
+            kind: 'interface',
+          },
+          {
+            exportedName: 'UserService',
+            kind: 'class',
+          },
+          {
+            exportedName: 'UserId',
+            kind: 'type',
+          },
+          {
+            exportedName: 'VERSION',
+            kind: 'const',
           },
         ])
       })
       Effect.runSync(program)
-    }, 10000)
+    },
+    timeout,
+  )
+  it(
+    'analyzes export aliases, default exports, re-exports and type-only exports',
+    () => {
+      const { project, projectRoot } = exportPatternsFixture
+
+      const filePath = path.join(projectRoot, 'src/index.ts')
+
+      const program = Effect.gen(function* () {
+        const result = yield* analyzeFile({ project, projectRoot }, filePath)
+
+        expect(
+          result.analysis.exports.map((x) => ({
+            exportedName: x.exportedName,
+            kind: x.symbol.kind,
+            symbolName: x.symbol.name,
+            isDefault: x.isDefault,
+            isTypeOnly: x.isTypeOnly,
+          })),
+        ).toEqual([
+          {
+            exportedName: 'value',
+            symbolName: 'internalValue',
+            kind: 'const',
+            isDefault: false,
+            isTypeOnly: false,
+          },
+
+          {
+            exportedName: 'default',
+            symbolName: 'UserService',
+            kind: 'class',
+            isDefault: true,
+            isTypeOnly: false,
+          },
+
+          {
+            exportedName: 'User',
+            symbolName: 'User',
+            kind: 'interface',
+            isDefault: false,
+            isTypeOnly: true,
+          },
+
+          {
+            exportedName: 'foo',
+            symbolName: 'foo',
+            kind: 'const',
+            isDefault: false,
+            isTypeOnly: false,
+          },
+
+          {
+            exportedName: 'foo2',
+            symbolName: 'foo2',
+            kind: 'const',
+            isDefault: false,
+            isTypeOnly: false,
+          },
+
+          {
+            exportedName: 'UserRole',
+            symbolName: 'UserRole',
+            kind: 'enum',
+            isDefault: false,
+            isTypeOnly: false,
+          },
+        ])
+      })
+
+      Effect.runSync(program)
+    },
+    timeout,
+  )
+  it(
+    'registers parsed jsdocs into metadata',
+    async () => {
+      const result = await tempJsdocProgram('generated-simple.ts')
+
+      expect(result.metadata.parsedJsDocs.size).toBe(1)
+
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      const [symbolId, docs] = [...result.metadata.parsedJsDocs.entries()][0]!
+
+      expect(symbolId).toContain('generated-simple.ts')
+
+      expect(docs).toHaveLength(1)
+    },
+    timeout,
+  )
+  it(
+    'registers parsed jsdocs by symbol id',
+    async () => {
+      const result = await tempJsdocProgram('generated-simple.ts')
+
+      expect(result.metadata.parsedJsDocs.size).toBe(1)
+
+      const entries = [...result.metadata.parsedJsDocs.entries()]
+
+      expect(entries).toHaveLength(1)
+
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      const [symbolId, docs] = entries[0]!
+
+      expect(symbolId).toMatch(/generated-simple\.ts::/)
+
+      expect(docs).toHaveLength(1)
+    },
+    timeout,
+  )
+  it(
+    'registers multiple symbol jsdocs',
+    async () => {
+      const result = await tempJsdocProgram('multiple-symbols.ts')
+
+      expect(result.metadata.parsedJsDocs.size).toBe(2)
+    },
+    timeout,
+  )
+  describe('analyzeFile/import-patterns', () => {
+    it(
+      'analyzes import declarations',
+      () => {
+        const { project, projectRoot } = importPatternsFixture
+
+        const filePath = path.join(projectRoot, 'src/index.ts')
+        const program = Effect.gen(function* () {
+          const result = yield* analyzeFile({ project, projectRoot }, filePath)
+
+          expect(result.analysis.imports).toEqual([
+            {
+              moduleSpecifier: './default-value.js',
+
+              defaultImport: 'DefaultValue',
+
+              namedImports: [],
+            },
+
+            {
+              moduleSpecifier: './types.js',
+
+              namedImports: [
+                {
+                  importedName: 'VERSION',
+
+                  localName: 'VERSION',
+
+                  isTypeOnly: false,
+                },
+                {
+                  importedName: 'createUser',
+
+                  localName: 'buildUser',
+
+                  isTypeOnly: false,
+                },
+              ],
+            },
+
+            {
+              moduleSpecifier: './types.js',
+
+              namespaceImport: 'Types',
+
+              namedImports: [],
+            },
+            {
+              moduleSpecifier: './types.js',
+
+              namedImports: [
+                {
+                  importedName: 'User',
+
+                  localName: 'User',
+
+                  isTypeOnly: true,
+                },
+                {
+                  importedName: 'UserId',
+
+                  localName: 'UserId',
+
+                  isTypeOnly: true,
+                },
+              ],
+            },
+          ])
+        })
+        Effect.runSync(program)
+      },
+      timeout,
+    )
   })
   describe('analyzeFile jsdoc analysis', () => {
     const firstJsDoc = (result: FileAnalysisResult) => {
@@ -248,132 +278,168 @@ describe('analyzeFile', () => {
       return analysis!
     }
     describe('ParsedJsDoc', () => {
-      it('detects generated marker', async () => {
-        const result = await tempProgram('jsdoc', 'generated-simple.ts')
+      it(
+        'detects generated marker',
+        async () => {
+          const result = await tempJsdocProgram('generated-simple.ts')
 
-        const jsDoc = firstJsDoc(result)
+          const jsDoc = firstJsDoc(result)
 
-        expect(jsDoc.generator).toEqual({
-          tool: 'ChatGPT',
-          version: '5.5',
-          raw: '@GeneratedBy(ChatGPT@5.5)',
-        })
-      }, 10000)
-
-      it('detects complex markdown signals', async () => {
-        const result = await tempProgram('jsdoc', 'manual-markdown.ts')
-
-        const jsDoc = firstJsDoc(result)
-
-        expect(jsDoc.humanEditSignals).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({
-              type: 'complex-markdown',
-            }),
-          ]),
-        )
-      }, 10000)
-
-      it('detects manual formatting signals', async () => {
-        const result = await tempProgram('jsdoc', 'manual-formatting.ts')
-
-        const jsDoc = firstJsDoc(result)
-
-        expect(jsDoc.humanEditSignals).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({
-              type: 'manual-format',
-              details: expect.objectContaining({
-                pattern: 'aligned space',
-              }),
-            }),
-            expect.objectContaining({
-              type: 'manual-format',
-              details: expect.objectContaining({
-                pattern: 'ascii-art',
-              }),
-            }),
-          ]),
-        )
-      }, 10000)
-
-      it('detects non generated tags', async () => {
-        const result = await tempProgram('jsdoc', 'non-generated-tags.ts')
-
-        const jsDoc = firstJsDoc(result)
-
-        expect(jsDoc.humanEditSignals).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({
-              type: 'non-generated-tag',
-            }),
-          ]),
-        )
-      }, 10000)
-      it('detects multiple human edit signals together', async () => {
-        const result = await tempProgram('jsdoc', 'mixed-human-edit.ts')
-
-        const jsDoc = firstJsDoc(result)
-
-        expect(jsDoc.humanEditSignals).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({
-              type: 'complex-markdown',
-            }),
-            expect.objectContaining({
-              type: 'manual-format',
-            }),
-            expect.objectContaining({
-              type: 'non-generated-tag',
-            }),
-          ]),
-        )
-      }, 10000)
-    })
-    describe('JsDocAnalysis', () => {
-      it('analyzes generated documentation', async () => {
-        const result = await tempProgram('jsdoc', 'generated-simple.ts')
-
-        const analysis = firstJsDocAnalysis(result)
-
-        expect(analysis.exists).toBe(true)
-        expect(analysis.hasSummary).toBe(true)
-
-        expect(analysis.generators).toEqual([
-          {
+          expect(jsDoc.generator).toEqual({
             tool: 'ChatGPT',
             version: '5.5',
             raw: '@GeneratedBy(ChatGPT@5.5)',
-          },
-        ])
+          })
+        },
+        timeout,
+      )
 
-        expect(analysis.hasHumanEditedSections).toBe(false)
-      }, 10000)
+      it(
+        'detects complex markdown signals',
+        async () => {
+          const result = await tempJsdocProgram('manual-markdown.ts')
 
-      it('detects human edited markdown', async () => {
-        const result = await tempProgram('jsdoc', 'manual-markdown.ts')
+          const jsDoc = firstJsDoc(result)
 
-        const analysis = firstJsDocAnalysis(result)
+          expect(jsDoc.humanEditSignals).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                type: 'complex-markdown',
+              }),
+            ]),
+          )
+        },
+        timeout,
+      )
 
-        expect(analysis.hasHumanEditedSections).toBe(true)
-      }, 10000)
+      it(
+        'detects manual formatting signals',
+        async () => {
+          const result = await tempJsdocProgram('manual-formatting.ts')
 
-      it('detects human edited custom tags', async () => {
-        const result = await tempProgram('jsdoc', 'non-generated-tags.ts')
+          const jsDoc = firstJsDoc(result)
 
-        const analysis = firstJsDocAnalysis(result)
+          expect(jsDoc.humanEditSignals).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                type: 'manual-format',
+                details: expect.objectContaining({
+                  pattern: 'aligned space',
+                }),
+              }),
+              expect.objectContaining({
+                type: 'manual-format',
+                details: expect.objectContaining({
+                  pattern: 'ascii-art',
+                }),
+              }),
+            ]),
+          )
+        },
+        timeout,
+      )
 
-        expect(analysis.hasHumanEditedSections).toBe(true)
-      }, 10000)
+      it(
+        'detects non generated tags',
+        async () => {
+          const result = await tempJsdocProgram('non-generated-tags.ts')
 
-      it('detects human edited custom tags', async () => {
-        const result = await tempProgram('jsdoc', 'remarks-fixture.ts')
+          const jsDoc = firstJsDoc(result)
 
-        const analysis = firstJsDocAnalysis(result)
+          expect(jsDoc.humanEditSignals).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                type: 'non-generated-tag',
+              }),
+            ]),
+          )
+        },
+        timeout,
+      )
+      it(
+        'detects multiple human edit signals together',
+        async () => {
+          const result = await tempJsdocProgram('mixed-human-edit.ts')
 
-        expect(analysis.hasRemarks).toBe(true)
-        expect(analysis.tagCount).toBe(1)
-      }, 10000)
+          const jsDoc = firstJsDoc(result)
+
+          expect(jsDoc.humanEditSignals).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                type: 'complex-markdown',
+              }),
+              expect.objectContaining({
+                type: 'manual-format',
+              }),
+              expect.objectContaining({
+                type: 'non-generated-tag',
+              }),
+            ]),
+          )
+        },
+        timeout,
+      )
+    })
+    describe('JsDocAnalysis', () => {
+      it(
+        'analyzes generated documentation',
+        async () => {
+          const result = await tempJsdocProgram('generated-simple.ts')
+
+          const analysis = firstJsDocAnalysis(result)
+
+          expect(analysis.exists).toBe(true)
+          expect(analysis.hasSummary).toBe(true)
+
+          expect(analysis.generators).toEqual([
+            {
+              tool: 'ChatGPT',
+              version: '5.5',
+              raw: '@GeneratedBy(ChatGPT@5.5)',
+            },
+          ])
+
+          expect(analysis.hasHumanEditedSections).toBe(false)
+        },
+        timeout,
+      )
+
+      it(
+        'detects human edited markdown',
+        async () => {
+          const result = await tempJsdocProgram('manual-markdown.ts')
+
+          const analysis = firstJsDocAnalysis(result)
+
+          expect(analysis.hasHumanEditedSections).toBe(true)
+        },
+        timeout,
+      )
+
+      it(
+        'detects human edited custom tags',
+        async () => {
+          const result = await tempJsdocProgram('non-generated-tags.ts')
+
+          const analysis = firstJsDocAnalysis(result)
+
+          expect(analysis.hasHumanEditedSections).toBe(true)
+        },
+        timeout,
+      )
+
+      it(
+        'detects human edited custom tags',
+        async () => {
+          const result = await tempJsdocProgram('remarks-fixture.ts')
+
+          const analysis = firstJsDocAnalysis(result)
+
+          expect(analysis.hasRemarks).toBe(true)
+          expect(analysis.tagCount).toBe(1)
+        },
+        timeout,
+      )
     })
   })
 })
