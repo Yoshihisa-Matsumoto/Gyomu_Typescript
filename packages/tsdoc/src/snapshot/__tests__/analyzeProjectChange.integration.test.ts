@@ -70,14 +70,14 @@ it('analyzeProjectChange integration test', async () => {
 
     yield* commitProjectSnapshot({
       expectedSnapshot: initialStatus,
-      projectPath: rootPath,
+      projectPath: '.',
       repoRoot: rootPath,
     })
 
     yield* prepareTestWorkspaceForOther('updated', rootPath)
     const resultUpdated = yield* analyzeProjectChanges({
       repoRoot: rootPath,
-      projectPath: rootPath,
+      projectPath: '.',
     })
     expect(resultUpdated.previousSnapshot).toBeDefined()
     expect(resultUpdated.previousSnapshot).toEqual(initialStatus)
@@ -88,14 +88,14 @@ it('analyzeProjectChange integration test', async () => {
 
     yield* commitProjectSnapshot({
       expectedSnapshot: updatedStatus,
-      projectPath: rootPath,
+      projectPath: '.',
       repoRoot: rootPath,
     })
 
     yield* prepareTestWorkspaceForOther('added', rootPath)
     const resultAdded = yield* analyzeProjectChanges({
       repoRoot: rootPath,
-      projectPath: rootPath,
+      projectPath: '.',
     })
     expect(resultAdded.previousSnapshot).toBeDefined()
     expect(resultAdded.previousSnapshot).toEqual(updatedStatus)
@@ -106,14 +106,14 @@ it('analyzeProjectChange integration test', async () => {
 
     yield* commitProjectSnapshot({
       expectedSnapshot: addedStatus,
-      projectPath: rootPath,
+      projectPath: '.',
       repoRoot: rootPath,
     })
 
     yield* prepareTestWorkspaceForOther('deleted', rootPath)
     const resultDeleted = yield* analyzeProjectChanges({
       repoRoot: rootPath,
-      projectPath: rootPath,
+      projectPath: '.',
     })
     expect(resultDeleted.previousSnapshot).toBeDefined()
     expect(resultDeleted.previousSnapshot).toEqual(addedStatus)
@@ -124,7 +124,7 @@ it('analyzeProjectChange integration test', async () => {
 
     yield* commitProjectSnapshot({
       expectedSnapshot: deletedStatus,
-      projectPath: rootPath,
+      projectPath: '.',
       repoRoot: rootPath,
     })
   })
@@ -144,7 +144,7 @@ it('analyzeProjectChange integration concurrency test', async () => {
 
     yield* commitProjectSnapshot({
       expectedSnapshot: { version: GYOMU_VERSION, files: [] },
-      projectPath: rootPath,
+      projectPath: '.',
       repoRoot: rootPath,
     })
   })
