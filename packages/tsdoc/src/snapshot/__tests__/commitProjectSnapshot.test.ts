@@ -11,6 +11,7 @@ import { saveSnapshot } from '../saveSnapshot.js'
 import { diffSnapshot } from '../diffSnapshot.js'
 import { GYOMU_VERSION } from '../types/ProjectWorkspaceManifest.js'
 import type { FileHashSnapshot } from '../types/FileHashSnapshot.js'
+import { toProjectAbsolutePath } from '../../shared/path/toProjectAbsolutePath.js'
 
 // ------------------------
 // mocks
@@ -129,7 +130,7 @@ describe('commitProjectSnapshot', () => {
       }),
     )
 
-    expect(createSnapshot).toHaveBeenCalledWith('packages/app')
+    expect(createSnapshot).toHaveBeenCalledWith(toProjectAbsolutePath('packages/app', '/repo'))
   })
 
   it('passes expected and current snapshots to diffSnapshot', () => {
