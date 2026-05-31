@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 import { Effect } from 'effect'
-import { NodeFileSystem } from '@effect/platform-node'
+import { PlatformLayer } from '@gyomu/infra'
 import { parseProjectExports } from '../PackageAnalyzer.js'
 
 describe('parseProjectExports', () => {
@@ -50,7 +50,7 @@ describe('parseProjectExports', () => {
     )
 
     const result = await Effect.runPromise(
-      parseProjectExports(projectDir).pipe(Effect.provide(NodeFileSystem.layer)),
+      parseProjectExports(projectDir).pipe(Effect.provide(PlatformLayer)),
     )
 
     expect(result).toEqual([join(projectDir, 'src/index.ts')])
@@ -75,7 +75,7 @@ describe('parseProjectExports', () => {
     )
 
     const result = await Effect.runPromise(
-      parseProjectExports(projectDir).pipe(Effect.provide(NodeFileSystem.layer)),
+      parseProjectExports(projectDir).pipe(Effect.provide(PlatformLayer)),
     )
 
     expect(result).toEqual([join(projectDir, 'src/index.ts')])
@@ -83,7 +83,7 @@ describe('parseProjectExports', () => {
 
   it('fails when project does not exist', async () => {
     const exit = await Effect.runPromiseExit(
-      parseProjectExports('/not/exist').pipe(Effect.provide(NodeFileSystem.layer)),
+      parseProjectExports('/not/exist').pipe(Effect.provide(PlatformLayer)),
     )
 
     expect(exit._tag).toBe('Failure')
@@ -105,7 +105,7 @@ describe('parseProjectExports', () => {
     )
 
     const exit = await Effect.runPromiseExit(
-      parseProjectExports(projectDir).pipe(Effect.provide(NodeFileSystem.layer)),
+      parseProjectExports(projectDir).pipe(Effect.provide(PlatformLayer)),
     )
 
     expect(exit._tag).toBe('Failure')
@@ -129,7 +129,7 @@ describe('parseProjectExports', () => {
     )
 
     const exit = await Effect.runPromiseExit(
-      parseProjectExports(projectDir).pipe(Effect.provide(NodeFileSystem.layer)),
+      parseProjectExports(projectDir).pipe(Effect.provide(PlatformLayer)),
     )
 
     expect(exit._tag).toBe('Failure')
