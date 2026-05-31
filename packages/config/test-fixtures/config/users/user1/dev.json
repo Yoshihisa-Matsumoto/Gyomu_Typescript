@@ -1,0 +1,10 @@
+{
+  "invoice": {
+    "host": "user1-dev-invoice",
+    "features": {
+      "beta": false
+    }
+  },
+
+  "host": "user1-dev-root"
+}

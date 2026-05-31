@@ -31,5 +31,6 @@ export default defineConfig({
     'marked',
     'material-react-table',
     'mermaid',
+    'sonner',
   ],
 })

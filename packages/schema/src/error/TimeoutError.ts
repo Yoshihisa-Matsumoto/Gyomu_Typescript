@@ -9,6 +9,6 @@ export interface TimeoutErrorContext extends AppErrorContext {
   readonly elapsedMs?: number
 }
 export class TimeoutError extends withErrorTraits(
-  Data.TaggedError('TimeoutError')<TimeoutErrorContext>,
+  Data.TaggedError('@gyomu/schema/TimeoutError')<TimeoutErrorContext>,
   { severity: Severity.ERROR, isRetryable: () => true },
 ) {}

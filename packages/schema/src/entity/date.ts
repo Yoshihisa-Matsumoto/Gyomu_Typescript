@@ -1,7 +1,8 @@
-import { format, isValid, parse } from 'date-fns'
+import { add, format, isValid, parse } from 'date-fns'
 import { Schema } from 'effect'
 import { isPattern } from 'effect/Schema'
 import { ValueError } from '../error/ValueError.js'
+import type { Brand } from 'effect'
 
 export const LocalDateSchema = Schema.String.pipe(
   Schema.check(isPattern(/^\d{4}-\d{2}-\d{2}$/)),
@@ -45,6 +46,16 @@ export const Date2LocalDate = (date: Date): LocalDate => {
   return format(date, 'yyyy-MM-dd') as LocalDate
 }
 
+type DbLocalDate = string & Brand.Brand<'LocalDate'>
+
+export function toDbLocalDate(value: LocalDate): DbLocalDate {
+  return value as string as DbLocalDate
+}
+
+export const Date2DbLocalDate = (date: Date): DbLocalDate => {
+  return toDbLocalDate(Date2LocalDate(date))
+}
+
 export const createDateOnly = (year: number, one_base_month: number, day: number) => {
   const dateString = `${year}-${('00' + one_base_month).slice(-2)}-${('00' + day).slice(-2)}`
   return new Date(dateString)
@@ -70,3 +81,11 @@ export function parseYmdToDate(ymd: string): Date {
   }
   return date
 }
+
+export const getTodayAsLocalDate = (): LocalDate => {
+  return Date2LocalDate(new Date())
+}
+export const addDays = (date: Date, numberToAdd: number): Date => {
+  return add(date, { days: numberToAdd })
+}
+export const getCurrentISOString = () => new Date().toISOString()

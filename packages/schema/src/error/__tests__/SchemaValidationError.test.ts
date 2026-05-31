@@ -15,7 +15,7 @@ describe('SchemaValidationError test', () => {
     if (result._tag === 'Failure') {
       const error = getFailureFromExit(result)
 
-      expect(error._tag).toBe('SchemaErrorContext')
+      expect(error._tag).toBe('@gyomu/schema/SchemaErrorContext')
       expect(error.schemaName).toBe('Test')
       expect(error.phase).toBe('decode')
     }

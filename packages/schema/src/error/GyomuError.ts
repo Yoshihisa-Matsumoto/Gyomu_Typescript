@@ -11,7 +11,13 @@ import type { AppErrorContext } from './BaseError.js'
 export interface GyomuErrorContext extends AppErrorContext {
   readonly operation: string // fetchHoliday
   readonly domain: string // market / file / ai
-  readonly reason: 'invalid_input' | 'not_found' | 'external_failure' | 'unexpected'
+  readonly reason:
+    | 'invalid_input'
+    | 'not_found'
+    | 'external_failure'
+    | 'unexpected'
+    | 'concurrent_modification'
+    | 'out_of_bounds'
   readonly retryable?: boolean
 }
 
@@ -31,11 +37,14 @@ export const mapGyomuReason = (e: unknown): GyomuErrorContext['reason'] => {
 
   return 'unexpected'
 }
-export class GyomuError extends withErrorTraits(Data.TaggedError('GyomuError')<GyomuErrorContext>, {
-  isRetryable: (ctx) => {
-    return ctx.retryable ?? false
+export class GyomuError extends withErrorTraits(
+  Data.TaggedError('@gyomu/schema/GyomuError')<GyomuErrorContext>,
+  {
+    isRetryable: (ctx) => {
+      return ctx.retryable ?? false
+    },
   },
-}) {}
+) {}
 
 export const gyomuExternalFailure = (operation: string, domain: string) => (e: unknown) =>
   new GyomuError({

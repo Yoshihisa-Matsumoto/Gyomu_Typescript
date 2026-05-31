@@ -1,8 +1,11 @@
 {
   "name": "@gyomu/ui-core",
-  "version": "0.2.1",
+  "version": "0.2.4-beta.5",
   "description": "",
   "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
   "exports": {
     ".": {
       "import": "./dist/index.js",
@@ -34,12 +37,10 @@
   "author": "",
   "license": "ISC",
   "files": [
-    "index.js",
-    "!**/__tests__",
-    "!**/__sit__"
+    "dist"
   ],
   "dependencies": {
-    "@gyomu/schema": "workspace:*",
+    "@gyomu/schema": "workspace:^",
     "effect": "4.0.0-beta.57",
     "react": "19.2.4"
   },

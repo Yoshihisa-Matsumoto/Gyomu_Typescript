@@ -32,21 +32,12 @@ export type ResultSchemaType<T extends Schema.Schema<any>> =
       readonly success: false
       readonly error: PublicError
     }
-export type ToolResult<T> =
-  | {
-      readonly success: true
-      readonly data: T
-    }
-  | {
-      readonly success: false
-      readonly error: PublicError
-    }
 
 export const executePublicApiWithSchema = async <T extends Schema.Schema<any>>(
   dataSchema: T,
   effectResult: () => Promise<Result.Result<Schema.Schema.Type<T>, GyomuError>>,
   mapError: (error: GyomuError) => PublicError,
-) => {
+): Promise<ResultSchemaType<T>> => {
   const result = await effectResult()
   if (Result.isSuccess(result)) {
     return {

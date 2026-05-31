@@ -12,7 +12,6 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
-    "check": "pnpm lint && pnpm typecheck && pnpm test",
     "build:types": "tsc -b",
     "build": "turbo run build",
     "build:local": "pnpm run build:types",
@@ -26,7 +25,17 @@
     "coverage:all": "pnpm test:coverage && pnpm coverage:merge && pnpm coverage:report",
     "coverage:ci:all": "pnpm test:ci:coverage && pnpm coverage:merge && pnpm coverage:report",
     "dep:check": "knip",
-    "check:sync:version": "pnpm syncpack lint"
+    "check:sync:version": "pnpm syncpack lint",
+    "changeset:add": "changeset",
+    "changeset:status": "changeset status",
+    "changeset:pre:enter": "changeset pre enter beta",
+    "changeset:pre:exit": "changeset pre exit",
+    "changeset:version": "changeset version",
+    "changeset:publish": "changeset publish",
+    "changeset:publish:beta": "changeset publish",
+    "release:beta": "pnpm build:clean && pnpm changeset:version && pnpm changeset:publish:beta",
+    "release:stable": "pnpm changeset:pre:exit && pnpm changeset:version && pnpm changeset:publish",
+    "generate:tsdocs": "tsx scripts/generate-tsdoc.ts config"
   },
   "engines": {
     "node": ">=24.0.0",
@@ -42,6 +51,7 @@
     "apps/*"
   ],
   "devDependencies": {
+    "@changesets/cli": "^2.31.0",
     "@effect/language-service": "^0.85.1",
     "@eslint/js": "^10.0.1",
     "@tanstack/eslint-config": "^0.4.0",
@@ -66,6 +76,8 @@
     "syncpack": "^14.3.1",
     "tsup": "^8.5.1",
     "turbo": "^2.9.7",
+    "typedoc": "^0.28.19",
+    "typedoc-plugin-markdown": "^4.11.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.59.1",
     "vitest": "^4.1.5",

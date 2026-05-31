@@ -54,6 +54,7 @@ export class SshService extends Context.Service<
               Config.string(`${prefix.toUpperCase()}_PRIVATE_KEY_FILENAME`),
             ),
           })
+
           const config = yield* configService.load(sshConfigRaw)
           const privateKeyFilename = Option.getOrUndefined(config.privateKeyFilename)
           return yield* Effect.acquireRelease(

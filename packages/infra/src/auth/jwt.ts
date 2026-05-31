@@ -1,52 +1,54 @@
-import * as jwt from 'jsonwebtoken'
+import { SignJWT, importPKCS8, importSPKI, jwtVerify } from 'jose'
 import { IOError } from '@gyomu/schema'
 import { Effect } from 'effect'
-import { Uint8ArraytoBuffer } from '@gyomu/schema/shared/binary'
-import { fromSync } from '@gyomu/schema/effect'
-import { readFromFile } from '../fs/fs-utils.js'
-// import { fs } from '../fs/index.js';
-
-// let env_priv: Record<string, never> | undefined = undefined;
-// const getEnv = () => {
-//   if (env_priv) return env_priv;
-//   const env2 = parsedEnv(
-//     z.object({
-//       JWT_ACCESS_SECRET: z.string(),
-//       JWT_ACCESS_EXPIRY: z.string().regex(/^[0-9]+[md]$/, {
-//         message: `Expiry need to be specified as number + 'm' or 'd'`,
-//       }),
-//       JWT_REFRESH_SECRET: z.string(),
-//       JWT_REFRESH_EXPIRY_DATE: z.coerce.number(),
-//     }),
-//   );
-//   env_priv = env2;
-//   return env_priv;
-// };
+import { fromPromise } from '@gyomu/schema/effect'
+import { readStringFromFile } from '../fs/fs-utils.js'
+import type { JWTPayload } from 'jose'
 
 export type JwtOption = {
   keyFilepath: string
   expiryHour: number
+  algorithm?: string
 }
 export type JwtVerifyOption = {
   keyFilepath: string
 }
 
+export const signJwt = (payload: JWTPayload, option: Omit<Required<JwtOption>, 'expiryHour'>) => {
+  return Effect.gen(function* () {
+    const secretOrPrivateKey = yield* readStringFromFile(option.keyFilepath)
+    return fromPromise(IOError, () => ({
+      layer: 'filesystem' as const,
+      message: 'fail to sign jwt',
+      operation: 'write' as const,
+    }))(async () => {
+      const privateKey = await importPKCS8(secretOrPrivateKey, option.algorithm)
+
+      const token = await new SignJWT(payload)
+        .setProtectedHeader({ alg: option.algorithm })
+        .sign(privateKey)
+      return token
+    })
+  })
+}
+
 export const generateToken = (uid: string, option: JwtOption) =>
   Effect.gen(function* () {
-    const secretOrPrivateKey = yield* readFromFile(option.keyFilepath)
-    const payload = { name: uid }
-    const token = yield* fromSync(IOError, () => ({
-      message: `Fail to generate JWT`,
+    const secretOrPrivateKey = yield* readStringFromFile(option.keyFilepath)
+    return fromPromise(IOError, () => ({
       layer: 'filesystem' as const,
-      operation: 'transform' as const,
-      details: { uid, option },
-    }))(() =>
-      jwt.sign(payload, Uint8ArraytoBuffer(secretOrPrivateKey), {
-        expiresIn: `${option.expiryHour}Hour`,
-        algorithm: 'RS256',
-      }),
-    )
-    return token
+      message: 'fail to sign jwt',
+      operation: 'write' as const,
+    }))(async () => {
+      const privateKey = await importPKCS8(secretOrPrivateKey, option.algorithm ?? 'RS256')
+      const payload = { name: uid }
+      const token = await new SignJWT(payload)
+        .setProtectedHeader({ alg: option.algorithm ?? 'RS256' })
+        .setIssuedAt()
+        .setExpirationTime(`${option.expiryHour}h`)
+        .sign(privateKey)
+      return token
+    })
   })
 
 export const validateToken = (
@@ -54,39 +56,17 @@ export const validateToken = (
 
   option: JwtVerifyOption,
 ) =>
-  readFromFile(option.keyFilepath).pipe(
+  readStringFromFile(option.keyFilepath).pipe(
     Effect.flatMap((key) =>
-      Effect.try({
-        try: () => {
-          const payload = jwt.verify(token, Uint8ArraytoBuffer(key)) as jwt.JwtPayload
+      Effect.tryPromise({
+        try: async () => {
+          const publicKey = await importSPKI(key, 'RS256')
+          const { payload } = await jwtVerify(token, publicKey)
 
-          return { result: true as const, uid: payload['name'] as string }
+          return { result: true as const, uid: payload }
         },
         catch: () => ({ result: false as const, uid: '' }),
       }),
     ),
     Effect.catch(() => Effect.succeed({ result: false as const, uid: '' })),
   )
-//   try {
-//     const key = fs.readFileSync(option.keyFilepath);
-//     const accessResult = jwt.verify(token, key) as jwt.JwtPayload;
-//     return { result: true, uid: accessResult['name'] };
-//     // } else {
-//     //   const refreshResult = jwt.verify(
-//     //     token,
-//     //     getEnv().JWT_REFRESH_SECRET,
-//     //   ) as jwt.JwtPayload;
-//     //   return { result: true, uid: refreshResult['name'] };
-//     // }
-//   } catch (err) {
-//     return { result: false, uid: '' };
-//   }
-// };
-
-// const accessToken = generateToken('1040235', {
-//   expiryHour: 1,
-//   keyFilepath: './jwt_private.pem',
-// });
-// console.log(validateToken(accessToken, { keyFilepath: './jwt_public.pem' }));
-// const refreshToken = generateToken('1040235', 'RefreshToken');
-// console.log(validateToken(refreshToken, 'RefreshToken'));

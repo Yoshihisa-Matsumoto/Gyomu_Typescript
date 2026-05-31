@@ -7,10 +7,13 @@
   "files": [],
   "references": [
     { "path": "apps/cli" },
-    { "path": "packages/ai-agent" },
+    { "path": "packages/agent" },
+    { "path": "packages/ai" },
     { "path": "packages/ai-react" },
+    { "Path": "packages/approval-core" },
     { "path": "packages/schema" },
     { "path": "packages/infra" },
+    { "path": "packages/tsdoc" },
     { "path": "packages/ui" },
     { "path": "packages/ui-core" }
   ]

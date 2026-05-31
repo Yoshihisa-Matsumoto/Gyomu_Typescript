@@ -7,5 +7,5 @@ export interface AccessErrorContext extends AppErrorContext {
   readonly reason: 'in_use' | 'locked' | 'permission_denied' | 'not_exist' | 'invalid'
 }
 export class AccessError extends withErrorTraits(
-  Data.TaggedError('AccessError')<AccessErrorContext>,
+  Data.TaggedError('@gyomu/schema/AccessError')<AccessErrorContext>,
 ) {}

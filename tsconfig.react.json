@@ -5,7 +5,6 @@
     "lib": ["ES2022", "DOM"],
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "target": "es2024",
-    "composite": true
+    "target": "es2024"
   }
 }

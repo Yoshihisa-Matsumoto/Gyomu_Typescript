@@ -1,0 +1,8 @@
+{
+  "invoice": {
+    "host": "prod-invoice",
+    "timeout": 1000
+  },
+
+  "host": "prod-root"
+}

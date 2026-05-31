@@ -1,0 +1,56 @@
+{
+  "name": "@gyomu/ai",
+  "version": "0.2.4-beta.5",
+  "description": "",
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./provider/vercel": {
+      "import": "./dist/provider/vercel/index.js",
+      "types": "./dist/provider/vercel/index.d.ts"
+    }
+  },
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "clean": "rimraf ./dist ./coverage ./.turbo ./.tsbuildinfo",
+    "test": "bunx vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json ",
+    "@test:coverage": "vitest --config vitest.coverage.config.ts --typecheck.tsconfig ./tsconfig.vitest.json --coverage",
+    "@test:ci:coverage": "vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json --coverage",
+    "start": "pnpm run build:live",
+    "watch": "tsc -w",
+    "build": "tsc",
+    "build:ci": "pnpm run clean && pnpm run build",
+    "Sprepare": "pnpm run build",
+    "version": "git add -A src",
+    "postversion": "git push && git push --tags",
+    "schema-gen": "kysely-codegen --dialect mssql --env-file=.env --config-file=.kysely-codegenrc.json",
+    "sit": "dotenv -e .env -- vitest --config=./vitest.sit.config.ts --typecheck.tsconfig=./tsconfig.vitest.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.77",
+    "@ai-sdk/google": "^3.0.73",
+    "@ai-sdk/openai": "^3.0.63",
+    "@gyomu/approval-core": "workspace:^",
+    "@gyomu/infra": "workspace:^",
+    "@gyomu/schema": "workspace:^",
+    "@mastra/core": "^1.28.0",
+    "@standard-schema/spec": "^1.1.0",
+    "ai": "^6.0.184",
+    "effect": "4.0.0-beta.57"
+  },
+  "devDependencies": {
+    "dotenv": "^17.4.2"
+  }
+}

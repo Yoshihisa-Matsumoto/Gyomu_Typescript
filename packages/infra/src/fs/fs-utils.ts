@@ -2,8 +2,8 @@ import { dirname, extname, join } from 'node:path'
 import { randomUUID } from 'node:crypto'
 import { tmpdir } from 'node:os'
 import { Effect, FileSystem, Stream } from 'effect'
-import { IOError, wrapInfraError } from '@gyomu/schema'
-import type { NetworkError } from '@gyomu/schema'
+import { wrapIOError } from '@gyomu/schema'
+import type { IOError, NetworkError } from '@gyomu/schema'
 import type { PlatformError } from 'effect/PlatformError'
 
 /**
@@ -16,7 +16,7 @@ export const fileStream = (
   Stream.unwrap(
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem
-      return fs.stream(path).pipe(Stream.mapError((err) => wrapInfraError(IOError, err)))
+      return fs.stream(path).pipe(Stream.mapError((err) => wrapIOError(err)))
     }),
   )
 // export const fileStream = (path: string) =>
@@ -44,7 +44,7 @@ export const writeStreamToFile =
       // return yield* Stream.run(self, fs.sink(path, options));
       return yield* self.pipe(Stream.run(fs.sink(path, options))).pipe(
         Effect.mapError((e) =>
-          wrapInfraError(IOError, e, () => ({
+          wrapIOError(e, () => ({
             message: 'fail to write stream into file',
             target: path,
             operation: 'write' as const,
@@ -78,7 +78,7 @@ export const openFile = (
     const fs = yield* FileSystem.FileSystem
     return yield* fs.open(path, options).pipe(
       Effect.mapError((e) =>
-        wrapInfraError(IOError, e, () => ({
+        wrapIOError(e, () => ({
           message: 'fail to open file',
           target: path,
           layer: 'filesystem' as const,
@@ -99,7 +99,7 @@ export const writeToFile = (
     const fs = yield* FileSystem.FileSystem
     return yield* fs.writeFile(path, data, options).pipe(
       Effect.mapError((e) =>
-        wrapInfraError(IOError, e, () => ({
+        wrapIOError(e, () => ({
           message: 'fail to write file',
           target: path,
           layer: 'filesystem' as const,
@@ -120,7 +120,7 @@ export const writeStringToFile = (
     const fs = yield* FileSystem.FileSystem
     return yield* fs.writeFileString(path, data, options).pipe(
       Effect.mapError((e) =>
-        wrapInfraError(IOError, e, () => ({
+        wrapIOError(e, () => ({
           message: 'fail to write file',
           target: path,
           layer: 'filesystem' as const,
@@ -134,7 +134,7 @@ export const readFromFile = (path: string) =>
     const fs = yield* FileSystem.FileSystem
     return yield* fs.readFile(path).pipe(
       Effect.mapError((e) =>
-        wrapInfraError(IOError, e, () => ({
+        wrapIOError(e, () => ({
           message: 'fail to read from file',
           target: path,
           layer: 'filesystem' as const,
@@ -148,7 +148,7 @@ export const readStringFromFile = (path: string, encoding?: string) =>
     const fs = yield* FileSystem.FileSystem
     return yield* fs.readFileString(path, encoding).pipe(
       Effect.mapError((e) =>
-        wrapInfraError(IOError, e, () => ({
+        wrapIOError(e, () => ({
           message: 'fail to read string from file',
           target: path,
           layer: 'filesystem' as const,
@@ -162,7 +162,7 @@ export const copyFile = (source: string, destination: string) =>
     const fs = yield* FileSystem.FileSystem
     return yield* fs.copyFile(source, destination).pipe(
       Effect.mapError((e) =>
-        wrapInfraError(IOError, e, () => ({
+        wrapIOError(e, () => ({
           message: 'fail to copy file',
           target: `from ${source} to ${destination}`,
           layer: 'filesystem' as const,
@@ -183,7 +183,7 @@ export const copyFolder = (
     const fs = yield* FileSystem.FileSystem
     return yield* fs.copy(source, destination, options).pipe(
       Effect.mapError((e) =>
-        wrapInfraError(IOError, e, () => ({
+        wrapIOError(e, () => ({
           message: 'fail to copy folder',
           target: `from ${source} to ${destination}`,
           layer: 'filesystem' as const,
@@ -197,7 +197,7 @@ export const getFileStat = (path: string) =>
     const fs = yield* FileSystem.FileSystem
     return yield* fs.stat(path).pipe(
       Effect.mapError((e) =>
-        wrapInfraError(IOError, e, () => ({
+        wrapIOError(e, () => ({
           message: 'fail to check stat',
           target: path,
           layer: 'filesystem' as const,
@@ -211,7 +211,7 @@ export const pathExists = (path: string) =>
     const fs = yield* FileSystem.FileSystem
     return yield* fs.exists(path).pipe(
       Effect.mapError((e) =>
-        wrapInfraError(IOError, e, () => ({
+        wrapIOError(e, () => ({
           message: 'fail to check existence',
           target: path,
           layer: 'filesystem' as const,
@@ -225,7 +225,7 @@ export const readDirectoryDetailed = (dir: string) =>
     const fs = yield* FileSystem.FileSystem
     const names = yield* fs.readDirectory(dir).pipe(
       Effect.mapError(() =>
-        wrapInfraError(IOError, () => ({
+        wrapIOError(() => ({
           message: 'fail to read directory',
           target: dir,
           layer: 'filesystem' as const,
@@ -241,7 +241,7 @@ export const readDirectoryDetailed = (dir: string) =>
           const path = `${dir}/${name}`
           const stat = yield* fs.stat(path).pipe(
             Effect.mapError(() =>
-              wrapInfraError(IOError, () => ({
+              wrapIOError(() => ({
                 message: 'fail to retrieve stat',
                 target: path,
                 layer: 'filesystem' as const,
@@ -277,7 +277,7 @@ export const removePath = (
     }
   }).pipe(
     Effect.mapError((e) =>
-      wrapInfraError(IOError, e, () => ({
+      wrapIOError(e, () => ({
         message: 'fail to remove',
         target: path,
         layer: 'filesystem' as const,
@@ -298,7 +298,7 @@ export const emptyDir = (dir: string) =>
     yield* fs.makeDirectory(dir, { recursive: true })
   }).pipe(
     Effect.mapError((e) =>
-      wrapInfraError(IOError, e, () => ({
+      wrapIOError(e, () => ({
         message: 'fail to make directory empty',
         target: dir,
         layer: 'filesystem' as const,
@@ -312,7 +312,7 @@ export const makeDirectory = (dir: string) =>
 
     yield* fs.makeDirectory(dir, { recursive: true }).pipe(
       Effect.mapError((e) =>
-        wrapInfraError(IOError, e, () => ({
+        wrapIOError(e, () => ({
           message: 'fail to make directory',
           target: dir,
           layer: 'filesystem' as const,
@@ -339,7 +339,7 @@ export const ensureFile = (filePath: string): Effect.Effect<void, IOError, FileS
     }
   }).pipe(
     Effect.mapError((e) =>
-      wrapInfraError(IOError, e, () => ({
+      wrapIOError(e, () => ({
         message: 'fail to ensure file',
         target: filePath,
         layer: 'filesystem' as const,
@@ -368,7 +368,7 @@ export const ensureFileNotExist = (
     }
   }).pipe(
     Effect.mapError((e) =>
-      wrapInfraError(IOError, e, () => ({
+      wrapIOError(e, () => ({
         message: 'fail to ensure file',
         target: filePath,
         layer: 'filesystem' as const,

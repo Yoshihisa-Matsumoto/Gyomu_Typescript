@@ -14,3 +14,15 @@ export type UiErrorHandling = {
 //   readonly label: string
 //   readonly action: string
 // }
+export type UiErrorContext = {
+  error: UiErrorHandling
+  retry?: () => void
+}
+
+export type UiErrorHandler = (ctx: UiErrorContext) => void
+
+export type UiErrorHandlerMap = {
+  toast?: UiErrorHandler
+  inline?: UiErrorHandler
+  fullscreen?: UiErrorHandler
+}

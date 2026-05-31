@@ -8,9 +8,19 @@ export class FileSearchService extends Context.Service<
   FileSearchService,
   {
     search: (
-      parentDirectory: string,
-      filterConditions: Array<FileFilterInfo>,
-      isRecursive?: boolean,
+      query: FileSearchQuery,
     ) => Effect.Effect<Array<FileInfo>, IOError, FileSystem.FileSystem>
   }
 >()('FileSearchService') {}
+
+export interface FileSearchQuery {
+  readonly parentDirectory: string
+
+  readonly includes?: ReadonlyArray<string>
+
+  readonly excludes?: ReadonlyArray<string>
+
+  readonly recursive?: boolean
+
+  readonly metadataFilters?: ReadonlyArray<FileFilterInfo>
+}

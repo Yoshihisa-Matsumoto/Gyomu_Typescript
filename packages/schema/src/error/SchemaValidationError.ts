@@ -9,5 +9,5 @@ interface SchemaErrorContext extends AppErrorContext {
 }
 
 export class SchemaValidationError extends withErrorTraits(
-  Data.TaggedError('SchemaErrorContext')<SchemaErrorContext>,
+  Data.TaggedError('@gyomu/schema/SchemaErrorContext')<SchemaErrorContext>,
 ) {}

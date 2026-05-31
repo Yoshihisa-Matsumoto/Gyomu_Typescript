@@ -9,16 +9,16 @@ export const diffEntities =
     TInsert extends Schema.Schema.Type<typeof schemas.insertSchema> & {
       [field: string]: any
     },
-    TSelect extends TInsert & {
+    TSelect extends Schema.Schema.Type<typeof schemas.selectSchema> & {
       id: string
     } & { [field: string]: any },
     TUpdate extends Schema.Schema.Type<typeof schemas.updateSchema> & {
       [field: string]: any
     },
-    TField extends keyof (TInsert | TUpdate),
+    TField extends keyof (TInsert | TUpdate | TSelect),
   >(args: {
     incoming: Array<TInsert | TUpdate>
-    existing: Array<TSelect>
+    existing: ReadonlyArray<TSelect>
     getKey: (
       v: Schema.Schema.Type<
         typeof schemas.insertSchema | typeof schemas.updateSchema | typeof schemas.selectSchema

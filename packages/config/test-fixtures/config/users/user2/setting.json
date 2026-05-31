@@ -1,0 +1,6 @@
+{
+  "invoice": {
+    "host": "user2-invoice",
+    "port": 5000
+  }
+}

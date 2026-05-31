@@ -41,7 +41,7 @@ describe('JPXHolidayFetcher', () => {
     // assert
     await expect(
       Effect.runPromise(program.pipe(Effect.provide(JPXHolidayFetcherLayer))),
-    ).rejects.toMatchObject({ _tag: 'GyomuError', message: 'Invalid market' })
+    ).rejects.toMatchObject({ _tag: '@gyomu/schema/GyomuError', message: 'Invalid market' })
   })
 
   it('should map error when fetch fails', async () => {
@@ -57,7 +57,7 @@ describe('JPXHolidayFetcher', () => {
     await expect(
       Effect.runPromise(program.pipe(Effect.provide(JPXHolidayFetcherLayer))),
     ).rejects.toMatchObject({
-      _tag: 'GyomuError',
+      _tag: '@gyomu/schema/GyomuError',
       message: 'fetchHoliday failed',
     })
   })

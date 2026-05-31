@@ -3,55 +3,71 @@ import { Effect, Layer } from 'effect'
 import { compareAsc } from 'date-fns'
 import { FileSearchService } from '@gyomu/schema/shared/fs'
 import { FileCompareType, FilterType } from '@gyomu/schema/gyomu/file'
+import fg from 'fast-glob'
 import { createFileInfo } from './fileInfo.js'
-import { pathExists, readDirectoryDetailed } from './fs-utils.js'
+import { pathExists } from './fs-utils.js'
+import type { FileSearchQuery } from '@gyomu/schema/shared/fs'
 import type { FileFilterInfo } from '@gyomu/schema/gyomu/file'
 import type { FileSystem } from 'effect'
 
 import type { FileInfo } from './fileInfo.js'
 import type { IOError } from '@gyomu/schema'
 
-const searchFunc = (
-  parentDirectory: string,
-  filterConditions: Array<FileFilterInfo>,
-  isRecursive: boolean = false,
-): Effect.Effect<Array<FileInfo>, IOError, FileSystem.FileSystem> =>
+const enumerateFilePaths = (
+  query: FileSearchQuery,
+): Effect.Effect<ReadonlyArray<string>, IOError, FileSystem.FileSystem> =>
   Effect.gen(function* () {
-    if (!(yield* pathExists(parentDirectory))) {
+    if (!(yield* pathExists(query.parentDirectory))) {
       return []
     }
 
-    const dirents = yield* readDirectoryDetailed(parentDirectory)
+    const includes =
+      query.includes && query.includes.length > 0
+        ? query.includes
+        : [query.recursive ? '**/*' : '*']
+
+    const paths = yield* Effect.tryPromise({
+      try: () =>
+        fg([...includes], {
+          cwd: path.resolve(query.parentDirectory),
+
+          ignore: [...(query.excludes ?? [])],
+
+          absolute: true,
+
+          onlyFiles: true,
+
+          dot: false,
+        }),
+
+      catch: (error) => error as IOError,
+    })
+
+    return paths
+  })
+const searchFunc = (
+  query: FileSearchQuery,
+): Effect.Effect<Array<FileInfo>, IOError, FileSystem.FileSystem> =>
+  Effect.gen(function* () {
+    const filePaths = yield* enumerateFilePaths(query)
 
     const results = yield* Effect.forEach(
-      dirents,
-      (dirent) =>
+      filePaths,
+      (filePath) =>
         Effect.gen(function* () {
-          const fullPath = path.join(path.resolve(parentDirectory), dirent.name)
+          const [ok, fileInfo] = yield* isFileValid(filePath, query.metadataFilters ?? [])
 
-          // ファイル
-          if (dirent.isFile) {
-            const [ok, fileInfo] = yield* isFileValid(fullPath, filterConditions)
-            return ok ? [fileInfo] : []
-          }
-
-          // ディレクトリ（再帰）
-          if (dirent.isDirectory && isRecursive) {
-            return yield* searchFunc(fullPath, filterConditions, isRecursive)
-          }
-
-          return []
+          return ok ? [fileInfo] : []
         }),
-      { concurrency: 1 }, // 順序必要なら
+      { concurrency: 1 },
     )
 
-    // flatten
     return results.flat()
   })
 
 const isFileValid = (
   fileFullPath: string,
-  filterConditions: Array<FileFilterInfo>,
+  filterConditions: ReadonlyArray<FileFilterInfo>,
 ): Effect.Effect<[boolean, FileInfo], IOError, FileSystem.FileSystem> => {
   let isMatch = true
   return Effect.gen(function* () {
@@ -73,12 +89,6 @@ const isFileValidForFileter = (
   filterInformation: FileFilterInfo,
 ): boolean => {
   switch (filterInformation.kind) {
-    case FilterType.FileName:
-      return isFileNameMatch(
-        fileInformation.fileName,
-        filterInformation.nameFilter,
-        filterInformation.operator,
-      )
     case FilterType.CreateTime:
       return isFileDateMatch(
         fileInformation.createTime,
@@ -97,26 +107,6 @@ const isFileValidForFileter = (
         filterInformation.targetDate,
         filterInformation.operator,
       )
-  }
-}
-const isFileNameMatch = (
-  fileName: string,
-  targetFilter: string,
-  compareType: FileCompareType,
-): boolean => {
-  switch (compareType) {
-    case FileCompareType.Equal: {
-      const match = fileName.match(targetFilter)
-      return !!match && match.length > 0
-    }
-    case FileCompareType.Larger:
-      return fileName > targetFilter
-    case FileCompareType.LargerOrEqual:
-      return fileName >= targetFilter
-    case FileCompareType.Less:
-      return fileName < targetFilter
-    case FileCompareType.LessOrEqual:
-      return fileName <= targetFilter
   }
 }
 
