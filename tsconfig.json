@@ -9,6 +9,7 @@
     { "path": "apps/cli" },
     { "path": "packages/agent" },
     { "path": "packages/ai" },
+    { "path": "packages/ai-compiler" },
     { "path": "packages/ai-react" },
     { "Path": "packages/approval-core" },
     { "path": "packages/schema" },

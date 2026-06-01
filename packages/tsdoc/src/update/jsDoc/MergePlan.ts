@@ -1,11 +1,28 @@
-import type { ProtectedRegion } from '../../analysis/jsdoc/ParsedJsDoc.js'
+type MergeAction = 'replace' | 'preserve' | 'merge' | 'delete'
+
+type ConflictType = 'human-edited' | 'missing-in-new' | 'structural-mismatch'
 
 export interface MergePlan {
-  summary?: string
+  summary: MergeAction
+  params: Array<{
+    name: string
+    action: MergeAction
+    conflict?: ConflictType
+  }>
+  returns: MergeAction
 
-  params: Map<string, string>
+  tags: Array<{
+    tag: string
+    action: MergeAction
+    conflict?: ConflictType
+  }>
 
-  returns?: string
+  // 重要追加
+  conflicts: Array<{
+    symbol: string
+    type: ConflictType
+    message: string
+  }>
 
-  preserveRegions: Array<ProtectedRegion>
+  confidence: number // 0-1（AI更新の安全度）
 }
