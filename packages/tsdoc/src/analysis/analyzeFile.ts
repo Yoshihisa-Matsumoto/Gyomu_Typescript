@@ -40,7 +40,7 @@ export const analyzeFile = (
 ): Effect.Effect<FileAnalysisResult, AnalysisError> =>
   Effect.gen(function* () {
     const metadata: FileAnalysisMetadata = {
-      parsedJsDocs: new Map<string, ReadonlyArray<ParsedJsDoc>>(),
+      parsedJsDocs: new Map<string, ParsedJsDoc>(),
     }
 
     const sourceFile = yield* loadSourceFile(context.project, sourceFilePath)

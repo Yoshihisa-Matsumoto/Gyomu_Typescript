@@ -14,23 +14,31 @@ interface JsDocContextBase {
   }
 
   code: {
-    fullSnippet: string
-    bodySnippet: string
+    snippet?: string
   }
 
-  existingJsDoc: {
-    summary?: string
-    params: Array<{
-      name: string
-      type?: string
-      description?: string
-    }>
-    returns?: string
-    tags: Array<{
-      tag: string
-      content: string
-    }>
-  }
+  existingJsDoc?: ExistingJsDoc
+  relatedSymbols: Array<RelatedSymbol>
+}
+
+export interface ExistingJsDoc {
+  summary?: string
+  params: Array<{
+    name: string
+    type?: string
+    description?: string
+  }>
+  returns?: string
+  tags: Array<{
+    tag: string
+    content: string
+  }>
+}
+
+interface RelatedSymbol {
+  name: string
+  kind: string
+  signature: string
 }
 
 export interface LightJsDocContext extends JsDocContextBase {
@@ -48,7 +56,7 @@ export interface LightJsDocContext extends JsDocContextBase {
 export interface DeepJsDocContext extends JsDocContextBase {
   mode: 'deep'
 
-  analysis: {
+  analysis?: {
     intentSummary: string
     designPurpose: string
 

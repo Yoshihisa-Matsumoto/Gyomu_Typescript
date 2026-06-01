@@ -24,22 +24,15 @@ describeIfApiKey('executeJsDocUpdatePlan integration', () => {
         kind: 'function',
         signature: '(a: number, b: number) => number',
       },
-
+      relatedSymbols: [],
       code: {
-        fullSnippet: `
-/**
- * Adds two numbers.
- *
- * @param a The first number.
- * @param b The second number.
- * @returns The sum of the two numbers.
- */
-export const add = (
-  a: number,
-  b: number,
-): number => a + b
-`,
-        bodySnippet: 'return a + b',
+        //         declarationSnippet: `
+        // export const add = (
+        //   a: number,
+        //   b: number,
+        // ): number
+        // `,
+        snippet: 'return a + b',
       },
 
       existingJsDoc: {
@@ -90,26 +83,19 @@ export const add = (
         kind: 'function',
         signature: '(a: number, b: number) => number',
       },
-
+      relatedSymbols: [],
       code: {
-        fullSnippet: `
-/**
- * Adds three numbers.
- *
- * @param a The first number.
- * @param b The second number.
- * @returns The sum of the two numbers.
- */
-export const add = (
-  a: number,
-  b: number,
-): number => a + b
-`,
-        bodySnippet: 'return a + b',
+        //         declarationSnippet: `
+        // export const add = (
+        //   a: number,
+        //   b: number,
+        // ): number
+        // `,
+        snippet: 'return a + b',
       },
 
       existingJsDoc: {
-        summary: 'Adds two numbers.',
+        summary: 'Adds three numbers.',
 
         params: [
           {

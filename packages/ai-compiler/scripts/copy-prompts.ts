@@ -1,8 +1,8 @@
 import { copyFileSync, mkdirSync, readdirSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
 
-const srcRoot = 'src/features'
-const distRoot = 'dist/features'
+const srcRoot = 'src/pipelines'
+const distRoot = 'dist/pipelines'
 
 function copyDir(src: string, dest: string) {
   mkdirSync(dest, { recursive: true })

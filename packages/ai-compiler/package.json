@@ -7,9 +7,9 @@
     "access": "public"
   },
   "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+    "./jsdoc-update": {
+      "import": "./dist/pipelines/jsdoc-update/index.js",
+      "types": "./dist/pipelines/jsdoc-update/index.d.ts"
     }
   },
   "scripts": {

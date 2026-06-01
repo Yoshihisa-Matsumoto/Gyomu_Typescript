@@ -128,10 +128,15 @@ const parseParamTag = (tag: JSDocParameterTag, order: number): JsDocParam => {
   const parameterName = paramTag.getName()
   const parameterDescription = getNormalizedCommentText(paramTag)
   const optional = paramTag.getName().startsWith('[')
-
+  const parameterType = paramTag.getTypeExpression()?.getTypeNode().getText()
   return {
     name: parameterName,
-    ...withOptional({ description: parameterDescription, optional, raw: paramTag.getText() }),
+    ...withOptional({
+      description: parameterDescription,
+      optional,
+      raw: paramTag.getText(),
+      type: parameterType,
+    }),
 
     order,
   }

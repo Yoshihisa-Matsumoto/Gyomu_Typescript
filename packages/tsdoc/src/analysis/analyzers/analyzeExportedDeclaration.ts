@@ -78,6 +78,7 @@ export const analyzeExportedDeclaration = (
       isTypeOnly: true,
     }
   }
+
   // if (Node.isModuleDeclaration(declaration)) {
   //   const moduleResult = analyzeModuleDeclaration(withOptional({ declaration, options }))
   //   return {

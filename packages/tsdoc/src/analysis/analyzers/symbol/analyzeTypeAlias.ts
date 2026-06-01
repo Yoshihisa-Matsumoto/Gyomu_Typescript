@@ -7,9 +7,16 @@ import type { JSDocableTagAnalysisArg } from '../types.js'
 export const analyzeTypeAliasDeclaration = (
   args: JSDocableTagAnalysisArg<TypeAliasDeclaration>,
 ) => {
-  const prepared = prepareSymbolAnalysis(args.declaration, args.sourceRelativePath, args.metadata)
+  const prepared = prepareSymbolAnalysis(
+    args.declaration,
+    args.sourceRelativePath,
+    args.metadata,
+    getSignatureId,
+  )
   const symbol = {
     id: prepared.id,
+    signature: prepared.signature,
+    snippet: prepared.snippet,
     kind: 'type',
     location: {
       startLine: args.declaration.getStartLineNumber(),
@@ -23,4 +30,8 @@ export const analyzeTypeAliasDeclaration = (
     isDefault: args.declaration.isDefaultExport(),
     exportedName: args.declaration.getName(),
   }
+}
+
+const getSignatureId = (declaration: TypeAliasDeclaration) => {
+  return { id: 'type', parameters: [] }
 }

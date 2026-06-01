@@ -57,6 +57,10 @@ export interface ObjectMetrics {
  */
 export interface SignatureAnalysis {
   /**
+   * Unique signature identifier, e.g. for overloads.
+   */
+  id: string
+  /**
    * Parameter analysis list.
    */
   parameters: Array<ParameterAnalysis>
@@ -75,6 +79,11 @@ export interface SignatureAnalysis {
    * Number of overload signatures.
    */
   overloadCount?: number
+
+  /**
+   * Whether this signature is the implementation of an overload set.
+   */
+  isOverloadImplementation?: boolean
 }
 
 /**

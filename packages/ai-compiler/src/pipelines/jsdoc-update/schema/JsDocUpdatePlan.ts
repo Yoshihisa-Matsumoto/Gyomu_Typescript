@@ -24,8 +24,10 @@ export const JsDocTarget = Schema.Struct({
   // AST or symbolレベルの安定ID
   symbolId: Schema.String,
 
-  // optional: overload / signature disambiguation
-  signatureId: Schema.optional(Schema.String),
+  // overload / signature disambiguation
+  signatureId: Schema.String.annotate({
+    description: 'Identifier for function signature, used to disambiguate overloads',
+  }),
 
   // param/tagの追加識別子
   key: Schema.optional(Schema.String),

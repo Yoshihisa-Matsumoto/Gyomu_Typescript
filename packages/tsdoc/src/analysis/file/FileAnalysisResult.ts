@@ -8,5 +8,5 @@ export interface FileAnalysisResult {
 }
 
 export interface FileAnalysisMetadata {
-  parsedJsDocs: Map<SymbolId, ReadonlyArray<ParsedJsDoc>>
+  parsedJsDocs: Map<SymbolId, ParsedJsDoc>
 }

@@ -155,7 +155,7 @@ describe('analyzeFile', () => {
 
       expect(symbolId).toContain('generated-simple.ts')
 
-      expect(docs).toHaveLength(1)
+      expect(docs).toBeDefined()
     },
     timeout,
   )
@@ -175,7 +175,7 @@ describe('analyzeFile', () => {
 
       expect(symbolId).toMatch(/generated-simple\.ts::/)
 
-      expect(docs).toHaveLength(1)
+      expect(docs).toBeDefined()
     },
     timeout,
   )
@@ -264,7 +264,7 @@ describe('analyzeFile', () => {
   })
   describe('analyzeFile jsdoc analysis', () => {
     const firstJsDoc = (result: FileAnalysisResult) => {
-      const jsDoc = result.metadata.parsedJsDocs.values().next().value?.at(0)
+      const jsDoc = result.metadata.parsedJsDocs.values().next().value
 
       expect(jsDoc).toBeDefined()
 
@@ -376,6 +376,19 @@ describe('analyzeFile', () => {
               }),
             ]),
           )
+        },
+        timeout,
+      )
+
+      it(
+        'analyzeFile supports overloaded functions',
+        async () => {
+          const result = await tempJsdocProgram('overload-function.ts')
+
+          console.dir(result, { depth: null })
+
+          expect(result.analysis.exports).toHaveLength(3)
+          expect(result.metadata.parsedJsDocs.size).toBe(2)
         },
         timeout,
       )

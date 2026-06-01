@@ -43,9 +43,18 @@ Do NOT perform semantic redesign.
 
 # Rules
 
-- summary: preserve unless clearly incorrect
-- params: only update if name/type mismatch exists
-- returns: only update if missing or incorrect
+- summary:
+  - preserve if adequate
+  - create if missing
+  - update only when clearly incorrect
+- params:
+  - preserve existing descriptions
+  - create entries for missing parameters
+  - update only when mismatched
+- returns:
+  - preserve existing return descriptions
+  - create a return description if missing and return value is meaningful
+  - update only when clearly incorrect
 - tags: preserve unless invalid
 - confidence should be high when changes are minimal
 
@@ -68,6 +77,7 @@ Must strictly match JsDocUpdatePlan.
 - Never output raw JSDoc text
 - Never expand descriptions aggressively
 - Prefer "preserve" actions
+- If a documented section is missing, prefer action="replace" with generated content instead of "preserve".
 
 ---
 

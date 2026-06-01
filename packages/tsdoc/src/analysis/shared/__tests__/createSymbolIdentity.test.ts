@@ -20,19 +20,19 @@ export class UserService {
   test('creates symbol identity', () => {
     const method = sourceFile.getClassOrThrow('UserService').getMethodOrThrow('getUser')
 
-    const result = createSymbolIdentity(method, 'src/service/UserService.ts')
+    const result = createSymbolIdentity(method, 'src/service/UserService.ts', 'abc')
 
     expect(result.qualifiedName).toBe('UserService.getUser')
 
-    expect(result.id).toBe('src/service/UserService.ts::UserService.getUser')
+    expect(result.id).toBe('src/service/UserService.ts::UserService.getUser::abc')
   })
 
   test('creates stable identity', () => {
     const method = sourceFile.getClassOrThrow('UserService').getMethodOrThrow('getUser')
 
-    const first = createSymbolIdentity(method, 'src/service/UserService.ts')
+    const first = createSymbolIdentity(method, 'src/service/UserService.ts', 'abc')
 
-    const second = createSymbolIdentity(method, 'src/service/UserService.ts')
+    const second = createSymbolIdentity(method, 'src/service/UserService.ts', 'abc')
 
     expect(first).toEqual(second)
   })
@@ -40,9 +40,9 @@ export class UserService {
   test('different source paths produce different ids', () => {
     const method = sourceFile.getClassOrThrow('UserService').getMethodOrThrow('getUser')
 
-    const first = createSymbolIdentity(method, 'src/a/UserService.ts')
+    const first = createSymbolIdentity(method, 'src/a/UserService.ts', 'abc')
 
-    const second = createSymbolIdentity(method, 'src/b/UserService.ts')
+    const second = createSymbolIdentity(method, 'src/b/UserService.ts', 'abc')
 
     expect(first.id).not.toBe(second.id)
   })

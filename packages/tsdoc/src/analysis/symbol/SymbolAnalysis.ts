@@ -57,7 +57,12 @@ export interface SymbolAnalysis {
   /**
    * Signature information for callable or typed symbols.
    */
-  signature?: SignatureAnalysis
+  signature: SignatureAnalysis
+
+  /**
+   * Code snippet representing the symbol declaration.
+   */
+  snippet: string
 
   /**
    * Existing JSDoc/TSDoc analysis.

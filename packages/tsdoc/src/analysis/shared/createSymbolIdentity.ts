@@ -7,11 +7,12 @@ import type { ProjectRelativePath } from '../types.js'
 export const createSymbolIdentity = (
   node: Node,
   sourceRelativePath: ProjectRelativePath,
+  signatureId: string,
 ): SymbolIdentity => {
   const qualifiedName = createQualifiedName(node)
 
   return {
-    id: `${sourceRelativePath}::${qualifiedName}`,
+    id: `${sourceRelativePath}::${qualifiedName}::${signatureId}`,
     qualifiedName,
   }
 }

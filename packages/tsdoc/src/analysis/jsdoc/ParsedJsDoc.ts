@@ -75,6 +75,11 @@ export interface JsDocParam {
   name: string
 
   /**
+   * Parameter type as string, if available.
+   */
+  type?: string
+
+  /**
    * Parameter description.
    */
   description?: string

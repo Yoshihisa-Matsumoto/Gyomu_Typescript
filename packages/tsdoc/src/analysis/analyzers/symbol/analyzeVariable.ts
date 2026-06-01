@@ -18,10 +18,13 @@ export const analyzeVariableDeclaration = (args: {
     args.declaration,
     args.sourceRelativePath,
     args.metadata,
+    getSignatureId,
     statement,
   )
   const symbol = {
     id: prepared.id,
+    signature: prepared.signature,
+    snippet: prepared.snippet,
     kind: 'const',
     location: {
       startLine: args.declaration.getStartLineNumber(),
@@ -37,4 +40,8 @@ export const analyzeVariableDeclaration = (args: {
     symbol,
     isDefault: args.declaration.isDefaultExport(),
   }
+}
+
+const getSignatureId = (declaration: VariableDeclaration) => {
+  return { id: 'variable', parameters: [] }
 }

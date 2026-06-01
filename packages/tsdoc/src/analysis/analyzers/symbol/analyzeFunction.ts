@@ -3,11 +3,20 @@ import { prepareSymbolAnalysis } from './prepareSymbolAnalysis.js'
 import type { FunctionDeclaration } from 'ts-morph'
 import type { SymbolAnalysis } from '../../symbol/SymbolAnalysis.js'
 import type { JSDocableTagAnalysisArg } from '../types.js'
+import type { SignatureAnalysis } from '../../symbol/SymbolModel.js'
 
 export const analyzeFunctionDeclaration = (args: JSDocableTagAnalysisArg<FunctionDeclaration>) => {
-  const prepared = prepareSymbolAnalysis(args.declaration, args.sourceRelativePath, args.metadata)
+  const prepared = prepareSymbolAnalysis(
+    args.declaration,
+    args.sourceRelativePath,
+    args.metadata,
+    getFunctionSignatureId,
+  )
+
   const symbol = {
     id: prepared.id,
+    signature: prepared.signature,
+    snippet: prepared.snippet,
     kind: 'function',
     location: {
       startLine: args.declaration.getStartLineNumber(),
@@ -19,5 +28,29 @@ export const analyzeFunctionDeclaration = (args: JSDocableTagAnalysisArg<Functio
   return {
     symbol,
     isDefault: args.declaration.isDefaultExport(),
+  }
+}
+
+const getFunctionSignatureId = (declaration: FunctionDeclaration): SignatureAnalysis => {
+  const typeParams = declaration
+    .getTypeParameters()
+    .map((tp) => tp.getText())
+    .join(',')
+  const params = declaration
+    .getParameters()
+    .map((p) => `${p.getName()}:${p.getType().getText()}`)
+    .join(',')
+  const returnType = declaration.getReturnType().getText()
+
+  const overloadCount = declaration.getOverloads().length
+  let isOverloadImplementation = false
+  if (overloadCount > 0 && !declaration.isOverload()) {
+    isOverloadImplementation = true
+  }
+  return {
+    id: `${typeParams ? '(' + typeParams + ')' : ''}(${params}):${returnType}`,
+    parameters: [],
+    overloadCount: declaration.getOverloads().length,
+    isOverloadImplementation,
   }
 }
