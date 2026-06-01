@@ -1,3 +1,5 @@
+import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/index'
+
 interface JsDocContextBase {
   project: {
     name: string
@@ -7,10 +9,11 @@ interface JsDocContextBase {
     relativePath: string
   }
 
+  target: SymbolIdentity
+
   symbol: {
     name: string
     kind: string
-    signature: string
   }
 
   code: {

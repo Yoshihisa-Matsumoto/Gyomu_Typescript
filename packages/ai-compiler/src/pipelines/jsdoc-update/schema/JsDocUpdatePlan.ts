@@ -1,4 +1,5 @@
 import { Confidence } from '@gyomu/schema/schemas/Confidence'
+import { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
 import { Schema } from 'effect'
 
 export const MergeAction = Schema.Literals(['replace', 'preserve', 'merge']).annotate({
@@ -20,14 +21,6 @@ export const SummaryPlan = Schema.Struct({
 
 export const JsDocTarget = Schema.Struct({
   kind: Schema.Literals(['summary', 'param', 'return', 'tag']),
-
-  // AST or symbolレベルの安定ID
-  symbolId: Schema.String,
-
-  // overload / signature disambiguation
-  signatureId: Schema.String.annotate({
-    description: 'Identifier for function signature, used to disambiguate overloads',
-  }),
 
   // param/tagの追加識別子
   key: Schema.optional(Schema.String),
@@ -128,6 +121,7 @@ export const Risk = Schema.Struct({
 })
 
 export const JsDocUpdatePlanSchema = Schema.Struct({
+  identity: SymbolIdentity,
   summary: SummaryPlan,
   params: Schema.Array(ParamPlan),
   returns: ReturnPlan,

@@ -1,10 +1,10 @@
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { Effect } from 'effect'
-import { createFixtureProject } from '../../analysis/__tests__/createFixtureProject.js'
-import { analyzeFile } from '../../analysis/analyzeFile.js'
-import { buildJsDocUpdateContext } from '../internal/buildJsDocUpdateContext.js'
-import type { FileAnalysisResult } from '../../analysis/file/FileAnalysisResult.js'
+import { createFixtureProject } from '../../../analysis/__tests__/createFixtureProject.js'
+import { analyzeFile } from '../../../analysis/analyzeFile.js'
+import { buildJsDocUpdateContext } from '../buildJsDocUpdateContext.js'
+// import type { FileAnalysisResult } from '../../../analysis/file/FileAnalysisResult.js'
 
 const timeout = 20000
 
@@ -25,20 +25,20 @@ const buildJsDocUpdateContextProgram = (sourceFile: string) => {
 }
 
 describe('buildJsDocUpdateContext integration', () => {
-  const firstJsDoc = (result: FileAnalysisResult) => {
-    const jsDoc = result.metadata.parsedJsDocs.values().next().value
+  // const firstJsDoc = (result: FileAnalysisResult) => {
+  //   const jsDoc = result.metadata.parsedJsDocs.values().next().value
 
-    expect(jsDoc).toBeDefined()
+  //   expect(jsDoc).toBeDefined()
 
-    return jsDoc!
-  }
-  const firstJsDocAnalysis = (result: FileAnalysisResult) => {
-    const analysis = result.analysis.exports[0]?.symbol.jsDoc
+  //   return jsDoc!
+  // }
+  // const firstJsDocAnalysis = (result: FileAnalysisResult) => {
+  //   const analysis = result.analysis.exports[0]?.symbol.jsDoc
 
-    expect(analysis).toBeDefined()
+  //   expect(analysis).toBeDefined()
 
-    return analysis!
-  }
+  //   return analysis!
+  // }
 
   it(
     'generate-simple.ts',
@@ -47,7 +47,9 @@ describe('buildJsDocUpdateContext integration', () => {
 
       console.dir(context, { depth: null })
       expect(context).toHaveLength(1)
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       expect(context[0]!.mode).toBe('light')
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       expect(context[0]!.existingJsDoc).toBeUndefined()
     },
     timeout,
@@ -60,7 +62,9 @@ describe('buildJsDocUpdateContext integration', () => {
 
       console.dir(context, { depth: null })
       expect(context).toHaveLength(1)
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       expect(context[0]!.existingJsDoc!.summary).toBe('Add numbers')
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       expect(context[0]!.existingJsDoc!.params).toHaveLength(2)
     },
     timeout,
@@ -73,7 +77,7 @@ describe('buildJsDocUpdateContext integration', () => {
 
       console.dir(contexts, { depth: null })
       expect(contexts.length).toBe(2)
-      const ids = contexts.map((x) => x.symbol.signature)
+      const ids = contexts.map((x) => x.target.signatureId)
 
       expect(new Set(ids).size).toBe(2)
     },

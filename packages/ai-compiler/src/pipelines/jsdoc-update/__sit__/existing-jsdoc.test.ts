@@ -18,11 +18,13 @@ describeIfApiKey('executeJsDocUpdatePlan integration', () => {
       source: { relativePath: 'test/existing-jsdoc.ts' },
 
       mode: 'light',
-
+      target: {
+        signatureId: '(a: number, b: number) => number',
+        symbolId: 'add',
+      },
       symbol: {
         name: 'add',
         kind: 'function',
-        signature: '(a: number, b: number) => number',
       },
       relatedSymbols: [],
       code: {
@@ -77,11 +79,13 @@ describeIfApiKey('executeJsDocUpdatePlan integration', () => {
       source: { relativePath: 'test/existing-jsdoc.ts' },
 
       mode: 'light',
-
+      target: {
+        signatureId: '(a: number, b: number) => number',
+        symbolId: 'add',
+      },
       symbol: {
         name: 'add',
         kind: 'function',
-        signature: '(a: number, b: number) => number',
       },
       relatedSymbols: [],
       code: {

@@ -493,6 +493,9 @@ importers:
 
   packages/tsdoc:
     dependencies:
+      '@gyomu/ai':
+        specifier: workspace:^
+        version: link:../ai
       '@gyomu/ai-compiler':
         specifier: workspace:^
         version: link:../ai-compiler

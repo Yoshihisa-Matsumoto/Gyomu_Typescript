@@ -42,10 +42,13 @@ export const buildJsDocUpdateContext = (
         relativePath: sourceFilePath,
       },
       mode: 'light',
+      target: {
+        signatureId: symbol.signature.id,
+        symbolId: symbol.name,
+      },
       symbol: {
         name: symbol.name,
         kind: symbol.kind,
-        signature: symbol.signature.id,
       },
       code: {
         snippet: symbol.snippet,

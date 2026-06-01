@@ -3,12 +3,13 @@ import { describe, it } from 'vitest'
 import { Effect, Layer } from 'effect'
 import { ConfigLayer, MainLayer, PlatformLayer, makeRunner } from '@gyomu/infra'
 import { VercelAiModelServiceLive } from '@gyomu/ai/provider/vercel'
-import { createFixtureProject } from '../../analysis/__tests__/createFixtureProject.js'
-import { analyzeFile } from '../../analysis/analyzeFile.js'
-import { buildJsDocUpdateContext } from '../internal/buildJsDocUpdateContext.js'
-import { buildJsDocUpdateContextPlan } from '../internal/buildJsDocUpdatePlan.js'
-import type { JsDocUpdatePlan } from '@gyomu/ai-compiler/jsdoc-update'
+
 import 'dotenv/config'
+import { createFixtureProject } from '../../../analysis/__tests__/createFixtureProject.js'
+import { analyzeFile } from '../../../analysis/analyzeFile.js'
+import { buildJsDocUpdateContext } from '../buildJsDocUpdateContext.js'
+import { buildJsDocUpdateContextPlan } from '../buildJsDocUpdatePlan.js'
+import type { JsDocUpdatePlan } from '@gyomu/ai-compiler/jsdoc-update'
 
 const timeout = 20000
 

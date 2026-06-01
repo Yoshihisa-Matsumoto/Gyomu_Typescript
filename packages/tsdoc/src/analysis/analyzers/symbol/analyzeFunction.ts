@@ -30,7 +30,7 @@ export const analyzeFunctionDeclaration = (args: JSDocableTagAnalysisArg<Functio
     isDefault: args.declaration.isDefaultExport(),
   }
 }
-
+const normalizeTypeText = (text: string): string => text.replace(/import\([^)]*\)\./g, '')
 const getFunctionSignatureId = (declaration: FunctionDeclaration): SignatureAnalysis => {
   const typeParams = declaration
     .getTypeParameters()
@@ -38,9 +38,14 @@ const getFunctionSignatureId = (declaration: FunctionDeclaration): SignatureAnal
     .join(',')
   const params = declaration
     .getParameters()
-    .map((p) => `${p.getName()}:${p.getType().getText()}`)
+    .map((p) => {
+      const type = normalizeTypeText(p.getType().getText(declaration))
+
+      return `${p.getName()}:${type}`
+    })
     .join(',')
-  const returnType = declaration.getReturnType().getText()
+
+  const returnType = normalizeTypeText(declaration.getReturnType().getText(declaration))
 
   const overloadCount = declaration.getOverloads().length
   let isOverloadImplementation = false

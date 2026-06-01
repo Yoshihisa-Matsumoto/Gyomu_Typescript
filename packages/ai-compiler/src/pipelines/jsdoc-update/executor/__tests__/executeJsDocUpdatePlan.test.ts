@@ -9,6 +9,10 @@ import type { JsDocUpdatePlan } from '../../schema/JsDocUpdatePlan.js'
 describe('executeJsDocUpdatePlan', () => {
   test('returns object from AiModelService', async () => {
     const expected: JsDocUpdatePlan = {
+      identity: {
+        signatureId: '(filePath: string) => string',
+        symbolId: 'readFile',
+      },
       summary: {
         action: 'replace',
         value: 'Reads file content',
