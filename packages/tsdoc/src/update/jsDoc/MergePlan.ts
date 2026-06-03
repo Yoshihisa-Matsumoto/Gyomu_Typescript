@@ -1,22 +1,35 @@
+import type { JsDocTarget } from '@gyomu/ai-compiler/jsdoc-update'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
-type MergeAction = 'replace' | 'preserve' | 'merge' | 'delete'
+export type MergeActionContext<T> =
+  | {
+      type: 'replace'
+      value: T
+    }
+  | {
+      type: 'delete'
+    }
+  | {
+      type: 'preserve'
+    }
 
 type ConflictType = 'human-edited' | 'missing-in-new' | 'structural-mismatch'
 
 export interface MergePlan {
   target: SymbolIdentity
-  summary: MergeAction
+  summary: MergeActionContext<string>
   params: Array<{
     name: string
-    action: MergeAction
+    sortOrder: number
+    action: MergeActionContext<ParamAction>
     conflict?: ConflictType
   }>
-  returns: MergeAction
+  returns: MergeActionContext<string>
 
   tags: Array<{
-    tag: string
-    action: MergeAction
+    tag: JsDocTarget
+    sortOrder: number
+    action: MergeActionContext<string>
     conflict?: ConflictType
   }>
 
@@ -29,4 +42,9 @@ export interface MergePlan {
 
   confidence: number // 0-1（AI更新の安全度）
   averageConfidence: number // summary/params/returns/tagsの平均信頼度
+}
+
+export type ParamAction = {
+  type?: string
+  description?: string
 }

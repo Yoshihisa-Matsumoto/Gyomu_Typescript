@@ -10,5 +10,6 @@ export const createFixtureProject = (fixtureName: string) => {
       tsConfigFilePath: join(fixtureRoot, 'tsconfig.json'),
     }),
     projectRoot: fixtureRoot,
+    projectName: 'test',
   }
 }

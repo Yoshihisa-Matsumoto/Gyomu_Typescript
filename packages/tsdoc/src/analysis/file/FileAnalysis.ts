@@ -31,7 +31,7 @@ export interface FileAnalysis {
   /**
    * Public and internal symbol analysis.
    */
-  symbols?: Array<SymbolAnalysis>
+  symbols: Map<string, SymbolAnalysis>
 
   /**
    * Aggregated file metrics.

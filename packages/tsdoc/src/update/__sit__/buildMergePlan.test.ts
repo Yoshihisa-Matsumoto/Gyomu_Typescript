@@ -17,13 +17,14 @@ const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(Layer.provideMerge
 const runQAWithEnvOrThrow = makeRunner(VercelAiModelServiceLive)
 
 const buildMergePlanProgram = (sourceFile: string) => {
-  const { project, projectRoot } = updateFixture
+  const { project, projectRoot, projectName } = updateFixture
 
   const filePath = path.join(projectRoot, path.join('src', sourceFile))
   const program = Effect.gen(function* () {
-    const result = yield* analyzeFile({ project, projectRoot }, filePath, {
+    const result = yield* analyzeFile({ project, projectRoot, projectName }, filePath, {
       includeDebugInfo: true,
     })
+    // console.dir(result, { depth: null })
     const mergePlans = yield* buildMergePlan('test-project', result)
     return mergePlans
   })
@@ -39,7 +40,7 @@ describe('buildMergePlan integration', () => {
       console.dir(plan, { depth: null })
       expect(plan).toHaveLength(1)
       expect(plan[0]?.target.symbolId).toContain('add')
-      expect(plan[0]?.summary).toBe('replace')
+      expect(plan[0]?.summary.type).toBe('replace')
     },
     timeout,
   )
@@ -51,7 +52,7 @@ describe('buildMergePlan integration', () => {
 
       console.dir(plan, { depth: null })
       expect(plan).toHaveLength(1)
-      expect(plan[0]?.params.every((x) => x.action === 'preserve')).toBe(true)
+      expect(plan[0]?.params.every((x) => x.action.type === 'preserve')).toBe(true)
     },
     timeout,
   )
@@ -94,7 +95,7 @@ describe('buildMergePlan integration', () => {
 
       console.dir(plan, { depth: null })
       expect(plan).toHaveLength(1)
-      expect(plan[0]?.returns).toBe('replace')
+      expect(plan[0]?.returns.type).toBe('replace')
     },
     timeout,
   )

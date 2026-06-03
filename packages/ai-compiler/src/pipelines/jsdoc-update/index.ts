@@ -6,4 +6,4 @@ export {
 } from './context/JsDocUpdateContext.js'
 export * from './mode/index.js'
 export { executeJsDocUpdatePlan } from './executor/executeJsDocUpdatePlan.js'
-export { JsDocUpdatePlan } from './schema/JsDocUpdatePlan.js'
+export { JsDocUpdatePlan, MergeAction, JsDocTarget } from './schema/JsDocUpdatePlan.js'

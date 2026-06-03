@@ -14,13 +14,12 @@ describe('executeJsDocUpdatePlan', () => {
         symbolId: 'readFile',
       },
       summary: {
-        action: 'replace',
-        value: 'Reads file content',
+        action: { type: 'replace', value: 'Reads file content' },
         confidence: 0.95,
       },
       params: [],
       returns: {
-        action: 'preserve',
+        action: { type: 'preserve' },
         confidence: 1,
       },
       tags: [],

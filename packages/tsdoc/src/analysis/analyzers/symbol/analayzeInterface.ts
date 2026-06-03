@@ -22,7 +22,11 @@ export const analyzeInterfaceDeclaration = (
       startLine: args.declaration.getStartLineNumber(),
       endLine: args.declaration.getEndLineNumber(),
     },
-    name: args.name ?? args.declaration.getName(),
+    identity: {
+      symbolId: args.name ?? args.declaration.getName(),
+      signatureId: prepared.signature.id,
+    },
+    startOffset: args.declaration.getStart(),
     ...withOptional({ jsDoc: prepared.jsDoc }),
   } satisfies SymbolAnalysis
   return {

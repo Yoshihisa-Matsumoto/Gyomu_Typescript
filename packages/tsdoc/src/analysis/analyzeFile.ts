@@ -1,7 +1,9 @@
 import { Effect } from 'effect'
+import { toProjectAbsolutePath, toProjectRelativePath } from '../shared/index.js'
 import { loadSourceFile } from './shared/loadSourceFile.js'
 import { extractExport } from './extract/extractExport.js'
 import { extractImport } from './extract/extractImport.js'
+import { toIdentityKey } from './symbol/SymbolAnalysis.js'
 import type { FileAnalysisMetadata, FileAnalysisResult } from './file/FileAnalysisResult.js'
 import type { AnalysisOptions } from './AnalysisOption.js'
 import type { FileAnalysis } from './file/FileAnalysis.js'
@@ -10,6 +12,7 @@ import type { Project } from 'ts-morph'
 import type { ProjectRelativePath } from './types.js'
 import type { ProjectContext } from './project/ProjectContext.js'
 import type { ParsedJsDoc } from './jsdoc/ParsedJsDoc.js'
+import type { SymbolAnalysis } from './symbol/SymbolAnalysis.js'
 
 /**
  * Analyzes a TypeScript source file and produces a {@link FileAnalysis}.
@@ -42,16 +45,27 @@ export const analyzeFile = (
     const metadata: FileAnalysisMetadata = {
       parsedJsDocs: new Map<string, ParsedJsDoc>(),
     }
+    const sourceFullPath = toProjectAbsolutePath(sourceFilePath, context.projectRoot)
+    const sourceRelativePath = toProjectRelativePath(sourceFilePath, context.projectRoot)
 
-    const sourceFile = yield* loadSourceFile(context.project, sourceFilePath)
+    const sourceFile = yield* loadSourceFile(context.project, sourceFullPath)
+    sourceFile.path = sourceRelativePath
 
     const exports = yield* extractExport(sourceFile, metadata, option)
     const imports = yield* extractImport(sourceFile, metadata, option)
+
+    const symbols: Map<string, SymbolAnalysis> = new Map<string, SymbolAnalysis>()
+    exports.forEach((exp) => {
+      const symbol = exp.symbol
+      const symbolKey = toIdentityKey(symbol.identity)
+      symbols.set(symbolKey, symbol)
+    })
     return {
       analysis: {
-        path: sourceFilePath,
+        path: sourceRelativePath,
         exports,
         imports,
+        symbols,
       } satisfies FileAnalysis,
       metadata,
     }

@@ -45,11 +45,13 @@ describeIfApiKey('executeJsDocUpdatePlan integration', () => {
             name: 'a',
             type: 'number',
             description: 'The first number.',
+            sortOrder: 1,
           },
           {
             name: 'b',
             type: 'number',
             description: 'The second number.',
+            sortOrder: 2,
           },
         ],
 
@@ -67,11 +69,11 @@ describeIfApiKey('executeJsDocUpdatePlan integration', () => {
 
     console.dir(plan, { depth: null })
 
-    expect(plan.summary.action).toBe('preserve')
+    expect(plan.summary.action.type).toBe('preserve')
 
-    expect(plan.params.every((p) => p.action === 'preserve')).toBe(true)
+    expect(plan.params.every((p) => p.action.type === 'preserve')).toBe(true)
 
-    expect(plan.returns.action).toBe('preserve')
+    expect(plan.returns.action.type).toBe('preserve')
   }, 60_000)
   test('slightly different jsdoc expects replacement in summary', async () => {
     const context: LightJsDocContext = {
@@ -106,11 +108,13 @@ describeIfApiKey('executeJsDocUpdatePlan integration', () => {
             name: 'a',
             type: 'number',
             description: 'The first number.',
+            sortOrder: 1,
           },
           {
             name: 'b',
             type: 'number',
             description: 'The second number.',
+            sortOrder: 2,
           },
         ],
 
@@ -128,10 +132,77 @@ describeIfApiKey('executeJsDocUpdatePlan integration', () => {
 
     console.dir(plan, { depth: null })
 
-    expect(plan.summary.action).toBe('replace')
+    expect(plan.summary.action.type).toBe('replace')
 
-    expect(plan.params.every((p) => p.action === 'preserve')).toBe(true)
+    expect(plan.params.every((p) => p.action.type === 'preserve')).toBe(true)
 
-    expect(plan.returns.action).toBe('preserve')
+    expect(plan.returns.action.type).toBe('preserve')
+  }, 60_000)
+  test('deletes parameter documentation for removed parameter', async () => {
+    const context: LightJsDocContext = {
+      project: { name: 'simple test' },
+      source: { relativePath: 'test/existing-jsdoc.ts' },
+
+      mode: 'light',
+
+      target: {
+        signatureId: '(a: number, b: number) => number',
+        symbolId: 'add',
+      },
+
+      symbol: {
+        name: 'add',
+        kind: 'function',
+      },
+
+      relatedSymbols: [],
+
+      code: {
+        snippet: 'return a + b',
+      },
+
+      existingJsDoc: {
+        summary: 'Adds two numbers.',
+
+        params: [
+          {
+            name: 'a',
+            type: 'number',
+            description: 'The first number.',
+            sortOrder: 1,
+          },
+          {
+            name: 'b',
+            type: 'number',
+            description: 'The second number.',
+            sortOrder: 2,
+          },
+          {
+            name: 'removedParam',
+            type: 'number',
+            description: 'No longer exists.',
+            sortOrder: 3,
+          },
+        ],
+
+        returns: 'The sum of the two numbers.',
+
+        tags: [],
+      },
+
+      options: {
+        preserveStyle: true,
+      },
+    }
+
+    const plan = await runQAWithEnvOrThrow(executeJsDocUpdatePlan(context), layer)
+
+    console.dir(plan, { depth: null })
+
+    const removedParamPlan = plan.params.find((p) => p.name === 'removedParam')
+
+    expect(removedParamPlan).toBeDefined()
+
+    expect(removedParamPlan?.action.type).toBe('delete')
   }, 60_000)
 })

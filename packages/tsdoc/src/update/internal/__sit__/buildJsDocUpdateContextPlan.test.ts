@@ -19,11 +19,11 @@ const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(Layer.provideMerge
 const runQAWithEnvOrThrow = makeRunner(VercelAiModelServiceLive)
 
 const buildJsDocUpdateContextProgram = (sourceFile: string) => {
-  const { project, projectRoot } = updateFixture
+  const { project, projectRoot, projectName } = updateFixture
 
   const filePath = path.join(projectRoot, path.join('src', sourceFile))
   const program = Effect.gen(function* () {
-    const result = yield* analyzeFile({ project, projectRoot }, filePath, {
+    const result = yield* analyzeFile({ project, projectRoot, projectName }, filePath, {
       includeDebugInfo: true,
     })
     const contexts = buildJsDocUpdateContext('test-project', result)

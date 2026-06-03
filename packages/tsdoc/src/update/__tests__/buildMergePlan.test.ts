@@ -96,7 +96,9 @@ describe('buildMergePlan', () => {
       .mockReturnValueOnce(Effect.succeed(plan1))
       .mockReturnValueOnce(Effect.succeed(plan2))
 
-    mockCreateMergePlan.mockReturnValueOnce(mergePlan1).mockReturnValueOnce(mergePlan2)
+    mockCreateMergePlan
+      .mockReturnValueOnce(Effect.succeed(mergePlan1))
+      .mockReturnValueOnce(Effect.succeed(mergePlan2))
 
     const result = await Effect.runPromise(
       buildMergePlan('test-project', fileResult).pipe(
@@ -111,9 +113,9 @@ describe('buildMergePlan', () => {
 
     expect(mockBuildJsDocUpdateContextPlan).toHaveBeenCalledTimes(2)
 
-    expect(mockCreateMergePlan).toHaveBeenCalledWith(context1, plan1)
+    expect(mockCreateMergePlan).toHaveBeenCalledWith(fileResult.analysis.path, context1, plan1)
 
-    expect(mockCreateMergePlan).toHaveBeenCalledWith(context2, plan2)
+    expect(mockCreateMergePlan).toHaveBeenCalledWith(fileResult.analysis.path, context2, plan2)
   })
 
   test('should convert plan errors into UpdateError', async () => {

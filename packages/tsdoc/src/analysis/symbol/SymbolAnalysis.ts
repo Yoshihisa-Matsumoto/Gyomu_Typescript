@@ -1,3 +1,4 @@
+import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/index'
 import type { ComplexityMetrics } from '../metrics/ComplexityMetrics.js'
 import type { DomainSignals } from '../metrics/DomainSignals.js'
 import type { EffectSignals } from '../metrics/EffectSignals.js'
@@ -32,7 +33,7 @@ export interface SymbolAnalysis {
   /**
    * Symbol name.
    */
-  name: string
+  identity: SymbolIdentity
 
   /**
    * Symbol category.
@@ -83,9 +84,17 @@ export interface SymbolAnalysis {
    * Effect-related semantic signals.
    */
   effectSignals?: EffectSignals
+
+  /**
+   * Start offset of the symbol location
+   */
+  startOffset: number
 }
 
-export interface SymbolIdentity {
+export interface SymbolIDComposite {
   id: string
   qualifiedName: string
 }
+
+export const toIdentityKey = (identity: SymbolIdentity): string =>
+  `${identity.symbolId}::${identity.signatureId}`

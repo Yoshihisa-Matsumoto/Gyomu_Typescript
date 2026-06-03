@@ -23,7 +23,7 @@ export const buildMergePlan = (
     })
     const mergePlans = yield* Effect.forEach(contexts, (context) =>
       buildJsDocUpdateContextPlan(context).pipe(
-        Effect.map((plan) => createMergePlan(context, plan)),
+        Effect.flatMap((plan) => createMergePlan(fileResult.analysis.path, context, plan)),
         Effect.mapError(
           (error) =>
             new UpdateError({

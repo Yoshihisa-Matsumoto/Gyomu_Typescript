@@ -12,7 +12,7 @@ describe('detectNonGeneratedTag', () => {
       const tag: ParsedTag = {
         tagName,
         text: '',
-        order: 1,
+        sortOrder: 1,
       }
 
       expect(detectNonGeneratedTag(tag, context)).toEqual([])
@@ -23,7 +23,7 @@ describe('detectNonGeneratedTag', () => {
     const tag: ParsedTag = {
       tagName: 'customTag',
       text: '',
-      order: 1,
+      sortOrder: 1,
     }
 
     expect(detectNonGeneratedTag(tag, context)).toEqual([
@@ -41,7 +41,7 @@ describe('detectNonGeneratedTag', () => {
     const tag: ParsedTag = {
       tagName: 'see',
       text: '',
-      order: 1,
+      sortOrder: 1,
     }
 
     expect(detectNonGeneratedTag(tag, context)).toEqual([
@@ -59,7 +59,7 @@ describe('detectNonGeneratedTag', () => {
     const tag: ParsedTag = {
       tagName: '',
       text: '',
-      order: 1,
+      sortOrder: 1,
     }
 
     expect(detectNonGeneratedTag(tag, context)).toEqual([
@@ -77,7 +77,7 @@ describe('detectNonGeneratedTag', () => {
     const tag: ParsedTag = {
       tagName: 'Param',
       text: '',
-      order: 1,
+      sortOrder: 1,
     }
 
     expect(detectNonGeneratedTag(tag, context)).toEqual([

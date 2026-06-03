@@ -51,12 +51,23 @@ Do NOT perform semantic redesign.
   - preserve existing descriptions
   - create entries for missing parameters
   - update only when mismatched
+  - delete parameter documentation only when the parameter no longer exists
+  - Parameter order must match the function signature.
+  - When creating new items, assign order values that produce a stable and deterministic final layout.
 - returns:
   - preserve existing return descriptions
   - create a return description if missing and return value is meaningful
   - update only when clearly incorrect
-- tags: preserve unless invalid
+  - delete only when the function no longer returns a meaningful value
+  - When creating new items, assign order values that produce a stable and deterministic final layout.
+- tags:
+  - preserve unless invalid
+  - Tag order should preserve the existing documentation order whenever possible.
 - confidence should be high when changes are minimal
+- delete:
+  - delete only when documentation is clearly invalid or refers to removed code elements
+  - do not delete content solely because it is incomplete or low quality
+  - when uncertain, preserve
 
 ---
 

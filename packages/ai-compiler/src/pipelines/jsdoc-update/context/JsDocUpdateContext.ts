@@ -28,6 +28,7 @@ export interface ExistingJsDoc {
   summary?: string
   params: Array<{
     name: string
+    sortOrder: number
     type?: string
     description?: string
   }>
@@ -35,6 +36,7 @@ export interface ExistingJsDoc {
   tags: Array<{
     tag: string
     content: string
+    sortOrder: number
   }>
 }
 

@@ -1,3 +1,4 @@
+import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 import type { RawJsDoc } from './RawJsDoc.js'
 
 export interface ParsedJsDoc {
@@ -25,6 +26,10 @@ export interface ParsedJsDoc {
 
   humanEditSignals: Array<HumanEditSignal>
   raw: RawJsDoc
+
+  startOffset: number
+
+  endOffset: number
 }
 export interface HumanEditSignal {
   type:
@@ -57,6 +62,8 @@ export interface ProtectedRegion {
   start: number
   end: number
   content: string
+  before?: SymbolIdentity | undefined
+  after?: SymbolIdentity | undefined
 }
 export interface JsDocReturns {
   description?: string
@@ -97,7 +104,7 @@ export interface JsDocParam {
   /**
    * Physical order within the block.
    */
-  order: number
+  sortOrder: number
 }
 
 export interface ParsedTag {
@@ -112,6 +119,24 @@ export interface ParsedTag {
   tagName: string
 
   /**
+   * Stable identifier used to distinguish tags that share the same tagName.
+   *
+   * Examples:
+   *
+   * - `@template T` -> key = "T"
+   * - `@template TResult` -> key = "TResult"
+   * - `@param userId` -> key = "userId"
+   * - `@throws ValidationError` -> key = "ValidationError"
+   *
+   * This value is used during merge planning and application to match
+   * individual tags deterministically when multiple tags of the same
+   * kind exist.
+   *
+   * Undefined when the tag does not expose a natural identifier.
+   */
+  key?: string
+
+  /**
    * Raw tag content.
    */
   text?: string
@@ -124,5 +149,5 @@ export interface ParsedTag {
   /**
    * Physical order within the block.
    */
-  order: number
+  sortOrder: number
 }

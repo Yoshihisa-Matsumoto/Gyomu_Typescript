@@ -10,12 +10,14 @@ const timeout = 20000
 const jsDocFixture = createFixtureProject(path.join('analysis', 'jsdoc'))
 
 const tempJsdocProgram = (sourceFile: string) => {
-  const { project, projectRoot } = jsDocFixture
+  const { project, projectRoot, projectName } = jsDocFixture
 
   const filePath = path.join(projectRoot, path.join('src', sourceFile))
   return Effect.runSync(
     Effect.gen(function* () {
-      return yield* analyzeFile({ project, projectRoot }, filePath, { includeDebugInfo: true })
+      return yield* analyzeFile({ project, projectRoot, projectName }, filePath, {
+        includeDebugInfo: true,
+      })
     }),
   )
 }

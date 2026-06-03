@@ -11,12 +11,12 @@ const timeout = 20000
 const updateFixture = createFixtureProject(path.join('update'))
 
 const buildJsDocUpdateContextProgram = (sourceFile: string) => {
-  const { project, projectRoot } = updateFixture
+  const { project, projectRoot, projectName } = updateFixture
 
   const filePath = path.join(projectRoot, path.join('src', sourceFile))
   return Effect.runSync(
     Effect.gen(function* () {
-      const result = yield* analyzeFile({ project, projectRoot }, filePath, {
+      const result = yield* analyzeFile({ project, projectRoot, projectName }, filePath, {
         includeDebugInfo: true,
       })
       return buildJsDocUpdateContext('test-project', result)

@@ -59,6 +59,9 @@ export const parseJsDocStructure = (raw: RawJsDoc, doc: JSDoc): ParsedJsDoc => {
     humanEditSignals: [],
 
     raw,
+    startOffset: doc.getFullStart(),
+
+    endOffset: doc.getEnd(),
   }
 
   const description = normalizeJsDocText(doc.getDescription().trim())
@@ -75,8 +78,9 @@ export const parseJsDocStructure = (raw: RawJsDoc, doc: JSDoc): ParsedJsDoc => {
     parsed.tags.push({
       tagName,
       text,
+      ...withOptional({ key: extractTagKey(tag, rawTag, tagName, text, index) }),
       raw: rawTag,
-      order: index,
+      sortOrder: index,
     })
 
     if (tagName == 'remarks') parsed.remarks = text
@@ -109,6 +113,36 @@ export const parseJsDocStructure = (raw: RawJsDoc, doc: JSDoc): ParsedJsDoc => {
   return parsed
 }
 
+const extractTagKey = (
+  tag: JSDocTag,
+  rawTag: string,
+  tagName: string,
+  text: string,
+  index: number,
+): string | undefined => {
+  const firstWord = text.trim().split(/\s+/)[0]
+
+  if (Node.isJSDocParameterTag(tag)) return tag.getName()
+  if (Node.isJSDocTemplateTag(tag)) {
+    return extractTemplateKey(rawTag)
+  }
+  switch (tagName) {
+    case 'throws':
+      return firstWord || undefined
+
+    case 'example':
+      return String(index)
+
+    default:
+      return undefined
+  }
+}
+
+const extractTemplateKey = (rawTag: string): string | undefined => {
+  const match = rawTag.match(/^@template\s+([A-Za-z_$][A-Za-z0-9_$]*)/)
+  return match?.[1]
+}
+
 const getNormalizedCommentText = (tag: JSDocTag): string | undefined => {
   const text = tag.getCommentText()
 
@@ -138,7 +172,7 @@ const parseParamTag = (tag: JSDocParameterTag, order: number): JsDocParam => {
       type: parameterType,
     }),
 
-    order,
+    sortOrder: order,
   }
 }
 

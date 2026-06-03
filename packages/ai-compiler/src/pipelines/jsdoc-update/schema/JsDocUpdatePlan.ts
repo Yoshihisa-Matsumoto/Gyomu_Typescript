@@ -2,25 +2,43 @@ import { Confidence } from '@gyomu/schema/schemas/Confidence'
 import { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
 import { Schema } from 'effect'
 
-export const MergeAction = Schema.Literals(['replace', 'preserve', 'merge']).annotate({
+export const MergeActionSchema = Schema.Union([
+  Schema.Struct({
+    type: Schema.Literal('replace'),
+    value: Schema.String,
+  }).annotate({
+    description:
+      'Replace the existing content with the provided value. The value must contain the final content to apply.',
+  }),
+
+  Schema.Struct({
+    type: Schema.Literal('preserve'),
+  }).annotate({
+    description:
+      'Keep the existing content unchanged. Use when the current documentation is already adequate or uncertainty is high.',
+  }),
+
+  Schema.Struct({
+    type: Schema.Literal('delete'),
+  }).annotate({
+    description:
+      'Delete the existing content. Use only when the documented element no longer exists or the documentation is clearly invalid.',
+  }),
+]).annotate({
   description:
-    'Action for merging JSDoc elements. replace = overwrite, preserve = keep existing, merge = combine intelligently',
+    'Deterministic JSDoc update action. All replacement content must be embedded directly in the action so that application does not require additional context.',
 })
 
 export const SummaryPlan = Schema.Struct({
-  action: MergeAction,
-
-  value: Schema.optional(Schema.String).annotate({
-    description: 'Generated or updated summary text when action is replace',
-  }),
-
+  action: MergeActionSchema,
   confidence: Confidence,
 }).annotate({
-  description: 'Update plan for JSDoc summary field',
+  description:
+    'Update plan for the summary section. Prefer preserve. Use replace only when the summary is missing or clearly incorrect.',
 })
 
-export const JsDocTarget = Schema.Struct({
-  kind: Schema.Literals(['summary', 'param', 'return', 'tag']),
+export const JsDocTargetSchema = Schema.Struct({
+  kind: Schema.Literals(['summary', 'param', 'return', 'template', 'throws']),
 
   // param/tagの追加識別子
   key: Schema.optional(Schema.String),
@@ -29,13 +47,18 @@ export const JsDocTarget = Schema.Struct({
 })
 
 export const ParamPlan = Schema.Struct({
-  target: JsDocTarget,
+  target: JsDocTargetSchema,
 
   name: Schema.String.annotate({
     description: 'Parameter name from function signature',
   }),
 
-  action: MergeAction,
+  sortOrder: Schema.Number.annotate({
+    description:
+      'Parameter position in the function signature. The first parameter should have the lowest sortOrder. Preserve signature order when generating update plans.',
+  }),
+
+  action: MergeActionSchema,
 
   value: Schema.optional(
     Schema.Struct({
@@ -44,52 +67,47 @@ export const ParamPlan = Schema.Struct({
       }),
 
       description: Schema.optional(Schema.String).annotate({
-        description: 'Human-readable meaning of parameter',
+        description:
+          'Complete replacement parameter metadata. When using replace, provide the final parameter documentation to be written.',
       }),
     }),
   ).annotate({
-    description: 'Updated parameter metadata when action is replace or merge',
+    description: 'Updated parameter metadata when action is replace',
   }),
 
   confidence: Confidence,
 }).annotate({
-  description: 'Update plan for a single function parameter',
+  description:
+    'Parameter update plan. Delete only when the parameter no longer exists in the function signature. Preserve when unsure.',
 })
 
 export const ReturnPlan = Schema.Struct({
-  action: MergeAction,
-
-  value: Schema.optional(Schema.String).annotate({
-    description: 'Return value description when replacing',
-  }),
+  action: MergeActionSchema,
 
   confidence: Confidence,
 }).annotate({
-  description: 'Update plan for return JSDoc field',
+  description:
+    'Return documentation update plan. Delete only when the function no longer returns a meaningful value.',
 })
 
 export const TagPlan = Schema.Struct({
-  target: JsDocTarget,
+  target: JsDocTargetSchema,
 
   tag: Schema.String.annotate({
     description: 'JSDoc tag name (e.g. @throws, @template)',
   }),
 
-  action: MergeAction,
-
-  value: Schema.optional(
-    Schema.Struct({
-      content: Schema.optional(Schema.String).annotate({
-        description: 'Tag content text',
-      }),
-    }),
-  ).annotate({
-    description: 'Updated tag content when needed',
+  sortOrder: Schema.Number.annotate({
+    description:
+      'Stable ordering index for JSDoc tags. Preserve existing tag order whenever possible. New tags should be assigned a deterministic position relative to existing tags.',
   }),
+
+  action: MergeActionSchema,
 
   confidence: Confidence,
 }).annotate({
-  description: 'Generic JSDoc tag update plan',
+  description:
+    'Generic JSDoc tag update plan. Existing tags should normally be preserved. Delete only when the tag is clearly obsolete or invalid.',
 })
 
 export const Reasoning = Schema.Struct({
@@ -130,7 +148,18 @@ export const JsDocUpdatePlanSchema = Schema.Struct({
   reasoning: Reasoning,
   risk: Risk,
 }).annotate({
-  description: 'AI-generated structured plan for safely updating JSDoc',
+  description: `
+AI-generated structured plan for safely updating JSDoc.
+
+Prefer preserve over replace.
+Prefer replace over delete.
+
+Delete actions should be rare and only used when the documented target no longer exists or the documentation is clearly invalid.
+
+All replacement content must be included directly in the plan so that application can be performed without access to the original update context.
+`,
 })
 
+export type MergeAction = Schema.Schema.Type<typeof MergeActionSchema>
 export type JsDocUpdatePlan = Schema.Schema.Type<typeof JsDocUpdatePlanSchema>
+export type JsDocTarget = Schema.Schema.Type<typeof JsDocTargetSchema>

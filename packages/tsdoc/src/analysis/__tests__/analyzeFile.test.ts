@@ -16,12 +16,14 @@ const jsDocFixture = createFixtureProject(path.join('analysis', 'jsdoc'))
 const importPatternsFixture = createFixtureProject(path.join('analysis', 'import-patterns'))
 
 const tempJsdocProgram = (sourceFile: string) => {
-  const { project, projectRoot } = jsDocFixture
+  const { project, projectRoot, projectName } = jsDocFixture
 
   const filePath = path.join(projectRoot, path.join('src', sourceFile))
   return Effect.runSync(
     Effect.gen(function* () {
-      return yield* analyzeFile({ project, projectRoot }, filePath, { includeDebugInfo: true })
+      return yield* analyzeFile({ project, projectRoot, projectName }, filePath, {
+        includeDebugInfo: true,
+      })
     }),
   )
 }
@@ -30,11 +32,11 @@ describe('analyzeFile', () => {
   it(
     'extracts exported symbols from basic-export fixture',
     () => {
-      const { project, projectRoot } = basicExportFixture
+      const { project, projectRoot, projectName } = basicExportFixture
 
       const filePath = path.join(projectRoot, path.join('src', 'index.ts'))
       const program = Effect.gen(function* () {
-        const result = yield* analyzeFile({ project, projectRoot }, filePath)
+        const result = yield* analyzeFile({ project, projectRoot, projectName }, filePath)
 
         expect(result.analysis.exports).toHaveLength(5)
 
@@ -73,18 +75,18 @@ describe('analyzeFile', () => {
   it(
     'analyzes export aliases, default exports, re-exports and type-only exports',
     () => {
-      const { project, projectRoot } = exportPatternsFixture
+      const { project, projectRoot, projectName } = exportPatternsFixture
 
       const filePath = path.join(projectRoot, 'src/index.ts')
 
       const program = Effect.gen(function* () {
-        const result = yield* analyzeFile({ project, projectRoot }, filePath)
+        const result = yield* analyzeFile({ project, projectRoot, projectName }, filePath)
 
         expect(
           result.analysis.exports.map((x) => ({
             exportedName: x.exportedName,
             kind: x.symbol.kind,
-            symbolName: x.symbol.name,
+            symbolName: x.symbol.identity.symbolId,
             isDefault: x.isDefault,
             isTypeOnly: x.isTypeOnly,
           })),
@@ -192,11 +194,11 @@ describe('analyzeFile', () => {
     it(
       'analyzes import declarations',
       () => {
-        const { project, projectRoot } = importPatternsFixture
+        const { project, projectRoot, projectName } = importPatternsFixture
 
         const filePath = path.join(projectRoot, 'src/index.ts')
         const program = Effect.gen(function* () {
-          const result = yield* analyzeFile({ project, projectRoot }, filePath)
+          const result = yield* analyzeFile({ project, projectRoot, projectName }, filePath)
 
           expect(result.analysis.imports).toEqual([
             {

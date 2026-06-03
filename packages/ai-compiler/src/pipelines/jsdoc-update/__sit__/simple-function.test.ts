@@ -97,11 +97,13 @@ describeIfApiKey('executeJsDocUpdatePlan integration', () => {
             name: 'a',
             type: 'number',
             description: 'The first number.',
+            sortOrder: 1,
           },
           {
             name: 'b',
             type: 'number',
             description: 'The second number.',
+            sortOrder: 2,
           },
         ],
 
@@ -119,10 +121,10 @@ describeIfApiKey('executeJsDocUpdatePlan integration', () => {
 
     console.dir(plan, { depth: null })
 
-    expect(plan.summary.action).toBe('preserve')
+    expect(plan.summary.action.type).toBe('preserve')
 
-    expect(plan.params.every((p) => p.action === 'preserve')).toBe(true)
+    expect(plan.params.every((p) => p.action.type === 'preserve')).toBe(true)
 
-    expect(plan.returns.action).toBe('preserve')
+    expect(plan.returns.action.type).toBe('preserve')
   }, 60_000)
 })

@@ -10,4 +10,9 @@ export interface ProjectContext {
    * Project root directory.
    */
   projectRoot: string
+
+  /**
+   * Project name
+   */
+  projectName: string
 }

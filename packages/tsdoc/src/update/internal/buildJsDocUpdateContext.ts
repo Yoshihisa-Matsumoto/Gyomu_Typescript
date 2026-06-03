@@ -42,12 +42,9 @@ export const buildJsDocUpdateContext = (
         relativePath: sourceFilePath,
       },
       mode: 'light',
-      target: {
-        signatureId: symbol.signature.id,
-        symbolId: symbol.name,
-      },
+      target: symbol.identity,
       symbol: {
-        name: symbol.name,
+        name: symbol.identity.symbolId,
         kind: symbol.kind,
       },
       code: {
@@ -87,6 +84,7 @@ const buildExistingJsDoc = (
       ...withOptional({ summary: parsedJsDoc.summary, returns: parsedJsDoc.returns?.description }),
       params: parsedJsDoc.params.map((p) => ({
         name: p.name,
+        sortOrder: p.sortOrder,
         ...withOptional({
           type: p.type,
           description: p.description,
@@ -97,6 +95,7 @@ const buildExistingJsDoc = (
         .map((t) => ({
           tag: t.tagName,
           content: t.text ?? '',
+          sortOrder: t.sortOrder,
         })),
     }
   }
