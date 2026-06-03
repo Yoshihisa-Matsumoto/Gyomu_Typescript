@@ -5,10 +5,19 @@ export const applyFileUpdatePlan = (sourceContent: string, plan: FileUpdatePlan)
   const edits = [...plan.edits].sort((a, b) => b.startOffset - a.startOffset)
   let result = sourceContent
   for (const part of edits) {
-    console.log(result)
+    let newText = part.newText
+    const prefix = result.slice(0, part.startOffset)
+    if (part.startOffset == part.endOffset && part.startOffset > 1) {
+      if (!isPreviousLineEmpty(prefix)) newText = '\n' + newText
+    }
+
     // lines.splice(part.startLine, part.endLine - part.startLine + 1, ...part.newText.split('\n'))
-    result = result.slice(0, part.startOffset) + part.newText + result.slice(part.endOffset)
+    result = prefix + newText + result.slice(part.endOffset)
   }
   return result
   // return lines.join('\n')
+}
+
+const isPreviousLineEmpty = (prefix: string): boolean => {
+  return /(?:\r?\n){2}$/.test(prefix)
 }

@@ -29,35 +29,41 @@ describe('renderJsDocString.ts', () => {
   })
   describe('renderJsDocString', () => {
     it('renders empty jsdoc', () => {
-      expect(renderJsDocString([])).toBeUndefined()
+      expect(renderJsDocString([], false)).toBeUndefined()
     })
     it('renders jsdoc with text', () => {
       expect(
-        renderJsDocString([
-          {
-            type: 'text',
-            text: 'Create user',
-          },
-        ]),
+        renderJsDocString(
+          [
+            {
+              type: 'text',
+              text: 'Create user',
+            },
+          ],
+          false,
+        ),
       ).toBe(`/**
  * Create user
 */`)
     })
     it('renders blank line', () => {
       expect(
-        renderJsDocString([
-          {
-            type: 'text',
-            text: 'Create user',
-          },
-          {
-            type: 'blank',
-          },
-          {
-            type: 'tag',
-            text: '@returns User',
-          },
-        ]),
+        renderJsDocString(
+          [
+            {
+              type: 'text',
+              text: 'Create user',
+            },
+            {
+              type: 'blank',
+            },
+            {
+              type: 'tag',
+              text: '@returns User',
+            },
+          ],
+          false,
+        ),
       ).toBe(`/**
  * Create user
  *
@@ -66,26 +72,29 @@ describe('renderJsDocString.ts', () => {
     })
     it('renders complete jsdoc', () => {
       expect(
-        renderJsDocString([
-          {
-            type: 'text',
-            text: 'Create user',
-          },
-          {
-            type: 'blank',
-          },
-          {
-            type: 'tag',
-            text: '@param id User ID',
-          },
-          {
-            type: 'blank',
-          },
-          {
-            type: 'tag',
-            text: '@returns User',
-          },
-        ]),
+        renderJsDocString(
+          [
+            {
+              type: 'text',
+              text: 'Create user',
+            },
+            {
+              type: 'blank',
+            },
+            {
+              type: 'tag',
+              text: '@param id User ID',
+            },
+            {
+              type: 'blank',
+            },
+            {
+              type: 'tag',
+              text: '@returns User',
+            },
+          ],
+          false,
+        ),
       ).toBe(`/**
  * Create user
  *

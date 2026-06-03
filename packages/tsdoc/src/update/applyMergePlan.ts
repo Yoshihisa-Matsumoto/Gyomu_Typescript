@@ -17,6 +17,7 @@ export const applyMergePlan = (
   return Effect.gen(function* () {
     const targetExport = fileResult.analysis.exports.find((exp) => {
       const identity = exp.symbol.identity
+      console.log(identity)
       return (
         identity.signatureId == plan.target.signatureId && identity.symbolId == plan.target.symbolId
       )

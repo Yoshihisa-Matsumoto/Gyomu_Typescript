@@ -2,7 +2,7 @@ import { fromSync } from '@gyomu/schema/effect'
 import { Effect } from 'effect'
 import { buildJsDocUpdateContext } from './internal/buildJsDocUpdateContext.js'
 import { UpdateError } from './error/UpdateError.js'
-import { buildJsDocUpdateContextPlan } from './internal/buildJsDocUpdatePlan.js'
+import { buildJsDocUpdatePlan } from './internal/buildJsDocUpdatePlan.js'
 import { createMergePlan } from './internal/createMargePlan.js'
 import type { FileSystem } from 'effect'
 import type { FileAnalysisResult } from '../analysis/file/FileAnalysisResult.js'
@@ -22,7 +22,7 @@ export const buildMergePlan = (
       return buildJsDocUpdateContext(projectName, fileResult)
     })
     const mergePlans = yield* Effect.forEach(contexts, (context) =>
-      buildJsDocUpdateContextPlan(context).pipe(
+      buildJsDocUpdatePlan(context).pipe(
         Effect.flatMap((plan) => createMergePlan(fileResult.analysis.path, context, plan)),
         Effect.mapError(
           (error) =>

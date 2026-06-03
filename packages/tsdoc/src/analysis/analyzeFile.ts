@@ -1,4 +1,5 @@
 import { Effect } from 'effect'
+import { Project } from 'ts-morph'
 import { toProjectAbsolutePath, toProjectRelativePath } from '../shared/index.js'
 import { loadSourceFile } from './shared/loadSourceFile.js'
 import { extractExport } from './extract/extractExport.js'
@@ -8,7 +9,6 @@ import type { FileAnalysisMetadata, FileAnalysisResult } from './file/FileAnalys
 import type { AnalysisOptions } from './AnalysisOption.js'
 import type { FileAnalysis } from './file/FileAnalysis.js'
 import type { AnalysisError } from './error/AnalysisError.js'
-import type { Project } from 'ts-morph'
 import type { ProjectRelativePath } from './types.js'
 import type { ProjectContext } from './project/ProjectContext.js'
 import type { ParsedJsDoc } from './jsdoc/ParsedJsDoc.js'

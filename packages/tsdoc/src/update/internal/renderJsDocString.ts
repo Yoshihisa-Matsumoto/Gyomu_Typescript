@@ -1,9 +1,12 @@
 import type { JsDocLine } from '../jsdoc/JsDocLine.js'
 
-export const renderJsDocString = (lines: Array<JsDocLine>): string | undefined => {
+export const renderJsDocString = (
+  lines: Array<JsDocLine>,
+  isAdded: boolean,
+): string | undefined => {
   if (lines.length == 0) return undefined
   const jsDocStart = '/**'
-  const jsDocEnd = '*/'
+  const jsDocEnd = isAdded ? ' */\n' : ' */'
   const stringLines: Array<string> = [jsDocStart, ...lines.map((l) => computeLine(l)), jsDocEnd]
   return stringLines.join('\n')
 }

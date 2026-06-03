@@ -25,6 +25,7 @@ export const processTsDocUpdate = (
     // console.dir(result, { depth: null })
     const mergePlans = yield* buildMergePlan(context.projectName, fileResult)
 
+    console.dir(fileResult, { depth: null })
     const updateJsDocs = yield* applyMergePlans(fileResult, mergePlans)
 
     const renderedJsDocs = renderJsDocs(updateJsDocs)

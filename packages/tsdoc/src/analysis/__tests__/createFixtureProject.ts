@@ -2,8 +2,8 @@ import { join, resolve } from 'node:path'
 import { Project } from 'ts-morph'
 
 const FIXTURE_ROOT = './test-fixtures'
-export const createFixtureProject = (fixtureName: string) => {
-  const fixtureRoot = resolve(FIXTURE_ROOT, fixtureName)
+export const createFixtureProject = (fixtureName: string, fixtureRootPath?: string) => {
+  const fixtureRoot = resolve(fixtureRootPath ?? FIXTURE_ROOT, fixtureName)
 
   return {
     project: new Project({

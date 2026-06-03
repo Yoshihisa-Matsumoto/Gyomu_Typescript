@@ -5,7 +5,7 @@ import type { RenderedSymbolJsDoc } from './jsdoc/RenderedSymbolJsDoc.js'
 
 export const renderJsDoc = (updated: UpdatedSymbolJsDoc): RenderedSymbolJsDoc => {
   const lines = renderJsDocLines(updated)
-  const document = renderJsDocString(lines)
+  const document = renderJsDocString(lines, updated.jsDoc.startOffset == updated.jsDoc.endOffset)
   return {
     target: updated.target,
     jsDoc: document,

@@ -8,7 +8,7 @@ import 'dotenv/config'
 import { createFixtureProject } from '../../../analysis/__tests__/createFixtureProject.js'
 import { analyzeFile } from '../../../analysis/analyzeFile.js'
 import { buildJsDocUpdateContext } from '../buildJsDocUpdateContext.js'
-import { buildJsDocUpdateContextPlan } from '../buildJsDocUpdatePlan.js'
+import { buildJsDocUpdatePlan } from '../buildJsDocUpdatePlan.js'
 import type { JsDocUpdatePlan } from '@gyomu/ai-compiler/jsdoc-update'
 
 const timeout = 20000
@@ -31,7 +31,7 @@ const buildJsDocUpdateContextProgram = (sourceFile: string) => {
     const results: Array<JsDocUpdatePlan> = []
 
     for (const context of contexts) {
-      const plan = yield* buildJsDocUpdateContextPlan(context)
+      const plan = yield* buildJsDocUpdatePlan(context)
       results.push(plan)
     }
     return results
