@@ -28,6 +28,7 @@ export const analyzeFunctionDeclaration = (args: JSDocableTagAnalysisArg<Functio
     },
     startOffset: args.declaration.getStart(),
     ...withOptional({ jsDoc: prepared.jsDoc }),
+    members: [],
   } satisfies SymbolAnalysis
   return {
     symbol,

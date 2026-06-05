@@ -1,3 +1,5 @@
+import type { ParameterAnalysis, TypeAnalysis } from './SymbolModel.js'
+
 export type MemberAnalysis = MethodMemberAnalysis | PropertyMemberAnalysis
 
 export interface MethodMemberAnalysis {
@@ -8,6 +10,8 @@ export interface MethodMemberAnalysis {
   parameters: Array<ParameterAnalysis>
 
   returnType?: TypeAnalysis
+  static: boolean
+  visibility: MemberAccessor
 }
 
 export interface PropertyMemberAnalysis {
@@ -18,20 +22,9 @@ export interface PropertyMemberAnalysis {
   type?: TypeAnalysis
 
   readonly: boolean
+  optional: boolean
+  static: boolean
+  visibility: MemberAccessor
 }
 
-export interface ParameterAnalysis {
-  name: string
-
-  required: boolean
-
-  rest: boolean
-
-  type?: TypeAnalysis
-
-  description?: string
-}
-
-export interface TypeAnalysis {
-  text: string
-}
+export type MemberAccessor = 'private' | 'protected' | 'public'

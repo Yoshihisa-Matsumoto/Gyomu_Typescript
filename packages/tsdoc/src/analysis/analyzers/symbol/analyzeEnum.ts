@@ -11,6 +11,7 @@ export const analyzeEnumDeclaration = (args: JSDocableTagAnalysisArg<EnumDeclara
     args.metadata,
     getSignatureId,
   )
+
   const symbol = {
     id: prepared.id,
     signature: prepared.signature,
@@ -26,6 +27,7 @@ export const analyzeEnumDeclaration = (args: JSDocableTagAnalysisArg<EnumDeclara
     },
     startOffset: args.declaration.getStart(),
     ...withOptional({ jsDoc: prepared.jsDoc }),
+    members: [],
   } satisfies SymbolAnalysis
   return {
     symbol,

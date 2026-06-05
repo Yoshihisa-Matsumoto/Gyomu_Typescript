@@ -4,6 +4,7 @@ import type { DomainSignals } from '../metrics/DomainSignals.js'
 import type { EffectSignals } from '../metrics/EffectSignals.js'
 import type { JsDocAnalysis } from '../jsdoc/JsDocAnalysis.js'
 import type { SignatureAnalysis, SymbolKind } from './SymbolModel.js'
+import type { MemberAnalysis } from './MemberAnalysis.js'
 
 /**
  * Detailed analysis result for a symbol declaration.
@@ -89,6 +90,8 @@ export interface SymbolAnalysis {
    * Start offset of the symbol location
    */
   startOffset: number
+
+  members: Array<MemberAnalysis>
 }
 
 export interface SymbolIDComposite {

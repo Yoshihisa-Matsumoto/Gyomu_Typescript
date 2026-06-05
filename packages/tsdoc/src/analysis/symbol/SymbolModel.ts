@@ -98,7 +98,7 @@ export interface ParameterAnalysis {
   /**
    * Parameter type text representation.
    */
-  type?: string
+  type?: TypeAnalysis
 
   /**
    * Whether the parameter is optional.
@@ -119,4 +119,7 @@ export interface ParameterAnalysis {
    * Object-specific structural metrics.
    */
   objectMetrics?: ObjectMetrics
+}
+export interface TypeAnalysis {
+  text: string
 }

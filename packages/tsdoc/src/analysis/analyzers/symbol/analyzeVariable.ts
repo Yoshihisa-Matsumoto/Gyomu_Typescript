@@ -40,6 +40,7 @@ export const analyzeVariableDeclaration = (args: {
       .getStart(),
     ...withOptional({
       jsDoc: prepared.jsDoc,
+      members: [],
     }),
   } satisfies SymbolAnalysis
 
