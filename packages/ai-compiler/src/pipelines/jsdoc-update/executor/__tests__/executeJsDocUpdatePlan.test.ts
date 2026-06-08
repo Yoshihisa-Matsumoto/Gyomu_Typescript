@@ -8,31 +8,33 @@ import type { JsDocUpdatePlan } from '../../schema/JsDocUpdatePlan.js'
 
 describe('executeJsDocUpdatePlan', () => {
   test('returns object from AiModelService', async () => {
-    const expected: JsDocUpdatePlan = {
-      identity: {
-        signatureId: '(filePath: string) => string',
-        symbolId: 'readFile',
+    const expected: JsDocUpdatePlan = [
+      {
+        identity: {
+          signatureId: '(filePath: string) => string',
+          symbolId: 'readFile',
+        },
+        summary: {
+          action: { type: 'replace', value: 'Reads file content' },
+          confidence: 0.95,
+        },
+        params: [],
+        returns: {
+          action: { type: 'preserve' },
+          confidence: 1,
+        },
+        tags: [],
+        reasoning: {
+          summary: 'Test',
+          paramMapping: 'Test',
+          returnMapping: 'Test',
+        },
+        risk: {
+          hasHumanConflict: false,
+          riskLevel: 'low',
+        },
       },
-      summary: {
-        action: { type: 'replace', value: 'Reads file content' },
-        confidence: 0.95,
-      },
-      params: [],
-      returns: {
-        action: { type: 'preserve' },
-        confidence: 1,
-      },
-      tags: [],
-      reasoning: {
-        summary: 'Test',
-        paramMapping: 'Test',
-        returnMapping: 'Test',
-      },
-      risk: {
-        hasHumanConflict: false,
-        riskLevel: 'low',
-      },
-    }
+    ]
 
     const mockAiModelService = Layer.succeed(AiModelService, {
       generateObject: () =>

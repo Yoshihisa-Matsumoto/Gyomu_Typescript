@@ -23,6 +23,7 @@ describe('renderJsDoc', () => {
         filePath: 'src/user.ts',
       },
       jsDoc: { startOffset: 10, endOffset: 15 },
+      indent: '  ',
     } as any
 
     const lines = [
@@ -35,9 +36,9 @@ describe('renderJsDoc', () => {
     vi.mocked(renderJsDocLines).mockReturnValue(lines)
 
     vi.mocked(renderJsDocString).mockReturnValue(
-      `/**
- * Create user
- */`,
+      `  /**
+   * Create user
+   */`,
     )
 
     const result = renderJsDoc(updated)
@@ -46,15 +47,16 @@ describe('renderJsDoc', () => {
     expect(renderJsDocLines).toHaveBeenCalledWith(updated)
 
     expect(renderJsDocString).toHaveBeenCalledTimes(1)
-    expect(renderJsDocString).toHaveBeenCalledWith(lines)
+    expect(renderJsDocString).toHaveBeenCalledWith(lines, false, '  ')
 
     expect(result).toEqual({
-      startOffset: 10,
-      endOffset: 15,
+      startOffset: 8,
+      endOffset: 13,
       target: updated.target,
-      jsDoc: `/**
- * Create user
- */`,
+      jsDoc: `  /**
+   * Create user
+   */`,
+      indent: 2,
     })
   })
 
@@ -66,6 +68,7 @@ describe('renderJsDoc', () => {
         symbolId: 'aa',
       },
       jsDoc: { startOffset: 10, endOffset: 15 },
+      indent: '',
     } as any
 
     vi.mocked(renderJsDocLines).mockReturnValue([])
@@ -79,6 +82,7 @@ describe('renderJsDoc', () => {
       endOffset: 15,
       target: updated.target,
       jsDoc: undefined,
+      indent: 0,
     })
   })
 })

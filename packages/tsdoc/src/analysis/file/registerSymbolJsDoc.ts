@@ -1,5 +1,6 @@
 import { AnalysisError } from '../error/AnalysisError.js'
 import type { ExtractedJsDoc } from '../jsdoc/JsDocAnalysis.js'
+import type { ParsedJsDoc } from '../jsdoc/ParsedJsDoc.js'
 import type { SymbolId } from '../types.js'
 import type { FileAnalysisMetadata } from './FileAnalysisResult.js'
 
@@ -9,7 +10,7 @@ export const registerSymbolJsDoc = (
   extractedjsDoc?: ExtractedJsDoc,
 ) => {
   if (extractedjsDoc) {
-    const parsed = extractedjsDoc.parsed[0]
+    const parsed: ParsedJsDoc | undefined = extractedjsDoc.parsed[0]
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (extractedjsDoc.parsed.length !== 1 || !parsed) {
       throw new AnalysisError({

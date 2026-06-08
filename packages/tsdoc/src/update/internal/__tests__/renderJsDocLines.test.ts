@@ -16,6 +16,7 @@ describe('renderJsDocLines', () => {
         startOffset: 0,
         endOffset: 0,
       },
+      indent: '',
     })
 
     expect(result).toEqual([])
@@ -36,6 +37,7 @@ describe('renderJsDocLines', () => {
         startOffset: 0,
         endOffset: 0,
       },
+      indent: '',
     })
 
     expect(result).toEqual([
@@ -60,6 +62,7 @@ describe('renderJsDocLines', () => {
         startOffset: 0,
         endOffset: 0,
       },
+      indent: '',
     })
 
     expect(result).toEqual([
@@ -101,8 +104,8 @@ describe('renderJsDocLines', () => {
         startOffset: 0,
         endOffset: 0,
       },
+      indent: '',
     })
-
     expect(result).toEqual([
       {
         type: 'text',
@@ -142,6 +145,7 @@ describe('renderJsDocLines', () => {
         startOffset: 0,
         endOffset: 0,
       },
+      indent: '',
     })
 
     expect(result).toEqual([
@@ -177,6 +181,7 @@ describe('renderJsDocLines', () => {
         startOffset: 0,
         endOffset: 0,
       },
+      indent: '',
     })
 
     expect(result).toEqual([
@@ -203,6 +208,7 @@ describe('renderJsDocLines', () => {
         startOffset: 0,
         endOffset: 0,
       },
+      indent: '',
     })
 
     expect(result).toEqual([
@@ -235,6 +241,7 @@ describe('renderJsDocLines', () => {
         startOffset: 0,
         endOffset: 0,
       },
+      indent: '',
     })
 
     expect(result).toEqual([
@@ -265,6 +272,7 @@ describe('renderJsDocLines', () => {
         startOffset: 0,
         endOffset: 0,
       },
+      indent: '  ',
     })
 
     expect(result).toEqual([
@@ -301,6 +309,7 @@ describe('renderJsDocLines', () => {
         startOffset: 0,
         endOffset: 0,
       },
+      indent: '',
     })
 
     expect(result).toEqual([
@@ -331,6 +340,7 @@ describe('renderJsDocLines', () => {
         startOffset: 0,
         endOffset: 0,
       },
+      indent: '',
     })
 
     expect(result).toEqual([
@@ -381,6 +391,7 @@ describe('renderJsDocLines', () => {
         startOffset: 0,
         endOffset: 0,
       },
+      indent: '',
     })
 
     expect(result).toEqual([

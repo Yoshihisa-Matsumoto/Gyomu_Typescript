@@ -2,6 +2,7 @@ import { describe, expect, test } from 'vitest'
 import { Effect } from 'effect'
 
 import { applyMergePlan, applyMergePlans } from '../applyMergePlan.js'
+import { toIdentityKey } from '../../analysis/symbol/SymbolAnalysis.js'
 
 const createFileResult = (symbolId: string, existingJsDoc?: any): any => ({
   analysis: {
@@ -20,6 +21,24 @@ const createFileResult = (symbolId: string, existingJsDoc?: any): any => ({
   },
   metadata: {
     parsedJsDocs: new Map(existingJsDoc ? [[symbolId, existingJsDoc]] : []),
+    symbols: new Map([
+      [
+        toIdentityKey({
+          symbolId,
+          signatureId: '() => void',
+        }),
+        {
+          analysis: {
+            id: symbolId,
+            identity: {
+              symbolId,
+              signatureId: '() => void',
+            },
+          },
+          indent: '',
+        },
+      ],
+    ]),
   },
 })
 
@@ -53,7 +72,7 @@ describe('applyMergePlan', () => {
       ),
     )
 
-    expect(result.summary).toBe('New summary')
+    expect(result.updatedJsDoc.summary).toBe('New summary')
   })
   test('deletes returns', async () => {
     const result = await Effect.runPromise(
@@ -85,7 +104,7 @@ describe('applyMergePlan', () => {
       ),
     )
 
-    expect(result.returns).toBeUndefined()
+    expect(result.updatedJsDoc.returns).toBeUndefined()
   })
   test('adds parameter', async () => {
     const result = await Effect.runPromise(
@@ -127,7 +146,7 @@ describe('applyMergePlan', () => {
       ),
     )
 
-    expect(result.params).toEqual([
+    expect(result.updatedJsDoc.params).toEqual([
       {
         name: 'id',
         sortOrder: 1,
@@ -183,7 +202,7 @@ describe('applyMergePlan', () => {
       ),
     )
 
-    expect(result.tags).toEqual([
+    expect(result.updatedJsDoc.tags).toEqual([
       {
         tagName: 'throws',
         key: 'ValidationError',
@@ -236,6 +255,40 @@ describe('applyMergePlans', () => {
         parsedJsDocs: new Map([
           ['add', { summary: 'old add', params: [], tags: [] }],
           ['subtract', { summary: 'old sub', params: [], tags: [] }],
+        ]),
+        symbols: new Map([
+          [
+            toIdentityKey({
+              symbolId: 'add',
+              signatureId: '() => void',
+            }),
+            {
+              analysis: {
+                id: 'add',
+                identity: {
+                  symbolId: 'add',
+                  signatureId: '() => void',
+                },
+              },
+              indent: '',
+            },
+          ],
+          [
+            toIdentityKey({
+              symbolId: 'subtract',
+              signatureId: '() => void',
+            }),
+            {
+              analysis: {
+                id: 'subtract',
+                identity: {
+                  symbolId: 'subtract',
+                  signatureId: '() => void',
+                },
+              },
+              indent: '',
+            },
+          ],
         ]),
       },
     } as any

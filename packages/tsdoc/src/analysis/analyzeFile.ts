@@ -5,7 +5,11 @@ import { loadSourceFile } from './shared/loadSourceFile.js'
 import { extractExport } from './extract/extractExport.js'
 import { extractImport } from './extract/extractImport.js'
 import { toIdentityKey } from './symbol/SymbolAnalysis.js'
-import type { FileAnalysisMetadata, FileAnalysisResult } from './file/FileAnalysisResult.js'
+import type {
+  DocumentableTarget,
+  FileAnalysisMetadata,
+  FileAnalysisResult,
+} from './file/FileAnalysisResult.js'
 import type { AnalysisOptions } from './AnalysisOption.js'
 import type { FileAnalysis } from './file/FileAnalysis.js'
 import type { AnalysisError } from './error/AnalysisError.js'
@@ -44,6 +48,7 @@ export const analyzeFile = (
   Effect.gen(function* () {
     const metadata: FileAnalysisMetadata = {
       parsedJsDocs: new Map<string, ParsedJsDoc>(),
+      symbols: new Map<string, DocumentableTarget>(),
     }
     const sourceFullPath = toProjectAbsolutePath(sourceFilePath, context.projectRoot)
     const sourceRelativePath = toProjectRelativePath(sourceFilePath, context.projectRoot)

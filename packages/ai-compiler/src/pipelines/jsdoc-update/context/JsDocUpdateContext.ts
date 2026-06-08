@@ -22,6 +22,21 @@ interface JsDocContextBase {
 
   existingJsDoc?: ExistingJsDoc
   relatedSymbols: Array<RelatedSymbol>
+
+  children?: Array<ContextEntry>
+}
+
+export interface ContextEntry {
+  id: string
+
+  name: string
+
+  kind: 'property' | 'method' | 'parameter' | 'type'
+
+  type?: string
+
+  existingJsDoc?: ExistingJsDoc
+  children?: Array<ContextEntry>
 }
 
 export interface ExistingJsDoc {

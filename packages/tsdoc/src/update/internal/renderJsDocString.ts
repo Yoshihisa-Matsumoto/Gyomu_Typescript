@@ -3,21 +3,26 @@ import type { JsDocLine } from '../jsdoc/JsDocLine.js'
 export const renderJsDocString = (
   lines: Array<JsDocLine>,
   isAdded: boolean,
+  indent: string,
 ): string | undefined => {
   if (lines.length == 0) return undefined
-  const jsDocStart = '/**'
-  const jsDocEnd = isAdded ? ' */\n' : ' */'
-  const stringLines: Array<string> = [jsDocStart, ...lines.map((l) => computeLine(l)), jsDocEnd]
+  const jsDocStart = indent + '/**'
+  const jsDocEnd = indent + (isAdded ? ' */\n' : ' */')
+  const stringLines: Array<string> = [
+    jsDocStart,
+    ...lines.map((l) => computeLine(l, indent)),
+    jsDocEnd,
+  ]
   return stringLines.join('\n')
 }
 
-export const computeLine = (line: JsDocLine): string => {
+export const computeLine = (line: JsDocLine, indent: string): string => {
   switch (line.type) {
     case 'blank':
-      return ' *'
+      return indent + ' *'
     case 'text':
-      return ` * ${line.text}`
+      return indent + ` * ${line.text}`
     case 'tag':
-      return ` * ${line.text}`
+      return indent + ` * ${line.text}`
   }
 }

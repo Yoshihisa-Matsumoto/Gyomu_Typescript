@@ -1,58 +1,67 @@
-import { Node, SyntaxKind } from 'ts-morph'
 import { withOptional } from '@gyomu/schema'
+import { Node } from 'ts-morph'
+import { createMemberIdentityAndId } from '../../shared/createMemberIdentity.js'
 import { analyzeType } from './analyzeType.js'
-import type { Expression, ParameterDeclaration, TypeNode } from 'ts-morph'
-import type { ParameterAnalysis, ParameterStructure } from '../../symbol/SymbolModel.js'
+import type { ParameterDeclaration } from 'ts-morph'
+import type { ProjectRelativePath } from '../../types.js'
+import type { FileAnalysisMetadata } from '../../file/FileAnalysisResult.js'
+import type {
+  MemberIdentityMemberPath,
+  MemberIdentityOwnerSymbolId,
+  NonDocumentablePropertyMemberAnalysis,
+} from '../../symbol/MemberAnalysis.js'
+import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
 
-export const analyzeParameter = (node: ParameterDeclaration): ParameterAnalysis => {
+export const analyzeParameter = (
+  node: ParameterDeclaration,
+  sourceRelativePath: ProjectRelativePath,
+  metadata: FileAnalysisMetadata,
+  ownerSymbolId: MemberIdentityOwnerSymbolId,
+  ownerSymbolIdentity: SymbolIdentity,
+  memberPath: MemberIdentityMemberPath,
+  sourceFullText: string,
+): NonDocumentablePropertyMemberAnalysis => {
   const typeNode = node.getTypeNode()
+  const name = node.getName()
   const initializer = node.getInitializer()
+  const { id, identity } = createMemberIdentityAndId(
+    {
+      ownerSymbolId,
+      memberPath,
+      signatureId: name,
+    },
+    ownerSymbolIdentity,
+  )
   return {
-    name: node.getName(),
+    kind: 'property',
+    documentable: false,
+    readonly: node.isReadonly(),
+    source: 'parameter-declaration',
+    static: Node.isStaticable(node) ? node.isStatic() : false,
+    visibility: 'public',
+    ownerSymbolId,
+    id,
+    identity,
+    name,
 
     optional: !!node.getQuestionTokenNode(),
 
     rest: !!node.getDotDotDotToken(),
 
-    ...withOptional({ type: analyzeType({ node: typeNode, initializer }) }),
+    ...withOptional({
+      type: analyzeType({
+        node: typeNode,
+        initializer,
+        sourcePath: sourceRelativePath,
+        metadata,
+        ownerSymbolId,
+        ownerSymbolIdentity,
+        memberPath,
+        nodeName: [name],
+        sourceFullText,
+      }),
+    }),
 
-    structure: analyzeParameterStructure(withOptional({ node: typeNode, initializer })),
+    // structure: analyzeParameterStructure(withOptional({ node: typeNode, initializer })),
   }
-}
-
-const analyzeParameterStructure = (args: {
-  node?: TypeNode
-  initializer?: Expression
-}): ParameterStructure => {
-  const { node, initializer } = args
-  if (node) {
-    if (Node.isUnionTypeNode(node)) return 'union'
-    if (Node.isFunctionTypeNode(node)) return 'function'
-    if (Node.isUnionTypeNode(node)) return 'union'
-    if (Node.isArrayTypeNode(node)) return 'array'
-    if (
-      Node.isNumberKeyword(node) ||
-      Node.isStringKeyword(node) ||
-      Node.isStringLiteral(node) ||
-      Node.isBooleanKeyword(node) ||
-      Node.isLiteralTypeNode(node) ||
-      Node.isStringKeyword(node) ||
-      Node.isStringLiteral(node) ||
-      Node.isBigIntLiteral(node) ||
-      Node.isTrueLiteral(node) ||
-      Node.isFalseLiteral(node)
-    )
-      return 'primitive'
-  }
-  const initialKind = initializer?.getKind()
-
-  if (initialKind) {
-    switch (initialKind) {
-      case SyntaxKind.TrueKeyword:
-      case SyntaxKind.FalseKeyword:
-        return 'primitive'
-    }
-  }
-
-  return 'unknown'
 }

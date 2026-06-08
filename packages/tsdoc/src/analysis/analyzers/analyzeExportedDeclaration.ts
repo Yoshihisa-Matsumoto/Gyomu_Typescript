@@ -4,7 +4,7 @@ import { analyzeClassDeclaration } from './symbol/class/analyzeClass.js'
 import { analyzeFunctionDeclaration } from './symbol/analyzeFunction.js'
 import { analyzeInterfaceDeclaration } from './symbol/analyzeInterface.js'
 import { analyzeEnumDeclaration } from './symbol/analyzeEnum.js'
-import { analyzeVariableDeclaration } from './symbol/analyzeVariable.js'
+import { analyzeVariableDeclaration } from './symbol/variable/analyzeVariable.js'
 import { analyzeTypeAliasDeclaration } from './symbol/analyzeTypeAlias.js'
 import type { ExportAnalysis } from '../symbol/ExportAnalysis.js'
 import type { ExportedDeclarations } from 'ts-morph'
@@ -17,11 +17,20 @@ export const analyzeExportedDeclaration = (
   declaration: ExportedDeclarations,
   sourceRelativePath: ProjectRelativePath,
   metadata: FileAnalysisMetadata,
+  sourceFullText: string,
   options?: AnalysisOptions,
 ): ExportAnalysis | undefined => {
+  const memberPath: Array<string> = []
   if (Node.isClassDeclaration(declaration)) {
     const classResult = analyzeClassDeclaration(
-      withOptional({ declaration, options, sourceRelativePath, metadata }),
+      withOptional({
+        declaration,
+        options,
+        sourceRelativePath,
+        metadata,
+        memberPath,
+        sourceFullText,
+      }),
     )
     return {
       exportedName: name,
@@ -31,7 +40,14 @@ export const analyzeExportedDeclaration = (
   }
   if (Node.isFunctionDeclaration(declaration)) {
     const functionResult = analyzeFunctionDeclaration(
-      withOptional({ declaration, options, sourceRelativePath, metadata }),
+      withOptional({
+        declaration,
+        options,
+        sourceRelativePath,
+        metadata,
+        memberPath,
+        sourceFullText,
+      }),
     )
     return {
       ...functionResult,
@@ -41,7 +57,14 @@ export const analyzeExportedDeclaration = (
   }
   if (Node.isInterfaceDeclaration(declaration)) {
     const interfaceResult = analyzeInterfaceDeclaration(
-      withOptional({ declaration, options, sourceRelativePath, metadata }),
+      withOptional({
+        declaration,
+        options,
+        sourceRelativePath,
+        metadata,
+        memberPath,
+        sourceFullText,
+      }),
     )
     return {
       ...interfaceResult,
@@ -51,7 +74,14 @@ export const analyzeExportedDeclaration = (
   }
   if (Node.isEnumDeclaration(declaration)) {
     const enumResult = analyzeEnumDeclaration(
-      withOptional({ declaration, options, sourceRelativePath, metadata }),
+      withOptional({
+        declaration,
+        options,
+        sourceRelativePath,
+        metadata,
+        memberPath,
+        sourceFullText,
+      }),
     )
     return {
       ...enumResult,
@@ -61,7 +91,14 @@ export const analyzeExportedDeclaration = (
   }
   if (Node.isVariableDeclaration(declaration)) {
     const variableresult = analyzeVariableDeclaration(
-      withOptional({ declaration, options, sourceRelativePath, metadata }),
+      withOptional({
+        declaration,
+        options,
+        sourceRelativePath,
+        metadata,
+        memberPath,
+        sourceFullText,
+      }),
     )
     return {
       ...variableresult,
@@ -71,7 +108,14 @@ export const analyzeExportedDeclaration = (
   }
   if (Node.isTypeAliasDeclaration(declaration)) {
     const typeResult = analyzeTypeAliasDeclaration(
-      withOptional({ declaration, options, sourceRelativePath, metadata }),
+      withOptional({
+        declaration,
+        options,
+        sourceRelativePath,
+        metadata,
+        memberPath,
+        sourceFullText,
+      }),
     )
     return {
       ...typeResult,

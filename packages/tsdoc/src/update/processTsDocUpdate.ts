@@ -23,15 +23,16 @@ export const processTsDocUpdate = (
   return Effect.gen(function* () {
     const fileResult = yield* analyzeFile(context, sourceFilePath, option)
     // console.dir(result, { depth: null })
+
     const mergePlans = yield* buildMergePlan(context.projectName, fileResult)
 
-    console.dir(fileResult, { depth: null })
+    console.dir(fileResult.metadata.symbols.keys())
     const updateJsDocs = yield* applyMergePlans(fileResult, mergePlans)
 
     const renderedJsDocs = renderJsDocs(updateJsDocs)
-
+    console.dir(renderedJsDocs, { depth: null })
     const fileUpdatePlan = buildFileUpdatePlan(fileResult, renderedJsDocs)
-
+    console.dir(fileUpdatePlan, { depth: null })
     const sourceFileAbsolutePath = toProjectAbsolutePath(sourceFilePath, context.projectRoot)
 
     const sourceContent = yield* readStringFromFile(sourceFileAbsolutePath).pipe(

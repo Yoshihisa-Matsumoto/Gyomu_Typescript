@@ -35,7 +35,7 @@ export const buildMergePlan = (
             }),
         ),
       ),
-    )
+    ).pipe(Effect.map((plans) => plans.flat()))
     return mergePlans
   })
 }

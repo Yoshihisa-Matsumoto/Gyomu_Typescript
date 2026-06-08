@@ -20,6 +20,9 @@ describe('buildFileUpdatePlan', () => {
       analysis: {
         symbols: new Map([[toIdentityKey(symbol.identity), symbol]]),
       },
+      metadata: {
+        symbols: new Map([[toIdentityKey(symbol.identity), { analysis: symbol }]]),
+      },
     }
 
     const updatedDocs = [
@@ -51,6 +54,9 @@ describe('buildFileUpdatePlan', () => {
   it('should ignore docs that do not have matching symbols', () => {
     const sourceFile = {
       analysis: {
+        symbols: new Map(),
+      },
+      metadata: {
         symbols: new Map(),
       },
     }
@@ -101,6 +107,12 @@ describe('buildFileUpdatePlan', () => {
         symbols: new Map([
           [toIdentityKey(symbol1.identity), symbol1],
           [toIdentityKey(symbol2.identity), symbol2],
+        ]),
+      },
+      metadata: {
+        symbols: new Map([
+          [toIdentityKey(symbol1.identity), { analysis: symbol1 }],
+          [toIdentityKey(symbol2.identity), { analysis: symbol2 }],
         ]),
       },
     }

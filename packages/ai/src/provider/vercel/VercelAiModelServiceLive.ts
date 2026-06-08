@@ -15,7 +15,7 @@ import type {
   GenerateTextParams,
   StreamTextParams,
 } from '../types/AiModelService.js'
-import type { EffectSchema } from '@gyomu/schema/entity'
+import type { EffectArrayableSchema } from '@gyomu/schema/entity'
 
 /**
  * =========================================
@@ -76,7 +76,9 @@ export const makeAiService = (): AiModelService => ({
     )
   },
 
-  generateObject: <TSchema extends EffectSchema>(params: GenerateObjectParams<TSchema>) => {
+  generateObject: <TSchema extends EffectArrayableSchema>(
+    params: GenerateObjectParams<TSchema>,
+  ) => {
     return fromPromise(AiError, () => ({
       message: 'fail to generate structured object',
       model: params.model.toString(),

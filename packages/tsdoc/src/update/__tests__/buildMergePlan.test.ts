@@ -12,7 +12,7 @@ const { mockBuildJsDocUpdateContext } = vi.hoisted(() => ({
   mockBuildJsDocUpdateContext: vi.fn(),
 }))
 
-const { mockBuildJsDocUpdateContextPlan } = vi.hoisted(() => ({
+const { mockBuildJsDocUpdateContextPlan: mockBuildJsDocUpdatePlan } = vi.hoisted(() => ({
   mockBuildJsDocUpdateContextPlan: vi.fn(),
 }))
 
@@ -25,7 +25,7 @@ vi.mock('../internal/buildJsDocUpdateContext.js', () => ({
 }))
 
 vi.mock('../internal/buildJsDocUpdatePlan.js', () => ({
-  buildJsDocUpdateContextPlan: mockBuildJsDocUpdateContextPlan,
+  buildJsDocUpdatePlan: mockBuildJsDocUpdatePlan,
 }))
 
 vi.mock('../internal/createMargePlan.js', () => ({
@@ -92,7 +92,7 @@ describe('buildMergePlan', () => {
 
     mockBuildJsDocUpdateContext.mockReturnValue([context1, context2])
 
-    mockBuildJsDocUpdateContextPlan
+    mockBuildJsDocUpdatePlan
       .mockReturnValueOnce(Effect.succeed(plan1))
       .mockReturnValueOnce(Effect.succeed(plan2))
 
@@ -111,7 +111,7 @@ describe('buildMergePlan', () => {
 
     expect(mockBuildJsDocUpdateContext).toHaveBeenCalledWith('test-project', fileResult)
 
-    expect(mockBuildJsDocUpdateContextPlan).toHaveBeenCalledTimes(2)
+    expect(mockBuildJsDocUpdatePlan).toHaveBeenCalledTimes(2)
 
     expect(mockCreateMergePlan).toHaveBeenCalledWith(fileResult.analysis.path, context1, plan1)
 
@@ -127,7 +127,7 @@ describe('buildMergePlan', () => {
 
     mockBuildJsDocUpdateContext.mockReturnValue([context])
 
-    mockBuildJsDocUpdateContextPlan.mockReturnValue(Effect.fail(new Error('llm failed')))
+    mockBuildJsDocUpdatePlan.mockReturnValue(Effect.fail(new Error('llm failed')))
 
     await expect(
       Effect.runPromise(

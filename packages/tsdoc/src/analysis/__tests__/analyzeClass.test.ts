@@ -3,7 +3,10 @@ import { describe, expect, it } from 'vitest'
 import { Effect } from 'effect'
 import { analyzeFile } from '../analyzeFile.js'
 import { createFixtureProject } from './createFixtureProject.js'
-import type { MethodMemberAnalysis } from '../symbol/MemberAnalysis.js'
+import type {
+  DocumentableMethodMemberAnalysis,
+  DocumentablePropertyMemberAnalysis,
+} from '../symbol/MemberAnalysis.js'
 import type { SymbolAnalysis } from '../symbol/SymbolAnalysis.js'
 
 const timeout = 20000
@@ -64,7 +67,12 @@ describe('analyze Class pattern', () => {
 
       console.dir(result, { depth: null })
       expect(result.members.find((m) => m.kind == 'property')?.optional).toBeTruthy()
-      expect(result.members.find((m) => m.kind == 'method')?.parameters[0]?.optional).toBeTruthy()
+      expect(
+        (
+          result.members.find((m) => m.kind == 'method')
+            ?.parameters[0] as DocumentablePropertyMemberAnalysis
+        ).optional,
+      ).toBeTruthy()
     },
     timeout,
   )
@@ -77,7 +85,7 @@ describe('analyze Class pattern', () => {
       const method = result.members.find((m) => m.kind == 'method')!
       const parameters = method.parameters
       expect(parameters.length).toBe(3)
-      expect(parameters[0]?.optional).toBeFalsy()
+      expect((parameters[0] as DocumentablePropertyMemberAnalysis).optional).toBeFalsy()
     },
     timeout,
   )
@@ -124,9 +132,9 @@ describe('analyze Class pattern', () => {
       console.dir(result, { depth: null })
       expect(result.members.length).toBe(3)
       expect(result.members.filter((v) => v.kind == 'method').length).toBe(2)
-      const constructor: MethodMemberAnalysis = result.members.find(
-        (m) => m.name == 'constructor' && m.kind == 'method',
-      )! as MethodMemberAnalysis
+      const constructor: DocumentableMethodMemberAnalysis = result.members.find(
+        (m) => m.name == '$constructor' && m.kind == 'method',
+      )! as DocumentableMethodMemberAnalysis
       expect(constructor).toBeDefined()
       expect(constructor.parameters.length).toBe(1)
       expect(constructor.parameters[0]?.name).toBe('id')
@@ -149,9 +157,30 @@ describe('analyze Class pattern', () => {
     async () => {
       const result = await classAnalysisProgram('10-class-members-effect.ts')
 
-      console.dir(result, { depth: null })
-      expect(result.members.length).toBe(1)
-      // TODO Effect
+      const member: DocumentableMethodMemberAnalysis = result
+        .members[0] as DocumentableMethodMemberAnalysis
+
+      expect(member.returnType?.effect).toMatchObject({
+        returnsEffect: true,
+
+        success: {
+          text: 'User',
+        },
+
+        error: {
+          text: 'Error',
+        },
+
+        requirements: {
+          text: 'Repository',
+        },
+
+        hasErrorType: true,
+
+        hasRequirementsType: true,
+
+        effectDepth: 1,
+      })
     },
     timeout,
   )

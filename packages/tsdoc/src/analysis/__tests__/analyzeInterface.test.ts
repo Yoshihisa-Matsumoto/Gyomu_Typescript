@@ -3,6 +3,10 @@ import { describe, expect, it } from 'vitest'
 import { Effect } from 'effect'
 import { analyzeFile } from '../analyzeFile.js'
 import { createFixtureProject } from './createFixtureProject.js'
+import type {
+  DocumentableMethodMemberAnalysis,
+  DocumentablePropertyMemberAnalysis,
+} from '../symbol/MemberAnalysis.js'
 import type { SymbolAnalysis } from '../symbol/SymbolAnalysis.js'
 
 const timeout = 20000
@@ -10,7 +14,7 @@ const timeout = 20000
 const interfaceFixture = createFixtureProject(path.join('analysis', 'interface'))
 
 const interfaceAnalysisProgram = (sourceFile: string): SymbolAnalysis => {
-  const { project, projectRoot, projectName } = interfaceFixture
+  const { projectRoot } = interfaceFixture
 
   const filePath = path.join(projectRoot, path.join('src', sourceFile))
   const result = Effect.runSync(
@@ -123,6 +127,46 @@ describe('analyze Interface pattern', () => {
       const result = await interfaceAnalysisProgram('04-nested-object-interface.ts')
 
       console.dir(result, { depth: null })
+    },
+    timeout,
+  )
+  it(
+    '05-interface-method-effect.ts',
+    async () => {
+      const result = await interfaceAnalysisProgram('05-interface-method-effect.ts')
+
+      console.dir(result, { depth: null })
+      expect(
+        (result.members[0] as DocumentableMethodMemberAnalysis).returnType?.effect,
+      ).toMatchObject({
+        returnsEffect: true,
+        success: { text: 'User' },
+        error: { text: 'Error' },
+        requirements: { text: 'Repository' },
+        hasErrorType: true,
+        hasRequirementsType: true,
+        effectDepth: 1,
+      })
+      expect((result.members[1] as DocumentablePropertyMemberAnalysis).type?.effect).toMatchObject({
+        returnsEffect: true,
+        success: { text: 'User' },
+        error: { text: 'Error' },
+        requirements: { text: 'Repository' },
+        hasErrorType: true,
+        hasRequirementsType: true,
+        effectDepth: 1,
+      })
+      expect(
+        (result.members[2] as DocumentableMethodMemberAnalysis).returnType?.effect,
+      ).toMatchObject({
+        returnsEffect: true,
+        success: { text: 'User' },
+        error: { text: 'Error' },
+        requirements: { text: 'Repository' },
+        hasErrorType: true,
+        hasRequirementsType: true,
+        effectDepth: 1,
+      })
     },
     timeout,
   )

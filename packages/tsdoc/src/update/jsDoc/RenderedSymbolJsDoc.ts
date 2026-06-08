@@ -5,4 +5,5 @@ export interface RenderedSymbolJsDoc {
   jsDoc: string | undefined
   startOffset: number
   endOffset: number
+  indent: number
 }

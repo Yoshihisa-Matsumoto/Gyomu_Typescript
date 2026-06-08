@@ -54,15 +54,15 @@ describeIfApiKey('executeJsDocUpdatePlan integration', () => {
 
     console.dir(plan, { depth: null })
 
-    expect(plan.summary).toBeDefined()
+    expect(plan[0]?.summary).toBeDefined()
 
-    expect(plan.params.length).toBe(2)
+    expect(plan[0]?.params.length).toBe(2)
 
-    expect(plan.params.some((p) => p.name === 'a')).toBe(true)
+    expect(plan[0]?.params.some((p) => p.name === 'a')).toBe(true)
 
-    expect(plan.params.some((p) => p.name === 'b')).toBe(true)
+    expect(plan[0]?.params.some((p) => p.name === 'b')).toBe(true)
 
-    expect(plan.risk).toBeDefined()
+    expect(plan[0]?.risk).toBeDefined()
   }, 60_000)
   test('prefers preserve when existing documentation already exists', async () => {
     const context: LightJsDocContext = {
@@ -121,10 +121,10 @@ describeIfApiKey('executeJsDocUpdatePlan integration', () => {
 
     console.dir(plan, { depth: null })
 
-    expect(plan.summary.action.type).toBe('preserve')
+    expect(plan[0]?.summary.action.type).toBe('preserve')
 
-    expect(plan.params.every((p) => p.action.type === 'preserve')).toBe(true)
+    expect(plan[0]?.params.every((p) => p.action.type === 'preserve')).toBe(true)
 
-    expect(plan.returns.action.type).toBe('preserve')
+    expect(plan[0]?.returns.action.type).toBe('preserve')
   }, 60_000)
 })

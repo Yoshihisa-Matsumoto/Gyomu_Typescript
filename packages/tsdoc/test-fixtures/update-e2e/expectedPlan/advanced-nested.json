@@ -1,75 +1,77 @@
 [
-  {
-    "identity": {
-      "symbolId": "utils",
-      "signatureId": "variable"
-    },
-
-    "summary": {
-      "action": {
-        "type": "replace",
-        "value": "Utility collection."
+  [
+    {
+      "identity": {
+        "symbolId": "utils",
+        "signatureId": "variable"
       },
-      "confidence": 0.95
-    },
 
-    "params": [],
-
-    "tags": [],
-
-    "returns": {
-      "action": {
-        "type": "preserve"
+      "summary": {
+        "action": {
+          "type": "replace",
+          "value": "Utility collection."
+        },
+        "confidence": 0.95
       },
-      "confidence": 1.0
+
+      "params": [],
+
+      "tags": [],
+
+      "returns": {
+        "action": {
+          "type": "preserve"
+        },
+        "confidence": 1.0
+      },
+
+      "reasoning": {
+        "summary": "Top-level utility object containing helper functions.",
+        "paramMapping": "No parameter documentation required.",
+        "returnMapping": "No return documentation required."
+      },
+
+      "risk": {
+        "hasHumanConflict": false,
+        "riskLevel": "low"
+      }
     },
 
-    "reasoning": {
-      "summary": "Top-level utility object containing helper functions.",
-      "paramMapping": "No parameter documentation required.",
-      "returnMapping": "No return documentation required."
-    },
+    {
+      "identity": {
+        "symbolId": "utils.math.add",
+        "signatureId": "(a:number,b:number):number"
+      },
 
-    "risk": {
-      "hasHumanConflict": false,
-      "riskLevel": "low"
+      "summary": {
+        "action": {
+          "type": "replace",
+          "value": "Add two numbers."
+        },
+        "confidence": 0.95
+      },
+
+      "params": [],
+
+      "tags": [],
+
+      "returns": {
+        "action": {
+          "type": "preserve"
+        },
+        "confidence": 1.0
+      },
+
+      "reasoning": {
+        "summary": "Adds two numeric values.",
+        "paramMapping": "Parameter documentation omitted for this scenario.",
+        "returnMapping": "Return documentation omitted for this scenario."
+      },
+
+      "risk": {
+        "hasHumanConflict": false,
+        "riskLevel": "low"
+      }
     }
-  },
-
-  {
-    "identity": {
-      "symbolId": "utils.math.add",
-      "signatureId": "(a:number,b:number):number"
-    },
-
-    "summary": {
-      "action": {
-        "type": "replace",
-        "value": "Add two numbers."
-      },
-      "confidence": 0.95
-    },
-
-    "params": [],
-
-    "tags": [],
-
-    "returns": {
-      "action": {
-        "type": "preserve"
-      },
-      "confidence": 1.0
-    },
-
-    "reasoning": {
-      "summary": "Adds two numeric values.",
-      "paramMapping": "Parameter documentation omitted for this scenario.",
-      "returnMapping": "Return documentation omitted for this scenario."
-    },
-
-    "risk": {
-      "hasHumanConflict": false,
-      "riskLevel": "low"
-    }
-  }
+  ]
 ]

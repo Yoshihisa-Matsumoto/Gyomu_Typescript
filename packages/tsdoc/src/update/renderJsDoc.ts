@@ -5,12 +5,17 @@ import type { RenderedSymbolJsDoc } from './jsdoc/RenderedSymbolJsDoc.js'
 
 export const renderJsDoc = (updated: UpdatedSymbolJsDoc): RenderedSymbolJsDoc => {
   const lines = renderJsDocLines(updated)
-  const document = renderJsDocString(lines, updated.jsDoc.startOffset == updated.jsDoc.endOffset)
+  const document = renderJsDocString(
+    lines,
+    updated.jsDoc.startOffset == updated.jsDoc.endOffset,
+    updated.indent,
+  )
   return {
     target: updated.target,
     jsDoc: document,
-    startOffset: updated.jsDoc.startOffset,
-    endOffset: updated.jsDoc.endOffset,
+    startOffset: updated.jsDoc.startOffset - updated.indent.length,
+    endOffset: updated.jsDoc.endOffset - updated.indent.length,
+    indent: updated.indent.length,
   }
 }
 

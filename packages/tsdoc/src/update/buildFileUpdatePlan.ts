@@ -12,9 +12,11 @@ export const buildFileUpdatePlan = (
    */
   const targets = updatedDocs
     .flatMap((doc) => {
-      const symbol = sourceFile.analysis.symbols.get(toIdentityKey(doc.target))
-
-      return symbol ? [{ symbol, doc }] : []
+      const symbolData = sourceFile.metadata.symbols.get(toIdentityKey(doc.target))
+      if (!symbolData) {
+        console.log(`${toIdentityKey(doc.target)} Not found on symbols`)
+      }
+      return symbolData ? [{ symbol: symbolData.analysis, doc }] : []
     })
     .sort((a, b) => b.symbol.location.startLine - a.symbol.location.startLine)
 
@@ -26,6 +28,7 @@ export const buildFileUpdatePlan = (
       endOffset: doc.endOffset,
       symbol: symbol.identity,
       newText: doc.jsDoc ?? '',
+      indent: doc.indent,
     })),
   }
 }

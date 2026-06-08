@@ -21,8 +21,16 @@ export const extractExport = (
     message: 'fail to extract export',
   }))(() => {
     const result: Array<ExportAnalysis> = []
+    const sourceFullText = context.sourceFile.getFullText()
     for (const [name, declarations] of context.sourceFile.getExportedDeclarations()) {
-      const analysisResult = toExportAnalysis(name, declarations, context.path, metadata, option)
+      const analysisResult = toExportAnalysis(
+        name,
+        declarations,
+        context.path,
+        metadata,
+        sourceFullText,
+        option,
+      )
       result.push(...analysisResult)
     }
     return result
@@ -33,6 +41,7 @@ const toExportAnalysis = (
   declarations: Array<ExportedDeclarations>,
   sourceFilePath: ProjectRelativePath,
   metadata: FileAnalysisMetadata,
+  sourceFullText: string,
   option?: AnalysisOptions,
 ): ReadonlyArray<ExportAnalysis> => {
   const results: Array<ExportAnalysis> = []
@@ -42,6 +51,7 @@ const toExportAnalysis = (
       declaration,
       sourceFilePath,
       metadata,
+      sourceFullText,
       option,
     )
     if (!analysisResult) continue

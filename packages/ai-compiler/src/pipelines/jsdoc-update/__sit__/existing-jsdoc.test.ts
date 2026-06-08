@@ -69,11 +69,11 @@ describeIfApiKey('executeJsDocUpdatePlan integration', () => {
 
     console.dir(plan, { depth: null })
 
-    expect(plan.summary.action.type).toBe('preserve')
+    expect(plan[0]?.summary.action.type).toBe('preserve')
 
-    expect(plan.params.every((p) => p.action.type === 'preserve')).toBe(true)
+    expect(plan[0]?.params.every((p) => p.action.type === 'preserve')).toBe(true)
 
-    expect(plan.returns.action.type).toBe('preserve')
+    expect(plan[0]?.returns.action.type).toBe('preserve')
   }, 60_000)
   test('slightly different jsdoc expects replacement in summary', async () => {
     const context: LightJsDocContext = {
@@ -132,11 +132,11 @@ describeIfApiKey('executeJsDocUpdatePlan integration', () => {
 
     console.dir(plan, { depth: null })
 
-    expect(plan.summary.action.type).toBe('replace')
+    expect(plan[0]?.summary.action.type).toBe('replace')
 
-    expect(plan.params.every((p) => p.action.type === 'preserve')).toBe(true)
+    expect(plan[0]?.params.every((p) => p.action.type === 'preserve')).toBe(true)
 
-    expect(plan.returns.action.type).toBe('preserve')
+    expect(plan[0]?.returns.action.type).toBe('preserve')
   }, 60_000)
   test('deletes parameter documentation for removed parameter', async () => {
     const context: LightJsDocContext = {
@@ -199,7 +199,7 @@ describeIfApiKey('executeJsDocUpdatePlan integration', () => {
 
     console.dir(plan, { depth: null })
 
-    const removedParamPlan = plan.params.find((p) => p.name === 'removedParam')
+    const removedParamPlan = plan[0]?.params.find((p) => p.name === 'removedParam')
 
     expect(removedParamPlan).toBeDefined()
 

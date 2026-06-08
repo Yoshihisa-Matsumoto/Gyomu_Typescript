@@ -25,21 +25,6 @@ const buildJsDocUpdateContextProgram = (sourceFile: string) => {
 }
 
 describe('buildJsDocUpdateContext integration', () => {
-  // const firstJsDoc = (result: FileAnalysisResult) => {
-  //   const jsDoc = result.metadata.parsedJsDocs.values().next().value
-
-  //   expect(jsDoc).toBeDefined()
-
-  //   return jsDoc!
-  // }
-  // const firstJsDocAnalysis = (result: FileAnalysisResult) => {
-  //   const analysis = result.analysis.exports[0]?.symbol.jsDoc
-
-  //   expect(analysis).toBeDefined()
-
-  //   return analysis!
-  // }
-
   it(
     'generate-simple.ts',
     async () => {
@@ -80,6 +65,24 @@ describe('buildJsDocUpdateContext integration', () => {
       const ids = contexts.map((x) => x.target.signatureId)
 
       expect(new Set(ids).size).toBe(2)
+    },
+    timeout,
+  )
+  it(
+    'mixed-exports.ts',
+    async () => {
+      const contexts = await buildJsDocUpdateContextProgram('mixed-exports.ts')
+
+      console.dir(contexts, { depth: null })
+      expect(contexts.length).toBe(3)
+      const userInterface = contexts.find(
+        (c) => c.symbol.name == 'User' && c.symbol.kind == 'interface',
+      )
+      expect(userInterface).toBeDefined()
+      expect(userInterface?.children?.length).toBe(2)
+      expect(userInterface?.children?.map((c) => c.name)).toEqual(
+        expect.arrayContaining(['id', 'name']),
+      )
     },
     timeout,
   )

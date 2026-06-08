@@ -16,7 +16,7 @@ You must NOT reinterpret code intent deeply.
 
 You must prefer preserving existing documentation.
 
-You must output a structured JsDocUpdatePlan only.
+You must output an array of JsDocUpdateEntryPlan entries only.
 
 Do not generate full rewritten documentation unless necessary.
 
@@ -38,6 +38,14 @@ Focus on:
 - preserving human-written content
 
 Do NOT perform semantic redesign.
+
+A single context may produce multiple JsDocUpdatePlan entries.
+
+The target symbol should normally produce one plan entry.
+
+Additional plan entries may be generated for documentable child members.
+
+Each generated plan must be independent and reference its own identity.
 
 ---
 
@@ -64,10 +72,16 @@ Do NOT perform semantic redesign.
   - preserve unless invalid
   - Tag order should preserve the existing documentation order whenever possible.
 - confidence should be high when changes are minimal
+- Reasoning and risk must be evaluated independently for each generated plan entry.
 - delete:
   - delete only when documentation is clearly invalid or refers to removed code elements
   - do not delete content solely because it is incomplete or low quality
   - when uncertain, preserve
+- documentable child members:
+  - Generate an additional JsDocUpdatePlan entry for each documentable child member.
+  - Do not generate entries for non-documentable members.
+  - Each plan must reference its own identity.
+  - Child plans should be generated independently from the parent plan.
 
 ---
 
@@ -83,12 +97,15 @@ Do NOT perform semantic redesign.
 
 # Output Schema
 
-Must strictly match JsDocUpdatePlan.
+Must strictly match JsDocUpdateEntryPlan[].
 
 - Never output raw JSDoc text
 - Never expand descriptions aggressively
 - Prefer "preserve" actions
 - If a documented section is missing, prefer action="replace" with generated content instead of "preserve".
+- One plan entry may be generated for the target symbol.
+- Additional plan entries may be generated for documentable child members.
+- Every generated plan must contain a valid identity.
 
 ---
 

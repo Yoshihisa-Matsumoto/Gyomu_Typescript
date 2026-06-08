@@ -1,18 +1,33 @@
 import { withOptional } from '@gyomu/schema'
+import { registerSymbolSymbolAnalysis } from '../../file/registerSymbolSymbolAnalysis.js'
 import { prepareSymbolAnalysis } from './prepareSymbolAnalysis.js'
+import { detectEffectSignals } from './analyzeEffectType.js'
+import { analyzeType } from './analyzeType.js'
+import { computeIndent } from './computeIndent.js'
+import type { MemberIdentityMemberPath } from '../../symbol/MemberAnalysis.js'
 import type { FunctionDeclaration } from 'ts-morph'
 import type { SymbolAnalysis } from '../../symbol/SymbolAnalysis.js'
 import type { JSDocableTagAnalysisArg } from '../types.js'
 import type { SignatureAnalysis } from '../../symbol/SymbolModel.js'
+import type { FileAnalysisMetadata } from '../../file/FileAnalysisResult.js'
+import type { ProjectRelativePath } from '../../types.js'
+import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
 
 export const analyzeFunctionDeclaration = (args: JSDocableTagAnalysisArg<FunctionDeclaration>) => {
+  const typeName = args.name ?? args.declaration.getName() ?? ''
   const prepared = prepareSymbolAnalysis(
     args.declaration,
     args.sourceRelativePath,
     args.metadata,
+    [],
     getFunctionSignatureId,
+    typeName,
+    args.sourceFullText,
   )
-
+  const identity: SymbolIdentity = {
+    symbolId: typeName,
+    signatureId: prepared.signature.id,
+  }
   const symbol = {
     id: prepared.id,
     signature: prepared.signature,
@@ -22,21 +37,39 @@ export const analyzeFunctionDeclaration = (args: JSDocableTagAnalysisArg<Functio
       startLine: args.declaration.getStartLineNumber(),
       endLine: args.declaration.getEndLineNumber(),
     },
-    identity: {
-      symbolId: args.name ?? args.declaration.getName() ?? '',
-      signatureId: prepared.signature.id,
+    type: {
+      text: typeName,
+      ...withOptional({ effect: detectEffectSignals(typeName) }),
     },
+    identity,
     startOffset: args.declaration.getStart(),
     ...withOptional({ jsDoc: prepared.jsDoc }),
     members: [],
   } satisfies SymbolAnalysis
+  registerSymbolSymbolAnalysis(
+    args.metadata,
+    symbol,
+    computeIndent(
+      args.sourceFullText,
+      args.declaration.getStart(),
+      args.declaration.getStartLinePos(),
+    ),
+  )
   return {
     symbol,
     isDefault: args.declaration.isDefaultExport(),
   }
 }
 const normalizeTypeText = (text: string): string => text.replace(/import\([^)]*\)\./g, '')
-const getFunctionSignatureId = (declaration: FunctionDeclaration): SignatureAnalysis => {
+
+const getFunctionSignatureId = (
+  declaration: FunctionDeclaration,
+  sourcePath: ProjectRelativePath,
+  metadata: FileAnalysisMetadata,
+  memberPath: MemberIdentityMemberPath,
+  nodeName: string,
+  sourceFullText: string,
+): SignatureAnalysis => {
   const typeParams = declaration
     .getTypeParameters()
     .map((tp) => tp.getText())
@@ -50,17 +83,33 @@ const getFunctionSignatureId = (declaration: FunctionDeclaration): SignatureAnal
     })
     .join(',')
 
-  const returnType = normalizeTypeText(declaration.getReturnType().getText(declaration))
+  const returnTypeText = normalizeTypeText(declaration.getReturnType().getText(declaration))
 
+  const symbolId = `${typeParams ? '(' + typeParams + ')' : ''}(${params}):${returnTypeText}`
+  const returnType = analyzeType({
+    node: declaration.getReturnTypeNode()!,
+    initializer: undefined,
+    sourcePath,
+    metadata,
+    ownerSymbolId: symbolId,
+    ownerSymbolIdentity: {
+      symbolId: nodeName,
+      signatureId: symbolId,
+    },
+    memberPath,
+    nodeName: ['$return'],
+    sourceFullText,
+  })
   const overloadCount = declaration.getOverloads().length
   let isOverloadImplementation = false
   if (overloadCount > 0 && !declaration.isOverload()) {
     isOverloadImplementation = true
   }
   return {
-    id: `${typeParams ? '(' + typeParams + ')' : ''}(${params}):${returnType}`,
+    id: symbolId,
     parameters: [],
     overloadCount: declaration.getOverloads().length,
     isOverloadImplementation,
+    ...withOptional({ returnType }),
   }
 }

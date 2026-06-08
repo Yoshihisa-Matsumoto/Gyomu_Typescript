@@ -1,10 +1,10 @@
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/index'
 import type { ComplexityMetrics } from '../metrics/ComplexityMetrics.js'
 import type { DomainSignals } from '../metrics/DomainSignals.js'
-import type { EffectSignals } from '../metrics/EffectSignals.js'
 import type { JsDocAnalysis } from '../jsdoc/JsDocAnalysis.js'
-import type { SignatureAnalysis, SymbolKind } from './SymbolModel.js'
+import type { SignatureAnalysis, SymbolKind, TypeAnalysis } from './SymbolModel.js'
 import type { MemberAnalysis } from './MemberAnalysis.js'
+import type { SymbolId } from '../types.js'
 
 /**
  * Detailed analysis result for a symbol declaration.
@@ -30,11 +30,16 @@ export interface SymbolAnalysis {
    * src/user/UserService.ts::UserService.getUser
    * ```
    */
-  id: string
+  id: SymbolId
   /**
    * Symbol name.
    */
   identity: SymbolIdentity
+
+  /**
+   * Symbol type text representation.
+   */
+  type?: TypeAnalysis
 
   /**
    * Symbol category.
@@ -80,11 +85,6 @@ export interface SymbolAnalysis {
    * Domain-specific semantic signals.
    */
   domainSignals?: DomainSignals
-
-  /**
-   * Effect-related semantic signals.
-   */
-  effectSignals?: EffectSignals
 
   /**
    * Start offset of the symbol location

@@ -1,46 +1,143 @@
 import { withOptional } from '@gyomu/schema'
-import { analyzeParameter } from '../analyzeParameter.js'
 import { analyzeType } from '../analyzeType.js'
-import { getAccessor } from './analyzePropertyMember.js'
+import { analyzeFunctionMemberInternal } from '../struct/analyzeFunctionMember.js'
+import { createMemberIdentityAndId } from '../../../shared/createMemberIdentity.js'
+import { getAccessor } from './analyzeClassPropertyMember.js'
+import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
+import type { ClassDeclaration, ConstructorDeclaration, ParameterDeclaration } from 'ts-morph'
 import type {
   MemberAnalysis,
-  MethodMemberAnalysis,
-  PropertyMemberAnalysis,
+  MemberIdentityMemberPath,
+  MemberIdentityOwnerSymbolId,
+  NonDocumentablePropertyMemberAnalysis,
 } from '../../../symbol/MemberAnalysis.js'
-import type { ClassDeclaration, ConstructorDeclaration, ParameterDeclaration } from 'ts-morph'
+import type { ProjectRelativePath } from '../../../types.js'
+import type { FileAnalysisMetadata } from '../../../file/FileAnalysisResult.js'
 
 export const analyzeConstructor = (
+  sourcePath: ProjectRelativePath,
+  metadata: FileAnalysisMetadata,
   node: ConstructorDeclaration,
   parent: ClassDeclaration,
+
+  ownerSymbolId: MemberIdentityOwnerSymbolId,
+  ownerSymbolIdentity: SymbolIdentity,
+  memberPath: MemberIdentityMemberPath,
+  sourceFullText: string,
 ): Array<MemberAnalysis> => {
-  const method: MethodMemberAnalysis = {
-    kind: 'method',
-    name: 'constructor',
-    visibility: 'public',
-    parameters: node.getParameters().map(analyzeParameter),
-    static: false,
-    returnType: { text: parent.getName()! },
-  }
+  const name = '$constructor'
+
+  const method = analyzeFunctionMemberInternal(
+    {
+      sourcePath,
+      metadata,
+      node,
+      ownerSymbolId,
+      ownerSymbolIdentity,
+      memberPath,
+      jsDocableNode: node,
+      name,
+      sourceFullText,
+    },
+    { isStatic: false, visibility: 'public', returnType: { text: parent.getName()! } },
+  )
+  // const method: DocumentableMethodMemberAnalysis = {
+  //   kind: 'method',
+  //   documentable: true,
+  //   name,
+  //   identity,
+
+  //   parameters: node
+  //     .getParameters()
+  //     .map((p) => analyzeParameter(p, sourcePath, metadata, ownerSymbolId, memberPath)),
+  //   snippet,
+
+  //   // returnType: { text: parent.getName()! },
+
+  //   ...withOptional({
+  //     returnType: analyzeType({
+  //       node: undefined,
+  //       initializer: undefined,
+  //       memberPath,
+  //       metadata,
+  //       nodeName: [name],
+  //       ownerSymbolId,
+  //       sourcePath,
+  //       rawText: parent.getName()!,
+  //     }),
+  //     jsDoc,
+  //   }),
+  //   location,
+  //   startOffset,
+  //   static: false,
+  //   visibility: 'public',
+  // }
 
   const parameters = node
     .getParameters()
     .filter((p) => p.getModifiers().length > 0)
-    .map(analyzeClassPropertyFromConstructorParameters)
+    .map((v) =>
+      analyzeClassPropertyFromConstructorParameters({
+        sourcePath,
+        metadata,
+        node: v,
+        ownerSymbolId,
+        ownerSymbolIdentity,
+        memberPath: [],
+        sourceFullText,
+      }),
+    )
 
   return [method, ...parameters]
 }
-const analyzeClassPropertyFromConstructorParameters = (
-  node: ParameterDeclaration,
-): PropertyMemberAnalysis => {
+const analyzeClassPropertyFromConstructorParameters = (args: {
+  sourcePath: ProjectRelativePath
+  metadata: FileAnalysisMetadata
+  node: ParameterDeclaration
+
+  ownerSymbolId: MemberIdentityOwnerSymbolId
+  ownerSymbolIdentity: SymbolIdentity
+  memberPath: MemberIdentityMemberPath
+  sourceFullText: string
+}): NonDocumentablePropertyMemberAnalysis => {
+  const { sourcePath, metadata, node, ownerSymbolId, ownerSymbolIdentity, memberPath } = args
   const typeNode = node.getTypeNode()
   const initializer = node.getInitializer()
+  const nodeName = node.getName()
+  const { id, identity } = createMemberIdentityAndId(
+    {
+      memberPath,
+      ownerSymbolId,
+      signatureId: nodeName,
+    },
+    ownerSymbolIdentity,
+  )
   return {
     kind: 'property',
-    name: node.getName(),
+    documentable: false,
+    source: 'constructor-parameter',
+    id,
+    ownerSymbolId,
+    identity,
+    rest: !!node.getDotDotDotToken(),
+    name: nodeName,
     readonly: node.isReadonly(),
     optional: !!node.getQuestionTokenNode(),
+
+    ...withOptional({
+      type: analyzeType({
+        node: typeNode,
+        initializer,
+        memberPath,
+        metadata,
+        ownerSymbolId,
+        ownerSymbolIdentity,
+        sourcePath,
+        nodeName: [nodeName],
+        sourceFullText: args.sourceFullText,
+      }),
+    }),
     static: false,
     visibility: getAccessor(node),
-    ...withOptional({ type: analyzeType({ node: typeNode, initializer }) }),
   }
 }

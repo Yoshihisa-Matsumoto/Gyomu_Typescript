@@ -1,5 +1,6 @@
 import { Effect } from 'effect'
 import { withOptional } from '@gyomu/schema'
+import { toIdentityKey } from '../analysis/symbol/SymbolAnalysis.js'
 import { UpdateError } from './error/UpdateError.js'
 import { mergeTags } from './merge/mergeTags.js'
 import { mergeSummary } from './merge/mergeSummary.js'
@@ -13,16 +14,18 @@ import type { UpdatedSymbolJsDoc } from './jsdoc/UpdatedSymbolJsDoc.js'
 export const applyMergePlan = (
   fileResult: FileAnalysisResult,
   plan: MergePlan,
-): Effect.Effect<UpdatedJsDoc, UpdateError> => {
+): Effect.Effect<{ updatedJsDoc: UpdatedJsDoc; indent: string }, UpdateError> => {
   return Effect.gen(function* () {
-    const targetExport = fileResult.analysis.exports.find((exp) => {
-      const identity = exp.symbol.identity
-      console.log(identity)
-      return (
-        identity.signatureId == plan.target.signatureId && identity.symbolId == plan.target.symbolId
-      )
-    })
-    if (!targetExport)
+    const targetSymbolData = fileResult.metadata.symbols.get(toIdentityKey(plan.target))
+    // const targetSymbol = fileResult.metadata.symbols.find((exp) => {
+    //   const identity = exp.symbol.identity
+    //   console.log(identity)
+    //   return (
+    //     identity.signatureId == plan.target.signatureId && identity.symbolId == plan.target.symbolId
+    //   )
+    // })
+    if (!targetSymbolData) {
+      console.log(plan.target)
       return yield* Effect.fail(
         new UpdateError({
           filePath: fileResult.analysis.path,
@@ -32,8 +35,9 @@ export const applyMergePlan = (
           phase: 'apply-merge',
         }),
       )
-    const targetSymbol = targetExport.symbol
-    const existingJsDoc = fileResult.metadata.parsedJsDocs.get(targetSymbol.id)
+    }
+    // const targetSymbol = targetSymbol.symbol
+    const existingJsDoc = fileResult.metadata.parsedJsDocs.get(targetSymbolData.analysis.id)
     const params = yield* mergeParams(fileResult.analysis.path, plan.params, existingJsDoc)
     const tags = yield* mergeTags(fileResult.analysis.path, plan.tags, existingJsDoc)
     const updatedJsDoc: UpdatedJsDoc = {
@@ -54,11 +58,11 @@ export const applyMergePlan = (
 
       params,
       tags,
-      startOffset: existingJsDoc?.startOffset ?? targetSymbol.startOffset,
-      endOffset: existingJsDoc?.endOffset ?? targetSymbol.startOffset,
+      startOffset: existingJsDoc?.startOffset ?? targetSymbolData.analysis.startOffset,
+      endOffset: existingJsDoc?.endOffset ?? targetSymbolData.analysis.startOffset,
     }
 
-    return yield* Effect.succeed(updatedJsDoc)
+    return yield* Effect.succeed({ updatedJsDoc, indent: targetSymbolData.indent })
   })
 }
 
@@ -70,7 +74,8 @@ export const applyMergePlans = (
     applyMergePlan(fileResult, plan).pipe(
       Effect.map((doc) => ({
         target: plan.target,
-        jsDoc: doc,
+        jsDoc: doc.updatedJsDoc,
+        indent: doc.indent,
       })),
     ),
   )(plans)

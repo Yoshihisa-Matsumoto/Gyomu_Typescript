@@ -4,7 +4,7 @@ import type { EmbeddingModel, LanguageModel, StreamTextResult } from 'ai'
 import type { AiError } from '@gyomu/schema'
 import type { Message } from '@gyomu/schema/conversation'
 import type { AiTool } from '../../tool/ai-tool.js'
-import type { EffectSchema } from '@gyomu/schema/entity'
+import type { EffectArrayableSchema } from '@gyomu/schema/entity'
 
 export type { StreamTextResult } from 'ai'
 /**
@@ -66,7 +66,7 @@ export type StreamTextParams = TextGenerationParams & {
   readonly maxTokens?: number
 }
 
-export type GenerateObjectParams<TSchema extends EffectSchema> = BaseAiParams &
+export type GenerateObjectParams<TSchema extends EffectArrayableSchema> = BaseAiParams &
   PromptInput &
   ToolConfig & {
     readonly schema: TSchema
@@ -151,7 +151,7 @@ export interface AiModelService {
     params: StreamTextParams,
   ) => Effect.Effect<StreamTextResult<Record<string, never>, never>, AiError>
 
-  readonly generateObject: <TSchema extends EffectSchema>(
+  readonly generateObject: <TSchema extends EffectArrayableSchema>(
     params: GenerateObjectParams<TSchema>,
   ) => Effect.Effect<AiObjectResult<Schema.Schema.Type<TSchema>>, AiError>
 

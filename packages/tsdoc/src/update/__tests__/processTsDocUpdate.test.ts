@@ -28,7 +28,7 @@ describe('processTsDocUpdate', () => {
   it('should update source file with generated jsdoc', async () => {
     vi.spyOn(analyze, 'analyzeFile').mockReturnValue(
       Effect.succeed({
-        symbols: {},
+        metadata: { symbols: new Map<string, any>() },
       } as any),
     )
 

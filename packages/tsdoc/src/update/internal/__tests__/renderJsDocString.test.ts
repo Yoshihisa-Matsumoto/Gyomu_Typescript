@@ -5,31 +5,40 @@ describe('renderJsDocString.ts', () => {
   describe('computeLine', () => {
     it('renders blank line', () => {
       expect(
-        computeLine({
-          type: 'blank',
-        }),
+        computeLine(
+          {
+            type: 'blank',
+          },
+          '',
+        ),
       ).toBe(' *')
     })
     it('renders text line', () => {
       expect(
-        computeLine({
-          type: 'text',
-          text: 'Create user',
-        }),
+        computeLine(
+          {
+            type: 'text',
+            text: 'Create user',
+          },
+          '',
+        ),
       ).toBe(' * Create user')
     })
     it('renders tag line', () => {
       expect(
-        computeLine({
-          type: 'tag',
-          text: '@param id User ID',
-        }),
+        computeLine(
+          {
+            type: 'tag',
+            text: '@param id User ID',
+          },
+          '',
+        ),
       ).toBe(' * @param id User ID')
     })
   })
   describe('renderJsDocString', () => {
     it('renders empty jsdoc', () => {
-      expect(renderJsDocString([], false)).toBeUndefined()
+      expect(renderJsDocString([], false, '')).toBeUndefined()
     })
     it('renders jsdoc with text', () => {
       expect(
@@ -41,10 +50,11 @@ describe('renderJsDocString.ts', () => {
             },
           ],
           false,
+          '',
         ),
       ).toBe(`/**
  * Create user
-*/`)
+ */`)
     })
     it('renders blank line', () => {
       expect(
@@ -63,12 +73,13 @@ describe('renderJsDocString.ts', () => {
             },
           ],
           false,
+          '',
         ),
       ).toBe(`/**
  * Create user
  *
  * @returns User
-*/`)
+ */`)
     })
     it('renders complete jsdoc', () => {
       expect(
@@ -94,6 +105,7 @@ describe('renderJsDocString.ts', () => {
             },
           ],
           false,
+          '',
         ),
       ).toBe(`/**
  * Create user
@@ -101,7 +113,7 @@ describe('renderJsDocString.ts', () => {
  * @param id User ID
  *
  * @returns User
-*/`)
+ */`)
     })
   })
 })

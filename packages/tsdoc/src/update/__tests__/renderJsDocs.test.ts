@@ -20,6 +20,7 @@ describe('renderJsDocs', () => {
           templates: [],
           tags: [],
         },
+        indent: '',
       },
       {
         target: 'b',
@@ -33,6 +34,7 @@ describe('renderJsDocs', () => {
           templates: [],
           tags: [],
         },
+        indent: '',
       },
     ] as never)
 

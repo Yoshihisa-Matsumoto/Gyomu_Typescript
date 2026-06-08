@@ -12,37 +12,39 @@ import type { Effect } from 'effect'
 export const createMergePlan = (
   filePath: string,
   context: JsDocUpdateContext,
-  plan: JsDocUpdatePlan,
-): Effect.Effect<MergePlan, UpdateError> => {
+  plans: JsDocUpdatePlan,
+): Effect.Effect<Array<MergePlan>, UpdateError> => {
   return fromSync(UpdateError, () => ({
     filePath,
     message: 'fail to create mergePlan',
     phase: 'merge-plan' as const,
   }))(() => {
-    const confidences = [
-      plan.summary.confidence,
-      plan.returns.confidence,
-      ...plan.params.map((p) => p.confidence),
-      ...plan.tags.map((t) => t.confidence),
-    ]
-    return {
-      target: plan.identity,
-      summary: makeMergeAction(filePath, 'summary', plan.summary.action),
-      returns: makeMergeAction(filePath, 'returns', plan.returns.action),
-      params: plan.params.map((param) => ({
-        name: param.name,
-        sortOrder: param.sortOrder,
-        action: makeMergeParamAction(filePath, `param:${param.name}`, param.action, param.value),
-      })),
-      tags: plan.tags.map((tag) => ({
-        tag: tag.target,
-        sortOrder: tag.sortOrder,
-        action: makeMergeAction(filePath, `tag:${tag.tag}`, tag.action),
-      })),
-      conflicts: [],
-      confidence: Math.min(...confidences),
-      averageConfidence: confidences.reduce((sum, value) => sum + value, 0) / confidences.length,
-    } satisfies MergePlan
+    return plans.map((plan) => {
+      const confidences = [
+        plan.summary.confidence,
+        plan.returns.confidence,
+        ...plan.params.map((p) => p.confidence),
+        ...plan.tags.map((t) => t.confidence),
+      ]
+      return {
+        target: plan.identity,
+        summary: makeMergeAction(filePath, 'summary', plan.summary.action),
+        returns: makeMergeAction(filePath, 'returns', plan.returns.action),
+        params: plan.params.map((param) => ({
+          name: param.name,
+          sortOrder: param.sortOrder,
+          action: makeMergeParamAction(filePath, `param:${param.name}`, param.action, param.value),
+        })),
+        tags: plan.tags.map((tag) => ({
+          tag: tag.target,
+          sortOrder: tag.sortOrder,
+          action: makeMergeAction(filePath, `tag:${tag.tag}`, tag.action),
+        })),
+        conflicts: [],
+        confidence: Math.min(...confidences),
+        averageConfidence: confidences.reduce((sum, value) => sum + value, 0) / confidences.length,
+      } satisfies MergePlan
+    })
   })
 }
 
@@ -54,7 +56,7 @@ const makeMergeAction = (
   return action
 }
 
-type ParamValue = JsDocUpdatePlan['params'][number]['value']
+type ParamValue = JsDocUpdatePlan[number]['params'][number]['value']
 
 const makeMergeParamAction = (
   filePath: string,

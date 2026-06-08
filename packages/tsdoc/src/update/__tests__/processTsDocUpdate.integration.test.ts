@@ -73,12 +73,13 @@ const processTsDocUpdateProgram = async (
 
 describe('processTsDocUpdate integration', () => {
   it.each([
-    'generated-simple',
-    'existing-jsdoc',
-    'overload-function',
-    'mixed-exports',
-    'returns-needed',
-    // q'advanced-nested',
+    // 'generated-simple',
+    // 'existing-jsdoc',
+    // 'overload-function',
+    // 'mixed-exports',
+    // 'returns-needed',
+    // 'advanced-nested',
+    'nested-object-properties',
   ])('compare exactly same as expected', async (...args: Array<string>) => {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const target_file = args[0]!

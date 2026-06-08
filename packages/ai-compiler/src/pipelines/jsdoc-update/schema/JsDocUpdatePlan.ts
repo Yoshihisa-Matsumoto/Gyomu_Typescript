@@ -138,7 +138,7 @@ export const Risk = Schema.Struct({
   description: 'Safety risk assessment for merge operation',
 })
 
-export const JsDocUpdatePlanSchema = Schema.Struct({
+export const JsDocUpdateEntrySchema = Schema.Struct({
   identity: SymbolIdentity,
   summary: SummaryPlan,
   params: Schema.Array(ParamPlan),
@@ -159,7 +159,17 @@ Delete actions should be rare and only used when the documented target no longer
 All replacement content must be included directly in the plan so that application can be performed without access to the original update context.
 `,
 })
+export const JsDocUpdatePlanSchema = Schema.Array(JsDocUpdateEntrySchema).annotate({
+  description: `
+Collection of JSDoc update plans.
 
+The first entry typically represents the requested target symbol.
+Additional entries may represent documentable child members or nested symbols.
+
+Each entry is applied independently using its identity.
+`,
+})
 export type MergeAction = Schema.Schema.Type<typeof MergeActionSchema>
 export type JsDocUpdatePlan = Schema.Schema.Type<typeof JsDocUpdatePlanSchema>
+export type JsDocUpdateEntryPlan = Schema.Schema.Type<typeof JsDocUpdateEntrySchema>
 export type JsDocTarget = Schema.Schema.Type<typeof JsDocTargetSchema>

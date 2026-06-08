@@ -1,9 +1,9 @@
 import { defaultComplexityStrategy, modeResolver } from '@gyomu/ai-compiler/jsdoc-update'
 import { withOptional } from '@gyomu/schema'
-import type { ParsedJsDoc } from '../../analysis/jsdoc/ParsedJsDoc.js'
-import type { ExistingJsDoc, JsDocUpdateContext } from '@gyomu/ai-compiler/jsdoc-update'
+import { buildContextEntry } from './buildContextEntry.js'
+import { buildExistingJsDoc } from './buildExistingJsDoc.js'
+import type { JsDocUpdateContext } from '@gyomu/ai-compiler/jsdoc-update'
 import type { FileAnalysisResult } from '../../analysis/file/FileAnalysisResult.js'
-import type { JsDocAnalysis } from '../../analysis/jsdoc/JsDocAnalysis.js'
 
 export const buildJsDocUpdateContext = (
   projectName: string,
@@ -34,6 +34,9 @@ export const buildJsDocUpdateContext = (
       },
       defaultComplexityStrategy,
     )
+    const children = symbol.members
+      .filter((m) => m.documentable)
+      .map((m) => buildContextEntry(fileResult, m))
     const context = {
       project: {
         name: projectName,
@@ -52,6 +55,7 @@ export const buildJsDocUpdateContext = (
       },
       ...withOptional({ existingJsDoc: buildExistingJsDoc(jsDocAnalysis, parsedJsDoc) }),
       relatedSymbols: [],
+      children,
       options: {
         preserveStyle: true,
       },
@@ -71,32 +75,4 @@ export const buildJsDocUpdateContext = (
     results.push(context)
   }
   return results
-}
-
-const buildExistingJsDoc = (
-  jsDocAnalysis: JsDocAnalysis | undefined,
-  parsedJsDoc: ParsedJsDoc | undefined,
-): ExistingJsDoc | undefined => {
-  if (!jsDocAnalysis || !parsedJsDoc) {
-    return undefined
-  } else {
-    return {
-      ...withOptional({ summary: parsedJsDoc.summary, returns: parsedJsDoc.returns?.description }),
-      params: parsedJsDoc.params.map((p) => ({
-        name: p.name,
-        sortOrder: p.sortOrder,
-        ...withOptional({
-          type: p.type,
-          description: p.description,
-        }),
-      })),
-      tags: parsedJsDoc.tags
-        .filter((f) => ['param', 'return'].includes(f.tagName) == false)
-        .map((t) => ({
-          tag: t.tagName,
-          content: t.text ?? '',
-          sortOrder: t.sortOrder,
-        })),
-    }
-  }
 }

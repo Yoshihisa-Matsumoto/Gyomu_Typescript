@@ -1,26 +1,176 @@
 import { withOptional } from '@gyomu/schema'
+import { Node } from 'ts-morph'
 import { analyzeType } from '../analyzeType.js'
-import type { PropertyMemberAnalysis } from '../../../symbol/MemberAnalysis.js'
-import type { PropertySignature } from 'ts-morph'
+import { preparePropertyAnalysis } from '../prepareMemberAnalysis.js'
+import { registerSymbolSymbolAnalysis } from '../../../file/registerSymbolSymbolAnalysis.js'
+import { computeIndent } from '../computeIndent.js'
+import type {
+  Expression,
+  GetAccessorDeclaration,
+  PropertyDeclaration,
+  PropertySignature,
+  TypeNode,
+} from 'ts-morph'
+import type { JsDocAnalysis } from '../../../jsdoc/JsDocAnalysis.js'
+import type { ProjectRelativePath, SymbolId } from '../../../types.js'
+import type { FileAnalysisMetadata } from '../../../file/FileAnalysisResult.js'
+import type {
+  DocumentablePropertyMemberAnalysis,
+  MemberAccessor,
+  MemberIdentityMemberPath,
+  MemberIdentityOwnerSymbolId,
+} from '../../../symbol/MemberAnalysis.js'
+import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
-export const analyzePropertyMember = (node: PropertySignature): PropertyMemberAnalysis => {
-  const typeNode = node.getTypeNode()
-
-  const initializer = node.getInitializer()
-  // console.dir(typeNode)
-  return {
-    kind: 'property',
-
-    name: node.getName(),
-
-    ...withOptional({ type: analyzeType({ node: typeNode, initializer }) }),
-
+export const analyzePropertyMember = (
+  args: {
+    sourcePath: ProjectRelativePath
+    metadata: FileAnalysisMetadata
+    node: PropertySignature | PropertyDeclaration
+    ownerSymbolId: MemberIdentityOwnerSymbolId
+    ownerSymbolIdentity: SymbolIdentity
+    memberPath: MemberIdentityMemberPath
+    sourceFullText: string
+  },
+  isStatic: boolean = false,
+  visibility: MemberAccessor = 'public',
+): DocumentablePropertyMemberAnalysis => {
+  const { sourcePath, metadata, node, ownerSymbolId, ownerSymbolIdentity, memberPath } = args
+  const typeNode = args.node.getTypeNode()
+  const name = node.getName()
+  const initializer = args.node.getInitializer()
+  const { id, identity, jsDoc, location, startOffset } = preparePropertyAnalysis(
+    sourcePath,
+    metadata,
+    ownerSymbolId,
+    ownerSymbolIdentity,
+    memberPath,
+    name,
+    node,
+    node,
+  )
+  return analyzePropertyMemberInternal(args, {
+    initializer,
+    typeNode,
+    isStatic,
+    visibility,
+    id,
+    identity,
+    jsDoc,
+    location,
+    startOffset,
     readonly: node.isReadonly(),
-
     optional: !!node.getQuestionTokenNode(),
+  })
+  // const name = node.getName()
+  // const { identity, jsDoc, location, startOffset } = preparePropertyAnalysis(
+  //   sourcePath,
+  //   metadata,
+  //   ownerSymbolId,
+  //   memberPath,
+  //   name,
+  //   node,
+  //   node,
+  // )
 
-    static: false,
+  // // console.dir(typeNode)
+  // return {
+  //   kind: 'property',
+  //   source: 'property-declaration',
+  //   identity,
+  //   name,
+  //   readonly: node.isReadonly(),
+  //   optional: !!node.getQuestionTokenNode(),
 
-    visibility: 'public',
-  }
+  //   ...withOptional({
+  //     type: analyzeType({
+  //       node: typeNode,
+  //       initializer,
+  //       memberPath,
+  //       metadata,
+  //       ownerSymbolId,
+  //       sourcePath,
+  //       nodeName: [name],
+  //     }),
+  //     jsDoc,
+  //   }),
+  //   location,
+  //   startOffset,
+
+  //   static: isStatic,
+  //   visibility: visibility,
+  // }
+}
+
+export const analyzePropertyMemberInternal = (
+  args: {
+    sourcePath: ProjectRelativePath
+    metadata: FileAnalysisMetadata
+    node: PropertySignature | PropertyDeclaration | GetAccessorDeclaration
+    ownerSymbolId: MemberIdentityOwnerSymbolId
+    ownerSymbolIdentity: SymbolIdentity
+    memberPath: MemberIdentityMemberPath
+    sourceFullText: string
+  },
+  args2: {
+    readonly: boolean
+    optional: boolean
+    isStatic: boolean
+    visibility: MemberAccessor
+    initializer: Expression | undefined
+    typeNode: TypeNode | undefined
+    id: SymbolId
+    identity: SymbolIdentity
+    jsDoc: JsDocAnalysis | undefined
+    location: {
+      startLine: number
+      endLine: number
+    }
+    startOffset: number
+  },
+): DocumentablePropertyMemberAnalysis => {
+  const { sourcePath, metadata, node, ownerSymbolId, ownerSymbolIdentity, memberPath } = args
+  const { id, identity, jsDoc, location, startOffset, readonly, optional } = args2
+  const name = node.getName()
+
+  // console.dir(typeNode)
+
+  const property = {
+    kind: 'property',
+    documentable: true,
+    source: 'property-declaration',
+    id,
+    identity,
+    ownerSymbolId,
+    name,
+
+    readonly,
+    optional,
+    ...withOptional({
+      type: analyzeType({
+        node: args2.typeNode,
+        initializer: args2.initializer,
+        memberPath,
+        metadata,
+        ownerSymbolId,
+        ownerSymbolIdentity,
+        sourcePath,
+        nodeName: [name],
+        sourceFullText: args.sourceFullText,
+      }),
+      jsDoc,
+    }),
+    location,
+    startOffset,
+    rest: Node.isDotDotDotTokenable(node) ? !!node.getDotDotDotToken() : false,
+
+    static: args2.isStatic,
+    visibility: args2.visibility,
+  } satisfies DocumentablePropertyMemberAnalysis
+  registerSymbolSymbolAnalysis(
+    metadata,
+    property,
+    computeIndent(args.sourceFullText, args.node.getStart(), args.node.getStartLinePos()),
+  )
+  return property
 }

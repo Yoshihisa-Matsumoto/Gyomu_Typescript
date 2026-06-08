@@ -1,75 +1,78 @@
 [
-  {
-    "identity": {
-      "symbolId": "parse",
-      "signatureId": "(text:string):string"
-    },
-
-    "summary": {
-      "action": {
-        "type": "replace",
-        "value": "Parse string input into string output."
+  [
+    {
+      "identity": {
+        "symbolId": "parse",
+        "signatureId": "(text:string):string"
       },
-      "confidence": 0.95
-    },
 
-    "params": [],
-
-    "tags": [],
-
-    "returns": {
-      "action": {
-        "type": "preserve"
+      "summary": {
+        "action": {
+          "type": "replace",
+          "value": "Parse string input into string output."
+        },
+        "confidence": 0.95
       },
-      "confidence": 1.0
-    },
 
-    "reasoning": {
-      "summary": "This overload accepts a string and returns a string.",
-      "paramMapping": "Parameter documentation is not required for this test case.",
-      "returnMapping": "Return description is intentionally omitted."
-    },
+      "params": [],
 
-    "risk": {
-      "hasHumanConflict": false,
-      "riskLevel": "low"
+      "tags": [],
+
+      "returns": {
+        "action": {
+          "type": "preserve"
+        },
+        "confidence": 1.0
+      },
+
+      "reasoning": {
+        "summary": "This overload accepts a string and returns a string.",
+        "paramMapping": "Parameter documentation is not required for this test case.",
+        "returnMapping": "Return description is intentionally omitted."
+      },
+
+      "risk": {
+        "hasHumanConflict": false,
+        "riskLevel": "low"
+      }
     }
-  },
-
-  {
-    "identity": {
-      "symbolId": "parse",
-      "signatureId": "(buffer:Buffer):Buffer"
-    },
-
-    "summary": {
-      "action": {
-        "type": "replace",
-        "value": "Parse buffer input into buffer output."
+  ],
+  [
+    {
+      "identity": {
+        "symbolId": "parse",
+        "signatureId": "(buffer:Buffer):Buffer"
       },
-      "confidence": 0.95
-    },
 
-    "params": [],
-
-    "tags": [],
-
-    "returns": {
-      "action": {
-        "type": "preserve"
+      "summary": {
+        "action": {
+          "type": "replace",
+          "value": "Parse buffer input into buffer output."
+        },
+        "confidence": 0.95
       },
-      "confidence": 1.0
-    },
 
-    "reasoning": {
-      "summary": "This overload accepts a Buffer and returns a Buffer.",
-      "paramMapping": "Parameter documentation is not required for this test case.",
-      "returnMapping": "Return description is intentionally omitted."
-    },
+      "params": [],
 
-    "risk": {
-      "hasHumanConflict": false,
-      "riskLevel": "low"
+      "tags": [],
+
+      "returns": {
+        "action": {
+          "type": "preserve"
+        },
+        "confidence": 1.0
+      },
+
+      "reasoning": {
+        "summary": "This overload accepts a Buffer and returns a Buffer.",
+        "paramMapping": "Parameter documentation is not required for this test case.",
+        "returnMapping": "Return description is intentionally omitted."
+      },
+
+      "risk": {
+        "hasHumanConflict": false,
+        "riskLevel": "low"
+      }
     }
-  }
+  ]
 ]

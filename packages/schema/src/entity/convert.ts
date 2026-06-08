@@ -54,6 +54,9 @@ export const convertFromSchemaObjectWithEffect =
     )
 
 export type EffectSchema = Parameters<typeof Schema.toStandardSchemaV1>[0] & Schema.Struct<any>
+export type EffectArrayableSchema =
+  | (Parameters<typeof Schema.toStandardSchemaV1>[0] & Schema.$Array<Schema.Struct<any>>)
+  | EffectSchema
 // export type StandardizedSchema<S extends EffectSchema> = ReturnType<
 //   typeof Schema.toStandardSchemaV1<S>
 // >
