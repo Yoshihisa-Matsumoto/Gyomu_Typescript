@@ -8,7 +8,9 @@ import { Project } from 'ts-morph'
 import { analyzeFile } from '../../analysis/analyzeFile.js'
 
 import 'dotenv/config'
+import { processTsDocUpdate } from '../processTsDocUpdate.js'
 
+const timeout = 20000
 const describeIfProjectName =
   process.env.TSDOC_PROJECT && process.env.TSDOC_FILE ? describe : describe.skip
 
@@ -21,11 +23,11 @@ const processTsDocUpdateProgram = () => {
   const project = new Project({
     tsConfigFilePath: join(projectRoot, 'tsconfig.json'),
   })
-  const projectName = '@gyomu/schema'
+  const projectName = '@gyomu/ai-compiler'
 
   const filePath = join(projectRoot, sourceFilename)
   const program = Effect.gen(function* () {
-    const result = yield* analyzeFile({ project, projectRoot, projectName }, filePath, {
+    const result = yield* processTsDocUpdate({ project, projectRoot, projectName }, filePath, {
       includeDebugInfo: true,
     })
     console.dir(result, { depth: null })
@@ -33,7 +35,11 @@ const processTsDocUpdateProgram = () => {
   return runQAWithEnvOrThrow(program, layer)
 }
 describeIfProjectName('processTsDocUpdate real test', () => {
-  it('test', async () => {
-    const plan = await processTsDocUpdateProgram()
-  })
+  it(
+    'test',
+    async () => {
+      const plan = await processTsDocUpdateProgram()
+    },
+    timeout,
+  )
 })

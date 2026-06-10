@@ -21,6 +21,7 @@ export const buildMergePlan = (
     }))(() => {
       return buildJsDocUpdateContext(projectName, fileResult)
     })
+    console.dir(contexts, { depth: null })
     const mergePlans = yield* Effect.forEach(contexts, (context) =>
       buildJsDocUpdatePlan(context).pipe(
         Effect.flatMap((plan) => createMergePlan(fileResult.analysis.path, context, plan)),
@@ -36,6 +37,7 @@ export const buildMergePlan = (
         ),
       ),
     ).pipe(Effect.map((plans) => plans.flat()))
+    console.dir(mergePlans, { depth: null })
     return mergePlans
   })
 }

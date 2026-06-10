@@ -27,7 +27,7 @@ interface JsDocContextBase {
 }
 
 export interface ContextEntry {
-  id: string
+  target: SymbolIdentity
 
   name: string
 

@@ -19,7 +19,7 @@ export const buildContextEntry = (
   switch (member.kind) {
     case 'method':
       return {
-        id: member.id,
+        target: member.identity,
         kind: member.kind,
         name: member.name,
 
@@ -43,7 +43,7 @@ export const buildContextEntry = (
           break
       }
       return {
-        id: member.id,
+        target: member.identity,
         kind: member.kind,
         name: member.name,
 

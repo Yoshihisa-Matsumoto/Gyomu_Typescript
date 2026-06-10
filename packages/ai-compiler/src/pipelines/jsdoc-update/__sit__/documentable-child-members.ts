@@ -45,7 +45,10 @@ export interface User {
 
       children: [
         {
-          id: 'User.id',
+          target: {
+            symbolId: 'User.id',
+            signatureId: 'property',
+          },
 
           name: 'id',
           kind: 'property',
