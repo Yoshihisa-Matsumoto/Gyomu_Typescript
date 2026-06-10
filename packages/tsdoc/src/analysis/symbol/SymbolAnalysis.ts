@@ -36,6 +36,8 @@ export interface SymbolAnalysis {
    */
   identity: SymbolIdentity
 
+  declarationOrder: number
+
   /**
    * Symbol type text representation.
    */

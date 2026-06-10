@@ -24,6 +24,7 @@ export const analyzeConstructor = (
   ownerSymbolIdentity: SymbolIdentity,
   memberPath: MemberIdentityMemberPath,
   sourceFullText: string,
+  declarationOrder: number,
 ): Array<MemberAnalysis> => {
   const name = '$constructor'
 
@@ -38,6 +39,7 @@ export const analyzeConstructor = (
       jsDocableNode: node,
       name,
       sourceFullText,
+      declarationOrder,
     },
     { isStatic: false, visibility: 'public', returnType: { text: parent.getName()! } },
   )
@@ -76,7 +78,7 @@ export const analyzeConstructor = (
   const parameters = node
     .getParameters()
     .filter((p) => p.getModifiers().length > 0)
-    .map((v) =>
+    .map((v, index) =>
       analyzeClassPropertyFromConstructorParameters({
         sourcePath,
         metadata,
@@ -85,6 +87,7 @@ export const analyzeConstructor = (
         ownerSymbolIdentity,
         memberPath: [],
         sourceFullText,
+        declarationOrder: index,
       }),
     )
 
@@ -99,8 +102,17 @@ const analyzeClassPropertyFromConstructorParameters = (args: {
   ownerSymbolIdentity: SymbolIdentity
   memberPath: MemberIdentityMemberPath
   sourceFullText: string
+  declarationOrder: number
 }): NonDocumentablePropertyMemberAnalysis => {
-  const { sourcePath, metadata, node, ownerSymbolId, ownerSymbolIdentity, memberPath } = args
+  const {
+    sourcePath,
+    metadata,
+    node,
+    ownerSymbolId,
+    ownerSymbolIdentity,
+    memberPath,
+    declarationOrder,
+  } = args
   const typeNode = node.getTypeNode()
   const initializer = node.getInitializer()
   const nodeName = node.getName()
@@ -135,9 +147,11 @@ const analyzeClassPropertyFromConstructorParameters = (args: {
         sourcePath,
         nodeName: [nodeName],
         sourceFullText: args.sourceFullText,
+        declarationOrder: args.declarationOrder,
       }),
     }),
     static: false,
     visibility: getAccessor(node),
+    declarationOrder,
   }
 }

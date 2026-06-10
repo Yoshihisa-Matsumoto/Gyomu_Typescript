@@ -22,7 +22,7 @@ export const analyzeObjectMembers = (
 ): Array<MemberAnalysis> => {
   const typeNode = declaration.getTypeNode()
   if (Node.isTypeLiteral(typeNode)) {
-    return typeNode.getMembers().flatMap((member) => {
+    return typeNode.getMembers().flatMap((member, index) => {
       if (Node.isMethodSignature(member)) {
         return [
           analyzeFunctionMember({
@@ -35,6 +35,7 @@ export const analyzeObjectMembers = (
             name: member.getName(),
             jsDocableNode: member,
             sourceFullText,
+            declarationOrder: index,
           }),
         ] as Array<MemberAnalysis>
       }
@@ -53,6 +54,7 @@ export const analyzeObjectMembers = (
               ownerSymbolIdentity,
               memberPath,
               sourceFullText,
+              declarationOrder: index,
             }),
           ] as Array<MemberAnalysis>
         }
@@ -65,6 +67,7 @@ export const analyzeObjectMembers = (
             ownerSymbolIdentity,
             memberPath,
             sourceFullText,
+            declarationOrder: index,
           }),
         ] as Array<MemberAnalysis>
       }

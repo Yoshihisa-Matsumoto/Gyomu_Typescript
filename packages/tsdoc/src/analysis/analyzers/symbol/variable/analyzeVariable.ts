@@ -25,6 +25,7 @@ export const analyzeVariableDeclaration = (args: {
   name?: string
   options?: AnalysisOptions
   sourceFullText: string
+  declarationOrder: number
 }) => {
   const statement = args.declaration.getVariableStatement()
   const name = args.name ?? args.declaration.getName()
@@ -69,6 +70,7 @@ export const analyzeVariableDeclaration = (args: {
       jsDoc: prepared.jsDoc,
       members: [],
     }),
+    declarationOrder: args.declarationOrder,
   } satisfies SymbolAnalysis
   registerSymbolSymbolAnalysis(
     args.metadata,
@@ -104,6 +106,7 @@ const getSignatureId = (
       memberPath,
       nodeName,
       sourceFullText,
+      0,
     )
   }
   return { id: 'variable', parameters: [] }

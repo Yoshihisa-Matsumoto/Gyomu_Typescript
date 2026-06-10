@@ -78,8 +78,10 @@ describe('processTsDocUpdate integration', () => {
     // 'overload-function',
     // 'mixed-exports',
     // 'returns-needed',
-    // 'advanced-nested',
-    'nested-object-properties',
+    // // 'advanced-nested',
+    // 'nested-object-properties',
+    'array',
+    'optional',
   ])('compare exactly same as expected', async (...args: Array<string>) => {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const target_file = args[0]!

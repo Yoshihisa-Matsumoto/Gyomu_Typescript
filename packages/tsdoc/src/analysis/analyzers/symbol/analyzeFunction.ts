@@ -45,6 +45,7 @@ export const analyzeFunctionDeclaration = (args: JSDocableTagAnalysisArg<Functio
     startOffset: args.declaration.getStart(),
     ...withOptional({ jsDoc: prepared.jsDoc }),
     members: [],
+    declarationOrder: args.declarationOrder,
   } satisfies SymbolAnalysis
   registerSymbolSymbolAnalysis(
     args.metadata,
@@ -99,6 +100,7 @@ const getFunctionSignatureId = (
     memberPath,
     nodeName: ['$return'],
     sourceFullText,
+    declarationOrder: 0,
   })
   const overloadCount = declaration.getOverloads().length
   let isOverloadImplementation = false

@@ -57,6 +57,8 @@ interface BaseMemberAnalysis {
   static: boolean
 
   visibility: MemberAccessor
+
+  declarationOrder: number
 }
 
 interface MethodMemberAnalysis extends BaseMemberAnalysis {

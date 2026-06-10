@@ -60,6 +60,7 @@ export const analyzeInterfaceDeclaration = (
       [],
       args.sourceFullText,
     ),
+    declarationOrder: args.declarationOrder,
   } satisfies SymbolAnalysis
   registerSymbolSymbolAnalysis(
     args.metadata,
@@ -89,7 +90,7 @@ const analyzeInterfaceMembers = (
   memberPath: MemberIdentityMemberPath,
   sourceFullText: string,
 ): Array<MemberAnalysis> => {
-  return node.getMembers().flatMap((member) => {
+  return node.getMembers().flatMap((member, index) => {
     if (Node.isPropertySignature(member)) {
       const typeNode = member.getTypeNode()
       if (Node.isFunctionTypeNode(typeNode)) {
@@ -104,9 +105,11 @@ const analyzeInterfaceMembers = (
             ownerSymbolIdentity,
             memberPath,
             sourceFullText,
+            declarationOrder: index,
           }),
         ] as Array<MemberAnalysis>
       }
+      console.log(`PromPmember, ${index}`)
       return [
         analyzePropertyMember({
           sourcePath,
@@ -116,6 +119,7 @@ const analyzeInterfaceMembers = (
           ownerSymbolIdentity,
           memberPath,
           sourceFullText,
+          declarationOrder: index,
         }),
       ]
     }
@@ -132,6 +136,7 @@ const analyzeInterfaceMembers = (
           name: member.getName(),
           jsDocableNode: member,
           sourceFullText,
+          declarationOrder: index,
         }),
       ] as Array<MemberAnalysis>
     }

@@ -10,4 +10,5 @@ export type JSDocableTagAnalysisArg<T extends JSDocableNode> = {
   name?: string
   memberPath: MemberIdentityMemberPath
   sourceFullText: string
+  declarationOrder: number
 }

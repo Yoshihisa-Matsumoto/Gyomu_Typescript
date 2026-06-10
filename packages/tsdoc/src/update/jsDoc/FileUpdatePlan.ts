@@ -9,5 +9,7 @@ export type FileUpdatePlan = {
     endOffset: number
     newText: string
     indent: number
+
+    declarationOrder: number
   }>
 }

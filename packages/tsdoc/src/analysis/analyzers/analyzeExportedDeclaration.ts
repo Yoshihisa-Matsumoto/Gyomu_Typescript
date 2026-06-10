@@ -18,6 +18,7 @@ export const analyzeExportedDeclaration = (
   sourceRelativePath: ProjectRelativePath,
   metadata: FileAnalysisMetadata,
   sourceFullText: string,
+  declarationOrder: number,
   options?: AnalysisOptions,
 ): ExportAnalysis | undefined => {
   const memberPath: Array<string> = []
@@ -30,6 +31,8 @@ export const analyzeExportedDeclaration = (
         metadata,
         memberPath,
         sourceFullText,
+
+        declarationOrder,
       }),
     )
     return {
@@ -47,6 +50,8 @@ export const analyzeExportedDeclaration = (
         metadata,
         memberPath,
         sourceFullText,
+
+        declarationOrder,
       }),
     )
     return {
@@ -64,6 +69,8 @@ export const analyzeExportedDeclaration = (
         metadata,
         memberPath,
         sourceFullText,
+
+        declarationOrder,
       }),
     )
     return {
@@ -81,6 +88,8 @@ export const analyzeExportedDeclaration = (
         metadata,
         memberPath,
         sourceFullText,
+
+        declarationOrder,
       }),
     )
     return {
@@ -98,6 +107,8 @@ export const analyzeExportedDeclaration = (
         metadata,
         memberPath,
         sourceFullText,
+
+        declarationOrder,
       }),
     )
     return {
@@ -115,6 +126,8 @@ export const analyzeExportedDeclaration = (
         metadata,
         memberPath,
         sourceFullText,
+
+        declarationOrder,
       }),
     )
     return {

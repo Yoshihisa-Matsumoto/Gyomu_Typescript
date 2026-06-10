@@ -22,17 +22,21 @@ export const extractExport = (
   }))(() => {
     const result: Array<ExportAnalysis> = []
     const sourceFullText = context.sourceFile.getFullText()
-    for (const [name, declarations] of context.sourceFile.getExportedDeclarations()) {
+
+    const map = context.sourceFile.getExportedDeclarations()
+    map.keys().forEach((name, index) => {
+      const declarations = map.get(name)!
       const analysisResult = toExportAnalysis(
         name,
         declarations,
         context.path,
         metadata,
         sourceFullText,
+        index,
         option,
       )
       result.push(...analysisResult)
-    }
+    })
     return result
   })
 
@@ -42,6 +46,7 @@ const toExportAnalysis = (
   sourceFilePath: ProjectRelativePath,
   metadata: FileAnalysisMetadata,
   sourceFullText: string,
+  declarationOrder: number,
   option?: AnalysisOptions,
 ): ReadonlyArray<ExportAnalysis> => {
   const results: Array<ExportAnalysis> = []
@@ -52,6 +57,7 @@ const toExportAnalysis = (
       sourceFilePath,
       metadata,
       sourceFullText,
+      declarationOrder,
       option,
     )
     if (!analysisResult) continue

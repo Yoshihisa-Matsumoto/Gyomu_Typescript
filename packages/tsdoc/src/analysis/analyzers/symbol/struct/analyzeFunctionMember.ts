@@ -106,6 +106,7 @@ export const analyzeFunctionMember = (
     name: string
     jsDocableNode: JSDocableNode | undefined
     sourceFullText: string
+    declarationOrder: number
   },
   isStatic: boolean = false,
   visibility: MemberAccessor = 'public',
@@ -123,6 +124,7 @@ export const analyzeFunctionMember = (
     sourcePath,
     nodeName: [name, '$return'],
     sourceFullText: args.sourceFullText,
+    declarationOrder: args.declarationOrder,
   })
   return analyzeFunctionMemberInternal(args, {
     isStatic,
@@ -144,6 +146,7 @@ export const analyzeFunctionMemberInternal = (
     name: string
     jsDocableNode: JSDocableNode | undefined
     sourceFullText: string
+    declarationOrder: number
   },
   args2: {
     isStatic: boolean
@@ -183,7 +186,7 @@ export const analyzeFunctionMemberInternal = (
       identity,
       parameters: node
         .getParameters()
-        .map((p) =>
+        .map((p, index) =>
           analyzeParameter(
             p,
             sourcePath,
@@ -192,6 +195,7 @@ export const analyzeFunctionMemberInternal = (
             ownerSymbolIdentity,
             childMemberPath,
             args.sourceFullText,
+            index,
           ),
         ),
       snippet,
@@ -202,7 +206,7 @@ export const analyzeFunctionMemberInternal = (
       location,
       startOffset,
       static: isStatic,
-
+      declarationOrder: args.declarationOrder,
       visibility,
     } as DocumentableMethodMemberAnalysis
     registerSymbolSymbolAnalysis(
@@ -227,7 +231,7 @@ export const analyzeFunctionMemberInternal = (
       identity,
       parameters: node
         .getParameters()
-        .map((p) =>
+        .map((p, index) =>
           analyzeParameter(
             p,
             sourcePath,
@@ -236,6 +240,7 @@ export const analyzeFunctionMemberInternal = (
             ownerSymbolIdentity,
             childMemberPath,
             args.sourceFullText,
+            index,
           ),
         ),
       ...withOptional({
@@ -245,6 +250,7 @@ export const analyzeFunctionMemberInternal = (
       static: isStatic,
 
       visibility,
+      declarationOrder: args.declarationOrder,
     } as NonDocumentableMethodMemberAnalysis
   }
 }

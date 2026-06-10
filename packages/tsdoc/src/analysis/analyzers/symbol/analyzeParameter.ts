@@ -20,6 +20,7 @@ export const analyzeParameter = (
   ownerSymbolIdentity: SymbolIdentity,
   memberPath: MemberIdentityMemberPath,
   sourceFullText: string,
+  declarationOrder: number,
 ): NonDocumentablePropertyMemberAnalysis => {
   const typeNode = node.getTypeNode()
   const name = node.getName()
@@ -32,6 +33,7 @@ export const analyzeParameter = (
     },
     ownerSymbolIdentity,
   )
+
   return {
     kind: 'property',
     documentable: false,
@@ -59,9 +61,10 @@ export const analyzeParameter = (
         memberPath,
         nodeName: [name],
         sourceFullText,
+        declarationOrder,
       }),
     }),
-
+    declarationOrder,
     // structure: analyzeParameterStructure(withOptional({ node: typeNode, initializer })),
   }
 }

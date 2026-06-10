@@ -26,6 +26,7 @@ export const analyzeType = (args: {
   nodeName: Array<string> | undefined
   rawText?: string | undefined
   sourceFullText: string
+  declarationOrder: number
 }): TypeAnalysis | undefined => {
   const {
     node,
@@ -39,7 +40,8 @@ export const analyzeType = (args: {
   } = args
   if (node) {
     const nodeContent = node.getText()
-
+    console.log(`${nodeContent}`)
+    console.log(args.declarationOrder)
     return {
       text: nodeContent,
       ...withOptional({
@@ -53,6 +55,7 @@ export const analyzeType = (args: {
           memberPath,
           nodeName,
           args.sourceFullText,
+          args.declarationOrder,
         ),
       }),
     }
@@ -100,6 +103,7 @@ const analyzeTypeStructures = (
   oldMemberPath: MemberIdentityMemberPath,
   nodeName: Array<string> | undefined,
   sourceFullText: string,
+  declarationOrder: number,
 ): TypeStructureAnalysis | undefined => {
   const memberPath: MemberIdentityMemberPath = nodeName
     ? [...oldMemberPath, ...nodeName]
@@ -118,8 +122,15 @@ const analyzeTypeStructures = (
       nodeName: undefined,
       initializer: undefined,
       sourceFullText,
+      declarationOrder,
     })
+    if (Node.isArrayTypeNode(typeNode)) {
+      console.log('Array')
+      console.log(typeName.getText())
+    }
     if (typeName.getText().includes('Array')) {
+      console.log('Array')
+      console.log(typeName.getText())
       if (typeArguments.length == 1 && typeAlias) {
         return {
           kind: 'array',
@@ -138,7 +149,7 @@ const analyzeTypeStructures = (
       kind: 'union',
       types: typeNode
         .getTypeNodes()
-        .map((childType) =>
+        .map((childType, index) =>
           analyzeType({
             sourcePath,
             metadata,
@@ -149,6 +160,7 @@ const analyzeTypeStructures = (
             initializer: undefined,
             nodeName: undefined,
             sourceFullText,
+            declarationOrder: index,
           }),
         )
         .filter((v) => !!v),
@@ -174,6 +186,7 @@ const analyzeTypeStructures = (
       ownerSymbolId,
       ownerSymbolIdentity,
       sourceFullText,
+      declarationOrder,
     })
     return {
       kind: 'function',
@@ -212,7 +225,7 @@ const analyzeTypeLiteralMembers = (
 ): Array<MemberAnalysis> | undefined => {
   const members: Array<MemberAnalysis> = typeNode
     .getMembers()
-    .flatMap((member) => {
+    .flatMap((member, index) => {
       if (Node.isMethodSignature(member)) {
         return [
           analyzeFunctionMember({
@@ -225,6 +238,7 @@ const analyzeTypeLiteralMembers = (
             name: member.getName(),
             jsDocableNode: member,
             sourceFullText,
+            declarationOrder: index,
           }),
         ] as Array<MemberAnalysis>
       }
@@ -241,6 +255,7 @@ const analyzeTypeLiteralMembers = (
               jsDocableNode: member,
               name: Node.isNameable(member) ? member.getName()! : member.getText(),
               sourceFullText,
+              declarationOrder: index,
             }),
           ]
         }
@@ -260,6 +275,7 @@ const analyzeTypeLiteralMembers = (
               ownerSymbolIdentity,
               memberPath,
               sourceFullText,
+              declarationOrder: index,
             }),
           ] as Array<MemberAnalysis>
         }
@@ -272,6 +288,7 @@ const analyzeTypeLiteralMembers = (
             ownerSymbolIdentity,
             memberPath,
             sourceFullText,
+            declarationOrder: index,
           }),
         ] as Array<MemberAnalysis>
       }

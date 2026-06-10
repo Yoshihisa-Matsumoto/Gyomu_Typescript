@@ -21,6 +21,7 @@ export const analyzeClassMethodMember = (args: {
   name: string
   jsDocableNode: MethodDeclaration
   sourceFullText: string
+  declarationOrder: number
 }): DocumentableMethodMemberAnalysis | NonDocumentableMethodMemberAnalysis => {
   return analyzeFunctionMember(args, args.node.isStatic(), getAccessor(args.node))
   // const { sourcePath, metadata, node, ownerSymbolId, memberPath, name, jsDocableNode } = args

@@ -28,6 +28,7 @@ export const analyzeClassPropertyMember = (args: {
   ownerSymbolIdentity: SymbolIdentity
   memberPath: MemberIdentityMemberPath
   sourceFullText: string
+  declarationOrder: number
 }): DocumentablePropertyMemberAnalysis => {
   return analyzePropertyMember(args, args.node.isStatic(), getAccessor(args.node))
   // const { sourcePath, metadata, node, ownerSymbolId, memberPath } = args
@@ -80,6 +81,7 @@ export const analyzeGetSetAccessor = (
     ownerSymbolIdentity: SymbolIdentity
     memberPath: MemberIdentityMemberPath
     sourceFullText: string
+    declarationOrder: number
   },
   setter?: SetAccessorDeclaration,
 ): DocumentablePropertyMemberAnalysis => {

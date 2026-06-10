@@ -23,6 +23,7 @@ export const analyzeFunction = (
     name?: string
     options?: AnalysisOptions
     sourceFullText: string
+    declarationOrder: number
   },
   prepared: SymbolPreparation,
   node: ArrowFunction | FunctionExpression,
@@ -50,6 +51,7 @@ export const analyzeFunction = (
       jsDoc: prepared.jsDoc,
       members: [],
     }),
+    declarationOrder: args.declarationOrder,
   } satisfies SymbolAnalysis
   registerSymbolSymbolAnalysis(
     args.metadata,
@@ -80,6 +82,7 @@ export const getFunctionSignature = (
   memberPath: MemberIdentityMemberPath,
   nodeName: string,
   sourceFullText: string,
+  declarationOrder: number,
 ): SignatureAnalysis => {
   const { id } = createSymbolIdentity(declaration, sourcePath, 'function')
   const identity: SymbolIdentity = { symbolId: nodeName, signatureId: 'function' }
@@ -87,8 +90,8 @@ export const getFunctionSignature = (
     id: 'function',
     parameters: node
       .getParameters()
-      .map((p) =>
-        analyzeParameter(p, sourcePath, metadata, id, identity, memberPath, sourceFullText),
+      .map((p, index) =>
+        analyzeParameter(p, sourcePath, metadata, id, identity, memberPath, sourceFullText, index),
       ),
     ...withOptional({
       returnType: analyzeType({
@@ -101,6 +104,7 @@ export const getFunctionSignature = (
         sourcePath,
         nodeName: [nodeName, '$return'],
         sourceFullText,
+        declarationOrder,
       }),
     }),
   }

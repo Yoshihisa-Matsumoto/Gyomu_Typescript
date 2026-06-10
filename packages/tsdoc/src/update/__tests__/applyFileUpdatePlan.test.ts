@@ -18,6 +18,8 @@ describe('applyFileUpdatePlan', () => {
           newText: 'bar',
           startLine: 0,
           endLine: 0,
+          indent: 0,
+          declarationOrder: 0,
         },
       ],
     }
@@ -42,6 +44,8 @@ describe('applyFileUpdatePlan', () => {
           newText: '/** doc */\n',
           startLine: 0,
           endLine: 0,
+          indent: 0,
+          declarationOrder: 0,
         },
       ],
     }
@@ -66,6 +70,8 @@ describe('applyFileUpdatePlan', () => {
           newText: 'bar',
           startLine: 0,
           endLine: 0,
+          indent: 0,
+          declarationOrder: 0,
         },
         {
           startOffset: 24,
@@ -77,6 +83,8 @@ describe('applyFileUpdatePlan', () => {
           newText: '42',
           startLine: 0,
           endLine: 0,
+          indent: 0,
+          declarationOrder: 0,
         },
       ],
     }
@@ -101,6 +109,8 @@ describe('applyFileUpdatePlan', () => {
           newText: '42',
           startLine: 0,
           endLine: 0,
+          indent: 0,
+          declarationOrder: 0,
         },
         {
           startOffset: 9,
@@ -112,6 +122,8 @@ describe('applyFileUpdatePlan', () => {
           newText: 'bar',
           startLine: 0,
           endLine: 0,
+          indent: 0,
+          declarationOrder: 0,
         },
       ],
     }

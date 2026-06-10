@@ -10,7 +10,6 @@ import { analyzeConstructor } from './analyzeConstructor.js'
 import type { ProjectRelativePath } from '../../../types.js'
 import type {
   DocumentableMemberAnalysis,
-  DocumentablePropertyMemberAnalysis,
   MemberAnalysis,
   MemberIdentityMemberPath,
   MemberIdentityOwnerSymbolId,
@@ -61,6 +60,7 @@ export const analyzeClassDeclaration = (args: JSDocableTagAnalysisArg<ClassDecla
       [],
       args.sourceFullText,
     ),
+    declarationOrder: args.declarationOrder,
   } satisfies SymbolAnalysis
 
   registerSymbolSymbolAnalysis(
@@ -89,7 +89,10 @@ const analyzeClassMembers = (
   sourceFullText: string,
 ): Array<MemberAnalysis> => {
   const nodeMembers = node.getMembers()
-  const members = nodeMembers.flatMap((member) => {
+
+  const setters = nodeMembers.filter((v) => Node.isSetAccessorDeclaration(v))
+
+  const members = nodeMembers.flatMap((member, index) => {
     if (Node.isPropertyDeclaration(member)) {
       return [
         analyzeClassPropertyMember({
@@ -100,6 +103,7 @@ const analyzeClassMembers = (
           ownerSymbolIdentity,
           memberPath,
           sourceFullText,
+          declarationOrder: index,
         }),
       ]
     }
@@ -115,6 +119,7 @@ const analyzeClassMembers = (
           name: member.getName(),
           jsDocableNode: member,
           sourceFullText,
+          declarationOrder: index,
         }),
       ]
     if (Node.isConstructorDeclaration(member))
@@ -127,32 +132,53 @@ const analyzeClassMembers = (
         ownerSymbolIdentity,
         memberPath,
         sourceFullText,
+        index,
       )
+
+    if (Node.isGetAccessorDeclaration(member)) {
+      const getter = member
+      const name = getter.getName()
+      const setter = setters.find((s) => s.getName() == name)
+      const analysis = analyzeGetSetAccessor(
+        {
+          sourcePath,
+          metadata,
+          node: getter,
+          ownerSymbolId,
+          ownerSymbolIdentity,
+          memberPath,
+          sourceFullText,
+          declarationOrder: index,
+        },
+        setter,
+      )
+      return analysis
+    }
 
     return [] as Array<DocumentableMemberAnalysis>
   })
 
-  const getters = nodeMembers.filter((v) => Node.isGetAccessorDeclaration(v))
-  const setters = nodeMembers.filter((v) => Node.isSetAccessorDeclaration(v))
-  const getterAnalysis: Array<DocumentablePropertyMemberAnalysis> = []
-  for (const getter of getters) {
-    const name = getter.getName()
-    const setter = setters.find((s) => s.getName() == name)
-    const analysis = analyzeGetSetAccessor(
-      {
-        sourcePath,
-        metadata,
-        node: getter,
-        ownerSymbolId,
-        ownerSymbolIdentity,
-        memberPath,
-        sourceFullText,
-      },
-      setter,
-    )
-    getterAnalysis.push(analysis)
-  }
-  members.push(...getterAnalysis)
+  // const getters = nodeMembers.filter((v) => Node.isGetAccessorDeclaration(v))
+
+  // const getterAnalysis: Array<DocumentablePropertyMemberAnalysis> = []
+  // for (const getter of getters) {
+  //   const name = getter.getName()
+  //   const setter = setters.find((s) => s.getName() == name)
+  //   const analysis = analyzeGetSetAccessor(
+  //     {
+  //       sourcePath,
+  //       metadata,
+  //       node: getter,
+  //       ownerSymbolId,
+  //       ownerSymbolIdentity,
+  //       memberPath,
+  //       sourceFullText,
+  //     },
+  //     setter,
+  //   )
+  //   getterAnalysis.push(analysis)
+  // }
+  // members.push(...getterAnalysis)
   return members
 }
 

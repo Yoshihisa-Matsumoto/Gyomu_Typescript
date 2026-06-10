@@ -29,6 +29,7 @@ export const buildFileUpdatePlan = (
       symbol: symbol.identity,
       newText: doc.jsDoc ?? '',
       indent: doc.indent,
+      declarationOrder: symbol.declarationOrder,
     })),
   }
 }

@@ -7,7 +7,9 @@ export const applyFileUpdatePlan = (sourceContent: string, plan: FileUpdatePlan)
   for (const part of edits) {
     let newText = part.newText
     const prefix = result.slice(0, part.startOffset)
-    if (part.startOffset == part.endOffset && part.startOffset > 1 && part.indent == 0) {
+    console.log(part)
+    // if (part.startOffset == part.endOffset && part.startOffset > 1 && part.indent == 0) {
+    if (part.declarationOrder > 0) {
       if (!isPreviousLineEmpty(prefix)) newText = '\n' + newText
     }
 

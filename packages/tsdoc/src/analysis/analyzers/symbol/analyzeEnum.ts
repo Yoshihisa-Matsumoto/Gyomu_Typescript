@@ -40,6 +40,7 @@ export const analyzeEnumDeclaration = (args: JSDocableTagAnalysisArg<EnumDeclara
     startOffset: args.declaration.getStart(),
     ...withOptional({ jsDoc: prepared.jsDoc }),
     members: [],
+    declarationOrder: args.declarationOrder,
   } satisfies SymbolAnalysis
 
   registerSymbolSymbolAnalysis(

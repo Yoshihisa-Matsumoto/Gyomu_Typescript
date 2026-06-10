@@ -51,6 +51,7 @@ export const analyzeTypeAliasDeclaration = (
       [],
       args.sourceFullText,
     ),
+    declarationOrder: args.declarationOrder,
   } satisfies SymbolAnalysis
   registerSymbolSymbolAnalysis(
     args.metadata,

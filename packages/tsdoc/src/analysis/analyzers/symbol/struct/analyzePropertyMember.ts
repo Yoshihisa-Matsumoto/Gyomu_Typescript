@@ -31,6 +31,7 @@ export const analyzePropertyMember = (
     ownerSymbolIdentity: SymbolIdentity
     memberPath: MemberIdentityMemberPath
     sourceFullText: string
+    declarationOrder: number
   },
   isStatic: boolean = false,
   visibility: MemberAccessor = 'public',
@@ -111,6 +112,7 @@ export const analyzePropertyMemberInternal = (
     ownerSymbolIdentity: SymbolIdentity
     memberPath: MemberIdentityMemberPath
     sourceFullText: string
+    declarationOrder: number
   },
   args2: {
     readonly: boolean
@@ -157,6 +159,7 @@ export const analyzePropertyMemberInternal = (
         sourcePath,
         nodeName: [name],
         sourceFullText: args.sourceFullText,
+        declarationOrder: args.declarationOrder,
       }),
       jsDoc,
     }),
@@ -166,6 +169,7 @@ export const analyzePropertyMemberInternal = (
 
     static: args2.isStatic,
     visibility: args2.visibility,
+    declarationOrder: args.declarationOrder,
   } satisfies DocumentablePropertyMemberAnalysis
   registerSymbolSymbolAnalysis(
     metadata,
