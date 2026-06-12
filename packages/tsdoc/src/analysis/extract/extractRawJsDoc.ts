@@ -1,5 +1,5 @@
 import type { JSDoc, JSDocableNode } from 'ts-morph'
-import type { RawJsDoc } from '../jsdoc/RawJsDoc.js'
+import type { RawJsDoc } from '@gyomu/schema/typescript'
 
 export const extractRawJsDoc = (node: JSDocableNode): Array<{ raw: RawJsDoc; doc: JSDoc }> => {
   const jsDocs = node.getJsDocs()

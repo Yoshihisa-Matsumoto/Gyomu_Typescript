@@ -8,13 +8,12 @@ import {
   getFunctionSignature,
   isFunctionLikeInitializer,
 } from './analyzeFunction.js'
-import type { MemberIdentityMemberPath } from '../../../symbol/MemberAnalysis.js'
+import type { MemberIdentityMemberPath, TypeAnalysis } from '@gyomu/schema/typescript'
 import type { VariableDeclaration } from 'ts-morph'
 import type { ProjectRelativePath } from '../../../types.js'
 import type { SymbolAnalysis } from '../../../symbol/SymbolAnalysis.js'
 import type { AnalysisOptions } from '../../../AnalysisOption.js'
 import type { FileAnalysisMetadata } from '../../../file/FileAnalysisResult.js'
-import type { TypeAnalysis } from '../../../symbol/SymbolModel.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
 export const analyzeVariableDeclaration = (args: {

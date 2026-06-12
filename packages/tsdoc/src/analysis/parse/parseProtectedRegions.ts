@@ -1,5 +1,5 @@
 import { normalizeJsDocText } from '../normalize/normalizeJsDocText.js'
-import type { ProtectedRegion } from '../jsdoc/ParsedJsDoc.js'
+import type { ProtectedRegion } from '@gyomu/schema/typescript'
 
 const START_MARKER = '<!-- tsdoc-preserve-start -->'
 const END_MARKER = '<!-- tsdoc-preserve-end -->'

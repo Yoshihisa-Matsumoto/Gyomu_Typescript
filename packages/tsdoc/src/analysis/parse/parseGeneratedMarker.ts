@@ -1,5 +1,5 @@
 import { withOptional } from '@gyomu/schema'
-import type { GeneratorMarker } from '../jsdoc/ParsedJsDoc.js'
+import type { GeneratorMarker } from '@gyomu/schema/typescript'
 
 export const parseGeneratedMarker = (text: string): GeneratorMarker | undefined => {
   const marker = extractGeneratorMarker(text)

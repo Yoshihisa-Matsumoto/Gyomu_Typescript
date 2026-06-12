@@ -1,4 +1,4 @@
-import type { HumanEditContext, HumanEditSignal, ParsedTag } from '../../jsdoc/ParsedJsDoc.js'
+import type { HumanEditContext, HumanEditSignal, ParsedTag } from '@gyomu/schema/typescript'
 
 type HumanEditDetector<T> = (target: T, context: HumanEditContext) => Array<HumanEditSignal>
 

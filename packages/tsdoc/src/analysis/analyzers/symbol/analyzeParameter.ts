@@ -9,22 +9,33 @@ import type {
   MemberIdentityMemberPath,
   MemberIdentityOwnerSymbolId,
   NonDocumentablePropertyMemberAnalysis,
-} from '../../symbol/MemberAnalysis.js'
+} from '@gyomu/schema/typescript'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
 
-export const analyzeParameter = (
-  node: ParameterDeclaration,
-  sourceRelativePath: ProjectRelativePath,
-  metadata: FileAnalysisMetadata,
-  ownerSymbolId: MemberIdentityOwnerSymbolId,
-  ownerSymbolIdentity: SymbolIdentity,
-  memberPath: MemberIdentityMemberPath,
-  sourceFullText: string,
-  declarationOrder: number,
-): NonDocumentablePropertyMemberAnalysis => {
+export const analyzeParameter = (args: {
+  node: ParameterDeclaration
+  sourceRelativePath: ProjectRelativePath
+  metadata: FileAnalysisMetadata
+  ownerSymbolId: MemberIdentityOwnerSymbolId
+  ownerSymbolIdentity: SymbolIdentity
+  memberPath: MemberIdentityMemberPath
+  sourceFullText: string
+  declarationOrder: number
+}): NonDocumentablePropertyMemberAnalysis => {
+  const {
+    node,
+    sourceRelativePath,
+    metadata,
+    ownerSymbolId,
+    ownerSymbolIdentity,
+    memberPath,
+    sourceFullText,
+    declarationOrder,
+  } = args
   const typeNode = node.getTypeNode()
   const name = node.getName()
   const initializer = node.getInitializer()
+
   const { id, identity } = createMemberIdentityAndId(
     {
       ownerSymbolId,
@@ -33,7 +44,6 @@ export const analyzeParameter = (
     },
     ownerSymbolIdentity,
   )
-
   return {
     kind: 'property',
     documentable: false,

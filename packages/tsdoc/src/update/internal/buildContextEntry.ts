@@ -5,14 +5,15 @@ import type { ContextEntry } from '@gyomu/ai-compiler/jsdoc-update'
 import type {
   DocumentableMemberAnalysis,
   MemberAnalysis,
-} from '../../analysis/symbol/MemberAnalysis.js'
-import type { TypeStructureAnalysis } from '../../analysis/symbol/SymbolModel.js'
+  NonDocumentableMemberAnalysis,
+  TypeStructureAnalysis,
+} from '@gyomu/schema/typescript'
 
 export const buildContextEntry = (
   fileResult: FileAnalysisResult,
-  member: DocumentableMemberAnalysis,
+  member: DocumentableMemberAnalysis | NonDocumentableMemberAnalysis,
 ): ContextEntry => {
-  const jsDocAnalysis = member.jsDoc
+  const jsDocAnalysis = member.documentable ? member.jsDoc : undefined
   // const hasJsDoc = jsDocAnalysis != undefined && jsDocAnalysis.exists
 
   const parsedJsDoc = fileResult.metadata.parsedJsDocs.get(JSON.stringify(member.identity))

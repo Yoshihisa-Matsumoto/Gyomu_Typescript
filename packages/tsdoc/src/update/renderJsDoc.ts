@@ -10,11 +10,13 @@ export const renderJsDoc = (updated: UpdatedSymbolJsDoc): RenderedSymbolJsDoc =>
     updated.jsDoc.startOffset == updated.jsDoc.endOffset,
     updated.indent,
   )
+  const isAdded = updated.jsDoc.startOffset == updated.jsDoc.endOffset
+
   return {
     target: updated.target,
     jsDoc: document,
     startOffset: updated.jsDoc.startOffset - updated.indent.length,
-    endOffset: updated.jsDoc.endOffset - updated.indent.length,
+    endOffset: isAdded ? updated.jsDoc.endOffset - updated.indent.length : updated.jsDoc.endOffset,
     indent: updated.indent.length,
   }
 }

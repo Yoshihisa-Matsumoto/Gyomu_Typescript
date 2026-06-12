@@ -1,5 +1,5 @@
 import { createHumanEditSignal } from './createHumanEditSignal.js'
-import type { HumanEditContext, HumanEditSignal } from '../../jsdoc/ParsedJsDoc.js'
+import type { HumanEditContext, HumanEditSignal } from '@gyomu/schema/typescript'
 import type { TextHumanEditDetector } from './types.js'
 
 export const detectComplexMarkdown: TextHumanEditDetector = (

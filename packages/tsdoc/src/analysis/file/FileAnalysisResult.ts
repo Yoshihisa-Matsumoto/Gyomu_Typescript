@@ -1,5 +1,4 @@
-import type { ParsedJsDoc } from '../jsdoc/ParsedJsDoc.js'
-import type { DocumentableMemberAnalysis } from '../symbol/MemberAnalysis.js'
+import type { DocumentableMemberAnalysis, ParsedJsDoc } from '@gyomu/schema/typescript'
 import type { SymbolAnalysis } from '../symbol/SymbolAnalysis.js'
 import type { SymbolId } from '../types.js'
 import type { FileAnalysis } from './FileAnalysis.js'

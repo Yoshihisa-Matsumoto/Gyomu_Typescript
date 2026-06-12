@@ -2,12 +2,14 @@ import { Node } from 'ts-morph'
 import { extractJsDoc } from '../../extract/extractJsDoc.js'
 import { registerSymbolJsDoc } from '../../file/registerSymbolJsDoc.js'
 import { createSymbolIdentity } from '../../shared/createSymbolIdentity.js'
-import type { MemberIdentityMemberPath } from '../../symbol/MemberAnalysis.js'
+import type {
+  JsDocAnalysis,
+  MemberIdentityMemberPath,
+  SignatureAnalysis,
+} from '@gyomu/schema/typescript'
 import type { FileAnalysisMetadata } from '../../file/FileAnalysisResult.js'
 import type { JSDocableNode } from 'ts-morph'
 import type { ProjectRelativePath, SymbolId } from '../../types.js'
-import type { JsDocAnalysis } from '../../jsdoc/JsDocAnalysis.js'
-import type { SignatureAnalysis } from '../../symbol/SymbolModel.js'
 
 export const prepareSymbolAnalysis = <T extends Node>(
   declaration: T,

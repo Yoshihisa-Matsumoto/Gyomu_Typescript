@@ -1,10 +1,14 @@
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/index'
-import type { ComplexityMetrics } from '../metrics/ComplexityMetrics.js'
 import type { DomainSignals } from '../metrics/DomainSignals.js'
-import type { JsDocAnalysis } from '../jsdoc/JsDocAnalysis.js'
-import type { SignatureAnalysis, SymbolKind, TypeAnalysis } from './SymbolModel.js'
-import type { MemberAnalysis } from './MemberAnalysis.js'
+
 import type { SymbolId } from '../types.js'
+import type {
+  JsDocAnalysis,
+  MemberAnalysis,
+  SignatureAnalysis,
+  SymbolKind,
+  TypeAnalysis,
+} from '@gyomu/schema/typescript'
 
 /**
  * Detailed analysis result for a symbol declaration.
@@ -77,11 +81,6 @@ export interface SymbolAnalysis {
    * Existing JSDoc/TSDoc analysis.
    */
   jsDoc?: JsDocAnalysis
-
-  /**
-   * Structural and logical complexity metrics.
-   */
-  complexity?: ComplexityMetrics
 
   /**
    * Domain-specific semantic signals.

@@ -1,7 +1,6 @@
 import { withOptional } from '@gyomu/schema'
 import type { ExistingJsDoc } from '@gyomu/ai-compiler/jsdoc-update'
-import type { JsDocAnalysis } from '../../analysis/jsdoc/JsDocAnalysis.js'
-import type { ParsedJsDoc } from '../../analysis/jsdoc/ParsedJsDoc.js'
+import type { JsDocAnalysis, ParsedJsDoc } from '@gyomu/schema/typescript'
 
 export const buildExistingJsDoc = (
   jsDocAnalysis: JsDocAnalysis | undefined,

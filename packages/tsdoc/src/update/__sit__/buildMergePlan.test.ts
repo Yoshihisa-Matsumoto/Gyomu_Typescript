@@ -77,12 +77,14 @@ describe('buildMergePlan integration', () => {
       const plan = await buildMergePlanProgram('mixed-exports.ts')
 
       console.dir(plan, { depth: null })
-      expect(plan).toHaveLength(3)
+      expect(plan).toHaveLength(5)
       expect(plan.map((x) => x.target.symbolId)).toEqual(
         expect.arrayContaining([
           expect.stringContaining('User'),
           expect.stringContaining('createUser'),
           expect.stringContaining('VERSION'),
+          expect.stringContaining('id'),
+          expect.stringContaining('name'),
         ]),
       )
     },

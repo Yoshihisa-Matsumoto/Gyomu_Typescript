@@ -1,12 +1,13 @@
-import { withOptional } from '@gyomu/schema'
 import { fromSync } from '@gyomu/schema/effect'
 import { UpdateError } from '../error/UpdateError.js'
 import type {
   JsDocUpdateContext,
   JsDocUpdatePlan,
   MergeAction,
+  ParamActionValue,
+  ParamMergeAction,
 } from '@gyomu/ai-compiler/jsdoc-update'
-import type { MergeActionContext, MergePlan, ParamAction } from '../jsdoc/MergePlan.js'
+import type { MergeActionContext, MergePlan } from '../jsdoc/MergePlan.js'
 import type { Effect } from 'effect'
 
 export const createMergePlan = (
@@ -33,7 +34,7 @@ export const createMergePlan = (
         params: plan.params.map((param) => ({
           name: param.name,
           sortOrder: param.sortOrder,
-          action: makeMergeParamAction(filePath, `param:${param.name}`, param.action, param.value),
+          action: makeMergeParamAction(filePath, `param:${param.name}`, param.action),
         })),
         tags: plan.tags.map((tag) => ({
           tag: tag.target,
@@ -56,30 +57,28 @@ const makeMergeAction = (
   return action
 }
 
-type ParamValue = JsDocUpdatePlan[number]['params'][number]['value']
-
 const makeMergeParamAction = (
   filePath: string,
   place: string,
-  action: MergeAction,
-  targetValue: ParamValue,
-): MergeActionContext<ParamAction> => {
+  action: ParamMergeAction,
+): MergeActionContext<ParamActionValue> => {
   switch (action.type) {
     case 'delete':
     case 'preserve':
       return { type: action.type }
     case 'replace':
-      if (!targetValue || (!targetValue.description && !targetValue.type))
+      if (!action.value)
         throw new UpdateError({
           cause: undefined,
           filePath,
-          message: `action is ${action}, but no value to update`,
+          message: `action is replace for ${action.value}, but no value to update`,
           phase: 'merge-plan',
-          details: { place, action, targetValue },
+          details: { place, action },
         })
+
       return {
         type: action.type,
-        value: withOptional({ description: targetValue.description, type: targetValue.type }),
+        value: action.value as ParamActionValue,
       }
   }
 }

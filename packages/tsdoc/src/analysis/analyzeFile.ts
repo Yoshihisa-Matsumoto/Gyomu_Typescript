@@ -15,7 +15,7 @@ import type { FileAnalysis } from './file/FileAnalysis.js'
 import type { AnalysisError } from './error/AnalysisError.js'
 import type { ProjectRelativePath } from './types.js'
 import type { ProjectContext } from './project/ProjectContext.js'
-import type { ParsedJsDoc } from './jsdoc/ParsedJsDoc.js'
+import type { ParsedJsDoc } from '@gyomu/schema/typescript'
 import type { SymbolAnalysis } from './symbol/SymbolAnalysis.js'
 
 /**

@@ -1,7 +1,7 @@
 import { detectNonGeneratedTag } from './detectors/detectNonGeneratedTag.js'
 import { detectComplexMarkdown } from './detectors/detectComplexMarkdown.js'
 import { detectManualFormatting } from './detectors/detectManualFormatting.js'
-import type { HumanEditSignal, ParsedJsDoc } from '../jsdoc/ParsedJsDoc.js'
+import type { HumanEditSignal, ParsedJsDoc } from '@gyomu/schema/typescript'
 
 export const analyzeHumanEditSignals = (parsed: ParsedJsDoc): Array<HumanEditSignal> => {
   const signals: Array<HumanEditSignal> = []

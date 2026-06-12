@@ -1,4 +1,4 @@
-import type { JsDocTarget } from '@gyomu/ai-compiler/jsdoc-update'
+import type { JsDocTarget, ParamActionValue } from '@gyomu/ai-compiler/jsdoc-update'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
 export type MergeActionContext<T> =
@@ -21,7 +21,7 @@ export interface MergePlan {
   params: Array<{
     name: string
     sortOrder: number
-    action: MergeActionContext<ParamAction>
+    action: MergeActionContext<ParamActionValue>
     conflict?: ConflictType
   }>
   returns: MergeActionContext<string>

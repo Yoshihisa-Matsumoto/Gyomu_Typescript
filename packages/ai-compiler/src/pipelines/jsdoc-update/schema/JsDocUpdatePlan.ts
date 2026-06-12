@@ -46,6 +46,44 @@ export const JsDocTargetSchema = Schema.Struct({
   description: 'Stable target reference for deterministic JsDoc application',
 })
 
+const ParamActionValueSchema = Schema.Struct({
+  type: Schema.optional(Schema.String).annotate({
+    description: 'Type hint of parameter',
+  }),
+
+  description: Schema.optional(Schema.String).annotate({
+    description:
+      'Complete replacement parameter metadata. When using replace, provide the final parameter documentation to be written.',
+  }),
+})
+
+export const ParamMergeActionSchema = Schema.Union([
+  Schema.Struct({
+    type: Schema.Literal('replace'),
+    value: ParamActionValueSchema,
+  }).annotate({
+    description:
+      'Replace the existing content with the provided value. The value must contain the final content to apply.',
+  }),
+
+  Schema.Struct({
+    type: Schema.Literal('preserve'),
+  }).annotate({
+    description:
+      'Keep the existing content unchanged. Use when the current documentation is already adequate or uncertainty is high.',
+  }),
+
+  Schema.Struct({
+    type: Schema.Literal('delete'),
+  }).annotate({
+    description:
+      'Delete the existing content. Use only when the documented element no longer exists or the documentation is clearly invalid.',
+  }),
+]).annotate({
+  description:
+    'Deterministic JSDoc update action. All replacement content must be embedded directly in the action so that application does not require additional context.',
+})
+
 export const ParamPlan = Schema.Struct({
   target: JsDocTargetSchema,
 
@@ -58,22 +96,7 @@ export const ParamPlan = Schema.Struct({
       'Parameter position in the function signature. The first parameter should have the lowest sortOrder. Preserve signature order when generating update plans.',
   }),
 
-  action: MergeActionSchema,
-
-  value: Schema.optional(
-    Schema.Struct({
-      type: Schema.optional(Schema.String).annotate({
-        description: 'Type hint of parameter',
-      }),
-
-      description: Schema.optional(Schema.String).annotate({
-        description:
-          'Complete replacement parameter metadata. When using replace, provide the final parameter documentation to be written.',
-      }),
-    }),
-  ).annotate({
-    description: 'Updated parameter metadata when action is replace',
-  }),
+  action: ParamMergeActionSchema,
 
   confidence: Confidence,
 }).annotate({
@@ -169,7 +192,9 @@ Additional entries may represent documentable child members or nested symbols.
 Each entry is applied independently using its identity.
 `,
 })
+export type ParamMergeAction = Schema.Schema.Type<typeof ParamMergeActionSchema>
 export type MergeAction = Schema.Schema.Type<typeof MergeActionSchema>
 export type JsDocUpdatePlan = Schema.Schema.Type<typeof JsDocUpdatePlanSchema>
 export type JsDocUpdateEntryPlan = Schema.Schema.Type<typeof JsDocUpdateEntrySchema>
 export type JsDocTarget = Schema.Schema.Type<typeof JsDocTargetSchema>
+export type ParamActionValue = Schema.Schema.Type<typeof ParamActionValueSchema>

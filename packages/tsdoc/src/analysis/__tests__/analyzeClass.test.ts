@@ -6,7 +6,7 @@ import { createFixtureProject } from './createFixtureProject.js'
 import type {
   DocumentableMethodMemberAnalysis,
   DocumentablePropertyMemberAnalysis,
-} from '../symbol/MemberAnalysis.js'
+} from '@gyomu/schema/typescript'
 import type { SymbolAnalysis } from '../symbol/SymbolAnalysis.js'
 
 const timeout = 20000

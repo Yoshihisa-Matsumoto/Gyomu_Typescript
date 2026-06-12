@@ -9,9 +9,10 @@ import type {
   MemberAnalysis,
   MemberIdentityMemberPath,
   MemberIdentityOwnerSymbolId,
-} from '../../symbol/MemberAnalysis.js'
+  TypeAnalysis,
+  TypeStructureAnalysis,
+} from '@gyomu/schema/typescript'
 
-import type { TypeAnalysis, TypeStructureAnalysis } from '../../symbol/SymbolModel.js'
 import type { EntityName, Expression, TypeLiteralNode, TypeNode } from 'ts-morph'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 

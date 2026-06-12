@@ -9,6 +9,7 @@ import { createFixtureProject } from '../../../analysis/__tests__/createFixtureP
 import { analyzeFile } from '../../../analysis/analyzeFile.js'
 import { buildJsDocUpdateContext } from '../buildJsDocUpdateContext.js'
 import { buildJsDocUpdatePlan } from '../buildJsDocUpdatePlan.js'
+import { calculateComplexityMetrics } from '../../../evaluation/complexity/calculateComplexityMetrics.js'
 import type { JsDocUpdatePlan } from '@gyomu/ai-compiler/jsdoc-update'
 
 const timeout = 20000
@@ -26,7 +27,8 @@ const buildJsDocUpdateContextProgram = (sourceFile: string) => {
     const result = yield* analyzeFile({ project, projectRoot, projectName }, filePath, {
       includeDebugInfo: true,
     })
-    const contexts = buildJsDocUpdateContext('test-project', result)
+    const mapComplexity = calculateComplexityMetrics(result)
+    const contexts = buildJsDocUpdateContext('test-project', result, mapComplexity)
 
     const results: Array<JsDocUpdatePlan> = []
 

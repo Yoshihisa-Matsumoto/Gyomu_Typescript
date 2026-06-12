@@ -51,7 +51,7 @@ describe('renderJsDoc', () => {
 
     expect(result).toEqual({
       startOffset: 8,
-      endOffset: 13,
+      endOffset: 15,
       target: updated.target,
       jsDoc: `  /**
    * Create user

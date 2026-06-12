@@ -1,4 +1,4 @@
-import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
+import type { SymbolIdentity } from '../../schemas/typescript/SymbolIdentity.js'
 import type { RawJsDoc } from './RawJsDoc.js'
 
 export interface ParsedJsDoc {

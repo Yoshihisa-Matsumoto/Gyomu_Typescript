@@ -11,15 +11,15 @@ import type {
   PropertySignature,
   TypeNode,
 } from 'ts-morph'
-import type { JsDocAnalysis } from '../../../jsdoc/JsDocAnalysis.js'
 import type { ProjectRelativePath, SymbolId } from '../../../types.js'
 import type { FileAnalysisMetadata } from '../../../file/FileAnalysisResult.js'
 import type {
   DocumentablePropertyMemberAnalysis,
+  JsDocAnalysis,
   MemberAccessor,
   MemberIdentityMemberPath,
   MemberIdentityOwnerSymbolId,
-} from '../../../symbol/MemberAnalysis.js'
+} from '@gyomu/schema/typescript'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
 export const analyzePropertyMember = (

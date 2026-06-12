@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import { detectManualFormatting } from '../detectManualFormatting.js'
-import type { HumanEditContext } from '../../../jsdoc/ParsedJsDoc.js'
+import type { HumanEditContext } from '@gyomu/schema/typescript'
 
 describe('detectManualFormatting', () => {
   const context: HumanEditContext = {

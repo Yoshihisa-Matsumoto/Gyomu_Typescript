@@ -1,5 +1,5 @@
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
-import type { MemberIdentity } from '../symbol/MemberAnalysis.js'
+import type { MemberIdentity } from '@gyomu/schema/typescript'
 import type { SymbolId } from '../types.js'
 
 export const createMemberIdentityAndId = (

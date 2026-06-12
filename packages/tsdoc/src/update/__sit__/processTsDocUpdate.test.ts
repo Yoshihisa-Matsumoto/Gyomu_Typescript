@@ -5,12 +5,11 @@ import { makeRunner } from '@gyomu/schema/effect'
 import { Effect, Layer } from 'effect'
 import { describe, it } from 'vitest'
 import { Project } from 'ts-morph'
-import { analyzeFile } from '../../analysis/analyzeFile.js'
 
 import 'dotenv/config'
 import { processTsDocUpdate } from '../processTsDocUpdate.js'
 
-const timeout = 20000
+const timeout = 30000
 const describeIfProjectName =
   process.env.TSDOC_PROJECT && process.env.TSDOC_FILE ? describe : describe.skip
 

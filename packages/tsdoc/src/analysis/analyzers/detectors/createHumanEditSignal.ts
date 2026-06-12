@@ -1,5 +1,5 @@
 import { withOptional } from '@gyomu/schema'
-import type { HumanEditContext, HumanEditSignal } from '../../jsdoc/ParsedJsDoc.js'
+import type { HumanEditContext, HumanEditSignal } from '@gyomu/schema/typescript'
 
 export const createHumanEditSignal = (
   type: HumanEditSignal['type'],

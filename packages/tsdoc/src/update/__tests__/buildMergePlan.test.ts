@@ -6,6 +6,8 @@ import { PlatformLayer } from '@gyomu/infra'
 import { buildMergePlan } from '../buildMergePlan.js'
 import { UpdateError } from '../error/UpdateError.js'
 
+import type { SymbolId } from '../../analysis/types.js'
+import type { ComplexityMetrics } from '../../evaluation/complexity/ComplexityMetrics.js'
 import type { FileAnalysisResult } from '../../analysis/file/FileAnalysisResult.js'
 
 const { mockBuildJsDocUpdateContext } = vi.hoisted(() => ({
@@ -18,6 +20,14 @@ const { mockBuildJsDocUpdateContextPlan: mockBuildJsDocUpdatePlan } = vi.hoisted
 
 const { mockCreateMergePlan } = vi.hoisted(() => ({
   mockCreateMergePlan: vi.fn(),
+}))
+
+const { mockCalculateComplexityMetrics } = vi.hoisted(() => ({
+  mockCalculateComplexityMetrics: vi.fn(),
+}))
+
+vi.mock('../../evaluation/complexity/calculateComplexityMetrics.js', () => ({
+  calculateComplexityMetrics: mockCalculateComplexityMetrics,
 }))
 
 vi.mock('../internal/buildJsDocUpdateContext.js', () => ({
@@ -100,6 +110,8 @@ describe('buildMergePlan', () => {
       .mockReturnValueOnce(Effect.succeed(mergePlan1))
       .mockReturnValueOnce(Effect.succeed(mergePlan2))
 
+    const mapDummy = new Map<SymbolId, ComplexityMetrics>()
+    mockCalculateComplexityMetrics.mockReturnValue(mapDummy)
     const result = await Effect.runPromise(
       buildMergePlan('test-project', fileResult).pipe(
         Effect.provide(mockAiModelService),
@@ -109,7 +121,7 @@ describe('buildMergePlan', () => {
 
     expect(result).toEqual([mergePlan1, mergePlan2])
 
-    expect(mockBuildJsDocUpdateContext).toHaveBeenCalledWith('test-project', fileResult)
+    expect(mockBuildJsDocUpdateContext).toHaveBeenCalledWith('test-project', fileResult, mapDummy)
 
     expect(mockBuildJsDocUpdatePlan).toHaveBeenCalledTimes(2)
 

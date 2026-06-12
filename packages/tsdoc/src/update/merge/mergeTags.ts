@@ -1,6 +1,6 @@
 import { Effect } from 'effect'
 import { withOptional } from '@gyomu/schema'
-import type { ParsedJsDoc, ParsedTag } from '../../analysis/jsdoc/ParsedJsDoc.js'
+import type { ParsedJsDoc, ParsedTag } from '@gyomu/schema/typescript'
 import type { MergePlan } from '../jsdoc/MergePlan.js'
 
 type PlanTagList = MergePlan['tags']

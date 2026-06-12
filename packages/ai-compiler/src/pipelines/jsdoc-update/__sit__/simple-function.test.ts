@@ -41,10 +41,6 @@ describeIfApiKey('executeJsDocUpdatePlan integration', () => {
         tags: [],
       },
 
-      analysis: {
-        inferredSummary: 'Adds two numbers',
-      },
-
       options: {
         preserveStyle: true,
       },

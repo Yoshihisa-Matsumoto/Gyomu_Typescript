@@ -1,4 +1,4 @@
-import type { JsDocReturns, ParsedJsDoc } from '../../analysis/jsdoc/ParsedJsDoc.js'
+import type { JsDocReturns, ParsedJsDoc } from '@gyomu/schema/typescript'
 import type { MergeActionContext } from '../jsdoc/MergePlan.js'
 
 export const mergeReturns = (

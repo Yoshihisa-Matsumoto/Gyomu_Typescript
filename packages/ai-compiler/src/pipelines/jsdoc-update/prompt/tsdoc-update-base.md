@@ -47,6 +47,18 @@ Additional plan entries may be generated for documentable child members.
 
 Each generated plan must be independent and reference its own identity.
 
+Never invent behavior.
+Never infer implementation intent.
+Only describe information explicitly present in the declaration and type structure.
+
+Every exported symbol must have a summary.
+
+If the symbol name is self-explanatory,
+generate a concise summary instead of omitting it.
+
+Do not preserve an empty summary solely because
+the symbol name is descriptive.
+
 ---
 
 # Rules

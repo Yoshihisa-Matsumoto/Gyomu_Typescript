@@ -1,6 +1,6 @@
 import { AnalysisError } from '../error/AnalysisError.js'
 import type { ExtractedJsDoc } from '../jsdoc/JsDocAnalysis.js'
-import type { ParsedJsDoc } from '../jsdoc/ParsedJsDoc.js'
+import type { ParsedJsDoc } from '@gyomu/schema/typescript'
 import type { SymbolId } from '../types.js'
 import type { FileAnalysisMetadata } from './FileAnalysisResult.js'
 

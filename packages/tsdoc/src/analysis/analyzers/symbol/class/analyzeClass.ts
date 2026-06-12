@@ -13,7 +13,7 @@ import type {
   MemberAnalysis,
   MemberIdentityMemberPath,
   MemberIdentityOwnerSymbolId,
-} from '../../../symbol/MemberAnalysis.js'
+} from '@gyomu/schema/typescript'
 import type { ClassDeclaration } from 'ts-morph'
 import type { SymbolAnalysis } from '../../../symbol/SymbolAnalysis.js'
 import type { JSDocableTagAnalysisArg } from '../../types.js'

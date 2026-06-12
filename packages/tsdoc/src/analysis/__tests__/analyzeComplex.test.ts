@@ -8,13 +8,13 @@ import { describe, expect, it } from 'vitest'
 import { Effect } from 'effect'
 import { analyzeFile } from '../analyzeFile.js'
 import { createFixtureProject } from './createFixtureProject.js'
-import type { TypeAnalysis } from '../symbol/SymbolModel.js'
 import type {
   DocumentableMemberAnalysis,
   DocumentableMethodMemberAnalysis,
   DocumentablePropertyMemberAnalysis,
   MemberAnalysis,
-} from '../symbol/MemberAnalysis.js'
+  TypeAnalysis,
+} from '@gyomu/schema/typescript'
 import type { FileAnalysisResult } from '../file/FileAnalysisResult.js'
 
 const timeout = 20000

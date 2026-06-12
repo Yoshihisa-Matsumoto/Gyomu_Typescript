@@ -1,5 +1,7 @@
 import { fromSync } from '@gyomu/schema/effect'
 import { Effect } from 'effect'
+
+import { calculateComplexityMetrics } from '../evaluation/complexity/calculateComplexityMetrics.js'
 import { buildJsDocUpdateContext } from './internal/buildJsDocUpdateContext.js'
 import { UpdateError } from './error/UpdateError.js'
 import { buildJsDocUpdatePlan } from './internal/buildJsDocUpdatePlan.js'
@@ -13,13 +15,15 @@ export const buildMergePlan = (
   projectName: string,
   fileResult: FileAnalysisResult,
 ): Effect.Effect<Array<MergePlan>, UpdateError, FileSystem.FileSystem | AiModelService> => {
+  const mapComplexity = calculateComplexityMetrics(fileResult)
+
   return Effect.gen(function* () {
     const contexts = yield* fromSync(UpdateError, () => ({
       filePath: fileResult.analysis.path,
       message: 'Failed to build merge plan',
       phase: 'context-build' as const,
     }))(() => {
-      return buildJsDocUpdateContext(projectName, fileResult)
+      return buildJsDocUpdateContext(projectName, fileResult, mapComplexity)
     })
     console.dir(contexts, { depth: null })
     const mergePlans = yield* Effect.forEach(contexts, (context) =>

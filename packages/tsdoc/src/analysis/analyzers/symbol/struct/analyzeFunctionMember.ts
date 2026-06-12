@@ -25,8 +25,8 @@ import type {
   MemberIdentityMemberPath,
   MemberIdentityOwnerSymbolId,
   NonDocumentableMethodMemberAnalysis,
-} from '../../../symbol/MemberAnalysis.js'
-import type { TypeAnalysis } from '../../../symbol/SymbolModel.js'
+  TypeAnalysis,
+} from '@gyomu/schema/typescript'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
 // export const analyzeMethodMember = (args: {
@@ -184,20 +184,18 @@ export const analyzeFunctionMemberInternal = (
       name,
       id,
       identity,
-      parameters: node
-        .getParameters()
-        .map((p, index) =>
-          analyzeParameter(
-            p,
-            sourcePath,
-            metadata,
-            ownerSymbolId,
-            ownerSymbolIdentity,
-            childMemberPath,
-            args.sourceFullText,
-            index,
-          ),
-        ),
+      parameters: node.getParameters().map((p, index) =>
+        analyzeParameter({
+          node: p,
+          sourceRelativePath: sourcePath,
+          metadata,
+          ownerSymbolId,
+          ownerSymbolIdentity,
+          memberPath: childMemberPath,
+          sourceFullText: args.sourceFullText,
+          declarationOrder: index,
+        }),
+      ),
       snippet,
       ...withOptional({
         returnType,
@@ -229,20 +227,18 @@ export const analyzeFunctionMemberInternal = (
       name,
       id,
       identity,
-      parameters: node
-        .getParameters()
-        .map((p, index) =>
-          analyzeParameter(
-            p,
-            sourcePath,
-            metadata,
-            ownerSymbolId,
-            ownerSymbolIdentity,
-            childMemberPath,
-            args.sourceFullText,
-            index,
-          ),
-        ),
+      parameters: node.getParameters().map((p, index) =>
+        analyzeParameter({
+          node: p,
+          sourceRelativePath: sourcePath,
+          metadata,
+          ownerSymbolId,
+          ownerSymbolIdentity,
+          memberPath: childMemberPath,
+          sourceFullText: args.sourceFullText,
+          declarationOrder: index,
+        }),
+      ),
       ...withOptional({
         returnType,
       }),

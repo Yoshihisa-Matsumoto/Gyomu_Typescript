@@ -1,4 +1,4 @@
-import type { MemberIdentityMemberPath } from '../symbol/MemberAnalysis.js'
+import type { MemberIdentityMemberPath } from '@gyomu/schema/typescript'
 import type { ProjectRelativePath } from '../types.js'
 import type { JSDocableNode } from 'ts-morph'
 import type { FileAnalysisMetadata } from '../file/FileAnalysisResult.js'

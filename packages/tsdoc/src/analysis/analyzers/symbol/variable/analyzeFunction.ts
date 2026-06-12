@@ -5,14 +5,13 @@ import { analyzeParameter } from '../analyzeParameter.js'
 import { createSymbolIdentity } from '../../../shared/createSymbolIdentity.js'
 import { registerSymbolSymbolAnalysis } from '../../../file/registerSymbolSymbolAnalysis.js'
 import { computeIndent } from '../computeIndent.js'
-import type { MemberIdentityMemberPath } from '../../../symbol/MemberAnalysis.js'
+import type { MemberIdentityMemberPath, SignatureAnalysis } from '@gyomu/schema/typescript'
 import type { SymbolAnalysis } from '../../../symbol/SymbolAnalysis.js'
 import type { ArrowFunction, Expression, FunctionExpression, VariableDeclaration } from 'ts-morph'
 import type { SymbolPreparation } from '../prepareSymbolAnalysis.js'
 import type { ProjectRelativePath } from '../../../types.js'
 import type { FileAnalysisMetadata } from '../../../file/FileAnalysisResult.js'
 import type { AnalysisOptions } from '../../../AnalysisOption.js'
-import type { SignatureAnalysis } from '../../../symbol/SymbolModel.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
 export const analyzeFunction = (
@@ -88,11 +87,18 @@ export const getFunctionSignature = (
   const identity: SymbolIdentity = { symbolId: nodeName, signatureId: 'function' }
   return {
     id: 'function',
-    parameters: node
-      .getParameters()
-      .map((p, index) =>
-        analyzeParameter(p, sourcePath, metadata, id, identity, memberPath, sourceFullText, index),
-      ),
+    parameters: node.getParameters().map((p, index) =>
+      analyzeParameter({
+        node: p,
+        sourceRelativePath: sourcePath,
+        metadata,
+        ownerSymbolId: id,
+        ownerSymbolIdentity: identity,
+        memberPath,
+        sourceFullText,
+        declarationOrder: index,
+      }),
+    ),
     ...withOptional({
       returnType: analyzeType({
         node: node.getReturnTypeNode(),

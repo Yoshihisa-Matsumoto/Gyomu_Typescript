@@ -12,8 +12,13 @@ import type {
   JSDocTemplateTag,
   JSDocThrowsTag,
 } from 'ts-morph'
-import type { JsDocParam, JsDocReturns, JsDocThrows, ParsedJsDoc } from '../jsdoc/ParsedJsDoc.js'
-import type { RawJsDoc } from '../jsdoc/RawJsDoc.js'
+import type {
+  JsDocParam,
+  JsDocReturns,
+  JsDocThrows,
+  ParsedJsDoc,
+  RawJsDoc,
+} from '@gyomu/schema/typescript'
 
 /**
  * Parses a ts-morph JSDoc node into a normalized {@link ParsedJsDoc} structure.

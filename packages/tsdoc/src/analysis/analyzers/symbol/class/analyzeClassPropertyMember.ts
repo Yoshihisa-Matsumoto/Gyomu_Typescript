@@ -16,7 +16,7 @@ import type {
   MemberAccessor,
   MemberIdentityMemberPath,
   MemberIdentityOwnerSymbolId,
-} from '../../../symbol/MemberAnalysis.js'
+} from '@gyomu/schema/typescript'
 import type { ProjectRelativePath } from '../../../types.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 

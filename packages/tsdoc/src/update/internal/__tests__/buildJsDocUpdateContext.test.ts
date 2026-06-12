@@ -4,6 +4,7 @@ import { Effect } from 'effect'
 import { createFixtureProject } from '../../../analysis/__tests__/createFixtureProject.js'
 import { analyzeFile } from '../../../analysis/analyzeFile.js'
 import { buildJsDocUpdateContext } from '../buildJsDocUpdateContext.js'
+import { calculateComplexityMetrics } from '../../../evaluation/complexity/calculateComplexityMetrics.js'
 // import type { FileAnalysisResult } from '../../../analysis/file/FileAnalysisResult.js'
 
 const timeout = 20000
@@ -19,7 +20,8 @@ const buildJsDocUpdateContextProgram = (sourceFile: string) => {
       const result = yield* analyzeFile({ project, projectRoot, projectName }, filePath, {
         includeDebugInfo: true,
       })
-      return buildJsDocUpdateContext('test-project', result)
+      const mapComplexity = calculateComplexityMetrics(result)
+      return buildJsDocUpdateContext('test-project', result, mapComplexity)
     }),
   )
 }

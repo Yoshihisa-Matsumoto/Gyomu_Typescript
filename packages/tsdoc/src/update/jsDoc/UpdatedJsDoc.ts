@@ -1,3 +1,3 @@
-import type { ParsedJsDoc } from '../../analysis/jsdoc/ParsedJsDoc.js'
+import type { ParsedJsDoc } from '@gyomu/schema/typescript'
 
 export type UpdatedJsDoc = Omit<ParsedJsDoc, 'raw'>

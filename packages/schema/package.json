@@ -55,6 +55,10 @@
       "import": "./dist/schemas/typescript/index.js",
       "types": "./dist/schemas/typescript/index.d.ts"
     },
+    "./typescript": {
+      "import": "./dist/typescript/index.js",
+      "types": "./dist/typescript/index.d.ts"
+    },
     "./usecase/*": {
       "import": "./dist/usecase/*.js",
       "types": "./dist/usecase/*.d.ts"

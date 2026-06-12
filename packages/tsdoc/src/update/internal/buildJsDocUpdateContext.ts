@@ -1,13 +1,23 @@
 import { defaultComplexityStrategy, modeResolver } from '@gyomu/ai-compiler/jsdoc-update'
 import { withOptional } from '@gyomu/schema'
+import { UpdateError } from '../error/UpdateError.js'
+import { computeComplexityScore } from '../../evaluation/complexity/computeComplexityScore.js'
 import { buildContextEntry } from './buildContextEntry.js'
 import { buildExistingJsDoc } from './buildExistingJsDoc.js'
-import type { JsDocUpdateContext } from '@gyomu/ai-compiler/jsdoc-update'
+import type { ComplexityMetrics } from '../../evaluation/complexity/ComplexityMetrics.js'
+import type {
+  DeepJsDocContext,
+  JsDocContextBase,
+  JsDocUpdateContext,
+  LightJsDocContext,
+} from '@gyomu/ai-compiler/jsdoc-update'
 import type { FileAnalysisResult } from '../../analysis/file/FileAnalysisResult.js'
+import type { SymbolId } from '../../analysis/types.js'
 
 export const buildJsDocUpdateContext = (
   projectName: string,
   fileResult: FileAnalysisResult,
+  mapComplexity: Map<SymbolId, ComplexityMetrics>,
 ): Array<JsDocUpdateContext> => {
   const sourceFilePath = fileResult.analysis.path
   const results: Array<JsDocUpdateContext> = []
@@ -17,6 +27,16 @@ export const buildJsDocUpdateContext = (
     const jsDocAnalysis = symbol.jsDoc
     const hasJsDoc = symbol.jsDoc != null && symbol.jsDoc.exists
     const parsedJsDoc = fileResult.metadata.parsedJsDocs.get(symbol.id)
+    const targetComplexity = mapComplexity.get(symbol.id)
+    if (!targetComplexity)
+      throw new UpdateError({
+        cause: undefined,
+        filePath: fileResult.analysis.path,
+        message: 'Complexity metrix not found',
+        phase: 'context-build',
+        symbolId: symbol.id,
+        details: mapComplexity.keys().toArray(),
+      })
     const mode = modeResolver(
       {
         file: {
@@ -29,11 +49,12 @@ export const buildJsDocUpdateContext = (
           publicApi: false,
           hasJsDoc,
           humanEdited: symbol.jsDoc != null && symbol.jsDoc.hasHumanEditedSections,
-          complexityScore: symbol.complexity != null ? 1 : 0,
+          complexityScore: computeComplexityScore(targetComplexity),
         },
       },
       defaultComplexityStrategy,
     )
+    console.dir(symbol.members, { depth: null })
     const children = symbol.members
       .filter((m) => m.documentable)
       .map((m) => buildContextEntry(fileResult, m))
@@ -44,35 +65,35 @@ export const buildJsDocUpdateContext = (
       source: {
         relativePath: sourceFilePath,
       },
-      mode: 'light',
+      mode: mode,
       target: symbol.identity,
       symbol: {
         name: symbol.identity.symbolId,
         kind: symbol.kind,
       },
+
       code: {
         snippet: symbol.snippet,
       },
       ...withOptional({ existingJsDoc: buildExistingJsDoc(jsDocAnalysis, parsedJsDoc) }),
       relatedSymbols: [],
       children,
-      options: {
-        preserveStyle: true,
-      },
-    } as JsDocUpdateContext
+    } as JsDocContextBase
 
-    if (mode === 'light') {
-      context.options = {
+    if (context.mode === 'light') {
+      const lightContext = context as LightJsDocContext
+      lightContext.options = {
         preserveStyle: true,
       }
+      results.push(lightContext)
     } else {
-      context.mode = 'deep'
-      context.options = {
+      const deepContext = context as DeepJsDocContext
+      deepContext.options = {
         requireHighQuality: true,
         allowRewrite: true,
       }
+      results.push(deepContext)
     }
-    results.push(context)
   }
   return results
 }

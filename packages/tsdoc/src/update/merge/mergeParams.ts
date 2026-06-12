@@ -1,7 +1,7 @@
 import { Effect } from 'effect'
 import { withOptional } from '@gyomu/schema'
 import { UpdateError } from '../error/UpdateError.js'
-import type { JsDocParam, ParsedJsDoc } from '../../analysis/jsdoc/ParsedJsDoc.js'
+import type { JsDocParam, ParsedJsDoc } from '@gyomu/schema/typescript'
 import type { MergePlan } from '../jsdoc/MergePlan.js'
 
 type PlanParamList = MergePlan['params']

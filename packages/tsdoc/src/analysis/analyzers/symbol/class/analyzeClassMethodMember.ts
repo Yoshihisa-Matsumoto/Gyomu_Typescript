@@ -7,7 +7,7 @@ import type {
   MemberIdentityMemberPath,
   MemberIdentityOwnerSymbolId,
   NonDocumentableMethodMemberAnalysis,
-} from '../../../symbol/MemberAnalysis.js'
+} from '@gyomu/schema/typescript'
 import type { ProjectRelativePath } from '../../../types.js'
 import type { FileAnalysisMetadata } from '../../../file/FileAnalysisResult.js'
 

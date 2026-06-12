@@ -1,7 +1,7 @@
-import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
-import type { JsDocAnalysis } from '../jsdoc/JsDocAnalysis.js'
+import type { JsDocAnalysis } from './jsdoc/JsDocAnalysis.js'
 import type { TypeAnalysis } from './SymbolModel.js'
-import type { SymbolId } from '../types.js'
+import type { SymbolId } from './types.js'
+import type { SymbolIdentity } from '../schemas/typescript/SymbolIdentity.js'
 
 export type MemberAnalysis = NonDocumentableMemberAnalysis | DocumentableMemberAnalysis
 export type NonDocumentableMemberAnalysis =
