@@ -98,8 +98,6 @@ the symbol name is descriptive.
   - When requirements are present, describe what external services or context are required.
   - When error types are present, mention possible failure conditions in documentation when appropriate.
   - When the symbol returns an Effect, focus on the operation performed rather than describing the implementation as "returns an Effect".
-- type:
-  - If the type is unknown, omit the field. Never output null.
 
 ---
 

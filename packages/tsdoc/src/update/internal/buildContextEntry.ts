@@ -35,7 +35,7 @@ export const buildContextEntry = (
           existingJsDoc: buildExistingJsDoc(jsDocAnalysis, parsedJsDoc),
 
           children: member.parameters
-            .filter((p) => p.documentable)
+            // .filter((p) => p.documentable)
             .map((m) => buildContextEntry(fileResult, m)),
         }),
       }
@@ -66,7 +66,7 @@ export const buildContextEntry = (
           existingJsDoc: buildExistingJsDoc(jsDocAnalysis, parsedJsDoc),
 
           children: children
-            .filter((p) => p.documentable)
+            // .filter((p) => p.documentable)
             .map((m) => buildContextEntry(fileResult, m)),
         }),
       }

@@ -41,17 +41,17 @@ export const JsDocTargetSchema = Schema.Struct({
   kind: Schema.Literals(['summary', 'param', 'return', 'template', 'throws']),
 
   // param/tagの追加識別子
-  key: Schema.optional(Schema.String),
+  key: Schema.NullOr(Schema.String),
 }).annotate({
   description: 'Stable target reference for deterministic JsDoc application',
 })
 
 const ParamActionValueSchema = Schema.Struct({
-  type: Schema.optional(Schema.String).annotate({
+  type: Schema.NullOr(Schema.String).annotate({
     description: 'Type hint of parameter',
   }),
 
-  description: Schema.optional(Schema.String).annotate({
+  description: Schema.NullOr(Schema.String).annotate({
     description:
       'Complete replacement parameter metadata. When using replace, provide the final parameter documentation to be written.',
   }),

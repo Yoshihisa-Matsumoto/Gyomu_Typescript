@@ -67,18 +67,18 @@ const makeMergeParamAction = (
     case 'preserve':
       return { type: action.type }
     case 'replace':
-      if (!action.value)
-        throw new UpdateError({
-          cause: undefined,
-          filePath,
-          message: `action is replace for ${action.value}, but no value to update`,
-          phase: 'merge-plan',
-          details: { place, action },
-        })
+      // if (!action.value)
+      //   throw new UpdateError({
+      //     cause: undefined,
+      //     filePath,
+      //     message: `action is replace for ${action.value}, but no value to update`,
+      //     phase: 'merge-plan',
+      //     details: { place, action },
+      //   })
 
       return {
         type: action.type,
-        value: action.value as ParamActionValue,
+        value: action.value,
       }
   }
 }

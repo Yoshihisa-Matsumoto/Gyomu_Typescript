@@ -55,7 +55,7 @@ export const buildJsDocUpdateContext = (
       },
       defaultComplexityStrategy,
     )
-    console.dir(symbol.members, { depth: null })
+    // console.dir(symbol.members, { depth: null })
     const children = symbol.members
       // .filter((m) => m.documentable)
       .map((m) => buildContextEntry(fileResult, m))

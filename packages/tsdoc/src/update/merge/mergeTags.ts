@@ -1,5 +1,4 @@
 import { Effect } from 'effect'
-import { withOptional } from '@gyomu/schema'
 import type { ParsedJsDoc, ParsedTag } from '@gyomu/schema/typescript'
 import type { MergePlan } from '../jsdoc/MergePlan.js'
 
@@ -25,7 +24,7 @@ export const mergeTags = (
         case 'replace':
           return yield* Effect.succeed({
             tagName: tag.tag.kind,
-            ...withOptional({ key: tag.tag.key }),
+            // ...withOptional({ key: tag.tag.key ?? undefined }),
             sortOrder: tag.sortOrder,
             text: tag.action.value,
           } satisfies ParsedTag)
