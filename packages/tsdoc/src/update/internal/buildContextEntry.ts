@@ -23,10 +23,17 @@ export const buildContextEntry = (
         target: member.identity,
         kind: member.kind,
         name: member.name,
-
+        effectSignals: member.returnType?.effect
+          ? {
+              success: member.returnType.effect.success,
+              error: member.returnType.effect.error,
+              requirements: member.returnType.effect.requirements,
+            }
+          : undefined,
         ...withOptional({
           type: member.returnType?.text,
           existingJsDoc: buildExistingJsDoc(jsDocAnalysis, parsedJsDoc),
+
           children: member.parameters
             .filter((p) => p.documentable)
             .map((m) => buildContextEntry(fileResult, m)),
@@ -47,10 +54,17 @@ export const buildContextEntry = (
         target: member.identity,
         kind: member.kind,
         name: member.name,
-
+        effectSignals: member.type?.effect
+          ? {
+              success: member.type.effect.success,
+              error: member.type.effect.error,
+              requirements: member.type.effect.requirements,
+            }
+          : undefined,
         ...withOptional({
           type: member.type?.text,
           existingJsDoc: buildExistingJsDoc(jsDocAnalysis, parsedJsDoc),
+
           children: children
             .filter((p) => p.documentable)
             .map((m) => buildContextEntry(fileResult, m)),

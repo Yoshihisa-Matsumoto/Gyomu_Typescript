@@ -11,6 +11,7 @@ import { AiModelService } from '@gyomu/ai'
 import { createFixtureProject } from '../../analysis/__tests__/createFixtureProject.js'
 import { buildJsDocUpdatePlan } from '../internal/buildJsDocUpdatePlan.js'
 import { processTsDocUpdate } from '../processTsDocUpdate.js'
+import { analyzeFile } from '../../analysis/analyzeFile.js'
 import { compareFilesEffect } from './baseClass.js'
 import type { JsDocUpdatePlan } from '@gyomu/ai-compiler/jsdoc-update'
 
@@ -62,7 +63,8 @@ const processTsDocUpdateProgram = async (
     vi.mocked(buildJsDocUpdatePlan).mockReturnValueOnce(Effect.succeed(expectedPlan))
   const program = Effect.gen(function* () {
     const sourceRelativePath = path.join('src', sourceFile)
-    yield* processTsDocUpdate(updateFixture, sourceRelativePath)
+    const fileResult = yield* analyzeFile(updateFixture, sourceRelativePath)
+    yield* processTsDocUpdate(updateFixture, fileResult)
     const sourceAbsolute = path.join(updateFixture.projectRoot, sourceRelativePath)
     const expectedAbsolute = path.join(updateFixture.projectRoot, 'expected', sourceFile)
     const isEqual = yield* compareFilesEffect(sourceAbsolute, expectedAbsolute)
@@ -91,7 +93,6 @@ describe('processTsDocUpdate integration', () => {
     ).toString()
     const planObject = JSON.parse(expectedPlan) as Array<JsDocUpdatePlan>
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     await processTsDocUpdateProgram(target_file + '.ts', planObject)
   })
 })

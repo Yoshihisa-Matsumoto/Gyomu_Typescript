@@ -41,8 +41,8 @@ export const analyzeType = (args: {
   } = args
   if (node) {
     const nodeContent = node.getText()
-    console.log(`${nodeContent}`)
-    console.log(args.declarationOrder)
+    // console.log(`${nodeContent}`)
+    // console.log(args.declarationOrder)
     return {
       text: nodeContent,
       ...withOptional({
@@ -126,12 +126,12 @@ const analyzeTypeStructures = (
       declarationOrder,
     })
     if (Node.isArrayTypeNode(typeNode)) {
-      console.log('Array')
-      console.log(typeName.getText())
+      // console.log('Array')
+      // console.log(typeName.getText())
     }
     if (typeName.getText().includes('Array')) {
-      console.log('Array')
-      console.log(typeName.getText())
+      // console.log('Array')
+      // console.log(typeName.getText())
       if (typeArguments.length == 1 && typeAlias) {
         return {
           kind: 'array',

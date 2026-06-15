@@ -1,4 +1,5 @@
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/index'
+import type { EffectSignals } from '@gyomu/schema/typescript'
 
 /**
  * Defines the base interface for a JSDoc update context containing project metadata and target identification.
@@ -49,6 +50,11 @@ export interface JsDocContextBase {
   existingJsDoc?: ExistingJsDoc
 
   /**
+   * The optional effect type declaration
+   */
+  effectSignals: Pick<EffectSignals, 'success' | 'error' | 'requirements'> | undefined
+
+  /**
    * List of related symbols to be documented.
    */
   relatedSymbols: Array<RelatedSymbol>
@@ -87,6 +93,11 @@ export interface ContextEntry {
    * Existing JSDoc content associated with the symbol, if any.
    */
   existingJsDoc?: ExistingJsDoc
+
+  /**
+   * The optional effect type declaration
+   */
+  effectSignals: Pick<EffectSignals, 'success' | 'error' | 'requirements'> | undefined
 
   /**
    * Child entries nested under this symbol.

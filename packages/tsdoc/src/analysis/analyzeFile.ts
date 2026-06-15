@@ -24,7 +24,7 @@ import type { SymbolAnalysis } from './symbol/SymbolAnalysis.js'
  * @param context project containing the target source file.
  *
  * @param sourceFilePath Path used to locate the source file via
- * {@link Project.getSourceFile}.
+ * {@link Project.getSourceFile()}.
  *
  * This value may be either:
  *

@@ -10,10 +10,12 @@ import type { FileSystem } from 'effect'
 import type { FileAnalysisResult } from '../analysis/file/FileAnalysisResult.js'
 import type { MergePlan } from './jsdoc/MergePlan.js'
 import type { AiModelService } from '@gyomu/ai'
+import type { UpdateOptions } from './UpdateOptions.js'
 
 export const buildMergePlan = (
   projectName: string,
   fileResult: FileAnalysisResult,
+  option?: UpdateOptions,
 ): Effect.Effect<Array<MergePlan>, UpdateError, FileSystem.FileSystem | AiModelService> => {
   const mapComplexity = calculateComplexityMetrics(fileResult)
 
@@ -25,9 +27,9 @@ export const buildMergePlan = (
     }))(() => {
       return buildJsDocUpdateContext(projectName, fileResult, mapComplexity)
     })
-    console.dir(contexts, { depth: null })
+    if (option?.debugInfo?.JsDocUpdateContext) console.dir(contexts, { depth: null })
     const mergePlans = yield* Effect.forEach(contexts, (context) =>
-      buildJsDocUpdatePlan(context).pipe(
+      buildJsDocUpdatePlan(context, option).pipe(
         Effect.flatMap((plan) => createMergePlan(fileResult.analysis.path, context, plan)),
         Effect.mapError(
           (error) =>
@@ -41,7 +43,7 @@ export const buildMergePlan = (
         ),
       ),
     ).pipe(Effect.map((plans) => plans.flat()))
-    console.dir(mergePlans, { depth: null })
+    if (option?.debugInfo?.MergePlan) console.dir(mergePlans, { depth: null })
     return mergePlans
   })
 }

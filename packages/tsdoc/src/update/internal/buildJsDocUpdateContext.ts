@@ -13,6 +13,7 @@ import type {
 } from '@gyomu/ai-compiler/jsdoc-update'
 import type { FileAnalysisResult } from '../../analysis/file/FileAnalysisResult.js'
 import type { SymbolId } from '../../analysis/types.js'
+import type { EffectSignals } from '@gyomu/schema/typescript'
 
 export const buildJsDocUpdateContext = (
   projectName: string,
@@ -56,8 +57,26 @@ export const buildJsDocUpdateContext = (
     )
     console.dir(symbol.members, { depth: null })
     const children = symbol.members
-      .filter((m) => m.documentable)
+      // .filter((m) => m.documentable)
       .map((m) => buildContextEntry(fileResult, m))
+
+    let effectSignals: Pick<EffectSignals, 'success' | 'error' | 'requirements'> | undefined =
+      undefined
+
+    if (symbol.type?.effect)
+      effectSignals = {
+        success: symbol.type.effect.success,
+        error: symbol.type.effect.error,
+        requirements: symbol.type.effect.requirements,
+      }
+    else if (symbol.signature.returnType?.effect) {
+      effectSignals = {
+        success: symbol.signature.returnType.effect.success,
+        error: symbol.signature.returnType.effect.error,
+        requirements: symbol.signature.returnType.effect.requirements,
+      }
+    }
+
     const context = {
       project: {
         name: projectName,
@@ -76,6 +95,7 @@ export const buildJsDocUpdateContext = (
         snippet: symbol.snippet,
       },
       ...withOptional({ existingJsDoc: buildExistingJsDoc(jsDocAnalysis, parsedJsDoc) }),
+      effectSignals,
       relatedSymbols: [],
       children,
     } as JsDocContextBase

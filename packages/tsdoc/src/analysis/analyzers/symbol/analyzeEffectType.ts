@@ -21,24 +21,22 @@ export const detectEffectSignals = (typeRawText: string): EffectSignals | undefi
       text: successType,
       ...withOptional({ effect: successType ? detectEffectSignals(successType) : undefined }),
     },
-    ...withOptional({
-      error: errorType
-        ? // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-          ({
-            text: errorType,
-            ...withOptional({ effect: detectEffectSignals(errorType) }),
-          } as TypeAnalysis)
-        : undefined,
-    }),
-    ...withOptional({
-      requirements: requirementsType
-        ? // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-          ({
-            text: requirementsType,
-            ...withOptional({ effect: detectEffectSignals(requirementsType) }),
-          } as TypeAnalysis)
-        : undefined,
-    }),
+
+    error: errorType
+      ? // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+        ({
+          text: errorType,
+          ...withOptional({ effect: detectEffectSignals(errorType) }),
+        } as TypeAnalysis)
+      : undefined,
+
+    requirements: requirementsType
+      ? // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+        ({
+          text: requirementsType,
+          ...withOptional({ effect: detectEffectSignals(requirementsType) }),
+        } as TypeAnalysis)
+      : undefined,
 
     hasErrorType: args.length >= 2,
 

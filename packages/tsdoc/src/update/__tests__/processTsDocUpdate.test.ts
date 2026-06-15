@@ -80,7 +80,12 @@ describe('processTsDocUpdate', () => {
         projectName: 'test-project',
         projectRoot: '/project',
       } as any,
-      'src/file.ts',
+      {
+        analysis: {
+          path: 'src/file.ts',
+        },
+        metadata: { symbols: new Map<string, any>() },
+      } as any,
     )
 
     const result = await Effect.runPromise(

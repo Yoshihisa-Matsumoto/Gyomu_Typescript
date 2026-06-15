@@ -40,6 +40,7 @@ describeIfApiKey('executeJsDocUpdatePlan integration', () => {
         params: [],
         tags: [],
       },
+      effectSignals: undefined,
 
       options: {
         preserveStyle: true,
@@ -107,6 +108,7 @@ describeIfApiKey('executeJsDocUpdatePlan integration', () => {
 
         tags: [],
       },
+      effectSignals: undefined,
 
       options: {
         preserveStyle: true,

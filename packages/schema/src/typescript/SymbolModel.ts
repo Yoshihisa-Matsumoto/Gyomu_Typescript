@@ -132,12 +132,12 @@ export interface EffectSignals {
   /**
    * Error type.
    */
-  error?: TypeAnalysis
+  error: TypeAnalysis | undefined
 
   /**
    * Required context/environment type.
    */
-  requirements?: TypeAnalysis
+  requirements: TypeAnalysis | undefined
   /**
    * Whether the Effect contains an error type.
    */

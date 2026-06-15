@@ -158,7 +158,7 @@ const analyzeFunctionMembers = (
         }),
       ] as Array<MemberAnalysis>
     }
-    console.log(`PropMember, ${index}`)
+    // console.log(`PropMember, ${index}`)
     return [
       analyzeParameter({
         sourceRelativePath: sourcePath,

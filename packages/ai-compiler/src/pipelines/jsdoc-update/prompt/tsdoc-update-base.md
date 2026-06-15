@@ -94,6 +94,12 @@ the symbol name is descriptive.
   - Do not generate entries for non-documentable members.
   - Each plan must reference its own identity.
   - Child plans should be generated independently from the parent plan.
+- EffectSignals interpretation:
+  - When requirements are present, describe what external services or context are required.
+  - When error types are present, mention possible failure conditions in documentation when appropriate.
+  - When the symbol returns an Effect, focus on the operation performed rather than describing the implementation as "returns an Effect".
+- type:
+  - If the type is unknown, omit the field. Never output null.
 
 ---
 

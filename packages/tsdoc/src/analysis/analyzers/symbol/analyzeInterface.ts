@@ -109,7 +109,7 @@ const analyzeInterfaceMembers = (
           }),
         ] as Array<MemberAnalysis>
       }
-      console.log(`PromPmember, ${index}`)
+      // console.log(`PromPmember, ${index}`)
       return [
         analyzePropertyMember({
           sourcePath,

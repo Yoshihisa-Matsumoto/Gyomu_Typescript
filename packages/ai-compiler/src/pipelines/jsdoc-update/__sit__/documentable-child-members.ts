@@ -42,7 +42,7 @@ export interface User {
         params: [],
         tags: [],
       },
-
+      effectSignals: undefined,
       children: [
         {
           target: {
@@ -58,6 +58,7 @@ export interface User {
             params: [],
             tags: [],
           },
+          effectSignals: undefined,
         },
       ],
 
