@@ -41,7 +41,7 @@ export const analyzeTypeAliasDeclaration = (
     },
     identity,
     startOffset: args.declaration.getStart(),
-    ...withOptional({ jsDoc: prepared.jsDoc }),
+    ...withOptional({ jsDoc: prepared.jsDoc, parsedJsDoc: prepared.parsedJsDoc }),
     members: analyzeObjectMembers(
       args.sourceRelativePath,
       args.metadata,

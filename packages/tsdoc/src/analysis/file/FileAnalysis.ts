@@ -3,7 +3,6 @@ import type { ExportAnalysis } from '../symbol/ExportAnalysis.js'
 import type { FileMetrics } from './FileMetrics.js'
 import type { ImportAnalysis } from '../symbol/ImportAnalysis.js'
 import type { ScoreHints } from '../metrics/ScoreHints.js'
-import type { SymbolAnalysis } from '../symbol/SymbolAnalysis.js'
 
 /**
  * Complete analysis result for a source file.
@@ -27,11 +26,6 @@ export interface FileAnalysis {
    * Exported symbol analysis.
    */
   exports: Array<ExportAnalysis>
-
-  /**
-   * Public and internal symbol analysis.
-   */
-  symbols: Map<string, SymbolAnalysis>
 
   /**
    * Aggregated file metrics.

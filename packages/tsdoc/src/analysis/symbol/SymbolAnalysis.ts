@@ -5,6 +5,7 @@ import type { SymbolId } from '../types.js'
 import type {
   JsDocAnalysis,
   MemberAnalysis,
+  ParsedJsDoc,
   SignatureAnalysis,
   SymbolKind,
   TypeAnalysis,
@@ -81,6 +82,11 @@ export interface SymbolAnalysis {
    * Existing JSDoc/TSDoc analysis.
    */
   jsDoc?: JsDocAnalysis
+
+  /**
+   * Parsed JSDoc/TSDoc
+   */
+  parsedJsDoc?: Array<ParsedJsDoc>
 
   /**
    * Domain-specific semantic signals.

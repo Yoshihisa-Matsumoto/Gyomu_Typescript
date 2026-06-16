@@ -65,8 +65,10 @@ export const analyzeVariableDeclaration = (args: {
     startOffset: args.declaration
       .getFirstAncestorByKindOrThrow(SyntaxKind.VariableStatement)
       .getStart(),
+
     ...withOptional({
       jsDoc: prepared.jsDoc,
+      parsedJsDoc: prepared.parsedJsDoc,
       members: [],
     }),
     declarationOrder: args.declarationOrder,

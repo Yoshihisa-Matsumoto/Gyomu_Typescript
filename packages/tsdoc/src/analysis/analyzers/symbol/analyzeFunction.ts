@@ -50,7 +50,7 @@ export const analyzeFunctionDeclaration = (args: JSDocableTagAnalysisArg<Functio
     },
     identity,
     startOffset: args.declaration.getStart(),
-    ...withOptional({ jsDoc: prepared.jsDoc }),
+    ...withOptional({ jsDoc: prepared.jsDoc, parsedJsDoc: prepared.parsedJsDoc }),
     members: analyzeFunctionMembers(
       args.sourceRelativePath,
       args.metadata,

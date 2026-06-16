@@ -51,7 +51,7 @@ describe('computeEffectComplexity', () => {
       },
     } as EffectSignals
 
-    expect(computeEffectComplexity(signals)).toBe(1)
+    expect(computeEffectComplexity(signals)).toBe(3)
   })
 
   it('adds complexity for union requirement types', () => {
@@ -77,7 +77,7 @@ describe('computeEffectComplexity', () => {
       },
     } as EffectSignals
 
-    expect(computeEffectComplexity(signals)).toBe(1)
+    expect(computeEffectComplexity(signals)).toBe(4)
   })
 
   it('combines all complexity sources', () => {

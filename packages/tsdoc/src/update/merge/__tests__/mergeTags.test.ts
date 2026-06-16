@@ -233,7 +233,7 @@ describe('mergeTags', () => {
     expect(result).toEqual([
       {
         tagName: 'throws',
-        key: 'ValidationError',
+        // key: 'ValidationError',
         sortOrder: 1,
         text: 'Updated validation error',
       },

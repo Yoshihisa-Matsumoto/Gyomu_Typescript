@@ -4,7 +4,6 @@ import { toProjectAbsolutePath, toProjectRelativePath } from '../shared/index.js
 import { loadSourceFile } from './shared/loadSourceFile.js'
 import { extractExport } from './extract/extractExport.js'
 import { extractImport } from './extract/extractImport.js'
-import { toIdentityKey } from './symbol/SymbolAnalysis.js'
 import type {
   DocumentableTarget,
   FileAnalysisMetadata,
@@ -16,7 +15,6 @@ import type { AnalysisError } from './error/AnalysisError.js'
 import type { ProjectRelativePath } from './types.js'
 import type { ProjectContext } from './project/ProjectContext.js'
 import type { ParsedJsDoc } from '@gyomu/schema/typescript'
-import type { SymbolAnalysis } from './symbol/SymbolAnalysis.js'
 
 /**
  * Analyzes a TypeScript source file and produces a {@link FileAnalysis}.
@@ -59,18 +57,17 @@ export const analyzeFile = (
     const exports = yield* extractExport(sourceFile, metadata, option)
     const imports = yield* extractImport(sourceFile, metadata, option)
 
-    const symbols: Map<string, SymbolAnalysis> = new Map<string, SymbolAnalysis>()
-    exports.forEach((exp) => {
-      const symbol = exp.symbol
-      const symbolKey = toIdentityKey(symbol.identity)
-      symbols.set(symbolKey, symbol)
-    })
+    // const symbols: Map<string, SymbolAnalysis> = new Map<string, SymbolAnalysis>()
+    // exports.forEach((exp) => {
+    //   const symbol = exp.symbol
+    //   const symbolKey = toIdentityKey(symbol.identity)
+    //   symbols.set(symbolKey, symbol)
+    // })
     return {
       analysis: {
         path: sourceRelativePath,
         exports,
         imports,
-        symbols,
       } satisfies FileAnalysis,
       metadata,
     }

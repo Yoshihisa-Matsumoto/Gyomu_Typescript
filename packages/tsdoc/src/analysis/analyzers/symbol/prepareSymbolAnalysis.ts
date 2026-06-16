@@ -5,6 +5,7 @@ import { createSymbolIdentity } from '../../shared/createSymbolIdentity.js'
 import type {
   JsDocAnalysis,
   MemberIdentityMemberPath,
+  ParsedJsDoc,
   SignatureAnalysis,
 } from '@gyomu/schema/typescript'
 import type { FileAnalysisMetadata } from '../../file/FileAnalysisResult.js'
@@ -49,6 +50,7 @@ export const prepareSymbolAnalysis = <T extends Node>(
     return {
       id,
       jsDoc: extractedJsDoc.analysis,
+      parsedJsDoc: extractedJsDoc.parsed,
       signature: signature,
       snippet: declaration.getText(),
     }
@@ -57,6 +59,7 @@ export const prepareSymbolAnalysis = <T extends Node>(
 export interface SymbolPreparation {
   id: SymbolId
   jsDoc?: JsDocAnalysis
+  parsedJsDoc?: Array<ParsedJsDoc>
   signature: SignatureAnalysis
   snippet: string
 }

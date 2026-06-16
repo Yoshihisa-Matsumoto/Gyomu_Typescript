@@ -48,6 +48,7 @@ export const analyzeFunction = (
       .getStart(),
     ...withOptional({
       jsDoc: prepared.jsDoc,
+      parsedJsDoc: prepared.parsedJsDoc,
       members: [],
     }),
     declarationOrder: args.declarationOrder,

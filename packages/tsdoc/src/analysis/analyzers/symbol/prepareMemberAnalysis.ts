@@ -16,6 +16,7 @@ import type {
   JsDocAnalysis,
   MemberIdentityMemberPath,
   MemberIdentityOwnerSymbolId,
+  ParsedJsDoc,
 } from '@gyomu/schema/typescript'
 import type { FileAnalysisMetadata } from '../../file/FileAnalysisResult.js'
 import type { ProjectRelativePath, SymbolId } from '../../types.js'
@@ -34,6 +35,7 @@ export const preparePropertyAnalysis = (
   id: SymbolId
   identity: SymbolIdentity
   jsDoc: JsDocAnalysis | undefined
+  parsedJsDoc: Array<ParsedJsDoc> | undefined
   location: { startLine: number; endLine: number }
   startOffset: number
   snippet: string
@@ -75,6 +77,7 @@ export const prepareMethodAnalysis = (
   id: SymbolId
   identity: SymbolIdentity
   jsDoc: JsDocAnalysis | undefined
+  parsedJsDoc: Array<ParsedJsDoc> | undefined
   location: { startLine: number; endLine: number }
   startOffset: number
   snippet: string
@@ -122,6 +125,7 @@ const prepareMemberAnalysis = (args: {
   id: SymbolId
   identity: SymbolIdentity
   jsDoc: JsDocAnalysis | undefined
+  parsedJsDoc: Array<ParsedJsDoc> | undefined
   location: { startLine: number; endLine: number }
   startOffset: number
   snippet: string
@@ -135,6 +139,7 @@ const prepareMemberAnalysis = (args: {
     id,
     identity,
     jsDoc: extractedJsDoc?.analysis,
+    parsedJsDoc: extractedJsDoc?.parsed,
     location: {
       startLine: node.getStartLineNumber(),
       endLine: node.getEndLineNumber(),

@@ -50,7 +50,7 @@ export const analyzeInterfaceDeclaration = (
     },
     identity,
     startOffset: args.declaration.getStart(),
-    ...withOptional({ jsDoc: prepared.jsDoc }),
+    ...withOptional({ jsDoc: prepared.jsDoc, parsedJsDoc: prepared.parsedJsDoc }),
     members: analyzeInterfaceMembers(
       args.sourceRelativePath,
       args.metadata,

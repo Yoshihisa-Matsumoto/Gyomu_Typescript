@@ -2,6 +2,7 @@ import type { JsDocAnalysis } from './jsdoc/JsDocAnalysis.js'
 import type { TypeAnalysis } from './SymbolModel.js'
 import type { SymbolId } from './types.js'
 import type { SymbolIdentity } from '../schemas/typescript/SymbolIdentity.js'
+import type { ParsedJsDoc } from './jsdoc/ParsedJsDoc.js'
 
 export type MemberAnalysis = NonDocumentableMemberAnalysis | DocumentableMemberAnalysis
 export type NonDocumentableMemberAnalysis =
@@ -79,6 +80,10 @@ export interface DocumentableMethodMemberAnalysis extends MethodMemberAnalysis {
   documentable: true
   jsDoc?: JsDocAnalysis
   /**
+   * Parsed JSDoc/TSDoc
+   */
+  parsedJsDoc: Array<ParsedJsDoc>
+  /**
    * Source code location.
    */
   location: {
@@ -119,6 +124,10 @@ export interface NonDocumentablePropertyMemberAnalysis extends PropertyMemberAna
 export interface DocumentablePropertyMemberAnalysis extends PropertyMemberAnalysis {
   documentable: true
   jsDoc?: JsDocAnalysis
+  /**
+   * Parsed JSDoc/TSDoc
+   */
+  parsedJsDoc?: Array<ParsedJsDoc>
   /**
    * Source code location.
    */

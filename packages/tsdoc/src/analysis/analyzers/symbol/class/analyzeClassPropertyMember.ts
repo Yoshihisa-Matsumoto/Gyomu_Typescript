@@ -88,7 +88,7 @@ export const analyzeGetSetAccessor = (
   const { sourcePath, metadata, node, ownerSymbolId, ownerSymbolIdentity, memberPath } = args
   const name = node.getName()
 
-  const { id, identity, jsDoc, location, startOffset } = prepareMethodAnalysis(
+  const { id, identity, jsDoc, location, startOffset, parsedJsDoc } = prepareMethodAnalysis(
     sourcePath,
     metadata,
     ownerSymbolId,
@@ -107,6 +107,7 @@ export const analyzeGetSetAccessor = (
     visibility: getAccessor(args.node),
     identity,
     jsDoc,
+    parsedJsDoc,
     location,
     startOffset,
     readonly: !setter,

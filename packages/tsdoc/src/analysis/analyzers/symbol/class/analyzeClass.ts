@@ -50,7 +50,7 @@ export const analyzeClassDeclaration = (args: JSDocableTagAnalysisArg<ClassDecla
     },
     identity,
     startOffset: args.declaration.getStart(),
-    ...withOptional({ jsDoc: prepared.jsDoc }),
+    ...withOptional({ jsDoc: prepared.jsDoc, parsedJsDoc: prepared.parsedJsDoc }),
     members: analyzeClassMembers(
       args.sourceRelativePath,
       args.metadata,

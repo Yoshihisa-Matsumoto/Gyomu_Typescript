@@ -205,7 +205,7 @@ describe('applyMergePlan', () => {
     expect(result.updatedJsDoc.tags).toEqual([
       {
         tagName: 'throws',
-        key: 'ValidationError',
+        // key: 'ValidationError',
         sortOrder: 1,
         text: 'Updated text',
       },

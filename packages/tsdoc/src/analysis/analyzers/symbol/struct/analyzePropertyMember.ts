@@ -19,6 +19,7 @@ import type {
   MemberAccessor,
   MemberIdentityMemberPath,
   MemberIdentityOwnerSymbolId,
+  ParsedJsDoc,
 } from '@gyomu/schema/typescript'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
@@ -40,7 +41,7 @@ export const analyzePropertyMember = (
   const typeNode = args.node.getTypeNode()
   const name = node.getName()
   const initializer = args.node.getInitializer()
-  const { id, identity, jsDoc, location, startOffset } = preparePropertyAnalysis(
+  const { id, identity, jsDoc, location, startOffset, parsedJsDoc } = preparePropertyAnalysis(
     sourcePath,
     metadata,
     ownerSymbolId,
@@ -58,6 +59,7 @@ export const analyzePropertyMember = (
     id,
     identity,
     jsDoc,
+    parsedJsDoc,
     location,
     startOffset,
     readonly: node.isReadonly(),
@@ -124,6 +126,7 @@ export const analyzePropertyMemberInternal = (
     id: SymbolId
     identity: SymbolIdentity
     jsDoc: JsDocAnalysis | undefined
+    parsedJsDoc: Array<ParsedJsDoc> | undefined
     location: {
       startLine: number
       endLine: number
@@ -132,7 +135,7 @@ export const analyzePropertyMemberInternal = (
   },
 ): DocumentablePropertyMemberAnalysis => {
   const { sourcePath, metadata, node, ownerSymbolId, ownerSymbolIdentity, memberPath } = args
-  const { id, identity, jsDoc, location, startOffset, readonly, optional } = args2
+  const { id, identity, jsDoc, location, startOffset, readonly, optional, parsedJsDoc } = args2
   const name = node.getName()
 
   // console.dir(typeNode)
@@ -162,6 +165,7 @@ export const analyzePropertyMemberInternal = (
         declarationOrder: args.declarationOrder,
       }),
       jsDoc,
+      parsedJsDoc,
     }),
     location,
     startOffset,

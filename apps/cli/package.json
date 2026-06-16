@@ -23,8 +23,12 @@
     "tsup": "^8.5.1"
   },
   "dependencies": {
-    "@gyomu/schema": "workspace:*",
-    "@gyomu/infra": "workspace:*",
+    "@clack/prompts": "^1.5.1",
+    "@gyomu/ai": "workspace:^",
+    "@gyomu/infra": "workspace:^",
+    "@gyomu/schema": "workspace:^",
+    "@gyomu/tsdoc": "workspace:^",
+    "cac": "^7.0.0",
     "effect": "4.0.0-beta.57"
   },
   "files": [
