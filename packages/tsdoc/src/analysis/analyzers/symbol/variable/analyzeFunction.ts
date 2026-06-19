@@ -86,6 +86,11 @@ export const getFunctionSignature = (
 ): SignatureAnalysis => {
   const { id } = createSymbolIdentity(declaration, sourcePath, 'function')
   const identity: SymbolIdentity = { symbolId: nodeName, signatureId: 'function' }
+  let initializer: Expression | undefined = undefined
+  if (!node.getReturnTypeNode()) {
+    const body = node.getBody()
+    if (Node.isExpression(body)) initializer = body
+  }
   return {
     id: 'function',
     parameters: node.getParameters().map((p, index) =>
@@ -103,7 +108,7 @@ export const getFunctionSignature = (
     ...withOptional({
       returnType: analyzeType({
         node: node.getReturnTypeNode(),
-        initializer: undefined,
+        initializer,
         memberPath,
         metadata,
         ownerSymbolId: id,

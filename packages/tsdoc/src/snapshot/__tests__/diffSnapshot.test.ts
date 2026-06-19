@@ -4,10 +4,11 @@ import { GYOMU_VERSION } from '../types/ProjectWorkspaceManifest.js'
 
 describe('diffSnapshot test', () => {
   it('detects added files', () => {
-    const previous = { version: GYOMU_VERSION, files: [] }
+    const previous = { version: GYOMU_VERSION, projectRoot: '', files: [] }
 
     const current = {
       version: GYOMU_VERSION,
+      projectRoot: '',
       files: [{ path: 'a.ts', rawHash: '1', updatedAt: '' }],
     }
 
@@ -22,10 +23,11 @@ describe('diffSnapshot test', () => {
   it('detects deleted files', () => {
     const previous = {
       version: GYOMU_VERSION,
+      projectRoot: '',
       files: [{ path: 'a.ts', rawHash: '1', updatedAt: '' }],
     }
 
-    const current = { version: GYOMU_VERSION, files: [] }
+    const current = { version: GYOMU_VERSION, projectRoot: '', files: [] }
 
     expect(diffSnapshot(previous, current)).toEqual([
       {
@@ -38,11 +40,13 @@ describe('diffSnapshot test', () => {
   it('detects updated files', () => {
     const previous = {
       version: GYOMU_VERSION,
+      projectRoot: '',
       files: [{ path: 'a.ts', rawHash: '1', updatedAt: '' }],
     }
 
     const current = {
       version: GYOMU_VERSION,
+      projectRoot: '',
       files: [{ path: 'a.ts', rawHash: '2', updatedAt: '' }],
     }
 
@@ -58,6 +62,7 @@ describe('diffSnapshot test', () => {
   it('does not return unchanged files', () => {
     const snapshot = {
       version: GYOMU_VERSION,
+      projectRoot: '',
       files: [{ path: 'a.ts', rawHash: '1', updatedAt: '' }],
     }
 

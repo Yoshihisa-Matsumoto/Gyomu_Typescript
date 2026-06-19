@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto'
 import { tmpdir } from 'node:os'
 import { Effect, FileSystem, Stream } from 'effect'
 import { wrapIOError } from '@gyomu/schema'
+import { parse } from 'yaml'
 import type { IOError, NetworkError } from '@gyomu/schema'
 import type { PlatformError } from 'effect/PlatformError'
 
@@ -157,6 +158,16 @@ export const readStringFromFile = (path: string, encoding?: string) =>
       ),
     )
   })
+export const readJsonFromFile = <T>(path: string, encoding?: string) =>
+  Effect.gen(function* () {
+    const text = yield* readStringFromFile(path, encoding)
+    return JSON.parse(text) as T
+  })
+export const readYamlFromFile = <T>(path: string, encoding?: string) =>
+  Effect.gen(function* () {
+    const text = yield* readStringFromFile(path, encoding)
+    return parse(text) as T
+  })
 export const copyFile = (source: string, destination: string) =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem
@@ -261,6 +272,48 @@ export const readDirectoryDetailed = (dir: string) =>
       { concurrency: 'unbounded' },
     )
   })
+
+export const expandDirectoryGlob = (repositoryRoot: string, pattern: string) =>
+  Effect.gen(function* () {
+    if (!pattern.endsWith('/*')) {
+      return []
+    }
+    if (pattern.startsWith('!')) {
+      return []
+    }
+    const fs = yield* FileSystem.FileSystem
+    const parentDir = pattern.slice(0, -2)
+
+    const targetDir = join(repositoryRoot, parentDir)
+
+    const entries = yield* fs.readDirectory(targetDir)
+
+    const results = yield* Effect.forEach(
+      entries,
+      (entry) =>
+        Effect.gen(function* () {
+          const fullPath = join(targetDir, entry)
+
+          const directory = (yield* fs.stat(fullPath)).type == 'Directory'
+
+          return directory ? join(parentDir, entry) : undefined
+        }),
+      {
+        concurrency: 'unbounded',
+      },
+    )
+
+    return results.filter((x): x is string => x !== undefined)
+  }).pipe(
+    Effect.mapError((e) =>
+      wrapIOError(e, () => ({
+        layer: 'filesystem' as const,
+        message: 'fail to expand directory',
+        target: repositoryRoot,
+        details: pattern,
+      })),
+    ),
+  )
 export const removePath = (
   path: string,
   options?: {

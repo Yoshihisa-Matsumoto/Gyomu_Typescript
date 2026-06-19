@@ -12,6 +12,7 @@ describe('Snapshot Integration', () => {
   it('loads saved snapshot', async () => {
     const snapshot: FileHashSnapshot = {
       version: GYOMU_VERSION,
+      projectRoot: '',
       files: [
         {
           path: '/a.ts',

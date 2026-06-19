@@ -17,6 +17,13 @@ export interface FileHashSnapshot {
    * and backward compatibility handling.
    */
   readonly version: GyomuVersion
+
+  /**
+   * Project root path
+   * relative from workspace root.
+   */
+  readonly projectRoot: string
+
   /**
    * Collected file hash entries.
    */

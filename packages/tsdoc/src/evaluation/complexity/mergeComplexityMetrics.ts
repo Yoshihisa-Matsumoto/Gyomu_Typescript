@@ -16,6 +16,8 @@ export const mergeComplexityMetrics = (
 
       genericDepth: Math.max(acc.genericDepth, metrics.genericDepth),
       returnTypeDepth: Math.max(acc.returnTypeDepth, metrics.returnTypeDepth),
+      effectComplexity: (acc.effectComplexity ?? 0) + (metrics.effectComplexity ?? 0),
+      schemaComplexity: (acc.schemaComplexity ?? 0) + (metrics.schemaComplexity ?? 0),
     }),
     emptyComplexityMetrics(),
   )

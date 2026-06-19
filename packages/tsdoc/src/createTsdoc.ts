@@ -18,9 +18,17 @@ const processTsDocUpdateProgram = async (projectRoot: string, sourceFilename: st
   const program = Effect.gen(function* () {
     const projectContext = yield* initializeProjectContext(projectRoot)
     const fileResult = yield* analyzeFile(projectContext, filePath)
-    yield* writeStringToFile('./fileAnalysis.txt', JSON.stringify(fileResult.analysis, null, 2))
+    yield* writeStringToFile('./log/fileAnalysis.txt', JSON.stringify(fileResult.analysis, null, 2))
     yield* processTsDocUpdate(projectContext, fileResult, {
-      debugInfo: { JsDocUpdateContext: true, JsDocUpdatePlan: true },
+      debugInfo: {
+        JsDocUpdateContext: true,
+        JsDocUpdatePlan: true,
+        DumpToFile: true,
+      },
+      action: {
+        // NoLLMRequest: true,
+        // NoUpdateTSDoc: true,
+      },
     })
   })
   return await runQAWithEnvOrThrow(program, layer)
@@ -28,5 +36,5 @@ const processTsDocUpdateProgram = async (projectRoot: string, sourceFilename: st
 
 await processTsDocUpdateProgram(
   `C:\\data\\program\\typescript\\dev\\gyomu\\packages\\schema`,
-  `src/effect/utility.ts`,
+  `src/core/result.ts`,
 )

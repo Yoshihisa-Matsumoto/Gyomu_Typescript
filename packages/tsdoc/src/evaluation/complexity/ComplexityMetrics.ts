@@ -20,4 +20,6 @@ export interface ComplexityMetrics {
    * Effect-specific complexity score.
    */
   effectComplexity?: number
+
+  schemaComplexity?: number
 }

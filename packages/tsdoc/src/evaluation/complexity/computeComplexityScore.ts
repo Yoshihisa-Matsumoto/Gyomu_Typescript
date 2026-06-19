@@ -12,6 +12,7 @@ export const computeComplexityScore = (metrics: ComplexityMetrics): number => {
   if (metrics.referencedTypeCount > 0) score += metrics.referencedTypeCount
   if (metrics.returnTypeDepth > 0) score += 2
   if (metrics.unionCount > 0) score += 1
+  if (metrics.schemaComplexity) score += metrics.schemaComplexity
 
   return score
 }

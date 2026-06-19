@@ -3,6 +3,7 @@ import { SyntaxKind } from 'ts-morph'
 import { prepareSymbolAnalysis } from '../prepareSymbolAnalysis.js'
 import { registerSymbolSymbolAnalysis } from '../../../file/registerSymbolSymbolAnalysis.js'
 import { computeIndent } from '../computeIndent.js'
+import { analyzeEffectSchema, getSupportedEffectSchemaType } from '../analyzeEffectSchema.js'
 import {
   analyzeFunction,
   getFunctionSignature,
@@ -44,13 +45,25 @@ export const analyzeVariableDeclaration = (args: {
   if (isFunctionLikeInitializer(initializer)) {
     return analyzeFunction(args, prepared, initializer)
   }
-  // if (isObjectInitializer(initializer)) {
-  //   return analyzeObject(args, prepared, initializer)
-  // }
   const identity: SymbolIdentity = {
     symbolId: name,
     signatureId: prepared.signature.id,
   }
+
+  const effectSchemaSupportType = getSupportedEffectSchemaType(initializer)
+  const typeAnalysis: TypeAnalysis | undefined =
+    effectSchemaSupportType == undefined
+      ? { text: name, source: 'typescript' }
+      : analyzeEffectSchema(effectSchemaSupportType, {
+          name: '',
+          ownerSymbolId: prepared.id,
+          ownerSymbolIdentity: identity,
+          memberPath: [],
+        })
+  // if (isObjectInitializer(initializer)) {
+  //   return analyzeObject(args, prepared, initializer)
+  // }
+
   const symbol = {
     id: prepared.id,
     signature: prepared.signature,
@@ -60,13 +73,14 @@ export const analyzeVariableDeclaration = (args: {
       startLine: args.declaration.getStartLineNumber(),
       endLine: args.declaration.getEndLineNumber(),
     },
-    type: { text: name },
+
     identity,
     startOffset: args.declaration
       .getFirstAncestorByKindOrThrow(SyntaxKind.VariableStatement)
       .getStart(),
 
     ...withOptional({
+      type: typeAnalysis,
       jsDoc: prepared.jsDoc,
       parsedJsDoc: prepared.parsedJsDoc,
       members: [],

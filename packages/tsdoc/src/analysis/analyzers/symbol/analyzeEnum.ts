@@ -34,6 +34,7 @@ export const analyzeEnumDeclaration = (args: JSDocableTagAnalysisArg<EnumDeclara
     },
     type: {
       text: typeName,
+      source: 'typescript',
       ...withOptional({ effect: detectEffectSignals(typeName) }),
     },
     identity,

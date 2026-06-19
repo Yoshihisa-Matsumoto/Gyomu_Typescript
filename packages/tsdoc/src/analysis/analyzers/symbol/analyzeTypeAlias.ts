@@ -37,6 +37,7 @@ export const analyzeTypeAliasDeclaration = (
     },
     type: {
       text: typeName,
+      source: 'typescript',
       ...withOptional({ effect: detectEffectSignals(typeName) }),
     },
     identity,

@@ -3,6 +3,7 @@ import { withOptional } from '@gyomu/schema'
 import { detectEffectSignals } from './analyzeEffectType.js'
 import { analyzeFunctionMember } from './struct/analyzeFunctionMember.js'
 import { analyzePropertyMember } from './struct/analyzePropertyMember.js'
+import { analyzeEffectSchema, getSupportedEffectSchemaType } from './analyzeEffectSchema.js'
 import type { ProjectRelativePath } from '../../types.js'
 import type { FileAnalysisMetadata } from '../../file/FileAnalysisResult.js'
 import type {
@@ -45,6 +46,7 @@ export const analyzeType = (args: {
     // console.log(args.declarationOrder)
     return {
       text: nodeContent,
+      source: 'typescript',
       ...withOptional({
         effect: detectEffectSignals(nodeContent),
         structure: analyzeTypeStructures(
@@ -62,12 +64,27 @@ export const analyzeType = (args: {
     }
   }
   if (initializer) {
+    if (Node.isCallExpression(initializer) || Node.isPropertyAccessExpression(initializer)) {
+      const schemaEffectExpression = getSupportedEffectSchemaType(initializer)
+      if (schemaEffectExpression != null) {
+        // console.dir(schemaEffectExpression)
+        // console.log(nodeName)
+        return analyzeEffectSchema(schemaEffectExpression, {
+          name: nodeName?.[0] ?? '',
+          ownerSymbolId,
+          ownerSymbolIdentity,
+          memberPath,
+        })
+      }
+    }
+
     const initialKind = initializer.getKind()
     switch (initialKind) {
       case SyntaxKind.TrueKeyword:
       case SyntaxKind.FalseKeyword:
         return {
           text: 'boolean',
+          source: 'typescript',
         }
     }
     // if (Node.isObjectLiteralExpression(initializer)) {
@@ -90,6 +107,7 @@ export const analyzeType = (args: {
   if (args.rawText) {
     return {
       text: args.rawText,
+      source: 'typescript',
     }
   }
   return undefined

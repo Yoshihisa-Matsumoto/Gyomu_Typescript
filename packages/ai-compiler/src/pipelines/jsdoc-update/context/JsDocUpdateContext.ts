@@ -189,6 +189,8 @@ export interface DeepJsDocContext extends JsDocContextBase {
     returnSemantics?: string
 
     sideEffects: Array<string>
+
+    schemaStructure?: SchemaStructureNode
   }
 
   /**
@@ -207,6 +209,18 @@ export interface DeepJsDocContext extends JsDocContextBase {
     requireHighQuality: true
     allowRewrite: true
   }
+}
+
+export interface SchemaStructureNode {
+  name: string
+
+  kind: 'property' | 'object' | 'array' | 'union' | 'primitive' | 'reference' | 'literal'
+
+  type?: string
+
+  semanticHint?: string
+
+  children?: Array<SchemaStructureNode>
 }
 
 /**

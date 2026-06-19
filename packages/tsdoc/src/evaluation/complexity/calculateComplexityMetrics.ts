@@ -96,6 +96,10 @@ const calculateComplexityMetricsFromTypeAnalysis = (
   if (typeAnalysis.effect) {
     initial.effectComplexity = computeEffectComplexity(typeAnalysis.effect)
   }
+  if (typeAnalysis.source == 'effect-schema') initial.schemaComplexity = 5
+
+  metricsArray.push(initial)
+
   if (typeAnalysis.structure) {
     metricsArray.push(
       calculateComplexityMetricsFromTypeStructureAnalysis(typeAnalysis.structure, currentDepth),
@@ -112,6 +116,7 @@ const calculateComplexityMetricsFromTypeStructureAnalysis = (
   const array: Array<ComplexityMetrics> = []
   const initial = emptyComplexityMetrics()
   initial.nestingDepth = currentDepth
+
   switch (typeStructure.kind) {
     case 'array':
       return calculateComplexityMetricsFromTypeAnalysis(typeStructure.elementType, currentDepth)
@@ -124,7 +129,9 @@ const calculateComplexityMetricsFromTypeStructureAnalysis = (
     case 'reference':
       initial.referencedTypeCount = 1
       return initial
-
+    case 'literal':
+    case 'primitive':
+      return initial
     case 'union':
       initial.unionCount = typeStructure.types.length
       array.push(initial)

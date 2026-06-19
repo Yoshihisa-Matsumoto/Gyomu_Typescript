@@ -1,7 +1,6 @@
 import { Effect } from 'effect'
 
 import { GyomuError, wrapInfraError } from '@gyomu/schema'
-import { toProjectAbsolutePath } from '../shared/index.js'
 import { diffSnapshot } from './diffSnapshot.js'
 import { loadSnapshot } from './loadSnapshot.js'
 import { createSnapshot } from './createSnapshot.js'
@@ -35,16 +34,20 @@ export const analyzeProjectChanges = (
   Effect.gen(function* () {
     const projectWorkspace = yield* ensureProjectWorkspace(input.repoRoot, input.projectPath)
 
-    const projectAbsolutePath = toProjectAbsolutePath(input.projectPath, input.repoRoot)
+    // const projectAbsolutePath = toProjectAbsolutePath(input.projectPath, input.repoRoot)
 
     const previousSnapshot = yield* loadSnapshot(projectWorkspace.snapshotPath)
 
-    const currentSnapshot = yield* createSnapshot(projectAbsolutePath)
+    const currentSnapshot = yield* createSnapshot(input)
 
     const diff = previousSnapshot
       ? diffSnapshot(previousSnapshot, currentSnapshot)
       : diffSnapshot(
-          { version: GYOMU_VERSION, files: [] as ReadonlyArray<FileHashEntry> },
+          {
+            version: GYOMU_VERSION,
+            projectRoot: input.projectPath,
+            files: [] as ReadonlyArray<FileHashEntry>,
+          },
           currentSnapshot,
         )
 

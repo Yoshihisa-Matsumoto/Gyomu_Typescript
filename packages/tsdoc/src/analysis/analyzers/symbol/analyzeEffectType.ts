@@ -19,6 +19,7 @@ export const detectEffectSignals = (typeRawText: string): EffectSignals | undefi
 
     success: {
       text: successType,
+      source: 'typescript',
       ...withOptional({ effect: successType ? detectEffectSignals(successType) : undefined }),
     },
 

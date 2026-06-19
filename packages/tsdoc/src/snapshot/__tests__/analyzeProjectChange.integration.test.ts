@@ -143,7 +143,7 @@ it('analyzeProjectChange integration concurrency test', async () => {
     expect(diff.length).toBe(1)
 
     yield* commitProjectSnapshot({
-      expectedSnapshot: { version: GYOMU_VERSION, files: [] },
+      expectedSnapshot: { version: GYOMU_VERSION, projectRoot: '', files: [] },
       projectPath: '.',
       repoRoot: rootPath,
     })

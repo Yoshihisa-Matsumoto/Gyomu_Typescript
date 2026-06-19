@@ -18,14 +18,27 @@ export const processTsDocUpdate = (
 ) => {
   return Effect.gen(function* () {
     const mergePlans = yield* buildMergePlan(context.projectName, fileResult, option)
-
+    if (option?.action?.NoLLMRequest) {
+      return
+    }
     // console.dir(fileResult.metadata.symbols.keys())
     const updateJsDocs = yield* applyMergePlans(fileResult, mergePlans)
 
     const renderedJsDocs = renderJsDocs(updateJsDocs)
-    if (option?.debugInfo?.RenderedSymbolJsDoc) console.dir(renderedJsDocs, { depth: null })
+    if (option?.debugInfo?.RenderedSymbolJsDoc) {
+      if (option.debugInfo.DumpToFile)
+        yield* writeStringToFile('./log/RenderedJsDoc.txt', JSON.stringify(renderedJsDocs, null, 2))
+      else console.dir(renderedJsDocs, { depth: null })
+    }
     const fileUpdatePlan = buildFileUpdatePlan(fileResult, renderedJsDocs)
-    if (option?.debugInfo?.FileUpdatePlan) console.dir(fileUpdatePlan, { depth: null })
+    if (option?.debugInfo?.FileUpdatePlan) {
+      if (option.debugInfo.DumpToFile)
+        yield* writeStringToFile(
+          './log/FileUpdatePlan.txt',
+          JSON.stringify(fileUpdatePlan, null, 2),
+        )
+      else console.dir(fileUpdatePlan, { depth: null })
+    }
     const sourceFileAbsolutePath = toProjectAbsolutePath(
       fileResult.analysis.path,
       context.projectRoot,
@@ -45,6 +58,9 @@ export const processTsDocUpdate = (
 
     const tsUpdatedContent = applyFileUpdatePlan(sourceContent, fileUpdatePlan)
 
+    if (option?.action?.NoUpdateTSDoc) {
+      return
+    }
     yield* writeStringToFile(sourceFileAbsolutePath, tsUpdatedContent).pipe(
       Effect.mapError(
         (e) =>

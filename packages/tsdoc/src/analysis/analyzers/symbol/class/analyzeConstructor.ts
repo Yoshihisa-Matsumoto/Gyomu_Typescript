@@ -41,7 +41,11 @@ export const analyzeConstructor = (
       sourceFullText,
       declarationOrder,
     },
-    { isStatic: false, visibility: 'public', returnType: { text: parent.getName()! } },
+    {
+      isStatic: false,
+      visibility: 'public',
+      returnType: { text: parent.getName()!, source: 'typescript' },
+    },
   )
   // const method: DocumentableMethodMemberAnalysis = {
   //   kind: 'method',

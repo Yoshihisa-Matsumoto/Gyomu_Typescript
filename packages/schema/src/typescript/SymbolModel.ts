@@ -107,6 +107,7 @@ export interface SignatureAnalysis {
 // }
 export interface TypeAnalysis {
   text: string
+  source: 'typescript' | 'effect-schema'
   /**
    * Nested object members.
    */
@@ -160,7 +161,17 @@ export type TypeStructureAnalysis =
   | FunctionStructureAnalysis
   | UnionStructureAnalysis
   | TypeReferenceStructureAnalysis
+  | PrimitiveAnalysis
+  | LiteralAnalysis
 
+export type LiteralAnalysis = {
+  kind: 'literal'
+  elementValue: string
+}
+export type PrimitiveAnalysis = {
+  kind: 'primitive'
+  elementType: string
+}
 export type ObjectStructureAnalysis = {
   kind: 'object'
   /**

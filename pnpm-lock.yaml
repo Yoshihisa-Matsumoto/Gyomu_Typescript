@@ -126,6 +126,9 @@ importers:
       cac:
         specifier: ^7.0.0
         version: 7.0.0
+      dotenv:
+        specifier: ^17.4.2
+        version: 17.4.2
       effect:
         specifier: 4.0.0-beta.57
         version: 4.0.0-beta.57
@@ -431,6 +434,9 @@ importers:
       xml2js:
         specifier: ^0.6.2
         version: 0.6.2
+      yaml:
+        specifier: ^2.9.0
+        version: 2.9.0
       yauzl:
         specifier: ^3.3.0
         version: 3.3.0

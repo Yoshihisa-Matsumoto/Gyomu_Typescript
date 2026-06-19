@@ -46,6 +46,7 @@ export const analyzeClassDeclaration = (args: JSDocableTagAnalysisArg<ClassDecla
     },
     type: {
       text: typeName,
+      source: 'typescript',
       ...withOptional({ effect: detectEffectSignals(typeName) }),
     },
     identity,

@@ -4,6 +4,7 @@ import { UpdateError } from '../error/UpdateError.js'
 import { computeComplexityScore } from '../../evaluation/complexity/computeComplexityScore.js'
 import { buildContextEntry } from './buildContextEntry.js'
 import { buildExistingJsDoc } from './buildExistingJsDoc.js'
+import { buildSchemaStructureNode } from './buildSchemaStructureNode.js'
 import type { ComplexityMetrics } from '../../evaluation/complexity/ComplexityMetrics.js'
 import type {
   DeepJsDocContext,
@@ -100,6 +101,7 @@ export const buildJsDocUpdateContext = (
       children,
     } as JsDocContextBase
 
+    console.log({ target: context.target, mode: context.mode })
     if (context.mode === 'light') {
       const lightContext = context as LightJsDocContext
       lightContext.options = {
@@ -111,6 +113,20 @@ export const buildJsDocUpdateContext = (
       deepContext.options = {
         requireHighQuality: true,
         allowRewrite: true,
+      }
+      if (symbol.type?.source == 'effect-schema' && symbol.type.structure) {
+        deepContext.analysis = {
+          ...withOptional({
+            schemaStructure: buildSchemaStructureNode(
+              symbol.type.structure,
+              symbol.identity.symbolId,
+            ),
+          }),
+
+          paramSemantics: [],
+          protectedRegions: [],
+          sideEffects: [],
+        }
       }
       results.push(deepContext)
     }

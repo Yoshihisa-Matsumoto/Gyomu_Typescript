@@ -23,7 +23,7 @@ describe('createSnapshot', () => {
     )
 
     const result = await Effect.runPromise(
-      createSnapshot('./test-fixtures/snapshot').pipe(
+      createSnapshot({ repoRoot: './test-fixtures/snapshot', projectPath: '' }).pipe(
         Effect.provide(FileSearchServiceLayer),
         Effect.provide(PlatformLayer),
       ),
@@ -46,7 +46,7 @@ describe('createSnapshot', () => {
     const search = vi.fn().mockReturnValue(Effect.succeed([]))
 
     const result = await Effect.runPromise(
-      createSnapshot('/project').pipe(
+      createSnapshot({ repoRoot: '/project', projectPath: '' }).pipe(
         Effect.provideService(FileSystem.FileSystem, {} as any),
         Effect.provideService(FileSearchService, {
           search,
@@ -56,6 +56,7 @@ describe('createSnapshot', () => {
 
     expect(result).toEqual({
       version: GYOMU_VERSION,
+      projectRoot: '',
       files: [],
     })
   })

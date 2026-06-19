@@ -5,6 +5,7 @@ export {
   ExistingJsDoc,
   ContextEntry,
   JsDocContextBase,
+  SchemaStructureNode,
 } from './context/JsDocUpdateContext.js'
 export * from './mode/index.js'
 export { executeJsDocUpdatePlan } from './executor/executeJsDocUpdatePlan.js'

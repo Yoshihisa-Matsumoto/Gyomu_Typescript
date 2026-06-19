@@ -7,6 +7,14 @@ export interface UpdateOptions {
         UpdatedSymbolJsDoc?: boolean
         RenderedSymbolJsDoc?: boolean
         FileUpdatePlan?: boolean
+
+        DumpToFile?: boolean
+      }
+    | undefined
+  action:
+    | {
+        NoLLMRequest?: boolean
+        NoUpdateTSDoc?: boolean
       }
     | undefined
 }
