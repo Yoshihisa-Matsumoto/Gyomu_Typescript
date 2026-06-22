@@ -4,26 +4,7 @@ import type { EffectSignals } from '@gyomu/schema/typescript'
 /**
  * Defines the base interface for a JSDoc update context containing project metadata and target identification.
  */
-export interface JsDocContextBase {
-  /**
-   * Determines whether the update mode is 'light' or 'deep'.
-   */
-  mode: 'light' | 'deep'
-
-  /**
-   * Contains project-level configuration information.
-   */
-  project: {
-    name: string
-  }
-
-  /**
-   * Specifies information about the source file being processed.
-   */
-  source: {
-    relativePath: string
-  }
-
+export interface TsDocSymbolContext {
   /**
    * The specific symbol identity targeted for the JSDoc update.
    */
@@ -63,6 +44,34 @@ export interface JsDocContextBase {
    * List of documentable child members.
    */
   children?: Array<ContextEntry>
+
+  /**
+   * Deep analysis metadata for code refinement.
+   */
+  analysis?: {
+    paramSemantics: Array<{
+      name: string
+      meaning: string
+      role: string
+    }>
+
+    protectedRegions: Array<ProtectedSection>
+
+    returnSemantics?: string
+
+    sideEffects: Array<string>
+
+    schemaStructure?: SchemaStructureNode
+  }
+
+  /**
+   * Configuration and metrics regarding how the symbol is used.
+   */
+  usageContext?: {
+    publicApi: boolean
+    usedAcrossModules: boolean
+    callSites?: number
+  }
 }
 
 /**
@@ -145,72 +154,6 @@ interface RelatedSymbol {
   signature: string
 }
 
-/**
- * Represents a light JSDoc update context configuration.
- */
-export interface LightJsDocContext extends JsDocContextBase {
-  /**
-   * The mode of the compiler, forced to 'light'.
-   */
-  mode: 'light'
-
-  /**
-   * Configuration options for the update process.
-   */
-  options: {
-    /**
-     * Whether to preserve original code style during updates.
-     */
-    preserveStyle: true
-  }
-}
-
-/**
- * Extends JsDocContextBase with deep analysis metadata and strict usage configuration.
- */
-export interface DeepJsDocContext extends JsDocContextBase {
-  /**
-   * The deep mode indicator, fixed to 'deep'.
-   */
-  mode: 'deep'
-
-  /**
-   * Deep analysis metadata for code refinement.
-   */
-  analysis?: {
-    paramSemantics: Array<{
-      name: string
-      meaning: string
-      role: string
-    }>
-
-    protectedRegions: Array<ProtectedSection>
-
-    returnSemantics?: string
-
-    sideEffects: Array<string>
-
-    schemaStructure?: SchemaStructureNode
-  }
-
-  /**
-   * Configuration and metrics regarding how the symbol is used.
-   */
-  usageContext?: {
-    publicApi: boolean
-    usedAcrossModules: boolean
-    callSites?: number
-  }
-
-  /**
-   * Strict behavioral options for the AI compiler process.
-   */
-  options: {
-    requireHighQuality: true
-    allowRewrite: true
-  }
-}
-
 export interface SchemaStructureNode {
   name: string
 
@@ -242,8 +185,3 @@ export interface ProtectedSection {
    */
   reason: 'preserve-marker' | 'human-edited' | 'custom-content'
 }
-
-/**
- * Context for updating JSDoc, supporting either light or deep update strategies.
- */
-export type JsDocUpdateContext = LightJsDocContext | DeepJsDocContext

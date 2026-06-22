@@ -359,21 +359,24 @@ export const emptyDir = (dir: string) =>
       })),
     ),
   )
-export const makeDirectory = (dir: string) =>
+export const makeDirectory = (dir: string, fromFile: boolean = false) =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem
 
-    yield* fs.makeDirectory(dir, { recursive: true }).pipe(
+    let targetPath = dir
+    if (fromFile) targetPath = dirname(dir)
+    yield* fs.makeDirectory(targetPath, { recursive: true }).pipe(
       Effect.mapError((e) =>
         wrapIOError(e, () => ({
           message: 'fail to make directory',
-          target: dir,
+          target: targetPath,
           layer: 'filesystem' as const,
           operation: 'write' as const,
         })),
       ),
     )
   })
+
 export const ensureFile = (filePath: string): Effect.Effect<void, IOError, FileSystem.FileSystem> =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem

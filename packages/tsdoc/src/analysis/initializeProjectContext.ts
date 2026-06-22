@@ -8,11 +8,13 @@ import { AnalysisError } from './error/AnalysisError.js'
 import type { FileSystem } from 'effect'
 import type { ProjectContext } from './project/ProjectContext.js'
 
-export const initializeProjectContext = (
-  projectRoot: string,
-): Effect.Effect<ProjectContext, AnalysisError, FileSystem.FileSystem> => {
-  const tsConfig = join(projectRoot, 'tsconfig.json')
-  const packageJson = join(projectRoot, 'package.json')
+export const initializeProjectContext = (args: {
+  repoRoot: string
+  projectRelativePath: string
+}): Effect.Effect<ProjectContext, AnalysisError, FileSystem.FileSystem> => {
+  const projectRootAbsolutePath = join(args.repoRoot, args.projectRelativePath)
+  const tsConfig = join(projectRootAbsolutePath, 'tsconfig.json')
+  const packageJson = join(projectRootAbsolutePath, 'package.json')
 
   return Effect.gen(function* () {
     const projectContent = yield* readStringFromFile(packageJson).pipe(
@@ -47,7 +49,7 @@ export const initializeProjectContext = (
         tsConfigFilePath: tsConfig,
       }),
       projectName,
-      projectRoot,
+      projectRoot: projectRootAbsolutePath,
     }
   })
 }

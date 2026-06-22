@@ -33,11 +33,9 @@ describe('buildJsDocUpdateContext integration', () => {
       const context = await buildJsDocUpdateContextProgram('generated-simple.ts')
 
       console.dir(context, { depth: null })
-      expect(context).toHaveLength(1)
+      expect(context.symbols).toHaveLength(1)
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-      expect(context[0]!.mode).toBe('light')
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-      expect(context[0]!.existingJsDoc).toBeUndefined()
+      expect(context.symbols[0]!.existingJsDoc).toBeUndefined()
     },
     timeout,
   )
@@ -48,11 +46,11 @@ describe('buildJsDocUpdateContext integration', () => {
       const context = await buildJsDocUpdateContextProgram('existing-jsdoc.ts')
 
       console.dir(context, { depth: null })
-      expect(context).toHaveLength(1)
+      expect(context.symbols).toHaveLength(1)
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-      expect(context[0]!.existingJsDoc!.summary).toBe('Add numbers')
+      expect(context.symbols[0]!.existingJsDoc!.summary).toBe('Add numbers')
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-      expect(context[0]!.existingJsDoc!.params).toHaveLength(2)
+      expect(context.symbols[0]!.existingJsDoc!.params).toHaveLength(2)
     },
     timeout,
   )
@@ -63,8 +61,8 @@ describe('buildJsDocUpdateContext integration', () => {
       const contexts = await buildJsDocUpdateContextProgram('overload-function.ts')
 
       console.dir(contexts, { depth: null })
-      expect(contexts.length).toBe(2)
-      const ids = contexts.map((x) => x.target.signatureId)
+      expect(contexts.symbols.length).toBe(2)
+      const ids = contexts.symbols.map((x) => x.target.signatureId)
 
       expect(new Set(ids).size).toBe(2)
     },
@@ -76,8 +74,8 @@ describe('buildJsDocUpdateContext integration', () => {
       const contexts = await buildJsDocUpdateContextProgram('mixed-exports.ts')
 
       console.dir(contexts, { depth: null })
-      expect(contexts.length).toBe(3)
-      const userInterface = contexts.find(
+      expect(contexts.symbols.length).toBe(3)
+      const userInterface = contexts.symbols.find(
         (c) => c.symbol.name == 'User' && c.symbol.kind == 'interface',
       )
       expect(userInterface).toBeDefined()

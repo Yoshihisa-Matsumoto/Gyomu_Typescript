@@ -31,10 +31,10 @@ describe('createSnapshot', () => {
 
     expect(result.files).toHaveLength(3)
     console.log(result.files[0]?.path)
-    expect(result.files[0]?.path).contains(join('test-fixtures', 'snapshot', 'sample-a.ts'))
+    expect(result.files[0]?.path).contains(join('sample-a.ts'))
 
-    expect(result.files[1]?.path).contains(join('test-fixtures', 'snapshot', 'sample-b.ts'))
-    expect(result.files[2]?.path).contains(join('test-fixtures', 'snapshot', 'sample.ts'))
+    expect(result.files[1]?.path).contains(join('sample-b.ts'))
+    expect(result.files[2]?.path).contains(join('sample.ts'))
 
     expect(result.files[0]?.rawHash).toBeTruthy()
 

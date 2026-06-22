@@ -44,26 +44,24 @@ export const buildMergePlan = (
     if (option?.action?.NoLLMRequest) {
       return []
     }
-    const mergePlans = yield* Effect.forEach(contexts, (context) =>
-      buildJsDocUpdatePlan(context, option).pipe(
-        Effect.flatMap((plan) => createMergePlan(fileResult.analysis.path, context, plan)),
-        Effect.mapError(
-          (error) =>
-            new UpdateError({
-              cause: error,
-              filePath: fileResult.analysis.path,
-              symbolId: context.target.symbolId,
-              message: `Failed to build merge plan for symbol ${context.target.symbolId}: ${error.message}`,
-              phase: 'merge-plan' as const,
-            }),
-        ),
-      ),
-    ).pipe(Effect.map((plans) => plans.flat()))
+    const plans = yield* buildJsDocUpdatePlan(contexts, option)
+    const mergePlans = yield* createMergePlan(fileResult.analysis.path, plans)
+
     if (option?.debugInfo?.MergePlan) {
       if (option.debugInfo.DumpToFile)
         yield* writeStringToFile('./log/MergePlan.txt', JSON.stringify(mergePlans, null, 2))
       else console.dir(mergePlans, { depth: null })
     }
     return mergePlans
-  })
+  }).pipe(
+    Effect.mapError(
+      (error) =>
+        new UpdateError({
+          cause: error,
+          filePath: fileResult.analysis.path,
+          message: `Failed to build merge plan : ${error.message}`,
+          phase: 'merge-plan' as const,
+        }),
+    ),
+  )
 }

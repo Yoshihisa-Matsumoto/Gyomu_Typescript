@@ -4,7 +4,7 @@ import { ConfigLayer, MainLayer, PlatformLayer, makeRunner } from '@gyomu/infra'
 import { VercelAiModelServiceLive } from '@gyomu/ai/provider/vercel'
 import { executeJsDocUpdatePlan } from '../executor/executeJsDocUpdatePlan.js'
 import 'dotenv/config'
-import type { LightJsDocContext } from '../context/JsDocUpdateContext.js'
+import type { TsDocFileContext } from '../context/TsDocFileContext.js'
 
 const describeIfApiKey = process.env.GEMINI_API_KEY ? describe : describe.skip
 
@@ -13,60 +13,60 @@ const runQAWithEnvOrThrow = makeRunner(VercelAiModelServiceLive)
 
 describeIfApiKey('executeJsDocUpdatePlan integration', () => {
   test('generates plans for documentable child members', async () => {
-    const context: LightJsDocContext = {
+    const context: TsDocFileContext = {
       project: { name: 'simple test' },
       source: { relativePath: 'test/user.ts' },
 
-      mode: 'light',
+      // mode: 'light',
 
-      target: {
-        symbolId: 'User',
-        signatureId: 'interface',
-      },
+      symbols: [
+        {
+          target: {
+            symbolId: 'User',
+            signatureId: 'interface',
+          },
 
-      symbol: {
-        name: 'User',
-        kind: 'interface',
-      },
+          symbol: {
+            name: 'User',
+            kind: 'interface',
+          },
 
-      code: {
-        snippet: `
+          code: {
+            snippet: `
 export interface User {
   id: string
 }
 `,
-      },
-
-      existingJsDoc: {
-        summary: 'User information.',
-        params: [],
-        tags: [],
-      },
-      effectSignals: undefined,
-      children: [
-        {
-          target: {
-            symbolId: 'User.id',
-            signatureId: 'property',
           },
 
-          name: 'id',
-          kind: 'property',
-
           existingJsDoc: {
-            summary: 'User identifier.',
+            summary: 'User information.',
             params: [],
             tags: [],
           },
           effectSignals: undefined,
+          children: [
+            {
+              target: {
+                symbolId: 'User.id',
+                signatureId: 'property',
+              },
+
+              name: 'id',
+              kind: 'property',
+
+              existingJsDoc: {
+                summary: 'User identifier.',
+                params: [],
+                tags: [],
+              },
+              effectSignals: undefined,
+            },
+          ],
+
+          relatedSymbols: [],
         },
       ],
-
-      relatedSymbols: [],
-
-      options: {
-        preserveStyle: true,
-      },
     }
 
     const plan = await runQAWithEnvOrThrow(executeJsDocUpdatePlan(context), layer)

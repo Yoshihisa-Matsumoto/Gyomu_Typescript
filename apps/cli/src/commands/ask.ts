@@ -1,4 +1,4 @@
-import { analyzeFile, initializeProjectContext } from '@gyomu/tsdoc'
+import { analyzeFile, initializeProjectContext, listTypescriptProject } from '@gyomu/tsdoc'
 import { AI_MODELS, AiModelService } from '@gyomu/ai'
 import { Effect, Layer } from 'effect'
 import { MessageRole } from '@gyomu/schema/conversation'
@@ -9,10 +9,19 @@ import { createAskPrompt } from '../prompts/askPrompt.js'
 
 const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(Layer.provideMerge(PlatformLayer))
 const runQAWithEnvOrThrow = makeRunner(VercelAiModelServiceLive)
-export const askCommand = (projectRootPath: string, file: string) =>
+export const askCommand = (projectName: string, file: string) =>
   runQAWithEnvOrThrow(
     Effect.gen(function* () {
-      const project = yield* initializeProjectContext(projectRootPath)
+      const projects = yield* listTypescriptProject()
+      const targetProject = projects.projects.find((p) => p.name == projectName)
+      if (!targetProject) {
+        console.log(`${projectName} Not Found`)
+        return
+      }
+      const project = yield* initializeProjectContext({
+        repoRoot: projects.repositoryRoot,
+        projectRelativePath: targetProject.rootPath,
+      })
       const fileAnalysisResult = yield* analyzeFile(project, file)
 
       const prompt = createAskPrompt({

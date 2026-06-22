@@ -1,16 +1,16 @@
-export { DeepJsDocContext, LightJsDocContext } from './context/JsDocUpdateContext.js'
+export { TsDocFileContext } from './context/TsDocFileContext.js'
 export {
-  JsDocUpdateContext,
+  TsDocSymbolContext,
   ProtectedSection,
   ExistingJsDoc,
   ContextEntry,
-  JsDocContextBase,
   SchemaStructureNode,
-} from './context/JsDocUpdateContext.js'
+} from './context/TsDocSymbolContext.js'
 export * from './mode/index.js'
 export { executeJsDocUpdatePlan } from './executor/executeJsDocUpdatePlan.js'
 export {
   JsDocUpdatePlan,
+  JsDocUpdateEntryPlan,
   MergeAction,
   JsDocTarget,
   ParamActionValue,

@@ -15,6 +15,7 @@ export interface UpdateOptions {
     | {
         NoLLMRequest?: boolean
         NoUpdateTSDoc?: boolean
+        WriteToTempFolder?: boolean
       }
     | undefined
 }

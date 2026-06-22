@@ -1,10 +1,17 @@
+import { join } from 'node:path'
 import { VercelAiModelServiceLive } from '@gyomu/ai/provider/vercel'
 import { ConfigLayer, MainLayer, PlatformLayer } from '@gyomu/infra'
 import { makeRunner } from '@gyomu/schema/effect'
-import { analyzeProjectChanges, listTypescriptProject } from '@gyomu/tsdoc'
+import {
+  analyzeFile,
+  analyzeProjectChanges,
+  initializeProjectContext,
+  listTypescriptProject,
+  processTsDocUpdate,
+} from '@gyomu/tsdoc'
 import { Effect, Layer } from 'effect'
-import {} from 'dotenv/config'
-import { FileSearchServiceLayer } from '@gyomu/infra/fs'
+
+import { FileSearchServiceLayer, makeDirectory, writeStringToFile } from '@gyomu/infra/fs'
 
 const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(
   Layer.provideMerge(PlatformLayer),
@@ -30,7 +37,42 @@ export const snapshotCommand = (projectName: string, options?: { buildTsDoc?: bo
         { snapshotPath: changeResult.snapshotPath, projectId: changeResult.projectId },
         { depth: null },
       )
-      console.dir(changeResult.currentSnapshot, { depth: null })
+      console.dir(changeResult.diff, { depth: null })
+
+      if (options?.buildTsDoc) {
+        const projectContext = yield* initializeProjectContext({
+          repoRoot: projects.repositoryRoot,
+          projectRelativePath: targetProject.rootPath,
+        })
+        const projectAbsolutePath = projectContext.projectRoot
+        yield* makeDirectory('./log')
+        for (const fileChange of changeResult.diff) {
+          switch (fileChange.type) {
+            case 'added':
+            case 'updated': {
+              const targetFilePath = join(projectAbsolutePath, fileChange.path)
+              const fileResult = yield* analyzeFile(projectContext, targetFilePath)
+
+              yield* writeStringToFile(
+                './log/fileAnalysis.txt',
+                JSON.stringify(fileResult.analysis, null, 2),
+              )
+              yield* processTsDocUpdate(projectContext, fileResult, {
+                debugInfo: {
+                  JsDocUpdateContext: true,
+                  JsDocUpdatePlan: true,
+                  DumpToFile: true,
+                },
+                action: {
+                  // NoLLMRequest: true,
+                  // NoUpdateTSDoc: true,
+                  WriteToTempFolder: true,
+                },
+              })
+            }
+          }
+        }
+      }
     }),
     layer,
   )

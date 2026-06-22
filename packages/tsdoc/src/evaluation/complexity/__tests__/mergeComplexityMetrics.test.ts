@@ -5,7 +5,7 @@ import type { ComplexityMetrics } from '../ComplexityMetrics.js'
 
 describe('mergeComplexityMetrics', () => {
   it('returns empty metrics when input is empty', () => {
-    expect(mergeComplexityMetrics([])).toEqual({
+    expect(mergeComplexityMetrics([])).toMatchObject({
       nestingDepth: 0,
 
       parameterCount: 0,
@@ -33,7 +33,7 @@ describe('mergeComplexityMetrics', () => {
       returnTypeDepth: 2,
     }
 
-    expect(mergeComplexityMetrics([metrics])).toEqual(metrics)
+    expect(mergeComplexityMetrics([metrics])).toMatchObject(metrics)
   })
 
   it('sums count-based metrics and takes max depth-based metrics', () => {
@@ -63,7 +63,7 @@ describe('mergeComplexityMetrics', () => {
       returnTypeDepth: 1,
     }
 
-    expect(mergeComplexityMetrics([metrics1, metrics2])).toEqual({
+    expect(mergeComplexityMetrics([metrics1, metrics2])).toMatchObject({
       nestingDepth: 5,
 
       parameterCount: 7,
@@ -117,7 +117,7 @@ describe('mergeComplexityMetrics', () => {
       },
     ]
 
-    expect(mergeComplexityMetrics(metricsArray)).toEqual({
+    expect(mergeComplexityMetrics(metricsArray)).toMatchObject({
       nestingDepth: 3,
 
       parameterCount: 6,

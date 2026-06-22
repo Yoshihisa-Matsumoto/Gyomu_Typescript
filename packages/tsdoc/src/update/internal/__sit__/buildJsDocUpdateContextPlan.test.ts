@@ -30,13 +30,9 @@ const buildJsDocUpdateContextProgram = (sourceFile: string) => {
     const mapComplexity = calculateComplexityMetrics(result)
     const contexts = buildJsDocUpdateContext('test-project', result, mapComplexity)
 
-    const results: Array<JsDocUpdatePlan> = []
+    const plan = yield* buildJsDocUpdatePlan(contexts)
 
-    for (const context of contexts) {
-      const plan = yield* buildJsDocUpdatePlan(context)
-      results.push(plan)
-    }
-    return results
+    return plan
   })
   return runQAWithEnvOrThrow(program, layer)
 }

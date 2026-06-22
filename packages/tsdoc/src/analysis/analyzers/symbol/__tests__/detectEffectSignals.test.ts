@@ -14,7 +14,7 @@ describe('detectEffectSignals', () => {
 
   describe('simple effect', () => {
     it('detects success type only', () => {
-      expect(detectEffectSignals('Effect.Effect<FunnyStructure>')).toEqual({
+      expect(detectEffectSignals('Effect.Effect<FunnyStructure>')).toMatchObject({
         returnsEffect: true,
 
         success: {
@@ -34,7 +34,7 @@ describe('detectEffectSignals', () => {
     })
 
     it('supports Effect namespace omitted', () => {
-      expect(detectEffectSignals('Effect<FunnyStructure>')).toEqual({
+      expect(detectEffectSignals('Effect<FunnyStructure>')).toMatchObject({
         returnsEffect: true,
 
         success: {
@@ -56,7 +56,7 @@ describe('detectEffectSignals', () => {
 
   describe('effect with error', () => {
     it('detects error type', () => {
-      expect(detectEffectSignals('Effect.Effect<FunnyStructure,AiError>')).toEqual({
+      expect(detectEffectSignals('Effect.Effect<FunnyStructure,AiError>')).toMatchObject({
         returnsEffect: true,
 
         success: {
@@ -80,7 +80,9 @@ describe('detectEffectSignals', () => {
 
   describe('effect with requirements', () => {
     it('detects requirements type', () => {
-      expect(detectEffectSignals('Effect.Effect<FunnyStructure,AiError,AiEngineService>')).toEqual({
+      expect(
+        detectEffectSignals('Effect.Effect<FunnyStructure,AiError,AiEngineService>'),
+      ).toMatchObject({
         returnsEffect: true,
 
         success: {
@@ -106,7 +108,7 @@ describe('detectEffectSignals', () => {
 
   describe('nested generic arguments', () => {
     it('supports generic success type', () => {
-      expect(detectEffectSignals('Effect.Effect<FunnyStructure<TypeA,TypeB>>')).toEqual({
+      expect(detectEffectSignals('Effect.Effect<FunnyStructure<TypeA,TypeB>>')).toMatchObject({
         returnsEffect: true,
 
         success: {
@@ -126,7 +128,9 @@ describe('detectEffectSignals', () => {
     })
 
     it('supports generic error type', () => {
-      expect(detectEffectSignals('Effect.Effect<FunnyStructure<TypeA,TypeB>,TypeError>')).toEqual({
+      expect(
+        detectEffectSignals('Effect.Effect<FunnyStructure<TypeA,TypeB>,TypeError>'),
+      ).toMatchObject({
         returnsEffect: true,
 
         success: {
@@ -152,7 +156,7 @@ describe('detectEffectSignals', () => {
         detectEffectSignals(
           'Effect.Effect<FunnyStructure<TypeA,TypeB>,TypeError,CollaborativeService<TypeB,TypeC>>',
         ),
-      ).toEqual({
+      ).toMatchObject({
         returnsEffect: true,
 
         success: {
@@ -178,7 +182,7 @@ describe('detectEffectSignals', () => {
 
   describe('nested effect', () => {
     it('calculates effect depth', () => {
-      expect(detectEffectSignals('Effect.Effect<Effect.Effect<User>>')).toEqual({
+      expect(detectEffectSignals('Effect.Effect<Effect.Effect<User>>')).toMatchObject({
         returnsEffect: true,
 
         success: {

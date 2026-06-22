@@ -6,12 +6,7 @@ import { buildContextEntry } from './buildContextEntry.js'
 import { buildExistingJsDoc } from './buildExistingJsDoc.js'
 import { buildSchemaStructureNode } from './buildSchemaStructureNode.js'
 import type { ComplexityMetrics } from '../../evaluation/complexity/ComplexityMetrics.js'
-import type {
-  DeepJsDocContext,
-  JsDocContextBase,
-  JsDocUpdateContext,
-  LightJsDocContext,
-} from '@gyomu/ai-compiler/jsdoc-update'
+import type { TsDocFileContext, TsDocSymbolContext } from '@gyomu/ai-compiler/jsdoc-update'
 import type { FileAnalysisResult } from '../../analysis/file/FileAnalysisResult.js'
 import type { SymbolId } from '../../analysis/types.js'
 import type { EffectSignals } from '@gyomu/schema/typescript'
@@ -20,9 +15,19 @@ export const buildJsDocUpdateContext = (
   projectName: string,
   fileResult: FileAnalysisResult,
   mapComplexity: Map<SymbolId, ComplexityMetrics>,
-): Array<JsDocUpdateContext> => {
+): TsDocFileContext => {
   const sourceFilePath = fileResult.analysis.path
-  const results: Array<JsDocUpdateContext> = []
+  const fileContext: TsDocFileContext = {
+    project: {
+      name: projectName,
+    },
+    source: {
+      relativePath: sourceFilePath,
+    },
+    symbols: [],
+  }
+
+  const results: Array<TsDocSymbolContext> = fileContext.symbols
   for (const exportInfo of fileResult.analysis.exports) {
     const symbol = exportInfo.symbol
     if (symbol.signature.isOverloadImplementation) continue
@@ -79,13 +84,6 @@ export const buildJsDocUpdateContext = (
     }
 
     const context = {
-      project: {
-        name: projectName,
-      },
-      source: {
-        relativePath: sourceFilePath,
-      },
-      mode: mode,
       target: symbol.identity,
       symbol: {
         name: symbol.identity.symbolId,
@@ -99,23 +97,23 @@ export const buildJsDocUpdateContext = (
       effectSignals,
       relatedSymbols: [],
       children,
-    } as JsDocContextBase
-
-    console.log({ target: context.target, mode: context.mode })
-    if (context.mode === 'light') {
-      const lightContext = context as LightJsDocContext
-      lightContext.options = {
-        preserveStyle: true,
-      }
-      results.push(lightContext)
+    } as TsDocSymbolContext
+    results.push(context)
+    // console.log({ target: context.target, mode })
+    if (mode === 'light') {
+      // const lightContext = context as LightJsDocContext
+      // lightContext.options = {
+      //   preserveStyle: true,
+      // }
+      // results.push(lightContext)
     } else {
-      const deepContext = context as DeepJsDocContext
-      deepContext.options = {
-        requireHighQuality: true,
-        allowRewrite: true,
-      }
+      // const deepContext = context as DeepJsDocContext
+      // deepContext.options = {
+      //   requireHighQuality: true,
+      //   allowRewrite: true,
+      // }
       if (symbol.type?.source == 'effect-schema' && symbol.type.structure) {
-        deepContext.analysis = {
+        context.analysis = {
           ...withOptional({
             schemaStructure: buildSchemaStructureNode(
               symbol.type.structure,
@@ -128,8 +126,7 @@ export const buildJsDocUpdateContext = (
           sideEffects: [],
         }
       }
-      results.push(deepContext)
     }
   }
-  return results
+  return fileContext
 }

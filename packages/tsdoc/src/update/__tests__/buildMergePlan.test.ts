@@ -65,16 +65,25 @@ describe('buildMergePlan', () => {
 
   test('should build merge plans', async () => {
     const context1 = {
-      target: {
-        symbolId: 'symbol1',
-      },
+      symbols: [
+        {
+          target: {
+            symbolId: 'symbol1',
+          },
+        },
+        {
+          target: {
+            symbolId: 'symbol2',
+          },
+        },
+      ],
     }
 
-    const context2 = {
-      target: {
-        symbolId: 'symbol2',
-      },
-    }
+    // const context2 = {
+    //   target: {
+    //     symbolId: 'symbol2',
+    //   },
+    // }
 
     const plan1 = {
       identity: {
@@ -100,15 +109,12 @@ describe('buildMergePlan', () => {
       },
     }
 
-    mockBuildJsDocUpdateContext.mockReturnValue([context1, context2])
+    mockBuildJsDocUpdateContext.mockReturnValue(context1)
 
-    mockBuildJsDocUpdatePlan
-      .mockReturnValueOnce(Effect.succeed(plan1))
-      .mockReturnValueOnce(Effect.succeed(plan2))
+    mockBuildJsDocUpdatePlan.mockReturnValueOnce(Effect.succeed([plan1, plan2]))
 
-    mockCreateMergePlan
-      .mockReturnValueOnce(Effect.succeed(mergePlan1))
-      .mockReturnValueOnce(Effect.succeed(mergePlan2))
+    mockCreateMergePlan.mockReturnValueOnce(Effect.succeed([mergePlan1, mergePlan2]))
+    // .mockReturnValueOnce(Effect.succeed(mergePlan2))
 
     const mapDummy = new Map<SymbolId, ComplexityMetrics>()
     mockCalculateComplexityMetrics.mockReturnValue(mapDummy)
@@ -123,11 +129,11 @@ describe('buildMergePlan', () => {
 
     expect(mockBuildJsDocUpdateContext).toHaveBeenCalledWith('test-project', fileResult, mapDummy)
 
-    expect(mockBuildJsDocUpdatePlan).toHaveBeenCalledTimes(2)
+    expect(mockBuildJsDocUpdatePlan).toHaveBeenCalledTimes(1)
 
-    expect(mockCreateMergePlan).toHaveBeenCalledWith(fileResult.analysis.path, context1, plan1)
+    expect(mockCreateMergePlan).toHaveBeenCalledWith(fileResult.analysis.path, [plan1, plan2])
 
-    expect(mockCreateMergePlan).toHaveBeenCalledWith(fileResult.analysis.path, context2, plan2)
+    // expect(mockCreateMergePlan).toHaveBeenCalledWith(fileResult.analysis.path, context2, plan2)
   })
 
   test('should convert plan errors into UpdateError', async () => {

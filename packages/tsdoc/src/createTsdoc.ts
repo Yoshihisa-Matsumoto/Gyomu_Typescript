@@ -9,14 +9,25 @@ import { writeStringToFile } from '@gyomu/infra/fs'
 import { processTsDocUpdate } from './update/processTsDocUpdate.js'
 import { analyzeFile } from './analysis/analyzeFile.js'
 import { initializeProjectContext } from './analysis/initializeProjectContext.js'
+import { listTypescriptProject } from './shared/index.js'
 
 const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(Layer.provideMerge(PlatformLayer))
 const runQAWithEnvOrThrow = makeRunner(VercelAiModelServiceLive)
 
-const processTsDocUpdateProgram = async (projectRoot: string, sourceFilename: string) => {
-  const filePath = join(projectRoot, sourceFilename)
+const processTsDocUpdateProgram = async (projectName: string, sourceFilename: string) => {
+  // const filePath = join(projectRoot, sourceFilename)
   const program = Effect.gen(function* () {
-    const projectContext = yield* initializeProjectContext(projectRoot)
+    const projects = yield* listTypescriptProject()
+    const targetProject = projects.projects.find((p) => p.name == projectName)
+    if (!targetProject) {
+      console.log(`${projectName} Not Found`)
+      return
+    }
+    const projectContext = yield* initializeProjectContext({
+      repoRoot: projects.repositoryRoot,
+      projectRelativePath: targetProject.rootPath,
+    })
+    const filePath = join(projectContext.projectRoot, sourceFilename)
     const fileResult = yield* analyzeFile(projectContext, filePath)
     yield* writeStringToFile('./log/fileAnalysis.txt', JSON.stringify(fileResult.analysis, null, 2))
     yield* processTsDocUpdate(projectContext, fileResult, {
@@ -28,13 +39,13 @@ const processTsDocUpdateProgram = async (projectRoot: string, sourceFilename: st
       action: {
         // NoLLMRequest: true,
         // NoUpdateTSDoc: true,
+        WriteToTempFolder: true,
       },
     })
   })
   return await runQAWithEnvOrThrow(program, layer)
 }
 
-await processTsDocUpdateProgram(
-  `C:\\data\\program\\typescript\\dev\\gyomu\\packages\\schema`,
-  `src/core/result.ts`,
-)
+await processTsDocUpdateProgram(`@gyomu/schema`, `src/core/result.ts`)
+// `src/conversation/index.ts`
+// `src/core/result.ts`

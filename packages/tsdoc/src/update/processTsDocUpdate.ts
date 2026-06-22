@@ -1,6 +1,9 @@
+import { tmpdir } from 'node:os'
+import { join, relative } from 'node:path'
 import { Effect } from 'effect'
-import { readStringFromFile, writeStringToFile } from '@gyomu/infra/fs'
+import { makeDirectory, readStringFromFile, writeStringToFile } from '@gyomu/infra/fs'
 import { toProjectAbsolutePath } from '../shared/index.js'
+import { findWorkspaceRoot } from '../shared/path/findWorkspaceRoot.js'
 import { buildMergePlan } from './buildMergePlan.js'
 import { applyMergePlans } from './applyMergePlan.js'
 import { buildFileUpdatePlan } from './buildFileUpdatePlan.js'
@@ -17,6 +20,7 @@ export const processTsDocUpdate = (
   option?: UpdateOptions,
 ) => {
   return Effect.gen(function* () {
+    if (fileResult.analysis.exports.length == 0) return
     const mergePlans = yield* buildMergePlan(context.projectName, fileResult, option)
     if (option?.action?.NoLLMRequest) {
       return
@@ -61,12 +65,27 @@ export const processTsDocUpdate = (
     if (option?.action?.NoUpdateTSDoc) {
       return
     }
-    yield* writeStringToFile(sourceFileAbsolutePath, tsUpdatedContent).pipe(
+
+    let destinationPath = sourceFileAbsolutePath
+    if (option?.action?.WriteToTempFolder) {
+      const rootPath = join(tmpdir(), 'tsdoc-temp')
+
+      const repositoryRoot = yield* findWorkspaceRoot(context.projectRoot)
+
+      const projectRelativePath = relative(repositoryRoot, context.projectRoot)
+
+      const projectPath = join(rootPath, projectRelativePath)
+
+      destinationPath = toProjectAbsolutePath(fileResult.analysis.path, projectPath)
+      yield* makeDirectory(destinationPath, true)
+    }
+
+    yield* writeStringToFile(destinationPath, tsUpdatedContent).pipe(
       Effect.mapError(
         (e) =>
           new UpdateError({
             cause: e,
-            filePath: sourceFileAbsolutePath,
+            filePath: destinationPath,
             message: 'fail to update sourcefile',
             phase: 'update',
           }),

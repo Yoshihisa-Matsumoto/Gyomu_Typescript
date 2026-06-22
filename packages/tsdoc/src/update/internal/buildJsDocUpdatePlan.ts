@@ -1,10 +1,10 @@
 import { executeJsDocUpdatePlan } from '@gyomu/ai-compiler/jsdoc-update'
 import { Effect } from 'effect'
 import { writeStringToFile } from '@gyomu/infra/fs'
-import type { JsDocUpdateContext } from '@gyomu/ai-compiler/jsdoc-update'
+import type { TsDocFileContext } from '@gyomu/ai-compiler/jsdoc-update'
 import type { UpdateOptions } from '../UpdateOptions.js'
 
-export const buildJsDocUpdatePlan = (context: JsDocUpdateContext, option?: UpdateOptions) =>
+export const buildJsDocUpdatePlan = (context: TsDocFileContext, option?: UpdateOptions) =>
   Effect.gen(function* () {
     const result = yield* executeJsDocUpdatePlan(context)
     if (option?.debugInfo?.JsDocUpdatePlan) {

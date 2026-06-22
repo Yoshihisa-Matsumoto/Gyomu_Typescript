@@ -1,12 +1,17 @@
+import 'dotenv/config'
 import cac from 'cac'
 import { askCommand } from './commands/ask.js'
 import { snapshotCommand } from './commands/snapshot.js'
 
+console.log(process.env)
 const cli = cac('gyomu')
 
 cli.command('ask <projectRootPath> <file> ').action(askCommand)
 
-cli.command('snapshot <projectName>').action(snapshotCommand)
+cli
+  .command('snapshot <projectName>')
+  .option('-t, --buildTsDoc', 'Build TSDoc')
+  .action(snapshotCommand)
 
 cli.help()
 const parsed = cli.parse()

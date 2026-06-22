@@ -1,7 +1,6 @@
 import { fromSync } from '@gyomu/schema/effect'
 import { UpdateError } from '../error/UpdateError.js'
 import type {
-  JsDocUpdateContext,
   JsDocUpdatePlan,
   MergeAction,
   ParamActionValue,
@@ -12,7 +11,6 @@ import type { Effect } from 'effect'
 
 export const createMergePlan = (
   filePath: string,
-  context: JsDocUpdateContext,
   plans: JsDocUpdatePlan,
 ): Effect.Effect<Array<MergePlan>, UpdateError> => {
   return fromSync(UpdateError, () => ({

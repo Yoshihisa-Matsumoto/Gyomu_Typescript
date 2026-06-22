@@ -2,8 +2,8 @@ import { Effect } from 'effect'
 import { Project } from 'ts-morph'
 import { toProjectAbsolutePath, toProjectRelativePath } from '../shared/index.js'
 import { loadSourceFile } from './shared/loadSourceFile.js'
-import { extractExport } from './extract/extractExport.js'
 import { extractImport } from './extract/extractImport.js'
+import { extractSymbols } from './extract/extractSymbol.js'
 import type {
   DocumentableTarget,
   FileAnalysisMetadata,
@@ -54,8 +54,10 @@ export const analyzeFile = (
     const sourceFile = yield* loadSourceFile(context.project, sourceFullPath)
     sourceFile.path = sourceRelativePath
 
-    const exports = yield* extractExport(sourceFile, metadata, option)
+    // const exports = yield* extractExport(sourceFile, metadata, option)
     const imports = yield* extractImport(sourceFile, metadata, option)
+
+    const statements = extractSymbols(sourceFile, metadata, option)
 
     // const symbols: Map<string, SymbolAnalysis> = new Map<string, SymbolAnalysis>()
     // exports.forEach((exp) => {
@@ -66,8 +68,9 @@ export const analyzeFile = (
     return {
       analysis: {
         path: sourceRelativePath,
-        exports,
+        exports: statements.exported,
         imports,
+        internals: statements.internals,
       } satisfies FileAnalysis,
       metadata,
     }
