@@ -8,9 +8,8 @@ import 'dotenv/config'
 import { createFixtureProject } from '../../../analysis/__tests__/createFixtureProject.js'
 import { analyzeFile } from '../../../analysis/analyzeFile.js'
 import { buildJsDocUpdateContext } from '../buildJsDocUpdateContext.js'
-import { buildJsDocUpdatePlan } from '../buildJsDocUpdatePlan.js'
+import { buildJsDocUpdatePlanWithRetry } from '../buildJsDocUpdatePlanWithRetry.js'
 import { calculateComplexityMetrics } from '../../../evaluation/complexity/calculateComplexityMetrics.js'
-import type { JsDocUpdatePlan } from '@gyomu/ai-compiler/jsdoc-update'
 
 const timeout = 20000
 
@@ -24,13 +23,13 @@ const buildJsDocUpdateContextProgram = (sourceFile: string) => {
 
   const filePath = path.join(projectRoot, path.join('src', sourceFile))
   const program = Effect.gen(function* () {
-    const result = yield* analyzeFile({ project, projectRoot, projectName }, filePath, {
+    const result = yield* analyzeFile(updateFixture, filePath, {
       includeDebugInfo: true,
     })
     const mapComplexity = calculateComplexityMetrics(result)
     const contexts = buildJsDocUpdateContext('test-project', result, mapComplexity)
 
-    const plan = yield* buildJsDocUpdatePlan(contexts)
+    const plan = yield* buildJsDocUpdatePlanWithRetry(contexts, result)
 
     return plan
   })

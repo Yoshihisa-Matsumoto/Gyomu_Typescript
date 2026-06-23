@@ -198,9 +198,7 @@ describe('mergeParams', () => {
             sortOrder: 1,
             action: {
               type: 'replace',
-              value: {
-                description: 'Updated',
-              },
+              value: {},
             },
           },
         ] as any,
@@ -222,9 +220,7 @@ describe('mergeParams', () => {
             sortOrder: 1,
             action: {
               type: 'replace',
-              value: {
-                type: 'string',
-              },
+              value: {},
             },
           },
         ] as any,

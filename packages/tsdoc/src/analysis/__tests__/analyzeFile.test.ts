@@ -21,7 +21,7 @@ const tempJsdocProgram = (sourceFile: string) => {
   const filePath = path.join(projectRoot, path.join('src', sourceFile))
   return Effect.runSync(
     Effect.gen(function* () {
-      return yield* analyzeFile({ project, projectRoot, projectName }, filePath, {
+      return yield* analyzeFile(jsDocFixture, filePath, {
         includeDebugInfo: true,
       })
     }),
@@ -36,7 +36,7 @@ describe('analyzeFile', () => {
 
       const filePath = path.join(projectRoot, path.join('src', 'index.ts'))
       const program = Effect.gen(function* () {
-        const result = yield* analyzeFile({ project, projectRoot, projectName }, filePath)
+        const result = yield* analyzeFile(basicExportFixture, filePath)
 
         expect(result.analysis.exports).toHaveLength(5)
 
@@ -80,7 +80,7 @@ describe('analyzeFile', () => {
       const filePath = path.join(projectRoot, 'src/index.ts')
 
       const program = Effect.gen(function* () {
-        const result = yield* analyzeFile({ project, projectRoot, projectName }, filePath)
+        const result = yield* analyzeFile(exportPatternsFixture, filePath)
         console.dir(result, { depth: null })
         expect(
           result.analysis.exports.map((x) => ({
@@ -198,7 +198,7 @@ describe('analyzeFile', () => {
 
         const filePath = path.join(projectRoot, 'src/index.ts')
         const program = Effect.gen(function* () {
-          const result = yield* analyzeFile({ project, projectRoot, projectName }, filePath)
+          const result = yield* analyzeFile(importPatternsFixture, filePath)
 
           expect(result.analysis.imports).toEqual([
             {

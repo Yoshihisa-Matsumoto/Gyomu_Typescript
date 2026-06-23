@@ -34,8 +34,8 @@ vi.mock('../internal/buildJsDocUpdateContext.js', () => ({
   buildJsDocUpdateContext: mockBuildJsDocUpdateContext,
 }))
 
-vi.mock('../internal/buildJsDocUpdatePlan.js', () => ({
-  buildJsDocUpdatePlan: mockBuildJsDocUpdatePlan,
+vi.mock('../internal/buildJsDocUpdatePlanWithRetry.js', () => ({
+  buildJsDocUpdatePlanWithRetry: mockBuildJsDocUpdatePlan,
 }))
 
 vi.mock('../internal/createMargePlan.js', () => ({
@@ -69,11 +69,13 @@ describe('buildMergePlan', () => {
         {
           target: {
             symbolId: 'symbol1',
+            signatureId: 'test',
           },
         },
         {
           target: {
             symbolId: 'symbol2',
+            signatureId: 'test',
           },
         },
       ],
@@ -88,24 +90,28 @@ describe('buildMergePlan', () => {
     const plan1 = {
       identity: {
         symbolId: 'symbol1',
+        signatureId: 'test',
       },
     }
 
     const plan2 = {
       identity: {
         symbolId: 'symbol2',
+        signatureId: 'test',
       },
     }
 
     const mergePlan1 = {
       target: {
         symbolId: 'symbol1',
+        signatureId: 'test',
       },
     }
 
     const mergePlan2 = {
       target: {
         symbolId: 'symbol2',
+        signatureId: 'test',
       },
     }
 

@@ -6,6 +6,7 @@ import {
   analyzeFile,
   analyzeProjectChanges,
   initializeProjectContext,
+  isTestFile,
   listTypescriptProject,
   processTsDocUpdate,
 } from '@gyomu/tsdoc'
@@ -51,6 +52,12 @@ export const snapshotCommand = (projectName: string, options?: { buildTsDoc?: bo
             case 'added':
             case 'updated': {
               const targetFilePath = join(projectAbsolutePath, fileChange.path)
+              if (!projectContext.includedFiles.has(targetFilePath)) {
+                console.log(`File:${targetFilePath} Not in the project`)
+                continue
+              }
+              if (isTestFile(targetFilePath)) continue
+              console.log(fileChange.path)
               const fileResult = yield* analyzeFile(projectContext, targetFilePath)
 
               yield* writeStringToFile(

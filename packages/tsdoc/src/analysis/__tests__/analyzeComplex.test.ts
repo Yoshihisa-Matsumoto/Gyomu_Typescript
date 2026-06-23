@@ -27,7 +27,7 @@ const tempJsdocProgram = (sourceFile: string) => {
   const filePath = path.join(projectRoot, path.join('src', sourceFile))
   return Effect.runSync(
     Effect.gen(function* () {
-      return yield* analyzeFile({ project, projectRoot, projectName }, filePath, {
+      return yield* analyzeFile(jsDocFixture, filePath, {
         includeDebugInfo: true,
       })
     }),

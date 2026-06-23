@@ -20,7 +20,7 @@ export const mergeParams = (
         case 'delete':
           return undefined
         case 'replace':
-          if (!existingParam && (!param.action.value.type || !param.action.value.description)) {
+          if (!existingParam && !param.action.value.type && !param.action.value.description) {
             return yield* Effect.fail(
               new UpdateError({
                 cause: undefined,

@@ -9,7 +9,7 @@ import { beforeAll, describe, expect, it, vi } from 'vitest'
 
 import { AiModelService } from '@gyomu/ai'
 import { createFixtureProject } from '../../analysis/__tests__/createFixtureProject.js'
-import { buildJsDocUpdatePlan } from '../internal/buildJsDocUpdatePlan.js'
+import { buildJsDocUpdatePlanWithRetry } from '../internal/buildJsDocUpdatePlanWithRetry.js'
 import { processTsDocUpdate } from '../processTsDocUpdate.js'
 import { analyzeFile } from '../../analysis/analyzeFile.js'
 import { compareFilesEffect } from './baseClass.js'
@@ -51,16 +51,13 @@ const mockAiModelService = Layer.succeed(AiModelService, {
 } as any)
 const runQAWithEnvOrThrow = makeRunner(mockAiModelService)
 
-vi.mock('../internal/buildJsDocUpdatePlan.js', () => ({
-  buildJsDocUpdatePlan: vi.fn(),
+vi.mock('../internal/buildJsDocUpdatePlanWithRetry.js', () => ({
+  buildJsDocUpdatePlanWithRetry: vi.fn(),
 }))
 
-const processTsDocUpdateProgram = async (
-  sourceFile: string,
-  expectedPlans: Array<JsDocUpdatePlan>,
-) => {
-  for (const expectedPlan of expectedPlans)
-    vi.mocked(buildJsDocUpdatePlan).mockReturnValueOnce(Effect.succeed(expectedPlan))
+const processTsDocUpdateProgram = async (sourceFile: string, expectedPlans: JsDocUpdatePlan) => {
+  // for (const expectedPlan of expectedPlans)
+  vi.mocked(buildJsDocUpdatePlanWithRetry).mockReturnValueOnce(Effect.succeed(expectedPlans))
   const program = Effect.gen(function* () {
     const sourceRelativePath = path.join('src', sourceFile)
     const fileResult = yield* analyzeFile(updateFixture, sourceRelativePath)
@@ -91,7 +88,7 @@ describe('processTsDocUpdate integration', () => {
     const expectedPlan = (
       await fs.readFile(path.join(updateFixture.projectRoot, 'expectedPlan', target_file + '.json'))
     ).toString()
-    const planObject = JSON.parse(expectedPlan) as Array<JsDocUpdatePlan>
+    const planObject = JSON.parse(expectedPlan) as JsDocUpdatePlan
 
     await processTsDocUpdateProgram(target_file + '.ts', planObject)
   })

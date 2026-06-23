@@ -22,7 +22,7 @@ export const extractSymbols = (
   const internals: Array<SymbolAnalysis> = []
   const sourceRelativePath = context.path
   const memberPath: Array<string> = []
-
+  const sourceFullText = context.sourceFile.getFullText()
   console.log(symbols.length)
   symbols.forEach((statement, declarationOrder) => {
     let isExported = false
@@ -39,9 +39,9 @@ export const extractSymbols = (
 
     const declaration = statement
 
-    const sourceFullText = declaration.getFullText()
+    // const sourceFullText = declaration.getFullText()
 
-    console.log(declaration.getText(), isExported, isDefault)
+    // console.log(declaration.getText(), isExported, isDefault)
 
     if (Node.isVariableStatement(declaration)) {
       let variables = declaration.getDeclarationList().getDeclarations()
@@ -53,7 +53,7 @@ export const extractSymbols = (
           declarationOrder,
           memberPath,
           metadata,
-          sourceFullText: variable.getFullText(),
+          sourceFullText,
           name: variable.getName(),
           ...withOptional({ options }),
         })
@@ -194,7 +194,7 @@ export const extractSymbols = (
                     endLine: declaration.getEndLineNumber(),
                   }
                   referencedSymbol.startOffset = declaration.getStart()
-                  referencedSymbol.snippet = sourceFullText
+                  referencedSymbol.snippet = declaration.getFullText()
                   exported.push({
                     symbol: referencedSymbol,
                     isTypeOnly: false,

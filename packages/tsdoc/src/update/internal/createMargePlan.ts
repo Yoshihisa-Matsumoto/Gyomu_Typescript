@@ -19,6 +19,7 @@ export const createMergePlan = (
     phase: 'merge-plan' as const,
   }))(() => {
     return plans.map((plan) => {
+      console.log(plan)
       const confidences = [
         plan.summary.confidence,
         plan.returns.confidence,

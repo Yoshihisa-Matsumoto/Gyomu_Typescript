@@ -1,164 +1,160 @@
 [
-  [
-    {
-      "identity": {
-        "symbolId": "add",
-        "signatureId": "(a:number,b:number):number"
-      },
+  {
+    "identity": {
+      "symbolId": "add",
+      "signatureId": "(a:number,b:number):number"
+    },
 
-      "summary": {
+    "summary": {
+      "action": {
+        "type": "replace",
+        "value": "Add utility functions for arithmetic operations"
+      },
+      "confidence": 0.95
+    },
+
+    "params": [
+      {
         "action": {
           "type": "replace",
-          "value": "Add utility functions for arithmetic operations"
+          "value": "First operand"
         },
-        "confidence": 0.95
+        "confidence": 0.92,
+        "target": {
+          "kind": "param",
+          "key": "a"
+        },
+        "name": "a",
+        "sortOrder": 0,
+        "value": {
+          "description": "First number to add",
+          "type": "number"
+        }
       },
-
-      "params": [
-        {
-          "action": {
-            "type": "replace",
-            "value": "First operand"
-          },
-          "confidence": 0.92,
-          "target": {
-            "kind": "param",
-            "key": "a"
-          },
-          "name": "a",
-          "sortOrder": 0,
-          "value": {
-            "description": "First number to add",
-            "type": "number"
-          }
-        },
-        {
-          "action": {
-            "type": "replace",
-            "value": "Second operand"
-          },
-          "confidence": 0.92,
-          "target": {
-            "kind": "param",
-            "key": "b"
-          },
-          "name": "b",
-          "sortOrder": 1,
-          "value": {
-            "description": "Second number to add",
-            "type": "number"
-          }
-        }
-      ],
-
-      "tags": [
-        {
-          "action": {
-            "type": "replace",
-            "value": "function"
-          },
-          "confidence": 0.9,
-          "target": {
-            "kind": "summary"
-          },
-          "sortOrder": 0,
-          "tag": "function"
-        },
-        {
-          "action": {
-            "type": "replace",
-            "value": "export"
-          },
-          "confidence": 0.9,
-          "target": {
-            "kind": "summary"
-          },
-          "sortOrder": 1,
-          "tag": "export"
-        }
-      ],
-
-      "returns": {
+      {
         "action": {
           "type": "replace",
-          "value": "Sum of a and b"
+          "value": "Second operand"
         },
-        "confidence": 0.94
-      },
-
-      "reasoning": {
-        "summary": "Function performs addition of two numeric inputs and is exported as utility function.",
-        "paramMapping": "Parameters a and b map directly to arithmetic operands of addition function.",
-        "returnMapping": "Return value represents the sum of the two input numbers."
-      },
-
-      "risk": {
-        "hasHumanConflict": false,
-        "riskLevel": "low"
+        "confidence": 0.92,
+        "target": {
+          "kind": "param",
+          "key": "b"
+        },
+        "name": "b",
+        "sortOrder": 1,
+        "value": {
+          "description": "Second number to add",
+          "type": "number"
+        }
       }
-    }
-  ],
-  [
-    {
-      "identity": {
-        "symbolId": "VERSION",
-        "signatureId": "variable"
-      },
+    ],
 
-      "summary": {
+    "tags": [
+      {
         "action": {
           "type": "replace",
-          "value": "Current version of the library"
+          "value": "function"
         },
-        "confidence": 0.9
+        "confidence": 0.9,
+        "target": {
+          "kind": "summary"
+        },
+        "sortOrder": 0,
+        "tag": "function"
       },
-
-      "params": [],
-
-      "tags": [
-        {
-          "action": {
-            "type": "replace",
-            "value": "constant"
-          },
-          "confidence": 0.9,
-          "target": {
-            "kind": "summary"
-          },
-          "sortOrder": 0,
-          "tag": "const"
-        },
-        {
-          "action": {
-            "type": "replace",
-            "value": "export"
-          },
-          "confidence": 0.9,
-          "target": {
-            "kind": "summary"
-          },
-          "sortOrder": 1,
-          "tag": "export"
-        }
-      ],
-
-      "returns": {
+      {
         "action": {
-          "type": "preserve"
+          "type": "replace",
+          "value": "export"
         },
-        "confidence": 1.0
-      },
-
-      "reasoning": {
-        "summary": "Constant representing package version string.",
-        "paramMapping": "No parameters exist for constant value.",
-        "returnMapping": "No return value for constant export."
-      },
-
-      "risk": {
-        "hasHumanConflict": false,
-        "riskLevel": "low"
+        "confidence": 0.9,
+        "target": {
+          "kind": "summary"
+        },
+        "sortOrder": 1,
+        "tag": "export"
       }
+    ],
+
+    "returns": {
+      "action": {
+        "type": "replace",
+        "value": "Sum of a and b"
+      },
+      "confidence": 0.94
+    },
+
+    "reasoning": {
+      "summary": "Function performs addition of two numeric inputs and is exported as utility function.",
+      "paramMapping": "Parameters a and b map directly to arithmetic operands of addition function.",
+      "returnMapping": "Return value represents the sum of the two input numbers."
+    },
+
+    "risk": {
+      "hasHumanConflict": false,
+      "riskLevel": "low"
     }
-  ]
+  },
+  {
+    "identity": {
+      "symbolId": "VERSION",
+      "signatureId": "variable"
+    },
+
+    "summary": {
+      "action": {
+        "type": "replace",
+        "value": "Current version of the library"
+      },
+      "confidence": 0.9
+    },
+
+    "params": [],
+
+    "tags": [
+      {
+        "action": {
+          "type": "replace",
+          "value": "constant"
+        },
+        "confidence": 0.9,
+        "target": {
+          "kind": "summary"
+        },
+        "sortOrder": 0,
+        "tag": "const"
+      },
+      {
+        "action": {
+          "type": "replace",
+          "value": "export"
+        },
+        "confidence": 0.9,
+        "target": {
+          "kind": "summary"
+        },
+        "sortOrder": 1,
+        "tag": "export"
+      }
+    ],
+
+    "returns": {
+      "action": {
+        "type": "preserve"
+      },
+      "confidence": 1.0
+    },
+
+    "reasoning": {
+      "summary": "Constant representing package version string.",
+      "paramMapping": "No parameters exist for constant value.",
+      "returnMapping": "No return value for constant export."
+    },
+
+    "risk": {
+      "hasHumanConflict": false,
+      "riskLevel": "low"
+    }
+  }
 ]

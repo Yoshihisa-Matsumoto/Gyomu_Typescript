@@ -17,7 +17,7 @@ const buildJsDocUpdateContextProgram = (sourceFile: string) => {
   const filePath = path.join(projectRoot, path.join('src', sourceFile))
   return Effect.runSync(
     Effect.gen(function* () {
-      const result = yield* analyzeFile({ project, projectRoot, projectName }, filePath, {
+      const result = yield* analyzeFile(updateFixture, filePath, {
         includeDebugInfo: true,
       })
       const mapComplexity = calculateComplexityMetrics(result)

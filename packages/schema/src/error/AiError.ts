@@ -12,11 +12,24 @@ export type AIPhase =
   | 'tool-call'
   | 'stream'
 
+type RetryStrategy =
+  | {
+      readonly _tag: 'none'
+    }
+  | {
+      readonly _tag: 'exponential'
+    }
+  | {
+      readonly _tag: 'retry-after'
+      readonly delayMs: number
+    }
 export interface AIErrorContext extends AppErrorContext {
   readonly operation: AIOperation
   readonly model: string
   readonly phase: AIPhase
   readonly retryable: boolean
+  readonly retryStrategy: RetryStrategy
+  readonly statusCode?: number
 }
 export class AiError extends withErrorTraits(
   Data.TaggedError('@gyomu/schema/AiError')<AIErrorContext>,
@@ -27,15 +40,15 @@ export class AiError extends withErrorTraits(
   },
 ) {}
 
-export const isRetryableAiError = (e: unknown): boolean => {
-  if (!(e instanceof Error)) return false
+// export const isRetryableAiError = (e: unknown): boolean => {
+//   if (!(e instanceof Error)) return false
 
-  const msg = e.message.toLowerCase()
+//   const msg = e.message.toLowerCase()
 
-  return (
-    msg.includes('timeout') ||
-    msg.includes('rate limit') ||
-    msg.includes('temporarily') ||
-    msg.includes('network')
-  )
-}
+//   return (
+//     msg.includes('timeout') ||
+//     msg.includes('rate limit') ||
+//     msg.includes('temporarily') ||
+//     msg.includes('network')
+//   )
+// }

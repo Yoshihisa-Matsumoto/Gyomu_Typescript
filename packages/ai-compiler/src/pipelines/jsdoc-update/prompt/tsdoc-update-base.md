@@ -164,3 +164,11 @@ Must strictly match JsDocUpdateEntryPlan[].
 - Treat human-edited content as authoritative
 - Avoid rewriting stable sections
 - If uncertain → preserve
+
+## Retry
+
+If retry.missingSymboldentity is present:
+
+- Existing documentation may already be generated.
+- Prioritize generating documentation for the listed SymbolIdentity.
+- Ensure all listed symbol identities appear in the output.

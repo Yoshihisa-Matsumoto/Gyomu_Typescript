@@ -4,9 +4,11 @@ import { AiError, withOptional } from '@gyomu/schema'
 
 import { fromPromise, fromSync } from '@gyomu/schema/effect'
 import { AiModelService } from '../types/AiModelService.js'
+import { withRetry } from '../withRetry.js'
 import { buildToolRuntimeConfig } from './buildToolRuntimeConfig.js'
 import { mapGenerateTextResultToAiGenerateTextResult } from './mapResult.js'
 import { buildPrompt } from './buildPrompt.js'
+import { mapAiSdkError } from './mapAiSdkError.js'
 import type { Effect } from 'effect'
 import type {
   AiGenerateTextResult,
@@ -25,112 +27,107 @@ import type { EffectArrayableSchema } from '@gyomu/schema/entity'
 
 export const makeAiService = (): AiModelService => ({
   generateText: (params: GenerateTextParams): Effect.Effect<AiGenerateTextResult, AiError> => {
-    return fromPromise(AiError, () => ({
-      message: 'fail to generate text',
-      model: params.model.toString(),
-      operation: 'generate' as const,
-      phase: 'request' as const,
-      retryable: false,
-    }))(async () => {
-      console.log('generateText')
-      const result = await generateText({
-        model: params.model,
-        ...buildPrompt(params),
-        ...withOptional({
-          system: params.system,
+    return withRetry(
+      fromPromise(AiError, (e) =>
+        mapAiSdkError(e, { model: params.model.toString(), operation: 'generate' }),
+      )(async () => {
+        const result = await generateText({
+          model: params.model,
+          ...buildPrompt(params),
+          ...withOptional({
+            system: params.system,
 
-          temperature: params.temperature,
-          maxTokens: params.maxTokens,
+            temperature: params.temperature,
+            maxTokens: params.maxTokens,
 
-          abortSignal: params.abortSignal,
-          headers: params.headers,
-        }),
-        ...withOptional(buildToolRuntimeConfig(params)),
-      })
-      return mapGenerateTextResultToAiGenerateTextResult(result)
-    })
+            abortSignal: params.abortSignal,
+            headers: params.headers,
+          }),
+          ...withOptional(buildToolRuntimeConfig(params)),
+        })
+        return mapGenerateTextResultToAiGenerateTextResult(result)
+      }),
+      params.retryOption,
+    )
   },
 
   streamText: (params: StreamTextParams) => {
-    return fromSync(AiError, () => ({
-      message: 'fail to generate stream',
-      model: params.model.toString(),
-      operation: 'stream' as const,
-      phase: 'request' as const,
-      retryable: false,
-    }))(() =>
-      streamText({
-        model: params.model,
-        ...buildPrompt(params),
-        ...withOptional({
-          system: params.system,
+    return withRetry(
+      fromSync(AiError, (e) =>
+        mapAiSdkError(e, { model: params.model.toString(), operation: 'stream' }),
+      )(() =>
+        streamText({
+          model: params.model,
+          ...buildPrompt(params),
+          ...withOptional({
+            system: params.system,
 
-          temperature: params.temperature,
-          maxTokens: params.maxTokens,
+            temperature: params.temperature,
+            maxTokens: params.maxTokens,
 
-          abortSignal: params.abortSignal,
-          headers: params.headers,
+            abortSignal: params.abortSignal,
+            headers: params.headers,
+          }),
+          ...withOptional(buildToolRuntimeConfig(params)),
         }),
-        ...withOptional(buildToolRuntimeConfig(params)),
-      }),
+      ),
+      params.retryOption,
     )
   },
 
   generateObject: <TSchema extends EffectArrayableSchema>(
     params: GenerateObjectParams<TSchema>,
   ) => {
-    return fromPromise(AiError, () => ({
-      message: 'fail to generate structured object',
-      model: params.model.toString(),
-      operation: 'generate' as const,
-      phase: 'decode' as const,
-      retryable: false,
-    }))(async () => {
-      const result = await generateText({
-        model: params.model,
+    return withRetry(
+      fromPromise(AiError, (e) =>
+        mapAiSdkError(e, { model: params.model.toString(), operation: 'generate' }),
+      )(async () => {
+        const result = await generateText({
+          model: params.model,
 
-        output: Output.object({
-          schema: Schema.toStandardSchemaV1(Schema.toStandardJSONSchemaV1(params.schema)),
-        }),
+          output: Output.object({
+            schema: Schema.toStandardSchemaV1(Schema.toStandardJSONSchemaV1(params.schema)),
+          }),
 
-        ...buildPrompt(params),
-        ...withOptional({
-          system: params.system,
+          ...buildPrompt(params),
+          ...withOptional({
+            system: params.system,
 
-          temperature: params.temperature,
+            temperature: params.temperature,
 
-          abortSignal: params.abortSignal,
-          headers: params.headers,
-        }),
+            abortSignal: params.abortSignal,
+            headers: params.headers,
+          }),
 
-        ...withOptional(buildToolRuntimeConfig(params)),
-      })
-      return {
-        object: result.output as Schema.Schema.Type<TSchema>,
-        text: result.text,
-      }
-    })
+          ...withOptional(buildToolRuntimeConfig(params)),
+        })
+        return {
+          object: result.output as Schema.Schema.Type<TSchema>,
+          text: result.text,
+        }
+      }),
+      params.retryOption,
+    )
   },
 
   embed: <TValue>(params: EmbedParams<TValue>) =>
-    fromPromise(AiError, () => ({
-      message: 'fail to generate structured object',
-      model: params.model.toString(),
-      operation: 'embedding' as const,
-      phase: 'request' as const,
-      retryable: false,
-    }))(async () => {
-      const result = await embed({
-        model: params.model,
-        value: params.value as string,
-        ...withOptional({
-          abortSignal: params.abortSignal,
-          headers: params.headers,
-        }),
-      })
+    withRetry(
+      fromPromise(AiError, (e) =>
+        mapAiSdkError(e, { model: params.model.toString(), operation: 'embedding' }),
+      )(async () => {
+        const result = await embed({
+          model: params.model,
+          value: params.value as string,
+          ...withOptional({
+            abortSignal: params.abortSignal,
+            headers: params.headers,
+          }),
+        })
 
-      return result.embedding
-    }),
+        return result.embedding
+      }),
+      params.retryOption,
+    ),
 })
 
 /**

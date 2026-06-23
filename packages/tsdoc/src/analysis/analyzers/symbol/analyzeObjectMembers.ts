@@ -41,6 +41,7 @@ export const analyzeObjectMembers = (
       }
 
       if (Node.isPropertySignature(member)) {
+        const newMemberPath = [...memberPath]
         const memberTypeNode = member.getTypeNode()
         if (Node.isFunctionTypeNode(memberTypeNode)) {
           return [
@@ -52,7 +53,7 @@ export const analyzeObjectMembers = (
               jsDocableNode: member,
               ownerSymbolId,
               ownerSymbolIdentity,
-              memberPath,
+              memberPath: newMemberPath,
               sourceFullText,
               declarationOrder: index,
             }),
@@ -65,7 +66,7 @@ export const analyzeObjectMembers = (
             node: member,
             ownerSymbolId,
             ownerSymbolIdentity,
-            memberPath,
+            memberPath: newMemberPath,
             sourceFullText,
             declarationOrder: index,
           }),

@@ -30,7 +30,7 @@ export const preparePropertyAnalysis = (
   memberPath: MemberIdentityMemberPath,
   propertyName: string,
   node: PropertySignature | PropertyDeclaration,
-  jsDocableNode: JSDocableNode,
+  jsDocableNode: JSDocableNode & Node,
 ): {
   id: SymbolId
   identity: SymbolIdentity
@@ -72,7 +72,7 @@ export const prepareMethodAnalysis = (
     | MethodDeclaration
     | ConstructorDeclaration
     | GetAccessorDeclaration,
-  jsDocableNode: JSDocableNode,
+  jsDocableNode: JSDocableNode & Node,
 ): {
   id: SymbolId
   identity: SymbolIdentity
@@ -120,7 +120,7 @@ const prepareMemberAnalysis = (args: {
   id: SymbolId
   identity: SymbolIdentity
   node: Node
-  jsDocableNode: JSDocableNode
+  jsDocableNode: JSDocableNode & Node
 }): {
   id: SymbolId
   identity: SymbolIdentity
@@ -141,10 +141,10 @@ const prepareMemberAnalysis = (args: {
     jsDoc: extractedJsDoc?.analysis,
     parsedJsDoc: extractedJsDoc?.parsed,
     location: {
-      startLine: node.getStartLineNumber(),
-      endLine: node.getEndLineNumber(),
+      startLine: jsDocableNode.getStartLineNumber(),
+      endLine: jsDocableNode.getEndLineNumber(),
     },
-    startOffset: node.getStart(),
+    startOffset: jsDocableNode.getStart(),
     snippet: node.getText(),
   }
 }

@@ -1,3 +1,6 @@
 export { JsDocAnalysis } from './JsDocAnalysis.js'
-export * from './ParsedJsDoc.js'
+export { ParsedJsDoc } from './ParsedJsDoc.js'
 export { RawJsDoc } from './RawJsDoc.js'
+export { HumanEditContext, HumanEditSignal } from './HumanEditSignal.js'
+export { ParsedTag, JsDocReturns, JsDocParam, JsDocThrows } from './JsDocParam.js'
+export { ProtectedRegion, GeneratorMarker } from './ProtectedRegion.js'

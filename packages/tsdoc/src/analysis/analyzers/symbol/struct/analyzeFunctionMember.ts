@@ -16,6 +16,7 @@ import type {
   JSDocableNode,
   MethodDeclaration,
   MethodSignature,
+  Node,
   PropertySignature,
   SetAccessorDeclaration,
 } from 'ts-morph'
@@ -104,7 +105,7 @@ export const analyzeFunctionMember = (
     ownerSymbolIdentity: SymbolIdentity
     memberPath: MemberIdentityMemberPath
     name: string
-    jsDocableNode: JSDocableNode | undefined
+    jsDocableNode: (JSDocableNode & Node) | undefined
     sourceFullText: string
     declarationOrder: number
   },
@@ -144,7 +145,7 @@ export const analyzeFunctionMemberInternal = (
     ownerSymbolIdentity: SymbolIdentity
     memberPath: MemberIdentityMemberPath
     name: string
-    jsDocableNode: JSDocableNode | undefined
+    jsDocableNode: (JSDocableNode & Node) | undefined
     sourceFullText: string
     declarationOrder: number
   },
@@ -210,7 +211,11 @@ export const analyzeFunctionMemberInternal = (
     registerSymbolSymbolAnalysis(
       metadata,
       method,
-      computeIndent(args.sourceFullText, args.node.getStart(), args.node.getStartLinePos()),
+      computeIndent(
+        args.sourceFullText,
+        (args.jsDocableNode ?? args.node).getStart(),
+        (args.jsDocableNode ?? args.node).getStartLinePos(),
+      ),
     )
     return method
   } else {

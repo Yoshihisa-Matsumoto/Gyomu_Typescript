@@ -52,7 +52,7 @@ export const buildContextEntry = (
       }
       return {
         target: member.identity,
-        kind: member.kind,
+        kind: member.documentable ? member.kind : 'parameter',
         name: member.name,
         effectSignals: member.type?.effect
           ? {

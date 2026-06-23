@@ -1,96 +1,94 @@
 [
-  [
-    {
-      "identity": {
-        "symbolId": "ApiResponse",
-        "signatureId": "interface"
-      },
-      "summary": {
-        "action": {
-          "type": "replace",
-          "value": "Represents an API response."
-        },
-        "confidence": 0.8
-      },
-      "params": [],
-      "tags": [],
-      "returns": {
-        "action": {
-          "type": "preserve"
-        },
-        "confidence": 1.0
-      },
-      "reasoning": {
-        "summary": "The interface lacks documentation.",
-        "paramMapping": "No parameters.",
-        "returnMapping": "Not applicable."
-      },
-      "risk": {
-        "hasHumanConflict": false,
-        "riskLevel": "low"
-      }
+  {
+    "identity": {
+      "symbolId": "ApiResponse",
+      "signatureId": "interface"
     },
-
-    {
-      "identity": {
-        "symbolId": "ApiResponse::interface::profile::property",
-        "signatureId": "property"
+    "summary": {
+      "action": {
+        "type": "replace",
+        "value": "Represents an API response."
       },
-      "summary": {
-        "action": {
-          "type": "replace",
-          "value": "Profile information."
-        },
-        "confidence": 0.8
-      },
-      "params": [],
-      "tags": [],
-      "returns": {
-        "action": {
-          "type": "preserve"
-        },
-        "confidence": 1.0
-      },
-      "reasoning": {
-        "summary": "Property lacks documentation.",
-        "paramMapping": "No parameters.",
-        "returnMapping": "Not applicable."
-      },
-      "risk": {
-        "hasHumanConflict": false,
-        "riskLevel": "low"
-      }
+      "confidence": 0.8
     },
-
-    {
-      "identity": {
-        "symbolId": "ApiResponse::interface::profile.displayName::property",
-        "signatureId": "property"
+    "params": [],
+    "tags": [],
+    "returns": {
+      "action": {
+        "type": "preserve"
       },
-      "summary": {
-        "action": {
-          "type": "replace",
-          "value": "Display name."
-        },
-        "confidence": 0.8
-      },
-      "params": [],
-      "tags": [],
-      "returns": {
-        "action": {
-          "type": "preserve"
-        },
-        "confidence": 1.0
-      },
-      "reasoning": {
-        "summary": "Property lacks documentation.",
-        "paramMapping": "No parameters.",
-        "returnMapping": "Not applicable."
-      },
-      "risk": {
-        "hasHumanConflict": false,
-        "riskLevel": "low"
-      }
+      "confidence": 1.0
+    },
+    "reasoning": {
+      "summary": "The interface lacks documentation.",
+      "paramMapping": "No parameters.",
+      "returnMapping": "Not applicable."
+    },
+    "risk": {
+      "hasHumanConflict": false,
+      "riskLevel": "low"
     }
-  ]
+  },
+
+  {
+    "identity": {
+      "symbolId": "ApiResponse::interface::profile::property",
+      "signatureId": "property"
+    },
+    "summary": {
+      "action": {
+        "type": "replace",
+        "value": "Profile information."
+      },
+      "confidence": 0.8
+    },
+    "params": [],
+    "tags": [],
+    "returns": {
+      "action": {
+        "type": "preserve"
+      },
+      "confidence": 1.0
+    },
+    "reasoning": {
+      "summary": "Property lacks documentation.",
+      "paramMapping": "No parameters.",
+      "returnMapping": "Not applicable."
+    },
+    "risk": {
+      "hasHumanConflict": false,
+      "riskLevel": "low"
+    }
+  },
+
+  {
+    "identity": {
+      "symbolId": "ApiResponse::interface::profile.displayName::property",
+      "signatureId": "property"
+    },
+    "summary": {
+      "action": {
+        "type": "replace",
+        "value": "Display name."
+      },
+      "confidence": 0.8
+    },
+    "params": [],
+    "tags": [],
+    "returns": {
+      "action": {
+        "type": "preserve"
+      },
+      "confidence": 1.0
+    },
+    "reasoning": {
+      "summary": "Property lacks documentation.",
+      "paramMapping": "No parameters.",
+      "returnMapping": "Not applicable."
+    },
+    "risk": {
+      "hasHumanConflict": false,
+      "riskLevel": "low"
+    }
+  }
 ]

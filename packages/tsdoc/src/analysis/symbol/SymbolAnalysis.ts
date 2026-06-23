@@ -107,4 +107,12 @@ export interface SymbolIDComposite {
 }
 
 export const toIdentityKey = (identity: SymbolIdentity): string =>
-  `${identity.symbolId}::${identity.signatureId}`
+  `${identity.symbolId}:%%:${identity.signatureId}`
+
+export const toSymbolIdentity = (identityKey: string): SymbolIdentity => {
+  const index = identityKey.lastIndexOf(':%%:')
+  return {
+    symbolId: identityKey.substring(0, index),
+    signatureId: identityKey.substring(index + 4),
+  }
+}

@@ -1,4 +1,4 @@
-import { join } from 'node:path'
+import { join, normalize } from 'node:path'
 import { Effect } from 'effect'
 import { readStringFromFile } from '@gyomu/infra/fs'
 import { fromSync } from '@gyomu/schema/effect'
@@ -43,13 +43,14 @@ export const initializeProjectContext = (args: {
         })
       return projectNameInternal
     })
-
+    const project = new Project({
+      tsConfigFilePath: tsConfig,
+    })
     return {
-      project: new Project({
-        tsConfigFilePath: tsConfig,
-      }),
+      project,
       projectName,
       projectRoot: projectRootAbsolutePath,
+      includedFiles: new Set(project.getSourceFiles().map((file) => normalize(file.getFilePath()))),
     }
   })
 }

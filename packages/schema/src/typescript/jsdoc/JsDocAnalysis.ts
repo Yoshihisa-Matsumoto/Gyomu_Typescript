@@ -1,4 +1,4 @@
-import type { GeneratorMarker } from './ParsedJsDoc.js'
+import type { GeneratorMarker } from './ProtectedRegion.js'
 
 /**
  * Existing JSDoc/TSDoc quality analysis.

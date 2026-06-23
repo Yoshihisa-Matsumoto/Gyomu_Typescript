@@ -1,3 +1,4 @@
+import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
 import type { TsDocSymbolContext } from './TsDocSymbolContext.js'
 
 export interface TsDocFileContext {
@@ -10,4 +11,9 @@ export interface TsDocFileContext {
   }
 
   symbols: Array<TsDocSymbolContext>
+
+  retry?: {
+    attempt: number
+    missingSymboldentity: Array<SymbolIdentity>
+  }
 }

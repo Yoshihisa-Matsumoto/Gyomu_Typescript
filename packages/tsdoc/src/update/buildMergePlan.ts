@@ -5,7 +5,7 @@ import { writeStringToFile } from '@gyomu/infra/fs'
 import { calculateComplexityMetrics } from '../evaluation/complexity/calculateComplexityMetrics.js'
 import { buildJsDocUpdateContext } from './internal/buildJsDocUpdateContext.js'
 import { UpdateError } from './error/UpdateError.js'
-import { buildJsDocUpdatePlan } from './internal/buildJsDocUpdatePlan.js'
+import { buildJsDocUpdatePlanWithRetry } from './internal/buildJsDocUpdatePlanWithRetry.js'
 import { createMergePlan } from './internal/createMargePlan.js'
 import type { FileSystem } from 'effect'
 import type { FileAnalysisResult } from '../analysis/file/FileAnalysisResult.js'
@@ -44,7 +44,7 @@ export const buildMergePlan = (
     if (option?.action?.NoLLMRequest) {
       return []
     }
-    const plans = yield* buildJsDocUpdatePlan(contexts, option)
+    const plans = yield* buildJsDocUpdatePlanWithRetry(contexts, fileResult, option)
     const mergePlans = yield* createMergePlan(fileResult.analysis.path, plans)
 
     if (option?.debugInfo?.MergePlan) {

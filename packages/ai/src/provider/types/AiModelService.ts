@@ -1,4 +1,5 @@
 import { Context } from 'effect'
+import type { RetryOption } from './RetryObserver.js'
 import type { Effect, Schema } from 'effect'
 import type { EmbeddingModel, LanguageModel, StreamTextResult } from 'ai'
 import type { AiError } from '@gyomu/schema'
@@ -60,23 +61,27 @@ type BaseAiParams = {
 type TextGenerationParams = BaseAiParams & PromptInput & ToolConfig
 export type GenerateTextParams = TextGenerationParams & {
   readonly maxTokens?: number
+  readonly retryOption?: RetryOption
 }
 
 export type StreamTextParams = TextGenerationParams & {
   readonly maxTokens?: number
+  readonly retryOption?: RetryOption
 }
 
 export type GenerateObjectParams<TSchema extends EffectArrayableSchema> = BaseAiParams &
   PromptInput &
   ToolConfig & {
     readonly schema: TSchema
+    readonly retryOption?: RetryOption
   }
 
-export interface EmbedParams<TValue> {
+export type EmbedParams<TValue> = {
   readonly model: EmbeddingModel
   readonly value: TValue
   readonly abortSignal?: AbortSignal
   readonly headers?: Record<string, string>
+  readonly retryOption?: RetryOption
 }
 
 export interface AiObjectResult<T> {

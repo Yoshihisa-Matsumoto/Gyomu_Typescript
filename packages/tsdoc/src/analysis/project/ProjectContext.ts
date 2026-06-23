@@ -15,4 +15,6 @@ export interface ProjectContext {
    * Project name
    */
   projectName: string
+
+  includedFiles: Set<string>
 }

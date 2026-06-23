@@ -27,9 +27,14 @@ const processTsDocUpdateProgram = async (projectName: string, sourceFilename: st
       repoRoot: projects.repositoryRoot,
       projectRelativePath: targetProject.rootPath,
     })
+    console.dir(projectContext.includedFiles, { depth: null })
     const filePath = join(projectContext.projectRoot, sourceFilename)
     const fileResult = yield* analyzeFile(projectContext, filePath)
     yield* writeStringToFile('./log/fileAnalysis.txt', JSON.stringify(fileResult.analysis, null, 2))
+    // for (const key of fileResult.metadata.symbols.keys()) {
+    //   const target = fileResult.metadata.symbols.get(key)
+    //   console.log({ key, indent: target?.indent })
+    // }
     yield* processTsDocUpdate(projectContext, fileResult, {
       debugInfo: {
         JsDocUpdateContext: true,
@@ -46,6 +51,9 @@ const processTsDocUpdateProgram = async (projectName: string, sourceFilename: st
   return await runQAWithEnvOrThrow(program, layer)
 }
 
-await processTsDocUpdateProgram(`@gyomu/schema`, `src/core/result.ts`)
+await processTsDocUpdateProgram(`@gyomu/schema`, `src/data/crud/CrudRepository.ts`)
+// await processTsDocUpdateProgram(`@gyomu/schema`, `src/core/result.ts`)
 // `src/conversation/index.ts`
 // `src/core/result.ts`
+// `src/effect/exit.ts`
+// `src/data/crud/CrudRepository.ts`
