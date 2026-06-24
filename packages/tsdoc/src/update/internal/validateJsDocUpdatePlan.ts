@@ -44,7 +44,7 @@ const getTsDocSingatureFromJsDocUpdateEntryPlan = (plans: JsDocUpdatePlan) => {
   }
   return keySet
 }
-const getTsDocSignatureFromContext = (context: TsDocFileContext) => {
+export const getTsDocSignatureFromContext = (context: TsDocFileContext) => {
   const keySet = new Set<string>()
   for (const symbol of context.symbols) {
     const key = toIdentityKey(symbol.target)
@@ -60,6 +60,7 @@ const getTsDocSignatureFromContext = (context: TsDocFileContext) => {
 const checkContextEntries = (entires: Array<ContextEntry>, keySet: Set<string>, depth: number) => {
   for (const member of entires) {
     if (member.kind == 'method' || member.kind == 'property') {
+      if (member.documentable == false) continue
       const key = toIdentityKey(member.target)
       keySet.add(key)
 

@@ -51,9 +51,10 @@ const processTsDocUpdateProgram = async (projectName: string, sourceFilename: st
   return await runQAWithEnvOrThrow(program, layer)
 }
 
-await processTsDocUpdateProgram(`@gyomu/schema`, `src/data/crud/CrudRepository.ts`)
+await processTsDocUpdateProgram(`@gyomu/schema`, `src/data/crud/types.ts`)
 // await processTsDocUpdateProgram(`@gyomu/schema`, `src/core/result.ts`)
 // `src/conversation/index.ts`
 // `src/core/result.ts`
 // `src/effect/exit.ts`
 // `src/data/crud/CrudRepository.ts`
+// `src/data/crud/type.ts`

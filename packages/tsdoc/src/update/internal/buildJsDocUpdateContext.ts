@@ -64,7 +64,7 @@ export const buildJsDocUpdateContext = (
     // console.dir(symbol.members, { depth: null })
     const children = symbol.members
       // .filter((m) => m.documentable)
-      .map((m) => buildContextEntry(fileResult, m))
+      .map((m) => buildContextEntry(fileResult, m, symbol))
 
     let effectSignals: Pick<EffectSignals, 'success' | 'error' | 'requirements'> | undefined =
       undefined

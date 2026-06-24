@@ -1,7 +1,9 @@
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { Config, Effect, Layer } from 'effect'
-import { ConfigLayer, MainLayer, PlatformLayer, makeRunner } from '@gyomu/infra'
+import { ConfigLayer, MainLayer, PlatformLayer } from '@gyomu/infra'
+
+import { makeRunner } from '@gyomu/schema/effect'
 import { logger } from '@gyomu/schema'
 import { loadStaticConfig } from '../loadStaticConfig.js'
 import { ConfigRootDirectory } from '../../services/ConfigRootDirectory.js'

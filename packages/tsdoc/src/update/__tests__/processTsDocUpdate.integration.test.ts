@@ -2,8 +2,9 @@ import path from 'node:path'
 import fs from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { Effect, Layer } from 'effect'
-import { ConfigLayer, MainLayer, PlatformLayer, makeRunner } from '@gyomu/infra'
+import { ConfigLayer, MainLayer, PlatformLayer } from '@gyomu/infra'
 
+import { makeRunner } from '@gyomu/schema/effect'
 import 'dotenv/config'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 

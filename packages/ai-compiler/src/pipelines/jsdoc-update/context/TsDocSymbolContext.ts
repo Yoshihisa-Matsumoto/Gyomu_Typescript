@@ -74,10 +74,26 @@ export interface TsDocSymbolContext {
   }
 }
 
+export type NonDocumentableReason =
+  | 'inline-object-member'
+  | 'generated'
+  | 'external'
+  | 'non-documentable-member'
+
+export type DocumentableInfo =
+  | {
+      documentable?: true
+      reason?: never
+    }
+  | {
+      documentable: false
+      reason: NonDocumentableReason
+    }
+
 /**
  * Represents an entry in the JSDoc update context, defining a target symbol and its associated metadata.
  */
-export interface ContextEntry {
+export type ContextEntry = {
   /**
    * The target symbol identity to be documented.
    */
@@ -112,7 +128,7 @@ export interface ContextEntry {
    * Child entries nested under this symbol.
    */
   children?: Array<ContextEntry>
-}
+} & DocumentableInfo
 
 /**
  * Represents the existing JSDoc documentation structure for a symbol.

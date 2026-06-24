@@ -1,7 +1,8 @@
 import path from 'node:path'
 import { Effect, Layer } from 'effect'
-import { ConfigLayer, MainLayer, PlatformLayer, makeRunner } from '@gyomu/infra'
+import { ConfigLayer, MainLayer, PlatformLayer } from '@gyomu/infra'
 import { VercelAiModelServiceLive } from '@gyomu/ai/provider/vercel'
+import { makeRunner } from '@gyomu/schema/effect'
 
 import 'dotenv/config'
 import { describe, expect, it } from 'vitest'

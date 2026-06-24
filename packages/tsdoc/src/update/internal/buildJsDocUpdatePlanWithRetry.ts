@@ -2,7 +2,8 @@ import { executeJsDocUpdatePlan } from '@gyomu/ai-compiler/jsdoc-update'
 import { Effect } from 'effect'
 import { writeStringToFile } from '@gyomu/infra/fs'
 import { UpdateError } from '../error/UpdateError.js'
-import { validateJsDocUpdatePlan } from './validateJsDocUpdatePlan.js'
+import { toIdentityKey } from '../../analysis/symbol/SymbolAnalysis.js'
+import { getTsDocSignatureFromContext, validateJsDocUpdatePlan } from './validateJsDocUpdatePlan.js'
 import type { JsDocUpdatePlan, TsDocFileContext } from '@gyomu/ai-compiler/jsdoc-update'
 import type { UpdateOptions } from '../UpdateOptions.js'
 import type { FileAnalysisResult } from '../../analysis/file/FileAnalysisResult.js'
@@ -62,7 +63,11 @@ const overrideJsDocUpdatePlan = (
   plan: JsDocUpdatePlan,
   originalPlan: JsDocUpdatePlan | undefined,
 ): JsDocUpdatePlan => {
-  if (!originalPlan || !context.retry) return [...plan]
+  if (!originalPlan || !context.retry) {
+    const contextKeys = getTsDocSignatureFromContext(context)
+    const filteredPlan = plan.filter((p) => contextKeys.has(toIdentityKey(p.identity)))
+    return [...filteredPlan]
+  }
 
   const overridePlan = [...originalPlan]
   for (const identity of context.retry.missingSymboldentity) {

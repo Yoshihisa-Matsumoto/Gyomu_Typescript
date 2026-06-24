@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import { Layer } from 'effect'
-import { ConfigLayer, MainLayer, PlatformLayer, makeRunner } from '@gyomu/infra'
+import { ConfigLayer, MainLayer, PlatformLayer } from '@gyomu/infra'
+import { makeRunner } from '@gyomu/schema/effect'
 import { VercelAiModelServiceLive } from '@gyomu/ai/provider/vercel'
 import { executeJsDocUpdatePlan } from '../executor/executeJsDocUpdatePlan.js'
 import 'dotenv/config'
