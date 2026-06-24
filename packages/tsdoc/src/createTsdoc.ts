@@ -40,21 +40,39 @@ const processTsDocUpdateProgram = async (projectName: string, sourceFilename: st
         JsDocUpdateContext: true,
         JsDocUpdatePlan: true,
         DumpToFile: true,
+        MergePlan: true,
+        FileUpdatePlan: true,
+        RenderedSymbolJsDoc: true,
+        UpdatedSymbolJsDoc: true,
       },
       action: {
-        // NoLLMRequest: true,
+        NoLLMRequest: true,
         // NoUpdateTSDoc: true,
         WriteToTempFolder: true,
+      },
+      retryOption: {
+        observer: {
+          onRetry: (params) => {
+            if (params.attempt <= 3) {
+              console.log(`attemt:${params.attempt} DelayMs: ${params.delayMs}`)
+            } else {
+              console.log(`attemt:${params.attempt} DelayMs: ${params.delayMs}`)
+              console.log(JSON.stringify(params.error, null, 2))
+            }
+          },
+        },
       },
     })
   })
   return await runQAWithEnvOrThrow(program, layer)
 }
 
-await processTsDocUpdateProgram(`@gyomu/schema`, `src/data/crud/types.ts`)
+// await processTsDocUpdateProgram(`@gyomu/schema`, `src/data/crud/types.ts`)
 // await processTsDocUpdateProgram(`@gyomu/schema`, `src/core/result.ts`)
 // `src/conversation/index.ts`
 // `src/core/result.ts`
 // `src/effect/exit.ts`
 // `src/data/crud/CrudRepository.ts`
 // `src/data/crud/type.ts`
+
+await processTsDocUpdateProgram(`@gyomu/tsdoc`, `src/analysis/symbol/SymbolAnalysis.ts`)

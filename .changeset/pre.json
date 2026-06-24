@@ -12,7 +12,8 @@
     "@gyomu/approval-core": "0.2.4-beta.0",
     "@gyomu/config": "0.2.4-beta.0",
     "@gyomu/agent": "0.2.4-beta.3",
-    "@gyomu/tsdoc": "0.2.4-beta.4"
+    "@gyomu/tsdoc": "0.2.4-beta.4",
+    "@gyomu/ai-compiler": "0.2.4-beta.5"
   },
   "changesets": [
     "big-dodos-relate",
@@ -21,6 +22,7 @@
     "dry-needles-jam",
     "gentle-fans-rhyme",
     "shiny-balloons-walk",
-    "sparkly-spoons-argue"
+    "sparkly-spoons-argue",
+    "spicy-banks-return"
   ]
 }

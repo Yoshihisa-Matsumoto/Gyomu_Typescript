@@ -1,6 +1,7 @@
 import { executeJsDocUpdatePlan } from '@gyomu/ai-compiler/jsdoc-update'
 import { Effect } from 'effect'
 import { writeStringToFile } from '@gyomu/infra/fs'
+import { equalSymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
 import { UpdateError } from '../error/UpdateError.js'
 import { toIdentityKey } from '../../analysis/symbol/SymbolAnalysis.js'
 import { getTsDocSignatureFromContext, validateJsDocUpdatePlan } from './validateJsDocUpdatePlan.js'
@@ -18,7 +19,7 @@ export const buildJsDocUpdatePlanWithRetry = (
     let originalPlan: JsDocUpdatePlan | undefined
 
     for (let attempt = 0; attempt < 5; attempt++) {
-      const plan = yield* executeJsDocUpdatePlan(currentContext)
+      const plan = yield* executeJsDocUpdatePlan(currentContext, option?.retryOption)
       if (option?.debugInfo?.JsDocUpdatePlan) {
         if (option.debugInfo.DumpToFile)
           yield* writeStringToFile('./log/JsDocUpdatePlan.txt', JSON.stringify(plan, null, 2), {
@@ -36,7 +37,7 @@ export const buildJsDocUpdatePlanWithRetry = (
       const validation = validateJsDocUpdatePlan(currentContext, overridePlan)
       if (validation.isValid) return overridePlan
 
-      console.log(`Current attempt : ${attempt + 1}`)
+      // console.log(`Current attempt : ${attempt + 1}`)
       originalPlan = overridePlan
 
       currentContext = {
@@ -71,10 +72,7 @@ const overrideJsDocUpdatePlan = (
 
   const overridePlan = [...originalPlan]
   for (const identity of context.retry.missingSymboldentity) {
-    const targetPlan = plan.find(
-      (p) =>
-        p.identity.signatureId == identity.signatureId && p.identity.symbolId == identity.symbolId,
-    )
+    const targetPlan = plan.find((p) => equalSymbolIdentity(p.identity, identity))
     if (targetPlan) overridePlan.push(targetPlan)
   }
 

@@ -7,10 +7,11 @@ export interface HumanEditSignal {
     | 'custom-example'
 
   score: number
-  details?: {
-    tagName?: string
+  details: {
+    // tagName?: string
     pattern?: string
     source?: string
+    targetSection: string
   }
 }
 

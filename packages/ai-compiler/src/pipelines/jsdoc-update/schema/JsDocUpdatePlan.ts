@@ -37,8 +37,19 @@ export const SummaryPlan = Schema.Struct({
     'Update plan for the summary section. Prefer preserve. Use replace only when the summary is missing or clearly incorrect.',
 })
 
+const TagKind = Schema.Literals([
+  'summary',
+  'param',
+  'return',
+  'template',
+  'throws',
+  'remarks',
+  'other',
+])
+export const isJsDocTargetKind = (value: string) => Schema.is(TagKind)(value)
+
 export const JsDocTargetSchema = Schema.Struct({
-  kind: Schema.Literals(['summary', 'param', 'return', 'template', 'throws']),
+  kind: TagKind,
 
   // param/tagの追加識別子
   key: Schema.NullOr(Schema.String),

@@ -1,3 +1,5 @@
+import type { RetryOption } from '@gyomu/ai'
+
 export interface UpdateOptions {
   debugInfo:
     | {
@@ -18,4 +20,5 @@ export interface UpdateOptions {
         WriteToTempFolder?: boolean
       }
     | undefined
+  retryOption: RetryOption | undefined
 }

@@ -31,7 +31,7 @@ describe('detectNonGeneratedTag', () => {
         type: 'non-generated-tag',
         score: 0.4,
         details: {
-          tagName: 'customTag',
+          targetSection: 'tag:customTag',
         },
       },
     ])
@@ -49,7 +49,7 @@ describe('detectNonGeneratedTag', () => {
         type: 'non-generated-tag',
         score: 0.4,
         details: {
-          tagName: 'see',
+          targetSection: 'tag:see',
         },
       },
     ])
@@ -67,7 +67,7 @@ describe('detectNonGeneratedTag', () => {
         type: 'non-generated-tag',
         score: 0.4,
         details: {
-          tagName: '',
+          targetSection: 'tag:',
         },
       },
     ])
@@ -85,7 +85,7 @@ describe('detectNonGeneratedTag', () => {
         type: 'non-generated-tag',
         score: 0.4,
         details: {
-          tagName: 'Param',
+          targetSection: 'tag:Param',
         },
       },
     ])

@@ -19,6 +19,7 @@ describe('detectComplexMarkdown', () => {
         details: {
           pattern: 'start with #',
           source: 'summary',
+          targetSection: 'summary',
         },
       },
     ])
@@ -32,6 +33,7 @@ describe('detectComplexMarkdown', () => {
         details: {
           pattern: 'start with #',
           source: 'summary',
+          targetSection: 'summary',
         },
       },
     ])
@@ -45,6 +47,7 @@ describe('detectComplexMarkdown', () => {
         details: {
           pattern: '```',
           source: 'summary',
+          targetSection: 'summary',
         },
       },
     ])
@@ -69,6 +72,7 @@ const x = 1
         details: {
           pattern: 'start with #',
           source: 'summary',
+          targetSection: 'summary',
         },
       },
       {
@@ -77,6 +81,7 @@ const x = 1
         details: {
           pattern: '```',
           source: 'summary',
+          targetSection: 'summary',
         },
       },
     ])
@@ -107,7 +112,7 @@ const x = 1
         details: {
           pattern: 'start with #',
           source: 'tag',
-          tagName: 'remarks',
+          targetSection: 'tag:remarks',
         },
       },
     ])

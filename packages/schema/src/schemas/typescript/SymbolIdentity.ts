@@ -11,3 +11,6 @@ export const SymbolIdentity = Schema.Struct({
 })
 
 export type SymbolIdentity = Schema.Schema.Type<typeof SymbolIdentity>
+
+export const equalSymbolIdentity = (a: SymbolIdentity, b: SymbolIdentity): boolean =>
+  a.symbolId === b.symbolId && a.signatureId === b.signatureId

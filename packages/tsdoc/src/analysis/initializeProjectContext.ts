@@ -50,7 +50,12 @@ export const initializeProjectContext = (args: {
       project,
       projectName,
       projectRoot: projectRootAbsolutePath,
-      includedFiles: new Set(project.getSourceFiles().map((file) => normalize(file.getFilePath()))),
+      includedFiles: new Set(
+        project
+          .getSourceFiles()
+          .map((file) => normalize(file.getFilePath()))
+          .filter((filePath) => filePath.startsWith(projectRootAbsolutePath)),
+      ),
     }
   })
 }

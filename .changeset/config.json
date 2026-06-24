@@ -12,7 +12,9 @@
       "@gyomu/ui",
       "@gyomu/ui-core",
       "@gyomu/approval-core",
-      "@gyomu/agent"
+      "@gyomu/agent",
+      "@gyomu/tsdoc",
+      "@gyomu/ai-compiler"
     ]
   ],
   "linked": [],

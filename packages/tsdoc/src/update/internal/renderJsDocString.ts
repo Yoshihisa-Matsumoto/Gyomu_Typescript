@@ -21,8 +21,10 @@ export const computeLine = (line: JsDocLine, indent: string): string => {
     case 'blank':
       return indent + ' *'
     case 'text':
-      return indent + ` * ${line.text}`
     case 'tag':
-      return indent + ` * ${line.text}`
+      return line.text
+        .split('\n')
+        .map((text) => indent + ` * ${text}`)
+        .join('\n')
   }
 }

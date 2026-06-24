@@ -2,6 +2,7 @@ import type { JsDocParam, JsDocReturns, JsDocThrows, ParsedTag } from './JsDocPa
 import type { GeneratorMarker, ProtectedRegion } from './ProtectedRegion.js'
 import type { HumanEditSignal } from './HumanEditSignal.js'
 import type { RawJsDoc } from './RawJsDoc.js'
+import type { ProtectedSection } from './ProtectedSection.js'
 
 export interface ParsedJsDoc {
   summary?: string
@@ -22,6 +23,7 @@ export interface ParsedJsDoc {
 
   tags: Array<ParsedTag>
 
+  protectedSection: Array<ProtectedSection>
   protectedRegions: Array<ProtectedRegion>
 
   generator?: GeneratorMarker

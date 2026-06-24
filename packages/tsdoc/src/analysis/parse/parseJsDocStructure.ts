@@ -4,6 +4,7 @@ import { normalizeJsDocText } from '../normalize/normalizeJsDocText.js'
 import { analyzeHumanEditSignals } from '../analyzers/analyzeHumanEditSignals.js'
 import { parseProtectedRegions } from './parseProtectedRegions.js'
 import { parseGeneratedMarker } from './parseGeneratedMarker.js'
+import { computeProtectedSections } from './computeProtectedSections.js'
 import type {
   JSDoc,
   JSDocParameterTag,
@@ -60,6 +61,7 @@ export const parseJsDocStructure = (raw: RawJsDoc, doc: JSDoc): ParsedJsDoc => {
     templates: [],
 
     tags: [],
+    protectedSection: [],
     protectedRegions: [],
     humanEditSignals: [],
 
@@ -109,11 +111,12 @@ export const parseJsDocStructure = (raw: RawJsDoc, doc: JSDoc): ParsedJsDoc => {
   }
 
   parsed.protectedRegions = parseProtectedRegions(parsed.raw.rawText)
-
   parsed.humanEditSignals = analyzeHumanEditSignals(parsed)
 
   const generator = parseGeneratedMarker(parsed.raw.rawText)
   if (generator) parsed.generator = generator
+
+  parsed.protectedSection = computeProtectedSections(parsed.humanEditSignals)
 
   return parsed
 }

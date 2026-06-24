@@ -137,7 +137,7 @@ describe('buildMergePlan', () => {
 
     expect(mockBuildJsDocUpdatePlan).toHaveBeenCalledTimes(1)
 
-    expect(mockCreateMergePlan).toHaveBeenCalledWith(fileResult.analysis.path, [plan1, plan2])
+    expect(mockCreateMergePlan).toHaveBeenCalledWith(fileResult, [plan1, plan2])
 
     // expect(mockCreateMergePlan).toHaveBeenCalledWith(fileResult.analysis.path, context2, plan2)
   })

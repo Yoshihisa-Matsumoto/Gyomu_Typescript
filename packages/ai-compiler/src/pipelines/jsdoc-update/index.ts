@@ -1,7 +1,6 @@
 export { TsDocFileContext } from './context/TsDocFileContext.js'
 export {
   TsDocSymbolContext,
-  ProtectedSection,
   ExistingJsDoc,
   ContextEntry,
   SchemaStructureNode,
@@ -17,4 +16,5 @@ export {
   JsDocTarget,
   ParamActionValue,
   ParamMergeAction,
+  isJsDocTargetKind,
 } from './schema/JsDocUpdatePlan.js'

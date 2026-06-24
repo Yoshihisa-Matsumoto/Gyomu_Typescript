@@ -45,7 +45,7 @@ export const buildMergePlan = (
       return []
     }
     const plans = yield* buildJsDocUpdatePlanWithRetry(contexts, fileResult, option)
-    const mergePlans = yield* createMergePlan(fileResult.analysis.path, plans)
+    const mergePlans = yield* createMergePlan(fileResult, plans)
 
     if (option?.debugInfo?.MergePlan) {
       if (option.debugInfo.DumpToFile)

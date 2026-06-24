@@ -19,6 +19,7 @@ describe('detectManualFormatting', () => {
         details: {
           pattern: 'aligned space',
           source: 'summary',
+          targetSection: 'summary',
         },
       },
     ])
@@ -32,6 +33,7 @@ describe('detectManualFormatting', () => {
         details: {
           pattern: 'ascii-art',
           source: 'summary',
+          targetSection: 'summary',
         },
       },
     ])
@@ -45,6 +47,7 @@ describe('detectManualFormatting', () => {
         details: {
           pattern: 'ascii-art',
           source: 'summary',
+          targetSection: 'summary',
         },
       },
     ])
@@ -58,6 +61,7 @@ describe('detectManualFormatting', () => {
         details: {
           pattern: 'indentation',
           source: 'summary',
+          targetSection: 'summary',
         },
       },
     ])
@@ -71,6 +75,7 @@ describe('detectManualFormatting', () => {
         details: {
           pattern: 'decorative separators',
           source: 'summary',
+          targetSection: 'summary',
         },
       },
     ])
@@ -89,7 +94,7 @@ describe('detectManualFormatting', () => {
         details: {
           pattern: 'aligned space',
           source: 'tag',
-          tagName: 'remarks',
+          targetSection: 'tag:remarks',
         },
       },
     ])
@@ -113,6 +118,7 @@ name  value
         details: {
           pattern: 'aligned space',
           source: 'summary',
+          targetSection: 'summary',
         },
       },
       {
@@ -121,6 +127,7 @@ name  value
         details: {
           pattern: 'ascii-art',
           source: 'summary',
+          targetSection: 'summary',
         },
       },
       {
@@ -129,6 +136,7 @@ name  value
         details: {
           pattern: 'indentation',
           source: 'summary',
+          targetSection: 'summary',
         },
       },
       {
@@ -137,6 +145,7 @@ name  value
         details: {
           pattern: 'decorative separators',
           source: 'summary',
+          targetSection: 'summary',
         },
       },
     ])

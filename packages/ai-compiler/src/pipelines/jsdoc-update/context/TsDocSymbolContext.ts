@@ -55,7 +55,7 @@ export interface TsDocSymbolContext {
       role: string
     }>
 
-    protectedRegions: Array<ProtectedSection>
+    // protectedRegions: Array<ProtectedSection>
 
     returnSemantics?: string
 
@@ -182,22 +182,22 @@ export interface SchemaStructureNode {
   children?: Array<SchemaStructureNode>
 }
 
-/**
- * Represents a section of code or documentation that should be protected from automatic modification.
- */
-export interface ProtectedSection {
-  /**
-   * The type of section being protected.
-   */
-  kind: 'summary' | 'param' | 'returns' | 'tag'
+// /**
+//  * Represents a section of code or documentation that should be protected from automatic modification.
+//  */
+// export interface ProtectedSection {
+//   /**
+//    * The type of section being protected.
+//    */
+//   kind: 'summary' | 'param' | 'returns' | 'tag'
 
-  /**
-   * Optional identifier for the section.
-   */
-  key?: string
+//   /**
+//    * Optional identifier for the section.
+//    */
+//   key?: string
 
-  /**
-   * The reason why the section is protected.
-   */
-  reason: 'preserve-marker' | 'human-edited' | 'custom-content'
-}
+//   /**
+//    * The reason why the section is protected.
+//    */
+//   reason: 'preserve-marker' | 'human-edited' | 'custom-content'
+// }

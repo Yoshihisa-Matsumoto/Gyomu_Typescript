@@ -33,7 +33,11 @@ export const analyzeHumanEditSignals = (parsed: ParsedJsDoc): Array<HumanEditSig
 
   for (const example of parsed.examples) {
     if (example.length > 500)
-      signals.push({ type: 'custom-example', score: 0.8, details: { tagName: 'example' } })
+      signals.push({
+        type: 'custom-example',
+        score: 0.8,
+        details: { targetSection: 'tag:example' },
+      })
   }
 
   return signals

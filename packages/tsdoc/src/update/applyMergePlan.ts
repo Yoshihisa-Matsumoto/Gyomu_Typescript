@@ -44,6 +44,7 @@ export const applyMergePlan = (
       examples: existingJsDoc?.examples ?? [],
       humanEditSignals: existingJsDoc?.humanEditSignals ?? [],
       protectedRegions: existingJsDoc?.protectedRegions ?? [],
+      protectedSection: existingJsDoc?.protectedSection ?? [],
 
       templates: existingJsDoc?.templates ?? [],
       throws: existingJsDoc?.throws ?? [],

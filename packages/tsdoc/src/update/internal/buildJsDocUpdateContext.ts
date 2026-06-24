@@ -122,7 +122,6 @@ export const buildJsDocUpdateContext = (
           }),
 
           paramSemantics: [],
-          protectedRegions: [],
           sideEffects: [],
         }
       }
