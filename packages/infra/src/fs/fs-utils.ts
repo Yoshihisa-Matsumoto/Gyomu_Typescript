@@ -98,6 +98,11 @@ export const writeToFile = (
 ) =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem
+    const dir = dirname(path)
+
+    yield* fs.makeDirectory(dir, {
+      recursive: true,
+    })
     return yield* fs.writeFile(path, data, options).pipe(
       Effect.mapError((e) =>
         wrapIOError(e, () => ({
@@ -119,6 +124,11 @@ export const writeStringToFile = (
 ) =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem
+    const dir = dirname(path)
+
+    yield* fs.makeDirectory(dir, {
+      recursive: true,
+    })
     return yield* fs.writeFileString(path, data, options).pipe(
       Effect.mapError((e) =>
         wrapIOError(e, () => ({

@@ -5,6 +5,7 @@ import { makeRunner } from '@gyomu/schema/effect'
 import {
   analyzeFile,
   analyzeProjectChanges,
+  commitProjectSnapshot,
   initializeProjectContext,
   isTestFile,
   listTypescriptProject,
@@ -16,6 +17,7 @@ import {
   FileSearchServiceLayer,
   createPathMatcher,
   makeDirectory,
+  removePath,
   writeStringToFile,
 } from '@gyomu/infra/fs'
 
@@ -26,7 +28,7 @@ const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(
 const runQAWithEnvOrThrow = makeRunner(VercelAiModelServiceLive)
 export const snapshotCommand = (
   projectName: string,
-  options?: { buildTsDoc?: boolean; filter?: string },
+  options?: { buildTsDoc?: boolean; filter?: string; commit?: boolean },
 ) => {
   return runQAWithEnvOrThrow(
     Effect.gen(function* () {
@@ -37,7 +39,7 @@ export const snapshotCommand = (
         return
       }
 
-      const changeResult = yield* analyzeProjectChanges({
+      let changeResult = yield* analyzeProjectChanges({
         repoRoot: projects.repositoryRoot,
         projectPath: targetProject.rootPath,
       })
@@ -50,41 +52,41 @@ export const snapshotCommand = (
 
       const fileFilter = createPathMatcher(options?.filter)
 
-      if (options?.buildTsDoc) {
-        const projectContext = yield* initializeProjectContext({
-          repoRoot: projects.repositoryRoot,
-          projectRelativePath: targetProject.rootPath,
-        })
-        const projectAbsolutePath = projectContext.projectRoot
-        yield* makeDirectory('./log')
-        for (const fileChange of changeResult.diff) {
-          switch (fileChange.type) {
-            case 'added':
-            case 'updated': {
-              if (!fileFilter.match(fileChange.path)) {
-                console.log(`${fileChange.path} is not the target. skip`)
-                continue
-              }
+      const projectContext = yield* initializeProjectContext({
+        repoRoot: projects.repositoryRoot,
+        projectRelativePath: targetProject.rootPath,
+      })
+      const projectAbsolutePath = projectContext.projectRoot
+      yield* makeDirectory('./log')
+      for (const fileChange of changeResult.diff) {
+        switch (fileChange.type) {
+          case 'added':
+          case 'updated': {
+            if (!fileFilter.match(fileChange.path)) {
+              console.log(`${fileChange.path} is not the target. skip`)
+              continue
+            }
 
-              const targetFilePath = join(projectAbsolutePath, fileChange.path)
-              if (!projectContext.includedFiles.has(targetFilePath)) {
-                console.log(`File:${targetFilePath} Not in the project`)
-                continue
-              }
-              if (isTestFile(targetFilePath)) continue
-              console.log(fileChange.path)
-              const fileResult = yield* analyzeFile(projectContext, targetFilePath)
+            const targetFilePath = join(projectAbsolutePath, fileChange.path)
+            if (!projectContext.includedFiles.has(targetFilePath)) {
+              console.log(`File:${targetFilePath} Not in the project`)
+              continue
+            }
+            if (isTestFile(targetFilePath)) continue
+            console.log(fileChange.path)
+            let fileResult = yield* analyzeFile(projectContext, targetFilePath)
 
-              yield* writeStringToFile(
-                './log/fileAnalysis.txt',
-                JSON.stringify(fileResult.analysis, null, 2),
-              )
+            // yield* writeStringToFile(
+            //   './log/fileAnalysis.txt',
+            //   JSON.stringify(fileResult.analysis, null, 2),
+            // )
 
+            if (options?.buildTsDoc) {
               yield* processTsDocUpdate(projectContext, fileResult, {
                 debugInfo: {
-                  JsDocUpdateContext: true,
-                  JsDocUpdatePlan: true,
-                  DumpToFile: true,
+                  // JsDocUpdateContext: true,
+                  // JsDocUpdatePlan: true,
+                  // DumpToFile: true,
                 },
                 action: {
                   // NoLLMRequest: true,
@@ -104,9 +106,48 @@ export const snapshotCommand = (
                   },
                 },
               })
+              fileResult = yield* analyzeFile(projectContext, targetFilePath)
             }
+            if (options?.commit) {
+              // Save FileAnalysis on project/.gyomu/<filePath>.json
+              const fileAnalysisPath = join(
+                projectAbsolutePath,
+                '.gyomu',
+                fileChange.path + '.json',
+              )
+              yield* writeStringToFile(
+                fileAnalysisPath,
+                JSON.stringify(fileResult.analysis, null, 2),
+              )
+            }
+            break
+          }
+          case 'deleted': {
+            if (options?.commit) {
+              // Delete FileAnalysis file from project/.gyomu/<filePath>.json
+              const fileAnalysisPath = join(
+                projectAbsolutePath,
+                '.gyomu',
+                fileChange.path + '.json',
+              )
+              yield* removePath(fileAnalysisPath)
+            }
+            break
           }
         }
+      }
+      if (options?.commit) {
+        if (options.buildTsDoc) {
+          changeResult = yield* analyzeProjectChanges({
+            repoRoot: projects.repositoryRoot,
+            projectPath: targetProject.rootPath,
+          })
+        }
+        yield* commitProjectSnapshot({
+          expectedSnapshot: changeResult.currentSnapshot,
+          projectPath: targetProject.rootPath,
+          repoRoot: projects.repositoryRoot,
+        })
       }
     }),
     layer,
