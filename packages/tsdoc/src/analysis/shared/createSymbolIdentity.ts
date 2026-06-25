@@ -1,8 +1,8 @@
 import { createQualifiedName } from './createQualifiedName.js'
 
 import type { Node } from 'ts-morph'
-import type { SymbolIDComposite } from '../symbol/SymbolAnalysis.js'
 import type { ProjectRelativePath } from '../types.js'
+import type { SymbolIDComposite } from '../symbol/SymbolIdComposite.js'
 
 export const createSymbolIdentity = (
   node: Node,

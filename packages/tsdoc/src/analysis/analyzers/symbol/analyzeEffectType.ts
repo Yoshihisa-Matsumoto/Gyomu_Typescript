@@ -27,16 +27,18 @@ export const detectEffectSignals = (typeRawText: string): EffectSignals | undefi
       ? // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
         ({
           text: errorType,
+          source: 'typescript',
           ...withOptional({ effect: detectEffectSignals(errorType) }),
-        } as TypeAnalysis)
+        } satisfies TypeAnalysis)
       : undefined,
 
     requirements: requirementsType
       ? // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
         ({
           text: requirementsType,
+          source: 'typescript',
           ...withOptional({ effect: detectEffectSignals(requirementsType) }),
-        } as TypeAnalysis)
+        } satisfies TypeAnalysis)
       : undefined,
 
     hasErrorType: args.length >= 2,

@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest'
-import { toIdentityKey, toSymbolIdentity } from '../SymbolAnalysis.js'
-import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
+import { toIdentityKey, toSymbolIdentity } from '../SymbolIdentity.js'
+import type { SymbolIdentity } from '../SymbolIdentity.js'
 
 it('toSymbolIdentity test', () => {
   const from: SymbolIdentity = {

@@ -1,9 +1,5 @@
 import type { DependencyEdge } from '../graph/DependencyEdge.js'
-import type { ExportAnalysis } from '../symbol/ExportAnalysis.js'
-import type { FileMetrics } from './FileMetrics.js'
-import type { ImportAnalysis } from '../symbol/ImportAnalysis.js'
-import type { ScoreHints } from '../metrics/ScoreHints.js'
-import type { SymbolAnalysis } from '../symbol/SymbolAnalysis.js'
+import type { ExportAnalysis, ImportAnalysis, SymbolAnalysis } from '@gyomu/schema/typescript'
 
 /**
  * Complete analysis result for a source file.
@@ -31,17 +27,7 @@ export interface FileAnalysis {
   internals: Array<SymbolAnalysis>
 
   /**
-   * Aggregated file metrics.
-   */
-  metrics?: FileMetrics
-
-  /**
    * File dependency relationships.
    */
   dependencyGraph?: Array<DependencyEdge>
-
-  /**
-   * Scoring hints used for documentation prioritization.
-   */
-  scoreHints?: ScoreHints
 }

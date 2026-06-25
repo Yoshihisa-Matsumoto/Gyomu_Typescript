@@ -169,16 +169,17 @@ export const analyzeFunctionMemberInternal = (
 
   const childMemberPath = [...memberPath, '$parameters']
   if (jsDocableNode) {
-    const { id, identity, jsDoc, location, snippet, startOffset } = prepareMethodAnalysis(
-      sourcePath,
-      metadata,
-      ownerSymbolId,
-      ownerSymbolIdentity,
-      memberPath,
-      name,
-      node,
-      jsDocableNode,
-    )
+    const { id, identity, jsDoc, location, snippet, startOffset, parsedJsDoc } =
+      prepareMethodAnalysis(
+        sourcePath,
+        metadata,
+        ownerSymbolId,
+        ownerSymbolIdentity,
+        memberPath,
+        name,
+        node,
+        jsDocableNode,
+      )
     const method = {
       kind: 'method',
       documentable: true,
@@ -201,13 +202,15 @@ export const analyzeFunctionMemberInternal = (
       ...withOptional({
         returnType,
         jsDoc,
+        parsedJsDoc,
       }),
       location,
       startOffset,
       static: isStatic,
       declarationOrder: args.declarationOrder,
       visibility,
-    } as DocumentableMethodMemberAnalysis
+      ownerSymbolId,
+    } satisfies DocumentableMethodMemberAnalysis
     registerSymbolSymbolAnalysis(
       metadata,
       method,
@@ -247,11 +250,12 @@ export const analyzeFunctionMemberInternal = (
       ...withOptional({
         returnType,
       }),
-
+      snippet: node.getText(),
+      ownerSymbolId,
       static: isStatic,
 
       visibility,
       declarationOrder: args.declarationOrder,
-    } as NonDocumentableMethodMemberAnalysis
+    } satisfies NonDocumentableMethodMemberAnalysis
   }
 }

@@ -46,7 +46,7 @@ const processTsDocUpdateProgram = async (projectName: string, sourceFilename: st
         UpdatedSymbolJsDoc: true,
       },
       action: {
-        NoLLMRequest: true,
+        // NoLLMRequest: true,
         // NoUpdateTSDoc: true,
         WriteToTempFolder: true,
       },
@@ -67,12 +67,17 @@ const processTsDocUpdateProgram = async (projectName: string, sourceFilename: st
   return await runQAWithEnvOrThrow(program, layer)
 }
 
-// await processTsDocUpdateProgram(`@gyomu/schema`, `src/data/crud/types.ts`)
+await processTsDocUpdateProgram(`@gyomu/schema`, `src/typescript/jsdoc/JsDocAnalysis.ts`)
 // await processTsDocUpdateProgram(`@gyomu/schema`, `src/core/result.ts`)
 // `src/conversation/index.ts`
 // `src/core/result.ts`
 // `src/effect/exit.ts`
 // `src/data/crud/CrudRepository.ts`
 // `src/data/crud/type.ts`
+// `src/effect/timer.ts`   @template /@other タグ説明が変
+// `src/entity/date.ts` @throw / @other tagが変
+// `src/error/helper.ts` @other @throw tagが変
+// `src/gyomu/file/transport.ts` FileTransportInfoのコンストラクタの説明をProtected Regionにする必要あり
+// `src/typescript/jsdoc/JsDocAnalysis.ts` タグ内解析がおかしい部分あり hasRemarks, exampleCount, hasDepreciated, throwsCount, templateCount
 
-await processTsDocUpdateProgram(`@gyomu/tsdoc`, `src/analysis/symbol/SymbolAnalysis.ts`)
+// await processTsDocUpdateProgram(`@gyomu/tsdoc`, `src/analysis/symbol/SymbolAnalysis.ts`)

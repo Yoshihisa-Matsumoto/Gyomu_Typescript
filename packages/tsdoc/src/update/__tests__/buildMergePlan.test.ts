@@ -5,8 +5,8 @@ import { AiModelService } from '@gyomu/ai'
 import { PlatformLayer } from '@gyomu/infra'
 import { buildMergePlan } from '../buildMergePlan.js'
 import { UpdateError } from '../error/UpdateError.js'
+import type { SymbolId } from '@gyomu/schema/typescript'
 
-import type { SymbolId } from '../../analysis/types.js'
 import type { ComplexityMetrics } from '../../evaluation/complexity/ComplexityMetrics.js'
 import type { FileAnalysisResult } from '../../analysis/file/FileAnalysisResult.js'
 

@@ -17,9 +17,10 @@ import type {
   MemberIdentityMemberPath,
   MemberIdentityOwnerSymbolId,
   ParsedJsDoc,
+  SymbolId,
 } from '@gyomu/schema/typescript'
 import type { FileAnalysisMetadata } from '../../file/FileAnalysisResult.js'
-import type { ProjectRelativePath, SymbolId } from '../../types.js'
+import type { ProjectRelativePath } from '../../types.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
 export const preparePropertyAnalysis = (

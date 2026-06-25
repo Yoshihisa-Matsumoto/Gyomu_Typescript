@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { toIdentityKey } from '../../analysis/symbol/SymbolAnalysis.js'
+import { toIdentityKey } from '@gyomu/schema/schemas/typescript'
 import { buildFileUpdatePlan } from '../buildFileUpdatePlan.js'
 import type { RenderedSymbolJsDoc } from '../jsdoc/RenderedSymbolJsDoc.js'
 

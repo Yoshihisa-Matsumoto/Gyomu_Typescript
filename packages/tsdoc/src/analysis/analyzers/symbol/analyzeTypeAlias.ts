@@ -5,7 +5,7 @@ import { detectEffectSignals } from './analyzeEffectType.js'
 import { analyzeObjectMembers } from './analyzeObjectMembers.js'
 import { computeIndent } from './computeIndent.js'
 import type { TypeAliasDeclaration } from 'ts-morph'
-import type { SymbolAnalysis } from '../../symbol/SymbolAnalysis.js'
+import type { SymbolAnalysis } from '@gyomu/schema/typescript'
 import type { JSDocableTagAnalysisArg } from '../types.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 

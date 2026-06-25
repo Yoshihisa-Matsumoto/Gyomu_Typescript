@@ -1,15 +1,9 @@
-import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/index'
-import type { DomainSignals } from '../metrics/DomainSignals.js'
-
-import type { SymbolId } from '../types.js'
-import type {
-  JsDocAnalysis,
-  MemberAnalysis,
-  ParsedJsDoc,
-  SignatureAnalysis,
-  SymbolKind,
-  TypeAnalysis,
-} from '@gyomu/schema/typescript'
+import type { SymbolIdentity } from '../schemas/typescript/SymbolIdentity.js'
+import type { JsDocAnalysis } from './jsdoc/JsDocAnalysis.js'
+import type { ParsedJsDoc } from './jsdoc/ParsedJsDoc.js'
+import type { MemberAnalysis } from './MemberAnalysis.js'
+import type { SignatureAnalysis, SymbolKind, TypeAnalysis } from './SymbolModel.js'
+import type { SymbolId } from './types.js'
 
 /**
  * Detailed analysis result for a symbol declaration.
@@ -89,30 +83,9 @@ export interface SymbolAnalysis {
   parsedJsDoc?: Array<ParsedJsDoc>
 
   /**
-   * Domain-specific semantic signals.
-   */
-  domainSignals?: DomainSignals
-
-  /**
    * Start offset of the symbol location
    */
   startOffset: number
 
   members: Array<MemberAnalysis>
-}
-
-export interface SymbolIDComposite {
-  id: string
-  qualifiedName: string
-}
-
-export const toIdentityKey = (identity: SymbolIdentity): string =>
-  `${identity.symbolId}:%%:${identity.signatureId}`
-
-export const toSymbolIdentity = (identityKey: string): SymbolIdentity => {
-  const index = identityKey.lastIndexOf(':%%:')
-  return {
-    symbolId: identityKey.substring(0, index),
-    signatureId: identityKey.substring(index + 4),
-  }
 }

@@ -6,9 +6,9 @@ import type {
   DocumentableMemberAnalysis,
   MemberAnalysis,
   NonDocumentableMemberAnalysis,
+  SymbolAnalysis,
   TypeStructureAnalysis,
 } from '@gyomu/schema/typescript'
-import type { SymbolAnalysis } from '../../analysis/symbol/SymbolAnalysis.js'
 
 export const buildContextEntry = (
   fileResult: FileAnalysisResult,

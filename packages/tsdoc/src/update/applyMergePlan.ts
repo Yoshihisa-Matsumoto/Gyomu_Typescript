@@ -1,6 +1,6 @@
 import { Effect } from 'effect'
 import { withOptional } from '@gyomu/schema'
-import { toIdentityKey } from '../analysis/symbol/SymbolAnalysis.js'
+import { toIdentityKey } from '@gyomu/schema/schemas/typescript'
 import { UpdateError } from './error/UpdateError.js'
 import { mergeTags } from './merge/mergeTags.js'
 import { mergeSummary } from './merge/mergeSummary.js'

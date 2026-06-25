@@ -1,4 +1,4 @@
-import { toIdentityKey } from '../analysis/symbol/SymbolAnalysis.js'
+import { toIdentityKey } from '@gyomu/schema/schemas/typescript'
 import type { RenderedSymbolJsDoc } from './jsdoc/RenderedSymbolJsDoc.js'
 import type { FileAnalysisResult } from '../analysis/file/FileAnalysisResult.js'
 import type { FileUpdatePlan } from './jsdoc/FileUpdatePlan.js'

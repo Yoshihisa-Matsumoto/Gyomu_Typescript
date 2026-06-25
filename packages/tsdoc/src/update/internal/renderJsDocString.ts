@@ -24,7 +24,7 @@ export const computeLine = (line: JsDocLine, indent: string): string => {
     case 'tag':
       return line.text
         .split('\n')
-        .map((text) => indent + ` * ${text}`)
+        .map((text) => indent + ` *` + ` ${text}`.trimEnd())
         .join('\n')
   }
 }

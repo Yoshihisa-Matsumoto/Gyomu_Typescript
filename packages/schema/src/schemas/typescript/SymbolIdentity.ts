@@ -14,3 +14,14 @@ export type SymbolIdentity = Schema.Schema.Type<typeof SymbolIdentity>
 
 export const equalSymbolIdentity = (a: SymbolIdentity, b: SymbolIdentity): boolean =>
   a.symbolId === b.symbolId && a.signatureId === b.signatureId
+
+export const toIdentityKey = (identity: SymbolIdentity): string =>
+  `${identity.symbolId}:%%:${identity.signatureId}`
+
+export const toSymbolIdentity = (identityKey: string): SymbolIdentity => {
+  const index = identityKey.lastIndexOf(':%%:')
+  return {
+    symbolId: identityKey.substring(0, index),
+    signatureId: identityKey.substring(index + 4),
+  }
+}

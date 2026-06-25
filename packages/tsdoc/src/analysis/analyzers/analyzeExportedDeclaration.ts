@@ -6,11 +6,12 @@ import { analyzeInterfaceDeclaration } from './symbol/analyzeInterface.js'
 import { analyzeEnumDeclaration } from './symbol/analyzeEnum.js'
 import { analyzeVariableDeclaration } from './symbol/variable/analyzeVariable.js'
 import { analyzeTypeAliasDeclaration } from './symbol/analyzeTypeAlias.js'
-import type { ExportAnalysis } from '../symbol/ExportAnalysis.js'
+
 import type { ExportedDeclarations } from 'ts-morph'
 import type { AnalysisOptions } from '../AnalysisOption.js'
 import type { ProjectRelativePath } from '../types.js'
 import type { FileAnalysisMetadata } from '../file/FileAnalysisResult.js'
+import type { ExportAnalysis } from '@gyomu/schema/typescript'
 
 export const analyzeExportedDeclaration = (
   name: string,

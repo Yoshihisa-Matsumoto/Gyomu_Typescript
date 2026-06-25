@@ -5,8 +5,12 @@ import { analyzeParameter } from '../analyzeParameter.js'
 import { createSymbolIdentity } from '../../../shared/createSymbolIdentity.js'
 import { registerSymbolSymbolAnalysis } from '../../../file/registerSymbolSymbolAnalysis.js'
 import { computeIndent } from '../computeIndent.js'
-import type { MemberIdentityMemberPath, SignatureAnalysis } from '@gyomu/schema/typescript'
-import type { SymbolAnalysis } from '../../../symbol/SymbolAnalysis.js'
+import type {
+  MemberIdentityMemberPath,
+  SignatureAnalysis,
+  SymbolAnalysis,
+} from '@gyomu/schema/typescript'
+
 import type { ArrowFunction, Expression, FunctionExpression, VariableDeclaration } from 'ts-morph'
 import type { SymbolPreparation } from '../prepareSymbolAnalysis.js'
 import type { ProjectRelativePath } from '../../../types.js'

@@ -1,15 +1,15 @@
 import { Node } from 'ts-morph'
 
 import { withOptional } from '@gyomu/schema'
-import { isSupportedSchemaType } from '../../symbol/SchemaAnalysis.js'
+import { isSupportedSchemaType } from '@gyomu/schema/typescript'
 import { createMemberIdentityAndId } from '../../shared/createMemberIdentity.js'
 import type {
   MemberIdentityMemberPath,
   MemberIdentityOwnerSymbolId,
   NonDocumentablePropertyMemberAnalysis,
+  SupportedSchemaKind,
   TypeAnalysis,
 } from '@gyomu/schema/typescript'
-import type { SupportedSchemaKind } from '../../symbol/SchemaAnalysis.js'
 import type {
   CallExpression,
   Expression,

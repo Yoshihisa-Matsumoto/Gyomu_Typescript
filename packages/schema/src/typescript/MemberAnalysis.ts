@@ -82,7 +82,7 @@ export interface DocumentableMethodMemberAnalysis extends MethodMemberAnalysis {
   /**
    * Parsed JSDoc/TSDoc
    */
-  parsedJsDoc: Array<ParsedJsDoc>
+  parsedJsDoc?: Array<ParsedJsDoc>
   /**
    * Source code location.
    */

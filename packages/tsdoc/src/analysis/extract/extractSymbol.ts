@@ -6,11 +6,10 @@ import { analyzeFunctionDeclaration } from '../analyzers/symbol/analyzeFunction.
 import { analyzeInterfaceDeclaration } from '../analyzers/symbol/analyzeInterface.js'
 import { analyzeEnumDeclaration } from '../analyzers/symbol/analyzeEnum.js'
 import { analyzeTypeAliasDeclaration } from '../analyzers/symbol/analyzeTypeAlias.js'
-import type { SymbolAnalysis } from '../symbol/SymbolAnalysis.js'
+import type { ExportAnalysis, SymbolAnalysis } from '@gyomu/schema/typescript'
 import type { AnalysisOptions } from '../AnalysisOption.js'
 import type { FileAnalysisMetadata } from '../file/FileAnalysisResult.js'
 import type { SourceFileContext } from '../file/SourceFileContext.js'
-import type { ExportAnalysis } from '../symbol/ExportAnalysis.js'
 
 export const extractSymbols = (
   context: SourceFileContext,

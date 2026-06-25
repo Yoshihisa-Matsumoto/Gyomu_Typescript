@@ -11,7 +11,7 @@ import type {
   PropertySignature,
   TypeNode,
 } from 'ts-morph'
-import type { ProjectRelativePath, SymbolId } from '../../../types.js'
+import type { ProjectRelativePath } from '../../../types.js'
 import type { FileAnalysisMetadata } from '../../../file/FileAnalysisResult.js'
 import type {
   DocumentablePropertyMemberAnalysis,
@@ -20,6 +20,7 @@ import type {
   MemberIdentityMemberPath,
   MemberIdentityOwnerSymbolId,
   ParsedJsDoc,
+  SymbolId,
 } from '@gyomu/schema/typescript'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 

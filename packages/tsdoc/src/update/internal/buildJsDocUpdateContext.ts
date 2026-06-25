@@ -8,8 +8,7 @@ import { buildSchemaStructureNode } from './buildSchemaStructureNode.js'
 import type { ComplexityMetrics } from '../../evaluation/complexity/ComplexityMetrics.js'
 import type { TsDocFileContext, TsDocSymbolContext } from '@gyomu/ai-compiler/jsdoc-update'
 import type { FileAnalysisResult } from '../../analysis/file/FileAnalysisResult.js'
-import type { SymbolId } from '../../analysis/types.js'
-import type { EffectSignals } from '@gyomu/schema/typescript'
+import type { EffectSignals, SymbolId } from '@gyomu/schema/typescript'
 
 export const buildJsDocUpdateContext = (
   projectName: string,

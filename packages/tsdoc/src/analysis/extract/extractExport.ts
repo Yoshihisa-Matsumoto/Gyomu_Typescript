@@ -4,11 +4,11 @@ import { AnalysisError } from '../error/AnalysisError.js'
 
 import { analyzeExportedDeclaration } from '../analyzers/analyzeExportedDeclaration.js'
 import type { SourceFileContext } from '../file/SourceFileContext.js'
-import type { ExportAnalysis } from '../symbol/ExportAnalysis.js'
 import type { ExportedDeclarations } from 'ts-morph'
 import type { AnalysisOptions } from '../AnalysisOption.js'
 import type { ProjectRelativePath } from '../types.js'
 import type { FileAnalysisMetadata } from '../file/FileAnalysisResult.js'
+import type { ExportAnalysis } from '@gyomu/schema/typescript'
 
 export const extractExport = (
   context: SourceFileContext,

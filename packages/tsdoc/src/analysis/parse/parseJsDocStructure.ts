@@ -77,11 +77,22 @@ export const parseJsDocStructure = (raw: RawJsDoc, doc: JSDoc): ParsedJsDoc => {
     parsed.summary = description
   }
 
+  console.log(doc.getDescription())
+  console.log(doc.getTags().map((t) => t.getTagName()))
+  const rawText = raw.rawText
+
   const tags = doc.getTags()
   for (const [index, tag] of tags.entries()) {
     const tagName = tag.getTagName()
     const text = getNormalizedCommentText(tag) ?? ''
     const rawTag = tag.getText()
+
+    const isRealTag = new RegExp(String.raw`(?:^|\n)\s*@${tagName}\b`).test(rawText)
+    if (!isRealTag) {
+      parsed.summary += ` ${rawTag}`
+      continue
+    }
+
     parsed.tags.push({
       tagName,
       text,

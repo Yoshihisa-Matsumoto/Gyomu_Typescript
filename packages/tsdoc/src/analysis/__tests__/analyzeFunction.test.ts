@@ -3,7 +3,7 @@ import { describe, it } from 'vitest'
 import { Effect } from 'effect'
 import { analyzeFile } from '../analyzeFile.js'
 import { createFixtureProject } from './createFixtureProject.js'
-import type { SymbolAnalysis } from '../symbol/SymbolAnalysis.js'
+import type { SymbolAnalysis } from '@gyomu/schema/typescript'
 
 const timeout = 20000
 

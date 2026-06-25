@@ -13,7 +13,7 @@ import * as render from '../renderJsDoc.js'
 import * as filePlan from '../buildFileUpdatePlan.js'
 import * as pathUtil from '../../shared/index.js'
 import { processTsDocUpdate } from '../processTsDocUpdate.js'
-import type { ExportAnalysis } from '../../analysis/symbol/ExportAnalysis.js'
+import type { ExportAnalysis } from '@gyomu/schema/typescript'
 
 const mockAiModelService = Layer.succeed(AiModelService, {
   generateObject: () =>

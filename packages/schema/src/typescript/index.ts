@@ -1,4 +1,8 @@
 export * from './jsdoc/index.js'
+export * from './ExportAnalysis.js'
+export * from './ImportAnalysis.js'
 export * from './MemberAnalysis.js'
+export * from './SchemaAnalysis.js'
+export { SymbolAnalysis } from './SymbolAnalysis.js'
 export * from './SymbolModel.js'
 export { SymbolId } from './types.js'

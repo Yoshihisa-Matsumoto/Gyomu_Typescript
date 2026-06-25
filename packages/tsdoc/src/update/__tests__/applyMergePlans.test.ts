@@ -1,8 +1,8 @@
 import { describe, expect, test } from 'vitest'
 import { Effect } from 'effect'
 
+import { toIdentityKey } from '@gyomu/schema/schemas/typescript'
 import { applyMergePlan, applyMergePlans } from '../applyMergePlan.js'
-import { toIdentityKey } from '../../analysis/symbol/SymbolAnalysis.js'
 
 const createFileResult = (symbolId: string, existingJsDoc?: any): any => ({
   analysis: {

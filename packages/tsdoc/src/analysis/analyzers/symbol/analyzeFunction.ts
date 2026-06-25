@@ -13,8 +13,8 @@ import type {
   MemberIdentityMemberPath,
   MemberIdentityOwnerSymbolId,
   SignatureAnalysis,
+  SymbolAnalysis,
 } from '@gyomu/schema/typescript'
-import type { SymbolAnalysis } from '../../symbol/SymbolAnalysis.js'
 import type { JSDocableTagAnalysisArg } from '../types.js'
 import type { FileAnalysisMetadata } from '../../file/FileAnalysisResult.js'
 import type { ProjectRelativePath } from '../../types.js'

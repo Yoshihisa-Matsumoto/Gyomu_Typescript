@@ -13,9 +13,10 @@ import type {
   MemberAnalysis,
   MemberIdentityMemberPath,
   MemberIdentityOwnerSymbolId,
+  SymbolAnalysis,
 } from '@gyomu/schema/typescript'
 import type { ClassDeclaration } from 'ts-morph'
-import type { SymbolAnalysis } from '../../../symbol/SymbolAnalysis.js'
+
 import type { JSDocableTagAnalysisArg } from '../../types.js'
 import type { FileAnalysisMetadata } from '../../../file/FileAnalysisResult.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'

@@ -15,7 +15,9 @@ export const mergeTags = (
       switch (tag.action.type) {
         case 'preserve': {
           const existingTag = existingJsDoc?.tags.find(
-            (t) => t.tagName == tag.tag.kind && (t.key == tag.tag.key || (!t.key && !tag.tag.key)),
+            (t) =>
+              (tag.tag.kind == 'other' ? t.tagName == tag.tag.key : t.tagName == tag.tag.kind) &&
+              (tag.tag.kind != 'other' ? t.key == tag.tag.key || (!t.key && !tag.tag.key) : !t.key),
           )
           return existingTag
         }
@@ -23,7 +25,7 @@ export const mergeTags = (
           return undefined
         case 'replace':
           return yield* Effect.succeed({
-            tagName: tag.tag.kind,
+            tagName: tag.tag.kind == 'other' ? (tag.tag.key ?? '') : tag.tag.kind,
             // ...withOptional({ key: tag.tag.key ?? undefined }),
             sortOrder: tag.sortOrder,
             text: tag.action.value,

@@ -3,8 +3,9 @@ import { registerSymbolSymbolAnalysis } from '../../file/registerSymbolSymbolAna
 import { prepareSymbolAnalysis } from './prepareSymbolAnalysis.js'
 import { detectEffectSignals } from './analyzeEffectType.js'
 import { computeIndent } from './computeIndent.js'
+import type { SymbolAnalysis } from '@gyomu/schema/typescript'
 import type { EnumDeclaration } from 'ts-morph'
-import type { SymbolAnalysis } from '../../symbol/SymbolAnalysis.js'
+
 import type { JSDocableTagAnalysisArg } from '../types.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 

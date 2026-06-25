@@ -75,6 +75,18 @@ export const snapshotCommand = (projectName: string, options?: { buildTsDoc?: bo
                   // NoUpdateTSDoc: true,
                   WriteToTempFolder: true,
                 },
+                retryOption: {
+                  observer: {
+                    onRetry: (params) => {
+                      if (params.attempt <= 3) {
+                        console.log(`attemt:${params.attempt} DelayMs: ${params.delayMs}`)
+                      } else {
+                        console.log(`attemt:${params.attempt} DelayMs: ${params.delayMs}`)
+                        console.log(JSON.stringify(params.error, null, 2))
+                      }
+                    },
+                  },
+                },
               })
             }
           }

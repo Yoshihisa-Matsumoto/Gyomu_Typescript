@@ -5,9 +5,9 @@ import { AnalysisError } from '../error/AnalysisError.js'
 
 import type { FileAnalysisMetadata } from '../file/FileAnalysisResult.js'
 import type { SourceFileContext } from '../file/SourceFileContext.js'
-import type { ImportAnalysis } from '../symbol/ImportAnalysis.js'
 import type { ImportDeclaration } from 'ts-morph'
 import type { AnalysisOptions } from '../AnalysisOption.js'
+import type { ImportAnalysis } from '@gyomu/schema/typescript'
 
 export const extractImport = (
   context: SourceFileContext,

@@ -5,12 +5,13 @@ import type {
   DocumentableMethodMemberAnalysis,
   DocumentablePropertyMemberAnalysis,
   MemberAnalysis,
+  SymbolAnalysis,
+  SymbolId,
   TypeAnalysis,
   TypeStructureAnalysis,
 } from '@gyomu/schema/typescript'
 import type { FileAnalysisResult } from '../../analysis/file/FileAnalysisResult.js'
-import type { SymbolAnalysis } from '../../analysis/symbol/SymbolAnalysis.js'
-import type { SymbolId } from '../../analysis/types.js'
+
 import type { ComplexityMetrics } from './ComplexityMetrics.js'
 
 export const calculateComplexityMetrics = (

@@ -1,4 +1,4 @@
-import { toIdentityKey, toSymbolIdentity } from '../../analysis/symbol/SymbolAnalysis.js'
+import { toIdentityKey, toSymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
 import type {
   ContextEntry,
