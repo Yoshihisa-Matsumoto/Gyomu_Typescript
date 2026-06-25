@@ -30,11 +30,15 @@ export interface SymbolAnalysis {
    * ```
    */
   id: SymbolId
+
   /**
-   * Symbol name.
+   * Symbol name/identity details.
    */
   identity: SymbolIdentity
 
+  /**
+   * The index of the symbol in its parent declaration list.
+   */
   declarationOrder: number
 
   /**
@@ -48,7 +52,7 @@ export interface SymbolAnalysis {
   kind: SymbolKind
 
   /**
-   * Source code location.
+   * Source code location of the symbol.
    */
   location: {
     /**
@@ -78,14 +82,17 @@ export interface SymbolAnalysis {
   jsDoc?: JsDocAnalysis
 
   /**
-   * Parsed JSDoc/TSDoc
+   * Parsed JSDoc/TSDoc.
    */
   parsedJsDoc?: Array<ParsedJsDoc>
 
   /**
-   * Start offset of the symbol location
+   * The character offset where the symbol declaration begins in the source file.
    */
   startOffset: number
 
+  /**
+   * A collection of child members associated with the symbol.
+   */
   members: Array<MemberAnalysis>
 }

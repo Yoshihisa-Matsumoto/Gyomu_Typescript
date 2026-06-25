@@ -19,6 +19,9 @@ import type { DBError } from '../error/DBError.js'
 import type { SchemaValidationError } from '../error/SchemaValidationError.js'
 import type { LocalDate, YearMonth } from '../entity/date.js'
 
+/**
+ * A repository service for managing Gyomu-related domain entities, providing CRUD operations for AppInfo, StatusType, StatusHandler, StatusInformation, MarketHoliday, Milestone, MilestoneDaily, and ParameterMaster schemas.
+ */
 export class GyomuRepository extends Context.Service<
   GyomuRepository,
   {

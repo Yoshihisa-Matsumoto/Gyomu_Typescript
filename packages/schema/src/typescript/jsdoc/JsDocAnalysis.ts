@@ -21,16 +21,19 @@ export interface JsDocAnalysis {
 
   /**
    * Whether a @remarks section exists.
+   *
    */
   hasRemarks: boolean
 
   /**
    * Count of @example section.
+   *
    */
   exampleCount: number
 
   /**
    * Whether a @deprecated tag exists.
+   *
    */
   hasDeprecated: boolean
 
@@ -41,16 +44,19 @@ export interface JsDocAnalysis {
 
   /**
    * Whether a @returns tag exists.
+   *
    */
   hasReturnTag: boolean
 
   /**
    * Count of @throws tag.
+   *
    */
   throwsCount: number
 
   /**
    * Count of @template tag.
+   *
    */
   templateCount: number
 
@@ -82,6 +88,8 @@ export interface JsDocAnalysis {
    *
    * <!-- tsdoc-preserve-start -->
    * <!-- tsdoc-preserve-end -->
+   *
+   *
    */
   hasProtectedRegion: boolean
 

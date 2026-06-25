@@ -5,24 +5,22 @@ import type { SymbolAnalysis } from './SymbolAnalysis.js'
  */
 export interface ExportAnalysis {
   /**
-   * Exported name.
-   *
-   * This may differ from symbol.name when alias export is used.
+   * The exported name. This may differ from the original symbol name when an alias is used.
    */
   exportedName: string
 
   /**
-   * Symbol declaration.
+   * The underlying symbol declaration.
    */
   symbol: SymbolAnalysis
 
   /**
-   * Whether the symbol is exported as default.
+   * Indicates if the symbol is exported as a default export.
    */
   isDefault: boolean
 
   /**
-   * Whether the export is type-only.
+   * Indicates if the export is type-only.
    */
   isTypeOnly: boolean
 }

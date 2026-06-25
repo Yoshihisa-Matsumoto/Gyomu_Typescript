@@ -3,36 +3,48 @@
  */
 export interface ImportAnalysis {
   /**
-   * Raw module specifier text.
+   * The raw module specifier text.
    *
-   * Example:
+   * @example
    * './userRepository'
    */
   moduleSpecifier: string
 
   /**
-   * Named imported symbols.
+   * The list of named imported symbols.
    */
   namedImports: Array<ImportedSymbolAnalysis>
 
   /**
-   * Namespace import identifier.
+   * The identifier for the namespace import, if present.
    *
-   * Example:
+   * @example
    * import * as fs from 'node:fs'
    */
   namespaceImport?: string
 
   /**
-   * Default import identifier.
+   * The identifier for the default import, if present.
    */
   defaultImport?: string
 }
 
+/**
+ * Represents an analyzed named imported symbol.
+ */
 export interface ImportedSymbolAnalysis {
+  /**
+   * The name of the symbol in the source module.
+   */
   readonly importedName: string
 
+  /**
+   * The name of the symbol in the local scope.
+   */
   readonly localName: string
 
+  /**
+   * Whether this is a type-only import.
+   */
   readonly isTypeOnly: boolean
 }

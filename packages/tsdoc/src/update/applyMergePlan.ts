@@ -52,7 +52,6 @@ export const applyMergePlan = (
         generator: existingJsDoc?.generator,
         deprecated: existingJsDoc?.deprecated,
         remarks: existingJsDoc?.remarks,
-
         summary: mergeSummary(plan.summary, existingJsDoc),
         returns: mergeReturns(plan.returns, existingJsDoc),
       }),

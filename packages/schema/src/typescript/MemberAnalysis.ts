@@ -4,23 +4,53 @@ import type { SymbolId } from './types.js'
 import type { SymbolIdentity } from '../schemas/typescript/SymbolIdentity.js'
 import type { ParsedJsDoc } from './jsdoc/ParsedJsDoc.js'
 
+/**
+ * Defines a union of member analysis types, categorized by whether they are documentable.
+ */
 export type MemberAnalysis = NonDocumentableMemberAnalysis | DocumentableMemberAnalysis
+
+/**
+ * Defines the set of member analyses that are not subject to documentation.
+ */
 export type NonDocumentableMemberAnalysis =
   | NonDocumentableMethodMemberAnalysis
   | NonDocumentablePropertyMemberAnalysis
+
+/**
+ * Defines the set of member analyses that are documentable.
+ */
 export type DocumentableMemberAnalysis =
   | DocumentableMethodMemberAnalysis
   | DocumentablePropertyMemberAnalysis
 
+/**
+ * Unique identifier for a class or object member.
+ */
 export interface MemberIdentity {
+  /**
+   * The identifier of the symbol that owns this member.
+   */
   readonly ownerSymbolId: MemberIdentityOwnerSymbolId
 
+  /**
+   * The path to the member within the owning symbol.
+   */
   readonly memberPath: Readonly<MemberIdentityMemberPath>
 
+  /**
+   * The signature identifier, used to distinguish overloaded members.
+   */
   readonly signatureId: string
 }
 
+/**
+ * Represents the unique identifier for an owner symbol.
+ */
 export type MemberIdentityOwnerSymbolId = string
+
+/**
+ * Represents a path of segments identifying a member.
+ */
 export type MemberIdentityMemberPath = Array<string>
 interface BaseMemberAnalysis {
   /**
@@ -72,33 +102,52 @@ interface MethodMemberAnalysis extends BaseMemberAnalysis {
   snippet: string
 }
 
+/**
+ * Represents the analysis of a method member that is not documentable.
+ */
 export interface NonDocumentableMethodMemberAnalysis extends MethodMemberAnalysis {
+  /**
+   * Indicates that this member is not documentable.
+   */
   documentable: false
 }
 
+/**
+ * Represents the analysis of a class or object member that supports JSDoc, specifically for method members.
+ */
 export interface DocumentableMethodMemberAnalysis extends MethodMemberAnalysis {
-  documentable: true
-  jsDoc?: JsDocAnalysis
   /**
-   * Parsed JSDoc/TSDoc
+   * Indicates that this member is documentable.
+   */
+  documentable: true
+
+  /**
+   * Contains the structured JSDoc analysis.
+   */
+  jsDoc?: JsDocAnalysis
+
+  /**
+   * A collection of parsed JSDoc/TSDoc elements.
    */
   parsedJsDoc?: Array<ParsedJsDoc>
+
   /**
-   * Source code location.
+   * The location information of the symbol within the source code.
    */
   location: {
     /**
-     * Starting line number.
+     * The starting line number of the symbol.
      */
     startLine: number
 
     /**
-     * Ending line number.
+     * The ending line number of the symbol.
      */
     endLine: number
   }
+
   /**
-   * Start offset of the symbol location
+   * The character offset where the symbol starts.
    */
   startOffset: number
 }
@@ -118,34 +167,57 @@ interface PropertyMemberAnalysis extends BaseMemberAnalysis {
 
 type PropertySource = 'property-declaration' | 'constructor-parameter' | 'parameter-declaration'
 
+/**
+ * Represents the analysis of a property member that is not documentable.
+ */
 export interface NonDocumentablePropertyMemberAnalysis extends PropertyMemberAnalysis {
+  /**
+   * Indicates that this member is not documentable.
+   */
   documentable: false
 }
+
+/**
+ * Represents the analysis of a class or object member that supports JSDoc, specifically for property members.
+ */
 export interface DocumentablePropertyMemberAnalysis extends PropertyMemberAnalysis {
-  documentable: true
-  jsDoc?: JsDocAnalysis
   /**
-   * Parsed JSDoc/TSDoc
+   * Indicates that this member is documentable.
+   */
+  documentable: true
+
+  /**
+   * Contains the structured JSDoc analysis.
+   */
+  jsDoc?: JsDocAnalysis
+
+  /**
+   * A collection of parsed JSDoc/TSDoc elements.
    */
   parsedJsDoc?: Array<ParsedJsDoc>
+
   /**
-   * Source code location.
+   * The location information of the symbol within the source code.
    */
   location: {
     /**
-     * Starting line number.
+     * The starting line number of the symbol.
      */
     startLine: number
 
     /**
-     * Ending line number.
+     * The ending line number of the symbol.
      */
     endLine: number
   }
+
   /**
-   * Start offset of the symbol location
+   * The character offset where the symbol starts.
    */
   startOffset: number
 }
 
+/**
+ * Defines the access levels available for members.
+ */
 export type MemberAccessor = 'private' | 'protected' | 'public'

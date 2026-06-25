@@ -79,5 +79,8 @@ await processTsDocUpdateProgram(`@gyomu/schema`, `src/typescript/jsdoc/JsDocAnal
 // `src/error/helper.ts` @other @throw tagが変
 // `src/gyomu/file/transport.ts` FileTransportInfoのコンストラクタの説明をProtected Regionにする必要あり
 // `src/typescript/jsdoc/JsDocAnalysis.ts` タグ内解析がおかしい部分あり hasRemarks, exampleCount, hasDepreciated, throwsCount, templateCount
+// `src/gyomu/core/security/path.ts`  throws タグ解析がおかしい？あるいは既存Tagとの互換性？
+// `src/typescript/ImportAnalysis.ts`
+// `src/typescript/jsdoc/JsDocAnalysis.ts`
 
 // await processTsDocUpdateProgram(`@gyomu/tsdoc`, `src/analysis/symbol/SymbolAnalysis.ts`)

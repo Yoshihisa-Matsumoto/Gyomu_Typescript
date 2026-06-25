@@ -12,14 +12,22 @@ import {
 } from '@gyomu/tsdoc'
 import { Effect, Layer } from 'effect'
 
-import { FileSearchServiceLayer, makeDirectory, writeStringToFile } from '@gyomu/infra/fs'
+import {
+  FileSearchServiceLayer,
+  createPathMatcher,
+  makeDirectory,
+  writeStringToFile,
+} from '@gyomu/infra/fs'
 
 const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(
   Layer.provideMerge(PlatformLayer),
   Layer.provideMerge(FileSearchServiceLayer),
 )
 const runQAWithEnvOrThrow = makeRunner(VercelAiModelServiceLive)
-export const snapshotCommand = (projectName: string, options?: { buildTsDoc?: boolean }) => {
+export const snapshotCommand = (
+  projectName: string,
+  options?: { buildTsDoc?: boolean; filter?: string },
+) => {
   return runQAWithEnvOrThrow(
     Effect.gen(function* () {
       const projects = yield* listTypescriptProject()
@@ -40,6 +48,8 @@ export const snapshotCommand = (projectName: string, options?: { buildTsDoc?: bo
       )
       console.dir(changeResult.diff, { depth: null })
 
+      const fileFilter = createPathMatcher(options?.filter)
+
       if (options?.buildTsDoc) {
         const projectContext = yield* initializeProjectContext({
           repoRoot: projects.repositoryRoot,
@@ -51,6 +61,11 @@ export const snapshotCommand = (projectName: string, options?: { buildTsDoc?: bo
           switch (fileChange.type) {
             case 'added':
             case 'updated': {
+              if (!fileFilter.match(fileChange.path)) {
+                console.log(`${fileChange.path} is not the target. skip`)
+                continue
+              }
+
               const targetFilePath = join(projectAbsolutePath, fileChange.path)
               if (!projectContext.includedFiles.has(targetFilePath)) {
                 console.log(`File:${targetFilePath} Not in the project`)
@@ -64,6 +79,7 @@ export const snapshotCommand = (projectName: string, options?: { buildTsDoc?: bo
                 './log/fileAnalysis.txt',
                 JSON.stringify(fileResult.analysis, null, 2),
               )
+
               yield* processTsDocUpdate(projectContext, fileResult, {
                 debugInfo: {
                   JsDocUpdateContext: true,

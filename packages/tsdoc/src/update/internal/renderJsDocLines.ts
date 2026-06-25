@@ -54,7 +54,18 @@ export const renderJsDocLines = (updated: UpdatedSymbolJsDoc): Array<JsDocLine> 
     }
   }
 
-  const tags = [...jsDoc.tags].sort((a, b) => a.sortOrder - b.sortOrder)
+  if (jsDoc.remarks) {
+    const text = (jsDoc.remarks.includes('\n') ? '\n' : ' ') + jsDoc.remarks
+
+    lines.push({ type: 'tag', text: `@remarks${text}` })
+    lines.push({ type: 'blank' })
+  }
+
+  const tags = [
+    ...jsDoc.tags.filter(
+      (t) => !['returns', 'throws', 'param', 'return', 'remarks', 'example'].includes(t.tagName),
+    ),
+  ].sort((a, b) => a.sortOrder - b.sortOrder)
   if (tags.length > 0) {
     for (const tag of tags) {
       lines.push({ type: 'tag', text: computeOtherTag(tag) })
@@ -79,11 +90,12 @@ const computeOtherTag = (tag: ParsedTag): string => {
   let text = `@${tag.tagName}`
   if (tag.key) text += ` ${tag.key}`
   if (tag.text) text += ` ${tag.text}`
+  if (text.includes('\n')) text = '\n' + text
   return text
 }
 
 const computeThrowTag = (throwTag: JsDocThrows): string => {
   let text = `@throws`
-  if (throwTag.description) text += ` ${throwTag.description}`
+  if (throwTag.description) text += ` ${throwTag.type} ${throwTag.description}`
   return text
 }

@@ -27,6 +27,14 @@ export const processTsDocUpdate = (
     }
     // console.dir(fileResult.metadata.symbols.keys())
     const updateJsDocs = yield* applyMergePlans(fileResult, mergePlans)
+    if (option?.debugInfo?.UpdatedSymbolJsDoc) {
+      if (option.debugInfo.DumpToFile)
+        yield* writeStringToFile(
+          './log/UpdatedSymbolJsDoc.txt',
+          JSON.stringify(updateJsDocs, null, 2),
+        )
+      else console.dir(updateJsDocs, { depth: null })
+    }
 
     const renderedJsDocs = renderJsDocs(updateJsDocs)
     if (option?.debugInfo?.RenderedSymbolJsDoc) {

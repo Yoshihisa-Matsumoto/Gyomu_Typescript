@@ -11,6 +11,7 @@ cli.command('ask <projectRootPath> <file> ').action(askCommand)
 cli
   .command('snapshot <projectName>')
   .option('-t, --buildTsDoc', 'Build TSDoc')
+  .option('--filter <filePath>', 'TsDoc Filter')
   .action(snapshotCommand)
 
 cli.help()

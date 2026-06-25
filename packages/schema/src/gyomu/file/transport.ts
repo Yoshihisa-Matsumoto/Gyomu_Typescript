@@ -2,19 +2,63 @@ import path from 'node:path'
 import { ValueError } from '../../error/ValueError.js'
 import type { FileFilterInfo } from './filter.js'
 
+/**
+ * Represents the metadata and path configuration for a file transport operation.
+ */
 export class FileTransportInfo {
+  /**
+   * The name of the source file.
+   */
   readonly sourceFileName: string
+
+  /**
+   * The name of the source folder.
+   */
   readonly sourceFolderName: string
+
+  /**
+   * The base directory path.
+   */
   readonly basePath: string
+
+  /**
+   * The internal destination filename.
+   */
   readonly #destinationFileName: string
+
+  /**
+   * The internal destination folder name.
+   */
   readonly #destinationFolderName: string
+
+  /**
+   * Indicates whether the source file should be deleted after the transport completes.
+   */
   readonly deleteSourceFileAfterCompletion: boolean
+
+  /**
+   * Indicates whether to overwrite the destination file if it already exists.
+   */
   readonly overwriteDestination: boolean
 
+  /**
+   * Returns true if the source is identified as a directory.
+   */
   readonly isSourceDirectory: boolean
+
+  /**
+   * Returns true if the destination is identified as a directory.
+   */
   readonly isDestinationDirectory: boolean
 
+  /**
+   * Returns true if the destination is located at the root folder level.
+   */
   readonly isDestinationRoot: boolean
+
+  /**
+   * Optional filters applied to the file transport operation.
+   */
   readonly filterConditions?: Array<FileFilterInfo>
 
   /**
@@ -41,6 +85,8 @@ export class FileTransportInfo {
    * 		        x	    x				                        Sname		        Sname	Ddir\Sname	Ddir	Sname
    * 		        x		        x			                    Sname		        Sname	Dname		        Dname
    * 		        x					                            Sname		        Sname	Sname		        Sname
+   *
+   * @returns The configured FileTransportInfo instance.
    */
   constructor({
     basePath = '',
@@ -88,28 +134,53 @@ export class FileTransportInfo {
       })
   }
 
+  /**
+   * Retrieves the full source name combining the folder and filename.
+   *
+   * @returns The full source path string.
+   */
   get sourceFullName(): string {
     if (!this.sourceFolderName) return this.sourceFileName
     if (!this.sourceFileName) return this.sourceFolderName
     return path.join(this.sourceFolderName, this.sourceFileName)
   }
 
+  /**
+   * Retrieves the full source path including the base path.
+   *
+   * @returns The absolute source path.
+   */
   get sourceFullNameWithBasePath(): string {
     if (!this.sourceFullName) return this.basePath
     if (this.basePath) return path.join(this.basePath, this.sourceFullName)
     return this.sourceFullName
   }
 
+  /**
+   * Returns the destination file name, falling back to the source file name if not defined.
+   *
+   * @returns The destination filename string.
+   */
   get destinationFileName(): string {
     if (!this.#destinationFileName) return this.sourceFileName
     return this.#destinationFileName
   }
 
+  /**
+   * Returns the destination path, falling back to the source folder name if not defined.
+   *
+   * @returns The destination directory path.
+   */
   get destinationPath(): string {
     if (!this.#destinationFolderName) return this.sourceFolderName
     return this.#destinationFolderName
   }
 
+  /**
+   * Retrieves the full path to the destination.
+   *
+   * @returns The full destination path string.
+   */
   get destinationFullName(): string {
     if (!this.destinationPath) return this.destinationFileName
     if (!this.destinationFileName) return this.destinationPath
