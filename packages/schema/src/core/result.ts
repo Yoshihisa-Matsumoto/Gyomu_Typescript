@@ -50,7 +50,6 @@ export const createResultSchema = <T extends Schema.Schema<any>>(dataSchema: T) 
 
 /**
  * Represents the union of success and failure states for a schema validation result.
- *
  */
 export type ResultSchemaType<T extends Schema.Schema<any>> =
   | {

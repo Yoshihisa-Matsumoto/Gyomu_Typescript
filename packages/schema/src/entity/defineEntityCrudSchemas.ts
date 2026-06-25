@@ -44,6 +44,13 @@ const AuditFieldsUIAnnotation: { [field: string]: UIAnnotationField } = {
   },
 }
 
+/**
+ * Generates a suite of CRUD schemas (select, insert, update) for a defined entity, optionally including audit fields and key mappings.
+ *
+ * @param args The configuration object defining entity fields, audit options, field mappings, and UI annotations.
+ *
+ * @returns An object containing the generated CRUD schemas, a type placeholder for internal inference, a list of updateable field names, and the configuration metadata.
+ */
 export const defineEntityCrudSchemas = <
   TFields extends Fields,
   TIncludeAudit extends boolean,

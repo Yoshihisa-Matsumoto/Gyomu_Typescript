@@ -3,6 +3,16 @@ type DiffItem = {
   valA?: any
   valB?: any
 }
+
+/**
+ * Calculates the differences between two objects and returns an array of changes.
+ *
+ * @param objA The source object.
+ *
+ * @param objB The target object to compare against.
+ *
+ * @returns An array of diff items representing fields that differ between the two objects.
+ */
 export const reconcile = (objA: object, objB: object): Array<DiffItem> => {
   const result: Array<DiffItem> = []
   const columnsA = Object.keys(objA)
@@ -31,15 +41,41 @@ export const reconcile = (objA: object, objB: object): Array<DiffItem> => {
   return result
 }
 
+/**
+ * Represents a specific difference between two objects, including the path and value changes.
+ */
 export type DiffDetail = {
+  /**
+   * The object path to the property that differs.
+   */
   path: string
+
+  /**
+   * The value of the property in the source object.
+   */
   sourceValue: string
+
+  /**
+   * The value of the property in the destination object.
+   */
   destinationValue: string
 }
 const buildPath = (path: string, parentPath: string = '') => {
   if (!parentPath) return path
   return parentPath + '::' + path
 }
+
+/**
+ * Recursively calculates differences between two objects and returns detailed change descriptions.
+ *
+ * @param objA The source object.
+ *
+ * @param objB The destination object to compare against.
+ *
+ * @param parentPath The initial path prefix for recursive calls.
+ *
+ * @returns An array of detailed diffs showing path and value changes.
+ */
 export const reconcileDetail = (
   objA: object,
   objB: object,

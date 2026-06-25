@@ -5,6 +5,13 @@ import { MarketHolidaySchema } from '../schemas/gyomu.js'
 import { HolidayFetcher } from '../gyomu/holiday/HolidayFetcher.js'
 import { gyomuExternalFailure } from '../error/GyomuError.js'
 
+/**
+ * Synchronizes market holiday records by fetching data for the specified market and reconciling it with the existing database state.
+ *
+ * @param market The market identifier to synchronize holidays for.
+ *
+ * @returns An Effect that yields the result of the synchronization operation, or fails with a Gyomu external failure.
+ */
 export const syncHoliday = (market: string) =>
   Effect.gen(function* () {
     const fetcher = yield* HolidayFetcher

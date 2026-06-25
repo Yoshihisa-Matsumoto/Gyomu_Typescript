@@ -34,22 +34,55 @@ type AssertDefinitionKeysExistInTable<TDef extends DefinitionShape, TTableKeys e
     ? TDef
     : never
 
+/**
+ * Asserts that all keys in the provided definition exist in the specified database table keys.
+ *
+ * @param def The schema definition to validate.
+ *
+ * @returns The provided definition.
+ */
 export const assertDefinitionKeysExistInTable =
   <TTableKeys extends string>() =>
   <TDef extends DefinitionShape>(def: AssertDefinitionKeysExistInTable<TDef, TTableKeys>) =>
     def
+
+/**
+ * Defines the base structure for CRUD operations, containing schemas for insert, select, and update actions alongside entity metadata.
+ */
 export type CrudSchemasBase<
   Insert extends Schema.Top,
   Select extends Schema.Top,
   Update extends Schema.Top,
 > = {
+  /**
+   * Metadata tags associated with the entity.
+   */
   readonly tags: { entity: string }
+
+  /**
+   * Schema for insert operations.
+   */
   readonly insertSchema: Insert
+
+  /**
+   * Schema for select operations.
+   */
   readonly selectSchema: Select
+
+  /**
+   * Schema for update operations.
+   */
   readonly updateSchema: Update
+
+  /**
+   * List of field names that are allowed in update operations.
+   */
   readonly updatefieldNames: Array<string>
 }
 
+/**
+ * Extends CrudSchemasBase with audit field inclusion enabled.
+ */
 export type CrudSchemasWithAudit<
   Insert extends Schema.Top,
   Select extends Schema.Top,
@@ -58,6 +91,9 @@ export type CrudSchemasWithAudit<
   includeAuditFields: true
 }
 
+/**
+ * Extends CrudSchemasBase with audit field inclusion optionally disabled.
+ */
 export type CrudSchemasWithoutAudit<
   Insert extends Schema.Top,
   Select extends Schema.Top,
@@ -66,6 +102,9 @@ export type CrudSchemasWithoutAudit<
   includeAuditFields?: false
 }
 
+/**
+ * A union type representing CRUD schemas either with or without audit fields.
+ */
 export type CrudSchemas<
   Insert extends Schema.Top,
   Select extends Schema.Top,

@@ -2,6 +2,15 @@ import { Effect, Schema } from 'effect'
 import { SchemaValidationError } from '../error/SchemaValidationError.js'
 import type { SchemaError } from 'effect/Schema'
 
+/**
+ * Parses a JSON string and decodes it into a schema object synchronously.
+ *
+ * @param schema The target schema definition.
+ *
+ * @param content The JSON string to be decoded.
+ *
+ * @returns The decoded schema object.
+ */
 export const jsonString2SchemaObjectWithoutEffect = <S extends Schema.Schema<any>>(
   schema: S,
   content: string,
@@ -10,6 +19,17 @@ export const jsonString2SchemaObjectWithoutEffect = <S extends Schema.Schema<any
     JSON.parse(content),
   )
 
+/**
+ * Decodes an unknown input into a schema object, returning a ParseResult.
+ *
+ * @param schema The target schema.
+ *
+ * @param input The input data to decode.
+ *
+ * @param includeAllErrors Whether to collect all decoding errors. Defaults to false.
+ *
+ * @returns A ParseResult containing the decoded object or error details.
+ */
 export const convertToSchemaObjectWithResult = <S extends Schema.Schema<any>>(
   schema: S,
   input: unknown,
@@ -21,6 +41,17 @@ export const convertToSchemaObjectWithResult = <S extends Schema.Schema<any>>(
   )
 }
 
+/**
+ * Creates an Effect operation to decode an unknown input into a schema object, wrapping errors in a SchemaValidationError.
+ *
+ * @param schemaName The identifier for the schema used for error reporting.
+ *
+ * @param schema The schema to decode against.
+ *
+ * @param input The input to decode.
+ *
+ * @returns An Effect performing the decode operation, failing with a SchemaValidationError on error.
+ */
 export const convertToSchemaObjectWithEffect =
   (schemaName: string) =>
   <S extends Schema.Schema<any>>(schema: S, input: unknown) =>
@@ -37,6 +68,17 @@ export const convertToSchemaObjectWithEffect =
       ),
     )
 
+/**
+ * Creates an Effect operation to encode a schema object, wrapping errors in a SchemaValidationError.
+ *
+ * @param schemaName The identifier for the schema used for error reporting.
+ *
+ * @param schema The schema definition.
+ *
+ * @param input The object to encode.
+ *
+ * @returns An Effect performing the encode operation, failing with a SchemaValidationError on error.
+ */
 export const convertFromSchemaObjectWithEffect =
   (schemaName: string) =>
   <S extends Schema.Schema<any>>(schema: S, input: S['Type']) =>
@@ -53,7 +95,14 @@ export const convertFromSchemaObjectWithEffect =
       ),
     )
 
+/**
+ * Represents a schema compatible with standard schema V1 and structurally required as a Struct.
+ */
 export type EffectSchema = Parameters<typeof Schema.toStandardSchemaV1>[0] & Schema.Struct<any>
+
+/**
+ * A union type defining schemas that are either arrays of structures or individual structures compatible with the system.
+ */
 export type EffectArrayableSchema =
   | (Parameters<typeof Schema.toStandardSchemaV1>[0] & Schema.$Array<Schema.Struct<any>>)
   | EffectSchema

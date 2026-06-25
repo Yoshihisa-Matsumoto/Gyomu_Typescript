@@ -3,6 +3,9 @@ import { TargetDateSchema } from './date.js'
 import { schemaField } from './fields.js'
 import type { EntityDefinition, Fields } from './type.js'
 
+/**
+ * Defines the application information entity schema, including description and mail contact settings.
+ */
 export const appInfoDefinition = {
   fields: {
     description: schemaField.text({ maxLength: 50 }),
@@ -21,12 +24,20 @@ export const appInfoDefinition = {
     },
   },
 } as const satisfies EntityDefinition<Fields, false>
+
+/**
+ * Defines the status type entity schema for categorization purposes.
+ */
 export const statusTypeDefinition = {
   fields: {
     description: schemaField.optionalText({ maxLength: 15 }),
   },
   tags: { entity: 'StatusType' },
 } as const satisfies EntityDefinition<Fields, false>
+
+/**
+ * Defines the status handler entity schema for managing recipient information associated with applications and status types.
+ */
 export const statusHandlerDefinition = {
   fields: {
     applicationId: schemaField.id,
@@ -46,6 +57,9 @@ export const statusHandlerDefinition = {
   },
 } as const satisfies EntityDefinition<Fields, false>
 
+/**
+ * Defines the status information entity schema, including error reporting, instance tracking, and diagnostic details.
+ */
 export const statusInformationDefinition = {
   fields: {
     applicationId: schemaField.id,
@@ -71,6 +85,9 @@ export const statusInformationDefinition = {
   },
 } as const satisfies EntityDefinition<Fields, true>
 
+/**
+ * Defines the market holiday entity schema for tracking holidays by market and year.
+ */
 export const marketHolidayDefinition = {
   fields: {
     market: schemaField.stringEnum({ enumValues: ['JP', 'US'] }),
@@ -95,6 +112,9 @@ export const marketHolidayDefinition = {
   },
 } as const satisfies EntityDefinition<Fields, false>
 
+/**
+ * Defines the milestone entity schema, storing identification and descriptive details.
+ */
 export const milestoneDefinition = {
   fields: {
     milestoneId: schemaField.text({ maxLength: 200 }),
@@ -107,6 +127,10 @@ export const milestoneDefinition = {
     },
   },
 } as const satisfies EntityDefinition<Fields, false>
+
+/**
+ * Defines the daily milestone entity schema for tracking time-based milestone targets.
+ */
 export const milestoneDailyDefinition = {
   fields: {
     targetType: schemaField.text({ maxLength: 10 }), // 'daily' | 'monthly'
@@ -126,6 +150,9 @@ export const milestoneDailyDefinition = {
   },
 } as const satisfies EntityDefinition<Fields, true>
 
+/**
+ * Defines the domain model for daily milestones, containing audit information and target references.
+ */
 export const MilestoneDailyDomainSchema = Schema.Struct({
   id: schemaField.id,
   modifiedAt: schemaField.timestampString,
@@ -134,6 +161,9 @@ export const MilestoneDailyDomainSchema = Schema.Struct({
   target: TargetDateSchema,
 })
 
+/**
+ * Defines the variable parameter entity schema, mapping keys to descriptions.
+ */
 export const variableParameterDefinition = {
   fields: {
     variableKey: schemaField.text({ maxLength: 20 }),
@@ -147,6 +177,9 @@ export const variableParameterDefinition = {
   },
 } as const satisfies EntityDefinition<Fields, false>
 
+/**
+ * Defines the parameter master entity schema for central configuration items.
+ */
 export const parameterMasterDefinition = {
   fields: {
     itemKey: schemaField.text({ maxLength: 50 }),
@@ -163,6 +196,9 @@ export const parameterMasterDefinition = {
   },
 } as const satisfies EntityDefinition<Fields, false>
 
+/**
+ * Defines the task information entity schema, detailing task execution properties and location.
+ */
 export const taskInfoDefinition = {
   fields: {
     applicationId: schemaField.id,
@@ -181,6 +217,9 @@ export const taskInfoDefinition = {
   },
 } as const satisfies EntityDefinition<Fields, false>
 
+/**
+ * Defines the task information access control list entity schema for managing account permissions.
+ */
 export const taskInfoAccessListDefitniion = {
   fields: {
     applicationId: schemaField.id,
@@ -200,6 +239,9 @@ export const taskInfoAccessListDefitniion = {
   },
 } as const satisfies EntityDefinition<Fields, false>
 
+/**
+ * Defines the task data entity schema, used to store task parameters and parent-child task associations.
+ */
 export const taskDataDefinition = {
   fields: {
     applicationId: schemaField.id,
@@ -218,6 +260,9 @@ export const taskDataDefinition = {
   },
 } as const satisfies EntityDefinition<Fields, true>
 
+/**
+ * Defines the task instance entity schema for monitoring individual task progress and status.
+ */
 export const taskInstanceDefinition = {
   fields: {
     taskDataId: schemaField.id,
@@ -239,6 +284,9 @@ export const taskInstanceDefinition = {
   },
 } as const satisfies EntityDefinition<Fields, true>
 
+/**
+ * Defines the task instance submission information entity schema.
+ */
 export const taskInstanceSubmitInformationDefinition = {
   fields: {
     taskInstanceId: schemaField.id,
@@ -247,6 +295,9 @@ export const taskInstanceSubmitInformationDefinition = {
   tags: { entity: 'TaskInstanceSubmitInformation' },
 } as const satisfies EntityDefinition<Fields, false>
 
+/**
+ * Defines the task data status entity schema, aggregating current state and latest instance information.
+ */
 export const taskDataStatusDefinition = {
   fields: {
     taskDataId: schemaField.id,
@@ -264,6 +315,9 @@ export const taskDataStatusDefinition = {
   },
 } as const satisfies EntityDefinition<Fields, true>
 
+/**
+ * Defines the task data log entity schema for tracking operational logs related to tasks.
+ */
 export const taskDataLogDefinition = {
   fields: {
     taskDataId: schemaField.id,
@@ -278,6 +332,9 @@ export const taskDataLogDefinition = {
   },
 } as const satisfies EntityDefinition<Fields, true>
 
+/**
+ * Defines the service type entity schema for categorizing services by implementation details.
+ */
 export const serviceTypeDefinition = {
   fields: {
     description: schemaField.text({ maxLength: 100 }),
@@ -293,6 +350,9 @@ export const serviceTypeDefinition = {
   },
 } as const satisfies EntityDefinition<Fields, false>
 
+/**
+ * Defines the service entity schema, describing service parameters and type associations.
+ */
 export const serviceDefinition = {
   fields: {
     description: schemaField.text({ maxLength: 100 }),
@@ -307,6 +367,9 @@ export const serviceDefinition = {
   },
 } as const satisfies EntityDefinition<Fields, false>
 
+/**
+ * Defines the task scheduler configuration entity schema for managing scheduled task parameters and triggers.
+ */
 export const taskSchedulerConfigDefinition = {
   fields: {
     serviceId: schemaField.id,

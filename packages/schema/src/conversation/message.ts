@@ -1,6 +1,9 @@
 import { Schema, SchemaTransformation } from 'effect'
 import { JsonObjectSchema } from '../core/jsonValue.js'
 
+/**
+ * Defines the role of a message participant, such as assistant, user, or system.
+ */
 export enum MessageRole {
   assistant = 'assistant',
   user = 'user',
@@ -20,6 +23,10 @@ enum AttachmentType {
   audio = 'audio',
   file = 'file',
 }
+
+/**
+ * Defines the schema for an attachment, including its ID, type, URL, and optional MIME type.
+ */
 export const AttachmentSchema = Schema.Struct({
   id: Schema.String,
   type: Schema.Enum(AttachmentType),
@@ -27,13 +34,23 @@ export const AttachmentSchema = Schema.Struct({
   mimeType: Schema.optional(Schema.String),
 })
 
+/**
+ * Represents a message attachment derived from the AttachmentSchema.
+ */
 export type Attachment = Schema.Schema.Type<typeof AttachmentSchema>
 
+/**
+ * Defines the schema for sending a message, requiring text and optional metadata or attachments.
+ */
 export const SendMessageInputSchema = Schema.Struct({
   text: Schema.String,
   metadata: Schema.optional(JsonObjectSchema),
   attachments: Schema.optional(Schema.Array(AttachmentSchema)),
 })
+
+/**
+ * Represents the input structure for sending a message derived from the SendMessageInputSchema.
+ */
 export type SendMessageInput = Schema.Schema.Type<typeof SendMessageInputSchema>
 
 const IsoDateTime = Schema.String.pipe(
@@ -46,6 +63,9 @@ const IsoDateTime = Schema.String.pipe(
   ),
 )
 
+/**
+ * Defines the schema for a message, including an ID, role, content, and optional creation timestamp and metadata.
+ */
 export const MessageSchema = Schema.Struct({
   id: Schema.String,
   role: Schema.Enum(MessageRole),
@@ -54,4 +74,7 @@ export const MessageSchema = Schema.Struct({
   metadata: Schema.optional(JsonObjectSchema),
 })
 
+/**
+ * Represents a message entity derived from the MessageSchema.
+ */
 export type Message = Schema.Schema.Type<typeof MessageSchema>

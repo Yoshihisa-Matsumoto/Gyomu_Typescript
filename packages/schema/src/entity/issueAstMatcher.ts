@@ -2,6 +2,15 @@ import { makeFormatterStandardSchemaV1 } from 'effect/SchemaIssue'
 import type { CrudSchemaType, Fields } from './type.js'
 import type { SchemaIssue } from 'effect'
 
+/**
+ * Resolves field-specific error messages from a schema issue by flattening the issue tree and mapping messages to their corresponding schema fields.
+ *
+ * @param schema The CRUD schema structure to resolve fields against.
+ *
+ * @param issue The validation issue to process.
+ *
+ * @returns A map where keys are field identifiers and values are arrays of associated error messages.
+ */
 export const resolveFieldErrorsFromIssue = <TFields extends Fields>(
   schema: CrudSchemaType<TFields, boolean>,
   issue: SchemaIssue.Issue,
@@ -41,6 +50,13 @@ const resolveField = <TFields extends Fields>(
   }
 }
 
+/**
+ * Flattens a schema issue into a standard format, extracting path and message information for each individual issue.
+ *
+ * @param issue The complex schema issue to flatten.
+ *
+ * @returns An array of flattened issues, each containing a normalized path and an error message.
+ */
 export const flattenIssues = (issue: SchemaIssue.Issue) => {
   const result = makeFormatterStandardSchemaV1()(issue)
   return result.issues.map((f) => ({

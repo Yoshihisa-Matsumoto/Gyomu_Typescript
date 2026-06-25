@@ -62,6 +62,7 @@ function wrapError<Ctor extends new (ctx: any) => any>(
     cause: error,
   })
 }
+
 /**
  * Fails the effect with the specified error type if the condition is false.
  *

@@ -5,6 +5,9 @@ import type { AccessError } from '../../error/AccessError.js'
 import type { IOError } from '../../error/IOError.js'
 import type { TimeoutError } from '../../error/TimeoutError.js'
 
+/**
+ * Provides a service for managing file access and synchronization, including checking accessibility and managing exclusive locks.
+ */
 export class FileAccessService extends Context.Service<
   FileAccessService,
   {

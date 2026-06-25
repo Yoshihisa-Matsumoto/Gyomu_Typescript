@@ -1,3 +1,10 @@
+/**
+ * Encodes a UTF-8 string into a Shift-JIS encoded Node.js Buffer.
+ *
+ * @param source The UTF-8 string to encode.
+ *
+ * @returns A Buffer containing the Shift-JIS encoded data.
+ */
 export const encodeUtf8ToShiftJisBuffer = (source: string) => {
   const encoded = encode2ShiftJIS(source).buffer
   return Buffer.from(encoded)
@@ -29,6 +36,13 @@ const initTable = () => {
   }
 }
 
+/**
+ * Encodes a string into a Shift-JIS encoded Uint8Array.
+ *
+ * @param content The string to encode.
+ *
+ * @returns A Uint8Array containing the Shift-JIS encoded bytes.
+ */
 export function encode2ShiftJIS(content: string) {
   initTable()
   const buffer = []

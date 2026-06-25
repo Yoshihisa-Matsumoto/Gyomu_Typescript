@@ -6,6 +6,9 @@ import type { SchemaValidationError } from '../../error/SchemaValidationError.js
 
 type ParameterType = string | number | boolean
 
+/**
+ * A service for retrieving and managing typed application parameters, supporting user-specific contexts and historical lookups.
+ */
 export class ParameterService extends Context.Service<
   ParameterService,
   {
