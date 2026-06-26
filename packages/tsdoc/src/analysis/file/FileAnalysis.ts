@@ -24,7 +24,7 @@ export interface FileAnalysis {
    */
   exports: Array<ExportAnalysis>
 
-  internals: Array<SymbolAnalysis>
+  symbols: Array<SymbolAnalysis>
 
   /**
    * File dependency relationships.

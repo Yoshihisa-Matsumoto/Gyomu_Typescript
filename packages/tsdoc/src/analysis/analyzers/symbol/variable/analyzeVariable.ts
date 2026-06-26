@@ -20,7 +20,7 @@ import type { AnalysisOptions } from '../../../AnalysisOption.js'
 import type { FileAnalysisMetadata } from '../../../file/FileAnalysisResult.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
-export const analyzeVariableDeclaration = (args: {
+export const analyzeVariable = (args: {
   declaration: VariableDeclaration
   sourceRelativePath: ProjectRelativePath
   metadata: FileAnalysisMetadata

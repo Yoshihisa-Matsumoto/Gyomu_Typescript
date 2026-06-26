@@ -96,6 +96,11 @@ const computeOtherTag = (tag: ParsedTag): string => {
 
 const computeThrowTag = (throwTag: JsDocThrows): string => {
   let text = `@throws`
-  if (throwTag.description) text += ` ${throwTag.type} ${throwTag.description}`
+
+  if (throwTag.description) {
+    if (throwTag.type) {
+      text += ` ${throwTag.type} ${throwTag.description}`
+    } else text += ` ${throwTag.description}`
+  }
   return text
 }

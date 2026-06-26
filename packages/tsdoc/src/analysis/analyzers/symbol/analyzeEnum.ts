@@ -9,7 +9,7 @@ import type { EnumDeclaration } from 'ts-morph'
 import type { JSDocableTagAnalysisArg } from '../types.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
-export const analyzeEnumDeclaration = (args: JSDocableTagAnalysisArg<EnumDeclaration>) => {
+export const analyzeEnum = (args: JSDocableTagAnalysisArg<EnumDeclaration>) => {
   const typeName = args.name ?? args.declaration.getName()
   const prepared = prepareSymbolAnalysis(
     args.declaration,
@@ -58,6 +58,7 @@ export const analyzeEnumDeclaration = (args: JSDocableTagAnalysisArg<EnumDeclara
   return {
     symbol,
     isDefault: args.declaration.isDefaultExport(),
+    isExported: args.declaration.isExported(),
   }
 }
 

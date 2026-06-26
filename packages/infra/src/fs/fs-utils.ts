@@ -100,9 +100,20 @@ export const writeToFile = (
     const fs = yield* FileSystem.FileSystem
     const dir = dirname(path)
 
-    yield* fs.makeDirectory(dir, {
-      recursive: true,
-    })
+    yield* fs
+      .makeDirectory(dir, {
+        recursive: true,
+      })
+      .pipe(
+        Effect.mapError((e) =>
+          wrapIOError(e, () => ({
+            message: 'fail to create directory',
+            target: path,
+            layer: 'filesystem' as const,
+            operation: 'write' as const,
+          })),
+        ),
+      )
     return yield* fs.writeFile(path, data, options).pipe(
       Effect.mapError((e) =>
         wrapIOError(e, () => ({
@@ -126,9 +137,20 @@ export const writeStringToFile = (
     const fs = yield* FileSystem.FileSystem
     const dir = dirname(path)
 
-    yield* fs.makeDirectory(dir, {
-      recursive: true,
-    })
+    yield* fs
+      .makeDirectory(dir, {
+        recursive: true,
+      })
+      .pipe(
+        Effect.mapError((e) =>
+          wrapIOError(e, () => ({
+            message: 'fail to create directory',
+            target: path,
+            layer: 'filesystem' as const,
+            operation: 'write' as const,
+          })),
+        ),
+      )
     return yield* fs.writeFileString(path, data, options).pipe(
       Effect.mapError((e) =>
         wrapIOError(e, () => ({

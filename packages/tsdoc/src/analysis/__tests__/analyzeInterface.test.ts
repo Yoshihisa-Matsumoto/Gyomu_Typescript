@@ -21,7 +21,7 @@ const interfaceAnalysisProgram = (sourceFile: string): SymbolAnalysis => {
     Effect.gen(function* () {
       return yield* analyzeFile(interfaceFixture, filePath, {
         includeDebugInfo: true,
-      }).pipe(Effect.map((result) => result.analysis.exports[0]?.symbol))
+      }).pipe(Effect.map((result) => result.analysis.symbols[0]))
     }),
   )
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition

@@ -1,5 +1,11 @@
 # @gyomu/schema
 
+## 0.2.4-beta.7
+
+### Patch Changes
+
+- tsdoc generation for @gyomu/schema
+
 ## 0.2.4-beta.6
 
 ### Patch Changes

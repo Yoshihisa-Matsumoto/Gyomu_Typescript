@@ -21,7 +21,7 @@ import type { JSDocableTagAnalysisArg } from '../../types.js'
 import type { FileAnalysisMetadata } from '../../../file/FileAnalysisResult.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
-export const analyzeClassDeclaration = (args: JSDocableTagAnalysisArg<ClassDeclaration>) => {
+export const analyzeClass = (args: JSDocableTagAnalysisArg<ClassDeclaration>) => {
   const typeName = args.name ?? args.declaration.getName() ?? ''
   const prepared = prepareSymbolAnalysis(
     args.declaration,
@@ -78,6 +78,7 @@ export const analyzeClassDeclaration = (args: JSDocableTagAnalysisArg<ClassDecla
   return {
     symbol,
     isDefault: args.declaration.isDefaultExport(),
+    isExported: args.declaration.isExported(),
   }
 }
 

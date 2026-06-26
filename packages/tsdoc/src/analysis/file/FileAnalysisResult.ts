@@ -6,10 +6,12 @@ import type {
 } from '@gyomu/schema/typescript'
 
 import type { FileAnalysis } from './FileAnalysis.js'
+import type { DependencyRequirement } from '../graph/DependencyRequirement.js'
 
 export interface FileAnalysisResult {
   analysis: FileAnalysis
   metadata: FileAnalysisMetadata
+  transient: FileAnalysisTransient
 }
 
 export interface FileAnalysisMetadata {
@@ -21,4 +23,8 @@ export interface DocumentableTarget {
   analysis: SymbolAnalysis | DocumentableMemberAnalysis
 
   indent: string
+}
+
+export interface FileAnalysisTransient {
+  dependencyRequirements: ReadonlyMap<SymbolId, ReadonlyArray<DependencyRequirement>>
 }

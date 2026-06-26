@@ -1,5 +1,6 @@
 import { defaultComplexityStrategy, modeResolver } from '@gyomu/ai-compiler/jsdoc-update'
 import { withOptional } from '@gyomu/schema'
+import { equalSymbolIdentity } from '@gyomu/schema/schemas/typescript'
 import { UpdateError } from '../error/UpdateError.js'
 import { computeComplexityScore } from '../../evaluation/complexity/computeComplexityScore.js'
 import { buildContextEntry } from './buildContextEntry.js'
@@ -27,8 +28,19 @@ export const buildJsDocUpdateContext = (
   }
 
   const results: Array<TsDocSymbolContext> = fileContext.symbols
-  for (const exportInfo of fileResult.analysis.exports) {
-    const symbol = exportInfo.symbol
+  for (const exportInfo of fileResult.analysis.exports.filter((e) => e.kind == 'local')) {
+    const symbol = fileResult.analysis.symbols.find((s) =>
+      equalSymbolIdentity(s.identity, exportInfo.identity),
+    )
+    if (!symbol) {
+      throw new UpdateError({
+        cause: undefined,
+        filePath: fileResult.analysis.path,
+        message: 'Symbol Not Found',
+        phase: 'context-build',
+        details: exportInfo.identity,
+      })
+    }
     if (symbol.signature.isOverloadImplementation) continue
     const jsDocAnalysis = symbol.jsDoc
     const hasJsDoc = symbol.jsDoc != null && symbol.jsDoc.exists

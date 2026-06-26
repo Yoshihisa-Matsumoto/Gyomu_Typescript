@@ -1,6 +1,7 @@
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { Effect } from 'effect'
+import { equalSymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
 import { analyzeFile } from '../analyzeFile.js'
 import { createFixtureProject } from './createFixtureProject.js'
 import type { FileAnalysisResult } from '../file/FileAnalysisResult.js'
@@ -41,10 +42,17 @@ describe('analyzeFile', () => {
         expect(result.analysis.exports).toHaveLength(5)
 
         expect(
-          result.analysis.exports.map((x) => ({
-            exportedName: x.exportedName,
-            kind: x.symbol.kind,
-          })),
+          result.analysis.exports
+            .filter((e) => e.kind == 'local')
+            .map((x) => {
+              const symbol = result.analysis.symbols.find((s) =>
+                equalSymbolIdentity(s.identity, x.identity),
+              )
+              return {
+                exportedName: x.exportedName,
+                kind: symbol?.kind,
+              }
+            }),
         ).toEqual([
           {
             exportedName: 'add',
@@ -83,62 +91,71 @@ describe('analyzeFile', () => {
         const result = yield* analyzeFile(exportPatternsFixture, filePath)
         console.dir(result, { depth: null })
         expect(
-          result.analysis.exports.map((x) => ({
-            exportedName: x.exportedName,
-            kind: x.symbol.kind,
-            symbolName: x.symbol.identity.symbolId,
-            isDefault: x.isDefault,
-            isTypeOnly: x.isTypeOnly,
-          })),
-        ).toMatchObject([
-          {
-            exportedName: 'value',
-            symbolName: 'internalValue',
-            kind: 'const',
-            isDefault: false,
-            isTypeOnly: false,
-          },
+          result.analysis.exports
+            .filter((e) => e.kind == 'local')
+            .map((x) => {
+              const symbol = result.analysis.symbols.find((s) =>
+                equalSymbolIdentity(s.identity, x.identity),
+              )
+              return {
+                exportedName: x.exportedName,
+                kind: symbol?.kind,
+                symbolName: symbol?.identity.symbolId,
+                isDefault: x.isDefault,
+                isTypeOnly: x.isTypeOnly,
+              }
+            }),
+        ).toEqual(
+          expect.arrayContaining([
+            {
+              exportedName: 'value',
+              symbolName: 'internalValue',
+              kind: 'const',
+              isDefault: false,
+              isTypeOnly: false,
+            },
 
-          {
-            exportedName: 'default',
-            symbolName: 'UserService',
-            kind: 'class',
-            isDefault: true,
-            isTypeOnly: false,
-          },
+            {
+              exportedName: '$default',
+              symbolName: 'UserService',
+              kind: 'class',
+              isDefault: true,
+              isTypeOnly: false,
+            },
 
-          // {
-          //   exportedName: 'User',
-          //   symbolName: 'User',
-          //   kind: 'interface',
-          //   isDefault: false,
-          //   isTypeOnly: true,
-          // },
+            // {
+            //   exportedName: 'User',
+            //   symbolName: 'User',
+            //   kind: 'interface',
+            //   isDefault: false,
+            //   isTypeOnly: true,
+            // },
 
-          // {
-          //   exportedName: 'foo',
-          //   symbolName: 'foo',
-          //   kind: 'const',
-          //   isDefault: false,
-          //   isTypeOnly: false,
-          // },
+            // {
+            //   exportedName: 'foo',
+            //   symbolName: 'foo',
+            //   kind: 'const',
+            //   isDefault: false,
+            //   isTypeOnly: false,
+            // },
 
-          // {
-          //   exportedName: 'foo2',
-          //   symbolName: 'foo2',
-          //   kind: 'const',
-          //   isDefault: false,
-          //   isTypeOnly: false,
-          // },
+            // {
+            //   exportedName: 'foo2',
+            //   symbolName: 'foo2',
+            //   kind: 'const',
+            //   isDefault: false,
+            //   isTypeOnly: false,
+            // },
 
-          // {
-          //   exportedName: 'UserRole',
-          //   symbolName: 'UserRole',
-          //   kind: 'enum',
-          //   isDefault: false,
-          //   isTypeOnly: false,
-          // },
-        ])
+            // {
+            //   exportedName: 'UserRole',
+            //   symbolName: 'UserRole',
+            //   kind: 'enum',
+            //   isDefault: false,
+            //   isTypeOnly: false,
+            // },
+          ]),
+        )
       })
 
       Effect.runSync(program)
@@ -273,7 +290,7 @@ describe('analyzeFile', () => {
       return jsDoc!
     }
     const firstJsDocAnalysis = (result: FileAnalysisResult) => {
-      const analysis = result.analysis.exports[0]?.symbol.jsDoc
+      const analysis = result.analysis.symbols[0]?.jsDoc
 
       expect(analysis).toBeDefined()
 

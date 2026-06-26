@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { calculateComplexityMetrics } from '../calculateComplexityMetrics.js'
 import type { FileAnalysisResult } from '../../../analysis/file/FileAnalysisResult.js'
+import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
 
 describe('calculateComplexityMetrics', () => {
   it('returns empty map when no exports exist', () => {
@@ -14,26 +15,34 @@ describe('calculateComplexityMetrics', () => {
   })
   it('counts optional properties and referenced types', () => {
     const symbolId = 'User'
-
+    const symbolIdentity: SymbolIdentity = {
+      signatureId: 'property',
+      symbolId,
+    }
     const result = calculateComplexityMetrics({
       analysis: {
         exports: [
           {
-            symbol: {
-              id: symbolId,
-              members: [
-                {
-                  documentable: true,
-                  kind: 'property',
-                  optional: true,
-                  type: {
-                    structure: {
-                      kind: 'reference',
-                    },
+            kind: 'local',
+            identity: symbolIdentity,
+          },
+        ],
+        symbols: [
+          {
+            id: symbolId,
+            identity: symbolIdentity,
+            members: [
+              {
+                documentable: true,
+                kind: 'property',
+                optional: true,
+                type: {
+                  structure: {
+                    kind: 'reference',
                   },
                 },
-              ],
-            },
+              },
+            ],
           },
         ],
       },
@@ -48,19 +57,27 @@ describe('calculateComplexityMetrics', () => {
 
   it('counts union types', () => {
     const symbolId = 'Status'
-
+    const symbolIdentity: SymbolIdentity = {
+      signatureId: 'property',
+      symbolId,
+    }
     const result = calculateComplexityMetrics({
       analysis: {
         exports: [
           {
-            symbol: {
-              id: symbolId,
-              members: [],
-              type: {
-                structure: {
-                  kind: 'union',
-                  types: [{}, {}, {}],
-                },
+            kind: 'local',
+            identity: symbolIdentity,
+          },
+        ],
+        symbols: [
+          {
+            id: symbolId,
+            identity: symbolIdentity,
+            members: [],
+            type: {
+              structure: {
+                kind: 'union',
+                types: [{}, {}, {}],
               },
             },
           },
@@ -75,38 +92,46 @@ describe('calculateComplexityMetrics', () => {
 
   it('counts nested referenced types recursively', () => {
     const symbolId = 'User'
-
+    const symbolIdentity: SymbolIdentity = {
+      signatureId: 'property',
+      symbolId,
+    }
     const result = calculateComplexityMetrics({
       analysis: {
         exports: [
           {
-            symbol: {
-              id: symbolId,
-              members: [
-                {
-                  documentable: true,
-                  kind: 'property',
-                  optional: false,
-                  type: {
-                    structure: {
-                      kind: 'object',
-                      members: [
-                        {
-                          documentable: true,
-                          kind: 'property',
-                          optional: false,
-                          type: {
-                            structure: {
-                              kind: 'reference',
-                            },
+            kind: 'local',
+            identity: symbolIdentity,
+          },
+        ],
+        symbols: [
+          {
+            id: symbolId,
+            identity: symbolIdentity,
+            members: [
+              {
+                documentable: true,
+                kind: 'property',
+                optional: false,
+                type: {
+                  structure: {
+                    kind: 'object',
+                    members: [
+                      {
+                        documentable: true,
+                        kind: 'property',
+                        optional: false,
+                        type: {
+                          structure: {
+                            kind: 'reference',
                           },
                         },
-                      ],
-                    },
+                      },
+                    ],
                   },
                 },
-              ],
-            },
+              },
+            ],
           },
         ],
       },

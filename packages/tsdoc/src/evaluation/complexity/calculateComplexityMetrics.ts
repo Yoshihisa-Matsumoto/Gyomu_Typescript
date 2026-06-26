@@ -1,3 +1,4 @@
+import { equalSymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
 import { mergeComplexityMetrics } from './mergeComplexityMetrics.js'
 import { emptyComplexityMetrics } from './emptyComplexityMetrics.js'
 import { computeEffectComplexity } from './computeEffectComplexity.js'
@@ -18,8 +19,11 @@ export const calculateComplexityMetrics = (
   fileAnalysisResult: FileAnalysisResult,
 ): Map<SymbolId, ComplexityMetrics> => {
   const map = new Map<SymbolId, ComplexityMetrics>()
-  for (const symbol of fileAnalysisResult.analysis.exports) {
-    map.set(symbol.symbol.id, calculateComplexityMetricsFromSymbol(symbol.symbol))
+  for (const exportItem of fileAnalysisResult.analysis.exports.filter((e) => e.kind == 'local')) {
+    const symbol = fileAnalysisResult.analysis.symbols.find((s) =>
+      equalSymbolIdentity(s.identity, exportItem.identity),
+    )
+    if (symbol) map.set(symbol.id, calculateComplexityMetricsFromSymbol(symbol))
   }
   return map
 }

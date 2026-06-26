@@ -6,6 +6,7 @@ import { writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { describe, expect, it } from 'vitest'
 import { Effect } from 'effect'
+import { equalSymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
 import { analyzeFile } from '../analyzeFile.js'
 import { createFixtureProject } from './createFixtureProject.js'
 import type {
@@ -84,7 +85,7 @@ describe('analyzeFile-complex pattern', () => {
       const exported = result.analysis.exports[0]
       expect(exported?.exportedName).toBe('UserService')
 
-      const symbol = exported?.symbol
+      const symbol = result.analysis.symbols[0]
 
       expect(symbol?.kind).toBe('class')
       expect(symbol?.identity).toEqual({
@@ -192,11 +193,15 @@ describe('analyzeFile-complex pattern', () => {
       console.dir(result, { depth: null })
       expect(result.metadata.parsedJsDocs.size).toBe(4)
 
-      const exported = result.analysis.exports[0]
-      expect(exported?.exportedName).toBe('UserService')
+      const exported = result.analysis.exports.filter((e) => e.kind == 'local')[0]
+      if (!exported) {
+        throw new Error('Unexpected')
+      }
+      expect(exported.exportedName).toBe('UserService')
 
-      const symbol = exported?.symbol
-
+      const symbol = result.analysis.symbols.find((s) =>
+        equalSymbolIdentity(s.identity, exported.identity),
+      )
       expect(symbol?.kind).toBe('interface')
       expect(symbol?.identity).toEqual({
         symbolId: 'UserService',
@@ -296,7 +301,7 @@ describe('analyzeFile-complex pattern', () => {
       const exported = result.analysis.exports[0]
       expect(exported?.exportedName).toBe('User')
 
-      const symbol = exported?.symbol
+      const symbol = result.analysis.symbols[0]
 
       expect(symbol?.kind).toBe('type')
       expect(symbol?.identity).toEqual({
@@ -376,7 +381,7 @@ describe('analyzeFile-complex pattern', () => {
       const exported = result.analysis.exports[0]
       expect(exported?.exportedName).toBe('Repository')
 
-      const symbol = exported?.symbol
+      const symbol = result.analysis.symbols[0]
 
       expect(symbol?.kind).toBe('interface')
       expect(symbol?.identity).toEqual({
@@ -456,7 +461,7 @@ describe('analyzeFile-complex pattern', () => {
       const exported = result.analysis.exports[0]
       expect(exported?.exportedName).toBe('ApiResponse')
 
-      const symbol = exported?.symbol
+      const symbol = result.analysis.symbols[0]
 
       expect(symbol?.kind).toBe('interface')
       expect(symbol?.identity).toEqual({
@@ -533,7 +538,7 @@ describe('analyzeFile-complex pattern', () => {
       const exported = result.analysis.exports[0]
       expect(exported?.exportedName).toBe('Formatter')
 
-      const symbol = exported?.symbol
+      const symbol = result.analysis.symbols[0]
 
       expect(symbol?.kind).toBe('interface')
       expect(symbol?.identity).toEqual({
@@ -618,7 +623,7 @@ describe('analyzeFile-complex pattern', () => {
       const exported = result.analysis.exports[0]
       expect(exported?.exportedName).toBe('MixedService')
 
-      const symbol = exported?.symbol
+      const symbol = result.analysis.symbols[0]
 
       expect(symbol?.kind).toBe('class')
 
@@ -716,7 +721,7 @@ describe('analyzeFile-complex pattern', () => {
       const exported = result.analysis.exports[0]
       expect(exported?.exportedName).toBe('ApiResponse')
 
-      const symbol = exported?.symbol
+      const symbol = result.analysis.symbols[0]
 
       expect(symbol?.kind).toBe('interface')
 
@@ -815,7 +820,7 @@ describe('analyzeFile-complex pattern', () => {
       const exported = result.analysis.exports[0]
       expect(exported?.exportedName).toBe('ApiResponse')
 
-      const symbol = exported?.symbol
+      const symbol = result.analysis.symbols[0]
 
       expect(symbol?.kind).toBe('interface')
 
@@ -924,7 +929,7 @@ describe('analyzeFile-complex pattern', () => {
 
       expect(exported?.exportedName).toBe('SearchResponse')
 
-      const symbol = exported?.symbol
+      const symbol = result.analysis.symbols[0]
 
       expect(symbol?.kind).toBe('interface')
 

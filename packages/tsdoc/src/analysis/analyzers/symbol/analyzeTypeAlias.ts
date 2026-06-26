@@ -9,9 +9,7 @@ import type { SymbolAnalysis } from '@gyomu/schema/typescript'
 import type { JSDocableTagAnalysisArg } from '../types.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
-export const analyzeTypeAliasDeclaration = (
-  args: JSDocableTagAnalysisArg<TypeAliasDeclaration>,
-) => {
+export const analyzeTypeAlias = (args: JSDocableTagAnalysisArg<TypeAliasDeclaration>) => {
   const typeName = args.name ?? args.declaration.getName()
   const prepared = prepareSymbolAnalysis(
     args.declaration,
@@ -66,7 +64,8 @@ export const analyzeTypeAliasDeclaration = (
   return {
     symbol: symbol,
     isDefault: args.declaration.isDefaultExport(),
-    exportedName: args.declaration.getName(),
+    exportedName: args.declaration.isDefaultExport() ? '$default' : args.declaration.getName(),
+    isExported: args.declaration.isExported(),
   }
 }
 

@@ -2,19 +2,20 @@ import { Effect } from 'effect'
 import { Project } from 'ts-morph'
 import { toProjectAbsolutePath, toProjectRelativePath } from '../shared/index.js'
 import { loadSourceFile } from './shared/loadSourceFile.js'
-import { extractImport } from './extract/extractImport.js'
 import { extractSymbols } from './extract/extractSymbol.js'
 import type {
   DocumentableTarget,
   FileAnalysisMetadata,
   FileAnalysisResult,
+  FileAnalysisTransient,
 } from './file/FileAnalysisResult.js'
 import type { AnalysisOptions } from './AnalysisOption.js'
 import type { FileAnalysis } from './file/FileAnalysis.js'
 import type { AnalysisError } from './error/AnalysisError.js'
 import type { ProjectRelativePath } from './types.js'
 import type { ProjectContext } from './project/ProjectContext.js'
-import type { ParsedJsDoc } from '@gyomu/schema/typescript'
+import type { ParsedJsDoc, SymbolId } from '@gyomu/schema/typescript'
+import type { DependencyRequirement } from './graph/DependencyRequirement.js'
 
 /**
  * Analyzes a TypeScript source file and produces a {@link FileAnalysis}.
@@ -48,6 +49,9 @@ export const analyzeFile = (
       parsedJsDocs: new Map<string, ParsedJsDoc>(),
       symbols: new Map<string, DocumentableTarget>(),
     }
+    const transient: FileAnalysisTransient = {
+      dependencyRequirements: new Map<SymbolId, ReadonlyArray<DependencyRequirement>>(),
+    }
     const sourceFullPath = toProjectAbsolutePath(sourceFilePath, context.projectRoot)
     const sourceRelativePath = toProjectRelativePath(sourceFilePath, context.projectRoot)
 
@@ -55,7 +59,7 @@ export const analyzeFile = (
     sourceFile.path = sourceRelativePath
 
     // const exports = yield* extractExport(sourceFile, metadata, option)
-    const imports = yield* extractImport(sourceFile, metadata, option)
+    // const imports = yield* extractImport(sourceFile, metadata, option)
 
     const statements = extractSymbols(sourceFile, metadata, option)
 
@@ -69,9 +73,10 @@ export const analyzeFile = (
       analysis: {
         path: sourceRelativePath,
         exports: statements.exported,
-        imports,
-        internals: statements.internals,
+        imports: statements.imported,
+        symbols: statements.internals,
       } satisfies FileAnalysis,
       metadata,
+      transient,
     }
   })

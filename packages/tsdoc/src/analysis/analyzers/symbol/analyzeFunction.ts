@@ -20,7 +20,7 @@ import type { FileAnalysisMetadata } from '../../file/FileAnalysisResult.js'
 import type { ProjectRelativePath } from '../../types.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
 
-export const analyzeFunctionDeclaration = (args: JSDocableTagAnalysisArg<FunctionDeclaration>) => {
+export const analyzeFunction = (args: JSDocableTagAnalysisArg<FunctionDeclaration>) => {
   const typeName = args.name ?? args.declaration.getName() ?? ''
   const prepared = prepareSymbolAnalysis(
     args.declaration,
@@ -75,6 +75,7 @@ export const analyzeFunctionDeclaration = (args: JSDocableTagAnalysisArg<Functio
   return {
     symbol,
     isDefault: args.declaration.isDefaultExport(),
+    isExported: args.declaration.isExported(),
   }
 }
 const normalizeTypeText = (text: string): string => text.replace(/import\([^)]*\)\./g, '')

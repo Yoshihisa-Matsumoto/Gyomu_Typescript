@@ -18,9 +18,7 @@ import type { JSDocableTagAnalysisArg } from '../types.js'
 import type { FileAnalysisMetadata } from '../../file/FileAnalysisResult.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
-export const analyzeInterfaceDeclaration = (
-  args: JSDocableTagAnalysisArg<InterfaceDeclaration>,
-) => {
+export const analyzeInterface = (args: JSDocableTagAnalysisArg<InterfaceDeclaration>) => {
   const typeName = args.name ?? args.declaration.getName()
   const prepared = prepareSymbolAnalysis(
     args.declaration,
@@ -75,6 +73,7 @@ export const analyzeInterfaceDeclaration = (
   return {
     symbol,
     isDefault: args.declaration.isDefaultExport(),
+    isExported: args.declaration.isExported(),
   }
 }
 
