@@ -7,13 +7,13 @@ import { registerSymbolSymbolAnalysis } from '../../../file/registerSymbolSymbol
 import { computeIndent } from '../computeIndent.js'
 import type {
   MemberIdentityMemberPath,
+  ProjectRelativePath,
   SignatureAnalysis,
   SymbolAnalysis,
 } from '@gyomu/schema/typescript'
 
 import type { ArrowFunction, Expression, FunctionExpression, VariableDeclaration } from 'ts-morph'
 import type { SymbolPreparation } from '../prepareSymbolAnalysis.js'
-import type { ProjectRelativePath } from '../../../types.js'
 import type { FileAnalysisMetadata } from '../../../file/FileAnalysisResult.js'
 import type { AnalysisOptions } from '../../../AnalysisOption.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'

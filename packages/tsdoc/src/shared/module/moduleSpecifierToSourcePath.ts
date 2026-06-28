@@ -1,7 +1,7 @@
 import path from 'node:path'
 
 import { normalizeModuleSpecifier } from './normalizeModuleSpecifier.js'
-import type { ProjectRelativePath } from '../../analysis/types.js'
+import type { ProjectRelativePath } from '@gyomu/schema/typescript'
 
 /**
  * Resolves a module specifier into a project-relative source path.

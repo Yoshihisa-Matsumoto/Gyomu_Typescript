@@ -89,23 +89,27 @@ describe('analyzeFile', () => {
 
       const program = Effect.gen(function* () {
         const result = yield* analyzeFile(exportPatternsFixture, filePath)
-        console.dir(result, { depth: null })
-        expect(
-          result.analysis.exports
-            .filter((e) => e.kind == 'local')
-            .map((x) => {
-              const symbol = result.analysis.symbols.find((s) =>
-                equalSymbolIdentity(s.identity, x.identity),
-              )
-              return {
-                exportedName: x.exportedName,
-                kind: symbol?.kind,
-                symbolName: symbol?.identity.symbolId,
-                isDefault: x.isDefault,
-                isTypeOnly: x.isTypeOnly,
-              }
-            }),
-        ).toEqual(
+        // console.dir(result, { depth: null })
+
+        const localExport = result.analysis.exports
+          .filter((e) => e.kind == 'local')
+          .map((x) => {
+            const symbol = result.analysis.symbols.find((s) =>
+              equalSymbolIdentity(s.identity, x.identity),
+            )
+            return {
+              exportedName: x.exportedName,
+              kind: symbol?.kind,
+              symbolName: symbol?.identity.symbolId,
+              isDefault: x.isDefault,
+              isTypeOnly: x.isTypeOnly,
+            }
+          })
+
+        console.dir(localExport, { depth: null })
+        const reExport = result.analysis.exports.filter((e) => e.kind == 're-export')
+        console.dir(reExport, { depth: null })
+        expect(localExport).toEqual(
           expect.arrayContaining([
             {
               exportedName: 'value',
@@ -122,38 +126,86 @@ describe('analyzeFile', () => {
               isDefault: true,
               isTypeOnly: false,
             },
+            {
+              exportedName: 'VERSION',
+              symbolName: 'VERSION',
+              kind: 'const',
+              isDefault: false,
+              isTypeOnly: false,
+            },
+            {
+              exportedName: 'VERSION2',
+              symbolName: 'VERSION',
+              kind: 'const',
+              isDefault: false,
+              isTypeOnly: false,
+            },
+          ]),
+        )
 
-            // {
-            //   exportedName: 'User',
-            //   symbolName: 'User',
-            //   kind: 'interface',
-            //   isDefault: false,
-            //   isTypeOnly: true,
-            // },
+        expect(reExport).toEqual(
+          expect.arrayContaining([
+            {
+              kind: 're-export',
+              exportAll: false,
+              isTypeOnly: true,
+              exportedName: 'User',
+              moduleSpecifier: "'./intrnal.js'",
+            },
+            {
+              kind: 're-export',
+              exportAll: false,
+              isTypeOnly: false,
+              exportedName: 'foo',
+              moduleSpecifier: "'./intrnal.js'",
+            },
+            {
+              kind: 're-export',
+              exportAll: false,
+              isTypeOnly: false,
+              exportedName: 'foo2',
+              moduleSpecifier: "'./intrnal.js'",
+            },
+            {
+              kind: 're-export',
+              exportAll: false,
+              isTypeOnly: false,
+              exportedName: 'UserRole',
+              moduleSpecifier: "'./intrnal.js'",
+            },
+          ]),
+        )
 
-            // {
-            //   exportedName: 'foo',
-            //   symbolName: 'foo',
-            //   kind: 'const',
-            //   isDefault: false,
-            //   isTypeOnly: false,
-            // },
-
-            // {
-            //   exportedName: 'foo2',
-            //   symbolName: 'foo2',
-            //   kind: 'const',
-            //   isDefault: false,
-            //   isTypeOnly: false,
-            // },
-
-            // {
-            //   exportedName: 'UserRole',
-            //   symbolName: 'UserRole',
-            //   kind: 'enum',
-            //   isDefault: false,
-            //   isTypeOnly: false,
-            // },
+        expect(reExport).toEqual(
+          expect.arrayContaining([
+            {
+              kind: 're-export',
+              exportAll: false,
+              isTypeOnly: false,
+              exportedName: 'fooAlias',
+              moduleSpecifier: "'./intrnal.js'",
+            },
+            {
+              kind: 're-export',
+              exportAll: false,
+              isTypeOnly: true,
+              exportedName: 'UserAlias',
+              moduleSpecifier: "'./intrnal.js'",
+            },
+            {
+              kind: 're-export',
+              exportAll: true,
+              isTypeOnly: false,
+              exportedName: '$*',
+              moduleSpecifier: "'./intrnal.js'",
+            },
+            {
+              kind: 're-export',
+              exportAll: true,
+              isTypeOnly: false,
+              exportedName: 'Internal',
+              moduleSpecifier: "'./intrnal.js'",
+            },
           ]),
         )
       })

@@ -12,10 +12,13 @@ import type {
 import type { AnalysisOptions } from './AnalysisOption.js'
 import type { FileAnalysis } from './file/FileAnalysis.js'
 import type { AnalysisError } from './error/AnalysisError.js'
-import type { ProjectRelativePath } from './types.js'
 import type { ProjectContext } from './project/ProjectContext.js'
-import type { ParsedJsDoc, SymbolId } from '@gyomu/schema/typescript'
-import type { DependencyRequirement } from './graph/DependencyRequirement.js'
+import type {
+  DependencyRequirement,
+  ParsedJsDoc,
+  ProjectRelativePath,
+  SymbolId,
+} from '@gyomu/schema/typescript'
 
 /**
  * Analyzes a TypeScript source file and produces a {@link FileAnalysis}.

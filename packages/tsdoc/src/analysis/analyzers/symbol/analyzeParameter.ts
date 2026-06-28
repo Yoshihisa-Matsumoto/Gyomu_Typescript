@@ -3,12 +3,12 @@ import { Node } from 'ts-morph'
 import { createMemberIdentityAndId } from '../../shared/createMemberIdentity.js'
 import { analyzeType } from './analyzeType.js'
 import type { ParameterDeclaration } from 'ts-morph'
-import type { ProjectRelativePath } from '../../types.js'
 import type { FileAnalysisMetadata } from '../../file/FileAnalysisResult.js'
 import type {
   MemberIdentityMemberPath,
   MemberIdentityOwnerSymbolId,
   NonDocumentablePropertyMemberAnalysis,
+  ProjectRelativePath,
 } from '@gyomu/schema/typescript'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
 

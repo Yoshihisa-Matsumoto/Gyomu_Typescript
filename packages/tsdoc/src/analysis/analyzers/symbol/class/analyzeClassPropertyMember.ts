@@ -16,8 +16,8 @@ import type {
   MemberAccessor,
   MemberIdentityMemberPath,
   MemberIdentityOwnerSymbolId,
+  ProjectRelativePath,
 } from '@gyomu/schema/typescript'
-import type { ProjectRelativePath } from '../../../types.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
 export const analyzeClassPropertyMember = (args: {

@@ -6,12 +6,12 @@ import type {
   JsDocAnalysis,
   MemberIdentityMemberPath,
   ParsedJsDoc,
+  ProjectRelativePath,
   SignatureAnalysis,
   SymbolId,
 } from '@gyomu/schema/typescript'
 import type { FileAnalysisMetadata } from '../../file/FileAnalysisResult.js'
 import type { JSDocableNode } from 'ts-morph'
-import type { ProjectRelativePath } from '../../types.js'
 
 export const prepareSymbolAnalysis = <T extends Node>(
   declaration: T,

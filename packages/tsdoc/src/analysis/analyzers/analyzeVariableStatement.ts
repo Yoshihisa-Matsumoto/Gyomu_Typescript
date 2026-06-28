@@ -1,11 +1,14 @@
 import { withOptional } from '@gyomu/schema'
 import { analyzeVariable } from './symbol/variable/analyzeVariable.js'
-import type { ExportAnalysis, SymbolAnalysis } from '@gyomu/schema/typescript'
+import type {
+  DependencyRequirement,
+  ExportAnalysis,
+  SymbolAnalysis,
+} from '@gyomu/schema/typescript'
 import type { StatementAnalysisResult } from './types.js'
 import type { VariableStatement } from 'ts-morph'
 import type { FileAnalysisMetadata } from '../file/FileAnalysisResult.js'
 import type { AnalysisOptions } from '../AnalysisOption.js'
-import type { DependencyRequirement } from '../graph/DependencyRequirement.js'
 
 export const analyzeVariableStatement = (
   statement: VariableStatement,
@@ -21,7 +24,6 @@ export const analyzeVariableStatement = (
   const result = {
     exported: new Array<ExportAnalysis>(),
     symbols: new Array<SymbolAnalysis>(),
-    // dependencyRequirements: new Map<string, Array<DependencyRequirement>>(),
   } satisfies StatementAnalysisResult
   const { metadata, sourceRelativePath, memberPath, sourceFullText, declarationOrder, options } =
     args

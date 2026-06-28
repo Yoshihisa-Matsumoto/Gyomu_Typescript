@@ -1,4 +1,5 @@
 import type {
+  DependencyRequirement,
   DocumentableMemberAnalysis,
   ParsedJsDoc,
   SymbolAnalysis,
@@ -6,7 +7,6 @@ import type {
 } from '@gyomu/schema/typescript'
 
 import type { FileAnalysis } from './FileAnalysis.js'
-import type { DependencyRequirement } from '../graph/DependencyRequirement.js'
 
 export interface FileAnalysisResult {
   analysis: FileAnalysis

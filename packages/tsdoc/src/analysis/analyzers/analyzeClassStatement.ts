@@ -18,8 +18,10 @@ export const analyzeClassStatement = (
   },
 ): StatementAnalysisResult => {
   const result = {
+    // kind: 'single',
     exported: new Array<ExportAnalysis>(),
     symbols: new Array<SymbolAnalysis>(),
+    // dependencies: new Array<DependencyRequirement>(),
   } satisfies StatementAnalysisResult
   const { metadata, sourceRelativePath, memberPath, sourceFullText, declarationOrder, options } =
     args

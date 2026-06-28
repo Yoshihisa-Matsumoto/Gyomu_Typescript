@@ -7,12 +7,12 @@ import { computeIndent } from '../computeIndent.js'
 import { analyzeClassPropertyMember, analyzeGetSetAccessor } from './analyzeClassPropertyMember.js'
 import { analyzeClassMethodMember } from './analyzeClassMethodMember.js'
 import { analyzeConstructor } from './analyzeConstructor.js'
-import type { ProjectRelativePath } from '../../../types.js'
 import type {
   DocumentableMemberAnalysis,
   MemberAnalysis,
   MemberIdentityMemberPath,
   MemberIdentityOwnerSymbolId,
+  ProjectRelativePath,
   SymbolAnalysis,
 } from '@gyomu/schema/typescript'
 import type { ClassDeclaration } from 'ts-morph'

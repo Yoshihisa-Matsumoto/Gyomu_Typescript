@@ -1,4 +1,4 @@
-import { Node } from 'ts-morph'
+import { Node, SyntaxKind } from 'ts-morph'
 import { moduleSpecifierToSourcePath } from '../../shared/module/moduleSpecifierToSourcePath.js'
 import type { FileAnalysisMetadata } from '../file/FileAnalysisResult.js'
 import type { ExportAnalysis, SymbolAnalysis } from '@gyomu/schema/typescript'
@@ -22,6 +22,7 @@ export const analyzeExportStatement = (
   },
 ): StatementAnalysisResult => {
   const result = {
+    // kind: 'none',
     exported: new Array<ExportAnalysis>(),
     symbols: new Array<SymbolAnalysis>(),
     // dependencyRequirements: new Map<string, Array<DependencyRequirement>>(),
@@ -32,20 +33,27 @@ export const analyzeExportStatement = (
 
   const isTypeAll = statement.isTypeOnly()
 
-  const namedExport = statement.getChildren().find((c) => Node.isNamedExports(c))
+  const statementChildren = statement.getChildren()
+
+  const namedExport = statementChildren.find((c) => Node.isNamedExports(c))
   if (namedExport) {
     for (const exportSpecifier of namedExport.getElements()) {
       console.log(exportSpecifier.getName())
       const propertyNamed = exportSpecifier.getNodeProperty('propertyName')
-      const exportName = exportSpecifier.getNodeProperty('name').getText()
-      const isTyped = exportSpecifier.isTypeOnly()
+      const children = exportSpecifier.getChildren()
+      const asIndex = children.findIndex((c) => c.getKind() == SyntaxKind.AsKeyword)
+      const aliasName = asIndex >= 0 ? (children[asIndex + 1]?.getText() ?? undefined) : undefined
 
-      let referencedNodeName: string
+      const typeKeywordIndex = children.findIndex((c) => c.getKind() == SyntaxKind.TypeKeyword)
+      const isTyped = exportSpecifier.isTypeOnly() || typeKeywordIndex >= 0
+
+      let referencedNodeName: string | undefined
       if (propertyNamed) {
         referencedNodeName = propertyNamed.getText()
-      } else {
-        referencedNodeName = exportSpecifier.getText()
       }
+
+      if (!referencedNodeName || referencedNodeName == '')
+        referencedNodeName = exportSpecifier.getName()
       if (!module) {
         const targetSymbol = fileSymbols.symbols.find(
           (s) => s.identity.symbolId == referencedNodeName,
@@ -63,29 +71,29 @@ export const analyzeExportStatement = (
             identity: referencedSymbol.identity,
             isTypeOnly: isTypeAll || isTyped,
             isDefault,
-            exportedName: isDefault ? '$default' : exportName,
+            exportedName: isDefault ? '$default' : (aliasName ?? referencedNodeName),
           })
         }
       } else {
         const fromModule = module.getText()
-        const exportName = referencedNodeName
+
         // Graph (non within file)
         if (fromModule.startsWith('.')) {
           // within the project
           const moduleSpecifier = moduleSpecifierToSourcePath(fromModule, args.sourceRelativePath)
           result.exported.push({
             kind: 're-export',
-            exportAll: true,
-            isTypeOnly: isTypeAll,
-            exportedName: isDefault ? '$default' : exportName,
+            exportAll: false,
+            isTypeOnly: isTypeAll || isTyped,
+            exportedName: isDefault ? '$default' : (aliasName ?? referencedNodeName),
             moduleSpecifier,
           })
         } else {
           result.exported.push({
             kind: 're-export',
-            exportAll: true,
-            isTypeOnly: isTypeAll,
-            exportedName: isDefault ? '$default' : exportName,
+            exportAll: false,
+            isTypeOnly: isTypeAll || isTyped,
+            exportedName: isDefault ? '$default' : (aliasName ?? referencedNodeName),
             moduleSpecifier: fromModule,
           })
         }
@@ -93,7 +101,7 @@ export const analyzeExportStatement = (
     }
   }
 
-  const namespaceExport = statement.getChildren().find((c) => Node.isNamespaceExport(c))
+  const namespaceExport = statementChildren.find((c) => Node.isNamespaceExport(c))
   if (namespaceExport) {
     if (module) {
       const fromModule = module.getText()
@@ -121,36 +129,43 @@ export const analyzeExportStatement = (
     }
   }
 
-  if (module) {
-    let isAsterisk = false
-    if (Node.isGeneratorable(statement) && statement.getAsteriskToken()) {
-      isAsterisk = true
-    }
-    if (!isAsterisk) {
-      const generator = statement.getChildren().find((c) => Node.isGeneratorable(c))
-      if (generator && generator.getAsteriskToken()) isAsterisk = true
-    }
-    if (isAsterisk) {
-      const fromModule = module.getText()
-      // Graph (non within file)
-      if (fromModule.startsWith('.')) {
-        // within the project
-        const moduleSpecifier = moduleSpecifierToSourcePath(fromModule, args.sourceRelativePath)
-        result.exported.push({
-          kind: 're-export',
-          exportAll: true,
-          isTypeOnly: isTypeAll,
-          exportedName: isDefault ? '$default' : module.getText(),
-          moduleSpecifier,
-        })
-      } else {
-        result.exported.push({
-          kind: 're-export',
-          exportAll: true,
-          isTypeOnly: isTypeAll,
-          exportedName: isDefault ? '$default' : module.getText(),
-          moduleSpecifier: fromModule,
-        })
+  if (!namedExport && !namespaceExport) {
+    if (module) {
+      let isAsterisk = false
+
+      if (Node.isGeneratorable(statement) && statement.getAsteriskToken()) {
+        isAsterisk = true
+      }
+
+      const asteriskToken = statementChildren.find((c) => c.getKind() == SyntaxKind.AsteriskToken)
+      if (asteriskToken) isAsterisk = true
+
+      if (!isAsterisk) {
+        const generator = statementChildren.find((c) => Node.isGeneratorable(c))
+        if (generator && generator.getAsteriskToken()) isAsterisk = true
+      }
+      if (isAsterisk) {
+        const fromModule = module.getText()
+        // Graph (non within file)
+        if (fromModule.startsWith('.')) {
+          // within the project
+          const moduleSpecifier = moduleSpecifierToSourcePath(fromModule, args.sourceRelativePath)
+          result.exported.push({
+            kind: 're-export',
+            exportAll: true,
+            isTypeOnly: isTypeAll,
+            exportedName: isDefault ? '$default' : '$*',
+            moduleSpecifier,
+          })
+        } else {
+          result.exported.push({
+            kind: 're-export',
+            exportAll: true,
+            isTypeOnly: isTypeAll,
+            exportedName: isDefault ? '$default' : '$*',
+            moduleSpecifier: fromModule,
+          })
+        }
       }
     }
   }

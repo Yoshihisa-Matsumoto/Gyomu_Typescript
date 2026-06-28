@@ -55,9 +55,20 @@ export const extractSymbols = (
     }
   })
 
-  statements.forEach((statement) => {
+  statements.forEach((statement, declarationOrder) => {
     if (Node.isExportDeclaration(statement)) {
-      const result = analyzeExportStatement(statement, { exported, symbols: symbols })
+      const result = analyzeExportStatement(
+        statement,
+        { exported, symbols: symbols },
+        {
+          metadata,
+          memberPath,
+          declarationOrder,
+          sourceFullText,
+          sourceRelativePath,
+          options,
+        },
+      )
 
       exported.push(...result.exported)
       symbols.push(...result.symbols)

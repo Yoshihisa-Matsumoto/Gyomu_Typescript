@@ -1,5 +1,5 @@
-import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
-import type { ProjectRelativePath } from '../types.js'
+import type { SymbolIdentity } from '../schemas/typescript/SymbolIdentity.js'
+import type { ProjectRelativePath } from './types.js'
 
 export type DependencyRequirement =
   | LocalFileDependency

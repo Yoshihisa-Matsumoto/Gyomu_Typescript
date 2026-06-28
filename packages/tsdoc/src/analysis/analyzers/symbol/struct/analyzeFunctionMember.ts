@@ -4,7 +4,6 @@ import { analyzeParameter } from '../analyzeParameter.js'
 import { initializeMethodIdentity, prepareMethodAnalysis } from '../prepareMemberAnalysis.js'
 import { registerSymbolSymbolAnalysis } from '../../../file/registerSymbolSymbolAnalysis.js'
 import { computeIndent } from '../computeIndent.js'
-import type { ProjectRelativePath } from '../../../types.js'
 import type { FileAnalysisMetadata } from '../../../file/FileAnalysisResult.js'
 import type {
   CallSignatureDeclaration,
@@ -26,6 +25,7 @@ import type {
   MemberIdentityMemberPath,
   MemberIdentityOwnerSymbolId,
   NonDocumentableMethodMemberAnalysis,
+  ProjectRelativePath,
   TypeAnalysis,
 } from '@gyomu/schema/typescript'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'

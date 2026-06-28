@@ -12,12 +12,12 @@ import type {
   MemberAnalysis,
   MemberIdentityMemberPath,
   MemberIdentityOwnerSymbolId,
+  ProjectRelativePath,
   SignatureAnalysis,
   SymbolAnalysis,
 } from '@gyomu/schema/typescript'
 import type { JSDocableTagAnalysisArg } from '../types.js'
 import type { FileAnalysisMetadata } from '../../file/FileAnalysisResult.js'
-import type { ProjectRelativePath } from '../../types.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
 
 export const analyzeFunction = (args: JSDocableTagAnalysisArg<FunctionDeclaration>) => {

@@ -7,8 +7,8 @@ import type {
   MemberIdentityMemberPath,
   MemberIdentityOwnerSymbolId,
   NonDocumentableMethodMemberAnalysis,
+  ProjectRelativePath,
 } from '@gyomu/schema/typescript'
-import type { ProjectRelativePath } from '../../../types.js'
 import type { FileAnalysisMetadata } from '../../../file/FileAnalysisResult.js'
 
 export const analyzeClassMethodMember = (args: {

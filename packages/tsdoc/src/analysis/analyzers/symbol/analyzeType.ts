@@ -4,12 +4,12 @@ import { detectEffectSignals } from './analyzeEffectType.js'
 import { analyzeFunctionMember } from './struct/analyzeFunctionMember.js'
 import { analyzePropertyMember } from './struct/analyzePropertyMember.js'
 import { analyzeEffectSchema, getSupportedEffectSchemaType } from './analyzeEffectSchema.js'
-import type { ProjectRelativePath } from '../../types.js'
 import type { FileAnalysisMetadata } from '../../file/FileAnalysisResult.js'
 import type {
   MemberAnalysis,
   MemberIdentityMemberPath,
   MemberIdentityOwnerSymbolId,
+  ProjectRelativePath,
   TypeAnalysis,
   TypeStructureAnalysis,
 } from '@gyomu/schema/typescript'

@@ -1,7 +1,7 @@
 import { fromSync } from '@gyomu/schema/effect'
 import { AnalysisError } from '../error/AnalysisError.js'
 import type { Project } from 'ts-morph'
-import type { ProjectRelativePath } from '../types.js'
+import type { ProjectRelativePath } from '@gyomu/schema/typescript'
 import type { SourceFileContext } from '../file/SourceFileContext.js'
 
 export const loadSourceFile = (project: Project, sourceFilePath: ProjectRelativePath) =>

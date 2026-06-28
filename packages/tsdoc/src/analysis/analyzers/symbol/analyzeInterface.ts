@@ -6,11 +6,11 @@ import { analyzePropertyMember } from './struct/analyzePropertyMember.js'
 import { analyzeFunctionMember } from './struct/analyzeFunctionMember.js'
 import { detectEffectSignals } from './analyzeEffectType.js'
 import { computeIndent } from './computeIndent.js'
-import type { ProjectRelativePath } from '../../types.js'
 import type {
   MemberAnalysis,
   MemberIdentityMemberPath,
   MemberIdentityOwnerSymbolId,
+  ProjectRelativePath,
   SymbolAnalysis,
 } from '@gyomu/schema/typescript'
 import type { InterfaceDeclaration } from 'ts-morph'
