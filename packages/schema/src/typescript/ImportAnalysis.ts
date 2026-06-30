@@ -10,29 +10,8 @@ export interface ImportAnalysis {
    */
   moduleSpecifier: string
 
-  /**
-   * The list of named imported symbols.
-   */
-  namedImports: Array<ImportedSymbolAnalysis>
+  kind: 'named' | 'default' | 'namespace'
 
-  /**
-   * The identifier for the namespace import, if present.
-   *
-   * @example
-   * import * as fs from 'node:fs'
-   */
-  namespaceImport?: string
-
-  /**
-   * The identifier for the default import, if present.
-   */
-  defaultImport?: string
-}
-
-/**
- * Represents an analyzed named imported symbol.
- */
-export interface ImportedSymbolAnalysis {
   /**
    * The name of the symbol in the source module.
    */

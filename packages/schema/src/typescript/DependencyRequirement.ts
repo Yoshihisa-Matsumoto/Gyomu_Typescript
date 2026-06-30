@@ -1,33 +1,42 @@
-import type { SymbolIdentity } from '../schemas/typescript/SymbolIdentity.js'
-import type { ProjectRelativePath } from './types.js'
+interface DependencySource {
+  /**
+   * Empty for the symbol itself.
+   * ["constructor"], ["save"], ["config"] ...
+   */
+  readonly memberPath: ReadonlyArray<string>
+}
 
-export type DependencyRequirement =
-  | LocalFileDependency
-  | SamePackageDependency
-  | WorkspaceDependency
-  | ExternalDependency
+export type DependencyRequirement = {
+  readonly source: DependencySource
+  readonly target: LocalFileDependency | ImportedSymbolDependency
+}
 
 type LocalFileDependency = {
   scope: 'local-file'
-  symbol: SymbolIdentity
+  symbolName: string
 }
 
-type SamePackageDependency = {
-  scope: 'same-package'
-  importPath: ProjectRelativePath
-  exportedName: string
+type ImportedSymbolDependency = {
+  scope: 'import'
+  localName: string
 }
 
-type WorkspaceDependency = {
-  scope: 'workspace'
-  packageName: string
-  importPath: ProjectRelativePath
-  exportedName: string
-}
+// type SamePackageDependency = {
+//   scope: 'same-package'
+//   importPath: ProjectRelativePath
+//   exportedName: string
+// }
 
-type ExternalDependency = {
-  scope: 'external'
-  packageName: string
-  importPath: string
-  exportedName: string
-}
+// type WorkspaceDependency = {
+//   scope: 'workspace'
+//   packageName: string
+//   importPath: ProjectRelativePath
+//   exportedName: string
+// }
+
+// type ExternalDependency = {
+//   scope: 'external'
+//   packageName: string
+//   importPath: string
+//   exportedName: string
+// }

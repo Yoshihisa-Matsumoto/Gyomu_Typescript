@@ -1,41 +1,36 @@
-import { withOptional } from '@gyomu/schema'
 import { analyzeInterface } from './symbol/analyzeInterface.js'
 import type { ExportAnalysis, SymbolAnalysis } from '@gyomu/schema/typescript'
-import type { StatementAnalysisResult } from './types.js'
+import type { StatementAnalysisArgument, StatementAnalysisResult } from './types.js'
 import type { InterfaceDeclaration } from 'ts-morph'
-import type { FileAnalysisMetadata } from '../file/FileAnalysisResult.js'
-import type { AnalysisOptions } from '../AnalysisOption.js'
 
 export const analyzeInterfaceStatement = (
   statement: InterfaceDeclaration,
-  args: {
-    metadata: FileAnalysisMetadata
-    sourceRelativePath: string
-    memberPath: Array<string>
-    sourceFullText: string
-    declarationOrder: number
-    options: AnalysisOptions | undefined
-  },
+  args: StatementAnalysisArgument,
 ): StatementAnalysisResult => {
   const result = {
     exported: new Array<ExportAnalysis>(),
     symbols: new Array<SymbolAnalysis>(),
   } satisfies StatementAnalysisResult
-  const { metadata, sourceRelativePath, memberPath, sourceFullText, declarationOrder, options } =
-    args
+  const {
+    metadata,
+    sourceRelativePath,
+    memberPath,
+    sourceFullText,
+    declarationOrder,
+    options,
+    imported,
+  } = args
 
-  const interfaceResult = analyzeInterface(
-    withOptional({
-      declaration: statement,
-      options,
-      sourceRelativePath,
-      metadata,
-      memberPath,
-      sourceFullText,
-
-      declarationOrder,
-    }),
-  )
+  const interfaceResult = analyzeInterface({
+    declaration: statement,
+    sourceRelativePath,
+    metadata,
+    memberPath,
+    sourceFullText,
+    imported,
+    declarationOrder,
+    options,
+  })
   if (interfaceResult.isExported) {
     result.exported.push({
       kind: 'local',

@@ -9,54 +9,52 @@ import {
   getFunctionSignature,
   isFunctionLikeInitializer,
 } from './analyzeFunction.js'
-import type {
-  MemberIdentityMemberPath,
-  ProjectRelativePath,
-  SymbolAnalysis,
-  TypeAnalysis,
-} from '@gyomu/schema/typescript'
+import type { GetSignatureIdArg, TagAnalysisArg } from '../../types.js'
+import type { SymbolAnalysis, TypeAnalysis } from '@gyomu/schema/typescript'
 import type { VariableDeclaration } from 'ts-morph'
-import type { AnalysisOptions } from '../../../AnalysisOption.js'
-import type { FileAnalysisMetadata } from '../../../file/FileAnalysisResult.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
-export const analyzeVariable = (args: {
-  declaration: VariableDeclaration
-  sourceRelativePath: ProjectRelativePath
-  metadata: FileAnalysisMetadata
-  memberPath: MemberIdentityMemberPath
-  name?: string
-  options?: AnalysisOptions
-  sourceFullText: string
-  declarationOrder: number
-}) => {
+export const analyzeVariable = (args: TagAnalysisArg<VariableDeclaration>) => {
   const statement = args.declaration.getVariableStatement()
-  const name = args.name ?? args.declaration.getName()
+  const variableName = args.declaration.getName()
+  const {
+    declaration,
+    sourceRelativePath,
+    metadata,
+    memberPath,
+    sourceFullText,
+    imported,
+    options,
+  } = args
   const prepared = prepareSymbolAnalysis(
-    args.declaration,
-    args.sourceRelativePath,
-    args.metadata,
-    args.memberPath,
+    {
+      declaration,
+      sourceRelativePath,
+      metadata,
+      memberPath,
+      sourceFullText,
+      imported,
+      options,
+      nodeName: variableName,
+    },
     getSignatureId,
-    name,
-    args.sourceFullText,
     statement,
   )
 
   const initializer = args.declaration.getInitializer()
-  let type: TypeAnalysis
+  // let type: TypeAnalysis
   if (isFunctionLikeInitializer(initializer)) {
     return analyzeFunction(args, prepared, initializer)
   }
   const identity: SymbolIdentity = {
-    symbolId: name,
+    symbolId: variableName,
     signatureId: prepared.signature.id,
   }
 
   const effectSchemaSupportType = getSupportedEffectSchemaType(initializer)
   const typeAnalysis: TypeAnalysis | undefined =
     effectSchemaSupportType == undefined
-      ? { text: name, source: 'typescript' }
+      ? { text: variableName, source: 'typescript' }
       : analyzeEffectSchema(effectSchemaSupportType, {
           name: '',
           ownerSymbolId: prepared.id,
@@ -106,24 +104,14 @@ export const analyzeVariable = (args: {
   }
 }
 
-const getSignatureId = (
-  declaration: VariableDeclaration,
-  sourcePath: ProjectRelativePath,
-  metadata: FileAnalysisMetadata,
-  memberPath: MemberIdentityMemberPath,
-  nodeName: string,
-  sourceFullText: string,
-) => {
+const getSignatureId = (args: GetSignatureIdArg<VariableDeclaration>) => {
+  const { declaration } = args
   const initializer = declaration.getInitializer()
   if (isFunctionLikeInitializer(initializer)) {
     return getFunctionSignature(
-      declaration,
+      args,
       initializer,
-      sourcePath,
-      metadata,
-      memberPath,
-      nodeName,
-      sourceFullText,
+
       0,
     )
   }

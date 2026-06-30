@@ -1,32 +1,25 @@
-import { withOptional } from '@gyomu/schema'
 import { analyzeVariable } from './symbol/variable/analyzeVariable.js'
-import type {
-  DependencyRequirement,
-  ExportAnalysis,
-  SymbolAnalysis,
-} from '@gyomu/schema/typescript'
-import type { StatementAnalysisResult } from './types.js'
+import type { ExportAnalysis, SymbolAnalysis } from '@gyomu/schema/typescript'
+import type { StatementAnalysisArgument, StatementAnalysisResult } from './types.js'
 import type { VariableStatement } from 'ts-morph'
-import type { FileAnalysisMetadata } from '../file/FileAnalysisResult.js'
-import type { AnalysisOptions } from '../AnalysisOption.js'
 
 export const analyzeVariableStatement = (
   statement: VariableStatement,
-  args: {
-    metadata: FileAnalysisMetadata
-    sourceRelativePath: string
-    memberPath: Array<string>
-    sourceFullText: string
-    declarationOrder: number
-    options: AnalysisOptions | undefined
-  },
+  args: StatementAnalysisArgument,
 ): StatementAnalysisResult => {
   const result = {
     exported: new Array<ExportAnalysis>(),
     symbols: new Array<SymbolAnalysis>(),
   } satisfies StatementAnalysisResult
-  const { metadata, sourceRelativePath, memberPath, sourceFullText, declarationOrder, options } =
-    args
+  const {
+    metadata,
+    sourceRelativePath,
+    memberPath,
+    sourceFullText,
+    declarationOrder,
+    options,
+    imported,
+  } = args
 
   const isExported = statement.isExported()
   // const isDefault = Node.isDefaultClause(statement)
@@ -40,8 +33,8 @@ export const analyzeVariableStatement = (
       memberPath,
       metadata,
       sourceFullText,
-      name: variable.getName(),
-      ...withOptional({ options }),
+      imported,
+      options,
     })
     if (isExported) {
       result.exported.push({

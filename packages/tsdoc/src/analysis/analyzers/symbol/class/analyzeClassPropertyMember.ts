@@ -4,92 +4,31 @@ import {
   analyzePropertyMember,
   analyzePropertyMemberInternal,
 } from '../struct/analyzePropertyMember.js'
-import type { FileAnalysisMetadata } from '../../../file/FileAnalysisResult.js'
+import type { ChildAnalysisArg } from '../../types.js'
 import type {
   GetAccessorDeclaration,
   ModifierableNode,
   PropertyDeclaration,
   SetAccessorDeclaration,
 } from 'ts-morph'
-import type {
-  DocumentablePropertyMemberAnalysis,
-  MemberAccessor,
-  MemberIdentityMemberPath,
-  MemberIdentityOwnerSymbolId,
-  ProjectRelativePath,
-} from '@gyomu/schema/typescript'
-import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
+import type { DocumentablePropertyMemberAnalysis, MemberAccessor } from '@gyomu/schema/typescript'
 
-export const analyzeClassPropertyMember = (args: {
-  sourcePath: ProjectRelativePath
-  metadata: FileAnalysisMetadata
-  node: PropertyDeclaration
-  ownerSymbolId: MemberIdentityOwnerSymbolId
-  ownerSymbolIdentity: SymbolIdentity
-  memberPath: MemberIdentityMemberPath
-  sourceFullText: string
-  declarationOrder: number
-}): DocumentablePropertyMemberAnalysis => {
+export const analyzeClassPropertyMember = (
+  args: ChildAnalysisArg<PropertyDeclaration>,
+): DocumentablePropertyMemberAnalysis => {
   return analyzePropertyMember(args, args.node.isStatic(), getAccessor(args.node))
-  // const { sourcePath, metadata, node, ownerSymbolId, memberPath } = args
-  // const typeNode = node.getTypeNode()
-  // const initializer = node.getInitializer()
-  // const name = node.getName()
-  // const { identity, jsDoc, location, startOffset } = preparePropertyAnalysis(
-  //   sourcePath,
-  //   metadata,
-  //   ownerSymbolId,
-  //   memberPath,
-  //   name,
-  //   node,
-  //   node,
-  // )
-  // return {
-  //   kind: 'property',
-  //   source: 'property-declaration',
-  //   identity,
-  //   name,
-  //   readonly: node.isReadonly(),
-  //   optional: !!node.getQuestionTokenNode(),
-
-  //   ...withOptional({
-  //     type: analyzeType({
-  //       node: typeNode,
-  //       initializer,
-  //       memberPath,
-  //       metadata,
-  //       ownerSymbolId,
-  //       sourcePath,
-  //       nodeName: [name],
-  //     }),
-  //     jsDoc,
-  //   }),
-  //   location,
-  //   startOffset,
-
-  //   static: node.isStatic(),
-  //   visibility: getAccessor(node),
-  // }
 }
 
 export const analyzeGetSetAccessor = (
-  args: {
-    sourcePath: ProjectRelativePath
-    metadata: FileAnalysisMetadata
-    node: GetAccessorDeclaration
-    ownerSymbolId: MemberIdentityOwnerSymbolId
-    ownerSymbolIdentity: SymbolIdentity
-    memberPath: MemberIdentityMemberPath
-    sourceFullText: string
-    declarationOrder: number
-  },
+  args: ChildAnalysisArg<GetAccessorDeclaration>,
   setter?: SetAccessorDeclaration,
 ): DocumentablePropertyMemberAnalysis => {
-  const { sourcePath, metadata, node, ownerSymbolId, ownerSymbolIdentity, memberPath } = args
+  const { sourceRelativePath, metadata, node, ownerSymbolId, ownerSymbolIdentity, memberPath } =
+    args
   const name = node.getName()
 
   const { id, identity, jsDoc, location, startOffset, parsedJsDoc } = prepareMethodAnalysis(
-    sourcePath,
+    sourceRelativePath,
     metadata,
     ownerSymbolId,
     ownerSymbolIdentity,

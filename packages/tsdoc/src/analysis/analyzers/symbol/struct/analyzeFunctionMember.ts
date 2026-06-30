@@ -4,7 +4,7 @@ import { analyzeParameter } from '../analyzeParameter.js'
 import { initializeMethodIdentity, prepareMethodAnalysis } from '../prepareMemberAnalysis.js'
 import { registerSymbolSymbolAnalysis } from '../../../file/registerSymbolSymbolAnalysis.js'
 import { computeIndent } from '../computeIndent.js'
-import type { FileAnalysisMetadata } from '../../../file/FileAnalysisResult.js'
+import type { ChildAnalysisArg } from '../../types.js'
 import type {
   CallSignatureDeclaration,
   ConstructSignatureDeclaration,
@@ -22,112 +22,67 @@ import type {
 import type {
   DocumentableMethodMemberAnalysis,
   MemberAccessor,
-  MemberIdentityMemberPath,
-  MemberIdentityOwnerSymbolId,
   NonDocumentableMethodMemberAnalysis,
-  ProjectRelativePath,
   TypeAnalysis,
 } from '@gyomu/schema/typescript'
-import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
-
-// export const analyzeMethodMember = (args: {
-//   sourcePath: ProjectRelativePath
-//   metadata: FileAnalysisMetadata
-//   node: MethodSignature
-//   ownerSymbolId: MemberIdentityOwnerSymbolId
-//   memberPath: MemberIdentityMemberPath
-//   name: string
-//   jsDocableNode: PropertySignature | InterfaceDeclaration | MethodSignature
-// }): DocumentableMemberAnalysis => {
-//   const { sourcePath, metadata, node, ownerSymbolId, memberPath, name, jsDocableNode } = args
-//   const returnTypeNode = node.getReturnTypeNode()
-
-//   // const name = node.getName()
-//   const { identity, jsDoc, location, startOffset, snippet } = prepareMethodAnalysis(
-//     sourcePath,
-//     metadata,
-//     ownerSymbolId,
-//     memberPath,
-//     name,
-//     node,
-//     jsDocableNode,
-//   )
-
-//   return {
-//     kind: 'method',
-
-//     name,
-//     identity,
-//     parameters: node
-//       .getParameters()
-//       .map((p) => analyzeParameter(p, sourcePath, metadata, ownerSymbolId, memberPath)),
-//     snippet,
-//     ...withOptional({
-//       returnType: analyzeType({
-//         node: returnTypeNode,
-//         initializer: undefined,
-//         memberPath,
-//         metadata,
-//         ownerSymbolId,
-//         sourcePath,
-//         nodeName: [name, '$return'],
-//       }),
-//       jsDoc,
-//     }),
-//     location,
-//     startOffset,
-//     static: false,
-
-//     visibility: 'public',
-//   }
-// }
 
 export const analyzeFunctionMember = (
-  args: {
-    sourcePath: ProjectRelativePath
-    metadata: FileAnalysisMetadata
-
-    node:
-      | MethodSignature
-      | FunctionTypeNode
-      | MethodDeclaration
-      | ((
-          | PropertySignature
-          | ConstructSignatureDeclaration
-          | CallSignatureDeclaration
-          | IndexSignatureDeclaration
-          | GetAccessorDeclaration
-          | SetAccessorDeclaration
-        ) &
-          FunctionTypeNode)
-
-    ownerSymbolId: MemberIdentityOwnerSymbolId
-    ownerSymbolIdentity: SymbolIdentity
-    memberPath: MemberIdentityMemberPath
+  args: ChildAnalysisArg<
+    | MethodSignature
+    | FunctionTypeNode
+    | MethodDeclaration
+    | ((
+        | PropertySignature
+        | ConstructSignatureDeclaration
+        | CallSignatureDeclaration
+        | IndexSignatureDeclaration
+        | GetAccessorDeclaration
+        | SetAccessorDeclaration
+      ) &
+        FunctionTypeNode)
+  >,
+  args2: {
+    isStatic: boolean | undefined
+    visibility: MemberAccessor | undefined
     name: string
     jsDocableNode: (JSDocableNode & Node) | undefined
-    sourceFullText: string
-    declarationOrder: number
   },
-  isStatic: boolean = false,
-  visibility: MemberAccessor = 'public',
 ): NonDocumentableMethodMemberAnalysis | DocumentableMethodMemberAnalysis => {
-  const { sourcePath, memberPath, name, node, ownerSymbolId, ownerSymbolIdentity, metadata } = args
-  const returnTypeNode = node.getReturnTypeNode()
-
-  const returnType = analyzeType({
-    node: returnTypeNode,
-    initializer: undefined,
+  const {
+    sourceRelativePath,
     memberPath,
-    metadata,
+    node,
     ownerSymbolId,
     ownerSymbolIdentity,
-    sourcePath,
-    nodeName: [name, '$return'],
-    sourceFullText: args.sourceFullText,
-    declarationOrder: args.declarationOrder,
-  })
+    metadata,
+    imported,
+    options,
+    sourceFullText,
+    declarationOrder,
+  } = args
+  const { name, jsDocableNode } = args2
+  const isStatic = args2.isStatic ?? false
+  const visibility = args2.visibility ?? 'public'
+  const returnTypeNode = node.getReturnTypeNode()
+
+  const returnType = analyzeType(
+    {
+      node: returnTypeNode,
+      memberPath,
+      metadata,
+      ownerSymbolId,
+      ownerSymbolIdentity,
+      sourceRelativePath,
+      sourceFullText,
+      declarationOrder,
+      imported,
+      options,
+    },
+    [name, '$return'],
+  )
   return analyzeFunctionMemberInternal(args, {
+    name,
+    jsDocableNode,
     isStatic,
     visibility,
     returnType,
@@ -135,43 +90,35 @@ export const analyzeFunctionMember = (
 }
 
 export const analyzeFunctionMemberInternal = (
-  args: {
-    sourcePath: ProjectRelativePath
-    metadata: FileAnalysisMetadata
-
-    node: MethodSignature | FunctionTypeNode | MethodDeclaration | ConstructorDeclaration
-
-    ownerSymbolId: MemberIdentityOwnerSymbolId
-    ownerSymbolIdentity: SymbolIdentity
-    memberPath: MemberIdentityMemberPath
-    name: string
-    jsDocableNode: (JSDocableNode & Node) | undefined
-    sourceFullText: string
-    declarationOrder: number
-  },
+  args: ChildAnalysisArg<
+    MethodSignature | FunctionTypeNode | MethodDeclaration | ConstructorDeclaration
+  >,
   args2: {
+    name: string
     isStatic: boolean
     visibility: MemberAccessor
     returnType: TypeAnalysis | undefined
+    jsDocableNode: (JSDocableNode & Node) | undefined
   },
 ): NonDocumentableMethodMemberAnalysis | DocumentableMethodMemberAnalysis => {
   const {
-    sourcePath,
+    sourceRelativePath,
     memberPath,
-    name,
+
     node,
-    jsDocableNode,
     ownerSymbolId,
     ownerSymbolIdentity,
     metadata,
+    imported,
+    options,
   } = args
-  const { isStatic, visibility, returnType } = args2
+  const { isStatic, visibility, returnType, jsDocableNode, name } = args2
 
   const childMemberPath = [...memberPath, '$parameters']
   if (jsDocableNode) {
     const { id, identity, jsDoc, location, snippet, startOffset, parsedJsDoc } =
       prepareMethodAnalysis(
-        sourcePath,
+        sourceRelativePath,
         metadata,
         ownerSymbolId,
         ownerSymbolIdentity,
@@ -189,13 +136,15 @@ export const analyzeFunctionMemberInternal = (
       parameters: node.getParameters().map((p, index) =>
         analyzeParameter({
           node: p,
-          sourceRelativePath: sourcePath,
+          sourceRelativePath,
           metadata,
           ownerSymbolId,
           ownerSymbolIdentity,
           memberPath: childMemberPath,
           sourceFullText: args.sourceFullText,
           declarationOrder: index,
+          imported,
+          options,
         }),
       ),
       snippet,
@@ -216,8 +165,8 @@ export const analyzeFunctionMemberInternal = (
       method,
       computeIndent(
         args.sourceFullText,
-        (args.jsDocableNode ?? args.node).getStart(),
-        (args.jsDocableNode ?? args.node).getStartLinePos(),
+        (args2.jsDocableNode ?? args.node).getStart(),
+        (args2.jsDocableNode ?? args.node).getStartLinePos(),
       ),
     )
     return method
@@ -238,13 +187,15 @@ export const analyzeFunctionMemberInternal = (
       parameters: node.getParameters().map((p, index) =>
         analyzeParameter({
           node: p,
-          sourceRelativePath: sourcePath,
+          sourceRelativePath,
           metadata,
           ownerSymbolId,
           ownerSymbolIdentity,
           memberPath: childMemberPath,
           sourceFullText: args.sourceFullText,
           declarationOrder: index,
+          imported,
+          options,
         }),
       ),
       ...withOptional({

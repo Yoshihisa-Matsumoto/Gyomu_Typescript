@@ -5,33 +5,19 @@ import { analyzeParameter } from '../analyzeParameter.js'
 import { createSymbolIdentity } from '../../../shared/createSymbolIdentity.js'
 import { registerSymbolSymbolAnalysis } from '../../../file/registerSymbolSymbolAnalysis.js'
 import { computeIndent } from '../computeIndent.js'
-import type {
-  MemberIdentityMemberPath,
-  ProjectRelativePath,
-  SignatureAnalysis,
-  SymbolAnalysis,
-} from '@gyomu/schema/typescript'
+import type { SignatureAnalysis, SymbolAnalysis } from '@gyomu/schema/typescript'
 
 import type { ArrowFunction, Expression, FunctionExpression, VariableDeclaration } from 'ts-morph'
 import type { SymbolPreparation } from '../prepareSymbolAnalysis.js'
-import type { FileAnalysisMetadata } from '../../../file/FileAnalysisResult.js'
-import type { AnalysisOptions } from '../../../AnalysisOption.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
+import type { GetSignatureIdArg, TagAnalysisArg } from '../../types.js'
 
 export const analyzeFunction = (
-  args: {
-    declaration: VariableDeclaration
-    sourceRelativePath: ProjectRelativePath
-    metadata: FileAnalysisMetadata
-    name?: string
-    options?: AnalysisOptions
-    sourceFullText: string
-    declarationOrder: number
-  },
+  args: TagAnalysisArg<VariableDeclaration>,
   prepared: SymbolPreparation,
   node: ArrowFunction | FunctionExpression,
 ) => {
-  const name = args.name ?? args.declaration.getName()
+  const name = args.declaration.getName()
   const identity: SymbolIdentity = {
     symbolId: name,
     signatureId: prepared.signature.id,
@@ -79,16 +65,23 @@ export const isFunctionLikeInitializer = (
   Node.isArrowFunction(node) || Node.isFunctionExpression(node)
 
 export const getFunctionSignature = (
-  declaration: VariableDeclaration,
+  args: GetSignatureIdArg<VariableDeclaration>,
+
   node: ArrowFunction | FunctionExpression,
-  sourcePath: ProjectRelativePath,
-  metadata: FileAnalysisMetadata,
-  memberPath: MemberIdentityMemberPath,
-  nodeName: string,
-  sourceFullText: string,
+
   declarationOrder: number,
 ): SignatureAnalysis => {
-  const { id } = createSymbolIdentity(declaration, sourcePath, 'function')
+  const {
+    declaration,
+    sourceRelativePath,
+    nodeName,
+    memberPath,
+    metadata,
+    sourceFullText,
+    imported,
+    options,
+  } = args
+  const { id } = createSymbolIdentity(declaration, sourceRelativePath, 'function')
   const identity: SymbolIdentity = { symbolId: nodeName, signatureId: 'function' }
   let initializer: Expression | undefined = undefined
   if (!node.getReturnTypeNode()) {
@@ -100,28 +93,33 @@ export const getFunctionSignature = (
     parameters: node.getParameters().map((p, index) =>
       analyzeParameter({
         node: p,
-        sourceRelativePath: sourcePath,
+        sourceRelativePath,
         metadata,
         ownerSymbolId: id,
         ownerSymbolIdentity: identity,
         memberPath,
         sourceFullText,
         declarationOrder: index,
+        imported,
+        options,
       }),
     ),
     ...withOptional({
-      returnType: analyzeType({
-        node: node.getReturnTypeNode(),
-        initializer,
-        memberPath,
-        metadata,
-        ownerSymbolId: id,
-        ownerSymbolIdentity: identity,
-        sourcePath,
-        nodeName: [nodeName, '$return'],
-        sourceFullText,
-        declarationOrder,
-      }),
+      returnType: analyzeType(
+        {
+          node: node.getReturnTypeNode() ?? initializer,
+          memberPath,
+          metadata,
+          ownerSymbolId: id,
+          ownerSymbolIdentity: identity,
+          sourceRelativePath,
+          sourceFullText,
+          declarationOrder,
+          imported,
+          options,
+        },
+        [nodeName, '$return'],
+      ),
     }),
   }
 }

@@ -3,50 +3,35 @@ import { analyzeType } from '../analyzeType.js'
 import { analyzeFunctionMemberInternal } from '../struct/analyzeFunctionMember.js'
 import { createMemberIdentityAndId } from '../../../shared/createMemberIdentity.js'
 import { getAccessor } from './analyzeClassPropertyMember.js'
-import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
+import type { ChildAnalysisArg } from '../../types.js'
 import type { ClassDeclaration, ConstructorDeclaration, ParameterDeclaration } from 'ts-morph'
 import type {
   MemberAnalysis,
-  MemberIdentityMemberPath,
-  MemberIdentityOwnerSymbolId,
   NonDocumentablePropertyMemberAnalysis,
-  ProjectRelativePath,
 } from '@gyomu/schema/typescript'
-import type { FileAnalysisMetadata } from '../../../file/FileAnalysisResult.js'
 
 export const analyzeConstructor = (
-  sourcePath: ProjectRelativePath,
-  metadata: FileAnalysisMetadata,
-  node: ConstructorDeclaration,
+  args: ChildAnalysisArg<ConstructorDeclaration>,
   parent: ClassDeclaration,
-
-  ownerSymbolId: MemberIdentityOwnerSymbolId,
-  ownerSymbolIdentity: SymbolIdentity,
-  memberPath: MemberIdentityMemberPath,
-  sourceFullText: string,
-  declarationOrder: number,
 ): Array<MemberAnalysis> => {
   const name = '$constructor'
-
-  const method = analyzeFunctionMemberInternal(
-    {
-      sourcePath,
-      metadata,
-      node,
-      ownerSymbolId,
-      ownerSymbolIdentity,
-      memberPath,
-      jsDocableNode: node,
-      name,
-      sourceFullText,
-      declarationOrder,
-    },
-    {
-      isStatic: false,
-      visibility: 'public',
-      returnType: { text: parent.getName()!, source: 'typescript' },
-    },
-  )
+  const {
+    sourceRelativePath,
+    metadata,
+    node,
+    ownerSymbolId,
+    ownerSymbolIdentity,
+    sourceFullText,
+    imported,
+    options,
+  } = args
+  const method = analyzeFunctionMemberInternal(args, {
+    name,
+    isStatic: false,
+    visibility: 'public',
+    returnType: { text: parent.getName()!, source: 'typescript' },
+    jsDocableNode: node,
+  })
   // const method: DocumentableMethodMemberAnalysis = {
   //   kind: 'method',
   //   documentable: true,
@@ -84,7 +69,7 @@ export const analyzeConstructor = (
     .filter((p) => p.getModifiers().length > 0)
     .map((v, index) =>
       analyzeClassPropertyFromConstructorParameters({
-        sourcePath,
+        sourceRelativePath,
         metadata,
         node: v,
         ownerSymbolId,
@@ -92,31 +77,17 @@ export const analyzeConstructor = (
         memberPath: [],
         sourceFullText,
         declarationOrder: index,
+        imported,
+        options,
       }),
     )
 
   return [method, ...parameters]
 }
-const analyzeClassPropertyFromConstructorParameters = (args: {
-  sourcePath: ProjectRelativePath
-  metadata: FileAnalysisMetadata
-  node: ParameterDeclaration
-
-  ownerSymbolId: MemberIdentityOwnerSymbolId
-  ownerSymbolIdentity: SymbolIdentity
-  memberPath: MemberIdentityMemberPath
-  sourceFullText: string
-  declarationOrder: number
-}): NonDocumentablePropertyMemberAnalysis => {
-  const {
-    sourcePath,
-    metadata,
-    node,
-    ownerSymbolId,
-    ownerSymbolIdentity,
-    memberPath,
-    declarationOrder,
-  } = args
+const analyzeClassPropertyFromConstructorParameters = (
+  args: ChildAnalysisArg<ParameterDeclaration>,
+): NonDocumentablePropertyMemberAnalysis => {
+  const { node, ownerSymbolId, ownerSymbolIdentity, memberPath, declarationOrder } = args
   const typeNode = node.getTypeNode()
   const initializer = node.getInitializer()
   const nodeName = node.getName()
@@ -141,18 +112,13 @@ const analyzeClassPropertyFromConstructorParameters = (args: {
     optional: !!node.getQuestionTokenNode(),
 
     ...withOptional({
-      type: analyzeType({
-        node: typeNode,
-        initializer,
-        memberPath,
-        metadata,
-        ownerSymbolId,
-        ownerSymbolIdentity,
-        sourcePath,
-        nodeName: [nodeName],
-        sourceFullText: args.sourceFullText,
-        declarationOrder: args.declarationOrder,
-      }),
+      type: analyzeType(
+        {
+          ...args,
+          node: typeNode ?? initializer,
+        },
+        [nodeName],
+      ),
     }),
     static: false,
     visibility: getAccessor(node),

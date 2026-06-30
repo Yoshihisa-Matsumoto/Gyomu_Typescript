@@ -271,60 +271,67 @@ describe('analyzeFile', () => {
 
           expect(result.analysis.imports).toEqual([
             {
+              kind: 'default',
+              importedName: 'ps',
+              isTypeOnly: false,
+              localName: 'ps',
+              moduleSpecifier: 'node:path',
+            },
+            {
+              kind: 'default',
               moduleSpecifier: './default-value.js',
 
-              defaultImport: 'DefaultValue',
-
-              namedImports: [],
+              importedName: 'DefaultValue',
+              localName: 'DefaultValue',
+              isTypeOnly: false,
             },
 
             {
+              kind: 'named',
               moduleSpecifier: './types.js',
+              importedName: 'VERSION',
 
-              namedImports: [
-                {
-                  importedName: 'VERSION',
+              localName: 'VERSION',
 
-                  localName: 'VERSION',
+              isTypeOnly: false,
+            },
+            {
+              kind: 'named',
+              moduleSpecifier: './types.js',
+              importedName: 'createUser',
 
-                  isTypeOnly: false,
-                },
-                {
-                  importedName: 'createUser',
+              localName: 'buildUser',
 
-                  localName: 'buildUser',
-
-                  isTypeOnly: false,
-                },
-              ],
+              isTypeOnly: false,
             },
 
             {
+              kind: 'namespace',
               moduleSpecifier: './types.js',
 
-              namespaceImport: 'Types',
+              importedName: 'Types',
 
-              namedImports: [],
+              localName: 'Types',
+              isTypeOnly: false,
             },
             {
+              kind: 'named',
               moduleSpecifier: './types.js',
 
-              namedImports: [
-                {
-                  importedName: 'User',
+              importedName: 'User',
 
-                  localName: 'User',
+              localName: 'User',
 
-                  isTypeOnly: true,
-                },
-                {
-                  importedName: 'UserId',
+              isTypeOnly: true,
+            },
+            {
+              kind: 'named',
+              moduleSpecifier: './types.js',
+              importedName: 'UserId',
 
-                  localName: 'UserId',
+              localName: 'UserId',
 
-                  isTypeOnly: true,
-                },
-              ],
+              isTypeOnly: true,
             },
           ])
         })

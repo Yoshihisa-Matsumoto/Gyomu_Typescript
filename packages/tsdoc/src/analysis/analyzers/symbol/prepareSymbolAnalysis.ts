@@ -4,41 +4,42 @@ import { registerSymbolJsDoc } from '../../file/registerSymbolJsDoc.js'
 import { createSymbolIdentity } from '../../shared/createSymbolIdentity.js'
 import type {
   JsDocAnalysis,
-  MemberIdentityMemberPath,
   ParsedJsDoc,
-  ProjectRelativePath,
   SignatureAnalysis,
   SymbolId,
 } from '@gyomu/schema/typescript'
-import type { FileAnalysisMetadata } from '../../file/FileAnalysisResult.js'
 import type { JSDocableNode } from 'ts-morph'
+import type { GetSignatureIdArg } from '../types.js'
 
 export const prepareSymbolAnalysis = <T extends Node>(
-  declaration: T,
-  sourcePath: ProjectRelativePath,
-  metadata: FileAnalysisMetadata,
-  memberPath: MemberIdentityMemberPath,
-  getSignature: (
-    declaration: T,
-    sourcePath: ProjectRelativePath,
-    metadata: FileAnalysisMetadata,
-    memberPath: MemberIdentityMemberPath,
-    nodeName: string,
-    sourceFullText: string,
-  ) => SignatureAnalysis,
-  nodeName: string,
-  sourceFullText: string,
+  args: GetSignatureIdArg<T>,
+  getSignature: (args: GetSignatureIdArg<T>, jsDocableNode?: JSDocableNode) => SignatureAnalysis,
   jsDocableNode?: JSDocableNode,
 ): SymbolPreparation => {
-  const signature = getSignature(
+  const {
     declaration,
-    sourcePath,
+    sourceRelativePath,
     metadata,
-    memberPath,
     nodeName,
+    memberPath,
     sourceFullText,
+    imported,
+    options,
+  } = args
+  const signature = getSignature(
+    {
+      declaration,
+      sourceRelativePath,
+      metadata,
+      memberPath,
+      nodeName,
+      sourceFullText,
+      imported,
+      options,
+    },
+    jsDocableNode,
   )
-  const id = createSymbolIdentity(declaration, sourcePath, signature.id).id
+  const id = createSymbolIdentity(declaration, sourceRelativePath, signature.id).id
 
   if (!jsDocableNode && !Node.isJSDocable(declaration))
     return { id, signature, snippet: declaration.getText() }

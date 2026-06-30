@@ -1,5 +1,5 @@
 import type { SymbolIdentity } from '../schemas/typescript/SymbolIdentity.js'
-// import { DependencyRequirement } from './DependencyRequirement.js'
+import type { DependencyRequirement } from './DependencyRequirement.js'
 import type { JsDocAnalysis } from './jsdoc/JsDocAnalysis.js'
 import type { ParsedJsDoc } from './jsdoc/ParsedJsDoc.js'
 import type { MemberAnalysis } from './MemberAnalysis.js'
@@ -97,5 +97,5 @@ export interface SymbolAnalysis {
    */
   members: Array<MemberAnalysis>
 
-  // dependencyRequirements: ReadonlyArray<DependencyRequirement>
+  dependencyRequirements?: ReadonlyArray<DependencyRequirement>
 }

@@ -4,6 +4,7 @@ import { analyzeType } from '../analyzeType.js'
 import { preparePropertyAnalysis } from '../prepareMemberAnalysis.js'
 import { registerSymbolSymbolAnalysis } from '../../../file/registerSymbolSymbolAnalysis.js'
 import { computeIndent } from '../computeIndent.js'
+import type { ChildAnalysisArg } from '../../types.js'
 import type {
   Expression,
   GetAccessorDeclaration,
@@ -12,39 +13,27 @@ import type {
   TypeNode,
 } from 'ts-morph'
 
-import type { FileAnalysisMetadata } from '../../../file/FileAnalysisResult.js'
 import type {
   DocumentablePropertyMemberAnalysis,
   JsDocAnalysis,
   MemberAccessor,
-  MemberIdentityMemberPath,
-  MemberIdentityOwnerSymbolId,
   ParsedJsDoc,
-  ProjectRelativePath,
   SymbolId,
 } from '@gyomu/schema/typescript'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
 export const analyzePropertyMember = (
-  args: {
-    sourcePath: ProjectRelativePath
-    metadata: FileAnalysisMetadata
-    node: PropertySignature | PropertyDeclaration
-    ownerSymbolId: MemberIdentityOwnerSymbolId
-    ownerSymbolIdentity: SymbolIdentity
-    memberPath: MemberIdentityMemberPath
-    sourceFullText: string
-    declarationOrder: number
-  },
+  args: ChildAnalysisArg<PropertySignature | PropertyDeclaration>,
   isStatic: boolean = false,
   visibility: MemberAccessor = 'public',
 ): DocumentablePropertyMemberAnalysis => {
-  const { sourcePath, metadata, node, ownerSymbolId, ownerSymbolIdentity, memberPath } = args
+  const { sourceRelativePath, metadata, node, ownerSymbolId, ownerSymbolIdentity, memberPath } =
+    args
   const typeNode = args.node.getTypeNode()
   const name = node.getName()
   const initializer = args.node.getInitializer()
   const { id, identity, jsDoc, location, startOffset, parsedJsDoc } = preparePropertyAnalysis(
-    sourcePath,
+    sourceRelativePath,
     metadata,
     ownerSymbolId,
     ownerSymbolIdentity,
@@ -67,57 +56,10 @@ export const analyzePropertyMember = (
     readonly: node.isReadonly(),
     optional: !!node.getQuestionTokenNode(),
   })
-  // const name = node.getName()
-  // const { identity, jsDoc, location, startOffset } = preparePropertyAnalysis(
-  //   sourcePath,
-  //   metadata,
-  //   ownerSymbolId,
-  //   memberPath,
-  //   name,
-  //   node,
-  //   node,
-  // )
-
-  // // console.dir(typeNode)
-  // return {
-  //   kind: 'property',
-  //   source: 'property-declaration',
-  //   identity,
-  //   name,
-  //   readonly: node.isReadonly(),
-  //   optional: !!node.getQuestionTokenNode(),
-
-  //   ...withOptional({
-  //     type: analyzeType({
-  //       node: typeNode,
-  //       initializer,
-  //       memberPath,
-  //       metadata,
-  //       ownerSymbolId,
-  //       sourcePath,
-  //       nodeName: [name],
-  //     }),
-  //     jsDoc,
-  //   }),
-  //   location,
-  //   startOffset,
-
-  //   static: isStatic,
-  //   visibility: visibility,
-  // }
 }
 
 export const analyzePropertyMemberInternal = (
-  args: {
-    sourcePath: ProjectRelativePath
-    metadata: FileAnalysisMetadata
-    node: PropertySignature | PropertyDeclaration | GetAccessorDeclaration
-    ownerSymbolId: MemberIdentityOwnerSymbolId
-    ownerSymbolIdentity: SymbolIdentity
-    memberPath: MemberIdentityMemberPath
-    sourceFullText: string
-    declarationOrder: number
-  },
+  args: ChildAnalysisArg<PropertySignature | PropertyDeclaration | GetAccessorDeclaration>,
   args2: {
     readonly: boolean
     optional: boolean
@@ -136,7 +78,16 @@ export const analyzePropertyMemberInternal = (
     startOffset: number
   },
 ): DocumentablePropertyMemberAnalysis => {
-  const { sourcePath, metadata, node, ownerSymbolId, ownerSymbolIdentity, memberPath } = args
+  const {
+    sourceRelativePath,
+    metadata,
+    node,
+    ownerSymbolId,
+    ownerSymbolIdentity,
+    memberPath,
+    imported,
+    options,
+  } = args
   const { id, identity, jsDoc, location, startOffset, readonly, optional, parsedJsDoc } = args2
   const name = node.getName()
 
@@ -154,18 +105,21 @@ export const analyzePropertyMemberInternal = (
     readonly,
     optional,
     ...withOptional({
-      type: analyzeType({
-        node: args2.typeNode,
-        initializer: args2.initializer,
-        memberPath,
-        metadata,
-        ownerSymbolId,
-        ownerSymbolIdentity,
-        sourcePath,
-        nodeName: [name],
-        sourceFullText: args.sourceFullText,
-        declarationOrder: args.declarationOrder,
-      }),
+      type: analyzeType(
+        {
+          node: args2.typeNode ?? args2.initializer,
+          memberPath,
+          metadata,
+          ownerSymbolId,
+          ownerSymbolIdentity,
+          sourceRelativePath,
+          sourceFullText: args.sourceFullText,
+          declarationOrder: args.declarationOrder,
+          imported,
+          options,
+        },
+        [name],
+      ),
       jsDoc,
       parsedJsDoc,
     }),

@@ -8,29 +8,39 @@ import { analyzeClassPropertyMember, analyzeGetSetAccessor } from './analyzeClas
 import { analyzeClassMethodMember } from './analyzeClassMethodMember.js'
 import { analyzeConstructor } from './analyzeConstructor.js'
 import type {
+  DependencyRequirement,
   DocumentableMemberAnalysis,
   MemberAnalysis,
-  MemberIdentityMemberPath,
-  MemberIdentityOwnerSymbolId,
-  ProjectRelativePath,
   SymbolAnalysis,
 } from '@gyomu/schema/typescript'
 import type { ClassDeclaration } from 'ts-morph'
 
-import type { JSDocableTagAnalysisArg } from '../../types.js'
-import type { FileAnalysisMetadata } from '../../../file/FileAnalysisResult.js'
+import type { ChildAnalysisArg, GetSignatureIdArg, TagAnalysisArg } from '../../types.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
-export const analyzeClass = (args: JSDocableTagAnalysisArg<ClassDeclaration>) => {
-  const typeName = args.name ?? args.declaration.getName() ?? ''
+export const analyzeClass = (args: TagAnalysisArg<ClassDeclaration>) => {
+  const {
+    declaration,
+    sourceRelativePath,
+    metadata,
+    memberPath,
+    imported,
+    options,
+    sourceFullText,
+  } = args
+  const typeName = args.declaration.getName() ?? ''
   const prepared = prepareSymbolAnalysis(
-    args.declaration,
-    args.sourceRelativePath,
-    args.metadata,
-    args.memberPath,
+    {
+      declaration,
+      sourceRelativePath,
+      memberPath,
+      metadata,
+      nodeName: typeName,
+      sourceFullText,
+      imported,
+      options,
+    },
     getSignatureId,
-    typeName,
-    args.sourceFullText,
   )
   const identity: SymbolIdentity = {
     symbolId: typeName,
@@ -53,16 +63,20 @@ export const analyzeClass = (args: JSDocableTagAnalysisArg<ClassDeclaration>) =>
     identity,
     startOffset: args.declaration.getStart(),
     ...withOptional({ jsDoc: prepared.jsDoc, parsedJsDoc: prepared.parsedJsDoc }),
-    members: analyzeClassMembers(
-      args.sourceRelativePath,
-      args.metadata,
-      args.declaration,
-      prepared.id,
-      identity,
-      [],
-      args.sourceFullText,
-    ),
+    members: analyzeClassMembers({
+      sourceRelativePath,
+      metadata,
+      node: declaration,
+      ownerSymbolId: prepared.id,
+      ownerSymbolIdentity: identity,
+      memberPath: [],
+      sourceFullText,
+      imported,
+      options,
+      declarationOrder: 0,
+    }),
     declarationOrder: args.declarationOrder,
+    dependencyRequirements: new Array<DependencyRequirement>(),
   } satisfies SymbolAnalysis
 
   registerSymbolSymbolAnalysis(
@@ -82,15 +96,18 @@ export const analyzeClass = (args: JSDocableTagAnalysisArg<ClassDeclaration>) =>
   }
 }
 
-const analyzeClassMembers = (
-  sourcePath: ProjectRelativePath,
-  metadata: FileAnalysisMetadata,
-  node: ClassDeclaration,
-  ownerSymbolId: MemberIdentityOwnerSymbolId,
-  ownerSymbolIdentity: SymbolIdentity,
-  memberPath: MemberIdentityMemberPath,
-  sourceFullText: string,
-): Array<MemberAnalysis> => {
+const analyzeClassMembers = (args: ChildAnalysisArg<ClassDeclaration>): Array<MemberAnalysis> => {
+  const {
+    node,
+    sourceRelativePath,
+    metadata,
+    ownerSymbolId,
+    ownerSymbolIdentity,
+    memberPath,
+    sourceFullText,
+    imported,
+    options,
+  } = args
   const nodeMembers = node.getMembers()
 
   const setters = nodeMembers.filter((v) => Node.isSetAccessorDeclaration(v))
@@ -99,7 +116,7 @@ const analyzeClassMembers = (
     if (Node.isPropertyDeclaration(member)) {
       return [
         analyzeClassPropertyMember({
-          sourcePath,
+          sourceRelativePath,
           metadata,
           node: member,
           ownerSymbolId,
@@ -107,35 +124,45 @@ const analyzeClassMembers = (
           memberPath,
           sourceFullText,
           declarationOrder: index,
+          imported,
+          options,
         }),
       ]
     }
     if (Node.isMethodDeclaration(member))
       return [
-        analyzeClassMethodMember({
-          sourcePath,
-          metadata,
-          node: member,
-          ownerSymbolId,
-          ownerSymbolIdentity,
-          memberPath,
-          name: member.getName(),
-          jsDocableNode: member,
-          sourceFullText,
-          declarationOrder: index,
-        }),
+        analyzeClassMethodMember(
+          {
+            sourceRelativePath,
+            metadata,
+            node: member,
+            ownerSymbolId,
+            ownerSymbolIdentity,
+            memberPath,
+            sourceFullText,
+            declarationOrder: index,
+            imported,
+            options,
+          },
+          member.getName(),
+          member,
+        ),
       ]
     if (Node.isConstructorDeclaration(member))
       return analyzeConstructor(
-        sourcePath,
-        metadata,
-        member,
+        {
+          sourceRelativePath,
+          metadata,
+          node: member,
+          declarationOrder: index,
+          memberPath,
+          sourceFullText,
+          ownerSymbolId,
+          ownerSymbolIdentity,
+          imported,
+          options,
+        },
         node,
-        ownerSymbolId,
-        ownerSymbolIdentity,
-        memberPath,
-        sourceFullText,
-        index,
       )
 
     if (Node.isGetAccessorDeclaration(member)) {
@@ -144,7 +171,7 @@ const analyzeClassMembers = (
       const setter = setters.find((s) => s.getName() == name)
       const analysis = analyzeGetSetAccessor(
         {
-          sourcePath,
+          sourceRelativePath,
           metadata,
           node: getter,
           ownerSymbolId,
@@ -152,6 +179,8 @@ const analyzeClassMembers = (
           memberPath,
           sourceFullText,
           declarationOrder: index,
+          imported,
+          options,
         },
         setter,
       )
@@ -161,30 +190,9 @@ const analyzeClassMembers = (
     return [] as Array<DocumentableMemberAnalysis>
   })
 
-  // const getters = nodeMembers.filter((v) => Node.isGetAccessorDeclaration(v))
-
-  // const getterAnalysis: Array<DocumentablePropertyMemberAnalysis> = []
-  // for (const getter of getters) {
-  //   const name = getter.getName()
-  //   const setter = setters.find((s) => s.getName() == name)
-  //   const analysis = analyzeGetSetAccessor(
-  //     {
-  //       sourcePath,
-  //       metadata,
-  //       node: getter,
-  //       ownerSymbolId,
-  //       ownerSymbolIdentity,
-  //       memberPath,
-  //       sourceFullText,
-  //     },
-  //     setter,
-  //   )
-  //   getterAnalysis.push(analysis)
-  // }
-  // members.push(...getterAnalysis)
   return members
 }
 
-const getSignatureId = (declaration: ClassDeclaration) => {
+const getSignatureId = (args: GetSignatureIdArg<ClassDeclaration>) => {
   return { id: 'class', parameters: [] }
 }

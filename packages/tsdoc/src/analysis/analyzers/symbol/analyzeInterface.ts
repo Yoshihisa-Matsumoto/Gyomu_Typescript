@@ -6,28 +6,34 @@ import { analyzePropertyMember } from './struct/analyzePropertyMember.js'
 import { analyzeFunctionMember } from './struct/analyzeFunctionMember.js'
 import { detectEffectSignals } from './analyzeEffectType.js'
 import { computeIndent } from './computeIndent.js'
-import type {
-  MemberAnalysis,
-  MemberIdentityMemberPath,
-  MemberIdentityOwnerSymbolId,
-  ProjectRelativePath,
-  SymbolAnalysis,
-} from '@gyomu/schema/typescript'
+import type { MemberAnalysis, SymbolAnalysis } from '@gyomu/schema/typescript'
 import type { InterfaceDeclaration } from 'ts-morph'
-import type { JSDocableTagAnalysisArg } from '../types.js'
-import type { FileAnalysisMetadata } from '../../file/FileAnalysisResult.js'
+import type { ChildAnalysisArg, GetSignatureIdArg, TagAnalysisArg } from '../types.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
-export const analyzeInterface = (args: JSDocableTagAnalysisArg<InterfaceDeclaration>) => {
-  const typeName = args.name ?? args.declaration.getName()
+export const analyzeInterface = (args: TagAnalysisArg<InterfaceDeclaration>) => {
+  const {
+    declaration,
+    sourceRelativePath,
+    metadata,
+    memberPath,
+    sourceFullText,
+    imported,
+    options,
+  } = args
+  const typeName = args.declaration.getName()
   const prepared = prepareSymbolAnalysis(
-    args.declaration,
-    args.sourceRelativePath,
-    args.metadata,
-    args.memberPath,
+    {
+      declaration,
+      sourceRelativePath,
+      metadata,
+      memberPath,
+      nodeName: typeName,
+      sourceFullText,
+      imported,
+      options,
+    },
     getSignature,
-    typeName,
-    args.sourceFullText,
   )
   const identity: SymbolIdentity = {
     symbolId: typeName,
@@ -50,15 +56,18 @@ export const analyzeInterface = (args: JSDocableTagAnalysisArg<InterfaceDeclarat
     identity,
     startOffset: args.declaration.getStart(),
     ...withOptional({ jsDoc: prepared.jsDoc, parsedJsDoc: prepared.parsedJsDoc }),
-    members: analyzeInterfaceMembers(
-      args.sourceRelativePath,
-      args.metadata,
-      args.declaration,
-      prepared.id,
-      identity,
-      [],
-      args.sourceFullText,
-    ),
+    members: analyzeInterfaceMembers({
+      sourceRelativePath,
+      metadata,
+      node: declaration,
+      ownerSymbolId: prepared.id,
+      ownerSymbolIdentity: identity,
+      memberPath: [],
+      sourceFullText,
+      imported,
+      options,
+      declarationOrder: 0,
+    }),
     declarationOrder: args.declarationOrder,
   } satisfies SymbolAnalysis
   registerSymbolSymbolAnalysis(
@@ -77,42 +86,55 @@ export const analyzeInterface = (args: JSDocableTagAnalysisArg<InterfaceDeclarat
   }
 }
 
-const getSignature = (declaration: InterfaceDeclaration) => {
+const getSignature = (args: GetSignatureIdArg<InterfaceDeclaration>) => {
   return { id: 'interface', parameters: [] }
 }
 
 const analyzeInterfaceMembers = (
-  sourcePath: ProjectRelativePath,
-  metadata: FileAnalysisMetadata,
-  node: InterfaceDeclaration,
-  ownerSymbolId: MemberIdentityOwnerSymbolId,
-  ownerSymbolIdentity: SymbolIdentity,
-  memberPath: MemberIdentityMemberPath,
-  sourceFullText: string,
+  args: ChildAnalysisArg<InterfaceDeclaration>,
 ): Array<MemberAnalysis> => {
+  const {
+    node,
+    sourceRelativePath,
+    metadata,
+    memberPath,
+    ownerSymbolId,
+    ownerSymbolIdentity,
+    sourceFullText,
+    imported,
+    options,
+  } = args
   return node.getMembers().flatMap((member, index) => {
     if (Node.isPropertySignature(member)) {
       const typeNode = member.getTypeNode()
       if (Node.isFunctionTypeNode(typeNode)) {
         return [
-          analyzeFunctionMember({
-            sourcePath,
-            metadata,
-            name: member.getName(),
-            node: typeNode,
-            jsDocableNode: member,
-            ownerSymbolId,
-            ownerSymbolIdentity,
-            memberPath,
-            sourceFullText,
-            declarationOrder: index,
-          }),
+          analyzeFunctionMember(
+            {
+              sourceRelativePath,
+              metadata,
+              node: typeNode,
+              ownerSymbolId,
+              ownerSymbolIdentity,
+              memberPath,
+              sourceFullText,
+              declarationOrder: index,
+              imported,
+              options,
+            },
+            {
+              isStatic: undefined,
+              visibility: undefined,
+              name: member.getName(),
+              jsDocableNode: member,
+            },
+          ),
         ] as Array<MemberAnalysis>
       }
       // console.log(`PromPmember, ${index}`)
       return [
         analyzePropertyMember({
-          sourcePath,
+          sourceRelativePath,
           metadata,
           node: member,
           ownerSymbolId,
@@ -120,24 +142,34 @@ const analyzeInterfaceMembers = (
           memberPath,
           sourceFullText,
           declarationOrder: index,
+          imported,
+          options,
         }),
       ]
     }
 
     if (Node.isMethodSignature(member)) {
       return [
-        analyzeFunctionMember({
-          sourcePath,
-          metadata,
-          node: member,
-          ownerSymbolId,
-          ownerSymbolIdentity,
-          memberPath,
-          name: member.getName(),
-          jsDocableNode: member,
-          sourceFullText,
-          declarationOrder: index,
-        }),
+        analyzeFunctionMember(
+          {
+            sourceRelativePath,
+            metadata,
+            node: member,
+            ownerSymbolId,
+            ownerSymbolIdentity,
+            memberPath,
+            sourceFullText,
+            declarationOrder: index,
+            imported,
+            options,
+          },
+          {
+            isStatic: undefined,
+            visibility: undefined,
+            name: member.getName(),
+            jsDocableNode: member,
+          },
+        ),
       ] as Array<MemberAnalysis>
     }
 

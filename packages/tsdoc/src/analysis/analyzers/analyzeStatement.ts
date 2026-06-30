@@ -6,20 +6,11 @@ import { analyzeInterfaceStatement } from './analyzeInterfaceStatement.js'
 import { analyzeEnumStatement } from './analyzeEnumStatement.js'
 import { analyzeTypeAliasStatement } from './analyzeTypeAliasStatement.js'
 import type { Statement } from 'ts-morph'
-import type { FileAnalysisMetadata } from '../file/FileAnalysisResult.js'
-import type { AnalysisOptions } from '../AnalysisOption.js'
-import type { StatementAnalysisResult } from './types.js'
+import type { StatementAnalysisArgument, StatementAnalysisResult } from './types.js'
 
 export const analyzeStatement = (
   statement: Statement,
-  args: {
-    metadata: FileAnalysisMetadata
-    sourceRelativePath: string
-    memberPath: Array<string>
-    sourceFullText: string
-    declarationOrder: number
-    options: AnalysisOptions | undefined
-  },
+  args: StatementAnalysisArgument,
 ): StatementAnalysisResult | undefined => {
   if (Node.isVariableStatement(statement)) return analyzeVariableStatement(statement, args)
   if (Node.isClassDeclaration(statement)) return analyzeClassStatement(statement, args)

@@ -1,3 +1,5 @@
+import ps from 'node:path'
+
 import DefaultValue from './default-value.js'
 
 import { VERSION, createUser as buildUser } from './types.js'
@@ -12,3 +14,5 @@ export const factory = buildUser
 export type { User, UserId }
 
 export { DefaultValue, Types }
+
+export { ps }

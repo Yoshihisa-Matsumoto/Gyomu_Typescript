@@ -2,26 +2,13 @@ import { withOptional } from '@gyomu/schema'
 import { Node } from 'ts-morph'
 import { createMemberIdentityAndId } from '../../shared/createMemberIdentity.js'
 import { analyzeType } from './analyzeType.js'
+import type { ChildAnalysisArg } from '../types.js'
 import type { ParameterDeclaration } from 'ts-morph'
-import type { FileAnalysisMetadata } from '../../file/FileAnalysisResult.js'
-import type {
-  MemberIdentityMemberPath,
-  MemberIdentityOwnerSymbolId,
-  NonDocumentablePropertyMemberAnalysis,
-  ProjectRelativePath,
-} from '@gyomu/schema/typescript'
-import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
+import type { NonDocumentablePropertyMemberAnalysis } from '@gyomu/schema/typescript'
 
-export const analyzeParameter = (args: {
-  node: ParameterDeclaration
-  sourceRelativePath: ProjectRelativePath
-  metadata: FileAnalysisMetadata
-  ownerSymbolId: MemberIdentityOwnerSymbolId
-  ownerSymbolIdentity: SymbolIdentity
-  memberPath: MemberIdentityMemberPath
-  sourceFullText: string
-  declarationOrder: number
-}): NonDocumentablePropertyMemberAnalysis => {
+export const analyzeParameter = (
+  args: ChildAnalysisArg<ParameterDeclaration>,
+): NonDocumentablePropertyMemberAnalysis => {
   const {
     node,
     sourceRelativePath,
@@ -31,6 +18,8 @@ export const analyzeParameter = (args: {
     memberPath,
     sourceFullText,
     declarationOrder,
+    imported,
+    options,
   } = args
   const typeNode = node.getTypeNode()
   const name = node.getName()
@@ -61,18 +50,23 @@ export const analyzeParameter = (args: {
     rest: !!node.getDotDotDotToken(),
 
     ...withOptional({
-      type: analyzeType({
-        node: typeNode,
-        initializer,
-        sourcePath: sourceRelativePath,
-        metadata,
-        ownerSymbolId,
-        ownerSymbolIdentity,
-        memberPath,
-        nodeName: [name],
-        sourceFullText,
-        declarationOrder,
-      }),
+      type: analyzeType(
+        {
+          node: typeNode ?? initializer,
+
+          sourceRelativePath,
+          metadata,
+          ownerSymbolId,
+          ownerSymbolIdentity,
+          memberPath,
+          sourceFullText,
+          declarationOrder,
+          imported,
+          options,
+        },
+        [name],
+        undefined,
+      ),
     }),
     declarationOrder,
     // structure: analyzeParameterStructure(withOptional({ node: typeNode, initializer })),

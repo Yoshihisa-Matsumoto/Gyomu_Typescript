@@ -6,19 +6,32 @@ import { analyzeObjectMembers } from './analyzeObjectMembers.js'
 import { computeIndent } from './computeIndent.js'
 import type { TypeAliasDeclaration } from 'ts-morph'
 import type { SymbolAnalysis } from '@gyomu/schema/typescript'
-import type { JSDocableTagAnalysisArg } from '../types.js'
+import type { TagAnalysisArg } from '../types.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
-export const analyzeTypeAlias = (args: JSDocableTagAnalysisArg<TypeAliasDeclaration>) => {
-  const typeName = args.name ?? args.declaration.getName()
+export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => {
+  const {
+    declaration,
+    sourceRelativePath,
+    metadata,
+    memberPath,
+    sourceFullText,
+    imported,
+    options,
+  } = args
+  const typeName = args.declaration.getName()
   const prepared = prepareSymbolAnalysis(
-    args.declaration,
-    args.sourceRelativePath,
-    args.metadata,
-    args.memberPath,
+    {
+      declaration,
+      sourceRelativePath,
+      metadata,
+      memberPath,
+      sourceFullText,
+      imported,
+      options,
+      nodeName: typeName,
+    },
     getSignatureId,
-    typeName,
-    args.sourceFullText,
   )
   const identity: SymbolIdentity = {
     symbolId: typeName,
@@ -41,15 +54,18 @@ export const analyzeTypeAlias = (args: JSDocableTagAnalysisArg<TypeAliasDeclarat
     identity,
     startOffset: args.declaration.getStart(),
     ...withOptional({ jsDoc: prepared.jsDoc, parsedJsDoc: prepared.parsedJsDoc }),
-    members: analyzeObjectMembers(
-      args.sourceRelativePath,
-      args.metadata,
-      args.declaration,
-      prepared.id,
-      identity,
-      [],
-      args.sourceFullText,
-    ),
+    members: analyzeObjectMembers({
+      sourceRelativePath,
+      metadata,
+      node: declaration,
+      ownerSymbolId: prepared.id,
+      ownerSymbolIdentity: identity,
+      memberPath: [],
+      sourceFullText,
+      imported,
+      options,
+      declarationOrder: 0,
+    }),
     declarationOrder: args.declarationOrder,
   } satisfies SymbolAnalysis
   registerSymbolSymbolAnalysis(

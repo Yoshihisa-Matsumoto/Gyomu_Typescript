@@ -6,19 +6,32 @@ import { computeIndent } from './computeIndent.js'
 import type { SymbolAnalysis } from '@gyomu/schema/typescript'
 import type { EnumDeclaration } from 'ts-morph'
 
-import type { JSDocableTagAnalysisArg } from '../types.js'
+import type { TagAnalysisArg } from '../types.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
-export const analyzeEnum = (args: JSDocableTagAnalysisArg<EnumDeclaration>) => {
-  const typeName = args.name ?? args.declaration.getName()
+export const analyzeEnum = (args: TagAnalysisArg<EnumDeclaration>) => {
+  const typeName = args.declaration.getName()
+  const {
+    declaration,
+    sourceRelativePath,
+    metadata,
+    memberPath,
+    sourceFullText,
+    imported,
+    options,
+  } = args
   const prepared = prepareSymbolAnalysis(
-    args.declaration,
-    args.sourceRelativePath,
-    args.metadata,
-    args.memberPath,
+    {
+      declaration,
+      sourceRelativePath,
+      metadata,
+      memberPath,
+      nodeName: typeName,
+      sourceFullText,
+      imported,
+      options,
+    },
     getSignatureId,
-    typeName,
-    args.sourceFullText,
   )
   const identity: SymbolIdentity = {
     symbolId: typeName,

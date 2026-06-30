@@ -1,42 +1,49 @@
 import { Node } from 'ts-morph'
 import { analyzeFunctionMember } from './struct/analyzeFunctionMember.js'
 import { analyzePropertyMember } from './struct/analyzePropertyMember.js'
+import type { ChildAnalysisArg } from '../types.js'
 import type { TypeAliasDeclaration, VariableDeclaration } from 'ts-morph'
-import type { FileAnalysisMetadata } from '../../file/FileAnalysisResult.js'
-import type {
-  MemberAnalysis,
-  MemberIdentityMemberPath,
-  MemberIdentityOwnerSymbolId,
-  ProjectRelativePath,
-} from '@gyomu/schema/typescript'
-import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
+import type { MemberAnalysis } from '@gyomu/schema/typescript'
 
 export const analyzeObjectMembers = (
-  sourcePath: ProjectRelativePath,
-  metadata: FileAnalysisMetadata,
-  declaration: TypeAliasDeclaration | VariableDeclaration,
-  ownerSymbolId: MemberIdentityOwnerSymbolId,
-  ownerSymbolIdentity: SymbolIdentity,
-  memberPath: MemberIdentityMemberPath,
-  sourceFullText: string,
+  args: ChildAnalysisArg<TypeAliasDeclaration | VariableDeclaration>,
 ): Array<MemberAnalysis> => {
-  const typeNode = declaration.getTypeNode()
+  const {
+    node,
+    metadata,
+    sourceRelativePath,
+    ownerSymbolId,
+    ownerSymbolIdentity,
+    memberPath,
+    sourceFullText,
+    imported,
+    options,
+  } = args
+  const typeNode = node.getTypeNode()
   if (Node.isTypeLiteral(typeNode)) {
     return typeNode.getMembers().flatMap((member, index) => {
       if (Node.isMethodSignature(member)) {
         return [
-          analyzeFunctionMember({
-            sourcePath,
-            metadata,
-            node: member,
-            ownerSymbolId,
-            ownerSymbolIdentity,
-            memberPath,
-            name: member.getName(),
-            jsDocableNode: member,
-            sourceFullText,
-            declarationOrder: index,
-          }),
+          analyzeFunctionMember(
+            {
+              sourceRelativePath,
+              metadata,
+              node: member,
+              ownerSymbolId,
+              ownerSymbolIdentity,
+              memberPath,
+              sourceFullText,
+              declarationOrder: index,
+              imported,
+              options,
+            },
+            {
+              isStatic: false,
+              visibility: undefined,
+              jsDocableNode: member,
+              name: member.getName(),
+            },
+          ),
         ] as Array<MemberAnalysis>
       }
 
@@ -45,23 +52,31 @@ export const analyzeObjectMembers = (
         const memberTypeNode = member.getTypeNode()
         if (Node.isFunctionTypeNode(memberTypeNode)) {
           return [
-            analyzeFunctionMember({
-              sourcePath,
-              metadata,
-              name: member.getName(),
-              node: memberTypeNode,
-              jsDocableNode: member,
-              ownerSymbolId,
-              ownerSymbolIdentity,
-              memberPath: newMemberPath,
-              sourceFullText,
-              declarationOrder: index,
-            }),
+            analyzeFunctionMember(
+              {
+                sourceRelativePath,
+                metadata,
+                node: memberTypeNode,
+                ownerSymbolId,
+                ownerSymbolIdentity,
+                memberPath: newMemberPath,
+                sourceFullText,
+                declarationOrder: index,
+                imported,
+                options,
+              },
+              {
+                isStatic: false,
+                jsDocableNode: member,
+                name: member.getName(),
+                visibility: undefined,
+              },
+            ),
           ] as Array<MemberAnalysis>
         }
         return [
           analyzePropertyMember({
-            sourcePath,
+            sourceRelativePath,
             metadata,
             node: member,
             ownerSymbolId,
@@ -69,6 +84,8 @@ export const analyzeObjectMembers = (
             memberPath: newMemberPath,
             sourceFullText,
             declarationOrder: index,
+            imported,
+            options,
           }),
         ] as Array<MemberAnalysis>
       }

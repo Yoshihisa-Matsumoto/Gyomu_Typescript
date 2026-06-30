@@ -1,21 +1,11 @@
-import { withOptional } from '@gyomu/schema'
 import { analyzeClass } from './symbol/class/analyzeClass.js'
 import type { ExportAnalysis, SymbolAnalysis } from '@gyomu/schema/typescript'
-import type { StatementAnalysisResult } from './types.js'
+import type { StatementAnalysisArgument, StatementAnalysisResult } from './types.js'
 import type { ClassDeclaration } from 'ts-morph'
-import type { FileAnalysisMetadata } from '../file/FileAnalysisResult.js'
-import type { AnalysisOptions } from '../AnalysisOption.js'
 
 export const analyzeClassStatement = (
   statement: ClassDeclaration,
-  args: {
-    metadata: FileAnalysisMetadata
-    sourceRelativePath: string
-    memberPath: Array<string>
-    sourceFullText: string
-    declarationOrder: number
-    options: AnalysisOptions | undefined
-  },
+  args: StatementAnalysisArgument,
 ): StatementAnalysisResult => {
   const result = {
     // kind: 'single',
@@ -23,21 +13,26 @@ export const analyzeClassStatement = (
     symbols: new Array<SymbolAnalysis>(),
     // dependencies: new Array<DependencyRequirement>(),
   } satisfies StatementAnalysisResult
-  const { metadata, sourceRelativePath, memberPath, sourceFullText, declarationOrder, options } =
-    args
+  const {
+    metadata,
+    sourceRelativePath,
+    memberPath,
+    sourceFullText,
+    declarationOrder,
+    imported,
+    options,
+  } = args
 
-  const classResult = analyzeClass(
-    withOptional({
-      declaration: statement,
-      options,
-      sourceRelativePath,
-      metadata,
-      memberPath,
-      sourceFullText,
-
-      declarationOrder,
-    }),
-  )
+  const classResult = analyzeClass({
+    declaration: statement,
+    sourceRelativePath,
+    metadata,
+    memberPath,
+    sourceFullText,
+    imported,
+    declarationOrder,
+    options,
+  })
   if (classResult.isExported) {
     result.exported.push({
       kind: 'local',

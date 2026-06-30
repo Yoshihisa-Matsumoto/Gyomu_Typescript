@@ -1,41 +1,36 @@
-import { withOptional } from '@gyomu/schema'
 import { analyzeTypeAlias } from './symbol/analyzeTypeAlias.js'
 import type { ExportAnalysis, SymbolAnalysis } from '@gyomu/schema/typescript'
-import type { StatementAnalysisResult } from './types.js'
+import type { StatementAnalysisArgument, StatementAnalysisResult } from './types.js'
 import type { TypeAliasDeclaration } from 'ts-morph'
-import type { FileAnalysisMetadata } from '../file/FileAnalysisResult.js'
-import type { AnalysisOptions } from '../AnalysisOption.js'
 
 export const analyzeTypeAliasStatement = (
   statement: TypeAliasDeclaration,
-  args: {
-    metadata: FileAnalysisMetadata
-    sourceRelativePath: string
-    memberPath: Array<string>
-    sourceFullText: string
-    declarationOrder: number
-    options: AnalysisOptions | undefined
-  },
+  args: StatementAnalysisArgument,
 ): StatementAnalysisResult => {
   const result = {
     exported: new Array<ExportAnalysis>(),
     symbols: new Array<SymbolAnalysis>(),
   } satisfies StatementAnalysisResult
-  const { metadata, sourceRelativePath, memberPath, sourceFullText, declarationOrder, options } =
-    args
+  const {
+    metadata,
+    sourceRelativePath,
+    memberPath,
+    sourceFullText,
+    declarationOrder,
+    options,
+    imported,
+  } = args
 
-  const typeAliasResult = analyzeTypeAlias(
-    withOptional({
-      declaration: statement,
-      options,
-      sourceRelativePath,
-      metadata,
-      memberPath,
-      sourceFullText,
-
-      declarationOrder,
-    }),
-  )
+  const typeAliasResult = analyzeTypeAlias({
+    declaration: statement,
+    sourceRelativePath,
+    metadata,
+    memberPath,
+    sourceFullText,
+    imported,
+    declarationOrder,
+    options,
+  })
   if (typeAliasResult.isExported) {
     result.exported.push({
       kind: 'local',

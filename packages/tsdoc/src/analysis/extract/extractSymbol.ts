@@ -1,4 +1,4 @@
-import { Node, SyntaxKind } from 'ts-morph'
+import { Node } from 'ts-morph'
 import { analyzeStatement } from '../analyzers/analyzeStatement.js'
 import { analyzeExportStatement } from '../analyzers/analyzeExportStatement.js'
 import { analyzeImportStatement } from '../analyzers/analyzeImportStatement.js'
@@ -22,24 +22,24 @@ export const extractSymbols = (
 
   statements.forEach((statement, declarationOrder) => {
     if (Node.isImportDeclaration(statement)) {
-      imported.push(analyzeImportStatement(statement))
+      imported.push(...analyzeImportStatement(statement))
     }
   })
 
   statements.forEach((statement, declarationOrder) => {
-    let isDefault = false
-    if (Node.isDefaultClause(statement)) isDefault = true
+    // const isExports =
+    //   (Node.isExportGetable(statement) || Node.isExportable(statement)) && statement.isExported()
+    // if (isExports) return
 
-    if (Node.isModifierable(statement)) {
-      if (statement.getModifiers().find((m) => m.getKind() == SyntaxKind.DefaultKeyword))
-        isDefault = true
-    }
+    // let isDefault = false
+    // if (Node.isDefaultClause(statement)) isDefault = true
+
+    // if (Node.isModifierable(statement)) {
+    //   if (statement.getModifiers().find((m) => m.getKind() == SyntaxKind.DefaultKeyword))
+    //     isDefault = true
+    // }
 
     const declaration = statement
-
-    // const sourceFullText = declaration.getFullText()
-
-    // console.log(declaration.getText(), isExported, isDefault)
 
     const result = analyzeStatement(declaration, {
       metadata,
@@ -47,6 +47,7 @@ export const extractSymbols = (
       declarationOrder,
       sourceFullText,
       sourceRelativePath,
+      imported,
       options,
     })
     if (result) {
