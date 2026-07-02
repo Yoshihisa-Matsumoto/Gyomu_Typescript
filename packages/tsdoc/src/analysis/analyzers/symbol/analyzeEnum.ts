@@ -57,7 +57,7 @@ export const analyzeEnum = (args: TagAnalysisArg<EnumDeclaration>) => {
     parsedJsDoc: prepared.parsedJsDoc,
     members: [],
     declarationOrder: args.declarationOrder,
-    dependencyRequirements: [],
+    dependencyCandidates: [],
   } satisfies SymbolAnalysis
 
   registerSymbolSymbolAnalysis(

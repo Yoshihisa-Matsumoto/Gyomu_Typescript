@@ -8,7 +8,7 @@ interface DependencySource {
   readonly memberPath: MemberIdentityMemberPath
 }
 
-export type DependencyRequirement = {
+export type DependencyCandidate = {
   readonly source: DependencySource
   readonly target: LocalFileDependencyCandidate | ImportedSymbolDependency
 }

@@ -5,7 +5,7 @@ import { Effect } from 'effect'
 import { analyzeFile } from '../analyzeFile.js'
 import { createFixtureProject } from './createFixtureProject.js'
 import type {
-  DependencyRequirement,
+  DependencyCandidate,
   DocumentableMethodMemberAnalysis,
   DocumentablePropertyMemberAnalysis,
   SymbolAnalysis,
@@ -49,7 +49,7 @@ const classSymbolsDependencyProgram = (sourceFile: string, folder?: string) => {
           const exports = result.analysis.symbols.map((s) => {
             return {
               name: s.identity.symbolId,
-              dependencies: s.dependencyRequirements,
+              dependencies: s.dependencyCandidates,
             }
           })
           return exports
@@ -426,7 +426,7 @@ describe('analyze Class dependency pattern', () => {
                 localName: 'ImportedClass',
               },
             },
-          ] satisfies Array<DependencyRequirement>),
+          ] satisfies Array<DependencyCandidate>),
         )
       }
     },
@@ -489,7 +489,7 @@ describe('analyze Class dependency pattern', () => {
               source: { memberPath: ['h', 1] },
               target: { scope: 'import', localName: 'ImportedType' },
             },
-          ] satisfies Array<DependencyRequirement>),
+          ] satisfies Array<DependencyCandidate>),
         )
       }
     },
@@ -524,7 +524,7 @@ describe('analyze Class dependency pattern', () => {
               source: { memberPath: ['$generics', 'U'] },
               target: { scope: 'local-file', symbolName: 'LocalClass' },
             },
-          ] satisfies Array<DependencyRequirement>),
+          ] satisfies Array<DependencyCandidate>),
         )
       }
     },

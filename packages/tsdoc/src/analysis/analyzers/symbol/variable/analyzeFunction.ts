@@ -43,7 +43,7 @@ export const analyzeFunction = (
     members: [],
 
     declarationOrder: args.declarationOrder,
-    dependencyRequirements: prepared.dependencyRequirements ?? [],
+    dependencyCandidates: prepared.dependencyCandidates ?? [],
   } satisfies SymbolAnalysis
   registerSymbolSymbolAnalysis(
     args.metadata,
@@ -139,7 +139,7 @@ export const getFunctionSignature = (
     parameters: parametersResult.map((p) => p.member),
 
     returnType: returnTypeResult?.member,
-    dependencyRequirements: [
+    dependencyCandidates: [
       ...genericsResult.dependencies,
       ...parametersResult.map((p) => p.dependencies).flat(),
       ...(returnTypeResult?.dependencies ?? []),

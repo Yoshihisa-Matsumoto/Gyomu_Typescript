@@ -8,11 +8,7 @@ import { analyzeGenericsParameters } from '../analyzeGenericsParameters.js'
 import { analyzeClassPropertyMember, analyzeGetSetAccessor } from './analyzeClassPropertyMember.js'
 import { analyzeClassMethodMember } from './analyzeClassMethodMember.js'
 import { analyzeConstructor } from './analyzeConstructor.js'
-import type {
-  DependencyRequirement,
-  MemberAnalysis,
-  SymbolAnalysis,
-} from '@gyomu/schema/typescript'
+import type { DependencyCandidate, MemberAnalysis, SymbolAnalysis } from '@gyomu/schema/typescript'
 import type { ClassDeclaration } from 'ts-morph'
 
 import type {
@@ -68,7 +64,7 @@ export const analyzeClass = (args: TagAnalysisArg<ClassDeclaration>) => {
   })
 
   let heritageIndex = 0
-  const heritages: Array<DependencyRequirement> = declaration
+  const heritages: Array<DependencyCandidate> = declaration
     .getHeritageClauses()
     .map((heritage) => {
       const keyword = heritage.getToken()
@@ -126,7 +122,7 @@ export const analyzeClass = (args: TagAnalysisArg<ClassDeclaration>) => {
     parsedJsDoc: prepared.parsedJsDoc,
     members: memberResult.member,
     declarationOrder: args.declarationOrder,
-    dependencyRequirements: [
+    dependencyCandidates: [
       ...heritages,
       ...memberResult.dependencies,
       ...genericsResult.dependencies,

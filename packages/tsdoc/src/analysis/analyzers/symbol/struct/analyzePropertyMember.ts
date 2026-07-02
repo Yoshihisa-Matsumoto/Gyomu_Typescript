@@ -14,7 +14,7 @@ import type {
 } from 'ts-morph'
 
 import type {
-  DependencyRequirement,
+  DependencyCandidate,
   DocumentablePropertyMemberAnalysis,
   JsDocAnalysis,
   MemberAccessor,
@@ -95,7 +95,7 @@ export const analyzePropertyMemberInternal = (
   const name = node.getName()
 
   const newReservedNames = [...reservedNames]
-  const genercsDependencies: Array<DependencyRequirement> = []
+  const genercsDependencies: Array<DependencyCandidate> = []
   if (Node.isTypeParametered(node)) {
     const genericsResult = analyzeGenericsParameters({
       node,

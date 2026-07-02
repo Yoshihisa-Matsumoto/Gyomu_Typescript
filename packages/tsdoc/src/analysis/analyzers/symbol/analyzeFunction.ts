@@ -125,10 +125,10 @@ export const analyzeFunction = (args: TagAnalysisArg<FunctionDeclaration>) => {
     parsedJsDoc: prepared.parsedJsDoc,
     members: membersResult.member,
     declarationOrder: args.declarationOrder,
-    dependencyRequirements: [
+    dependencyCandidates: [
       ...genericsResult.dependencies,
       ...membersResult.dependencies,
-      ...(prepared.dependencyRequirements ?? []), // GenericsDependencyはprepared側に入っている
+      ...(prepared.dependencyCandidates ?? []), // GenericsDependencyはprepared側に入っている
       ...methodBodyResult.dependencies,
       ...(returnTypeResult?.dependencies ?? []),
     ],
@@ -227,7 +227,7 @@ const getFunctionSignatureId = (
     overloadCount: declaration.getOverloads().length,
     isOverloadImplementation,
     returnType: returnTypeResult?.member,
-    dependencyRequirements: [
+    dependencyCandidates: [
       ...(returnTypeResult?.dependencies ?? []),
       ...genericsResult.dependencies,
     ],

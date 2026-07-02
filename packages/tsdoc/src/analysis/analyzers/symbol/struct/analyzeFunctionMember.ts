@@ -23,7 +23,7 @@ import type {
 } from 'ts-morph'
 import type { ChildAnalysisArg, MemberAnalysisResult, MethodAnalysisResult } from '../../types.js'
 import type {
-  DependencyRequirement,
+  DependencyCandidate,
   DocumentableMethodMemberAnalysis,
   MemberAccessor,
   NonDocumentableMethodMemberAnalysis,
@@ -350,8 +350,8 @@ const analyzeStatement = (
     if (Node.isBinaryExpression(expression)) {
       const left = expression.getLeft()
       const right = expression.getRight()
-      const leftDependencies = new Array<DependencyRequirement>()
-      const rightDependencies = new Array<DependencyRequirement>()
+      const leftDependencies = new Array<DependencyCandidate>()
+      const rightDependencies = new Array<DependencyCandidate>()
       if (Node.isIdentifier(right)) {
         const rightText = right.getText()
         const dependency = analyzeDependency(rightText, args.imported, args.memberPath)

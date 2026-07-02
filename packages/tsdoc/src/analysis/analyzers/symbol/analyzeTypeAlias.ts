@@ -91,7 +91,7 @@ export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => 
       parsedJsDoc: prepared.parsedJsDoc,
       members: membersResult.member,
       declarationOrder: args.declarationOrder,
-      dependencyRequirements: [...genericsResult.dependencies, ...membersResult.dependencies],
+      dependencyCandidates: [...genericsResult.dependencies, ...membersResult.dependencies],
     } satisfies SymbolAnalysis
   } else if (Node.isTypeNode(typeOfType)) {
     const typeAnalysisArg: ChildAnalysisArg<TypeNode> = {
@@ -119,7 +119,7 @@ export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => 
       parsedJsDoc: prepared.parsedJsDoc,
       members: [],
       declarationOrder: args.declarationOrder,
-      dependencyRequirements: [...genericsResult.dependencies, ...(typeResult?.dependencies ?? [])],
+      dependencyCandidates: [...genericsResult.dependencies, ...(typeResult?.dependencies ?? [])],
     } satisfies SymbolAnalysis
   } else {
     symbol = {
@@ -142,7 +142,7 @@ export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => 
       parsedJsDoc: prepared.parsedJsDoc,
       members: [],
       declarationOrder: args.declarationOrder,
-      dependencyRequirements: [...genericsResult.dependencies],
+      dependencyCandidates: [...genericsResult.dependencies],
     } satisfies SymbolAnalysis
   }
   registerSymbolSymbolAnalysis(

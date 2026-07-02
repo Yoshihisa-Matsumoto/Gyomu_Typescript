@@ -1,4 +1,4 @@
-import type { DependencyRequirement } from './DependencyRequirement.js'
+import type { DependencyCandidate } from './DependencyRequirement.js'
 import type { MemberAnalysis } from './MemberAnalysis.js'
 
 /**
@@ -77,7 +77,7 @@ export interface SignatureAnalysis {
    */
   isOverloadImplementation?: boolean | undefined
 
-  dependencyRequirements?: ReadonlyArray<DependencyRequirement>
+  dependencyCandidates?: ReadonlyArray<DependencyCandidate>
 }
 
 // /**

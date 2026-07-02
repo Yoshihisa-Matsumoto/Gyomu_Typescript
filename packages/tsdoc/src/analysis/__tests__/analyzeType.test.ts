@@ -40,7 +40,7 @@ const typeSymbolsDependencyProgram = (sourceFile: string, folder?: string) => {
           const exports = result.analysis.symbols.map((s) => {
             return {
               name: s.identity.symbolId,
-              dependencies: s.dependencyRequirements,
+              dependencies: s.dependencyCandidates,
             }
           })
           return exports

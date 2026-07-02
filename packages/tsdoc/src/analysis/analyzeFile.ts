@@ -14,7 +14,7 @@ import type { AnalysisOptions } from './AnalysisOption.js'
 import type { FileAnalysis } from './file/FileAnalysis.js'
 import type { ProjectContext } from './project/ProjectContext.js'
 import type {
-  DependencyRequirement,
+  DependencyCandidate,
   ParsedJsDoc,
   ProjectRelativePath,
   SymbolId,
@@ -53,7 +53,7 @@ export const analyzeFile = (
       symbols: new Map<string, DocumentableTarget>(),
     }
     const transient: FileAnalysisTransient = {
-      dependencyRequirements: new Map<SymbolId, ReadonlyArray<DependencyRequirement>>(),
+      dependencyCandidates: new Map<SymbolId, ReadonlyArray<DependencyCandidate>>(),
     }
     const sourceFullPath = toProjectAbsolutePath(sourceFilePath, context.projectRoot)
     const sourceRelativePath = toProjectRelativePath(sourceFilePath, context.projectRoot)

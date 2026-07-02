@@ -1,6 +1,6 @@
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
 import type {
-  DependencyRequirement,
+  DependencyCandidate,
   ExportAnalysis,
   ImportAnalysis,
   MemberIdentityMemberPath,
@@ -38,12 +38,12 @@ type NoDependency = StatementAnalysisBaseResult & {
 
 type SingleDependency = StatementAnalysisBaseResult & {
   kind: 'single'
-  dependencies: ReadonlyArray<DependencyRequirement>
+  dependencies: ReadonlyArray<DependencyCandidate>
 }
 
 type MultipleDependencies = StatementAnalysisBaseResult & {
   kind: 'multiple'
-  dependencyRequirements: ReadonlyMap<SymbolId, ReadonlyArray<DependencyRequirement>>
+  DependencyCandidates: ReadonlyMap<SymbolId, ReadonlyArray<DependencyCandidate>>
 }
 
 export type StatementAnalysisArgument = {
@@ -84,15 +84,15 @@ export type GetSignatureIdArg<T extends Node> = {
 
 export type MemberAnalysisResult<T> = {
   member: T
-  dependencies: Array<DependencyRequirement>
+  dependencies: Array<DependencyCandidate>
 }
 
 export type MethodAnalysisResult = {
-  dependencies: Array<DependencyRequirement>
+  dependencies: Array<DependencyCandidate>
 }
 
 export type GenericParameterAnalysisResult = {
   parameters: Array<string>
-  dependencies: Array<DependencyRequirement>
+  dependencies: Array<DependencyCandidate>
   name: string | undefined
 }

@@ -1,6 +1,6 @@
 import { Node } from 'ts-morph'
 import type {
-  DependencyRequirement,
+  DependencyCandidate,
   ImportAnalysis,
   MemberIdentityMemberPath,
 } from '@gyomu/schema/typescript'
@@ -10,7 +10,7 @@ export const analyzeDependency = (
   identity: string,
   imported: Array<ImportAnalysis>,
   memberPath: MemberIdentityMemberPath,
-): DependencyRequirement => {
+): DependencyCandidate => {
   if (!hasImportedBinding(identity, imported)) {
     return {
       source: { memberPath },
@@ -53,10 +53,10 @@ export const analyzeDependencyFromTypeReference = (
   imported: Array<ImportAnalysis>,
   memberPath: MemberIdentityMemberPath,
   reservedNames: Array<string>,
-): Array<DependencyRequirement> => {
+): Array<DependencyCandidate> => {
   // Name, TypeArguments
   const typeName = typeRef.getTypeName().getText()
-  const dependencies: Array<DependencyRequirement> = []
+  const dependencies: Array<DependencyCandidate> = []
 
   if (!reservedTypeNames.includes(typeName) && !reservedNames.includes(typeName)) {
     dependencies.push(analyzeDependency(typeName, imported, memberPath))
@@ -83,8 +83,8 @@ export const analyzeDependencyFromTypeParameters = (
   imported: Array<ImportAnalysis>,
   memberPath: MemberIdentityMemberPath,
   reservedNames: Array<string>,
-): Array<DependencyRequirement> => {
-  const dependencies: Array<DependencyRequirement> = []
+): Array<DependencyCandidate> => {
+  const dependencies: Array<DependencyCandidate> = []
 
   params.forEach((param) => {
     const name = param.getName()

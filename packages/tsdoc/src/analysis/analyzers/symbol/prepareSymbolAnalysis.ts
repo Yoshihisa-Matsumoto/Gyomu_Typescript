@@ -3,7 +3,7 @@ import { extractJsDoc } from '../../extract/extractJsDoc.js'
 import { registerSymbolJsDoc } from '../../file/registerSymbolJsDoc.js'
 import { createSymbolIdentity } from '../../shared/createSymbolIdentity.js'
 import type {
-  DependencyRequirement,
+  DependencyCandidate,
   JsDocAnalysis,
   ParsedJsDoc,
   SignatureAnalysis,
@@ -58,7 +58,7 @@ export const prepareSymbolAnalysis = <T extends Node>(
       parsedJsDoc: extractedJsDoc.parsed,
       signature: signature,
       snippet: declaration.getText(),
-      dependencyRequirements: signature.dependencyRequirements,
+      dependencyCandidates: signature.dependencyCandidates,
     }
   return { id, signature, snippet: declaration.getText() }
 }
@@ -68,5 +68,5 @@ export interface SymbolPreparation {
   parsedJsDoc?: Array<ParsedJsDoc>
   signature: SignatureAnalysis
   snippet: string
-  dependencyRequirements?: ReadonlyArray<DependencyRequirement> | undefined
+  dependencyCandidates?: ReadonlyArray<DependencyCandidate> | undefined
 }

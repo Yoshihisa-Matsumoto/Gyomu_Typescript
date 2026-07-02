@@ -1,5 +1,5 @@
 import type {
-  DependencyRequirement,
+  DependencyCandidate,
   DocumentableMemberAnalysis,
   ParsedJsDoc,
   SymbolAnalysis,
@@ -26,5 +26,5 @@ export interface DocumentableTarget {
 }
 
 export interface FileAnalysisTransient {
-  dependencyRequirements: ReadonlyMap<SymbolId, ReadonlyArray<DependencyRequirement>>
+  dependencyCandidates: ReadonlyMap<SymbolId, ReadonlyArray<DependencyCandidate>>
 }

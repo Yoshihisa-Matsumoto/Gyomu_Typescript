@@ -88,7 +88,7 @@ export const analyzeVariable = (args: TagAnalysisArg<VariableDeclaration>) => {
     members: [],
 
     declarationOrder: args.declarationOrder,
-    dependencyRequirements: typeAnalysisResult?.dependencies ?? [],
+    dependencyCandidates: typeAnalysisResult?.dependencies ?? [],
   } satisfies SymbolAnalysis
   registerSymbolSymbolAnalysis(
     args.metadata,

@@ -7,11 +7,7 @@ import { detectEffectSignals } from './analyzeEffectType.js'
 import { computeIndent } from './computeIndent.js'
 import { analyzeGenericsParameters } from './analyzeGenericsParameters.js'
 import { analyzeDependency } from './analyzeDependency.js'
-import type {
-  DependencyRequirement,
-  MemberAnalysis,
-  SymbolAnalysis,
-} from '@gyomu/schema/typescript'
+import type { DependencyCandidate, MemberAnalysis, SymbolAnalysis } from '@gyomu/schema/typescript'
 import type { InterfaceDeclaration } from 'ts-morph'
 import type {
   ChildAnalysisArg,
@@ -64,7 +60,7 @@ export const analyzeInterface = (args: TagAnalysisArg<InterfaceDeclaration>) => 
     reservedNames: [],
   })
   let heritageIndex = 0
-  const heritages: Array<DependencyRequirement> = declaration
+  const heritages: Array<DependencyCandidate> = declaration
     .getHeritageClauses()
     .map((heritage) => {
       const keyword = heritage.getToken()
@@ -122,7 +118,7 @@ export const analyzeInterface = (args: TagAnalysisArg<InterfaceDeclaration>) => 
     parsedJsDoc: prepared.parsedJsDoc,
     members: membersResult.member,
     declarationOrder: args.declarationOrder,
-    dependencyRequirements: [
+    dependencyCandidates: [
       ...genericsResult.dependencies,
       ...heritages,
       ...membersResult.dependencies,
