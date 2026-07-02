@@ -1,5 +1,5 @@
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/index'
-import type { EffectSignals, SummaryDependency } from '@gyomu/schema/typescript'
+import type { EffectSignals, DependencySummary } from '@gyomu/schema/typescript'
 
 /**
  * Defines the base interface for a JSDoc update context containing project metadata and target identification.
@@ -68,7 +68,7 @@ export interface TsDocSymbolContext {
 
   dependencies:
     | {
-        candidates: ReadonlyArray<SummaryDependency>
+        candidates: ReadonlyArray<DependencySummary>
       }
     | undefined
 

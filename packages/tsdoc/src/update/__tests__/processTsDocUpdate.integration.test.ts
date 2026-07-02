@@ -9,10 +9,10 @@ import 'dotenv/config'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 
 import { AiModelService } from '@gyomu/ai'
-import { createFixtureProject } from '../../analysis/__tests__/createFixtureProject.js'
+import { analyzeFile } from '@gyomu/ts-analysis'
 import { buildJsDocUpdatePlanWithRetry } from '../internal/buildJsDocUpdatePlanWithRetry.js'
 import { processTsDocUpdate } from '../processTsDocUpdate.js'
-import { analyzeFile } from '../../analysis/analyzeFile.js'
+import { createFixtureProject } from './createFixtureProject.js'
 import { compareFilesEffect } from './baseClass.js'
 import type { JsDocUpdatePlan } from '@gyomu/ai-compiler/jsdoc-update'
 

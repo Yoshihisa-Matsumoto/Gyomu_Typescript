@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { calculateComplexityMetrics } from '../calculateComplexityMetrics.js'
-import type { FileAnalysisResult } from '../../../analysis/file/FileAnalysisResult.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
+import type { FileAnalysisResult } from '@gyomu/ts-analysis'
 
 describe('calculateComplexityMetrics', () => {
   it('returns empty map when no exports exist', () => {

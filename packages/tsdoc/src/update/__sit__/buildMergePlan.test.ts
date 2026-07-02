@@ -6,9 +6,9 @@ import { makeRunner } from '@gyomu/schema/effect'
 
 import 'dotenv/config'
 import { describe, expect, it } from 'vitest'
+import { analyzeFile } from '@gyomu/ts-analysis'
 import { buildMergePlan } from '../buildMergePlan.js'
-import { createFixtureProject } from '../../analysis/__tests__/createFixtureProject.js'
-import { analyzeFile } from '../../analysis/analyzeFile.js'
+import { createFixtureProject } from '../__tests__/createFixtureProject.js'
 
 const timeout = 20000
 

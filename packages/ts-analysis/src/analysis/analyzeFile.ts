@@ -1,6 +1,7 @@
 import { Effect } from 'effect'
 import { Project } from 'ts-morph'
-import { toProjectAbsolutePath, toProjectRelativePath } from '../shared/index.js'
+import { toProjectAbsolutePath } from '../shared/path/toProjectAbsolutePath.js'
+import { toProjectRelativePath } from '../shared/path/toProjectRelativePath.js'
 import { loadSourceFile } from './shared/loadSourceFile.js'
 import { extractSymbols } from './extract/extractSymbol.js'
 import type { AnalysisError } from './error/AnalysisError.js'

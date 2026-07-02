@@ -11,7 +11,7 @@ import type {
   TypeAnalysis,
   TypeStructureAnalysis,
 } from '@gyomu/schema/typescript'
-import type { FileAnalysisResult } from '../../analysis/file/FileAnalysisResult.js'
+import type { FileAnalysisResult } from '@gyomu/ts-analysis'
 
 import type { ComplexityMetrics } from './ComplexityMetrics.js'
 

@@ -1,10 +1,11 @@
-import { analyzeFile, initializeProjectContext, listTypescriptProject } from '@gyomu/tsdoc'
+import { listTypescriptProject } from '@gyomu/tsdoc'
 import { AI_MODELS, AiModelService } from '@gyomu/ai'
 import { Effect, Layer } from 'effect'
 import { MessageRole } from '@gyomu/schema/conversation'
 import { ConfigLayer, MainLayer, PlatformLayer } from '@gyomu/infra'
 import { VercelAiModelServiceLive } from '@gyomu/ai/provider/vercel'
 import { makeRunner } from '@gyomu/schema/effect'
+import { analyzeFile, initializeProjectContext } from '@gyomu/ts-analysis'
 import { createAskPrompt } from '../prompts/askPrompt.js'
 
 const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(Layer.provideMerge(PlatformLayer))

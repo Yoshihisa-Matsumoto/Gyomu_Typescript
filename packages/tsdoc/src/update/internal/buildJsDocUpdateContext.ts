@@ -1,7 +1,7 @@
 import { defaultComplexityStrategy, modeResolver } from '@gyomu/ai-compiler/jsdoc-update'
 import { withOptional } from '@gyomu/schema'
 import { equalSymbolIdentity } from '@gyomu/schema/schemas/typescript'
-import { equalSummaryDependency } from '@gyomu/schema/typescript'
+import { equalDependencySummary } from '@gyomu/schema/typescript'
 import { UpdateError } from '../error/UpdateError.js'
 import { computeComplexityScore } from '../../evaluation/complexity/computeComplexityScore.js'
 import { buildContextEntry } from './buildContextEntry.js'
@@ -9,14 +9,14 @@ import { buildExistingJsDoc } from './buildExistingJsDoc.js'
 import { buildSchemaStructureNode } from './buildSchemaStructureNode.js'
 import type {
   DependencyCandidate,
+  DependencySummary,
   EffectSignals,
   MemberIdentityMemberPath,
-  SummaryDependency,
   SymbolId,
 } from '@gyomu/schema/typescript'
 import type { ComplexityMetrics } from '../../evaluation/complexity/ComplexityMetrics.js'
 import type { TsDocFileContext, TsDocSymbolContext } from '@gyomu/ai-compiler/jsdoc-update'
-import type { FileAnalysisResult } from '../../analysis/file/FileAnalysisResult.js'
+import type { FileAnalysisResult } from '@gyomu/ts-analysis'
 
 export const buildJsDocUpdateContext = (
   projectName: string,
@@ -158,13 +158,13 @@ export const buildJsDocUpdateContext = (
 const filterImportantDependencies = (
   name: string,
   depedencies: ReadonlyArray<DependencyCandidate>,
-): Array<SummaryDependency> => {
-  const summaries = new Array<SummaryDependency>()
+): Array<DependencySummary> => {
+  const summaries = new Array<DependencySummary>()
 
   depedencies.forEach((dependency) => {
     const summary = DependencyCandidate2SummaryDependency(name, dependency)
     if (summary) {
-      const targetSummary = summaries.find((s) => equalSummaryDependency(s, summary))
+      const targetSummary = summaries.find((s) => equalDependencySummary(s, summary))
       if (!targetSummary) summaries.push(summary)
     }
   })
@@ -175,7 +175,7 @@ const filterImportantDependencies = (
 const DependencyCandidate2SummaryDependency = (
   name: string,
   dependency: DependencyCandidate,
-): SummaryDependency | undefined => {
+): DependencySummary | undefined => {
   const reason = convertMemberPathIntoReason(name, dependency.source.memberPath)
   if (!reason) return undefined
   return {
@@ -183,7 +183,7 @@ const DependencyCandidate2SummaryDependency = (
     target: dependency.target,
   }
 }
-type SummaryDependencyReason = SummaryDependency['reason']
+type SummaryDependencyReason = DependencySummary['reason']
 const convertMemberPathIntoReason = (
   name: string,
   memberPath: MemberIdentityMemberPath,

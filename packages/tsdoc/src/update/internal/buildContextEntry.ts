@@ -1,6 +1,6 @@
 import { withOptional } from '@gyomu/schema'
 import { buildExistingJsDoc } from './buildExistingJsDoc.js'
-import type { FileAnalysisResult } from '../../analysis/file/FileAnalysisResult.js'
+import type { FileAnalysisResult } from '@gyomu/ts-analysis'
 import type { ContextEntry, DocumentableInfo } from '@gyomu/ai-compiler/jsdoc-update'
 import type {
   DocumentableMemberAnalysis,

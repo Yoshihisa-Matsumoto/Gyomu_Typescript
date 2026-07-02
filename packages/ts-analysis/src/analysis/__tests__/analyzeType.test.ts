@@ -36,6 +36,7 @@ const typeSymbolsDependencyProgram = (sourceFile: string, folder?: string) => {
         includeDebugInfo: true,
       }).pipe(
         Effect.map((result) => {
+          if (!fs.existsSync('./log')) fs.mkdirSync('./log')
           fs.writeFileSync('./log/fileAnalysis.txt', JSON.stringify(result.analysis, null, 2))
           const exports = result.analysis.symbols.map((s) => {
             return {

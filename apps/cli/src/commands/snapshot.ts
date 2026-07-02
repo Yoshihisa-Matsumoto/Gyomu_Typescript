@@ -3,11 +3,9 @@ import { VercelAiModelServiceLive } from '@gyomu/ai/provider/vercel'
 import { ConfigLayer, MainLayer, PlatformLayer } from '@gyomu/infra'
 import { makeRunner } from '@gyomu/schema/effect'
 import {
-  analyzeFile,
   analyzeProjectChanges,
   commitProjectSnapshot,
   deleteSnapshot,
-  initializeProjectContext,
   isTestFile,
   listTypescriptProject,
   processTsDocUpdate,
@@ -21,6 +19,7 @@ import {
   removePath,
   writeStringToFile,
 } from '@gyomu/infra/fs'
+import { analyzeFile, initializeProjectContext } from '@gyomu/ts-analysis'
 
 const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(
   Layer.provideMerge(PlatformLayer),

@@ -1,5 +1,5 @@
 import type { ProtectedSection } from '@gyomu/schema/typescript'
-import type { FileAnalysisResult } from '../../analysis/index.js'
+import type { FileAnalysisResult } from '@gyomu/ts-analysis'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
 
 export const analyzeProtectedSection = (

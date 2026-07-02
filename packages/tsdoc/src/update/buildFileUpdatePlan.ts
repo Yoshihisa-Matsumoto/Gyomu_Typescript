@@ -1,6 +1,6 @@
 import { toIdentityKey } from '@gyomu/schema/schemas/typescript'
 import type { RenderedSymbolJsDoc } from './jsdoc/RenderedSymbolJsDoc.js'
-import type { FileAnalysisResult } from '../analysis/file/FileAnalysisResult.js'
+import type { FileAnalysisResult } from '@gyomu/ts-analysis'
 import type { FileUpdatePlan } from './jsdoc/FileUpdatePlan.js'
 
 export const buildFileUpdatePlan = (

@@ -1,8 +1,8 @@
 import path from 'node:path'
 import { describe, expect, test } from 'vitest'
 
+import { toProjectRelativePath } from '@gyomu/ts-analysis'
 import { mapSourcePathToOutputPath } from '../mapSourcePathToOutputPath.js'
-import { toProjectRelativePath } from '../toProjectRelativePath.js'
 
 describe('mapSourcePathToOutputPath', () => {
   const cwd = path.resolve('test-project')

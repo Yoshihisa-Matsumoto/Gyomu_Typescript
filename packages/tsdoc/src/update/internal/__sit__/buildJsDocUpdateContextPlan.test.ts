@@ -6,11 +6,11 @@ import { VercelAiModelServiceLive } from '@gyomu/ai/provider/vercel'
 
 import { makeRunner } from '@gyomu/schema/effect'
 import 'dotenv/config'
-import { createFixtureProject } from '../../../analysis/__tests__/createFixtureProject.js'
-import { analyzeFile } from '../../../analysis/analyzeFile.js'
+import { analyzeFile } from '@gyomu/ts-analysis'
 import { buildJsDocUpdateContext } from '../buildJsDocUpdateContext.js'
 import { buildJsDocUpdatePlanWithRetry } from '../buildJsDocUpdatePlanWithRetry.js'
 import { calculateComplexityMetrics } from '../../../evaluation/complexity/calculateComplexityMetrics.js'
+import { createFixtureProject } from '../../__tests__/createFixtureProject.js'
 
 const timeout = 20000
 

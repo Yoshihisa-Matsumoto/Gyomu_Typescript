@@ -11,7 +11,7 @@ import type {
 } from '@gyomu/ai-compiler/jsdoc-update'
 import type { MergeActionContext, MergePlan } from '../jsdoc/MergePlan.js'
 import type { Effect } from 'effect'
-import type { FileAnalysisResult } from '../../analysis/file/FileAnalysisResult.js'
+import type { FileAnalysisResult } from '@gyomu/ts-analysis'
 import type { ProtectedSection } from '@gyomu/schema/typescript'
 
 export const createMergePlan = (

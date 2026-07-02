@@ -6,9 +6,9 @@ import { Effect, Layer } from 'effect'
 
 import 'dotenv/config'
 import { writeStringToFile } from '@gyomu/infra/fs'
+import { analyzeFile, initializeProjectContext } from '@gyomu/ts-analysis'
 import { processTsDocUpdate } from './update/processTsDocUpdate.js'
-import { analyzeFile } from './analysis/analyzeFile.js'
-import { initializeProjectContext } from './analysis/initializeProjectContext.js'
+
 import { listTypescriptProject } from './shared/index.js'
 
 const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(Layer.provideMerge(PlatformLayer))

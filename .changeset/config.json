@@ -13,6 +13,7 @@
       "@gyomu/ui-core",
       "@gyomu/approval-core",
       "@gyomu/agent",
+      "@gyomu/ts-analysis",
       "@gyomu/tsdoc",
       "@gyomu/ai-compiler"
     ]

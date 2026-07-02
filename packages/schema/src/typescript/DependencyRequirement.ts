@@ -26,7 +26,7 @@ export type DependencyCandidate = {
 /**
  * Represents a summarized dependency record, identifying the reason for the dependency and its target.
  */
-export type SummaryDependency = {
+export type DependencySummary = {
   /**
    * The semantic reason for the dependency relationship.
    */
@@ -70,7 +70,7 @@ export const equalTargetCandidate = (
  *
  * @returns True if the summary dependencies are equal; otherwise false.
  */
-export const equalSummaryDependency = (a: SummaryDependency, b: SummaryDependency): boolean => {
+export const equalDependencySummary = (a: DependencySummary, b: DependencySummary): boolean => {
   return a.reason == b.reason && equalTargetCandidate(a.target, b.target)
 }
 

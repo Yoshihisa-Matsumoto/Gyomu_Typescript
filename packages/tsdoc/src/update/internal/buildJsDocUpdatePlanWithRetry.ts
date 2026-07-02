@@ -7,7 +7,7 @@ import { UpdateError } from '../error/UpdateError.js'
 import { getTsDocSignatureFromContext, validateJsDocUpdatePlan } from './validateJsDocUpdatePlan.js'
 import type { JsDocUpdatePlan, TsDocFileContext } from '@gyomu/ai-compiler/jsdoc-update'
 import type { UpdateOptions } from '../UpdateOptions.js'
-import type { FileAnalysisResult } from '../../analysis/file/FileAnalysisResult.js'
+import type { FileAnalysisResult } from '@gyomu/ts-analysis'
 
 export const buildJsDocUpdatePlanWithRetry = (
   context: TsDocFileContext,

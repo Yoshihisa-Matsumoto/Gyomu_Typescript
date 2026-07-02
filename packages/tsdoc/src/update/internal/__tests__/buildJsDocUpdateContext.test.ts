@@ -1,10 +1,10 @@
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { Effect } from 'effect'
-import { createFixtureProject } from '../../../analysis/__tests__/createFixtureProject.js'
-import { analyzeFile } from '../../../analysis/analyzeFile.js'
+import { analyzeFile } from '@gyomu/ts-analysis'
 import { buildJsDocUpdateContext } from '../buildJsDocUpdateContext.js'
 import { calculateComplexityMetrics } from '../../../evaluation/complexity/calculateComplexityMetrics.js'
+import { createFixtureProject } from '../../__tests__/createFixtureProject.js'
 // import type { FileAnalysisResult } from '../../../analysis/file/FileAnalysisResult.js'
 
 const timeout = 20000
