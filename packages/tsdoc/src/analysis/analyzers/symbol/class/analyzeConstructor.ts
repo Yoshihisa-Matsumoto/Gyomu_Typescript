@@ -1,9 +1,8 @@
-import { withOptional } from '@gyomu/schema'
 import { analyzeType } from '../analyzeType.js'
 import { analyzeFunctionMemberInternal } from '../struct/analyzeFunctionMember.js'
 import { createMemberIdentityAndId } from '../../../shared/createMemberIdentity.js'
 import { getAccessor } from './analyzeClassPropertyMember.js'
-import type { ChildAnalysisArg } from '../../types.js'
+import type { ChildAnalysisArg, MemberAnalysisResult } from '../../types.js'
 import type { ClassDeclaration, ConstructorDeclaration, ParameterDeclaration } from 'ts-morph'
 import type {
   MemberAnalysis,
@@ -13,8 +12,8 @@ import type {
 export const analyzeConstructor = (
   args: ChildAnalysisArg<ConstructorDeclaration>,
   parent: ClassDeclaration,
-): Array<MemberAnalysis> => {
-  const name = '$constructor'
+  name: string,
+): MemberAnalysisResult<Array<MemberAnalysis>> => {
   const {
     sourceRelativePath,
     metadata,
@@ -24,45 +23,15 @@ export const analyzeConstructor = (
     sourceFullText,
     imported,
     options,
+    reservedNames,
   } = args
   const method = analyzeFunctionMemberInternal(args, {
     name,
     isStatic: false,
     visibility: 'public',
-    returnType: { text: parent.getName()!, source: 'typescript' },
+    returnType: { member: { text: parent.getName()!, source: 'typescript' }, dependencies: [] },
     jsDocableNode: node,
   })
-  // const method: DocumentableMethodMemberAnalysis = {
-  //   kind: 'method',
-  //   documentable: true,
-  //   name,
-  //   identity,
-
-  //   parameters: node
-  //     .getParameters()
-  //     .map((p) => analyzeParameter(p, sourcePath, metadata, ownerSymbolId, memberPath)),
-  //   snippet,
-
-  //   // returnType: { text: parent.getName()! },
-
-  //   ...withOptional({
-  //     returnType: analyzeType({
-  //       node: undefined,
-  //       initializer: undefined,
-  //       memberPath,
-  //       metadata,
-  //       nodeName: [name],
-  //       ownerSymbolId,
-  //       sourcePath,
-  //       rawText: parent.getName()!,
-  //     }),
-  //     jsDoc,
-  //   }),
-  //   location,
-  //   startOffset,
-  //   static: false,
-  //   visibility: 'public',
-  // }
 
   const parameters = node
     .getParameters()
@@ -79,14 +48,18 @@ export const analyzeConstructor = (
         declarationOrder: index,
         imported,
         options,
+        reservedNames,
       }),
     )
 
-  return [method, ...parameters]
+  return {
+    member: [method.member, ...parameters.map((p) => p.member)],
+    dependencies: [...method.dependencies, ...parameters.map((p) => p.dependencies).flat()],
+  }
 }
 const analyzeClassPropertyFromConstructorParameters = (
   args: ChildAnalysisArg<ParameterDeclaration>,
-): NonDocumentablePropertyMemberAnalysis => {
+): MemberAnalysisResult<NonDocumentablePropertyMemberAnalysis> => {
   const { node, ownerSymbolId, ownerSymbolIdentity, memberPath, declarationOrder } = args
   const typeNode = node.getTypeNode()
   const initializer = node.getInitializer()
@@ -99,29 +72,32 @@ const analyzeClassPropertyFromConstructorParameters = (
     },
     ownerSymbolIdentity,
   )
+  const typeResult = analyzeType(
+    {
+      ...args,
+      node: typeNode ?? initializer,
+    },
+    [nodeName],
+  )
   return {
-    kind: 'property',
-    documentable: false,
-    source: 'constructor-parameter',
-    id,
-    ownerSymbolId,
-    identity,
-    rest: !!node.getDotDotDotToken(),
-    name: nodeName,
-    readonly: node.isReadonly(),
-    optional: !!node.getQuestionTokenNode(),
+    member: {
+      kind: 'property',
+      documentable: false,
+      source: 'constructor-parameter',
+      id,
+      ownerSymbolId,
+      identity,
+      rest: !!node.getDotDotDotToken(),
+      name: nodeName,
+      readonly: node.isReadonly(),
+      optional: !!node.getQuestionTokenNode(),
 
-    ...withOptional({
-      type: analyzeType(
-        {
-          ...args,
-          node: typeNode ?? initializer,
-        },
-        [nodeName],
-      ),
-    }),
-    static: false,
-    visibility: getAccessor(node),
-    declarationOrder,
+      type: typeResult?.member,
+
+      static: false,
+      visibility: getAccessor(node),
+      declarationOrder,
+    },
+    dependencies: typeResult?.dependencies ?? [],
   }
 }

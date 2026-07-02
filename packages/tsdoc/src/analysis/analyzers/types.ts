@@ -49,7 +49,7 @@ type MultipleDependencies = StatementAnalysisBaseResult & {
 export type StatementAnalysisArgument = {
   metadata: FileAnalysisMetadata
   sourceRelativePath: string
-  memberPath: Array<string>
+  memberPath: MemberIdentityMemberPath
   sourceFullText: string
   declarationOrder: number
   imported: Array<ImportAnalysis>
@@ -67,6 +67,7 @@ export type ChildAnalysisArg<T> = {
   declarationOrder: number
   imported: Array<ImportAnalysis>
   options: AnalysisOptions | undefined
+  reservedNames: Array<string>
 }
 
 export type GetSignatureIdArg<T extends Node> = {
@@ -78,4 +79,20 @@ export type GetSignatureIdArg<T extends Node> = {
   sourceFullText: string
   imported: Array<ImportAnalysis>
   options: AnalysisOptions | undefined
+  reservedNames: Array<string>
+}
+
+export type MemberAnalysisResult<T> = {
+  member: T
+  dependencies: Array<DependencyRequirement>
+}
+
+export type MethodAnalysisResult = {
+  dependencies: Array<DependencyRequirement>
+}
+
+export type GenericParameterAnalysisResult = {
+  parameters: Array<string>
+  dependencies: Array<DependencyRequirement>
+  name: string | undefined
 }

@@ -1,10 +1,10 @@
-import { withOptional } from '@gyomu/schema'
 import { Node } from 'ts-morph'
 import { analyzeType } from '../analyzeType.js'
 import { preparePropertyAnalysis } from '../prepareMemberAnalysis.js'
 import { registerSymbolSymbolAnalysis } from '../../../file/registerSymbolSymbolAnalysis.js'
 import { computeIndent } from '../computeIndent.js'
-import type { ChildAnalysisArg } from '../../types.js'
+import { analyzeGenericsParameters } from '../analyzeGenericsParameters.js'
+import type { ChildAnalysisArg, MemberAnalysisResult } from '../../types.js'
 import type {
   Expression,
   GetAccessorDeclaration,
@@ -14,6 +14,7 @@ import type {
 } from 'ts-morph'
 
 import type {
+  DependencyRequirement,
   DocumentablePropertyMemberAnalysis,
   JsDocAnalysis,
   MemberAccessor,
@@ -26,7 +27,7 @@ export const analyzePropertyMember = (
   args: ChildAnalysisArg<PropertySignature | PropertyDeclaration>,
   isStatic: boolean = false,
   visibility: MemberAccessor = 'public',
-): DocumentablePropertyMemberAnalysis => {
+): MemberAnalysisResult<DocumentablePropertyMemberAnalysis> => {
   const { sourceRelativePath, metadata, node, ownerSymbolId, ownerSymbolIdentity, memberPath } =
     args
   const typeNode = args.node.getTypeNode()
@@ -77,7 +78,7 @@ export const analyzePropertyMemberInternal = (
     }
     startOffset: number
   },
-): DocumentablePropertyMemberAnalysis => {
+): MemberAnalysisResult<DocumentablePropertyMemberAnalysis> => {
   const {
     sourceRelativePath,
     metadata,
@@ -87,11 +88,48 @@ export const analyzePropertyMemberInternal = (
     memberPath,
     imported,
     options,
+    sourceFullText,
+    reservedNames,
   } = args
   const { id, identity, jsDoc, location, startOffset, readonly, optional, parsedJsDoc } = args2
   const name = node.getName()
 
+  const newReservedNames = [...reservedNames]
+  const genercsDependencies: Array<DependencyRequirement> = []
+  if (Node.isTypeParametered(node)) {
+    const genericsResult = analyzeGenericsParameters({
+      node,
+      sourceRelativePath,
+      metadata,
+      memberPath,
+      ownerSymbolId,
+      ownerSymbolIdentity,
+      sourceFullText,
+      declarationOrder: 0,
+      imported,
+      options,
+      reservedNames,
+    })
+    newReservedNames.push(...genericsResult.parameters)
+    genercsDependencies.push(...genericsResult.dependencies)
+  }
   // console.dir(typeNode)
+  const typeResult = analyzeType(
+    {
+      node: args2.typeNode ?? args2.initializer,
+      memberPath,
+      metadata,
+      ownerSymbolId,
+      ownerSymbolIdentity,
+      sourceRelativePath,
+      sourceFullText: args.sourceFullText,
+      declarationOrder: args.declarationOrder,
+      imported,
+      options,
+      reservedNames: newReservedNames,
+    },
+    [name],
+  )
 
   const property = {
     kind: 'property',
@@ -104,25 +142,11 @@ export const analyzePropertyMemberInternal = (
 
     readonly,
     optional,
-    ...withOptional({
-      type: analyzeType(
-        {
-          node: args2.typeNode ?? args2.initializer,
-          memberPath,
-          metadata,
-          ownerSymbolId,
-          ownerSymbolIdentity,
-          sourceRelativePath,
-          sourceFullText: args.sourceFullText,
-          declarationOrder: args.declarationOrder,
-          imported,
-          options,
-        },
-        [name],
-      ),
-      jsDoc,
-      parsedJsDoc,
-    }),
+
+    type: typeResult?.member,
+    jsDoc,
+    parsedJsDoc,
+
     location,
     startOffset,
     rest: Node.isDotDotDotTokenable(node) ? !!node.getDotDotDotToken() : false,
@@ -136,5 +160,8 @@ export const analyzePropertyMemberInternal = (
     property,
     computeIndent(args.sourceFullText, args.node.getStart(), args.node.getStartLinePos()),
   )
-  return property
+  return {
+    member: property,
+    dependencies: [...(typeResult?.dependencies ?? []), ...genercsDependencies],
+  }
 }

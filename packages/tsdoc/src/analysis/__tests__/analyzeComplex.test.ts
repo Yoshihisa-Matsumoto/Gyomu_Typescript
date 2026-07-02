@@ -985,7 +985,7 @@ describe('analyzeFile-complex pattern', () => {
       const id = getProperty('id', successType.members!)
 
       expect(id.identity).toEqual({
-        symbolId: 'SearchResponse::interface::data.id::property',
+        symbolId: 'SearchResponse::interface::data.0.id::property',
         signatureId: 'property',
       })
 
@@ -994,7 +994,7 @@ describe('analyzeFile-complex pattern', () => {
       const name = getProperty('name', successType.members!)
 
       expect(name.identity).toEqual({
-        symbolId: 'SearchResponse::interface::data.name::property',
+        symbolId: 'SearchResponse::interface::data.0.name::property',
         signatureId: 'property',
       })
 
@@ -1011,7 +1011,7 @@ describe('analyzeFile-complex pattern', () => {
       const code = getProperty('code', errorType.members!)
 
       expect(code.identity).toEqual({
-        symbolId: 'SearchResponse::interface::data.code::property',
+        symbolId: 'SearchResponse::interface::data.1.code::property',
         signatureId: 'property',
       })
 
@@ -1020,7 +1020,7 @@ describe('analyzeFile-complex pattern', () => {
       const message = getProperty('message', errorType.members!)
 
       expect(message.identity).toEqual({
-        symbolId: 'SearchResponse::interface::data.message::property',
+        symbolId: 'SearchResponse::interface::data.1.message::property',
         signatureId: 'property',
       })
 

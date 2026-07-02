@@ -1,13 +1,13 @@
 import { Node } from 'ts-morph'
 import { analyzeFunctionMember } from './struct/analyzeFunctionMember.js'
 import { analyzePropertyMember } from './struct/analyzePropertyMember.js'
-import type { ChildAnalysisArg } from '../types.js'
+import type { ChildAnalysisArg, MemberAnalysisResult } from '../types.js'
 import type { TypeAliasDeclaration, VariableDeclaration } from 'ts-morph'
 import type { MemberAnalysis } from '@gyomu/schema/typescript'
 
 export const analyzeObjectMembers = (
   args: ChildAnalysisArg<TypeAliasDeclaration | VariableDeclaration>,
-): Array<MemberAnalysis> => {
+): MemberAnalysisResult<Array<MemberAnalysis>> => {
   const {
     node,
     metadata,
@@ -18,13 +18,15 @@ export const analyzeObjectMembers = (
     sourceFullText,
     imported,
     options,
+    reservedNames,
   } = args
   const typeNode = node.getTypeNode()
   if (Node.isTypeLiteral(typeNode)) {
-    return typeNode.getMembers().flatMap((member, index) => {
-      if (Node.isMethodSignature(member)) {
-        return [
-          analyzeFunctionMember(
+    const typeLiteralResult = typeNode
+      .getMembers()
+      .flatMap<MemberAnalysisResult<MemberAnalysis> | undefined>((member, index) => {
+        if (Node.isMethodSignature(member)) {
+          return analyzeFunctionMember(
             {
               sourceRelativePath,
               metadata,
@@ -36,6 +38,7 @@ export const analyzeObjectMembers = (
               declarationOrder: index,
               imported,
               options,
+              reservedNames,
             },
             {
               isStatic: false,
@@ -43,16 +46,14 @@ export const analyzeObjectMembers = (
               jsDocableNode: member,
               name: member.getName(),
             },
-          ),
-        ] as Array<MemberAnalysis>
-      }
+          )
+        }
 
-      if (Node.isPropertySignature(member)) {
-        const newMemberPath = [...memberPath]
-        const memberTypeNode = member.getTypeNode()
-        if (Node.isFunctionTypeNode(memberTypeNode)) {
-          return [
-            analyzeFunctionMember(
+        if (Node.isPropertySignature(member)) {
+          const newMemberPath = [...memberPath]
+          const memberTypeNode = member.getTypeNode()
+          if (Node.isFunctionTypeNode(memberTypeNode)) {
+            return analyzeFunctionMember(
               {
                 sourceRelativePath,
                 metadata,
@@ -64,6 +65,7 @@ export const analyzeObjectMembers = (
                 declarationOrder: index,
                 imported,
                 options,
+                reservedNames,
               },
               {
                 isStatic: false,
@@ -71,11 +73,9 @@ export const analyzeObjectMembers = (
                 name: member.getName(),
                 visibility: undefined,
               },
-            ),
-          ] as Array<MemberAnalysis>
-        }
-        return [
-          analyzePropertyMember({
+            )
+          }
+          return analyzePropertyMember({
             sourceRelativePath,
             metadata,
             node: member,
@@ -86,12 +86,19 @@ export const analyzeObjectMembers = (
             declarationOrder: index,
             imported,
             options,
-          }),
-        ] as Array<MemberAnalysis>
-      }
+            reservedNames,
+          })
+        }
 
-      return [] as Array<MemberAnalysis>
-    })
+        return undefined
+      })
+      .filter((m) => !!m)
+
+    return {
+      member: typeLiteralResult.map((m) => m.member),
+      dependencies: typeLiteralResult.map((m) => m.dependencies).flat(),
+    }
   }
-  return [] as Array<MemberAnalysis>
+
+  return { member: [] as Array<MemberAnalysis>, dependencies: [] }
 }

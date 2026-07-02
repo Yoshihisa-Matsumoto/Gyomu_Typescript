@@ -3,6 +3,7 @@ import { Project } from 'ts-morph'
 import { toProjectAbsolutePath, toProjectRelativePath } from '../shared/index.js'
 import { loadSourceFile } from './shared/loadSourceFile.js'
 import { extractSymbols } from './extract/extractSymbol.js'
+import type { AnalysisError } from './error/AnalysisError.js'
 import type {
   DocumentableTarget,
   FileAnalysisMetadata,
@@ -11,7 +12,6 @@ import type {
 } from './file/FileAnalysisResult.js'
 import type { AnalysisOptions } from './AnalysisOption.js'
 import type { FileAnalysis } from './file/FileAnalysis.js'
-import type { AnalysisError } from './error/AnalysisError.js'
 import type { ProjectContext } from './project/ProjectContext.js'
 import type {
   DependencyRequirement,
@@ -26,7 +26,7 @@ import type {
  * @param context project containing the target source file.
  *
  * @param sourceFilePath Path used to locate the source file via
- * {@link Project.getSourceFile()}.
+ * {@link Project.getSourceFile}.
  *
  * This value may be either:
  *
@@ -72,13 +72,15 @@ export const analyzeFile = (
     //   const symbolKey = toIdentityKey(symbol.identity)
     //   symbols.set(symbolKey, symbol)
     // })
+    const analysis = {
+      path: sourceRelativePath,
+      exports: statements.exported,
+      imports: statements.imported,
+      symbols: statements.internals,
+    } satisfies FileAnalysis
+
     return {
-      analysis: {
-        path: sourceRelativePath,
-        exports: statements.exported,
-        imports: statements.imported,
-        symbols: statements.internals,
-      } satisfies FileAnalysis,
+      analysis,
       metadata,
       transient,
     }

@@ -1,3 +1,4 @@
+import type { DependencyRequirement } from './DependencyRequirement.js'
 import type { MemberAnalysis } from './MemberAnalysis.js'
 
 /**
@@ -59,22 +60,24 @@ export interface SignatureAnalysis {
   /**
    * Return type text representation.
    */
-  returnType?: TypeAnalysis
+  returnType?: TypeAnalysis | undefined
 
   /**
    * Generic type parameter names.
    */
-  typeParameters?: Array<string>
+  typeParameters?: Array<string> | undefined
 
   /**
    * Number of overload signatures.
    */
-  overloadCount?: number
+  overloadCount?: number | undefined
 
   /**
    * Whether this signature is the implementation of an overload set.
    */
-  isOverloadImplementation?: boolean
+  isOverloadImplementation?: boolean | undefined
+
+  dependencyRequirements?: ReadonlyArray<DependencyRequirement>
 }
 
 // /**
@@ -129,7 +132,7 @@ export interface TypeAnalysis {
   /**
    * Effect-related semantic signals.
    */
-  effect?: EffectSignals
+  effect?: EffectSignals | undefined
 }
 
 /**
@@ -169,7 +172,7 @@ export interface EffectSignals {
   /**
    * Estimated Effect nesting depth.
    */
-  effectDepth?: number
+  effectDepth: number | undefined
 }
 
 /**
@@ -226,7 +229,7 @@ export type ObjectStructureAnalysis = {
   /**
    * Nested object members.
    */
-  members?: Array<MemberAnalysis> | undefined
+  members: Array<MemberAnalysis> | undefined
 }
 
 /**
@@ -261,7 +264,7 @@ export type FunctionStructureAnalysis = {
   /**
    * The function's return type.
    */
-  returnType?: TypeAnalysis
+  returnType: TypeAnalysis | undefined
 }
 
 /**

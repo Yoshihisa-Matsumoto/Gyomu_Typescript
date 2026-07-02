@@ -4,7 +4,7 @@ import {
   analyzePropertyMember,
   analyzePropertyMemberInternal,
 } from '../struct/analyzePropertyMember.js'
-import type { ChildAnalysisArg } from '../../types.js'
+import type { ChildAnalysisArg, MemberAnalysisResult } from '../../types.js'
 import type {
   GetAccessorDeclaration,
   ModifierableNode,
@@ -15,14 +15,14 @@ import type { DocumentablePropertyMemberAnalysis, MemberAccessor } from '@gyomu/
 
 export const analyzeClassPropertyMember = (
   args: ChildAnalysisArg<PropertyDeclaration>,
-): DocumentablePropertyMemberAnalysis => {
+): MemberAnalysisResult<DocumentablePropertyMemberAnalysis> => {
   return analyzePropertyMember(args, args.node.isStatic(), getAccessor(args.node))
 }
 
 export const analyzeGetSetAccessor = (
   args: ChildAnalysisArg<GetAccessorDeclaration>,
   setter?: SetAccessorDeclaration,
-): DocumentablePropertyMemberAnalysis => {
+): MemberAnalysisResult<DocumentablePropertyMemberAnalysis> => {
   const { sourceRelativePath, metadata, node, ownerSymbolId, ownerSymbolIdentity, memberPath } =
     args
   const name = node.getName()

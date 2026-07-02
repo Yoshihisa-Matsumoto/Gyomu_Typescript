@@ -1,10 +1,10 @@
 import { Node, SyntaxKind } from 'ts-morph'
-import { withOptional } from '@gyomu/schema'
 import { analyzeType } from '../analyzeType.js'
 import { analyzeParameter } from '../analyzeParameter.js'
 import { createSymbolIdentity } from '../../../shared/createSymbolIdentity.js'
 import { registerSymbolSymbolAnalysis } from '../../../file/registerSymbolSymbolAnalysis.js'
 import { computeIndent } from '../computeIndent.js'
+import { analyzeGenericsParameters } from '../analyzeGenericsParameters.js'
 import type { SignatureAnalysis, SymbolAnalysis } from '@gyomu/schema/typescript'
 
 import type { ArrowFunction, Expression, FunctionExpression, VariableDeclaration } from 'ts-morph'
@@ -22,6 +22,7 @@ export const analyzeFunction = (
     symbolId: name,
     signatureId: prepared.signature.id,
   }
+
   const symbol = {
     id: prepared.id,
     signature: prepared.signature,
@@ -36,12 +37,13 @@ export const analyzeFunction = (
     startOffset: args.declaration
       .getFirstAncestorByKindOrThrow(SyntaxKind.VariableStatement)
       .getStart(),
-    ...withOptional({
-      jsDoc: prepared.jsDoc,
-      parsedJsDoc: prepared.parsedJsDoc,
-      members: [],
-    }),
+
+    jsDoc: prepared.jsDoc,
+    parsedJsDoc: prepared.parsedJsDoc,
+    members: [],
+
     declarationOrder: args.declarationOrder,
+    dependencyRequirements: prepared.dependencyRequirements ?? [],
   } satisfies SymbolAnalysis
   registerSymbolSymbolAnalysis(
     args.metadata,
@@ -88,38 +90,59 @@ export const getFunctionSignature = (
     const body = node.getBody()
     if (Node.isExpression(body)) initializer = body
   }
+  const genericsResult = analyzeGenericsParameters({
+    node,
+    sourceRelativePath,
+    metadata,
+    memberPath,
+    ownerSymbolId: id,
+    ownerSymbolIdentity: identity,
+    sourceFullText,
+    declarationOrder: 0,
+    imported,
+    options,
+    reservedNames: [],
+  })
+  const parametersResult = node.getParameters().map((p, index) =>
+    analyzeParameter({
+      node: p,
+      sourceRelativePath,
+      metadata,
+      ownerSymbolId: id,
+      ownerSymbolIdentity: identity,
+      memberPath,
+      sourceFullText,
+      declarationOrder: index,
+      imported,
+      options,
+      reservedNames: genericsResult.parameters,
+    }),
+  )
+  const returnTypeResult = analyzeType(
+    {
+      node: node.getReturnTypeNode() ?? initializer,
+      memberPath,
+      metadata,
+      ownerSymbolId: id,
+      ownerSymbolIdentity: identity,
+      sourceRelativePath,
+      sourceFullText,
+      declarationOrder,
+      imported,
+      options,
+      reservedNames: genericsResult.parameters,
+    },
+    [nodeName, '$return'],
+  )
   return {
     id: 'function',
-    parameters: node.getParameters().map((p, index) =>
-      analyzeParameter({
-        node: p,
-        sourceRelativePath,
-        metadata,
-        ownerSymbolId: id,
-        ownerSymbolIdentity: identity,
-        memberPath,
-        sourceFullText,
-        declarationOrder: index,
-        imported,
-        options,
-      }),
-    ),
-    ...withOptional({
-      returnType: analyzeType(
-        {
-          node: node.getReturnTypeNode() ?? initializer,
-          memberPath,
-          metadata,
-          ownerSymbolId: id,
-          ownerSymbolIdentity: identity,
-          sourceRelativePath,
-          sourceFullText,
-          declarationOrder,
-          imported,
-          options,
-        },
-        [nodeName, '$return'],
-      ),
-    }),
+    parameters: parametersResult.map((p) => p.member),
+
+    returnType: returnTypeResult?.member,
+    dependencyRequirements: [
+      ...genericsResult.dependencies,
+      ...parametersResult.map((p) => p.dependencies).flat(),
+      ...(returnTypeResult?.dependencies ?? []),
+    ],
   }
 }

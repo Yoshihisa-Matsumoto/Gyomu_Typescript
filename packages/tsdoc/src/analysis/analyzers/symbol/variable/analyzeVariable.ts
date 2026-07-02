@@ -1,4 +1,3 @@
-import { withOptional } from '@gyomu/schema'
 import { SyntaxKind } from 'ts-morph'
 import { prepareSymbolAnalysis } from '../prepareSymbolAnalysis.js'
 import { registerSymbolSymbolAnalysis } from '../../../file/registerSymbolSymbolAnalysis.js'
@@ -9,7 +8,7 @@ import {
   getFunctionSignature,
   isFunctionLikeInitializer,
 } from './analyzeFunction.js'
-import type { GetSignatureIdArg, TagAnalysisArg } from '../../types.js'
+import type { GetSignatureIdArg, MemberAnalysisResult, TagAnalysisArg } from '../../types.js'
 import type { SymbolAnalysis, TypeAnalysis } from '@gyomu/schema/typescript'
 import type { VariableDeclaration } from 'ts-morph'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
@@ -26,6 +25,7 @@ export const analyzeVariable = (args: TagAnalysisArg<VariableDeclaration>) => {
     imported,
     options,
   } = args
+
   const prepared = prepareSymbolAnalysis(
     {
       declaration,
@@ -36,6 +36,7 @@ export const analyzeVariable = (args: TagAnalysisArg<VariableDeclaration>) => {
       imported,
       options,
       nodeName: variableName,
+      reservedNames: [],
     },
     getSignatureId,
     statement,
@@ -52,14 +53,15 @@ export const analyzeVariable = (args: TagAnalysisArg<VariableDeclaration>) => {
   }
 
   const effectSchemaSupportType = getSupportedEffectSchemaType(initializer)
-  const typeAnalysis: TypeAnalysis | undefined =
+  const typeAnalysisResult: MemberAnalysisResult<TypeAnalysis> | undefined =
     effectSchemaSupportType == undefined
-      ? { text: variableName, source: 'typescript' }
+      ? { member: { text: variableName, source: 'typescript' }, dependencies: [] }
       : analyzeEffectSchema(effectSchemaSupportType, {
           name: '',
           ownerSymbolId: prepared.id,
           ownerSymbolIdentity: identity,
           memberPath: [],
+          imported,
         })
   // if (isObjectInitializer(initializer)) {
   //   return analyzeObject(args, prepared, initializer)
@@ -80,13 +82,13 @@ export const analyzeVariable = (args: TagAnalysisArg<VariableDeclaration>) => {
       .getFirstAncestorByKindOrThrow(SyntaxKind.VariableStatement)
       .getStart(),
 
-    ...withOptional({
-      type: typeAnalysis,
-      jsDoc: prepared.jsDoc,
-      parsedJsDoc: prepared.parsedJsDoc,
-      members: [],
-    }),
+    type: typeAnalysisResult?.member,
+    jsDoc: prepared.jsDoc,
+    parsedJsDoc: prepared.parsedJsDoc,
+    members: [],
+
     declarationOrder: args.declarationOrder,
+    dependencyRequirements: typeAnalysisResult?.dependencies ?? [],
   } satisfies SymbolAnalysis
   registerSymbolSymbolAnalysis(
     args.metadata,

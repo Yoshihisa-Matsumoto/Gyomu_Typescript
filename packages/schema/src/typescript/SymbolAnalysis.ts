@@ -45,7 +45,7 @@ export interface SymbolAnalysis {
   /**
    * Symbol type text representation.
    */
-  type?: TypeAnalysis
+  type: TypeAnalysis | undefined
 
   /**
    * Symbol category.
@@ -80,12 +80,12 @@ export interface SymbolAnalysis {
   /**
    * Existing JSDoc/TSDoc analysis.
    */
-  jsDoc?: JsDocAnalysis
+  jsDoc: JsDocAnalysis | undefined
 
   /**
    * Parsed JSDoc/TSDoc.
    */
-  parsedJsDoc?: Array<ParsedJsDoc>
+  parsedJsDoc: Array<ParsedJsDoc> | undefined
 
   /**
    * The character offset where the symbol declaration begins in the source file.
@@ -97,5 +97,5 @@ export interface SymbolAnalysis {
    */
   members: Array<MemberAnalysis>
 
-  dependencyRequirements?: ReadonlyArray<DependencyRequirement>
+  dependencyRequirements: ReadonlyArray<DependencyRequirement>
 }

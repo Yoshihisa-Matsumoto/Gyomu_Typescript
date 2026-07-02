@@ -1,9 +1,11 @@
 import { Node } from 'ts-morph'
 
-import { withOptional } from '@gyomu/schema'
 import { isSupportedSchemaType } from '@gyomu/schema/typescript'
 import { createMemberIdentityAndId } from '../../shared/createMemberIdentity.js'
+import { analyzeDependency } from './analyzeDependency.js'
+import type { MemberAnalysisResult } from '../types.js'
 import type {
+  ImportAnalysis,
   MemberIdentityMemberPath,
   MemberIdentityOwnerSymbolId,
   NonDocumentablePropertyMemberAnalysis,
@@ -48,7 +50,7 @@ export const getSupportedEffectSchemaType = (
       }
     }
     if (Node.isIdentifier(expression)) {
-      return { kind: 'Reference', expression: initializer }
+      if (expression.getText() == 'Schema') return { kind: 'Reference', expression: initializer }
     }
   } else if (Node.isPropertyAccessExpression(initializer)) {
     if (initializer.getExpression().getText() == 'Schema') {
@@ -70,7 +72,9 @@ const analyzeEffectSchemaPrimitive = (
   name: string,
   supportType: Extract<SupportedSchemaKind, 'Primitive'>,
   callExpression: CallExpression | PropertyAccessExpression,
-): TypeAnalysis | undefined => {
+  imported: Array<ImportAnalysis>,
+  memberPath: MemberIdentityMemberPath,
+): MemberAnalysisResult<TypeAnalysis> | undefined => {
   let propertyExpression: PropertyAccessExpression | undefined = undefined
   if (Node.isPropertyAccessExpression(callExpression)) propertyExpression = callExpression
   if (Node.isCallExpression(callExpression)) {
@@ -80,13 +84,21 @@ const analyzeEffectSchemaPrimitive = (
   if (!propertyExpression) return undefined
 
   const type = propertyExpression.getName().toLowerCase()
+  const dependency = analyzeDependency(
+    propertyExpression.getExpression().getText(),
+    imported,
+    memberPath,
+  )
   return {
-    source: 'effect-schema',
-    text: name,
-    structure: {
-      kind: 'primitive',
-      elementType: type,
+    member: {
+      source: 'effect-schema',
+      text: name,
+      structure: {
+        kind: 'primitive',
+        elementType: type,
+      },
     },
+    dependencies: [dependency],
   }
 }
 export const checkAndAnalyzeEffectSchema = (
@@ -95,6 +107,7 @@ export const checkAndAnalyzeEffectSchema = (
     name: string
     ownerSymbolId: MemberIdentityOwnerSymbolId
     ownerSymbolIdentity: SymbolIdentity
+    imported: Array<ImportAnalysis>
     memberPath: MemberIdentityMemberPath
   },
 ) => {
@@ -114,20 +127,31 @@ export const analyzeEffectSchema = (
     name: string
     ownerSymbolId: MemberIdentityOwnerSymbolId
     ownerSymbolIdentity: SymbolIdentity
+    imported: Array<ImportAnalysis>
     memberPath: MemberIdentityMemberPath
   },
-): TypeAnalysis | undefined => {
+): MemberAnalysisResult<TypeAnalysis> | undefined => {
   if (!arg1) return undefined
   if (arg1.kind == 'Primitive')
-    return analyzeEffectSchemaPrimitive(arg2.name, arg1.kind, arg1.expression)
+    return analyzeEffectSchemaPrimitive(
+      arg2.name,
+      arg1.kind,
+      arg1.expression,
+      arg2.imported,
+      arg2.memberPath,
+    )
+  const dependency = analyzeDependency(arg1.expression.getText(), arg2.imported, arg2.memberPath)
   if (arg1.kind == 'Reference') {
     return {
-      source: 'effect-schema',
-      text: arg2.name,
-      structure: {
-        kind: 'reference',
-        targetId: arg1.expression.getText(),
+      member: {
+        source: 'effect-schema',
+        text: arg2.name,
+        structure: {
+          kind: 'reference',
+          targetId: arg1.expression.getText(),
+        },
       },
+      dependencies: [dependency],
     }
   }
   return analyzeEffectSchemaForNonPrimitive({
@@ -136,6 +160,7 @@ export const analyzeEffectSchema = (
     callExpression: arg1.expression as CallExpression,
     ownerSymbolId: arg2.ownerSymbolId,
     ownerSymbolIdentity: arg2.ownerSymbolIdentity,
+    imported: arg2.imported,
     memberPath: arg2.memberPath,
   })
 }
@@ -146,8 +171,9 @@ const analyzeEffectSchemaForNonPrimitive = (args: {
   callExpression: CallExpression
   ownerSymbolId: MemberIdentityOwnerSymbolId
   ownerSymbolIdentity: SymbolIdentity
+  imported: Array<ImportAnalysis>
   memberPath: MemberIdentityMemberPath
-}): TypeAnalysis | undefined => {
+}): MemberAnalysisResult<TypeAnalysis> | undefined => {
   const { name, supportType, callExpression, ownerSymbolId, ownerSymbolIdentity, memberPath } = args
   const newMemberPath = name ? [...memberPath, name] : [...memberPath]
   const expressionArgs = callExpression.getArguments()
@@ -157,46 +183,56 @@ const analyzeEffectSchemaForNonPrimitive = (args: {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (literalValue == undefined) return undefined
       return {
-        text: literalValue.getText(),
-        source: 'effect-schema',
-        structure: {
-          kind: 'literal',
-          elementValue: literalValue.getText(),
+        member: {
+          text: literalValue.getText(),
+          source: 'effect-schema',
+          structure: {
+            kind: 'literal',
+            elementValue: literalValue.getText(),
+          },
         },
+        dependencies: [],
       }
     }
     case 'Struct': {
       if (expressionArgs.length == 0) {
         return {
-          text: callExpression.getText(),
-          source: 'effect-schema',
-          structure: {
-            kind: 'object',
-            members: [],
+          member: {
+            text: callExpression.getText(),
+            source: 'effect-schema',
+            structure: {
+              kind: 'object',
+              members: [],
+            },
           },
+          dependencies: [],
         }
       }
       const targetStruct = expressionArgs[0]
       if (Node.isObjectLiteralExpression(targetStruct)) {
         const properties = targetStruct.getProperties()
-
+        const membersResult = properties
+          .map((p, index) =>
+            ObjectLiteralElementLike2MemberAnalysis(
+              p,
+              index,
+              ownerSymbolId,
+              ownerSymbolIdentity,
+              args.imported,
+              newMemberPath,
+            ),
+          )
+          .filter((m) => !!m)
         return {
-          text: callExpression.getText(),
-          source: 'effect-schema',
-          structure: {
-            kind: 'object',
-            members: properties
-              .map((p, index) =>
-                ObjectLiteralElementLike2MemberAnalysis(
-                  p,
-                  index,
-                  ownerSymbolId,
-                  ownerSymbolIdentity,
-                  newMemberPath,
-                ),
-              )
-              .filter((m) => !!m),
+          member: {
+            text: callExpression.getText(),
+            source: 'effect-schema',
+            structure: {
+              kind: 'object',
+              members: membersResult.map((m) => m.member),
+            },
           },
+          dependencies: membersResult.map((m) => m.dependencies).flat(),
         }
       }
       break
@@ -204,31 +240,41 @@ const analyzeEffectSchemaForNonPrimitive = (args: {
     case 'Union': {
       if (expressionArgs.length == 0) {
         return {
-          text: callExpression.getText(),
-          source: 'effect-schema',
-          structure: {
-            kind: 'union',
-            types: [],
+          member: {
+            text: callExpression.getText(),
+            source: 'effect-schema',
+            structure: {
+              kind: 'union',
+              types: [],
+            },
           },
+          dependencies: [],
         }
       }
       const arrayLiteral = expressionArgs[0]
       if (Node.isArrayLiteralExpression(arrayLiteral)) {
         const elements = arrayLiteral.getElements()
 
+        const typesResult = elements
+          .map((e) => {
+            const copiedArgs = { ...args }
+            copiedArgs.name = e.getText()
+            copiedArgs.memberPath = newMemberPath
+            return checkAndAnalyzeEffectSchema(e, copiedArgs)
+          })
+          .filter((m) => !!m)
+        const typesDependencies = typesResult.map((types) => types.dependencies).flat()
+
         return {
-          text: callExpression.getText(),
-          source: 'effect-schema',
-          structure: {
-            kind: 'union',
-            types: elements
-              .map((e) => {
-                const copiedArgs = { ...args }
-                copiedArgs.name = e.getText()
-                return checkAndAnalyzeEffectSchema(e, copiedArgs)
-              })
-              .filter((m) => !!m),
+          member: {
+            text: callExpression.getText(),
+            source: 'effect-schema',
+            structure: {
+              kind: 'union',
+              types: typesResult.map((t) => t.member),
+            },
           },
+          dependencies: typesDependencies,
         }
       }
       break
@@ -236,34 +282,44 @@ const analyzeEffectSchemaForNonPrimitive = (args: {
     case 'Array': {
       if (expressionArgs.length == 0) {
         return {
-          text: callExpression.getText(),
-          source: 'effect-schema',
+          member: {
+            text: callExpression.getText(),
+            source: 'effect-schema',
+          },
+          dependencies: [],
         }
       }
       const targetStruct = expressionArgs[0]
-      let memberType: TypeAnalysis | undefined = undefined
+      let memberType: MemberAnalysisResult<TypeAnalysis> | undefined = undefined
       if (Node.isExpression(targetStruct)) {
         memberType = checkAndAnalyzeEffectSchema(targetStruct, args)
       }
       if (!memberType) {
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         const targetContent = targetStruct?.getText() ?? ''
+        const dependency = analyzeDependency(targetContent, args.imported, newMemberPath)
         memberType = {
-          source: 'effect-schema',
-          text: targetContent,
-          structure: {
-            kind: 'reference',
-            targetId: targetContent,
+          member: {
+            source: 'effect-schema',
+            text: targetContent,
+            structure: {
+              kind: 'reference',
+              targetId: targetContent,
+            },
           },
+          dependencies: [dependency],
         }
       }
       return {
-        text: callExpression.getText(),
-        source: 'effect-schema',
-        structure: {
-          kind: 'array',
-          elementType: memberType,
+        member: {
+          text: callExpression.getText(),
+          source: 'effect-schema',
+          structure: {
+            kind: 'array',
+            elementType: memberType.member,
+          },
         },
+        dependencies: memberType.dependencies,
       }
     }
   }
@@ -274,8 +330,9 @@ const ObjectLiteralElementLike2MemberAnalysis = (
   index: number,
   ownerSymbolId: MemberIdentityOwnerSymbolId,
   ownerSymbolIdentity: SymbolIdentity,
+  imported: Array<ImportAnalysis>,
   memberPath: MemberIdentityMemberPath,
-): NonDocumentablePropertyMemberAnalysis | undefined => {
+): MemberAnalysisResult<NonDocumentablePropertyMemberAnalysis> | undefined => {
   if (Node.isPropertyAssignment(property)) {
     const newMemberPath = [...memberPath, property.getName()]
     const { id, identity } = createMemberIdentityAndId(
@@ -296,28 +353,35 @@ const ObjectLiteralElementLike2MemberAnalysis = (
       if (initializer.getNameNode().getText() == 'Optional') optional = true
     }
     const propertyName = property.getName()
+
+    const effectSchemaResult = effectSchemaSupport
+      ? analyzeEffectSchema(effectSchemaSupport, {
+          name: propertyName,
+          memberPath: newMemberPath,
+          ownerSymbolId,
+          ownerSymbolIdentity,
+          imported,
+        })
+      : undefined
+
     return {
-      declarationOrder: index,
-      kind: 'property',
-      documentable: false,
-      static: false,
-      visibility: 'public',
-      name: propertyName,
-      id,
-      identity,
-      ownerSymbolId,
-      readonly: false,
-      rest: false,
-      source: 'property-declaration',
-      optional,
-      ...withOptional({
-        type: effectSchemaSupport
-          ? analyzeEffectSchema(effectSchemaSupport, {
-              name: propertyName,
-              memberPath: newMemberPath,
-              ownerSymbolId,
-              ownerSymbolIdentity,
-            })
+      member: {
+        declarationOrder: index,
+        kind: 'property',
+        documentable: false,
+        static: false,
+        visibility: 'public',
+        name: propertyName,
+        id,
+        identity,
+        ownerSymbolId,
+        readonly: false,
+        rest: false,
+        source: 'property-declaration',
+        optional,
+
+        type: effectSchemaResult
+          ? effectSchemaResult.member
           : ({
               source: 'effect-schema',
               text: property.getInitializer()?.getText() ?? '',
@@ -326,7 +390,8 @@ const ObjectLiteralElementLike2MemberAnalysis = (
                 targetId: property.getInitializer()?.getText() ?? '',
               },
             } satisfies TypeAnalysis),
-      }),
+      },
+      dependencies: effectSchemaResult?.dependencies ?? [],
     }
   }
 

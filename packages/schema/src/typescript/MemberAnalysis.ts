@@ -51,7 +51,7 @@ export type MemberIdentityOwnerSymbolId = string
 /**
  * Represents a path of segments identifying a member.
  */
-export type MemberIdentityMemberPath = Array<string>
+export type MemberIdentityMemberPath = Array<string | number>
 interface BaseMemberAnalysis {
   /**
    * Stable identifier of the symbol.
@@ -97,7 +97,7 @@ interface MethodMemberAnalysis extends BaseMemberAnalysis {
 
   parameters: Array<MemberAnalysis>
 
-  returnType?: TypeAnalysis
+  returnType: TypeAnalysis | undefined
 
   snippet: string
 }
@@ -124,12 +124,12 @@ export interface DocumentableMethodMemberAnalysis extends MethodMemberAnalysis {
   /**
    * Contains the structured JSDoc analysis.
    */
-  jsDoc?: JsDocAnalysis
+  jsDoc: JsDocAnalysis | undefined
 
   /**
    * A collection of parsed JSDoc/TSDoc elements.
    */
-  parsedJsDoc?: Array<ParsedJsDoc>
+  parsedJsDoc: Array<ParsedJsDoc> | undefined
 
   /**
    * The location information of the symbol within the source code.
@@ -155,7 +155,7 @@ export interface DocumentableMethodMemberAnalysis extends MethodMemberAnalysis {
 interface PropertyMemberAnalysis extends BaseMemberAnalysis {
   kind: 'property'
 
-  type?: TypeAnalysis
+  type: TypeAnalysis | undefined
   source: PropertySource
   readonly: boolean
   optional: boolean
@@ -189,12 +189,12 @@ export interface DocumentablePropertyMemberAnalysis extends PropertyMemberAnalys
   /**
    * Contains the structured JSDoc analysis.
    */
-  jsDoc?: JsDocAnalysis
+  jsDoc: JsDocAnalysis | undefined
 
   /**
    * A collection of parsed JSDoc/TSDoc elements.
    */
-  parsedJsDoc?: Array<ParsedJsDoc>
+  parsedJsDoc: Array<ParsedJsDoc> | undefined
 
   /**
    * The location information of the symbol within the source code.

@@ -1,21 +1,26 @@
-import { withOptional } from '@gyomu/schema'
-import { Node } from 'ts-morph'
+import { Node, SyntaxKind } from 'ts-morph'
 import { prepareSymbolAnalysis } from '../prepareSymbolAnalysis.js'
 import { detectEffectSignals } from '../analyzeEffectType.js'
 import { registerSymbolSymbolAnalysis } from '../../../file/registerSymbolSymbolAnalysis.js'
 import { computeIndent } from '../computeIndent.js'
+import { analyzeDependency } from '../analyzeDependency.js'
+import { analyzeGenericsParameters } from '../analyzeGenericsParameters.js'
 import { analyzeClassPropertyMember, analyzeGetSetAccessor } from './analyzeClassPropertyMember.js'
 import { analyzeClassMethodMember } from './analyzeClassMethodMember.js'
 import { analyzeConstructor } from './analyzeConstructor.js'
 import type {
   DependencyRequirement,
-  DocumentableMemberAnalysis,
   MemberAnalysis,
   SymbolAnalysis,
 } from '@gyomu/schema/typescript'
 import type { ClassDeclaration } from 'ts-morph'
 
-import type { ChildAnalysisArg, GetSignatureIdArg, TagAnalysisArg } from '../../types.js'
+import type {
+  ChildAnalysisArg,
+  GetSignatureIdArg,
+  MemberAnalysisResult,
+  TagAnalysisArg,
+} from '../../types.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
 export const analyzeClass = (args: TagAnalysisArg<ClassDeclaration>) => {
@@ -28,6 +33,7 @@ export const analyzeClass = (args: TagAnalysisArg<ClassDeclaration>) => {
     options,
     sourceFullText,
   } = args
+
   const typeName = args.declaration.getName() ?? ''
   const prepared = prepareSymbolAnalysis(
     {
@@ -39,6 +45,7 @@ export const analyzeClass = (args: TagAnalysisArg<ClassDeclaration>) => {
       sourceFullText,
       imported,
       options,
+      reservedNames: [],
     },
     getSignatureId,
   )
@@ -46,6 +53,59 @@ export const analyzeClass = (args: TagAnalysisArg<ClassDeclaration>) => {
     symbolId: typeName,
     signatureId: prepared.signature.id,
   }
+  const genericsResult = analyzeGenericsParameters({
+    node: declaration,
+    sourceRelativePath,
+    metadata,
+    memberPath,
+    ownerSymbolId: prepared.id,
+    ownerSymbolIdentity: identity,
+    sourceFullText,
+    declarationOrder: 0,
+    imported,
+    options,
+    reservedNames: [],
+  })
+
+  let heritageIndex = 0
+  const heritages: Array<DependencyRequirement> = declaration
+    .getHeritageClauses()
+    .map((heritage) => {
+      const keyword = heritage.getToken()
+
+      if (keyword == SyntaxKind.ExtendsKeyword) {
+        const heritagePath = [...memberPath, '$heritage', heritageIndex++]
+        const extendsClasses = heritage
+          .getTypeNodes()
+          .map((expression) => expression.getExpression().getText())
+        return extendsClasses.map((name) => {
+          return analyzeDependency(name, imported, heritagePath)
+        })
+      } else {
+        const implementTypes = heritage
+          .getTypeNodes()
+          .map((expression) => expression.getExpression().getText())
+        return implementTypes.map((name) => {
+          const heritagePath = [...memberPath, '$heritage', heritageIndex++]
+          return analyzeDependency(name, imported, heritagePath)
+        })
+      }
+    })
+    .flat()
+
+  const memberResult = analyzeClassMembers({
+    sourceRelativePath,
+    metadata,
+    node: declaration,
+    ownerSymbolId: prepared.id,
+    ownerSymbolIdentity: identity,
+    memberPath: [],
+    sourceFullText,
+    imported,
+    options,
+    declarationOrder: 0,
+    reservedNames: genericsResult.parameters,
+  })
   const symbol = {
     id: prepared.id,
     signature: prepared.signature,
@@ -58,25 +118,19 @@ export const analyzeClass = (args: TagAnalysisArg<ClassDeclaration>) => {
     type: {
       text: typeName,
       source: 'typescript',
-      ...withOptional({ effect: detectEffectSignals(typeName) }),
+      effect: detectEffectSignals(typeName),
     },
     identity,
     startOffset: args.declaration.getStart(),
-    ...withOptional({ jsDoc: prepared.jsDoc, parsedJsDoc: prepared.parsedJsDoc }),
-    members: analyzeClassMembers({
-      sourceRelativePath,
-      metadata,
-      node: declaration,
-      ownerSymbolId: prepared.id,
-      ownerSymbolIdentity: identity,
-      memberPath: [],
-      sourceFullText,
-      imported,
-      options,
-      declarationOrder: 0,
-    }),
+    jsDoc: prepared.jsDoc,
+    parsedJsDoc: prepared.parsedJsDoc,
+    members: memberResult.member,
     declarationOrder: args.declarationOrder,
-    dependencyRequirements: new Array<DependencyRequirement>(),
+    dependencyRequirements: [
+      ...heritages,
+      ...memberResult.dependencies,
+      ...genericsResult.dependencies,
+    ],
   } satisfies SymbolAnalysis
 
   registerSymbolSymbolAnalysis(
@@ -96,7 +150,9 @@ export const analyzeClass = (args: TagAnalysisArg<ClassDeclaration>) => {
   }
 }
 
-const analyzeClassMembers = (args: ChildAnalysisArg<ClassDeclaration>): Array<MemberAnalysis> => {
+const analyzeClassMembers = (
+  args: ChildAnalysisArg<ClassDeclaration>,
+): MemberAnalysisResult<Array<MemberAnalysis>> => {
   const {
     node,
     sourceRelativePath,
@@ -107,90 +163,111 @@ const analyzeClassMembers = (args: ChildAnalysisArg<ClassDeclaration>): Array<Me
     sourceFullText,
     imported,
     options,
+    reservedNames,
   } = args
   const nodeMembers = node.getMembers()
 
   const setters = nodeMembers.filter((v) => Node.isSetAccessorDeclaration(v))
 
-  const members = nodeMembers.flatMap((member, index) => {
-    if (Node.isPropertyDeclaration(member)) {
-      return [
-        analyzeClassPropertyMember({
+  const members = nodeMembers
+    .flatMap<MemberAnalysisResult<Array<MemberAnalysis>> | undefined>((member, index) => {
+      if (Node.isPropertyDeclaration(member)) {
+        const newMemberPath = [...memberPath]
+        const propertyResult = analyzeClassPropertyMember({
           sourceRelativePath,
           metadata,
           node: member,
           ownerSymbolId,
           ownerSymbolIdentity,
-          memberPath,
+          memberPath: newMemberPath,
           sourceFullText,
           declarationOrder: index,
           imported,
           options,
-        }),
-      ]
-    }
-    if (Node.isMethodDeclaration(member))
-      return [
-        analyzeClassMethodMember(
+          reservedNames,
+        })
+        return {
+          member: [propertyResult.member] as Array<MemberAnalysis>,
+          dependencies: propertyResult.dependencies,
+        } satisfies MemberAnalysisResult<Array<MemberAnalysis>>
+      }
+      if (Node.isMethodDeclaration(member)) {
+        const newMemberPath = [...memberPath]
+        const methodResult = analyzeClassMethodMember(
           {
             sourceRelativePath,
             metadata,
             node: member,
             ownerSymbolId,
             ownerSymbolIdentity,
-            memberPath,
+            memberPath: newMemberPath,
             sourceFullText,
             declarationOrder: index,
             imported,
             options,
+            reservedNames,
           },
           member.getName(),
           member,
-        ),
-      ]
-    if (Node.isConstructorDeclaration(member))
-      return analyzeConstructor(
-        {
-          sourceRelativePath,
-          metadata,
-          node: member,
-          declarationOrder: index,
-          memberPath,
-          sourceFullText,
-          ownerSymbolId,
-          ownerSymbolIdentity,
-          imported,
-          options,
-        },
-        node,
-      )
+        )
+        return {
+          member: [methodResult.member] as Array<MemberAnalysis>,
+          dependencies: methodResult.dependencies,
+        } satisfies MemberAnalysisResult<Array<MemberAnalysis>>
+      }
+      if (Node.isConstructorDeclaration(member)) {
+        const name = '$constructor'
+        const newMemberPath = [...memberPath]
+        return analyzeConstructor(
+          {
+            sourceRelativePath,
+            metadata,
+            node: member,
+            declarationOrder: index,
+            memberPath: newMemberPath,
+            sourceFullText,
+            ownerSymbolId,
+            ownerSymbolIdentity,
+            imported,
+            options,
+            reservedNames,
+          },
+          node,
+          name,
+        ) satisfies MemberAnalysisResult<Array<MemberAnalysis>>
+      }
+      if (Node.isGetAccessorDeclaration(member)) {
+        const getter = member
+        const name = getter.getName()
+        const setter = setters.find((s) => s.getName() == name)
+        const newMemberPath = [...memberPath]
+        const analysis = analyzeGetSetAccessor(
+          {
+            sourceRelativePath,
+            metadata,
+            node: getter,
+            ownerSymbolId,
+            ownerSymbolIdentity,
+            memberPath: newMemberPath,
+            sourceFullText,
+            declarationOrder: index,
+            imported,
+            options,
+            reservedNames,
+          },
+          setter,
+        )
+        return { member: [analysis.member], dependencies: analysis.dependencies }
+      }
 
-    if (Node.isGetAccessorDeclaration(member)) {
-      const getter = member
-      const name = getter.getName()
-      const setter = setters.find((s) => s.getName() == name)
-      const analysis = analyzeGetSetAccessor(
-        {
-          sourceRelativePath,
-          metadata,
-          node: getter,
-          ownerSymbolId,
-          ownerSymbolIdentity,
-          memberPath,
-          sourceFullText,
-          declarationOrder: index,
-          imported,
-          options,
-        },
-        setter,
-      )
-      return analysis
-    }
+      return undefined
+    })
+    .filter((m) => !!m)
 
-    return [] as Array<DocumentableMemberAnalysis>
-  })
-
-  return members
+  return {
+    member: members.map((m) => m.member).flat(),
+    dependencies: members.map((m) => m.dependencies).flat(),
+  }
 }
 
 const getSignatureId = (args: GetSignatureIdArg<ClassDeclaration>) => {

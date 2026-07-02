@@ -1,4 +1,3 @@
-import { withOptional } from '@gyomu/schema'
 import { registerSymbolSymbolAnalysis } from '../../file/registerSymbolSymbolAnalysis.js'
 import { prepareSymbolAnalysis } from './prepareSymbolAnalysis.js'
 import { detectEffectSignals } from './analyzeEffectType.js'
@@ -30,6 +29,7 @@ export const analyzeEnum = (args: TagAnalysisArg<EnumDeclaration>) => {
       sourceFullText,
       imported,
       options,
+      reservedNames: [],
     },
     getSignatureId,
   )
@@ -49,13 +49,15 @@ export const analyzeEnum = (args: TagAnalysisArg<EnumDeclaration>) => {
     type: {
       text: typeName,
       source: 'typescript',
-      ...withOptional({ effect: detectEffectSignals(typeName) }),
+      effect: detectEffectSignals(typeName),
     },
     identity,
     startOffset: args.declaration.getStart(),
-    ...withOptional({ jsDoc: prepared.jsDoc, parsedJsDoc: prepared.parsedJsDoc }),
+    jsDoc: prepared.jsDoc,
+    parsedJsDoc: prepared.parsedJsDoc,
     members: [],
     declarationOrder: args.declarationOrder,
+    dependencyRequirements: [],
   } satisfies SymbolAnalysis
 
   registerSymbolSymbolAnalysis(

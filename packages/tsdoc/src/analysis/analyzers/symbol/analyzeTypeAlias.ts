@@ -1,12 +1,14 @@
-import { withOptional } from '@gyomu/schema'
+import { Node } from 'ts-morph'
 import { registerSymbolSymbolAnalysis } from '../../file/registerSymbolSymbolAnalysis.js'
 import { prepareSymbolAnalysis } from './prepareSymbolAnalysis.js'
 import { detectEffectSignals } from './analyzeEffectType.js'
 import { analyzeObjectMembers } from './analyzeObjectMembers.js'
 import { computeIndent } from './computeIndent.js'
-import type { TypeAliasDeclaration } from 'ts-morph'
+import { analyzeGenericsParameters } from './analyzeGenericsParameters.js'
+import { analyzeType } from './analyzeType.js'
+import type { TypeAliasDeclaration, TypeNode } from 'ts-morph'
 import type { SymbolAnalysis } from '@gyomu/schema/typescript'
-import type { TagAnalysisArg } from '../types.js'
+import type { ChildAnalysisArg, TagAnalysisArg } from '../types.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
 export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => {
@@ -19,7 +21,9 @@ export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => 
     imported,
     options,
   } = args
+
   const typeName = args.declaration.getName()
+  const typeOfType = args.declaration.getTypeNode()
   const prepared = prepareSymbolAnalysis(
     {
       declaration,
@@ -30,6 +34,7 @@ export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => 
       imported,
       options,
       nodeName: typeName,
+      reservedNames: [],
     },
     getSignatureId,
   )
@@ -37,24 +42,22 @@ export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => 
     symbolId: typeName,
     signatureId: prepared.signature.id,
   }
-  const symbol = {
-    id: prepared.id,
-    signature: prepared.signature,
-    snippet: prepared.snippet,
-    kind: 'type',
-    location: {
-      startLine: args.declaration.getStartLineNumber(),
-      endLine: args.declaration.getEndLineNumber(),
-    },
-    type: {
-      text: typeName,
-      source: 'typescript',
-      ...withOptional({ effect: detectEffectSignals(typeName) }),
-    },
-    identity,
-    startOffset: args.declaration.getStart(),
-    ...withOptional({ jsDoc: prepared.jsDoc, parsedJsDoc: prepared.parsedJsDoc }),
-    members: analyzeObjectMembers({
+  const genericsResult = analyzeGenericsParameters({
+    node: declaration,
+    sourceRelativePath,
+    metadata,
+    memberPath: [],
+    ownerSymbolId: prepared.id,
+    ownerSymbolIdentity: identity,
+    sourceFullText,
+    declarationOrder: 0,
+    imported,
+    options,
+    reservedNames: [],
+  })
+  let symbol: SymbolAnalysis
+  if (Node.isTypeLiteral(typeOfType)) {
+    const membersResult = analyzeObjectMembers({
       sourceRelativePath,
       metadata,
       node: declaration,
@@ -65,9 +68,83 @@ export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => 
       imported,
       options,
       declarationOrder: 0,
-    }),
-    declarationOrder: args.declarationOrder,
-  } satisfies SymbolAnalysis
+      reservedNames: genericsResult.parameters,
+    })
+
+    symbol = {
+      id: prepared.id,
+      signature: prepared.signature,
+      snippet: prepared.snippet,
+      kind: 'type',
+      location: {
+        startLine: args.declaration.getStartLineNumber(),
+        endLine: args.declaration.getEndLineNumber(),
+      },
+      type: {
+        text: typeName,
+        source: 'typescript',
+        effect: detectEffectSignals(typeName),
+      },
+      identity,
+      startOffset: args.declaration.getStart(),
+      jsDoc: prepared.jsDoc,
+      parsedJsDoc: prepared.parsedJsDoc,
+      members: membersResult.member,
+      declarationOrder: args.declarationOrder,
+      dependencyRequirements: [...genericsResult.dependencies, ...membersResult.dependencies],
+    } satisfies SymbolAnalysis
+  } else if (Node.isTypeNode(typeOfType)) {
+    const typeAnalysisArg: ChildAnalysisArg<TypeNode> = {
+      ...args,
+      node: typeOfType,
+      ownerSymbolId: prepared.id,
+      ownerSymbolIdentity: identity,
+      memberPath: [...args.memberPath, '$type'],
+      reservedNames: [],
+    }
+    const typeResult = analyzeType(typeAnalysisArg, [])
+    symbol = {
+      id: prepared.id,
+      signature: prepared.signature,
+      snippet: prepared.snippet,
+      kind: 'type',
+      location: {
+        startLine: args.declaration.getStartLineNumber(),
+        endLine: args.declaration.getEndLineNumber(),
+      },
+      type: typeResult?.member,
+      identity,
+      startOffset: args.declaration.getStart(),
+      jsDoc: prepared.jsDoc,
+      parsedJsDoc: prepared.parsedJsDoc,
+      members: [],
+      declarationOrder: args.declarationOrder,
+      dependencyRequirements: [...genericsResult.dependencies, ...(typeResult?.dependencies ?? [])],
+    } satisfies SymbolAnalysis
+  } else {
+    symbol = {
+      id: prepared.id,
+      signature: prepared.signature,
+      snippet: prepared.snippet,
+      kind: 'type',
+      location: {
+        startLine: args.declaration.getStartLineNumber(),
+        endLine: args.declaration.getEndLineNumber(),
+      },
+      type: {
+        text: typeName,
+        source: 'typescript',
+        effect: detectEffectSignals(typeName),
+      },
+      identity,
+      startOffset: args.declaration.getStart(),
+      jsDoc: prepared.jsDoc,
+      parsedJsDoc: prepared.parsedJsDoc,
+      members: [],
+      declarationOrder: args.declarationOrder,
+      dependencyRequirements: [...genericsResult.dependencies],
+    } satisfies SymbolAnalysis
+  }
   registerSymbolSymbolAnalysis(
     args.metadata,
     symbol,

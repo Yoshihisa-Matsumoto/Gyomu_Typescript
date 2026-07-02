@@ -1,4 +1,5 @@
 import path from 'node:path'
+import fs from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { Effect } from 'effect'
 import { analyzeFile } from '../analyzeFile.js'
@@ -22,6 +23,33 @@ const interfaceAnalysisProgram = (sourceFile: string): SymbolAnalysis => {
       return yield* analyzeFile(interfaceFixture, filePath, {
         includeDebugInfo: true,
       }).pipe(Effect.map((result) => result.analysis.symbols[0]))
+    }),
+  )
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  if (!result) throw new Error('Unexpected symbol should exist')
+  return result
+}
+const interfaceSymbolsDependencyProgram = (sourceFile: string, folder?: string) => {
+  const { project, projectRoot, projectName } = interfaceFixture
+
+  const sourcePath = folder ? path.join('src', folder, sourceFile) : path.join('src', sourceFile)
+  const filePath = path.join(projectRoot, sourcePath)
+  const result = Effect.runSync(
+    Effect.gen(function* () {
+      return yield* analyzeFile(interfaceFixture, filePath, {
+        includeDebugInfo: true,
+      }).pipe(
+        Effect.map((result) => {
+          fs.writeFileSync('./log/fileAnalysis.txt', JSON.stringify(result.analysis, null, 2))
+          const exports = result.analysis.symbols.map((s) => {
+            return {
+              name: s.identity.symbolId,
+              dependencies: s.dependencyRequirements,
+            }
+          })
+          return exports
+        }),
+      )
     }),
   )
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -167,6 +195,94 @@ describe('analyze Interface pattern', () => {
         hasRequirementsType: true,
         effectDepth: 1,
       })
+    },
+    timeout,
+  )
+})
+describe('analyze Interface dependency pattern', () => {
+  it(
+    '01-interface-dependency.ts',
+    async () => {
+      const result = await interfaceSymbolsDependencyProgram(
+        '01-interface-dependency.ts',
+        'dependency',
+      )
+      const dependencies = result.find((s) => s.name === 'DependencyInterface')
+
+      console.dir(result, { depth: null })
+      expect(dependencies).toBeDefined()
+      expect(dependencies?.dependencies).toEqual(
+        expect.arrayContaining([
+          {
+            source: { memberPath: ['$generics', 'T'] },
+            target: { scope: 'import', localName: 'ImportedType' },
+          },
+          {
+            source: { memberPath: ['$generics', 'U'] },
+            target: { scope: 'local-file', symbolName: 'LocalClass' },
+          },
+          {
+            source: { memberPath: ['$heritage', 0] },
+            target: { scope: 'import', localName: 'ImportedBase' },
+          },
+          {
+            source: { memberPath: ['$heritage', 1] },
+            target: { scope: 'local-file', symbolName: 'LocalBase' },
+          },
+          {
+            source: { memberPath: ['localProperty'] },
+            target: { scope: 'local-file', symbolName: 'LocalType' },
+          },
+          {
+            source: { memberPath: ['importedProperty'] },
+            target: { scope: 'import', localName: 'ImportedType' },
+          },
+          {
+            source: { memberPath: ['localMethod', '$parameters', 'value'] },
+            target: { scope: 'local-file', symbolName: 'LocalType' },
+          },
+          {
+            source: { memberPath: ['localMethod', '$return'] },
+            target: { scope: 'import', localName: 'ImportedType' },
+          },
+          {
+            source: { memberPath: ['importedMethod', '$parameters', 'value'] },
+            target: { scope: 'import', localName: 'ImportedType' },
+          },
+          {
+            source: { memberPath: ['importedMethod', '$return'] },
+            target: { scope: 'local-file', symbolName: 'LocalType' },
+          },
+          {
+            source: { memberPath: ['callback', '$generics', 'A'] },
+            target: { scope: 'import', localName: 'ImportedType' },
+          },
+          {
+            source: { memberPath: ['callback', '$generics', 'B'] },
+            target: { scope: 'local-file', symbolName: 'LocalClass' },
+          },
+          {
+            source: { memberPath: ['callback', '$parameters', 'local'] },
+            target: { scope: 'local-file', symbolName: 'LocalType' },
+          },
+          {
+            source: { memberPath: ['callback', '$parameters', 'imported'] },
+            target: { scope: 'import', localName: 'ImportedType' },
+          },
+          {
+            source: { memberPath: ['callback', '$return'] },
+            target: { scope: 'import', localName: 'ImportedClass' },
+          },
+          {
+            source: { memberPath: ['nested', 0, '$generics', 0] },
+            target: { scope: 'import', localName: 'ImportedType' },
+          },
+          {
+            source: { memberPath: ['nested', 1, '$generics', 1, '$generics', 0] },
+            target: { scope: 'local-file', symbolName: 'LocalType' },
+          },
+        ]),
+      )
     },
     timeout,
   )

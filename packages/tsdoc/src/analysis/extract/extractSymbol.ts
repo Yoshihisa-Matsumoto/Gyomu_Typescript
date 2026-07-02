@@ -2,7 +2,12 @@ import { Node } from 'ts-morph'
 import { analyzeStatement } from '../analyzers/analyzeStatement.js'
 import { analyzeExportStatement } from '../analyzers/analyzeExportStatement.js'
 import { analyzeImportStatement } from '../analyzers/analyzeImportStatement.js'
-import type { ExportAnalysis, ImportAnalysis, SymbolAnalysis } from '@gyomu/schema/typescript'
+import type {
+  ExportAnalysis,
+  ImportAnalysis,
+  MemberIdentityMemberPath,
+  SymbolAnalysis,
+} from '@gyomu/schema/typescript'
 import type { AnalysisOptions } from '../AnalysisOption.js'
 import type { FileAnalysisMetadata } from '../file/FileAnalysisResult.js'
 import type { SourceFileContext } from '../file/SourceFileContext.js'
@@ -17,7 +22,7 @@ export const extractSymbols = (
   const exported: Array<ExportAnalysis> = []
   const symbols: Array<SymbolAnalysis> = []
   const sourceRelativePath = context.path
-  const memberPath: Array<string> = []
+  const memberPath: MemberIdentityMemberPath = []
   const sourceFullText = context.sourceFile.getFullText()
 
   statements.forEach((statement, declarationOrder) => {
@@ -26,20 +31,30 @@ export const extractSymbols = (
     }
   })
 
+  // Non export statement start analysis first
   statements.forEach((statement, declarationOrder) => {
-    // const isExports =
-    //   (Node.isExportGetable(statement) || Node.isExportable(statement)) && statement.isExported()
-    // if (isExports) return
-
-    // let isDefault = false
-    // if (Node.isDefaultClause(statement)) isDefault = true
-
-    // if (Node.isModifierable(statement)) {
-    //   if (statement.getModifiers().find((m) => m.getKind() == SyntaxKind.DefaultKeyword))
-    //     isDefault = true
-    // }
-
     const declaration = statement
+    if (Node.isExportable(declaration) && declaration.isExported()) return
+
+    const result = analyzeStatement(declaration, {
+      metadata,
+      memberPath,
+      declarationOrder,
+      sourceFullText,
+      sourceRelativePath,
+      imported,
+      options,
+    })
+    if (result) {
+      exported.push(...result.exported)
+      symbols.push(...result.symbols)
+    }
+  })
+
+  // exportable statement later
+  statements.forEach((statement, declarationOrder) => {
+    const declaration = statement
+    if (Node.isExportable(declaration) && !declaration.isExported()) return
 
     const result = analyzeStatement(declaration, {
       metadata,

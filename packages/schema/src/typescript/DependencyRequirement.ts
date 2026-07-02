@@ -1,17 +1,19 @@
+import type { MemberIdentityMemberPath } from './MemberAnalysis.js'
+
 interface DependencySource {
   /**
    * Empty for the symbol itself.
    * ["constructor"], ["save"], ["config"] ...
    */
-  readonly memberPath: ReadonlyArray<string>
+  readonly memberPath: MemberIdentityMemberPath
 }
 
 export type DependencyRequirement = {
   readonly source: DependencySource
-  readonly target: LocalFileDependency | ImportedSymbolDependency
+  readonly target: LocalFileDependencyCandidate | ImportedSymbolDependency
 }
 
-type LocalFileDependency = {
+type LocalFileDependencyCandidate = {
   scope: 'local-file'
   symbolName: string
 }
