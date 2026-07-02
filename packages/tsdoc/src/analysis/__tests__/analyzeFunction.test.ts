@@ -96,19 +96,19 @@ describe('analyze Function dependency pattern', () => {
             target: { scope: 'import', localName: 'ImportedType' },
           },
           {
-            source: { memberPath: [] },
+            source: { memberPath: ['$body'] },
             target: { scope: 'local-file', symbolName: 'localFunction' },
           },
           {
-            source: { memberPath: [] },
+            source: { memberPath: ['$body'] },
             target: { scope: 'import', localName: 'importedFunction' },
           },
           {
-            source: { memberPath: [] },
+            source: { memberPath: ['$body'] },
             target: { scope: 'local-file', symbolName: 'LocalClass' },
           },
           {
-            source: { memberPath: [] },
+            source: { memberPath: ['$body'] },
             target: { scope: 'import', localName: 'ImportedClass' },
           },
           {

@@ -32,7 +32,7 @@
 
   {
     "identity": {
-      "symbolId": "ApiResponse::interface::profile::property",
+      "symbolId": "ApiResponse::interface::$property.profile::property",
       "signatureId": "property"
     },
     "summary": {
@@ -63,7 +63,7 @@
 
   {
     "identity": {
-      "symbolId": "ApiResponse::interface::profile.displayName::property",
+      "symbolId": "ApiResponse::interface::$property.profile.$property.displayName::property",
       "signatureId": "property"
     },
     "summary": {

@@ -44,6 +44,8 @@ describeIfApiKey('executeJsDocUpdatePlan integration', () => {
             tags: [],
           },
           effectSignals: undefined,
+          analysis: undefined,
+          dependencies: undefined,
         },
       ],
     }
@@ -112,6 +114,8 @@ describeIfApiKey('executeJsDocUpdatePlan integration', () => {
             tags: [],
           },
           effectSignals: undefined,
+          analysis: undefined,
+          dependencies: undefined,
         },
       ],
     }

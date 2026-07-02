@@ -70,7 +70,7 @@ export const analyzeInterface = (args: TagAnalysisArg<InterfaceDeclaration>) => 
           .getTypeNodes()
           .map((expression) => expression.getExpression().getText())
         return extendsClasses.map((name) => {
-          const heritagePath = [...memberPath, '$heritage', heritageIndex++]
+          const heritagePath = [...memberPath, '$extend', heritageIndex++]
           return analyzeDependency(name, imported, heritagePath)
         })
       } else {
@@ -78,7 +78,7 @@ export const analyzeInterface = (args: TagAnalysisArg<InterfaceDeclaration>) => 
           .getTypeNodes()
           .map((expression) => expression.getExpression().getText())
         return implementTypes.map((name) => {
-          const heritagePath = [...memberPath, '$heritage', heritageIndex++]
+          const heritagePath = [...memberPath, '$implement', heritageIndex++]
           return analyzeDependency(name, imported, heritagePath)
         })
       }
@@ -159,6 +159,7 @@ const analyzeInterfaceMembers = (
     options,
     reservedNames,
   } = args
+  const newMemberPath = [...memberPath, '$property']
   const members = node
     .getMembers()
     .flatMap<MemberAnalysisResult<MemberAnalysis> | undefined>((member, index) => {
@@ -172,7 +173,7 @@ const analyzeInterfaceMembers = (
               node: typeNode,
               ownerSymbolId,
               ownerSymbolIdentity,
-              memberPath,
+              memberPath: newMemberPath,
               sourceFullText,
               declarationOrder: index,
               imported,
@@ -194,7 +195,7 @@ const analyzeInterfaceMembers = (
           node: member,
           ownerSymbolId,
           ownerSymbolIdentity,
-          memberPath,
+          memberPath: newMemberPath,
           sourceFullText,
           declarationOrder: index,
           imported,
@@ -211,7 +212,7 @@ const analyzeInterfaceMembers = (
             node: member,
             ownerSymbolId,
             ownerSymbolIdentity,
-            memberPath,
+            memberPath: newMemberPath,
             sourceFullText,
             declarationOrder: index,
             imported,

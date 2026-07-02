@@ -419,6 +419,7 @@ const analyzeTypeLiteralMembers = (
 
       if (Node.isPropertySignature(member)) {
         const memberTypeNode = member.getTypeNode()
+        const newMemberPath = [...memberPath, '$property']
         if (Node.isFunctionTypeNode(memberTypeNode)) {
           return analyzeFunctionMember(
             {
@@ -427,7 +428,7 @@ const analyzeTypeLiteralMembers = (
               node: memberTypeNode,
               ownerSymbolId,
               ownerSymbolIdentity,
-              memberPath,
+              memberPath: newMemberPath,
               sourceFullText,
               declarationOrder: index,
               imported,
@@ -448,7 +449,7 @@ const analyzeTypeLiteralMembers = (
           node: member,
           ownerSymbolId,
           ownerSymbolIdentity,
-          memberPath,
+          memberPath: newMemberPath,
           sourceFullText,
           declarationOrder: index,
           imported,

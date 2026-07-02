@@ -306,7 +306,9 @@ export const analyzeFunctionBody = (
     if (Node.isBlock(body)) {
       const statementsResult = body
         .getStatements()
-        .map((statement) => analyzeStatement(args, statement))
+        .map((statement) =>
+          analyzeStatement({ ...args, memberPath: [...args.memberPath, '$body'] }, statement),
+        )
         .flat()
       console.dir(statementsResult, { depth: 5 })
       return {

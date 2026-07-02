@@ -55,6 +55,12 @@ generate a concise summary instead of omitting it.
 Do not preserve an empty summary solely because
 the symbol name is descriptive.
 
+When generating summaries,
+use dependencyCandidates as supporting context when available.
+
+The dependency list is intentionally filtered to contain only symbols
+that are considered semantically important.
+
 ---
 
 # Schema Structure
@@ -88,6 +94,39 @@ Prefer:
 Over:
 
 - "Defines a public error schema."
+
+---
+
+# Dependency Candidates
+
+Some symbols may include dependencyCandidates.
+
+Dependency candidates identify symbols that are directly referenced by
+the target symbol and may help explain its purpose.
+
+Use dependencyCandidates only as supporting context.
+
+Prefer deriving the summary from:
+
+- the target symbol name
+- the declaration
+- the type structure
+
+Use dependencyCandidates to:
+
+- clarify what the symbol represents
+- understand relationships with referenced domain types
+- avoid overly generic summaries
+
+Do NOT:
+
+- describe every dependency
+- enumerate dependency names
+- invent behavior based on dependencies
+- assume runtime execution order
+- infer implementation details that are not evident from the declaration
+
+Dependency candidates are contextual hints rather than documentation targets.
 
 ---
 

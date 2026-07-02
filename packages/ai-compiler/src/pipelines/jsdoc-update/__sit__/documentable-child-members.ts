@@ -66,6 +66,8 @@ export interface User {
           ],
 
           relatedSymbols: [],
+          analysis: undefined,
+          dependencies: undefined,
         },
       ],
     }

@@ -1,5 +1,5 @@
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/index'
-import type { EffectSignals } from '@gyomu/schema/typescript'
+import type { EffectSignals, SummaryDependency } from '@gyomu/schema/typescript'
 
 /**
  * Defines the base interface for a JSDoc update context containing project metadata and target identification.
@@ -28,7 +28,7 @@ export interface TsDocSymbolContext {
   /**
    * Optional existing JSDoc documentation for the target symbol.
    */
-  existingJsDoc?: ExistingJsDoc
+  existingJsDoc: ExistingJsDoc | undefined
 
   /**
    * The optional effect type declaration
@@ -48,21 +48,29 @@ export interface TsDocSymbolContext {
   /**
    * Deep analysis metadata for code refinement.
    */
-  analysis?: {
-    paramSemantics: Array<{
-      name: string
-      meaning: string
-      role: string
-    }>
+  analysis:
+    | {
+        paramSemantics: Array<{
+          name: string
+          meaning: string
+          role: string
+        }>
 
-    // protectedRegions: Array<ProtectedSection>
+        // protectedRegions: Array<ProtectedSection>
 
-    returnSemantics?: string
+        returnSemantics?: string
 
-    sideEffects: Array<string>
+        sideEffects: Array<string>
 
-    schemaStructure?: SchemaStructureNode
-  }
+        schemaStructure?: SchemaStructureNode
+      }
+    | undefined
+
+  dependencies:
+    | {
+        candidates: ReadonlyArray<SummaryDependency>
+      }
+    | undefined
 
   /**
    * Configuration and metrics regarding how the symbol is used.

@@ -70,7 +70,7 @@ export const analyzeClass = (args: TagAnalysisArg<ClassDeclaration>) => {
       const keyword = heritage.getToken()
 
       if (keyword == SyntaxKind.ExtendsKeyword) {
-        const heritagePath = [...memberPath, '$heritage', heritageIndex++]
+        const heritagePath = [...memberPath, '$extend', heritageIndex++]
         const extendsClasses = heritage
           .getTypeNodes()
           .map((expression) => expression.getExpression().getText())
@@ -82,7 +82,7 @@ export const analyzeClass = (args: TagAnalysisArg<ClassDeclaration>) => {
           .getTypeNodes()
           .map((expression) => expression.getExpression().getText())
         return implementTypes.map((name) => {
-          const heritagePath = [...memberPath, '$heritage', heritageIndex++]
+          const heritagePath = [...memberPath, '$implement', heritageIndex++]
           return analyzeDependency(name, imported, heritagePath)
         })
       }
@@ -168,7 +168,7 @@ const analyzeClassMembers = (
   const members = nodeMembers
     .flatMap<MemberAnalysisResult<Array<MemberAnalysis>> | undefined>((member, index) => {
       if (Node.isPropertyDeclaration(member)) {
-        const newMemberPath = [...memberPath]
+        const newMemberPath = [...memberPath, '$property']
         const propertyResult = analyzeClassPropertyMember({
           sourceRelativePath,
           metadata,
@@ -236,7 +236,7 @@ const analyzeClassMembers = (
         const getter = member
         const name = getter.getName()
         const setter = setters.find((s) => s.getName() == name)
-        const newMemberPath = [...memberPath]
+        const newMemberPath = [...memberPath, '$property']
         const analysis = analyzeGetSetAccessor(
           {
             sourceRelativePath,

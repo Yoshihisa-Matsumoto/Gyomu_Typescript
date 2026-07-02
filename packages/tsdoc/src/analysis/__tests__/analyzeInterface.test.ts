@@ -222,63 +222,63 @@ describe('analyze Interface dependency pattern', () => {
             target: { scope: 'local-file', symbolName: 'LocalClass' },
           },
           {
-            source: { memberPath: ['$heritage', 0] },
+            source: { memberPath: ['$extend', 0] },
             target: { scope: 'import', localName: 'ImportedBase' },
           },
           {
-            source: { memberPath: ['$heritage', 1] },
+            source: { memberPath: ['$extend', 1] },
             target: { scope: 'local-file', symbolName: 'LocalBase' },
           },
           {
-            source: { memberPath: ['localProperty'] },
+            source: { memberPath: ['$property', 'localProperty'] },
             target: { scope: 'local-file', symbolName: 'LocalType' },
           },
           {
-            source: { memberPath: ['importedProperty'] },
+            source: { memberPath: ['$property', 'importedProperty'] },
             target: { scope: 'import', localName: 'ImportedType' },
           },
           {
-            source: { memberPath: ['localMethod', '$parameters', 'value'] },
+            source: { memberPath: ['$property', 'localMethod', '$parameters', 'value'] },
             target: { scope: 'local-file', symbolName: 'LocalType' },
           },
           {
-            source: { memberPath: ['localMethod', '$return'] },
+            source: { memberPath: ['$property', 'localMethod', '$return'] },
             target: { scope: 'import', localName: 'ImportedType' },
           },
           {
-            source: { memberPath: ['importedMethod', '$parameters', 'value'] },
+            source: { memberPath: ['$property', 'importedMethod', '$parameters', 'value'] },
             target: { scope: 'import', localName: 'ImportedType' },
           },
           {
-            source: { memberPath: ['importedMethod', '$return'] },
+            source: { memberPath: ['$property', 'importedMethod', '$return'] },
             target: { scope: 'local-file', symbolName: 'LocalType' },
           },
           {
-            source: { memberPath: ['callback', '$generics', 'A'] },
+            source: { memberPath: ['$property', 'callback', '$generics', 'A'] },
             target: { scope: 'import', localName: 'ImportedType' },
           },
           {
-            source: { memberPath: ['callback', '$generics', 'B'] },
+            source: { memberPath: ['$property', 'callback', '$generics', 'B'] },
             target: { scope: 'local-file', symbolName: 'LocalClass' },
           },
           {
-            source: { memberPath: ['callback', '$parameters', 'local'] },
+            source: { memberPath: ['$property', 'callback', '$parameters', 'local'] },
             target: { scope: 'local-file', symbolName: 'LocalType' },
           },
           {
-            source: { memberPath: ['callback', '$parameters', 'imported'] },
+            source: { memberPath: ['$property', 'callback', '$parameters', 'imported'] },
             target: { scope: 'import', localName: 'ImportedType' },
           },
           {
-            source: { memberPath: ['callback', '$return'] },
+            source: { memberPath: ['$property', 'callback', '$return'] },
             target: { scope: 'import', localName: 'ImportedClass' },
           },
           {
-            source: { memberPath: ['nested', 0, '$generics', 0] },
+            source: { memberPath: ['$property', 'nested', 0, '$generics', 0] },
             target: { scope: 'import', localName: 'ImportedType' },
           },
           {
-            source: { memberPath: ['nested', 1, '$generics', 1, '$generics', 0] },
+            source: { memberPath: ['$property', 'nested', 1, '$generics', 1, '$generics', 0] },
             target: { scope: 'local-file', symbolName: 'LocalType' },
           },
         ]),
