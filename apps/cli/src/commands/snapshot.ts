@@ -6,6 +6,7 @@ import {
   analyzeFile,
   analyzeProjectChanges,
   commitProjectSnapshot,
+  deleteSnapshot,
   initializeProjectContext,
   isTestFile,
   listTypescriptProject,
@@ -28,7 +29,7 @@ const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(
 const runQAWithEnvOrThrow = makeRunner(VercelAiModelServiceLive)
 export const snapshotCommand = (
   projectName: string,
-  options?: { buildTsDoc?: boolean; filter?: string; commit?: boolean },
+  options?: { buildTsDoc?: boolean; filter?: string; commit?: boolean; recommit?: boolean },
 ) => {
   return runQAWithEnvOrThrow(
     Effect.gen(function* () {
@@ -37,6 +38,19 @@ export const snapshotCommand = (
       if (!targetProject) {
         console.log(`${projectName} Not Found`)
         return
+      }
+      const projectContext = yield* initializeProjectContext({
+        repoRoot: projects.repositoryRoot,
+        projectRelativePath: targetProject.rootPath,
+      })
+      const projectAbsolutePath = projectContext.projectRoot
+      if (options?.recommit) {
+        yield* deleteSnapshot({
+          projectPath: targetProject.rootPath,
+          repoRoot: projects.repositoryRoot,
+        })
+
+        yield* removePath(join(projectAbsolutePath, '.gyomu'), { recursive: true })
       }
 
       let changeResult = yield* analyzeProjectChanges({
@@ -52,11 +66,6 @@ export const snapshotCommand = (
 
       const fileFilter = createPathMatcher(options?.filter)
 
-      const projectContext = yield* initializeProjectContext({
-        repoRoot: projects.repositoryRoot,
-        projectRelativePath: targetProject.rootPath,
-      })
-      const projectAbsolutePath = projectContext.projectRoot
       yield* makeDirectory('./log')
       for (const fileChange of changeResult.diff) {
         switch (fileChange.type) {
@@ -108,7 +117,7 @@ export const snapshotCommand = (
               })
               fileResult = yield* analyzeFile(projectContext, targetFilePath)
             }
-            if (options?.commit) {
+            if (options?.commit || options?.recommit) {
               // Save FileAnalysis on project/.gyomu/<filePath>.json
               const fileAnalysisPath = join(
                 projectAbsolutePath,
@@ -123,7 +132,7 @@ export const snapshotCommand = (
             break
           }
           case 'deleted': {
-            if (options?.commit) {
+            if (options?.commit || options?.recommit) {
               // Delete FileAnalysis file from project/.gyomu/<filePath>.json
               const fileAnalysisPath = join(
                 projectAbsolutePath,
@@ -136,7 +145,7 @@ export const snapshotCommand = (
           }
         }
       }
-      if (options?.commit) {
+      if (options?.commit || options?.recommit) {
         if (options.buildTsDoc) {
           changeResult = yield* analyzeProjectChanges({
             repoRoot: projects.repositoryRoot,

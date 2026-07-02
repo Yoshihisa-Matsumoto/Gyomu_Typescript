@@ -89,9 +89,9 @@ export const analyzeDependencyFromTypeParameters = (
   params.forEach((param) => {
     const name = param.getName()
     const newMemberPath = [...memberPath, '$generics', name]
-    console.log(`memberPath: ${newMemberPath.join('.')}`)
+    // console.log(`memberPath: ${newMemberPath.join('.')}`)
     const constraint = param.getConstraint()
-    console.log(`constraint: ${constraint?.getText()}`)
+    // console.log(`constraint: ${constraint?.getText()}`)
     if (constraint && Node.isTypeReference(constraint)) {
       dependencies.push(
         ...analyzeDependencyFromTypeReference(constraint, imported, newMemberPath, reservedNames),

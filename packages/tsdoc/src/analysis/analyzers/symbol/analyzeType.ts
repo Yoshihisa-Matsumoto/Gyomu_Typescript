@@ -132,13 +132,13 @@ export const analyzeType = (
               dependencies: [dependency],
             }
           }
-          console.log('CallExpression Not handled')
-          console.dir(node, { depth: null })
+          // console.log('CallExpression Not handled')
+          // console.dir(node, { depth: null })
           break
         }
         default:
-          console.log(`Unhandled TypeNode kind: ${SyntaxKind[initialKind]}`)
-          console.dir(node, { depth: null })
+          // console.log(`Unhandled TypeNode kind: ${SyntaxKind[initialKind]}`)
+          // console.dir(node, { depth: null })
           break
       }
       // if (Node.isObjectLiteralExpression(initializer)) {

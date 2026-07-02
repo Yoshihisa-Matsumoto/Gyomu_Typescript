@@ -1,7 +1,7 @@
 import type { SymbolIdentity } from '../schemas/typescript/SymbolIdentity.js'
 
 /**
- * Represents an exported symbol declaration.
+ * Represents the analysis results for an exported symbol, which can be either a local export or a re-export.
  */
 export type ExportAnalysis = LocalExportAnalysis | ReExportAnalysis
 

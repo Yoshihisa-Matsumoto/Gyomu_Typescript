@@ -10,6 +10,9 @@ export interface ImportAnalysis {
    */
   moduleSpecifier: string
 
+  /**
+   * The type of import, categorized as named, default, or namespace.
+   */
   kind: 'named' | 'default' | 'namespace'
 
   /**

@@ -13,6 +13,7 @@ cli
   .option('-t, --buildTsDoc', 'Build TSDoc')
   .option('--filter <filePath>', 'TsDoc Filter')
   .option('--commit', 'Commit')
+  .option('--recommit', 'Remove Snapshot and Commit all files')
   .action(snapshotCommand)
 
 cli.help()

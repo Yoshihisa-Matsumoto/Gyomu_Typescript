@@ -12,7 +12,7 @@ export const analyzeGenericsParameters = (
   const newReservedNames = [...args.reservedNames, ...parameters]
 
   const name = Node.isTypeReference(node) ? node.getTypeName().getText() : undefined
-  console.log(`generics member: ${memberPath.join('.')}`)
+  // console.log(`generics member: ${memberPath.join('.')}`)
   const dependencies = analyzeDependencyFromTypeParameters(
     typeParameters,
     imported,

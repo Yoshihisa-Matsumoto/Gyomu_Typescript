@@ -42,7 +42,7 @@ export const analyzeExportStatement = (
   const namedExport = statementChildren.find((c) => Node.isNamedExports(c))
   if (namedExport) {
     for (const exportSpecifier of namedExport.getElements()) {
-      console.log(exportSpecifier.getName())
+      // console.log(exportSpecifier.getName())
       const propertyNamed = exportSpecifier.getNodeProperty('propertyName')
       const children = exportSpecifier.getChildren()
       const asIndex = children.findIndex((c) => c.getKind() == SyntaxKind.AsKeyword)

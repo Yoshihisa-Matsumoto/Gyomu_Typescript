@@ -301,7 +301,7 @@ export const analyzeFunctionBody = (
     Node.isMethodDeclaration(args.node) ||
     Node.isFunctionDeclaration(args.node)
   ) {
-    console.log('Constructor or Method', args2.name)
+    // console.log('Constructor or Method', args2.name)
     const body = args.node.getBody()
     if (Node.isBlock(body)) {
       const statementsResult = body
@@ -310,7 +310,7 @@ export const analyzeFunctionBody = (
           analyzeStatement({ ...args, memberPath: [...args.memberPath, '$body'] }, statement),
         )
         .flat()
-      console.dir(statementsResult, { depth: 5 })
+      // console.dir(statementsResult, { depth: 5 })
       return {
         dependencies: statementsResult.map((s) => s.dependencies).flat(),
       }
@@ -333,7 +333,7 @@ const analyzeStatement = (
 ): MethodAnalysisResult => {
   if (Node.isExpressionStatement(bodyStatement)) {
     const expression = bodyStatement.getExpression()
-    console.log('ExpressionStatement', expression.getKindName(), expression.getText())
+    // console.log('ExpressionStatement', expression.getKindName(), expression.getText())
     if (Node.isCallExpression(expression)) {
       const expressionText = expression.getExpression().getText()
       const dependency = analyzeDependency(expressionText, args.imported, args.memberPath)
@@ -343,7 +343,7 @@ const analyzeStatement = (
     }
     if (Node.isNewExpression(expression)) {
       const expressionText = expression.getExpression().getText()
-      console.log('NewExpression', expressionText)
+      // console.log('NewExpression', expressionText)
       const dependency = analyzeDependency(expressionText, args.imported, args.memberPath)
       return {
         dependencies: [dependency],
