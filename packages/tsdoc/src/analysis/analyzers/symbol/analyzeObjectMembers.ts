@@ -50,7 +50,7 @@ export const analyzeObjectMembers = (
         }
 
         if (Node.isPropertySignature(member)) {
-          const newMemberPath = [...memberPath, '$property']
+          const newMemberPath = [...memberPath, '$member']
           const memberTypeNode = member.getTypeNode()
           if (Node.isFunctionTypeNode(memberTypeNode)) {
             return analyzeFunctionMember(

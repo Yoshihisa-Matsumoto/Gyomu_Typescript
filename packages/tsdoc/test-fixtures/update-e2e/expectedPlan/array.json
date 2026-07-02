@@ -32,7 +32,7 @@
 
   {
     "identity": {
-      "symbolId": "ApiResponse::interface::$property.users::property",
+      "symbolId": "ApiResponse::interface::$member.users::property",
       "signatureId": "property"
     },
     "summary": {
@@ -63,7 +63,7 @@
 
   {
     "identity": {
-      "symbolId": "ApiResponse::interface::$property.users.$property.id::property",
+      "symbolId": "ApiResponse::interface::$member.users.$member.id::property",
       "signatureId": "property"
     },
     "summary": {
@@ -94,7 +94,7 @@
 
   {
     "identity": {
-      "symbolId": "ApiResponse::interface::$property.users.$property.profile::property",
+      "symbolId": "ApiResponse::interface::$member.users.$member.profile::property",
       "signatureId": "property"
     },
     "summary": {
@@ -125,7 +125,7 @@
 
   {
     "identity": {
-      "symbolId": "ApiResponse::interface::$property.users.$property.profile.$property.displayName::property",
+      "symbolId": "ApiResponse::interface::$member.users.$member.profile.$member.displayName::property",
       "signatureId": "property"
     },
     "summary": {

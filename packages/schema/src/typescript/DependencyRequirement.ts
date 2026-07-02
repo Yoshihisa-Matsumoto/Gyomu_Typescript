@@ -30,7 +30,7 @@ export type SummaryDependency = {
   /**
    * The semantic reason for the dependency relationship.
    */
-  reason: 'parameter' | 'return' | 'property' | 'extends' | 'implements' | 'body' | 'generics'
+  reason: 'parameter' | 'return' | 'member' | 'extends' | 'implements' | 'body' | 'generics'
 
   /**
    * The target of the dependency.

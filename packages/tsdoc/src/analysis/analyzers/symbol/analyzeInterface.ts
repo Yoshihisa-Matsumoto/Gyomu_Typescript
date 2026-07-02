@@ -159,7 +159,7 @@ const analyzeInterfaceMembers = (
     options,
     reservedNames,
   } = args
-  const newMemberPath = [...memberPath, '$property']
+  const newMemberPath = [...memberPath, '$member']
   const members = node
     .getMembers()
     .flatMap<MemberAnalysisResult<MemberAnalysis> | undefined>((member, index) => {

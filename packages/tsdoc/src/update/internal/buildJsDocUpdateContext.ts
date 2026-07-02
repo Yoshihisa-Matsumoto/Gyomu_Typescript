@@ -201,8 +201,8 @@ const convertMemberPathIntoReason = (
       return 'implements'
     case '$generics':
       return 'generics'
-    case '$property':
-      return 'property'
+    case '$member':
+      return 'member'
     case '$parameters':
       return 'parameter'
     case '$body':

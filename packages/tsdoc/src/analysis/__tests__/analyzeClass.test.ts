@@ -287,21 +287,21 @@ describe('analyze Class dependency pattern', () => {
         expect(dependencies).toEqual(
           expect.arrayContaining([
             {
-              source: { memberPath: ['$property', 'localProperty'] },
+              source: { memberPath: ['$member', 'localProperty'] },
               target: {
                 scope: 'local-file',
                 symbolName: 'LocalType',
               },
             },
             {
-              source: { memberPath: ['$property', 'importedProperty'] },
+              source: { memberPath: ['$member', 'importedProperty'] },
               target: {
                 scope: 'import',
                 localName: 'ImportedType',
               },
             },
             {
-              source: { memberPath: ['$property', 'localInitialized'] },
+              source: { memberPath: ['$member', 'localInitialized'] },
               target: {
                 scope: 'local-file',
                 symbolName: 'localFactory',
@@ -446,47 +446,47 @@ describe('analyze Class dependency pattern', () => {
         expect(dependencies).toEqual(
           expect.arrayContaining([
             {
-              source: { memberPath: ['$property', 'a', '$generics', 0] },
+              source: { memberPath: ['$member', 'a', '$generics', 0] },
               target: { scope: 'import', localName: 'ImportedType' },
             },
             {
-              source: { memberPath: ['$property', 'b', '$generics', 1, '$generics', 0] },
+              source: { memberPath: ['$member', 'b', '$generics', 1, '$generics', 0] },
               target: { scope: 'import', localName: 'ImportedType' },
             },
             {
-              source: { memberPath: ['$property', 'c', '$generics', 0] },
+              source: { memberPath: ['$member', 'c', '$generics', 0] },
               target: { scope: 'local-file', symbolName: 'LocalType' },
             },
             {
-              source: { memberPath: ['$property', 'd', '$generics', 0, '$generics', 1] },
+              source: { memberPath: ['$member', 'd', '$generics', 0, '$generics', 1] },
               target: { scope: 'local-file', symbolName: 'LocalType' },
             },
             {
-              source: { memberPath: ['$property', 'e', 0] },
+              source: { memberPath: ['$member', 'e', 0] },
               target: { scope: 'import', localName: 'ImportedType' },
             },
             {
-              source: { memberPath: ['$property', 'e', 1] },
+              source: { memberPath: ['$member', 'e', 1] },
               target: { scope: 'local-file', symbolName: 'LocalType' },
             },
             {
-              source: { memberPath: ['$property', 'f'] },
+              source: { memberPath: ['$member', 'f'] },
               target: { scope: 'import', localName: 'ImportedResult' },
             },
             {
-              source: { memberPath: ['$property', 'f', '$generics', 0] },
+              source: { memberPath: ['$member', 'f', '$generics', 0] },
               target: { scope: 'local-file', symbolName: 'LocalType' },
             },
             {
-              source: { memberPath: ['$property', 'g', '$generics', 1] },
+              source: { memberPath: ['$member', 'g', '$generics', 1] },
               target: { scope: 'import', localName: 'ImportedType' },
             },
             {
-              source: { memberPath: ['$property', 'h', 0] },
+              source: { memberPath: ['$member', 'h', 0] },
               target: { scope: 'local-file', symbolName: 'LocalClass' },
             },
             {
-              source: { memberPath: ['$property', 'h', 1] },
+              source: { memberPath: ['$member', 'h', 1] },
               target: { scope: 'import', localName: 'ImportedType' },
             },
           ] satisfies Array<DependencyCandidate>),

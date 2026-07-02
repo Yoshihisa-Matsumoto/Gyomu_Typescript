@@ -168,7 +168,7 @@ const analyzeClassMembers = (
   const members = nodeMembers
     .flatMap<MemberAnalysisResult<Array<MemberAnalysis>> | undefined>((member, index) => {
       if (Node.isPropertyDeclaration(member)) {
-        const newMemberPath = [...memberPath, '$property']
+        const newMemberPath = [...memberPath, '$member']
         const propertyResult = analyzeClassPropertyMember({
           sourceRelativePath,
           metadata,
@@ -236,7 +236,7 @@ const analyzeClassMembers = (
         const getter = member
         const name = getter.getName()
         const setter = setters.find((s) => s.getName() == name)
-        const newMemberPath = [...memberPath, '$property']
+        const newMemberPath = [...memberPath, '$member']
         const analysis = analyzeGetSetAccessor(
           {
             sourceRelativePath,
