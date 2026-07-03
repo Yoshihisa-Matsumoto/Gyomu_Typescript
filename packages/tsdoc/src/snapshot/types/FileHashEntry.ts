@@ -1,3 +1,5 @@
+import type { ProjectRelativePath } from '@gyomu/schema/typescript'
+
 /**
  * Cached hash entry for a source file.
  *
@@ -8,7 +10,7 @@ export interface FileHashEntry {
   /**
    * Relative file path from project root.
    */
-  path: string
+  path: ProjectRelativePath
 
   /**
    * Raw source hash including comments and formatting.

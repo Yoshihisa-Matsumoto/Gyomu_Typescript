@@ -8,6 +8,7 @@
       "@gyomu/ai",
       "@gyomu/ai-react",
       "@gyomu/config",
+      "@gyomu/concept",
       "@gyomu/infra",
       "@gyomu/ui",
       "@gyomu/ui-core",
