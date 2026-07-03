@@ -89,9 +89,9 @@
     "knip": "^6.4.1"
   },
   "dependencies": {
-    "date-fns": "^4.1.0",
-    "dotenv": "^17.3.1",
-    "effect": "4.0.0-beta.57",
+    "date-fns": "catalog:",
+    "dotenv": "catalog:",
+    "effect": "catalog:",
     "html-entities": "^2.6.0",
     "uuidv7": "^1.2.1"
   }

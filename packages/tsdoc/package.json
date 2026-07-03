@@ -36,7 +36,7 @@
     "@gyomu/infra": "workspace:^",
     "@gyomu/schema": "workspace:^",
     "@gyomu/ts-analysis": "workspace:^",
-    "effect": "4.0.0-beta.57",
+    "effect": "catalog:",
     "ts-morph": "^28.0.0"
   }
 }

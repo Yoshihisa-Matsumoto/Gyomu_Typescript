@@ -42,7 +42,7 @@
   "devDependencies": {
     "@tediousjs/connection-string": "^1.1.0",
     "@types/jsdom": "^28.0.1",
-    "@types/node": "^25.9.1",
+    "@types/node": "catalog:",
     "@types/ssh2": "^1.15.5",
     "@types/tar-stream": "^3.1.4",
     "@types/xml2js": "^0.4.14",
@@ -55,7 +55,7 @@
     "undici": "^8.2.0"
   },
   "dependencies": {
-    "@effect/platform-node": "4.0.0-beta.57",
+    "@effect/platform-node": "catalog:",
     "@google/genai": "^1.51.0",
     "@gyomu/schema": "workspace:*",
     "@standard-schema/spec": "^1.1.0",
@@ -63,8 +63,8 @@
     "csv": "^6.5.1",
     "csv-parse": "^6.2.1",
     "csv-stringify": "^6.7.0",
-    "date-fns": "^4.1.0",
-    "effect": "4.0.0-beta.57",
+    "date-fns": "catalog:",
+    "effect": "catalog:",
     "fast-glob": "^3.3.3",
     "html-entities": "^2.6.0",
     "jose": "^6.2.3",

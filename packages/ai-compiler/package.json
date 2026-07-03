@@ -34,9 +34,9 @@
     "@gyomu/ai": "workspace:^",
     "@gyomu/infra": "workspace:^",
     "@gyomu/schema": "workspace:^",
-    "effect": "4.0.0-beta.57"
+    "effect": "catalog:"
   },
   "devDependencies": {
-    "dotenv": "^17.4.2"
+    "dotenv": "catalog:"
   }
 }
