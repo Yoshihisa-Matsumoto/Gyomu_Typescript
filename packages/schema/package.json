@@ -51,6 +51,10 @@
       "import": "./dist/schemas/*.js",
       "types": "./dist/schemas/*.d.ts"
     },
+    "./snapshot": {
+      "import": "./dist/snapshot/index.js",
+      "types": "./dist/snapshot/index.d.ts"
+    },
     "./schemas/typescript": {
       "import": "./dist/schemas/typescript/index.js",
       "types": "./dist/schemas/typescript/index.d.ts"

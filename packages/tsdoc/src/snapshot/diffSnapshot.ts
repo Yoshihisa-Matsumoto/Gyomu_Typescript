@@ -1,5 +1,5 @@
 import type { FileHashSnapshot } from './types/FileHashSnapshot.js'
-import type { FileChange } from './types/FileChange.js'
+import type { FileChange } from '@gyomu/schema/snapshot'
 
 const toMap = (snapshot: FileHashSnapshot): Map<string, any> => {
   return new Map(snapshot.files.map((f) => [f.path, f]))

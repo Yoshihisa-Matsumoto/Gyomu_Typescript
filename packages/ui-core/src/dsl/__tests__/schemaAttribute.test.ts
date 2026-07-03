@@ -273,6 +273,7 @@ describe('getStructFields', () => {
         logger,
         ...(testSchemas.ui && { ui: testSchemas.ui }),
       })
+      // console.dir(result, { depth: null })
       expect(result.find((f) => f.name === 'name')?.required).toBe(true)
       expect(result.find((f) => f.name === 'address')?.required).toBe(false)
     })
@@ -329,7 +330,7 @@ describe('getStructFields', () => {
         logger,
         ...(schemas.ui && { ui: schemas.ui }),
       })
-
+      // console.dir(result, { depth: null })
       expect(result[0]?.options['string-minLength']).toBe(3)
     })
   })

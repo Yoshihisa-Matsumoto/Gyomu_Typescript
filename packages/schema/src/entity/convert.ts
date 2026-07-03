@@ -1,6 +1,6 @@
 import { Effect, Schema } from 'effect'
 import { SchemaValidationError } from '../error/SchemaValidationError.js'
-import type { SchemaError } from 'effect/Schema'
+import type { Constraint, ConstraintDecoder, SchemaError } from 'effect/Schema'
 
 /**
  * Parses a JSON string and decodes it into a schema object synchronously.
@@ -15,9 +15,8 @@ export const jsonString2SchemaObjectWithoutEffect = <S extends Schema.Schema<any
   schema: S,
   content: string,
 ) =>
-  Schema.decodeUnknownSync(schema as unknown as Schema.Decoder<Schema.Schema.Type<S>, never>)(
-    JSON.parse(content),
-  )
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  Schema.decodeUnknownSync(schema as unknown as ConstraintDecoder<S>)(JSON.parse(content))
 
 /**
  * Decodes an unknown input into a schema object, returning a ParseResult.
@@ -30,7 +29,7 @@ export const jsonString2SchemaObjectWithoutEffect = <S extends Schema.Schema<any
  *
  * @returns A ParseResult containing the decoded object or error details.
  */
-export const convertToSchemaObjectWithResult = <S extends Schema.Schema<any>>(
+export const convertToSchemaObjectWithResult = <S extends Constraint>(
   schema: S,
   input: unknown,
   includeAllErrors: boolean = false,

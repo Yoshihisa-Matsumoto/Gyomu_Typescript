@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os'
 import { beforeAll, describe, expect, it } from 'vitest'
 import { Effect, Layer, Stream } from 'effect'
 import { FileTransportInfo } from '@gyomu/schema/gyomu/file'
+import { makeRunner } from '@gyomu/schema/effect'
 import { copyFolder, emptyDir, writeStreamToFile } from '../../../fs/fs-utils.js'
 import { compareFiles, validateFolders } from '../../../__tests__/baseClass.js'
 import {
@@ -15,7 +16,6 @@ import {
 import { ZipService } from '../index.js'
 import { compareZip } from '../compare.js'
 import { MainLayer, PlatformLayer } from '../../../layer.js'
-import { makeRunner } from '../../../runtime.js'
 
 const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer)
 const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer)

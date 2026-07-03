@@ -5,7 +5,7 @@ import type { FileInfo } from '@gyomu/schema/gyomu/file'
 import type { FileSystem } from 'effect'
 import type { IOError } from '@gyomu/schema'
 
-import type { FileHashEntry } from './types/FileHashEntry.js'
+import type { FileHashEntry } from '@gyomu/schema/snapshot'
 
 /**
  * Creates a hash entry from a source file.

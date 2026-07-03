@@ -25,9 +25,11 @@ describe('IssueMap', () => {
       )
       console.log('test Exception')
     } catch (e) {
-      const issue: SchemaIssue.Issue = (e as any).cause
+      const issue: SchemaIssue.Issue = e as any
+
+      const formatter = makeFormatterStandardSchemaV1()
       console.log(JSON.stringify(issue, null, 2))
-      console.log(JSON.stringify(makeFormatterStandardSchemaV1()(issue), null, 2))
+      console.log(JSON.stringify(formatter(issue), null, 2))
       // console.log(JSON.stringify(redact(issue)))
     }
   })
@@ -55,7 +57,7 @@ describe('resolveFieldErrorsFromIssue', () => {
         { errors: 'all' },
       )
     } catch (e: any) {
-      issue = e.cause
+      issue = e.issue
     }
 
     const result = resolveFieldErrorsFromIssue(schema.selectSchema, issue)
@@ -80,7 +82,7 @@ describe('resolveFieldErrorsFromIssue', () => {
         age: 20,
       })
     } catch (e: any) {
-      issue = e.cause
+      issue = e.issue
     }
 
     const result = resolveFieldErrorsFromIssue(schema.selectSchema, issue)
@@ -113,7 +115,7 @@ describe('resolveFieldErrorsFromIssue', () => {
         { errors: 'all' },
       )
     } catch (e: any) {
-      issue = e.cause
+      issue = e.issue
     }
 
     const result = resolveFieldErrorsFromIssue(schema.selectSchema, issue)

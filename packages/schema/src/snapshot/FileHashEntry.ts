@@ -1,4 +1,4 @@
-import type { ProjectRelativePath } from '@gyomu/schema/typescript'
+import type { ProjectRelativePath } from '../typescript/types.js'
 
 /**
  * Cached hash entry for a source file.

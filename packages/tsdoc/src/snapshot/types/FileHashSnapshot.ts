@@ -1,4 +1,4 @@
-import type { FileHashEntry } from './FileHashEntry.js'
+import type { FileHashEntry } from '@gyomu/schema/snapshot'
 import type { GyomuVersion } from './ProjectWorkspaceManifest.js'
 
 /**

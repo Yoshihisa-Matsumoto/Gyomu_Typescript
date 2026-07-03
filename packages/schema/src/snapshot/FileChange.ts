@@ -1,4 +1,4 @@
-import type { ProjectRelativePath } from '@gyomu/schema/typescript'
+import type { ProjectRelativePath } from '../typescript/types.js'
 import type { FileHashEntry } from './FileHashEntry.js'
 
 export type FileChangeType = 'added' | 'updated' | 'deleted'

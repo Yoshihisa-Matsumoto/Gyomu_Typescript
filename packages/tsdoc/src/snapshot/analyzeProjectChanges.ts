@@ -9,7 +9,7 @@ import { GYOMU_VERSION } from './types/ProjectWorkspaceManifest.js'
 import type { FileHashSnapshot } from './types/FileHashSnapshot.js'
 import type { FileSearchService } from '@gyomu/schema/shared/fs'
 import type { FileSystem } from 'effect'
-import type { FileHashEntry } from './types/FileHashEntry.js'
+import type { FileHashEntry } from '@gyomu/schema/snapshot'
 
 export interface AnalyzeProjectChangesInput {
   readonly repoRoot: string

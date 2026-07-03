@@ -2,10 +2,10 @@ import path from 'node:path'
 import { tmpdir } from 'node:os'
 import { beforeAll, expect, test } from 'vitest'
 import { Effect, Layer } from 'effect'
+import { makeRunner } from '@gyomu/schema/effect'
 import { gunzip, gzip } from '../gz.js'
 import { copyFolder, emptyDir, fileStream, writeStreamToFile } from '../../fs/fs-utils.js'
 import { compareFiles } from '../../__tests__/baseClass.js'
-import { makeRunner } from '../../runtime.js'
 import { MainLayer, PlatformLayer } from '../../layer.js'
 
 const nodeTestLayer = Layer.mergeAll(MainLayer, PlatformLayer)

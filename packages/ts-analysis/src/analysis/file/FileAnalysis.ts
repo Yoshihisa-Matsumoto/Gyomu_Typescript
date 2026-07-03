@@ -1,5 +1,10 @@
 import type { DependencyEdge } from '../graph/DependencyEdge.js'
-import type { ExportAnalysis, ImportAnalysis, SymbolAnalysis } from '@gyomu/schema/typescript'
+import type {
+  ExportAnalysis,
+  ImportAnalysis,
+  ProjectRelativePath,
+  SymbolAnalysis,
+} from '@gyomu/schema/typescript'
 
 /**
  * Complete analysis result for a source file.
@@ -12,7 +17,7 @@ export interface FileAnalysis {
   /**
    * Relative file path from project root.
    */
-  path: string
+  path: ProjectRelativePath
 
   /**
    * Imported module analysis.

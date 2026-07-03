@@ -21,7 +21,7 @@ export function validateWithSchema<TFields extends Fields>(
 
   return {
     ok: false as const,
-    errors: resolveFieldErrorsFromIssue(schema, result.failure),
+    errors: resolveFieldErrorsFromIssue(schema, result.failure.issue),
   }
 }
 
@@ -33,6 +33,6 @@ export function validateField(fieldSchema: Schema.Schema<any>, value: unknown) {
 
   return {
     ok: false as const,
-    errors: flattenIssues(result.failure),
+    errors: flattenIssues(result.failure.issue),
   }
 }

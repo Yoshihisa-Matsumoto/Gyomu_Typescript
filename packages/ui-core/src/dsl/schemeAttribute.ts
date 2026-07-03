@@ -26,61 +26,84 @@ function getMergedAnnotations(
     // logger?.debug(ast.annotations, 'Annotation exists');
     Object.assign(result, ast.annotations)
   }
-
+  console.dir(ast, { depth: null })
   const checks = ast.checks
+
   if (Array.isArray(checks)) {
     // logger?.debug(checks, 'checks exists');
     for (const item of checks) {
       const check: Check<any> = item
+
       if (check.annotations) {
-        // logger?.debug(check.annotations, 'Check Annotation exists');
-        if (check.annotations.toArbitraryConstraint) {
-          const constraint = check.annotations.toArbitraryConstraint
-          if (constraint.array) {
-            const parent = 'array'
-            if (constraint.array.maxLength)
-              result[`${parent}-maxLength`] = constraint.array.maxLength
-            if (constraint.array.minLength)
-              result[`${parent}-minLength`] = constraint.array.minLength
-            if (constraint.array.size) result[`${parent}-size`] = constraint.array.size
-          } else if (constraint.bigint) {
-            const parent = 'bigint'
-            if (constraint.bigint.max) result[`${parent}-max`] = constraint.bigint.max
-            if (constraint.bigint.min) result[`${parent}-min`] = constraint.bigint.min
-          } else if (constraint.date) {
-            const parent = 'date'
-            if (constraint.date.max) result[`${parent}-max`] = constraint.date.max
-            if (constraint.date.min) result[`${parent}-min`] = constraint.date.min
-            if (constraint.date.noInvalidDate)
-              result[`${parent}-noInvalidDate`] = constraint.date.noInvalidDate
-          } else if (constraint.number) {
-            const parent = 'number'
-            if (constraint.number.isInteger)
-              result[`${parent}-isInteger`] = constraint.number.isInteger
-            if (constraint.number.max) result[`${parent}-max`] = constraint.number.max
-            if (constraint.number.maxExcluded)
-              result[`${parent}-maxExcluded`] = constraint.number.maxExcluded
-            if (constraint.number.min) result[`${parent}-min`] = constraint.number.min
-            if (constraint.number.minExcluded)
-              result[`${parent}-minExcluded`] = constraint.number.minExcluded
-            if (constraint.number.noInteger)
-              result[`${parent}-noInteger`] = constraint.number.noInteger
-            if (constraint.number.noDefaultInfinity)
-              result[`${parent}-noDefaultInfinity`] = constraint.number.noDefaultInfinity
-            if (constraint.number.noNaN) result[`${parent}-noNaN`] = constraint.number.noNaN
-          } else if (constraint.string) {
-            const parent = 'string'
-            if (constraint.string.maxLength)
-              result[`${parent}-maxLength`] = constraint.string.maxLength
-            if (constraint.string.minLength)
-              result[`${parent}-minLength`] = constraint.string.minLength
-            if (constraint.string.patterns)
-              result[`${parent}-patterns`] = constraint.string.patterns
-            if (constraint.string.size) result[`${parent}-size`] = constraint.string.size
+        logger?.debug(check.annotations, 'Check Annotation exists')
+
+        if (check.annotations.arbitrary?.constraint) {
+          console.dir(check.annotations.arbitrary, { depth: null })
+          console.dir(check.annotations.arbitrary.constraint, { depth: null })
+          const constraint = check.annotations.arbitrary.constraint
+          if (constraint) {
+            const parent = check.annotations.identifier
+
+            if (constraint.maxLength) result[`${parent}-maxLength`] = constraint.maxLength
+            if (constraint.minLength) result[`${parent}-minLength`] = constraint.minLength
+
+            if (constraint.valid != undefined) result[`${parent}-valid`] = constraint.valid
+
+            if (constraint.integer) result[`${parent}-isInteger`] = constraint.integer
+            if (constraint.noNaN) result[`${parent}-noNaN`] = constraint.noNaN
+            if (constraint.noInfinity) result[`${parent}-noInfinity`] = constraint.noInfinity
+            if (constraint.unique) result[`${parent}-unique`] = constraint.unique
+            if (constraint.patterns) result[`${parent}-patterns`] = constraint.patterns
+            if (constraint.ordered) result[`${parent}-ordered`] = constraint.ordered
           }
         }
-        Object.assign(result, check.annotations)
       }
+
+      // TODO: Somehow AST & parser has different type
+      if ((check.annotations as any).toArbitraryConstraint) {
+        const constraint = (check.annotations as any).toArbitraryConstraint
+        if (constraint.array) {
+          const parent = 'array'
+          if (constraint.array.maxLength) result[`${parent}-maxLength`] = constraint.array.maxLength
+          if (constraint.array.minLength) result[`${parent}-minLength`] = constraint.array.minLength
+          if (constraint.array.size) result[`${parent}-size`] = constraint.array.size
+        } else if (constraint.bigint) {
+          const parent = 'bigint'
+          if (constraint.bigint.max) result[`${parent}-max`] = constraint.bigint.max
+          if (constraint.bigint.min) result[`${parent}-min`] = constraint.bigint.min
+        } else if (constraint.date) {
+          const parent = 'date'
+          if (constraint.date.max) result[`${parent}-max`] = constraint.date.max
+          if (constraint.date.min) result[`${parent}-min`] = constraint.date.min
+          if (constraint.date.noInvalidDate)
+            result[`${parent}-noInvalidDate`] = constraint.date.noInvalidDate
+        } else if (constraint.number) {
+          const parent = 'number'
+          if (constraint.number.isInteger)
+            result[`${parent}-isInteger`] = constraint.number.isInteger
+          if (constraint.number.max) result[`${parent}-max`] = constraint.number.max
+          if (constraint.number.maxExcluded)
+            result[`${parent}-maxExcluded`] = constraint.number.maxExcluded
+          if (constraint.number.min) result[`${parent}-min`] = constraint.number.min
+          if (constraint.number.minExcluded)
+            result[`${parent}-minExcluded`] = constraint.number.minExcluded
+          if (constraint.number.noInteger)
+            result[`${parent}-noInteger`] = constraint.number.noInteger
+          if (constraint.number.noDefaultInfinity)
+            result[`${parent}-noDefaultInfinity`] = constraint.number.noDefaultInfinity
+          if (constraint.number.noNaN) result[`${parent}-noNaN`] = constraint.number.noNaN
+        } else if (constraint.string) {
+          const parent = 'string'
+          if (constraint.string.maxLength)
+            result[`${parent}-maxLength`] = constraint.string.maxLength
+          if (constraint.string.minLength)
+            result[`${parent}-minLength`] = constraint.string.minLength
+          if (constraint.string.patterns) result[`${parent}-patterns`] = constraint.string.patterns
+          if (constraint.string.size) result[`${parent}-size`] = constraint.string.size
+        }
+      }
+
+      Object.assign(result, check.annotations)
     }
   }
 
@@ -171,6 +194,7 @@ function resolveUI(
   annotations: Record<string, any>,
   uiDef?: UIAnnotation,
 ): FormFieldMeta | undefined {
+  // console.dir(annotations, { depth: null })
   if (!uiDef) {
     return {
       name,
