@@ -1,6 +1,6 @@
 import { hashFile } from '@gyomu/infra/hash'
 import { Effect } from 'effect'
-import { toProjectAbsolutePath, toProjectRelativePath } from '../shared/index.js'
+import { toProjectAbsolutePath, toProjectRelativePath } from '@gyomu/ts-analysis'
 import type { FileInfo } from '@gyomu/schema/gyomu/file'
 import type { FileSystem } from 'effect'
 import type { IOError } from '@gyomu/schema'

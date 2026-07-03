@@ -8,7 +8,7 @@ import { mergeReturns } from './merge/mergeReturns.js'
 import { mergeParams } from './merge/mergeParams.js'
 import type { UpdatedJsDoc } from './jsdoc/UpdatedJsDoc.js'
 import type { MergePlan } from './jsdoc/MergePlan.js'
-import type { FileAnalysisResult } from '../analysis/file/FileAnalysisResult.js'
+import type { FileAnalysisResult } from '@gyomu/ts-analysis'
 import type { UpdatedSymbolJsDoc } from './jsdoc/UpdatedSymbolJsDoc.js'
 
 export const applyMergePlan = (

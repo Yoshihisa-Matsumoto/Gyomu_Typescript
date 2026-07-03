@@ -1,20 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Effect, Layer } from 'effect'
-// eslint-disable-next-line import/no-duplicates
 import * as fsRead from '@gyomu/infra/fs'
-// eslint-disable-next-line import/no-duplicates
-import * as fsWrite from '@gyomu/infra/fs'
+// import * as fsWrite from '@gyomu/infra/fs'
 import { PlatformLayer } from '@gyomu/infra'
 import { AiModelService } from '@gyomu/ai'
-import * as analyze from '../../analysis/analyzeFile.js'
+import * as analyze from '@gyomu/ts-analysis'
 import * as merge from '../buildMergePlan.js'
 import * as applyMerge from '../applyMergePlan.js'
 import * as render from '../renderJsDoc.js'
 import * as filePlan from '../buildFileUpdatePlan.js'
-import * as pathUtil from '../../shared/index.js'
 import { processTsDocUpdate } from '../processTsDocUpdate.js'
 import type { ExportAnalysis } from '@gyomu/schema/typescript'
 
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 const mockAiModelService = Layer.succeed(AiModelService, {
   generateObject: () =>
     Effect.succeed({
@@ -69,13 +67,13 @@ describe('processTsDocUpdate', () => {
       ],
     } as any)
 
-    vi.spyOn(pathUtil, 'toProjectAbsolutePath').mockReturnValue('/mock/path/file.ts')
+    vi.spyOn(analyze, 'toProjectAbsolutePath').mockReturnValue('/mock/path/file.ts')
 
     vi.spyOn(fsRead, 'readStringFromFile').mockReturnValue(Effect.succeed('function foo() {}'))
 
-    const writeMock = vi
-      .spyOn(fsWrite, 'writeStringToFile')
-      .mockReturnValue(Effect.succeed(undefined as any))
+    // const writeMock = vi
+    //   .spyOn(fsWrite, 'writeStringToFile')
+    //   .mockReturnValue(Effect.succeed(undefined as any))
 
     const program = processTsDocUpdate(
       {

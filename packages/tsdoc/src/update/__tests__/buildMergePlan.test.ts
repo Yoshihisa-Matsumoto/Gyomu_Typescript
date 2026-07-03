@@ -8,7 +8,7 @@ import { UpdateError } from '../error/UpdateError.js'
 import type { SymbolId } from '@gyomu/schema/typescript'
 
 import type { ComplexityMetrics } from '../../evaluation/complexity/ComplexityMetrics.js'
-import type { FileAnalysisResult } from '../../analysis/file/FileAnalysisResult.js'
+import type { FileAnalysisResult } from '@gyomu/ts-analysis'
 
 const { mockBuildJsDocUpdateContext } = vi.hoisted(() => ({
   mockBuildJsDocUpdateContext: vi.fn(),
@@ -41,6 +41,7 @@ vi.mock('../internal/buildJsDocUpdatePlanWithRetry.js', () => ({
 vi.mock('../internal/createMargePlan.js', () => ({
   createMergePlan: mockCreateMergePlan,
 }))
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 const mockAiModelService = Layer.succeed(AiModelService, {
   generateObject: () =>
     Effect.succeed({

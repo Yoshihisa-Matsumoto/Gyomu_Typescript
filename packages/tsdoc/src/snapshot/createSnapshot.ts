@@ -1,6 +1,6 @@
 import { Effect } from 'effect'
 
-import { toProjectAbsolutePath } from '../shared/index.js'
+import { toProjectAbsolutePath } from '@gyomu/ts-analysis'
 import { createFileHashEntry } from './createFileHashEntry.js'
 import { enumerateTargetFiles } from './enumerateTargetFiles.js'
 import { GYOMU_VERSION } from './types/ProjectWorkspaceManifest.js'
