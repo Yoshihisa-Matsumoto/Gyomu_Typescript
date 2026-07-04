@@ -3,6 +3,7 @@ import type { TypeAnalysis } from './SymbolModel.js'
 import type { SymbolId } from './types.js'
 import type { SymbolIdentity } from '../schemas/typescript/SymbolIdentity.js'
 import type { ParsedJsDoc } from '../schemas/typescript/jsdoc/ParsedJsDoc.js'
+import type { MemberAccessor } from '../schemas/typescript/MemberAccessor.js'
 
 /**
  * Defines a union of member analysis types, categorized by whether they are documentable.
@@ -21,30 +22,26 @@ export type NonDocumentableMemberAnalysis =
 export type DocumentableMemberAnalysis =
   DocumentableMethodMemberAnalysis | DocumentablePropertyMemberAnalysis
 
-/**
- * Unique identifier for a class or object member.
- */
-export interface MemberIdentity {
-  /**
-   * The identifier of the symbol that owns this member.
-   */
-  readonly ownerSymbolId: SymbolId
+// /**
+//  * Unique identifier for a class or object member.
+//  */
+// export interface MemberIdentity {
+//   /**
+//    * The identifier of the symbol that owns this member.
+//    */
+//   readonly ownerSymbolId: SymbolId
 
-  /**
-   * The path to the member within the owning symbol.
-   */
-  readonly memberPath: Readonly<MemberIdentityMemberPath>
+//   /**
+//    * The path to the member within the owning symbol.
+//    */
+//   readonly memberPath: Readonly<MemberIdentityMemberPath>
 
-  /**
-   * The signature identifier, used to distinguish overloaded members.
-   */
-  readonly signatureId: string
-}
+//   /**
+//    * The signature identifier, used to distinguish overloaded members.
+//    */
+//   readonly signatureId: string
+// }
 
-/**
- * Represents a path of segments identifying a member.
- */
-export type MemberIdentityMemberPath = Array<string | number>
 interface BaseMemberAnalysis {
   /**
    * Stable identifier of the symbol.
@@ -210,7 +207,7 @@ export interface DocumentablePropertyMemberAnalysis extends PropertyMemberAnalys
   startOffset: number
 }
 
-/**
- * Defines the access levels available for members.
- */
-export type MemberAccessor = 'private' | 'protected' | 'public'
+// /**
+//  * Defines the access levels available for members.
+//  */
+// export type MemberAccessor = 'private' | 'protected' | 'public'

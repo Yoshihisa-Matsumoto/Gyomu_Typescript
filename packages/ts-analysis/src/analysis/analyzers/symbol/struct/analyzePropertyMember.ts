@@ -13,14 +13,11 @@ import type {
   TypeNode,
 } from 'ts-morph'
 
-import type {
-  DocumentablePropertyMemberAnalysis,
-  MemberAccessor,
-  SymbolId,
-} from '@gyomu/schema/typescript'
+import type { DocumentablePropertyMemberAnalysis, SymbolId } from '@gyomu/schema/typescript'
 import type {
   DependencyCandidate,
   JsDocAnalysis,
+  MemberAccessor,
   ParsedJsDoc,
   SymbolIdentity,
 } from '@gyomu/schema/schemas/typescript'

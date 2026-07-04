@@ -1,6 +1,12 @@
+import { SignatureId } from '@gyomu/schema/typescript'
 import { registerSymbolJsDoc } from '../../file/registerSymbolJsDoc.js'
 import { extractJsDoc } from '../../extract/extractJsDoc.js'
 import { createMemberIdentityAndId } from '../../shared/createMemberIdentity.js'
+import type {
+  MemberIdentityMemberPath,
+  ProjectRelativePath,
+  SymbolId,
+} from '@gyomu/schema/typescript'
 import type {
   ConstructorDeclaration,
   FunctionTypeNode,
@@ -12,11 +18,6 @@ import type {
   PropertyDeclaration,
   PropertySignature,
 } from 'ts-morph'
-import type {
-  MemberIdentityMemberPath,
-  ProjectRelativePath,
-  SymbolId,
-} from '@gyomu/schema/typescript'
 import type { FileAnalysisMetadata } from '../../file/FileAnalysisResult.js'
 import type { JsDocAnalysis, ParsedJsDoc, SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
@@ -43,7 +44,7 @@ export const preparePropertyAnalysis = (
     {
       ownerSymbolId,
       memberPath: newMemberPath,
-      signatureId: 'property',
+      signatureId: SignatureId('property'),
     },
     ownerSymbolIdentity,
   )
@@ -156,7 +157,7 @@ const getFunctionSignatureId = (
     | MethodDeclaration
     | ConstructorDeclaration
     | GetAccessorDeclaration,
-): string => {
+): SignatureId => {
   const typeParams = declaration
     .getTypeParameters()
     .map((tp) => tp.getText())
@@ -172,5 +173,5 @@ const getFunctionSignatureId = (
 
   const returnTypeText = normalizeTypeText(declaration.getReturnType().getText(declaration))
 
-  return `${typeParams ? '(' + typeParams + ')' : ''}(${params}):${returnTypeText}`
+  return SignatureId(`${typeParams ? '(' + typeParams + ')' : ''}(${params}):${returnTypeText}`)
 }

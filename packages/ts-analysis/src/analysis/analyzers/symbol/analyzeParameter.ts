@@ -1,9 +1,10 @@
 import { Node } from 'ts-morph'
+import { SignatureId } from '@gyomu/schema/typescript'
 import { createMemberIdentityAndId } from '../../shared/createMemberIdentity.js'
 import { analyzeType } from './analyzeType.js'
+import type { NonDocumentablePropertyMemberAnalysis } from '@gyomu/schema/typescript'
 import type { ChildAnalysisArg, MemberAnalysisResult } from '../types.js'
 import type { ParameterDeclaration } from 'ts-morph'
-import type { NonDocumentablePropertyMemberAnalysis } from '@gyomu/schema/typescript'
 
 export const analyzeParameter = (
   args: ChildAnalysisArg<ParameterDeclaration>,
@@ -29,7 +30,7 @@ export const analyzeParameter = (
     {
       ownerSymbolId,
       memberPath,
-      signatureId: name,
+      signatureId: SignatureId(name),
     },
     ownerSymbolIdentity,
   )

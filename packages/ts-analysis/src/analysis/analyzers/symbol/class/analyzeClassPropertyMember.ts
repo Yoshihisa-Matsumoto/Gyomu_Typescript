@@ -11,7 +11,8 @@ import type {
   PropertyDeclaration,
   SetAccessorDeclaration,
 } from 'ts-morph'
-import type { DocumentablePropertyMemberAnalysis, MemberAccessor } from '@gyomu/schema/typescript'
+import type { DocumentablePropertyMemberAnalysis } from '@gyomu/schema/typescript'
+import type { MemberAccessor } from '@gyomu/schema/schemas/typescript'
 
 export const analyzeClassPropertyMember = (
   args: ChildAnalysisArg<PropertyDeclaration>,

@@ -1,13 +1,14 @@
+import { SignatureId } from '@gyomu/schema/typescript'
 import { analyzeType } from '../analyzeType.js'
 import { analyzeFunctionMemberInternal } from '../struct/analyzeFunctionMember.js'
 import { createMemberIdentityAndId } from '../../../shared/createMemberIdentity.js'
 import { getAccessor } from './analyzeClassPropertyMember.js'
-import type { ChildAnalysisArg, MemberAnalysisResult } from '../../types.js'
-import type { ClassDeclaration, ConstructorDeclaration, ParameterDeclaration } from 'ts-morph'
 import type {
   MemberAnalysis,
   NonDocumentablePropertyMemberAnalysis,
 } from '@gyomu/schema/typescript'
+import type { ChildAnalysisArg, MemberAnalysisResult } from '../../types.js'
+import type { ClassDeclaration, ConstructorDeclaration, ParameterDeclaration } from 'ts-morph'
 
 export const analyzeConstructor = (
   args: ChildAnalysisArg<ConstructorDeclaration>,
@@ -68,7 +69,7 @@ const analyzeClassPropertyFromConstructorParameters = (
     {
       memberPath,
       ownerSymbolId,
-      signatureId: nodeName,
+      signatureId: SignatureId(nodeName),
     },
     ownerSymbolIdentity,
   )

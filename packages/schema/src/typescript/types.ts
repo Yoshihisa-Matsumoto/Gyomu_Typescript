@@ -1,6 +1,11 @@
 import { Brand } from 'effect'
 
 /**
+ * Represents a path of segments identifying a member.
+ */
+export type MemberIdentityMemberPath = Array<string | number>
+
+/**
  * Represents a unique identifier for a symbol as a string.
  */
 export type SymbolId = Brand.Branded<string, 'SymbolId'>

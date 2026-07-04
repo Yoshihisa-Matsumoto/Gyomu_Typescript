@@ -1,6 +1,6 @@
 import { Node } from 'ts-morph'
 
-import { isSupportedSchemaType } from '@gyomu/schema/typescript'
+import { SignatureId, isSupportedSchemaType } from '@gyomu/schema/typescript'
 import { createMemberIdentityAndId } from '../../shared/createMemberIdentity.js'
 import { analyzeDependency } from './analyzeDependency.js'
 import type { MemberAnalysisResult } from '../types.js'
@@ -338,7 +338,7 @@ const ObjectLiteralElementLike2MemberAnalysis = (
       {
         ownerSymbolId,
         memberPath: newMemberPath,
-        signatureId: 'property',
+        signatureId: SignatureId('property'),
       },
       ownerSymbolIdentity,
     )
