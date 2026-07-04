@@ -1,4 +1,4 @@
-import type { HumanEditContext, HumanEditSignal } from '@gyomu/schema/typescript'
+import type { HumanEditContext, HumanEditSignal } from '@gyomu/schema/schemas/typescript'
 
 export const createHumanEditSignal = (
   type: HumanEditSignal['type'],

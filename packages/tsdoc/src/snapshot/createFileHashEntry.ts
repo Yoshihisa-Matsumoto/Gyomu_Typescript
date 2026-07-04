@@ -1,6 +1,8 @@
 import { hashFile } from '@gyomu/infra/hash'
 import { Effect } from 'effect'
-import { toProjectAbsolutePath, toProjectRelativePath } from '@gyomu/ts-analysis'
+import { toAbsolutePath, toProjectRelativePath } from '@gyomu/ts-analysis'
+import { FullPath } from '@gyomu/schema/typescript'
+import type { WorkspaceRelativePath } from '@gyomu/schema/typescript'
 import type { FileInfo } from '@gyomu/schema/gyomu/file'
 import type { FileSystem } from 'effect'
 import type { IOError } from '@gyomu/schema'
@@ -22,14 +24,17 @@ import type { FileHashEntry } from '@gyomu/schema/snapshot'
  * @param fileInfo Source file information
  */
 export const createFileHashEntry =
-  (args: { repoRoot: string; projectPath: string }) =>
+  (args: { repoRoot: FullPath; projectPath: WorkspaceRelativePath }) =>
   (fileInfo: FileInfo): Effect.Effect<FileHashEntry, IOError, FileSystem.FileSystem> =>
     Effect.gen(function* () {
       const rawHash = yield* hashFile(fileInfo.fullPath)
-      const projectAbsolutePath = toProjectAbsolutePath(args.projectPath, args.repoRoot)
-      const sourceRelativePath = toProjectRelativePath(fileInfo.fullPath, projectAbsolutePath)
+      const projectAbsolutePath = toAbsolutePath(args.projectPath, args.repoRoot)
+      const sourceRelativePath = toProjectRelativePath(
+        FullPath(fileInfo.fullPath),
+        projectAbsolutePath,
+      )
       return {
-        path: sourceRelativePath,
+        projectRelativePath: sourceRelativePath,
         rawHash,
         updatedAt: fileInfo.updateTime.toISOString(),
       }

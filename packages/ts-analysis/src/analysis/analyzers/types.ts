@@ -1,10 +1,11 @@
-import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
 import type {
   DependencyCandidate,
   ExportAnalysis,
   ImportAnalysis,
+  SymbolIdentity,
+} from '@gyomu/schema/schemas/typescript'
+import type {
   MemberIdentityMemberPath,
-  MemberIdentityOwnerSymbolId,
   ProjectRelativePath,
   SymbolAnalysis,
   SymbolId,
@@ -48,7 +49,7 @@ type MultipleDependencies = StatementAnalysisBaseResult & {
 
 export type StatementAnalysisArgument = {
   metadata: FileAnalysisMetadata
-  sourceRelativePath: string
+  sourceRelativePath: ProjectRelativePath
   memberPath: MemberIdentityMemberPath
   sourceFullText: string
   declarationOrder: number
@@ -61,7 +62,7 @@ export type ChildAnalysisArg<T> = {
   sourceRelativePath: ProjectRelativePath
   metadata: FileAnalysisMetadata
   memberPath: MemberIdentityMemberPath
-  ownerSymbolId: MemberIdentityOwnerSymbolId
+  ownerSymbolId: SymbolId
   ownerSymbolIdentity: SymbolIdentity
   sourceFullText: string
   declarationOrder: number

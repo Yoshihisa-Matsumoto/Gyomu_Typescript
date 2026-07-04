@@ -7,6 +7,7 @@ import { expect, it } from 'vitest'
 import { PlatformLayer } from '@gyomu/infra'
 import { GyomuError, logger } from '@gyomu/schema'
 import { makeRunner, makeRunnerAsReturn } from '@gyomu/schema/effect'
+import { FullPath, WorkspaceRelativePath } from '@gyomu/schema/typescript'
 import { analyzeProjectChanges } from '../analyzeProjectChanges.js'
 import { commitProjectSnapshot } from '../commitProjectSnapshot.js'
 import { GYOMU_VERSION } from '../types/ProjectWorkspaceManifest.js'
@@ -44,7 +45,7 @@ const prepareTestWorkspaceForInit = () => {
     const srcFolder = join('./test-fixtures', TestCategory, 'initialized')
     yield* copyFolder(srcFolder, rootPath, { overwrite: true })
 
-    return rootPath
+    return FullPath(rootPath)
   })
 }
 const prepareTestWorkspaceForOther = (mode: 'updated' | 'added' | 'deleted', rootPath: string) => {
@@ -53,7 +54,7 @@ const prepareTestWorkspaceForOther = (mode: 'updated' | 'added' | 'deleted', roo
     const srcFolder = join('./test-fixtures', TestCategory, mode)
     yield* copyFolder(srcFolder, rootPath, { overwrite: true })
 
-    return targetPath
+    return FullPath(targetPath)
   })
 }
 
@@ -61,7 +62,10 @@ it('analyzeProjectChange integration test', async () => {
   const program = Effect.gen(function* () {
     const rootPath = yield* prepareTestWorkspaceForInit()
 
-    const result = yield* analyzeProjectChanges({ repoRoot: rootPath, projectPath: '.' })
+    const result = yield* analyzeProjectChanges({
+      repoRoot: rootPath,
+      projectPath: WorkspaceRelativePath('.'),
+    })
     logger.debug(result, 'analyzeProjectChange initialized')
     expect(result.previousSnapshot).toBeNull()
     const initialStatus = result.currentSnapshot
@@ -70,14 +74,14 @@ it('analyzeProjectChange integration test', async () => {
 
     yield* commitProjectSnapshot({
       expectedSnapshot: initialStatus,
-      projectPath: '.',
+      projectPath: WorkspaceRelativePath('.'),
       repoRoot: rootPath,
     })
 
     yield* prepareTestWorkspaceForOther('updated', rootPath)
     const resultUpdated = yield* analyzeProjectChanges({
       repoRoot: rootPath,
-      projectPath: '.',
+      projectPath: WorkspaceRelativePath('.'),
     })
     expect(resultUpdated.previousSnapshot).toBeDefined()
     expect(resultUpdated.previousSnapshot).toEqual(initialStatus)
@@ -88,14 +92,14 @@ it('analyzeProjectChange integration test', async () => {
 
     yield* commitProjectSnapshot({
       expectedSnapshot: updatedStatus,
-      projectPath: '.',
+      projectPath: WorkspaceRelativePath('.'),
       repoRoot: rootPath,
     })
 
     yield* prepareTestWorkspaceForOther('added', rootPath)
     const resultAdded = yield* analyzeProjectChanges({
       repoRoot: rootPath,
-      projectPath: '.',
+      projectPath: WorkspaceRelativePath('.'),
     })
     expect(resultAdded.previousSnapshot).toBeDefined()
     expect(resultAdded.previousSnapshot).toEqual(updatedStatus)
@@ -106,14 +110,14 @@ it('analyzeProjectChange integration test', async () => {
 
     yield* commitProjectSnapshot({
       expectedSnapshot: addedStatus,
-      projectPath: '.',
+      projectPath: WorkspaceRelativePath('.'),
       repoRoot: rootPath,
     })
 
     yield* prepareTestWorkspaceForOther('deleted', rootPath)
     const resultDeleted = yield* analyzeProjectChanges({
       repoRoot: rootPath,
-      projectPath: '.',
+      projectPath: WorkspaceRelativePath('.'),
     })
     expect(resultDeleted.previousSnapshot).toBeDefined()
     expect(resultDeleted.previousSnapshot).toEqual(addedStatus)
@@ -124,7 +128,7 @@ it('analyzeProjectChange integration test', async () => {
 
     yield* commitProjectSnapshot({
       expectedSnapshot: deletedStatus,
-      projectPath: '.',
+      projectPath: WorkspaceRelativePath('.'),
       repoRoot: rootPath,
     })
   })
@@ -135,7 +139,10 @@ it('analyzeProjectChange integration concurrency test', async () => {
   const program = Effect.gen(function* () {
     const rootPath = yield* prepareTestWorkspaceForInit()
 
-    const result = yield* analyzeProjectChanges({ repoRoot: rootPath, projectPath: '.' })
+    const result = yield* analyzeProjectChanges({
+      repoRoot: rootPath,
+      projectPath: WorkspaceRelativePath('.'),
+    })
     logger.debug(result, 'analyzeProjectChange initialized')
     expect(result.previousSnapshot).toBeNull()
     const initialStatus = result.currentSnapshot
@@ -143,8 +150,12 @@ it('analyzeProjectChange integration concurrency test', async () => {
     expect(diff.length).toBe(1)
 
     yield* commitProjectSnapshot({
-      expectedSnapshot: { version: GYOMU_VERSION, projectRoot: '', files: [] },
-      projectPath: '.',
+      expectedSnapshot: {
+        version: GYOMU_VERSION,
+        projectRoot: WorkspaceRelativePath(''),
+        files: [],
+      },
+      projectPath: WorkspaceRelativePath('.'),
       repoRoot: rootPath,
     })
   })

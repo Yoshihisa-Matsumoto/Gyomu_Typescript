@@ -1,7 +1,8 @@
+import { SymbolId } from '@gyomu/schema/typescript'
 import { createQualifiedName } from './createQualifiedName.js'
+import type { ProjectRelativePath } from '@gyomu/schema/typescript'
 
 import type { Node } from 'ts-morph'
-import type { ProjectRelativePath } from '@gyomu/schema/typescript'
 import type { SymbolIDComposite } from '../symbol/SymbolIdComposite.js'
 
 export const createSymbolIdentity = (
@@ -12,7 +13,7 @@ export const createSymbolIdentity = (
   const qualifiedName = createQualifiedName(node)
 
   return {
-    id: `${sourceRelativePath}::${qualifiedName}::${signatureId}`,
+    id: SymbolId(`${sourceRelativePath}::${qualifiedName}::${signatureId}`),
     qualifiedName,
   }
 }

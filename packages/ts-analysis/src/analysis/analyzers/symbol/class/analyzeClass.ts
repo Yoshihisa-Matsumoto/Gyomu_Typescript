@@ -1,4 +1,5 @@
 import { Node, SyntaxKind } from 'ts-morph'
+import { SignatureId, SymbolId } from '@gyomu/schema/typescript'
 import { prepareSymbolAnalysis } from '../prepareSymbolAnalysis.js'
 import { detectEffectSignals } from '../analyzeEffectType.js'
 import { registerSymbolSymbolAnalysis } from '../../../file/registerSymbolSymbolAnalysis.js'
@@ -8,7 +9,7 @@ import { analyzeGenericsParameters } from '../analyzeGenericsParameters.js'
 import { analyzeClassPropertyMember, analyzeGetSetAccessor } from './analyzeClassPropertyMember.js'
 import { analyzeClassMethodMember } from './analyzeClassMethodMember.js'
 import { analyzeConstructor } from './analyzeConstructor.js'
-import type { DependencyCandidate, MemberAnalysis, SymbolAnalysis } from '@gyomu/schema/typescript'
+import type { MemberAnalysis, SymbolAnalysis } from '@gyomu/schema/typescript'
 import type { ClassDeclaration } from 'ts-morph'
 
 import type {
@@ -17,7 +18,7 @@ import type {
   MemberAnalysisResult,
   TagAnalysisArg,
 } from '../../types.js'
-import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
+import type { DependencyCandidate, SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
 export const analyzeClass = (args: TagAnalysisArg<ClassDeclaration>) => {
   const {
@@ -46,7 +47,7 @@ export const analyzeClass = (args: TagAnalysisArg<ClassDeclaration>) => {
     getSignatureId,
   )
   const identity: SymbolIdentity = {
-    symbolId: typeName,
+    symbolId: SymbolId(typeName),
     signatureId: prepared.signature.id,
   }
   const genericsResult = analyzeGenericsParameters({
@@ -267,5 +268,5 @@ const analyzeClassMembers = (
 }
 
 const getSignatureId = (args: GetSignatureIdArg<ClassDeclaration>) => {
-  return { id: 'class', parameters: [] }
+  return { id: SignatureId('class'), parameters: [] }
 }

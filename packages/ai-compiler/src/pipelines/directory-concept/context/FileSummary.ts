@@ -1,4 +1,4 @@
-import type { DependencySummary } from '@gyomu/schema/typescript'
+import type { DependencySummary } from '@gyomu/schema/schemas/typescript'
 
 export interface FileSummary {
   path: string

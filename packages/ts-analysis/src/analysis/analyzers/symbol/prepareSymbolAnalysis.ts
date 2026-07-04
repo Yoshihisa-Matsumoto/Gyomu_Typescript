@@ -2,15 +2,14 @@ import { Node } from 'ts-morph'
 import { extractJsDoc } from '../../extract/extractJsDoc.js'
 import { registerSymbolJsDoc } from '../../file/registerSymbolJsDoc.js'
 import { createSymbolIdentity } from '../../shared/createSymbolIdentity.js'
+import type { SignatureAnalysis, SymbolId } from '@gyomu/schema/typescript'
+import type { JSDocableNode } from 'ts-morph'
+import type { GetSignatureIdArg } from '../types.js'
 import type {
   DependencyCandidate,
   JsDocAnalysis,
   ParsedJsDoc,
-  SignatureAnalysis,
-  SymbolId,
-} from '@gyomu/schema/typescript'
-import type { JSDocableNode } from 'ts-morph'
-import type { GetSignatureIdArg } from '../types.js'
+} from '@gyomu/schema/schemas/typescript'
 
 export const prepareSymbolAnalysis = <T extends Node>(
   args: GetSignatureIdArg<T>,
@@ -59,7 +58,7 @@ export const prepareSymbolAnalysis = <T extends Node>(
       signature: signature,
       snippet: declaration.getText(),
       dependencyCandidates: signature.dependencyCandidates,
-    }
+    } satisfies SymbolPreparation
   return { id, signature, snippet: declaration.getText() }
 }
 export interface SymbolPreparation {

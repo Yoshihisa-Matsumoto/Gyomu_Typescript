@@ -1,4 +1,4 @@
-import type { HumanEditSignal, ProtectedSection } from '@gyomu/schema/typescript'
+import type { HumanEditSignal, ProtectedSection } from '@gyomu/schema/schemas/typescript'
 
 export const computeProtectedSections = (
   signals: Array<HumanEditSignal>,

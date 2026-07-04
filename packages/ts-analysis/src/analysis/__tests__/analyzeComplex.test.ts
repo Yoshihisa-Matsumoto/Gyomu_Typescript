@@ -7,6 +7,7 @@ import { tmpdir } from 'node:os'
 import { describe, expect, it } from 'vitest'
 import { Effect } from 'effect'
 import { equalSymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
+import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { analyzeFile } from '../analyzeFile.js'
 import { createFixtureProject } from './createFixtureProject.js'
 import type {
@@ -25,7 +26,7 @@ const jsDocFixture = createFixtureProject(path.join('analysis', 'jsdoc'))
 const tempJsdocProgram = (sourceFile: string) => {
   const { project, projectRoot, projectName } = jsDocFixture
 
-  const filePath = path.join(projectRoot, path.join('src', sourceFile))
+  const filePath = ProjectRelativePath(path.join('src', sourceFile))
   return Effect.runSync(
     Effect.gen(function* () {
       return yield* analyzeFile(jsDocFixture, filePath, {

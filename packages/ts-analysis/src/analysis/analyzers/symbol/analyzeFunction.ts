@@ -1,4 +1,5 @@
 import { Node } from 'ts-morph'
+import { SignatureId, SymbolId } from '@gyomu/schema/typescript'
 import { registerSymbolSymbolAnalysis } from '../../file/registerSymbolSymbolAnalysis.js'
 import { prepareSymbolAnalysis } from './prepareSymbolAnalysis.js'
 import { detectEffectSignals } from './analyzeEffectType.js'
@@ -7,8 +8,8 @@ import { computeIndent } from './computeIndent.js'
 import { analyzeFunctionBody, analyzeFunctionMember } from './struct/analyzeFunctionMember.js'
 import { analyzeParameter } from './analyzeParameter.js'
 import { analyzeGenericsParameters } from './analyzeGenericsParameters.js'
-import type { FunctionDeclaration } from 'ts-morph'
 import type { MemberAnalysis, SignatureAnalysis, SymbolAnalysis } from '@gyomu/schema/typescript'
+import type { FunctionDeclaration } from 'ts-morph'
 import type {
   ChildAnalysisArg,
   GetSignatureIdArg,
@@ -35,7 +36,7 @@ export const analyzeFunction = (args: TagAnalysisArg<FunctionDeclaration>) => {
     getFunctionSignatureId,
   )
   const identity: SymbolIdentity = {
-    symbolId: typeName,
+    symbolId: SymbolId(typeName),
     signatureId: prepared.signature.id,
   }
   const genericsResult = analyzeGenericsParameters({
@@ -185,10 +186,10 @@ const getFunctionSignatureId = (
     sourceRelativePath,
     metadata,
     memberPath,
-    ownerSymbolId: symbolId,
+    ownerSymbolId: SymbolId(symbolId),
     ownerSymbolIdentity: {
-      symbolId: nodeName,
-      signatureId: symbolId,
+      symbolId: SymbolId(nodeName),
+      signatureId: SignatureId(symbolId),
     },
     sourceFullText,
     declarationOrder: 0,
@@ -201,10 +202,10 @@ const getFunctionSignatureId = (
       node: declaration.getReturnTypeNode()!,
       sourceRelativePath,
       metadata,
-      ownerSymbolId: symbolId,
+      ownerSymbolId: SymbolId(symbolId),
       ownerSymbolIdentity: {
-        symbolId: nodeName,
-        signatureId: symbolId,
+        symbolId: SymbolId(nodeName),
+        signatureId: SignatureId(symbolId),
       },
       memberPath,
       sourceFullText,
@@ -222,7 +223,7 @@ const getFunctionSignatureId = (
     isOverloadImplementation = true
   }
   return {
-    id: symbolId,
+    id: SignatureId(symbolId),
     parameters: [],
     overloadCount: declaration.getOverloads().length,
     isOverloadImplementation,

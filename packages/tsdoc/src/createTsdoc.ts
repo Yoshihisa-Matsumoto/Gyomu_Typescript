@@ -1,4 +1,3 @@
-import { join } from 'node:path'
 import { VercelAiModelServiceLive } from '@gyomu/ai/provider/vercel'
 import { ConfigLayer, MainLayer, PlatformLayer } from '@gyomu/infra'
 import { makeRunner } from '@gyomu/schema/effect'
@@ -7,6 +6,7 @@ import { Effect, Layer } from 'effect'
 import 'dotenv/config'
 import { writeStringToFile } from '@gyomu/infra/fs'
 import { analyzeFile, initializeProjectContext } from '@gyomu/ts-analysis'
+import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { processTsDocUpdate } from './update/processTsDocUpdate.js'
 
 import { listTypescriptProject } from './shared/index.js'
@@ -14,7 +14,10 @@ import { listTypescriptProject } from './shared/index.js'
 const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(Layer.provideMerge(PlatformLayer))
 const runQAWithEnvOrThrow = makeRunner(VercelAiModelServiceLive)
 
-const processTsDocUpdateProgram = async (projectName: string, sourceFilename: string) => {
+const processTsDocUpdateProgram = async (
+  projectName: string,
+  sourceFilename: ProjectRelativePath,
+) => {
   // const filePath = join(projectRoot, sourceFilename)
   const program = Effect.gen(function* () {
     const projects = yield* listTypescriptProject()
@@ -28,7 +31,7 @@ const processTsDocUpdateProgram = async (projectName: string, sourceFilename: st
       projectRelativePath: targetProject.rootPath,
     })
     console.dir(projectContext.includedFiles, { depth: null })
-    const filePath = join(projectContext.projectRoot, sourceFilename)
+    const filePath = sourceFilename
     const fileResult = yield* analyzeFile(projectContext, filePath)
     yield* writeStringToFile('./log/fileAnalysis.txt', JSON.stringify(fileResult.analysis, null, 2))
     // for (const key of fileResult.metadata.symbols.keys()) {
@@ -67,7 +70,10 @@ const processTsDocUpdateProgram = async (projectName: string, sourceFilename: st
   return await runQAWithEnvOrThrow(program, layer)
 }
 
-await processTsDocUpdateProgram(`@gyomu/schema`, `src/typescript/jsdoc/JsDocAnalysis.ts`)
+await processTsDocUpdateProgram(
+  `@gyomu/schema`,
+  ProjectRelativePath(`src/typescript/jsdoc/JsDocAnalysis.ts`),
+)
 // await processTsDocUpdateProgram(`@gyomu/schema`, `src/core/result.ts`)
 // `src/conversation/index.ts`
 // `src/core/result.ts`

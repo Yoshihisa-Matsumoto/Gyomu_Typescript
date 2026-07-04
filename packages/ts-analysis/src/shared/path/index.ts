@@ -1,2 +1,2 @@
-export { toProjectAbsolutePath } from './toProjectAbsolutePath.js'
+export { toAbsolutePath } from './toAbsolutePath.js'
 export { toProjectRelativePath } from './toProjectRelativePath.js'

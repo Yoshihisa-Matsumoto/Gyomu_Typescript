@@ -5,7 +5,7 @@ export type FileChangeType = 'added' | 'updated' | 'deleted'
 
 export interface FileChange {
   readonly type: FileChangeType
-  readonly path: ProjectRelativePath
+  readonly projectRelativePath: ProjectRelativePath
   readonly previous?: FileHashEntry
   readonly current?: FileHashEntry
 }

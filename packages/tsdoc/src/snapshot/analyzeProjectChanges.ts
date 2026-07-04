@@ -10,10 +10,11 @@ import type { FileHashSnapshot } from './types/FileHashSnapshot.js'
 import type { FileSearchService } from '@gyomu/schema/shared/fs'
 import type { FileSystem } from 'effect'
 import type { FileHashEntry } from '@gyomu/schema/snapshot'
+import type { FullPath, WorkspaceRelativePath } from '@gyomu/schema/typescript'
 
 export interface AnalyzeProjectChangesInput {
-  readonly repoRoot: string
-  readonly projectPath: string
+  readonly repoRoot: FullPath
+  readonly projectPath: WorkspaceRelativePath
 }
 
 export interface AnalyzeProjectChangesResult {

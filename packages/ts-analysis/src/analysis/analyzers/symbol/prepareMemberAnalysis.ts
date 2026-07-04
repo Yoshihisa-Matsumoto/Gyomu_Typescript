@@ -13,20 +13,17 @@ import type {
   PropertySignature,
 } from 'ts-morph'
 import type {
-  JsDocAnalysis,
   MemberIdentityMemberPath,
-  MemberIdentityOwnerSymbolId,
-  ParsedJsDoc,
   ProjectRelativePath,
   SymbolId,
 } from '@gyomu/schema/typescript'
 import type { FileAnalysisMetadata } from '../../file/FileAnalysisResult.js'
-import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
+import type { JsDocAnalysis, ParsedJsDoc, SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
 export const preparePropertyAnalysis = (
   sourcePath: ProjectRelativePath,
   metadata: FileAnalysisMetadata,
-  ownerSymbolId: MemberIdentityOwnerSymbolId,
+  ownerSymbolId: SymbolId,
   ownerSymbolIdentity: SymbolIdentity,
   memberPath: MemberIdentityMemberPath,
   propertyName: string,
@@ -63,7 +60,7 @@ export const preparePropertyAnalysis = (
 export const prepareMethodAnalysis = (
   sourcePath: ProjectRelativePath,
   metadata: FileAnalysisMetadata,
-  ownerSymbolId: MemberIdentityOwnerSymbolId,
+  ownerSymbolId: SymbolId,
   ownerSymbolIdentity: SymbolIdentity,
   memberPath: MemberIdentityMemberPath,
   methodName: string,
@@ -93,7 +90,7 @@ export const prepareMethodAnalysis = (
 }
 
 export const initializeMethodIdentity = (
-  ownerSymbolId: MemberIdentityOwnerSymbolId,
+  ownerSymbolId: SymbolId,
   ownerSymbolIdentity: SymbolIdentity,
   memberPath: MemberIdentityMemberPath,
   methodName: string,

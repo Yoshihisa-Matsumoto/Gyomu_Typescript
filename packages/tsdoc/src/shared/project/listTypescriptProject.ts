@@ -1,6 +1,7 @@
 import { join, relative, resolve } from 'node:path'
 import { Effect } from 'effect'
 import { expandDirectoryGlob, pathExists, readJsonFromFile } from '@gyomu/infra/fs'
+import { FullPath, WorkspaceRelativePath } from '@gyomu/schema/typescript'
 import { findWorkspaceRoot } from '../path/findWorkspaceRoot.js'
 import { loadWorkspaceDefinition } from './loadWorkspaceDefinition.js'
 import type { WorkspaceProject } from './WorkspaceProject.js'
@@ -29,7 +30,7 @@ export const listTypescriptProject = (startDirectory = process.cwd()) => {
 
         const project: WorkspaceProject = {
           name,
-          rootPath: relative(repositoryRoot, projectFolder),
+          rootPath: WorkspaceRelativePath(relative(repositoryRoot, projectFolder)),
           hasTypescript: tsConfigExists,
         }
         projects.push(project)
@@ -37,7 +38,7 @@ export const listTypescriptProject = (startDirectory = process.cwd()) => {
     }
 
     return {
-      repositoryRoot,
+      repositoryRoot: FullPath(repositoryRoot),
       projects: projects.sort((a, b) => a.rootPath.localeCompare(b.rootPath)),
     }
   })

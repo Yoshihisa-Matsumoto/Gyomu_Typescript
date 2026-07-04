@@ -1,9 +1,10 @@
 import { Effect } from 'effect'
 
-import { toProjectAbsolutePath } from '@gyomu/ts-analysis'
+import { toAbsolutePath } from '@gyomu/ts-analysis'
 import { createFileHashEntry } from './createFileHashEntry.js'
 import { enumerateTargetFiles } from './enumerateTargetFiles.js'
 import { GYOMU_VERSION } from './types/ProjectWorkspaceManifest.js'
+import type { FullPath, WorkspaceRelativePath } from '@gyomu/schema/typescript'
 import type { FileSystem } from 'effect'
 import type { IOError } from '@gyomu/schema'
 
@@ -24,11 +25,11 @@ import type { FileSearchService } from '@gyomu/schema/shared/fs'
  * @param rootDirectory Project root directory
  */
 export const createSnapshot = (args: {
-  repoRoot: string
-  projectPath: string
+  repoRoot: FullPath
+  projectPath: WorkspaceRelativePath
 }): Effect.Effect<FileHashSnapshot, IOError, FileSearchService | FileSystem.FileSystem> =>
   Effect.gen(function* () {
-    const projectAbsolutePath = toProjectAbsolutePath(args.projectPath, args.repoRoot)
+    const projectAbsolutePath = toAbsolutePath(args.projectPath, args.repoRoot)
     const files = yield* enumerateTargetFiles(projectAbsolutePath)
     const createFileHashEntryForProject = createFileHashEntry(args)
     const entries = yield* Effect.forEach(files, createFileHashEntryForProject, {

@@ -14,14 +14,16 @@ import type {
 } from 'ts-morph'
 
 import type {
-  DependencyCandidate,
   DocumentablePropertyMemberAnalysis,
-  JsDocAnalysis,
   MemberAccessor,
-  ParsedJsDoc,
   SymbolId,
 } from '@gyomu/schema/typescript'
-import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
+import type {
+  DependencyCandidate,
+  JsDocAnalysis,
+  ParsedJsDoc,
+  SymbolIdentity,
+} from '@gyomu/schema/schemas/typescript'
 
 export const analyzePropertyMember = (
   args: ChildAnalysisArg<PropertySignature | PropertyDeclaration>,

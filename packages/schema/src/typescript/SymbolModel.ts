@@ -1,17 +1,12 @@
-import type { DependencyCandidate } from './DependencyRequirement.js'
+import type { DependencyCandidate } from '../schemas/typescript/DependencyCandidate.js'
 import type { MemberAnalysis } from './MemberAnalysis.js'
+import type { SignatureId } from './types.js'
 
 /**
  * Categorizes the type of a public symbol.
  */
 export type SymbolKind =
-  | 'interface'
-  | 'type'
-  | 'class'
-  | 'function'
-  | 'const'
-  | 'enum'
-  | 'namespace'
+  'interface' | 'type' | 'class' | 'function' | 'const' | 'enum' | 'namespace'
 
 // /**
 //  * Structural metrics for object-like parameters.
@@ -50,7 +45,7 @@ export interface SignatureAnalysis {
   /**
    * Unique signature identifier, e.g. for overloads.
    */
-  id: string
+  id: SignatureId
 
   /**
    * An ordered list of analyzed parameters.

@@ -1,14 +1,15 @@
 import { Schema } from 'effect'
+import { SignatureId, SymbolId } from '../../typescript/types.js'
 
 /**
  * Represents the unique identity of a symbol, composed of a stable symbol identifier and a signature identifier.
  */
 export const SymbolIdentity = Schema.Struct({
-  symbolId: Schema.String.annotate({
+  symbolId: Schema.String.pipe(Schema.brand('SymbolId')).annotate({
     description: 'Stable symbol identifier',
   }),
 
-  signatureId: Schema.String.annotate({
+  signatureId: Schema.String.pipe(Schema.brand('SignatureId')).annotate({
     description: 'Identifier for function signature, used to disambiguate overloads',
   }),
 })
@@ -37,8 +38,8 @@ export const equalSymbolIdentity = (a: SymbolIdentity, b: SymbolIdentity): boole
  *
  * @returns A string representation of the identity.
  */
-export const toIdentityKey = (identity: SymbolIdentity): string =>
-  `${identity.symbolId}:%%:${identity.signatureId}`
+export const toIdentityKey = (identity: SymbolIdentity): SymbolId =>
+  SymbolId(`${identity.symbolId}:%%:${identity.signatureId}`)
 
 /**
  * Deserializes a string key back into a SymbolIdentity.
@@ -50,7 +51,7 @@ export const toIdentityKey = (identity: SymbolIdentity): string =>
 export const toSymbolIdentity = (identityKey: string): SymbolIdentity => {
   const index = identityKey.lastIndexOf(':%%:')
   return {
-    symbolId: identityKey.substring(0, index),
-    signatureId: identityKey.substring(index + 4),
+    symbolId: SymbolId(identityKey.substring(0, index)),
+    signatureId: SignatureId(identityKey.substring(index + 4)),
   }
 }

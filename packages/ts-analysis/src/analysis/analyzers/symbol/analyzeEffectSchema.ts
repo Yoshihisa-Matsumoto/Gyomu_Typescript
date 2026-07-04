@@ -5,11 +5,10 @@ import { createMemberIdentityAndId } from '../../shared/createMemberIdentity.js'
 import { analyzeDependency } from './analyzeDependency.js'
 import type { MemberAnalysisResult } from '../types.js'
 import type {
-  ImportAnalysis,
   MemberIdentityMemberPath,
-  MemberIdentityOwnerSymbolId,
   NonDocumentablePropertyMemberAnalysis,
   SupportedSchemaKind,
+  SymbolId,
   TypeAnalysis,
 } from '@gyomu/schema/typescript'
 import type {
@@ -19,7 +18,7 @@ import type {
   ObjectLiteralElementLike,
   PropertyAccessExpression,
 } from 'ts-morph'
-import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
+import type { ImportAnalysis, SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
 export const getSupportedEffectSchemaType = (
   initializer: Expression | undefined,
@@ -105,7 +104,7 @@ export const checkAndAnalyzeEffectSchema = (
   initializer: Expression | undefined,
   arg2: {
     name: string
-    ownerSymbolId: MemberIdentityOwnerSymbolId
+    ownerSymbolId: SymbolId
     ownerSymbolIdentity: SymbolIdentity
     imported: Array<ImportAnalysis>
     memberPath: MemberIdentityMemberPath
@@ -125,7 +124,7 @@ export const analyzeEffectSchema = (
     | undefined,
   arg2: {
     name: string
-    ownerSymbolId: MemberIdentityOwnerSymbolId
+    ownerSymbolId: SymbolId
     ownerSymbolIdentity: SymbolIdentity
     imported: Array<ImportAnalysis>
     memberPath: MemberIdentityMemberPath
@@ -169,7 +168,7 @@ const analyzeEffectSchemaForNonPrimitive = (args: {
   name: string
   supportType: Exclude<SupportedSchemaKind, 'Primitive' | 'Reference'>
   callExpression: CallExpression
-  ownerSymbolId: MemberIdentityOwnerSymbolId
+  ownerSymbolId: SymbolId
   ownerSymbolIdentity: SymbolIdentity
   imported: Array<ImportAnalysis>
   memberPath: MemberIdentityMemberPath
@@ -328,7 +327,7 @@ const analyzeEffectSchemaForNonPrimitive = (args: {
 const ObjectLiteralElementLike2MemberAnalysis = (
   property: ObjectLiteralElementLike,
   index: number,
-  ownerSymbolId: MemberIdentityOwnerSymbolId,
+  ownerSymbolId: SymbolId,
   ownerSymbolIdentity: SymbolIdentity,
   imported: Array<ImportAnalysis>,
   memberPath: MemberIdentityMemberPath,

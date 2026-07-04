@@ -2,12 +2,8 @@ import { Node } from 'ts-morph'
 import { analyzeStatement } from '../analyzers/analyzeStatement.js'
 import { analyzeExportStatement } from '../analyzers/analyzeExportStatement.js'
 import { analyzeImportStatement } from '../analyzers/analyzeImportStatement.js'
-import type {
-  ExportAnalysis,
-  ImportAnalysis,
-  MemberIdentityMemberPath,
-  SymbolAnalysis,
-} from '@gyomu/schema/typescript'
+import type { ExportAnalysis, ImportAnalysis } from '@gyomu/schema/schemas/typescript'
+import type { MemberIdentityMemberPath, SymbolAnalysis } from '@gyomu/schema/typescript'
 import type { AnalysisOptions } from '../AnalysisOption.js'
 import type { FileAnalysisMetadata } from '../file/FileAnalysisResult.js'
 import type { SourceFileContext } from '../file/SourceFileContext.js'

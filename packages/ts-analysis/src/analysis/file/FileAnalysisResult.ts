@@ -1,12 +1,7 @@
-import type {
-  DependencyCandidate,
-  DocumentableMemberAnalysis,
-  ParsedJsDoc,
-  SymbolAnalysis,
-  SymbolId,
-} from '@gyomu/schema/typescript'
+import type { DocumentableMemberAnalysis, SymbolAnalysis, SymbolId } from '@gyomu/schema/typescript'
 
 import type { FileAnalysis } from './FileAnalysis.js'
+import type { DependencyCandidate, ParsedJsDoc } from '@gyomu/schema/schemas/typescript'
 
 export interface FileAnalysisResult {
   analysis: FileAnalysis
@@ -15,7 +10,7 @@ export interface FileAnalysisResult {
 }
 
 export interface FileAnalysisMetadata {
-  parsedJsDocs: Map<SymbolId, ParsedJsDoc>
+  parsedJsDocs: Map<string, ParsedJsDoc>
   symbols: Map<SymbolId, DocumentableTarget>
 }
 

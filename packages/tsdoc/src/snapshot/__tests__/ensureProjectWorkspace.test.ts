@@ -4,6 +4,7 @@ import { Effect } from 'effect'
 
 // mock dependencies
 import * as fsMock from 'effect/FileSystem'
+import { FullPath, WorkspaceRelativePath } from '@gyomu/schema/typescript'
 import { ensureProjectWorkspace } from '../ensureProjectWorkspace.js'
 
 const run = <A, E>(eff: Effect.Effect<A, E, never>) => Effect.runSync(eff)
@@ -36,8 +37,8 @@ const makeFsMock = () => {
 }
 
 describe('ensureProjectWorkspace', () => {
-  const repoRoot = '/repo'
-  const projectPath = 'packages/app'
+  const repoRoot = FullPath('/repo')
+  const projectPath = WorkspaceRelativePath('packages/app')
 
   it('creates workspace and manifest', () => {
     const mock = makeFsMock()
@@ -123,7 +124,7 @@ describe('ensureProjectWorkspace', () => {
 
     expect(() =>
       run(
-        ensureProjectWorkspace(repoRoot, '../etc').pipe(
+        ensureProjectWorkspace(repoRoot, WorkspaceRelativePath('../etc')).pipe(
           Effect.provideService(fsMock.FileSystem, mock.FileSystem as any),
         ),
       ),

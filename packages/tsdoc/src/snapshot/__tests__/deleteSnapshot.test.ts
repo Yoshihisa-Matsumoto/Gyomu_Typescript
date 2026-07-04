@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Effect, FileSystem } from 'effect'
 
 import { removePath } from '@gyomu/infra/fs'
+import { FullPath, WorkspaceRelativePath } from '@gyomu/schema/typescript'
 import { deleteSnapshot } from '../deleteSnapshot.js'
 import { ensureProjectWorkspace } from '../ensureProjectWorkspace.js'
 
@@ -19,7 +20,7 @@ describe('deleteSnapshot', () => {
 
     vi.mocked(ensureProjectWorkspace).mockReturnValue(
       Effect.succeed({
-        snapshotPath: '/repo/.gyomu/snapshot',
+        snapshotPath: FullPath('/repo/.gyomu/snapshot'),
       } as any),
     )
 
@@ -29,8 +30,8 @@ describe('deleteSnapshot', () => {
   it('deletes snapshot directory', async () => {
     await Effect.runPromise(
       deleteSnapshot({
-        repoRoot: '/repo',
-        projectPath: '/repo/packages/app',
+        repoRoot: FullPath('/repo'),
+        projectPath: WorkspaceRelativePath('/repo/packages/app'),
       }).pipe(Effect.provideService(FileSystem.FileSystem, {} as any)),
     )
 

@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { Effect, FileSystem } from 'effect'
 
 import { FileSearchService } from '@gyomu/schema/shared/fs'
+import { FullPath, WorkspaceRelativePath } from '@gyomu/schema/typescript'
 import { analyzeProjectChanges } from '../analyzeProjectChanges.js'
 
 // ------------------------
@@ -41,8 +42,8 @@ const run = <A, E>(eff: Effect.Effect<A, E, FileSystem.FileSystem | FileSearchSe
   )
 
 describe('analyzeProjectChanges', () => {
-  const repoRoot = '/repo'
-  const projectPath = 'packages/app'
+  const repoRoot = FullPath('/repo')
+  const projectPath = WorkspaceRelativePath('packages/app')
 
   const workspace = {
     projectId: 'abc123',
@@ -51,7 +52,7 @@ describe('analyzeProjectChanges', () => {
 
   const currentSnapshot: FileHashSnapshot = {
     version: GYOMU_VERSION,
-    projectRoot: '',
+    projectRoot: WorkspaceRelativePath(''),
     files: [{ path: 'a.ts', rawHash: '1' } as any],
   }
 

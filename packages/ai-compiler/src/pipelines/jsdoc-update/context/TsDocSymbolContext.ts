@@ -1,5 +1,5 @@
-import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/index'
-import type { EffectSignals, DependencySummary } from '@gyomu/schema/typescript'
+import type { DependencySummary, SymbolIdentity } from '@gyomu/schema/schemas/typescript'
+import type { EffectSignals } from '@gyomu/schema/typescript'
 
 /**
  * Defines the base interface for a JSDoc update context containing project metadata and target identification.
@@ -83,10 +83,7 @@ export interface TsDocSymbolContext {
 }
 
 export type NonDocumentableReason =
-  | 'inline-object-member'
-  | 'generated'
-  | 'external'
-  | 'non-documentable-member'
+  'inline-object-member' | 'generated' | 'external' | 'non-documentable-member'
 
 export type DocumentableInfo =
   | {

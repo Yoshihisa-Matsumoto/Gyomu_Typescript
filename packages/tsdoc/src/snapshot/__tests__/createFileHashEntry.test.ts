@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { Effect } from 'effect'
 import { PlatformLayer } from '@gyomu/infra'
 
+import { FullPath, WorkspaceRelativePath } from '@gyomu/schema/typescript'
 import { createFileHashEntry } from '../createFileHashEntry.js'
 
 import type { FileInfo } from '@gyomu/schema/gyomu/file'
@@ -19,12 +20,13 @@ describe('createFileHashEntry', () => {
     const fileInfo = createFileInfo('./test-fixtures/snapshot/sample.ts', updatedAt)
 
     const result = await Effect.runPromise(
-      createFileHashEntry({ projectPath: '', repoRoot: './test-fixtures/snapshot' })(fileInfo).pipe(
-        Effect.provide(PlatformLayer),
-      ),
+      createFileHashEntry({
+        projectPath: WorkspaceRelativePath(''),
+        repoRoot: FullPath('./test-fixtures/snapshot'),
+      })(fileInfo).pipe(Effect.provide(PlatformLayer)),
     )
 
-    expect(result.path).toBe('./test-fixtures/snapshot/sample.ts')
+    expect(result.projectRelativePath).toBe('./test-fixtures/snapshot/sample.ts')
 
     expect(result.updatedAt).toBe(updatedAt.toISOString())
 
@@ -37,15 +39,17 @@ describe('createFileHashEntry', () => {
     const fileInfo = createFileInfo('./test-fixtures/snapshot/sample.ts', updatedAt)
 
     const result1 = await Effect.runPromise(
-      createFileHashEntry({ projectPath: '', repoRoot: './test-fixtures/snapshot' })(fileInfo).pipe(
-        Effect.provide(PlatformLayer),
-      ),
+      createFileHashEntry({
+        projectPath: WorkspaceRelativePath(''),
+        repoRoot: FullPath('./test-fixtures/snapshot'),
+      })(fileInfo).pipe(Effect.provide(PlatformLayer)),
     )
 
     const result2 = await Effect.runPromise(
-      createFileHashEntry({ projectPath: '', repoRoot: './test-fixtures/snapshot' })(fileInfo).pipe(
-        Effect.provide(PlatformLayer),
-      ),
+      createFileHashEntry({
+        projectPath: WorkspaceRelativePath(''),
+        repoRoot: FullPath('./test-fixtures/snapshot'),
+      })(fileInfo).pipe(Effect.provide(PlatformLayer)),
     )
 
     expect(result1.rawHash).toBe(result2.rawHash)
@@ -59,15 +63,17 @@ describe('createFileHashEntry', () => {
     const fileInfo2 = createFileInfo('./test-fixtures/snapshot/sample-b.ts', updatedAt)
 
     const result1 = await Effect.runPromise(
-      createFileHashEntry({ projectPath: '', repoRoot: './test-fixtures/snapshot' })(
-        fileInfo1,
-      ).pipe(Effect.provide(PlatformLayer)),
+      createFileHashEntry({
+        projectPath: WorkspaceRelativePath(''),
+        repoRoot: FullPath('./test-fixtures/snapshot'),
+      })(fileInfo1).pipe(Effect.provide(PlatformLayer)),
     )
 
     const result2 = await Effect.runPromise(
-      createFileHashEntry({ projectPath: '', repoRoot: './test-fixtures/snapshot' })(
-        fileInfo2,
-      ).pipe(Effect.provide(PlatformLayer)),
+      createFileHashEntry({
+        projectPath: WorkspaceRelativePath(''),
+        repoRoot: FullPath('./test-fixtures/snapshot'),
+      })(fileInfo2).pipe(Effect.provide(PlatformLayer)),
     )
 
     expect(result1.rawHash).not.toBe(result2.rawHash)

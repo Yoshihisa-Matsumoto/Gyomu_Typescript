@@ -1,9 +1,6 @@
 import { Node } from 'ts-morph'
-import type {
-  DependencyCandidate,
-  ImportAnalysis,
-  MemberIdentityMemberPath,
-} from '@gyomu/schema/typescript'
+import type { DependencyCandidate, ImportAnalysis } from '@gyomu/schema/schemas/typescript'
+import type { MemberIdentityMemberPath } from '@gyomu/schema/typescript'
 import type { TypeParameterDeclaration, TypeReferenceNode } from 'ts-morph'
 
 export const analyzeDependency = (
@@ -16,7 +13,7 @@ export const analyzeDependency = (
       source: { memberPath },
       target: {
         scope: 'local-file',
-        symbolName: identity,
+        localSymbolName: identity,
       },
     }
   } else {
@@ -24,7 +21,7 @@ export const analyzeDependency = (
       source: { memberPath },
       target: {
         scope: 'import',
-        localName: identity,
+        localSymbolName: identity,
       },
     }
   }

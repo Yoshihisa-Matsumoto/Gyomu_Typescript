@@ -1,4 +1,5 @@
 import { SyntaxKind } from 'ts-morph'
+import { SignatureId, SymbolId } from '@gyomu/schema/typescript'
 import { prepareSymbolAnalysis } from '../prepareSymbolAnalysis.js'
 import { registerSymbolSymbolAnalysis } from '../../../file/registerSymbolSymbolAnalysis.js'
 import { computeIndent } from '../computeIndent.js'
@@ -8,8 +9,9 @@ import {
   getFunctionSignature,
   isFunctionLikeInitializer,
 } from './analyzeFunction.js'
-import type { GetSignatureIdArg, MemberAnalysisResult, TagAnalysisArg } from '../../types.js'
+import type { Builder } from '@gyomu/schema/entity'
 import type { SymbolAnalysis, TypeAnalysis } from '@gyomu/schema/typescript'
+import type { GetSignatureIdArg, MemberAnalysisResult, TagAnalysisArg } from '../../types.js'
 import type { VariableDeclaration } from 'ts-morph'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
@@ -48,7 +50,7 @@ export const analyzeVariable = (args: TagAnalysisArg<VariableDeclaration>) => {
     return analyzeFunction(args, prepared, initializer)
   }
   const identity: SymbolIdentity = {
-    symbolId: variableName,
+    symbolId: SymbolId(variableName),
     signatureId: prepared.signature.id,
   }
 
@@ -89,7 +91,7 @@ export const analyzeVariable = (args: TagAnalysisArg<VariableDeclaration>) => {
 
     declarationOrder: args.declarationOrder,
     dependencyCandidates: typeAnalysisResult?.dependencies ?? [],
-  } satisfies SymbolAnalysis
+  } satisfies Builder<SymbolAnalysis>
   registerSymbolSymbolAnalysis(
     args.metadata,
     symbol,
@@ -117,7 +119,7 @@ const getSignatureId = (args: GetSignatureIdArg<VariableDeclaration>) => {
       0,
     )
   }
-  return { id: 'variable', parameters: [] }
+  return { id: SignatureId('variable'), parameters: [] }
 }
 
 // const analyzeVariableMembers = (declaration: VariableDeclaration): Array<MemberAnalysis> => {

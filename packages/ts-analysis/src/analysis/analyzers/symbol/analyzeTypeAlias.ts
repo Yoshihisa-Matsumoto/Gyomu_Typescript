@@ -1,4 +1,5 @@
 import { Node } from 'ts-morph'
+import { SignatureId, SymbolId } from '@gyomu/schema/typescript'
 import { registerSymbolSymbolAnalysis } from '../../file/registerSymbolSymbolAnalysis.js'
 import { prepareSymbolAnalysis } from './prepareSymbolAnalysis.js'
 import { detectEffectSignals } from './analyzeEffectType.js'
@@ -6,8 +7,8 @@ import { analyzeObjectMembers } from './analyzeObjectMembers.js'
 import { computeIndent } from './computeIndent.js'
 import { analyzeGenericsParameters } from './analyzeGenericsParameters.js'
 import { analyzeType } from './analyzeType.js'
-import type { TypeAliasDeclaration, TypeNode } from 'ts-morph'
 import type { SymbolAnalysis } from '@gyomu/schema/typescript'
+import type { TypeAliasDeclaration, TypeNode } from 'ts-morph'
 import type { ChildAnalysisArg, TagAnalysisArg } from '../types.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
@@ -39,7 +40,7 @@ export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => 
     getSignatureId,
   )
   const identity: SymbolIdentity = {
-    symbolId: typeName,
+    symbolId: SymbolId(typeName),
     signatureId: prepared.signature.id,
   }
   const genericsResult = analyzeGenericsParameters({
@@ -163,5 +164,5 @@ export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => 
 }
 
 const getSignatureId = () => {
-  return { id: 'type', parameters: [] }
+  return { id: SignatureId('type'), parameters: [] }
 }

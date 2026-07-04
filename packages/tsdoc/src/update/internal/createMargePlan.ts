@@ -12,7 +12,7 @@ import type {
 import type { MergeActionContext, MergePlan } from '../jsdoc/MergePlan.js'
 import type { Effect } from 'effect'
 import type { FileAnalysisResult } from '@gyomu/ts-analysis'
-import type { ProtectedSection } from '@gyomu/schema/typescript'
+import type { ProtectedSection } from '@gyomu/schema/schemas/typescript'
 
 export const createMergePlan = (
   fileResult: FileAnalysisResult,

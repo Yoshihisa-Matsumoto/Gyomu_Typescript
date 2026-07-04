@@ -1,3 +1,6 @@
+import { ProjectRelativePath } from '@gyomu/schema/typescript'
+import type { FullPath } from '@gyomu/schema/typescript'
+
 /**
  * Converts an absolute file path into a project-relative path.
  *
@@ -21,7 +24,10 @@
  * This path format is intended to be used as the canonical project-internal
  * path representation.
  */
-export const toProjectRelativePath = (filePath: string, basePath: string): string => {
+export const toProjectRelativePath = (
+  filePath: FullPath | ProjectRelativePath,
+  basePath: FullPath,
+): ProjectRelativePath => {
   const normalize = (p: string) => p.replace(/\\/g, '/').replace(/^[a-zA-Z]:/, '') // C: を除去
 
   const normalizedFile = normalize(filePath)
@@ -32,5 +38,5 @@ export const toProjectRelativePath = (filePath: string, basePath: string): strin
     ? normalizedFile.slice(normalizedBase.length)
     : normalizedFile
 
-  return relative.replace(/^\/+/, '') // 先頭スラッシュ除去
+  return ProjectRelativePath(relative.replace(/^\/+/, '')) // 先頭スラッシュ除去
 }

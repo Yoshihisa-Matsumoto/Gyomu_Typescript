@@ -1,4 +1,4 @@
-import type { ProtectedSection } from '@gyomu/schema/typescript'
+import type { ProtectedSection } from '@gyomu/schema/schemas/typescript'
 import type { FileAnalysisResult } from '@gyomu/ts-analysis'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
 
@@ -13,8 +13,8 @@ export const analyzeProtectedSection = (
     const parsedJsDoc = targetSymbol.parsedJsDoc
     if (!parsedJsDoc) continue
     const protectedSection = parsedJsDoc
-      .filter((p) => p.protectedSection.length > 0)
-      .map((p) => p.protectedSection)
+      .filter((p) => p.protectedSections.length > 0)
+      .map((p) => p.protectedSections)
       .flat()
     if (protectedSection.length == 0) continue
 

@@ -1,4 +1,6 @@
+import type { SymbolId } from '@gyomu/schema/typescript'
+
 export interface SymbolIDComposite {
-  id: string
+  id: SymbolId
   qualifiedName: string
 }

@@ -1,15 +1,16 @@
 import path from 'node:path'
 import { describe, expect, test } from 'vitest'
 
+import { FullPath, ProjectRelativePath } from '@gyomu/schema/typescript'
 import { sourcePathToModuleSpecifier } from '../sourcePathToModuleSpecifier.js'
 
 describe('sourcePathToModuleSpecifier', () => {
-  const projectRoot = path.resolve('/project')
+  const projectRoot = FullPath(path.resolve('/project'))
 
   test('creates sibling module specifier', () => {
     expect(
       sourcePathToModuleSpecifier(
-        'src/service/User.ts',
+        ProjectRelativePath('src/service/User.ts'),
         path.resolve(projectRoot, 'src/service/UserService.ts'),
         projectRoot,
       ),
@@ -19,7 +20,7 @@ describe('sourcePathToModuleSpecifier', () => {
   test('creates parent module specifier', () => {
     expect(
       sourcePathToModuleSpecifier(
-        'src/model/User.ts',
+        ProjectRelativePath('src/model/User.ts'),
         path.resolve(projectRoot, 'src/service/UserService.ts'),
         projectRoot,
       ),
@@ -29,7 +30,7 @@ describe('sourcePathToModuleSpecifier', () => {
   test('creates nested parent module specifier', () => {
     expect(
       sourcePathToModuleSpecifier(
-        'src/shared/types/User.ts',
+        ProjectRelativePath('src/shared/types/User.ts'),
         path.resolve(projectRoot, 'src/service/internal/UserService.ts'),
         projectRoot,
       ),
@@ -39,7 +40,7 @@ describe('sourcePathToModuleSpecifier', () => {
   test('converts ts extension to js', () => {
     expect(
       sourcePathToModuleSpecifier(
-        'src/model/User.ts',
+        ProjectRelativePath('src/model/User.ts'),
         path.resolve(projectRoot, 'src/service/UserService.ts'),
         projectRoot,
       ),
@@ -49,7 +50,7 @@ describe('sourcePathToModuleSpecifier', () => {
   test('converts tsx extension to js', () => {
     expect(
       sourcePathToModuleSpecifier(
-        'src/components/App.tsx',
+        ProjectRelativePath('src/components/App.tsx'),
         path.resolve(projectRoot, 'src/pages/Home.tsx'),
         projectRoot,
       ),
@@ -58,7 +59,7 @@ describe('sourcePathToModuleSpecifier', () => {
 
   test('adds ./ prefix for sibling files', () => {
     const result = sourcePathToModuleSpecifier(
-      'src/service/User.ts',
+      ProjectRelativePath('src/service/User.ts'),
       path.resolve(projectRoot, 'src/service/UserService.ts'),
       projectRoot,
     )

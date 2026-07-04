@@ -5,6 +5,7 @@ import type {
   JsDocUpdatePlan,
   TsDocFileContext,
 } from '@gyomu/ai-compiler/jsdoc-update'
+import { SymbolId } from '@gyomu/schema/typescript'
 
 export const validateJsDocUpdatePlan = (
   context: TsDocFileContext,
@@ -45,7 +46,7 @@ const getTsDocSingatureFromJsDocUpdateEntryPlan = (plans: JsDocUpdatePlan) => {
   return keySet
 }
 export const getTsDocSignatureFromContext = (context: TsDocFileContext) => {
-  const keySet = new Set<string>()
+  const keySet = new Set<SymbolId>()
   for (const symbol of context.symbols) {
     const key = toIdentityKey(symbol.target)
     keySet.add(key)

@@ -3,7 +3,8 @@ import { join, relative } from 'node:path'
 import { Effect } from 'effect'
 import { makeDirectory, readStringFromFile, writeStringToFile } from '@gyomu/infra/fs'
 
-import { toProjectAbsolutePath } from '@gyomu/ts-analysis'
+import { toAbsolutePath } from '@gyomu/ts-analysis'
+import { FullPath } from '@gyomu/schema/typescript'
 import { findWorkspaceRoot } from '../shared/path/findWorkspaceRoot.js'
 import { buildMergePlan } from './buildMergePlan.js'
 import { applyMergePlans } from './applyMergePlan.js'
@@ -51,10 +52,7 @@ export const processTsDocUpdate = (
         )
       else console.dir(fileUpdatePlan, { depth: null })
     }
-    const sourceFileAbsolutePath = toProjectAbsolutePath(
-      fileResult.analysis.path,
-      context.projectRoot,
-    )
+    const sourceFileAbsolutePath = toAbsolutePath(fileResult.analysis.path, context.projectRoot)
 
     const sourceContent = yield* readStringFromFile(sourceFileAbsolutePath).pipe(
       Effect.mapError(
@@ -82,9 +80,9 @@ export const processTsDocUpdate = (
 
       const projectRelativePath = relative(repositoryRoot, context.projectRoot)
 
-      const projectPath = join(rootPath, projectRelativePath)
+      const projectPath = FullPath(join(rootPath, projectRelativePath))
 
-      destinationPath = toProjectAbsolutePath(fileResult.analysis.path, projectPath)
+      destinationPath = toAbsolutePath(fileResult.analysis.path, projectPath)
       yield* makeDirectory(destinationPath, true)
     }
 

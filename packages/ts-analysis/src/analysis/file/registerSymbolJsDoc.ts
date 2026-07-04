@@ -1,7 +1,8 @@
 import { AnalysisError } from '../error/AnalysisError.js'
 import type { ExtractedJsDoc } from '../jsdoc/ExtractedJsDoc.js'
-import type { ParsedJsDoc, SymbolId } from '@gyomu/schema/typescript'
+import type { SymbolId } from '@gyomu/schema/typescript'
 import type { FileAnalysisMetadata } from './FileAnalysisResult.js'
+import type { ParsedJsDoc } from '@gyomu/schema/schemas/typescript'
 
 export const registerSymbolJsDoc = (
   symbolId: SymbolId,

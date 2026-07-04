@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { analyzeDependency } from '../analyzeDependency.js'
-import type { ImportAnalysis } from '@gyomu/schema/typescript'
+import type { ImportAnalysis } from '@gyomu/schema/schemas/typescript'
 
 describe('analyzeDependency', () => {
   it('returns local-file dependency when identifier is not imported', () => {
@@ -12,7 +12,7 @@ describe('analyzeDependency', () => {
       },
       target: {
         scope: 'local-file',
-        symbolName: 'User',
+        localSymbolName: 'User',
       },
     })
   })
@@ -34,7 +34,7 @@ describe('analyzeDependency', () => {
       },
       target: {
         scope: 'import',
-        localName: 'User',
+        localSymbolName: 'User',
       },
     })
   })
@@ -56,7 +56,7 @@ describe('analyzeDependency', () => {
       },
       target: {
         scope: 'import',
-        localName: 'Person',
+        localSymbolName: 'Person',
       },
     })
   })

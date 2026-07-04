@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import { detectComplexMarkdown } from '../detectComplexMarkdown.js'
-import type { HumanEditContext } from '@gyomu/schema/typescript'
+import type { HumanEditContext } from '@gyomu/schema/schemas/typescript'
 
 describe('detectComplexMarkdown', () => {
   const context: HumanEditContext = {

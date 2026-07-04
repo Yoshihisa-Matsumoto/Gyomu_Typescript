@@ -2,45 +2,49 @@ import { describe, expect, test } from 'vitest'
 import { Effect } from 'effect'
 
 import { toIdentityKey } from '@gyomu/schema/schemas/typescript'
+import { SignatureId, SymbolId } from '@gyomu/schema/typescript'
 import { applyMergePlan, applyMergePlans } from '../applyMergePlan.js'
 
-const createFileResult = (symbolId: string, existingJsDoc?: any): any => ({
-  analysis: {
-    path: 'test.ts',
-    exports: [
-      {
-        symbol: {
-          id: symbolId,
-          identity: {
-            symbolId,
-            signatureId: '() => void',
-          },
-        },
-      },
-    ],
-  },
-  metadata: {
-    parsedJsDocs: new Map(existingJsDoc ? [[symbolId, existingJsDoc]] : []),
-    symbols: new Map([
-      [
-        toIdentityKey({
-          symbolId,
-          signatureId: '() => void',
-        }),
+const createFileResult = (symId: string, existingJsDoc?: any): any => {
+  const symbolId = SymbolId(symId)
+  return {
+    analysis: {
+      path: 'test.ts',
+      exports: [
         {
-          analysis: {
+          symbol: {
             id: symbolId,
             identity: {
               symbolId,
-              signatureId: '() => void',
+              signatureId: SignatureId('() => void'),
             },
           },
-          indent: '',
         },
       ],
-    ]),
-  },
-})
+    },
+    metadata: {
+      parsedJsDocs: new Map(existingJsDoc ? [[symbolId, existingJsDoc]] : []),
+      symbols: new Map([
+        [
+          toIdentityKey({
+            symbolId,
+            signatureId: SignatureId('() => void'),
+          }),
+          {
+            analysis: {
+              id: symbolId,
+              identity: {
+                symbolId,
+                signatureId: SignatureId('() => void'),
+              },
+            },
+            indent: '',
+          },
+        ],
+      ]),
+    },
+  }
+}
 
 describe('applyMergePlan', () => {
   test('replaces summary', async () => {
@@ -53,8 +57,8 @@ describe('applyMergePlan', () => {
         }),
         {
           target: {
-            symbolId: 'add',
-            signatureId: '() => void',
+            symbolId: SymbolId('add'),
+            signatureId: SignatureId('() => void'),
           },
 
           summary: {
@@ -86,8 +90,8 @@ describe('applyMergePlan', () => {
         }),
         {
           target: {
-            symbolId: 'add',
-            signatureId: '() => void',
+            symbolId: SymbolId('add'),
+            signatureId: SignatureId('() => void'),
           },
 
           summary: {
@@ -115,8 +119,8 @@ describe('applyMergePlan', () => {
         }),
         {
           target: {
-            symbolId: 'add',
-            signatureId: '() => void',
+            symbolId: SymbolId('add'),
+            signatureId: SignatureId('() => void'),
           },
 
           summary: {
@@ -171,8 +175,8 @@ describe('applyMergePlan', () => {
         }),
         {
           target: {
-            symbolId: 'add',
-            signatureId: '() => void',
+            symbolId: SymbolId('add'),
+            signatureId: SignatureId('() => void'),
           },
 
           summary: {
@@ -215,8 +219,8 @@ describe('applyMergePlan', () => {
     const exit = await Effect.runPromiseExit(
       applyMergePlan(createFileResult('add'), {
         target: {
-          symbolId: 'unknown',
-          signatureId: '() => void',
+          symbolId: SymbolId('unknown'),
+          signatureId: SignatureId('() => void'),
         },
       } as any),
     )
@@ -234,8 +238,8 @@ describe('applyMergePlans', () => {
             symbol: {
               id: 'add',
               identity: {
-                symbolId: 'add',
-                signatureId: '() => void',
+                symbolId: SymbolId('add'),
+                signatureId: SignatureId('() => void'),
               },
             },
           },
@@ -243,8 +247,8 @@ describe('applyMergePlans', () => {
             symbol: {
               id: 'subtract',
               identity: {
-                symbolId: 'subtract',
-                signatureId: '() => void',
+                symbolId: SymbolId('subtract'),
+                signatureId: SignatureId('() => void'),
               },
             },
           },
@@ -259,15 +263,15 @@ describe('applyMergePlans', () => {
         symbols: new Map([
           [
             toIdentityKey({
-              symbolId: 'add',
-              signatureId: '() => void',
+              symbolId: SymbolId('add'),
+              signatureId: SignatureId('() => void'),
             }),
             {
               analysis: {
-                id: 'add',
+                id: SymbolId('add'),
                 identity: {
-                  symbolId: 'add',
-                  signatureId: '() => void',
+                  symbolId: SymbolId('add'),
+                  signatureId: SignatureId('() => void'),
                 },
               },
               indent: '',
@@ -275,15 +279,15 @@ describe('applyMergePlans', () => {
           ],
           [
             toIdentityKey({
-              symbolId: 'subtract',
-              signatureId: '() => void',
+              symbolId: SymbolId('subtract'),
+              signatureId: SignatureId('() => void'),
             }),
             {
               analysis: {
-                id: 'subtract',
+                id: SymbolId('subtract'),
                 identity: {
-                  symbolId: 'subtract',
-                  signatureId: '() => void',
+                  symbolId: SymbolId('subtract'),
+                  signatureId: SignatureId('() => void'),
                 },
               },
               indent: '',
@@ -297,8 +301,8 @@ describe('applyMergePlans', () => {
       applyMergePlans(fileResult, [
         {
           target: {
-            symbolId: 'add',
-            signatureId: '() => void',
+            symbolId: SymbolId('add'),
+            signatureId: SignatureId('() => void'),
           },
           summary: {
             type: 'replace',
@@ -312,8 +316,8 @@ describe('applyMergePlans', () => {
         },
         {
           target: {
-            symbolId: 'subtract',
-            signatureId: '() => void',
+            symbolId: SymbolId('subtract'),
+            signatureId: SignatureId('() => void'),
           },
           summary: {
             type: 'replace',
@@ -330,10 +334,10 @@ describe('applyMergePlans', () => {
 
     expect(result).toHaveLength(2)
 
-    expect(result[0]?.target.symbolId).toBe('add')
+    expect(result[0]?.target.symbolId).toBe(SymbolId('add'))
     expect(result[0]?.jsDoc.summary).toBe('new add')
 
-    expect(result[1]?.target.symbolId).toBe('subtract')
+    expect(result[1]?.target.symbolId).toBe(SymbolId('subtract'))
     expect(result[1]?.jsDoc.summary).toBe('new sub')
   })
 })

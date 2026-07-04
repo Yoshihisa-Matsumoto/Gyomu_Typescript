@@ -1,4 +1,5 @@
 import { Node, SyntaxKind } from 'ts-morph'
+import { SignatureId, SymbolId } from '@gyomu/schema/typescript'
 import { registerSymbolSymbolAnalysis } from '../../file/registerSymbolSymbolAnalysis.js'
 import { prepareSymbolAnalysis } from './prepareSymbolAnalysis.js'
 import { analyzePropertyMember } from './struct/analyzePropertyMember.js'
@@ -7,7 +8,7 @@ import { detectEffectSignals } from './analyzeEffectType.js'
 import { computeIndent } from './computeIndent.js'
 import { analyzeGenericsParameters } from './analyzeGenericsParameters.js'
 import { analyzeDependency } from './analyzeDependency.js'
-import type { DependencyCandidate, MemberAnalysis, SymbolAnalysis } from '@gyomu/schema/typescript'
+import type { MemberAnalysis, SymbolAnalysis } from '@gyomu/schema/typescript'
 import type { InterfaceDeclaration } from 'ts-morph'
 import type {
   ChildAnalysisArg,
@@ -15,7 +16,7 @@ import type {
   MemberAnalysisResult,
   TagAnalysisArg,
 } from '../types.js'
-import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
+import type { DependencyCandidate, SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
 export const analyzeInterface = (args: TagAnalysisArg<InterfaceDeclaration>) => {
   const {
@@ -43,7 +44,7 @@ export const analyzeInterface = (args: TagAnalysisArg<InterfaceDeclaration>) => 
     getSignature,
   )
   const identity: SymbolIdentity = {
-    symbolId: typeName,
+    symbolId: SymbolId(typeName),
     signatureId: prepared.signature.id,
   }
   const genericsResult = analyzeGenericsParameters({
@@ -141,7 +142,7 @@ export const analyzeInterface = (args: TagAnalysisArg<InterfaceDeclaration>) => 
 }
 
 const getSignature = (args: GetSignatureIdArg<InterfaceDeclaration>) => {
-  return { id: 'interface', parameters: [] }
+  return { id: SignatureId('interface'), parameters: [] }
 }
 
 const analyzeInterfaceMembers = (

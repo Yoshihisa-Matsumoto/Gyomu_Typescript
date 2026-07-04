@@ -1,4 +1,4 @@
-import type { JsDocParam, JsDocThrows, ParsedTag } from '@gyomu/schema/typescript'
+import type { JsDocParam, JsDocThrows, ParsedTag } from '@gyomu/schema/schemas/typescript'
 import type { JsDocLine } from '../jsdoc/JsDocLine.js'
 import type { UpdatedSymbolJsDoc } from '../jsdoc/UpdatedSymbolJsDoc.js'
 

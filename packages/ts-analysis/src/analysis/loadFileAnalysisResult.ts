@@ -11,12 +11,8 @@ import type {
 } from './file/FileAnalysisResult.js'
 import type { LoadAnalysisOptions } from './AnalysisOption.js'
 import type { ProjectContext } from './project/ProjectContext.js'
-import type {
-  DependencyCandidate,
-  ParsedJsDoc,
-  ProjectRelativePath,
-  SymbolId,
-} from '@gyomu/schema/typescript'
+import type { ProjectRelativePath, SymbolId } from '@gyomu/schema/typescript'
+import type { DependencyCandidate, ParsedJsDoc } from '@gyomu/schema/schemas/typescript'
 
 export const loadFileAnalysisResult = (
   context: ProjectContext,
@@ -32,8 +28,8 @@ export const loadFileAnalysisResult = (
 > =>
   Effect.gen(function* () {
     const metadata: FileAnalysisMetadata = {
-      parsedJsDocs: new Map<string, ParsedJsDoc>(),
-      symbols: new Map<string, DocumentableTarget>(),
+      parsedJsDocs: new Map<SymbolId, ParsedJsDoc>(),
+      symbols: new Map<SymbolId, DocumentableTarget>(),
     }
     const transient: FileAnalysisTransient = {
       dependencyCandidates: new Map<SymbolId, ReadonlyArray<DependencyCandidate>>(),

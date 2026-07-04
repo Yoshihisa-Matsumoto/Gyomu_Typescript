@@ -1,9 +1,9 @@
 import { Effect } from 'effect'
 import { Project } from 'ts-morph'
-import { toProjectAbsolutePath } from '../shared/path/toProjectAbsolutePath.js'
-import { toProjectRelativePath } from '../shared/path/toProjectRelativePath.js'
+import { toAbsolutePath } from '../shared/path/toAbsolutePath.js'
 import { loadSourceFile } from './shared/loadSourceFile.js'
 import { extractSymbols } from './extract/extractSymbol.js'
+import type { DependencyCandidate, ParsedJsDoc } from '@gyomu/schema/schemas/typescript'
 import type { AnalysisError } from './error/AnalysisError.js'
 import type {
   DocumentableTarget,
@@ -14,12 +14,7 @@ import type {
 import type { AnalysisOptions } from './AnalysisOption.js'
 import type { FileAnalysis } from './file/FileAnalysis.js'
 import type { ProjectContext } from './project/ProjectContext.js'
-import type {
-  DependencyCandidate,
-  ParsedJsDoc,
-  ProjectRelativePath,
-  SymbolId,
-} from '@gyomu/schema/typescript'
+import type { ProjectRelativePath, SymbolId } from '@gyomu/schema/typescript'
 
 /**
  * Analyzes a TypeScript source file and produces a {@link FileAnalysis}.
@@ -50,16 +45,16 @@ export const analyzeFile = (
 ): Effect.Effect<FileAnalysisResult, AnalysisError> =>
   Effect.gen(function* () {
     const metadata: FileAnalysisMetadata = {
-      parsedJsDocs: new Map<string, ParsedJsDoc>(),
-      symbols: new Map<string, DocumentableTarget>(),
+      parsedJsDocs: new Map<SymbolId, ParsedJsDoc>(),
+      symbols: new Map<SymbolId, DocumentableTarget>(),
     }
     const transient: FileAnalysisTransient = {
       dependencyCandidates: new Map<SymbolId, ReadonlyArray<DependencyCandidate>>(),
     }
-    const sourceFullPath = toProjectAbsolutePath(sourceFilePath, context.projectRoot)
-    const sourceRelativePath = toProjectRelativePath(sourceFilePath, context.projectRoot)
+    const sourceFullPath = toAbsolutePath(sourceFilePath, context.projectRoot)
+    const sourceRelativePath = sourceFilePath
 
-    const sourceFile = yield* loadSourceFile(context.project, sourceFullPath)
+    const sourceFile = yield* loadSourceFile(context, sourceFullPath)
     sourceFile.path = sourceRelativePath
 
     // const exports = yield* extractExport(sourceFile, metadata, option)

@@ -1,7 +1,8 @@
+import type { JsDocAnalysis } from '../schemas/typescript/jsdoc/JsDocAnalysis.js'
+import type { ParsedJsDoc } from '../schemas/typescript/jsdoc/ParsedJsDoc.js'
+import type { DependencyCandidate } from '../schemas/typescript/DependencyCandidate.js'
 import type { SymbolIdentity } from '../schemas/typescript/SymbolIdentity.js'
-import type { DependencyCandidate } from './DependencyRequirement.js'
-import type { JsDocAnalysis } from './jsdoc/JsDocAnalysis.js'
-import type { ParsedJsDoc } from './jsdoc/ParsedJsDoc.js'
+
 import type { MemberAnalysis } from './MemberAnalysis.js'
 import type { SignatureAnalysis, SymbolKind, TypeAnalysis } from './SymbolModel.js'
 import type { SymbolId } from './types.js'

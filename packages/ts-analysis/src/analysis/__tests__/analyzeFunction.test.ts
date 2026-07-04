@@ -2,6 +2,7 @@ import path from 'node:path'
 import fs from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { Effect } from 'effect'
+import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { analyzeFile } from '../analyzeFile.js'
 import { createFixtureProject } from './createFixtureProject.js'
 import type { SymbolAnalysis } from '@gyomu/schema/typescript'
@@ -13,7 +14,7 @@ const functionFixture = createFixtureProject(path.join('analysis', 'function'))
 const functionAnalysisProgram = (sourceFile: string): SymbolAnalysis => {
   const { project, projectRoot, projectName } = functionFixture
 
-  const filePath = path.join(projectRoot, path.join('src', sourceFile))
+  const filePath = ProjectRelativePath(path.join('src', sourceFile))
   const result = Effect.runSync(
     Effect.gen(function* () {
       return yield* analyzeFile(functionFixture, filePath, {
@@ -30,7 +31,7 @@ const functionSymbolsDependencyProgram = (sourceFile: string, folder?: string) =
   const { project, projectRoot, projectName } = functionFixture
 
   const sourcePath = folder ? path.join('src', folder, sourceFile) : path.join('src', sourceFile)
-  const filePath = path.join(projectRoot, sourcePath)
+  const filePath = ProjectRelativePath(sourcePath)
   const result = Effect.runSync(
     Effect.gen(function* () {
       return yield* analyzeFile(functionFixture, filePath, {
@@ -82,39 +83,39 @@ describe('analyze Function dependency pattern', () => {
         expect.arrayContaining([
           {
             source: { memberPath: ['$generics', 'T'] },
-            target: { scope: 'import', localName: 'ImportedType' },
+            target: { scope: 'import', localSymbolName: 'ImportedType' },
           },
           {
             source: { memberPath: ['$generics', 'U'] },
-            target: { scope: 'local-file', symbolName: 'LocalClass' },
+            target: { scope: 'local-file', localSymbolName: 'LocalClass' },
           },
           {
             source: { memberPath: ['local'] },
-            target: { scope: 'local-file', symbolName: 'LocalType' },
+            target: { scope: 'local-file', localSymbolName: 'LocalType' },
           },
           {
             source: { memberPath: ['imported'] },
-            target: { scope: 'import', localName: 'ImportedType' },
+            target: { scope: 'import', localSymbolName: 'ImportedType' },
           },
           {
             source: { memberPath: ['$body'] },
-            target: { scope: 'local-file', symbolName: 'localFunction' },
+            target: { scope: 'local-file', localSymbolName: 'localFunction' },
           },
           {
             source: { memberPath: ['$body'] },
-            target: { scope: 'import', localName: 'importedFunction' },
+            target: { scope: 'import', localSymbolName: 'importedFunction' },
           },
           {
             source: { memberPath: ['$body'] },
-            target: { scope: 'local-file', symbolName: 'LocalClass' },
+            target: { scope: 'local-file', localSymbolName: 'LocalClass' },
           },
           {
             source: { memberPath: ['$body'] },
-            target: { scope: 'import', localName: 'ImportedClass' },
+            target: { scope: 'import', localSymbolName: 'ImportedClass' },
           },
           {
             source: { memberPath: ['$return'] },
-            target: { scope: 'import', localName: 'ImportedType' },
+            target: { scope: 'import', localSymbolName: 'ImportedType' },
           },
         ]),
       )

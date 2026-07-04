@@ -1,5 +1,7 @@
+import type { WorkspaceRelativePath } from '@gyomu/schema/typescript'
+
 export interface WorkspaceProject {
-  rootPath: string
+  rootPath: WorkspaceRelativePath
   name: string
   hasTypescript: boolean
 }

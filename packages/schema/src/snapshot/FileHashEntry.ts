@@ -10,7 +10,7 @@ export interface FileHashEntry {
   /**
    * Relative file path from project root.
    */
-  path: ProjectRelativePath
+  projectRelativePath: ProjectRelativePath
 
   /**
    * Raw source hash including comments and formatting.

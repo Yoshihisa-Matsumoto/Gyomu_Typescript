@@ -1,24 +1,28 @@
+import { relative } from 'node:path'
 import { fromSync } from '@gyomu/schema/effect'
+import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { AnalysisError } from '../error/AnalysisError.js'
-import type { Project } from 'ts-morph'
-import type { ProjectRelativePath } from '@gyomu/schema/typescript'
+import type { FullPath } from '@gyomu/schema/typescript'
 import type { SourceFileContext } from '../file/SourceFileContext.js'
+import type { ProjectContext } from '../project/ProjectContext.js'
 
-export const loadSourceFile = (project: Project, sourceFilePath: ProjectRelativePath) =>
+export const loadSourceFile = (context: ProjectContext, sourceFullPath: FullPath) =>
   fromSync(AnalysisError, () => ({
-    filePath: sourceFilePath,
+    filePath: sourceFullPath,
     message: 'fail to load source',
     phase: 'source-file-load' as const,
   }))(() => {
-    const sourceFile = project.getSourceFile(sourceFilePath)
+    console.log(sourceFullPath)
+    const sourceFile = context.project.getSourceFile(sourceFullPath)
 
     if (!sourceFile) {
       throw new AnalysisError({
         cause: undefined,
-        filePath: sourceFilePath,
+        filePath: sourceFullPath,
         message: 'source not found',
         phase: 'source-file-load',
       })
     }
-    return { path: sourceFilePath, sourceFile } satisfies SourceFileContext
+    const sourceRelativePath = ProjectRelativePath(relative(context.projectRoot, sourceFullPath))
+    return { path: sourceRelativePath, sourceFile } satisfies SourceFileContext
   })

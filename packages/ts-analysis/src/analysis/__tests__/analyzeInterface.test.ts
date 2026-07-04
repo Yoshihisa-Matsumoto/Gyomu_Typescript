@@ -2,6 +2,7 @@ import path from 'node:path'
 import fs from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { Effect } from 'effect'
+import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { analyzeFile } from '../analyzeFile.js'
 import { createFixtureProject } from './createFixtureProject.js'
 import type {
@@ -17,7 +18,7 @@ const interfaceFixture = createFixtureProject(path.join('analysis', 'interface')
 const interfaceAnalysisProgram = (sourceFile: string): SymbolAnalysis => {
   const { projectRoot } = interfaceFixture
 
-  const filePath = path.join(projectRoot, path.join('src', sourceFile))
+  const filePath = ProjectRelativePath(path.join('src', sourceFile))
   const result = Effect.runSync(
     Effect.gen(function* () {
       return yield* analyzeFile(interfaceFixture, filePath, {
@@ -33,7 +34,7 @@ const interfaceSymbolsDependencyProgram = (sourceFile: string, folder?: string) 
   const { project, projectRoot, projectName } = interfaceFixture
 
   const sourcePath = folder ? path.join('src', folder, sourceFile) : path.join('src', sourceFile)
-  const filePath = path.join(projectRoot, sourcePath)
+  const filePath = ProjectRelativePath(sourcePath)
   const result = Effect.runSync(
     Effect.gen(function* () {
       return yield* analyzeFile(interfaceFixture, filePath, {
@@ -216,71 +217,71 @@ describe('analyze Interface dependency pattern', () => {
         expect.arrayContaining([
           {
             source: { memberPath: ['$generics', 'T'] },
-            target: { scope: 'import', localName: 'ImportedType' },
+            target: { scope: 'import', localSymbolName: 'ImportedType' },
           },
           {
             source: { memberPath: ['$generics', 'U'] },
-            target: { scope: 'local-file', symbolName: 'LocalClass' },
+            target: { scope: 'local-file', localSymbolName: 'LocalClass' },
           },
           {
             source: { memberPath: ['$extend', 0] },
-            target: { scope: 'import', localName: 'ImportedBase' },
+            target: { scope: 'import', localSymbolName: 'ImportedBase' },
           },
           {
             source: { memberPath: ['$extend', 1] },
-            target: { scope: 'local-file', symbolName: 'LocalBase' },
+            target: { scope: 'local-file', localSymbolName: 'LocalBase' },
           },
           {
             source: { memberPath: ['$member', 'localProperty'] },
-            target: { scope: 'local-file', symbolName: 'LocalType' },
+            target: { scope: 'local-file', localSymbolName: 'LocalType' },
           },
           {
             source: { memberPath: ['$member', 'importedProperty'] },
-            target: { scope: 'import', localName: 'ImportedType' },
+            target: { scope: 'import', localSymbolName: 'ImportedType' },
           },
           {
             source: { memberPath: ['$member', 'localMethod', '$parameters', 'value'] },
-            target: { scope: 'local-file', symbolName: 'LocalType' },
+            target: { scope: 'local-file', localSymbolName: 'LocalType' },
           },
           {
             source: { memberPath: ['$member', 'localMethod', '$return'] },
-            target: { scope: 'import', localName: 'ImportedType' },
+            target: { scope: 'import', localSymbolName: 'ImportedType' },
           },
           {
             source: { memberPath: ['$member', 'importedMethod', '$parameters', 'value'] },
-            target: { scope: 'import', localName: 'ImportedType' },
+            target: { scope: 'import', localSymbolName: 'ImportedType' },
           },
           {
             source: { memberPath: ['$member', 'importedMethod', '$return'] },
-            target: { scope: 'local-file', symbolName: 'LocalType' },
+            target: { scope: 'local-file', localSymbolName: 'LocalType' },
           },
           {
             source: { memberPath: ['$member', 'callback', '$generics', 'A'] },
-            target: { scope: 'import', localName: 'ImportedType' },
+            target: { scope: 'import', localSymbolName: 'ImportedType' },
           },
           {
             source: { memberPath: ['$member', 'callback', '$generics', 'B'] },
-            target: { scope: 'local-file', symbolName: 'LocalClass' },
+            target: { scope: 'local-file', localSymbolName: 'LocalClass' },
           },
           {
             source: { memberPath: ['$member', 'callback', '$parameters', 'local'] },
-            target: { scope: 'local-file', symbolName: 'LocalType' },
+            target: { scope: 'local-file', localSymbolName: 'LocalType' },
           },
           {
             source: { memberPath: ['$member', 'callback', '$parameters', 'imported'] },
-            target: { scope: 'import', localName: 'ImportedType' },
+            target: { scope: 'import', localSymbolName: 'ImportedType' },
           },
           {
             source: { memberPath: ['$member', 'callback', '$return'] },
-            target: { scope: 'import', localName: 'ImportedClass' },
+            target: { scope: 'import', localSymbolName: 'ImportedClass' },
           },
           {
             source: { memberPath: ['$member', 'nested', 0, '$generics', 0] },
-            target: { scope: 'import', localName: 'ImportedType' },
+            target: { scope: 'import', localSymbolName: 'ImportedType' },
           },
           {
             source: { memberPath: ['$member', 'nested', 1, '$generics', 1, '$generics', 0] },
-            target: { scope: 'local-file', symbolName: 'LocalType' },
+            target: { scope: 'local-file', localSymbolName: 'LocalType' },
           },
         ]),
       )

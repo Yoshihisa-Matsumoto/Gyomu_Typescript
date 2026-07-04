@@ -2,10 +2,11 @@ import { Node, SyntaxKind } from 'ts-morph'
 import { moduleSpecifierToSourcePath } from '../../shared/module/moduleSpecifierToSourcePath.js'
 import type { FileAnalysisMetadata } from '../file/FileAnalysisResult.js'
 import type {
-  ExportAnalysis,
   MemberIdentityMemberPath,
+  ProjectRelativePath,
   SymbolAnalysis,
 } from '@gyomu/schema/typescript'
+import type { ExportAnalysis } from '@gyomu/schema/schemas/typescript'
 import type { StatementAnalysisResult } from './types.js'
 import type { ExportDeclaration } from 'ts-morph'
 import type { AnalysisOptions } from '../AnalysisOption.js'
@@ -18,7 +19,7 @@ export const analyzeExportStatement = (
   },
   args: {
     metadata: FileAnalysisMetadata
-    sourceRelativePath: string
+    sourceRelativePath: ProjectRelativePath
     memberPath: MemberIdentityMemberPath
     sourceFullText: string
     declarationOrder: number

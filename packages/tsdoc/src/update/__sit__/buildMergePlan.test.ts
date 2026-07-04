@@ -7,6 +7,7 @@ import { makeRunner } from '@gyomu/schema/effect'
 import 'dotenv/config'
 import { describe, expect, it } from 'vitest'
 import { analyzeFile } from '@gyomu/ts-analysis'
+import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { buildMergePlan } from '../buildMergePlan.js'
 import { createFixtureProject } from '../__tests__/createFixtureProject.js'
 
@@ -20,7 +21,7 @@ const runQAWithEnvOrThrow = makeRunner(VercelAiModelServiceLive)
 const buildMergePlanProgram = (sourceFile: string) => {
   const { project, projectRoot, projectName } = updateFixture
 
-  const filePath = path.join(projectRoot, path.join('src', sourceFile))
+  const filePath = ProjectRelativePath(path.join('src', sourceFile))
   const program = Effect.gen(function* () {
     const result = yield* analyzeFile(updateFixture, filePath, {
       includeDebugInfo: true,

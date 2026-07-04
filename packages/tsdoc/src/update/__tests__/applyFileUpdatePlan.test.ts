@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { SignatureId, SymbolId } from '@gyomu/schema/typescript'
 import { applyFileUpdatePlan } from '../applyFileUpdatePlan.js'
 import type { FileUpdatePlan } from '../jsdoc/FileUpdatePlan.js'
 
@@ -12,8 +13,8 @@ describe('applyFileUpdatePlan', () => {
           startOffset: 9,
           endOffset: 12, // "foo"
           symbol: {
-            symbolId: 'foo',
-            signatureId: 'sig',
+            symbolId: SymbolId('foo'),
+            signatureId: SignatureId('sig'),
           },
           newText: 'bar',
           startLine: 0,
@@ -38,8 +39,8 @@ describe('applyFileUpdatePlan', () => {
           startOffset: 0,
           endOffset: 0,
           symbol: {
-            symbolId: 'foo',
-            signatureId: 'sig',
+            symbolId: SymbolId('foo'),
+            signatureId: SignatureId('sig'),
           },
           newText: '/** doc */\n',
           startLine: 0,
@@ -64,8 +65,8 @@ describe('applyFileUpdatePlan', () => {
           startOffset: 9,
           endOffset: 12, // foo
           symbol: {
-            symbolId: 'foo',
-            signatureId: 'sig',
+            symbolId: SymbolId('foo'),
+            signatureId: SignatureId('sig'),
           },
           newText: 'bar',
           startLine: 0,
@@ -77,8 +78,8 @@ describe('applyFileUpdatePlan', () => {
           startOffset: 24,
           endOffset: 25, // 1
           symbol: {
-            symbolId: 'num',
-            signatureId: 'sig',
+            symbolId: SymbolId('num'),
+            signatureId: SignatureId('sig'),
           },
           newText: '42',
           startLine: 0,
@@ -103,8 +104,8 @@ describe('applyFileUpdatePlan', () => {
           startOffset: 24,
           endOffset: 25,
           symbol: {
-            symbolId: 'num',
-            signatureId: 'sig',
+            symbolId: SymbolId('num'),
+            signatureId: SignatureId('sig'),
           },
           newText: '42',
           startLine: 0,
@@ -116,8 +117,8 @@ describe('applyFileUpdatePlan', () => {
           startOffset: 9,
           endOffset: 12,
           symbol: {
-            symbolId: 'foo',
-            signatureId: 'sig',
+            symbolId: SymbolId('foo'),
+            signatureId: SignatureId('sig'),
           },
           newText: 'bar',
           startLine: 0,

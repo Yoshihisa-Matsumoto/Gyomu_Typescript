@@ -4,11 +4,11 @@ import { AuditFields, PrimaryFields } from './fields.js'
 import type {
   EntityDefinition,
   Fields,
-  Mutable,
   Optionalized,
   UIAnnotationField,
   UIAnnotations,
 } from './type.js'
+import type { Mutable } from 'effect/Types'
 
 const pickFields = <T extends Fields, K extends ReadonlyArray<keyof T>>(
   fields: T,

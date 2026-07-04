@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { toIdentityKey } from '@gyomu/schema/schemas/typescript'
+import { SignatureId, SymbolId } from '@gyomu/schema/typescript'
 import { buildFileUpdatePlan } from '../buildFileUpdatePlan.js'
 import type { RenderedSymbolJsDoc } from '../jsdoc/RenderedSymbolJsDoc.js'
 
@@ -7,8 +8,8 @@ describe('buildFileUpdatePlan', () => {
   it('should create edit plan from matching symbols', () => {
     const symbol = {
       identity: {
-        symbolId: 'user',
-        signatureId: 'sig1',
+        symbolId: SymbolId('user'),
+        signatureId: SignatureId('sig1'),
       },
       location: {
         startLine: 10,
@@ -34,7 +35,6 @@ describe('buildFileUpdatePlan', () => {
       },
     ]
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const result = buildFileUpdatePlan(sourceFile as any, updatedDocs as any)
 
     expect(result).toEqual({
@@ -71,7 +71,6 @@ describe('buildFileUpdatePlan', () => {
       },
     ]
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const result = buildFileUpdatePlan(sourceFile as any, updatedDocs as any)
 
     expect(result).toEqual({
@@ -82,8 +81,8 @@ describe('buildFileUpdatePlan', () => {
   it('should sort edits by startLine descending', () => {
     const symbol1 = {
       identity: {
-        symbolId: 'first',
-        signatureId: 'sig1',
+        symbolId: SymbolId('first'),
+        signatureId: SignatureId('sig1'),
       },
       location: {
         startLine: 10,
@@ -93,8 +92,8 @@ describe('buildFileUpdatePlan', () => {
 
     const symbol2 = {
       identity: {
-        symbolId: 'second',
-        signatureId: 'sig2',
+        symbolId: SymbolId('second'),
+        signatureId: SignatureId('sig2'),
       },
       location: {
         startLine: 50,

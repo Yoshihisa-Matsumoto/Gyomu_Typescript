@@ -6,13 +6,14 @@ import { saveSnapshot } from './saveSnapshot.js'
 import { ensureProjectWorkspace } from './ensureProjectWorkspace.js'
 
 import { diffSnapshot } from './diffSnapshot.js'
+import type { FullPath, WorkspaceRelativePath } from '@gyomu/schema/typescript'
 import type { FileSearchService } from '@gyomu/schema/shared/fs'
 import type { FileSystem } from 'effect'
 import type { FileHashSnapshot } from './types/FileHashSnapshot.js'
 
 export interface CommitProjectSnapshotInput {
-  readonly repoRoot: string
-  readonly projectPath: string
+  readonly repoRoot: FullPath
+  readonly projectPath: WorkspaceRelativePath
   readonly expectedSnapshot: FileHashSnapshot
 }
 

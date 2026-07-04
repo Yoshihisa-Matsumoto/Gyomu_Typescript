@@ -1,4 +1,5 @@
 import { Node, SyntaxKind } from 'ts-morph'
+import { SignatureId, SymbolId } from '@gyomu/schema/typescript'
 import { analyzeType } from '../analyzeType.js'
 import { analyzeParameter } from '../analyzeParameter.js'
 import { createSymbolIdentity } from '../../../shared/createSymbolIdentity.js'
@@ -19,7 +20,7 @@ export const analyzeFunction = (
 ) => {
   const name = args.declaration.getName()
   const identity: SymbolIdentity = {
-    symbolId: name,
+    symbolId: SymbolId(name),
     signatureId: prepared.signature.id,
   }
 
@@ -84,7 +85,10 @@ export const getFunctionSignature = (
     options,
   } = args
   const { id } = createSymbolIdentity(declaration, sourceRelativePath, 'function')
-  const identity: SymbolIdentity = { symbolId: nodeName, signatureId: 'function' }
+  const identity: SymbolIdentity = {
+    symbolId: SymbolId(nodeName),
+    signatureId: SignatureId('function'),
+  }
   let initializer: Expression | undefined = undefined
   if (!node.getReturnTypeNode()) {
     const body = node.getBody()
@@ -135,7 +139,7 @@ export const getFunctionSignature = (
     [nodeName, '$return'],
   )
   return {
-    id: 'function',
+    id: SignatureId('function'),
     parameters: parametersResult.map((p) => p.member),
 
     returnType: returnTypeResult?.member,

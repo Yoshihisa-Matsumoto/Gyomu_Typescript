@@ -10,6 +10,7 @@ import { beforeAll, describe, expect, it, vi } from 'vitest'
 
 import { AiModelService } from '@gyomu/ai'
 import { analyzeFile } from '@gyomu/ts-analysis'
+import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { buildJsDocUpdatePlanWithRetry } from '../internal/buildJsDocUpdatePlanWithRetry.js'
 import { processTsDocUpdate } from '../processTsDocUpdate.js'
 import { createFixtureProject } from './createFixtureProject.js'
@@ -60,7 +61,7 @@ const processTsDocUpdateProgram = async (sourceFile: string, expectedPlans: JsDo
   // for (const expectedPlan of expectedPlans)
   vi.mocked(buildJsDocUpdatePlanWithRetry).mockReturnValueOnce(Effect.succeed(expectedPlans))
   const program = Effect.gen(function* () {
-    const sourceRelativePath = path.join('src', sourceFile)
+    const sourceRelativePath = ProjectRelativePath(path.join('src', sourceFile))
     const fileResult = yield* analyzeFile(updateFixture, sourceRelativePath)
     yield* processTsDocUpdate(updateFixture, fileResult)
     const sourceAbsolute = path.join(updateFixture.projectRoot, sourceRelativePath)

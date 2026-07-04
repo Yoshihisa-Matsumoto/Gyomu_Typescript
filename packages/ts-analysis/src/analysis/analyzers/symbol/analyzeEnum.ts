@@ -1,3 +1,4 @@
+import { SignatureId, SymbolId } from '@gyomu/schema/typescript'
 import { registerSymbolSymbolAnalysis } from '../../file/registerSymbolSymbolAnalysis.js'
 import { prepareSymbolAnalysis } from './prepareSymbolAnalysis.js'
 import { detectEffectSignals } from './analyzeEffectType.js'
@@ -34,7 +35,7 @@ export const analyzeEnum = (args: TagAnalysisArg<EnumDeclaration>) => {
     getSignatureId,
   )
   const identity: SymbolIdentity = {
-    symbolId: typeName,
+    symbolId: SymbolId(typeName),
     signatureId: prepared.signature.id,
   }
   const symbol = {
@@ -78,5 +79,5 @@ export const analyzeEnum = (args: TagAnalysisArg<EnumDeclaration>) => {
 }
 
 const getSignatureId = () => {
-  return { id: 'enum', parameters: [] }
+  return { id: SignatureId('enum'), parameters: [] }
 }

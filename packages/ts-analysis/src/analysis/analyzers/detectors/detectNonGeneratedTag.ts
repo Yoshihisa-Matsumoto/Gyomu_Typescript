@@ -1,4 +1,4 @@
-import type { HumanEditSignal, ParsedTag } from '@gyomu/schema/typescript'
+import type { HumanEditSignal, ParsedTag } from '@gyomu/schema/schemas/typescript'
 import type { TagHumanEditDetector } from './types.js'
 
 const knownTags = new Set([

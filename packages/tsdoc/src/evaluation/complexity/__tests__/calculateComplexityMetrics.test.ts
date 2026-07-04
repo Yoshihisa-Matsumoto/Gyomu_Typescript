@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { SignatureId, SymbolId } from '@gyomu/schema/typescript'
 import { calculateComplexityMetrics } from '../calculateComplexityMetrics.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
 import type { FileAnalysisResult } from '@gyomu/ts-analysis'
@@ -14,9 +15,9 @@ describe('calculateComplexityMetrics', () => {
     expect(result.size).toBe(0)
   })
   it('counts optional properties and referenced types', () => {
-    const symbolId = 'User'
+    const symbolId = SymbolId('User')
     const symbolIdentity: SymbolIdentity = {
-      signatureId: 'property',
+      signatureId: SignatureId('property'),
       symbolId,
     }
     const result = calculateComplexityMetrics({
@@ -56,9 +57,9 @@ describe('calculateComplexityMetrics', () => {
   })
 
   it('counts union types', () => {
-    const symbolId = 'Status'
+    const symbolId = SymbolId('Status')
     const symbolIdentity: SymbolIdentity = {
-      signatureId: 'property',
+      signatureId: SignatureId('property'),
       symbolId,
     }
     const result = calculateComplexityMetrics({
@@ -91,9 +92,9 @@ describe('calculateComplexityMetrics', () => {
   })
 
   it('counts nested referenced types recursively', () => {
-    const symbolId = 'User'
+    const symbolId = SymbolId('User')
     const symbolIdentity: SymbolIdentity = {
-      signatureId: 'property',
+      signatureId: SignatureId('property'),
       symbolId,
     }
     const result = calculateComplexityMetrics({

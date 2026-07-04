@@ -8,7 +8,7 @@ describe('renderJsDocLines', () => {
       jsDoc: {
         examples: [],
         protectedRegions: [],
-        protectedSection: [],
+        protectedSections: [],
         params: [],
         throws: [],
         templates: [],
@@ -30,7 +30,7 @@ describe('renderJsDocLines', () => {
         summary: 'Create user',
         examples: [],
         protectedRegions: [],
-        protectedSection: [],
+        protectedSections: [],
         params: [],
         throws: [],
         templates: [],
@@ -56,7 +56,7 @@ describe('renderJsDocLines', () => {
       jsDoc: {
         examples: ['foo()', 'bar()'],
         protectedRegions: [],
-        protectedSection: [],
+        protectedSections: [],
         params: [],
         throws: [],
         templates: [],
@@ -99,7 +99,7 @@ describe('renderJsDocLines', () => {
             content: 'first',
           },
         ],
-        protectedSection: [],
+        protectedSections: [],
         params: [],
         throws: [],
         templates: [],
@@ -130,7 +130,7 @@ describe('renderJsDocLines', () => {
       jsDoc: {
         examples: [],
         protectedRegions: [],
-        protectedSection: [],
+        protectedSections: [],
         params: [
           {
             name: 'b',
@@ -173,7 +173,7 @@ describe('renderJsDocLines', () => {
       jsDoc: {
         examples: [],
         protectedRegions: [],
-        protectedSection: [],
+        protectedSections: [],
         params: [
           {
             name: 'id',
@@ -203,7 +203,7 @@ describe('renderJsDocLines', () => {
       jsDoc: {
         examples: [],
         protectedRegions: [],
-        protectedSection: [],
+        protectedSections: [],
         params: [],
         returns: {
           description: 'Created user',
@@ -231,7 +231,7 @@ describe('renderJsDocLines', () => {
       jsDoc: {
         examples: [],
         protectedRegions: [],
-        protectedSection: [],
+        protectedSections: [],
         params: [],
         throws: [
           {
@@ -272,7 +272,7 @@ describe('renderJsDocLines', () => {
       jsDoc: {
         examples: [],
         protectedRegions: [],
-        protectedSection: [],
+        protectedSections: [],
         params: [],
         throws: [],
         templates: ['T', 'U'],
@@ -304,7 +304,7 @@ describe('renderJsDocLines', () => {
       jsDoc: {
         examples: [],
         protectedRegions: [],
-        protectedSection: [],
+        protectedSections: [],
         params: [],
         throws: [],
         templates: [],
@@ -335,7 +335,7 @@ describe('renderJsDocLines', () => {
       jsDoc: {
         examples: [],
         protectedRegions: [],
-        protectedSection: [],
+        protectedSections: [],
         params: [],
         throws: [],
         templates: [],
@@ -374,7 +374,7 @@ describe('renderJsDocLines', () => {
             content: 'Protected content',
           },
         ],
-        protectedSection: [],
+        protectedSections: [],
         params: [
           {
             name: 'id',

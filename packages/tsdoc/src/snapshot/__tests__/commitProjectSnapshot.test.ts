@@ -3,6 +3,7 @@ import { Effect, Exit, FileSystem } from 'effect'
 
 import { FileSearchService } from '@gyomu/schema/shared/fs'
 import { getFailureFromExit } from '@gyomu/schema'
+import { FullPath, WorkspaceRelativePath } from '@gyomu/schema/typescript'
 import { commitProjectSnapshot } from '../commitProjectSnapshot.js'
 
 import { ensureProjectWorkspace } from '../ensureProjectWorkspace.js'
@@ -48,13 +49,13 @@ describe('commitProjectSnapshot', () => {
 
   const expectedSnapshot: FileHashSnapshot = {
     version: GYOMU_VERSION,
-    projectRoot: '',
+    projectRoot: WorkspaceRelativePath(''),
     files: [{ path: 'a.ts', rawHash: 'old' } as any],
   }
 
   const currentSnapshot: FileHashSnapshot = {
     version: GYOMU_VERSION,
-    projectRoot: '',
+    projectRoot: WorkspaceRelativePath(''),
     files: [{ path: 'a.ts', rawHash: 'new' } as any],
   }
 
@@ -73,8 +74,8 @@ describe('commitProjectSnapshot', () => {
 
     const result = run(
       commitProjectSnapshot({
-        repoRoot: '/repo',
-        projectPath: 'packages/app',
+        repoRoot: FullPath(FullPath('/repo')),
+        projectPath: WorkspaceRelativePath('packages/app'),
         expectedSnapshot,
       }),
     )
@@ -98,8 +99,8 @@ describe('commitProjectSnapshot', () => {
 
     const result = run(
       commitProjectSnapshot({
-        repoRoot: '/repo',
-        projectPath: 'packages/app',
+        repoRoot: FullPath('/repo'),
+        projectPath: WorkspaceRelativePath('packages/app'),
         expectedSnapshot,
       }),
     )
@@ -125,13 +126,16 @@ describe('commitProjectSnapshot', () => {
 
     run(
       commitProjectSnapshot({
-        repoRoot: '/repo',
-        projectPath: 'packages/app',
+        repoRoot: FullPath('/repo'),
+        projectPath: WorkspaceRelativePath('packages/app'),
         expectedSnapshot,
       }),
     )
 
-    expect(createSnapshot).toHaveBeenCalledWith({ projectPath: 'packages/app', repoRoot: '/repo' })
+    expect(createSnapshot).toHaveBeenCalledWith({
+      projectPath: WorkspaceRelativePath('packages/app'),
+      repoRoot: FullPath('/repo'),
+    })
   })
 
   it('passes expected and current snapshots to diffSnapshot', () => {
@@ -145,8 +149,8 @@ describe('commitProjectSnapshot', () => {
 
     run(
       commitProjectSnapshot({
-        repoRoot: '/repo',
-        projectPath: 'packages/app',
+        repoRoot: FullPath('/repo'),
+        projectPath: WorkspaceRelativePath('packages/app'),
         expectedSnapshot,
       }),
     )
@@ -168,8 +172,8 @@ describe('commitProjectSnapshot', () => {
 
     const result = run(
       commitProjectSnapshot({
-        repoRoot: '/repo',
-        projectPath: 'packages/app',
+        repoRoot: FullPath('/repo'),
+        projectPath: WorkspaceRelativePath('packages/app'),
         expectedSnapshot,
       }),
     )
@@ -190,8 +194,8 @@ describe('commitProjectSnapshot', () => {
 
     run(
       commitProjectSnapshot({
-        repoRoot: '/repo',
-        projectPath: 'packages/app',
+        repoRoot: FullPath('/repo'),
+        projectPath: WorkspaceRelativePath('packages/app'),
         expectedSnapshot,
       }),
     )

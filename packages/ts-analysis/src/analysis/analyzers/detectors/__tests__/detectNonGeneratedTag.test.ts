@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import { detectNonGeneratedTag } from '../detectNonGeneratedTag.js'
-import type { HumanEditContext, ParsedTag } from '@gyomu/schema/typescript'
+import type { HumanEditContext, ParsedTag } from '@gyomu/schema/schemas/typescript'
 
 const context: HumanEditContext = {
   source: 'tag',

@@ -1,4 +1,4 @@
-import type { ImportAnalysis } from '@gyomu/schema/typescript'
+import type { ImportAnalysis } from '@gyomu/schema/schemas/typescript'
 import type { ImportDeclaration } from 'ts-morph'
 
 export const analyzeImportStatement = (statement: ImportDeclaration): Array<ImportAnalysis> => {

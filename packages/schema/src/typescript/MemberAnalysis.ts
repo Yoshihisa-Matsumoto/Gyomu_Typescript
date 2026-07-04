@@ -1,8 +1,8 @@
-import type { JsDocAnalysis } from './jsdoc/JsDocAnalysis.js'
+import type { JsDocAnalysis } from '../schemas/typescript/jsdoc/JsDocAnalysis.js'
 import type { TypeAnalysis } from './SymbolModel.js'
 import type { SymbolId } from './types.js'
 import type { SymbolIdentity } from '../schemas/typescript/SymbolIdentity.js'
-import type { ParsedJsDoc } from './jsdoc/ParsedJsDoc.js'
+import type { ParsedJsDoc } from '../schemas/typescript/jsdoc/ParsedJsDoc.js'
 
 /**
  * Defines a union of member analysis types, categorized by whether they are documentable.
@@ -13,15 +13,13 @@ export type MemberAnalysis = NonDocumentableMemberAnalysis | DocumentableMemberA
  * Defines the set of member analyses that are not subject to documentation.
  */
 export type NonDocumentableMemberAnalysis =
-  | NonDocumentableMethodMemberAnalysis
-  | NonDocumentablePropertyMemberAnalysis
+  NonDocumentableMethodMemberAnalysis | NonDocumentablePropertyMemberAnalysis
 
 /**
  * Defines the set of member analyses that are documentable.
  */
 export type DocumentableMemberAnalysis =
-  | DocumentableMethodMemberAnalysis
-  | DocumentablePropertyMemberAnalysis
+  DocumentableMethodMemberAnalysis | DocumentablePropertyMemberAnalysis
 
 /**
  * Unique identifier for a class or object member.
@@ -30,7 +28,7 @@ export interface MemberIdentity {
   /**
    * The identifier of the symbol that owns this member.
    */
-  readonly ownerSymbolId: MemberIdentityOwnerSymbolId
+  readonly ownerSymbolId: SymbolId
 
   /**
    * The path to the member within the owning symbol.
@@ -42,11 +40,6 @@ export interface MemberIdentity {
    */
   readonly signatureId: string
 }
-
-/**
- * Represents the unique identifier for an owner symbol.
- */
-export type MemberIdentityOwnerSymbolId = string
 
 /**
  * Represents a path of segments identifying a member.
@@ -79,7 +72,7 @@ interface BaseMemberAnalysis {
 
   documentable: boolean
 
-  ownerSymbolId: MemberIdentityOwnerSymbolId
+  ownerSymbolId: SymbolId
 
   identity: SymbolIdentity
 

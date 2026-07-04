@@ -1,3 +1,4 @@
+import type { Mutable } from 'effect/Types'
 import type { Schema } from 'effect'
 import type { defineEntityCrudSchemas } from './defineEntityCrudSchemas.js'
 
@@ -58,9 +59,14 @@ export type EntityDefinition<
 /**
  * Removes the readonly modifier from all properties of a type.
  */
-export type Mutable<T> = {
-  -readonly [P in keyof T]: T[P]
-}
+export type DeepMutable<T> =
+  T extends ReadonlyArray<infer U>
+    ? Array<Mutable<U>>
+    : T extends object
+      ? { -readonly [K in keyof T]: Mutable<T[K]> }
+      : T
+
+export type Builder<T> = DeepMutable<T>
 
 /**
  * Wraps all fields in a schema definition with an optional modifier.

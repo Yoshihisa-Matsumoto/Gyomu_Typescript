@@ -7,6 +7,7 @@ import { VercelAiModelServiceLive } from '@gyomu/ai/provider/vercel'
 import { makeRunner } from '@gyomu/schema/effect'
 import 'dotenv/config'
 import { analyzeFile } from '@gyomu/ts-analysis'
+import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { buildJsDocUpdateContext } from '../buildJsDocUpdateContext.js'
 import { buildJsDocUpdatePlanWithRetry } from '../buildJsDocUpdatePlanWithRetry.js'
 import { calculateComplexityMetrics } from '../../../evaluation/complexity/calculateComplexityMetrics.js'
@@ -22,7 +23,7 @@ const runQAWithEnvOrThrow = makeRunner(VercelAiModelServiceLive)
 const buildJsDocUpdateContextProgram = (sourceFile: string) => {
   const { project, projectRoot, projectName } = updateFixture
 
-  const filePath = path.join(projectRoot, path.join('src', sourceFile))
+  const filePath = ProjectRelativePath(path.join('src', sourceFile))
   const program = Effect.gen(function* () {
     const result = yield* analyzeFile(updateFixture, filePath, {
       includeDebugInfo: true,

@@ -3,6 +3,7 @@ import { Effect, Layer } from 'effect'
 import { NodeFileSystem } from '@effect/platform-node'
 import { AiModelService } from '@gyomu/ai'
 
+import { SignatureId, SymbolId } from '@gyomu/schema/typescript'
 import { executeJsDocUpdatePlan } from '../executeJsDocUpdatePlan.js'
 import type { JsDocUpdatePlan } from '../../schema/JsDocUpdatePlan.js'
 
@@ -11,8 +12,8 @@ describe('executeJsDocUpdatePlan', () => {
     const expected: JsDocUpdatePlan = [
       {
         identity: {
-          signatureId: '(filePath: string) => string',
-          symbolId: 'readFile',
+          signatureId: SignatureId('(filePath: string) => string'),
+          symbolId: SymbolId('readFile'),
         },
         summary: {
           action: { type: 'replace', value: 'Reads file content' },

@@ -3,6 +3,7 @@ import { Layer } from 'effect'
 import { ConfigLayer, MainLayer, PlatformLayer } from '@gyomu/infra'
 import { makeRunner } from '@gyomu/schema/effect'
 import { VercelAiModelServiceLive } from '@gyomu/ai/provider/vercel'
+import { SignatureId, SymbolId } from '@gyomu/schema/typescript'
 import { executeJsDocUpdatePlan } from '../executor/executeJsDocUpdatePlan.js'
 import 'dotenv/config'
 import type { TsDocFileContext } from '../context/TsDocFileContext.js'
@@ -22,8 +23,8 @@ describeIfApiKey('executeJsDocUpdatePlan integration', () => {
       symbols: [
         {
           target: {
-            signatureId: '(a: number, b: number) => number',
-            symbolId: 'add',
+            signatureId: SignatureId('(a: number, b: number) => number'),
+            symbolId: SymbolId('add'),
           },
           symbol: {
             name: 'add',
@@ -88,8 +89,8 @@ describeIfApiKey('executeJsDocUpdatePlan integration', () => {
       symbols: [
         {
           target: {
-            signatureId: '(a: number, b: number) => number',
-            symbolId: 'add',
+            signatureId: SignatureId('(a: number, b: number) => number'),
+            symbolId: SymbolId('add'),
           },
           symbol: {
             name: 'add',
@@ -155,8 +156,8 @@ describeIfApiKey('executeJsDocUpdatePlan integration', () => {
       symbols: [
         {
           target: {
-            signatureId: '(a: number, b: number) => number',
-            symbolId: 'add',
+            signatureId: SignatureId('(a: number, b: number) => number'),
+            symbolId: SymbolId('add'),
           },
 
           symbol: {

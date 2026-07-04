@@ -19,7 +19,8 @@ import type {
   JsDocThrows,
   ParsedJsDoc,
   RawJsDoc,
-} from '@gyomu/schema/typescript'
+} from '@gyomu/schema/schemas/typescript'
+import type { Builder } from '@gyomu/schema/entity'
 
 /**
  * Parses a ts-morph JSDoc node into a normalized {@link ParsedJsDoc} structure.
@@ -51,7 +52,7 @@ import type {
  * @returns Normalized structured JSDoc representation.
  */
 export const parseJsDocStructure = (raw: RawJsDoc, doc: JSDoc): ParsedJsDoc => {
-  const parsed: ParsedJsDoc = {
+  const parsed: Builder<ParsedJsDoc> = {
     examples: [],
 
     params: [],
@@ -61,7 +62,7 @@ export const parseJsDocStructure = (raw: RawJsDoc, doc: JSDoc): ParsedJsDoc => {
     templates: [],
 
     tags: [],
-    protectedSection: [],
+    protectedSections: [],
     protectedRegions: [],
     humanEditSignals: [],
 
@@ -129,7 +130,7 @@ export const parseJsDocStructure = (raw: RawJsDoc, doc: JSDoc): ParsedJsDoc => {
   const generator = parseGeneratedMarker(parsed.raw.rawText)
   if (generator) parsed.generator = generator
 
-  parsed.protectedSection = computeProtectedSections(parsed.humanEditSignals)
+  parsed.protectedSections = computeProtectedSections(parsed.humanEditSignals)
 
   return parsed
 }

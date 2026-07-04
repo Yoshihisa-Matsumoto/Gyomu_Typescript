@@ -2,6 +2,7 @@ import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { Effect } from 'effect'
 import { analyzeFile } from '@gyomu/ts-analysis'
+import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { buildJsDocUpdateContext } from '../buildJsDocUpdateContext.js'
 import { calculateComplexityMetrics } from '../../../evaluation/complexity/calculateComplexityMetrics.js'
 import { createFixtureProject } from '../../__tests__/createFixtureProject.js'
@@ -14,7 +15,7 @@ const updateFixture = createFixtureProject(path.join('update'))
 const buildJsDocUpdateContextProgram = (sourceFile: string) => {
   const { project, projectRoot, projectName } = updateFixture
 
-  const filePath = path.join(projectRoot, path.join('src', sourceFile))
+  const filePath = ProjectRelativePath(path.join('src', sourceFile))
   return Effect.runSync(
     Effect.gen(function* () {
       const result = yield* analyzeFile(updateFixture, filePath, {

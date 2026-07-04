@@ -70,18 +70,18 @@ export const snapshotCommand = (
         switch (fileChange.type) {
           case 'added':
           case 'updated': {
-            if (!fileFilter.match(fileChange.path)) {
-              console.log(`${fileChange.path} is not the target. skip`)
+            if (!fileFilter.match(fileChange.projectRelativePath)) {
+              console.log(`${fileChange.projectRelativePath} is not the target. skip`)
               continue
             }
 
-            const targetFilePath = join(projectAbsolutePath, fileChange.path)
+            const targetFilePath = join(projectAbsolutePath, fileChange.projectRelativePath)
             if (!projectContext.includedFiles.has(targetFilePath)) {
               console.log(`File:${targetFilePath} Not in the project`)
               continue
             }
             if (isTestFile(targetFilePath)) continue
-            console.log(fileChange.path)
+            console.log(fileChange.projectRelativePath)
             let fileResult = yield* analyzeFile(projectContext, targetFilePath)
 
             // yield* writeStringToFile(
@@ -121,7 +121,7 @@ export const snapshotCommand = (
               const fileAnalysisPath = join(
                 projectAbsolutePath,
                 '.gyomu',
-                fileChange.path + '.json',
+                fileChange.projectRelativePath + '.json',
               )
               yield* writeStringToFile(
                 fileAnalysisPath,
@@ -136,7 +136,7 @@ export const snapshotCommand = (
               const fileAnalysisPath = join(
                 projectAbsolutePath,
                 '.gyomu',
-                fileChange.path + '.json',
+                fileChange.projectRelativePath + '.json',
               )
               yield* removePath(fileAnalysisPath)
             }

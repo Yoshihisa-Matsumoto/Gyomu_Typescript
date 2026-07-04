@@ -1,8 +1,9 @@
+import type { ProjectRelativePath } from '@gyomu/schema/typescript'
 import type { FileHashSnapshot } from './types/FileHashSnapshot.js'
 import type { FileChange } from '@gyomu/schema/snapshot'
 
-const toMap = (snapshot: FileHashSnapshot): Map<string, any> => {
-  return new Map(snapshot.files.map((f) => [f.path, f]))
+const toMap = (snapshot: FileHashSnapshot): Map<ProjectRelativePath, any> => {
+  return new Map(snapshot.files.map((f) => [f.projectRelativePath, f]))
 }
 
 export const diffSnapshot = (
@@ -15,13 +16,13 @@ export const diffSnapshot = (
   const changes: Array<FileChange> = []
 
   // deleted + updated + unchanged detection
-  for (const [path, prev] of prevMap) {
-    const curr = currMap.get(path)
+  for (const [projectRelativePath, prev] of prevMap) {
+    const curr = currMap.get(projectRelativePath)
 
     if (!curr) {
       changes.push({
         type: 'deleted',
-        path,
+        projectRelativePath,
         previous: prev,
       })
       continue
@@ -30,7 +31,7 @@ export const diffSnapshot = (
     if (prev.rawHash !== curr.rawHash) {
       changes.push({
         type: 'updated',
-        path,
+        projectRelativePath,
         previous: prev,
         current: curr,
       })
@@ -38,11 +39,11 @@ export const diffSnapshot = (
   }
 
   // added detection
-  for (const [path, curr] of currMap) {
-    if (!prevMap.has(path)) {
+  for (const [projectRelativePath, curr] of currMap) {
+    if (!prevMap.has(projectRelativePath)) {
       changes.push({
         type: 'added',
-        path,
+        projectRelativePath,
         current: curr,
       })
     }

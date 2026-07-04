@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { computeProtectedSections } from '../computeProtectedSections.js'
-import type { HumanEditSignal } from '@gyomu/schema/typescript'
+import type { HumanEditSignal } from '@gyomu/schema/schemas/typescript'
 
 describe('computeProtectedRegionsFromHumanEditSignals', () => {
   it('returns empty when signals are empty', () => {

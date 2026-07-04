@@ -28,7 +28,7 @@ export const loadFileAnalysis = (
     Effect.mapError((e) =>
       wrapInfraError(AnalysisError, e, () => ({
         cause: e,
-        phase: 'source-file-load' as const,
+        phase: 'analysis' as const,
         filePath: sourceFilePath,
         message: 'fail to load FileAnalysis',
       })),

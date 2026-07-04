@@ -1,4 +1,4 @@
-import type { JsDocAnalysis, ParsedJsDoc } from '@gyomu/schema/typescript'
+import type { JsDocAnalysis, ParsedJsDoc } from '@gyomu/schema/schemas/typescript'
 
 export const analyzeJsDoc = (parsedList: ReadonlyArray<ParsedJsDoc>): JsDocAnalysis => {
   const exists = parsedList.length > 0

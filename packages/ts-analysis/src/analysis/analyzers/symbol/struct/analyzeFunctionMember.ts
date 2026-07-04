@@ -23,12 +23,12 @@ import type {
 } from 'ts-morph'
 import type { ChildAnalysisArg, MemberAnalysisResult, MethodAnalysisResult } from '../../types.js'
 import type {
-  DependencyCandidate,
   DocumentableMethodMemberAnalysis,
   MemberAccessor,
   NonDocumentableMethodMemberAnalysis,
   TypeAnalysis,
 } from '@gyomu/schema/typescript'
+import type { DependencyCandidate } from '@gyomu/schema/schemas/typescript'
 
 export const analyzeFunctionMember = (
   args: ChildAnalysisArg<

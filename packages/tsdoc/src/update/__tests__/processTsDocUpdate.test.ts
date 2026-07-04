@@ -5,14 +5,14 @@ import * as fsRead from '@gyomu/infra/fs'
 import { PlatformLayer } from '@gyomu/infra'
 import { AiModelService } from '@gyomu/ai'
 import * as analyze from '@gyomu/ts-analysis'
+import { FullPath } from '@gyomu/schema/typescript'
 import * as merge from '../buildMergePlan.js'
 import * as applyMerge from '../applyMergePlan.js'
 import * as render from '../renderJsDoc.js'
 import * as filePlan from '../buildFileUpdatePlan.js'
 import { processTsDocUpdate } from '../processTsDocUpdate.js'
-import type { ExportAnalysis } from '@gyomu/schema/typescript'
+import type { ExportAnalysis } from '@gyomu/schema/schemas/typescript'
 
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 const mockAiModelService = Layer.succeed(AiModelService, {
   generateObject: () =>
     Effect.succeed({
@@ -67,7 +67,7 @@ describe('processTsDocUpdate', () => {
       ],
     } as any)
 
-    vi.spyOn(analyze, 'toProjectAbsolutePath').mockReturnValue('/mock/path/file.ts')
+    vi.spyOn(analyze, 'toAbsolutePath').mockReturnValue(FullPath('/mock/path/file.ts'))
 
     vi.spyOn(fsRead, 'readStringFromFile').mockReturnValue(Effect.succeed('function foo() {}'))
 
