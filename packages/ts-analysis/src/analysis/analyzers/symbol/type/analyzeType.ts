@@ -18,8 +18,9 @@ import type { CallExpression, EntityName, Expression, TypeLiteralNode, TypeNode 
 export const analyzeType = (
   args: ChildAnalysisArg<TypeNode | Expression | undefined>,
   nodeName: Array<string> | undefined,
+
   rawText?: string | undefined,
-): MemberAnalysisResult<TypeAnalysis> | undefined => {
+): MemberAnalysisResult<TypeAnalysis> => {
   const {
     node,
     sourceRelativePath,
@@ -33,7 +34,6 @@ export const analyzeType = (
     sourceFullText,
     reservedNames,
   } = args
-
   if (node) {
     if (Node.isTypeNode(node)) {
       const nodeContent = node.getText()
@@ -75,13 +75,14 @@ export const analyzeType = (
         if (schemaEffectExpression != null) {
           // console.dir(schemaEffectExpression)
           // console.log(nodeName)
-          return analyzeEffectSchema(schemaEffectExpression, {
+          const effectSchema = analyzeEffectSchema(schemaEffectExpression, {
             name: nodeName?.[0] ?? '',
             ownerSymbolId,
             ownerSymbolIdentity,
             imported,
             memberPath: newMemberPath,
           })
+          if (effectSchema) return effectSchema
         }
       }
 
@@ -120,6 +121,14 @@ export const analyzeType = (
             },
             dependencies: [],
           }
+        case SyntaxKind.VoidKeyword:
+          return {
+            member: {
+              text: 'void',
+              source: 'typescript',
+            },
+            dependencies: [],
+          }
         case SyntaxKind.CallExpression: {
           const callExpression = node as CallExpression
           const expression = callExpression.getExpression()
@@ -138,38 +147,31 @@ export const analyzeType = (
           break
         }
         default:
-          // console.log(`Unhandled TypeNode kind: ${SyntaxKind[initialKind]}`)
-          // console.dir(node, { depth: null })
-          break
+          return {
+            member: {
+              source: 'typescript',
+              text: node.getText(),
+            },
+            dependencies: [],
+          }
       }
-      // if (Node.isObjectLiteralExpression(initializer)) {
-      //   return {
-      //     text: initializer.getText(),
-      //     ...withOptional({
-      //       effect: detectEffectSignals(initializer.getText()),
-      //     }),
-      //     structure: analyzeObjectLiteralTypeStructure({
-      //       sourcePath,
-      //       initializer,
-      //       memberPath,
-      //       metadata,
-      //       ownerSymbolId,
-      //       rawText: initializer.getText(),
-      //     }),
-      //   }
-      // }
+      return {
+        member: {
+          source: 'typescript',
+          text: node.getText(),
+        },
+        dependencies: [],
+      }
     }
-  }
-  if (rawText) {
+  } else {
     return {
       member: {
-        text: rawText,
+        text: rawText ?? '',
         source: 'typescript',
       },
       dependencies: [],
     }
   }
-  return undefined
 }
 
 const analyzeTypeStructures = (
@@ -217,7 +219,7 @@ const analyzeTypeStructures = (
       },
       undefined,
     )
-    if (Node.isArrayTypeNode(node) && typeAlias) {
+    if (Node.isArrayTypeNode(node)) {
       // console.log('Array')
       // console.log(typeName.getText())
       return {
@@ -231,7 +233,7 @@ const analyzeTypeStructures = (
     if (typeName.getText().includes('Array')) {
       // console.log('Array')
       // console.log(typeName.getText())
-      if (typeArguments.length == 1 && typeAlias) {
+      if (typeArguments.length == 1) {
         return {
           member: {
             kind: 'array',
@@ -251,27 +253,24 @@ const analyzeTypeStructures = (
     }
   }
   if (Node.isUnionTypeNode(node) || Node.isIntersectionTypeNode(node)) {
-    const memberTypeResult = node
-      .getTypeNodes()
-      .map((childType, index) =>
-        analyzeType(
-          {
-            sourceRelativePath,
-            metadata,
-            node: childType,
-            ownerSymbolId,
-            ownerSymbolIdentity,
-            memberPath: [...memberPath, index],
-            sourceFullText,
-            declarationOrder: index,
-            imported,
-            options,
-            reservedNames,
-          },
-          undefined,
-        ),
-      )
-      .filter((v) => !!v)
+    const memberTypeResult = node.getTypeNodes().map((childType, index) =>
+      analyzeType(
+        {
+          sourceRelativePath,
+          metadata,
+          node: childType,
+          ownerSymbolId,
+          ownerSymbolIdentity,
+          memberPath: [...memberPath, index],
+          sourceFullText,
+          declarationOrder: index,
+          imported,
+          options,
+          reservedNames,
+        },
+        undefined,
+      ),
+    )
     return {
       member: {
         kind: 'union',
@@ -462,14 +461,14 @@ const analyzeTypeLiteralMembers = (
             optional: false,
             readonly: false,
             rest: false,
-            type: methodType?.member,
+            type: methodType.member,
             declarationOrder: index,
             jsDoc: prepareResult.jsDoc,
             parsedJsDoc: prepareResult.parsedJsDoc,
             location: prepareResult.location,
             startOffset: prepareResult.startOffset,
           },
-          dependencies: methodType?.dependencies ?? [],
+          dependencies: methodType.dependencies,
         } satisfies MemberAnalysisResult<TypeProperty>
       }
       if (Node.isFunctionTypeNode(member)) {
@@ -497,11 +496,7 @@ const analyzeTypeLiteralMembers = (
         //   },
         // )
         const name = Node.isNameable(member) ? member.getName()! : member.getText()
-        const methodType = analyzeType(
-          { ...args, node: member, memberPath: newMemberPath },
-          [name],
-          member.getFullText(),
-        )
+        const methodType = analyzeType({ ...args, node: member, memberPath: newMemberPath }, [name])
         const prepareResult = prepareMethodAnalysis(
           args.sourceRelativePath,
           args.metadata,
@@ -530,14 +525,14 @@ const analyzeTypeLiteralMembers = (
             optional: false,
             readonly: false,
             rest: false,
-            type: methodType?.member,
+            type: methodType.member,
             declarationOrder: index,
             jsDoc: prepareResult.jsDoc,
             parsedJsDoc: prepareResult.parsedJsDoc,
             location: prepareResult.location,
             startOffset: prepareResult.startOffset,
           },
-          dependencies: methodType?.dependencies ?? [],
+          dependencies: methodType.dependencies,
         } satisfies MemberAnalysisResult<TypeProperty>
         // }
       }
@@ -572,7 +567,6 @@ const analyzeTypeLiteralMembers = (
           const methodType = analyzeType(
             { ...args, node: memberTypeNode, memberPath: newMemberPath },
             [name],
-            member.getFullText(),
           )
           const prepareResult = prepareMethodAnalysis(
             args.sourceRelativePath,
@@ -602,14 +596,14 @@ const analyzeTypeLiteralMembers = (
               optional: false,
               readonly: false,
               rest: false,
-              type: methodType?.member,
+              type: methodType.member,
               declarationOrder: index,
               jsDoc: prepareResult.jsDoc,
               parsedJsDoc: prepareResult.parsedJsDoc,
               location: prepareResult.location,
               startOffset: prepareResult.startOffset,
             },
-            dependencies: methodType?.dependencies ?? [],
+            dependencies: methodType.dependencies,
           } satisfies MemberAnalysisResult<TypeProperty>
         }
         return analyzeTypePropertyMember({

@@ -142,11 +142,11 @@ export const getFunctionSignature = (
     id: SignatureId('function'),
     parameters: parametersResult.map((p) => p.member),
 
-    returnType: returnTypeResult?.member,
+    returnType: returnTypeResult.member,
     dependencyCandidates: [
       ...genericsResult.dependencies,
       ...parametersResult.map((p) => p.dependencies).flat(),
-      ...(returnTypeResult?.dependencies ?? []),
+      ...returnTypeResult.dependencies,
     ],
   }
 }
