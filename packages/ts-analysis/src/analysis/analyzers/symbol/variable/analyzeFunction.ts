@@ -1,6 +1,6 @@
 import { Node, SyntaxKind } from 'ts-morph'
 import { SignatureId, SymbolId } from '@gyomu/schema/typescript'
-import { analyzeType } from '../analyzeType.js'
+import { analyzeType } from '../type/analyzeType.js'
 import { analyzeParameter } from '../analyzeParameter.js'
 import { createSymbolIdentity } from '../../../shared/createSymbolIdentity.js'
 import { registerSymbolSymbolAnalysis } from '../../../file/registerSymbolSymbolAnalysis.js'

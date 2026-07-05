@@ -1,5 +1,5 @@
 import { SignatureId } from '@gyomu/schema/typescript'
-import { analyzeType } from '../analyzeType.js'
+import { analyzeType } from '../type/analyzeType.js'
 import { analyzeFunctionMemberInternal } from '../struct/analyzeFunctionMember.js'
 import { createMemberIdentityAndId } from '../../../shared/createMemberIdentity.js'
 import { getAccessor } from './analyzeClassPropertyMember.js'

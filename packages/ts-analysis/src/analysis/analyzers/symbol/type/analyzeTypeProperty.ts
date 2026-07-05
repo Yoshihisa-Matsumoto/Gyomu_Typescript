@@ -1,14 +1,13 @@
-import { Node } from 'ts-morph'
 import { SignatureId } from '@gyomu/schema/typescript'
-import { createMemberIdentityAndId } from '../../shared/createMemberIdentity.js'
-import { analyzeType } from './type/analyzeType.js'
-import type { NonDocumentablePropertyMemberAnalysis } from '@gyomu/schema/typescript'
-import type { ChildAnalysisArg, MemberAnalysisResult } from '../types.js'
+import { createMemberIdentityAndId } from '../../../shared/createMemberIdentity.js'
+import { analyzeType } from '../type/analyzeType.js'
+import type { NonDocumentableTypeProperty } from '@gyomu/schema/typescript'
+import type { ChildAnalysisArg, MemberAnalysisResult } from '../../types.js'
 import type { ParameterDeclaration } from 'ts-morph'
 
-export const analyzeParameter = (
+export const analyzeTypeProperty = (
   args: ChildAnalysisArg<ParameterDeclaration>,
-): MemberAnalysisResult<NonDocumentablePropertyMemberAnalysis> => {
+): MemberAnalysisResult<NonDocumentableTypeProperty> => {
   const {
     node,
     sourceRelativePath,
@@ -55,13 +54,8 @@ export const analyzeParameter = (
   )
   return {
     member: {
-      kind: 'property',
       documentable: false,
       readonly: node.isReadonly(),
-      source: 'parameter-declaration',
-      static: Node.isStaticable(node) ? node.isStatic() : false,
-      visibility: 'public',
-      ownerSymbolId,
       id,
       identity,
       name,
@@ -71,10 +65,10 @@ export const analyzeParameter = (
       rest: !!node.getDotDotDotToken(),
 
       type: typeResult?.member,
+      declarationOrder: args.declarationOrder,
 
-      declarationOrder,
       // structure: analyzeParameterStructure(withOptional({ node: typeNode, initializer })),
-    },
+    } satisfies NonDocumentableTypeProperty,
     dependencies: typeResult?.dependencies ?? [],
   }
 }

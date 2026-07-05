@@ -9,6 +9,7 @@ import type {
   SymbolAnalysis,
   SymbolId,
   TypeAnalysis,
+  TypeProperty,
   TypeStructureAnalysis,
 } from '@gyomu/schema/typescript'
 import type { FileAnalysisResult } from '@gyomu/ts-analysis'
@@ -50,6 +51,20 @@ const calculateComplexityMetricsFromMembers = (
     if (member.kind == 'method')
       metricsArray.push(calculateComplexityMetricsFromMethod(member, currentDepth))
     else metricsArray.push(calculateComplexityMetricsFromProperty(member, currentDepth))
+  }
+
+  return mergeComplexityMetrics(metricsArray)
+}
+
+const calculateComplexityMetricsFromTypeProperties = (
+  members: Array<TypeProperty>,
+  currentDepth: number,
+): ComplexityMetrics => {
+  currentDepth++
+  const metricsArray: Array<ComplexityMetrics> = []
+  for (const member of members) {
+    if (member.type)
+      metricsArray.push(calculateComplexityMetricsFromTypeAnalysis(member.type, currentDepth))
   }
 
   return mergeComplexityMetrics(metricsArray)
@@ -126,10 +141,10 @@ const calculateComplexityMetricsFromTypeStructureAnalysis = (
     case 'array':
       return calculateComplexityMetricsFromTypeAnalysis(typeStructure.elementType, currentDepth)
     case 'function':
-      return calculateComplexityMetricsFromMembers(typeStructure.parameters, currentDepth)
+      return calculateComplexityMetricsFromTypeProperties(typeStructure.parameters, currentDepth)
     case 'object':
       if (typeStructure.members)
-        return calculateComplexityMetricsFromMembers(typeStructure.members, currentDepth)
+        return calculateComplexityMetricsFromTypeProperties(typeStructure.members, currentDepth)
       return emptyComplexityMetrics()
     case 'reference':
       initial.referencedTypeCount = 1

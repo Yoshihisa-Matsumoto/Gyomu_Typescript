@@ -1,9 +1,9 @@
 import { Node } from 'ts-morph'
-import { analyzeType } from '../type/analyzeType.js'
 import { preparePropertyAnalysis } from '../prepareMemberAnalysis.js'
-import { registerSymbolSymbolAnalysis } from '../../../file/registerSymbolSymbolAnalysis.js'
-import { computeIndent } from '../computeIndent.js'
 import { analyzeGenericsParameters } from '../analyzeGenericsParameters.js'
+import { computeIndent } from '../computeIndent.js'
+import { registerSymbolSymbolAnalysis } from '../../../file/registerSymbolSymbolAnalysis.js'
+import { analyzeType } from './analyzeType.js'
 import type { ChildAnalysisArg, MemberAnalysisResult } from '../../types.js'
 import type {
   Expression,
@@ -13,7 +13,7 @@ import type {
   TypeNode,
 } from 'ts-morph'
 
-import type { DocumentablePropertyMemberAnalysis, SymbolId } from '@gyomu/schema/typescript'
+import type { DocumentableTypeProperty, SymbolId, TypeProperty } from '@gyomu/schema/typescript'
 import type {
   DependencyCandidate,
   JsDocAnalysis,
@@ -22,11 +22,11 @@ import type {
   SymbolIdentity,
 } from '@gyomu/schema/schemas/typescript'
 
-export const analyzePropertyMember = (
+export const analyzeTypePropertyMember = (
   args: ChildAnalysisArg<PropertySignature | PropertyDeclaration>,
   isStatic: boolean = false,
   visibility: MemberAccessor = 'public',
-): MemberAnalysisResult<DocumentablePropertyMemberAnalysis> => {
+): MemberAnalysisResult<TypeProperty> => {
   const { sourceRelativePath, metadata, node, ownerSymbolId, ownerSymbolIdentity, memberPath } =
     args
   const typeNode = args.node.getTypeNode()
@@ -42,7 +42,7 @@ export const analyzePropertyMember = (
     node,
     node,
   )
-  return analyzePropertyMemberInternal(args, {
+  return analyzeTypePropertyMemberInternal(args, {
     initializer,
     typeNode,
     isStatic,
@@ -58,7 +58,7 @@ export const analyzePropertyMember = (
   })
 }
 
-export const analyzePropertyMemberInternal = (
+const analyzeTypePropertyMemberInternal = (
   args: ChildAnalysisArg<PropertySignature | PropertyDeclaration | GetAccessorDeclaration>,
   args2: {
     readonly: boolean
@@ -77,7 +77,7 @@ export const analyzePropertyMemberInternal = (
     }
     startOffset: number
   },
-): MemberAnalysisResult<DocumentablePropertyMemberAnalysis> => {
+): MemberAnalysisResult<DocumentableTypeProperty> => {
   const {
     sourceRelativePath,
     metadata,
@@ -89,6 +89,7 @@ export const analyzePropertyMemberInternal = (
     options,
     sourceFullText,
     reservedNames,
+    declarationOrder,
   } = args
   const { id, identity, jsDoc, location, startOffset, readonly, optional, parsedJsDoc } = args2
   const name = node.getName()
@@ -131,29 +132,24 @@ export const analyzePropertyMemberInternal = (
   )
 
   const property = {
-    kind: 'property',
     documentable: true,
-    source: 'property-declaration',
     id,
     identity,
-    ownerSymbolId,
     name,
 
     readonly,
     optional,
 
     type: typeResult?.member,
-    jsDoc,
-    parsedJsDoc,
 
-    location,
-    startOffset,
     rest: Node.isDotDotDotTokenable(node) ? !!node.getDotDotDotToken() : false,
+    declarationOrder,
 
-    static: args2.isStatic,
-    visibility: args2.visibility,
-    declarationOrder: args.declarationOrder,
-  } satisfies DocumentablePropertyMemberAnalysis
+    jsDoc,
+    location,
+    parsedJsDoc,
+    startOffset,
+  } satisfies DocumentableTypeProperty
   registerSymbolSymbolAnalysis(
     metadata,
     property,

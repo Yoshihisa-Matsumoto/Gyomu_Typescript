@@ -1,10 +1,14 @@
 import { toIdentityKey } from '@gyomu/schema/schemas/typescript'
-import type { DocumentableMemberAnalysis, SymbolAnalysis } from '@gyomu/schema/typescript'
+import type {
+  DocumentableMemberAnalysis,
+  DocumentableTypeProperty,
+  SymbolAnalysis,
+} from '@gyomu/schema/typescript'
 import type { FileAnalysisMetadata } from './FileAnalysisResult.js'
 
 export const registerSymbolSymbolAnalysis = (
   metadata: FileAnalysisMetadata,
-  symbolAnalysis: DocumentableMemberAnalysis | SymbolAnalysis,
+  symbolAnalysis: DocumentableMemberAnalysis | SymbolAnalysis | DocumentableTypeProperty,
   indent: string,
 ) => {
   const id = toIdentityKey(symbolAnalysis.identity)

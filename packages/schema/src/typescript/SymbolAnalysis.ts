@@ -1,11 +1,14 @@
+import type { SymbolKind } from '../schemas/typescript/SymbolKind.js'
 import type { JsDocAnalysis } from '../schemas/typescript/jsdoc/JsDocAnalysis.js'
 import type { ParsedJsDoc } from '../schemas/typescript/jsdoc/ParsedJsDoc.js'
 import type { DependencyCandidate } from '../schemas/typescript/DependencyCandidate.js'
 import type { SymbolIdentity } from '../schemas/typescript/SymbolIdentity.js'
+import type { LineRange } from '../schemas/typescript/LineRange.js'
 
 import type { MemberAnalysis } from './MemberAnalysis.js'
-import type { SignatureAnalysis, SymbolKind, TypeAnalysis } from './SymbolModel.js'
+import type { SignatureAnalysis } from './SymbolModel.js'
 import type { SymbolId } from './types.js'
+import type { TypeAnalysis } from './TypeAnalysis.js'
 
 /**
  * Detailed analysis result for a symbol declaration.
@@ -56,17 +59,7 @@ export interface SymbolAnalysis {
   /**
    * Source code location of the symbol.
    */
-  location: {
-    /**
-     * Starting line number.
-     */
-    startLine: number
-
-    /**
-     * Ending line number.
-     */
-    endLine: number
-  }
+  location: LineRange
 
   /**
    * Signature information for callable or typed symbols.

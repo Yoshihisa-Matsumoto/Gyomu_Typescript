@@ -1,14 +1,15 @@
 import { Node, SyntaxKind } from 'ts-morph'
-import { detectEffectSignals } from './analyzeEffectType.js'
-import { analyzeFunctionMember } from './struct/analyzeFunctionMember.js'
-import { analyzePropertyMember } from './struct/analyzePropertyMember.js'
-import { analyzeEffectSchema, getSupportedEffectSchemaType } from './analyzeEffectSchema.js'
-import { analyzeDependency, analyzeDependencyFromTypeReference } from './analyzeDependency.js'
-import type { ChildAnalysisArg, MemberAnalysisResult } from '../types.js'
+import { detectEffectSignals } from '../analyzeEffectType.js'
+import { analyzeEffectSchema, getSupportedEffectSchemaType } from '../analyzeEffectSchema.js'
+import { analyzeDependency, analyzeDependencyFromTypeReference } from '../analyzeDependency.js'
+import { initializeMethodIdentity, prepareMethodAnalysis } from '../prepareMemberAnalysis.js'
+import { analyzeTypeFunction } from './analyzeTypeFunction.js'
+import { analyzeTypePropertyMember } from './analyzeTypePropertyMember.js'
+import type { ChildAnalysisArg, MemberAnalysisResult } from '../../types.js'
 import type {
-  MemberAnalysis,
   MemberIdentityMemberPath,
   TypeAnalysis,
+  TypeProperty,
   TypeStructureAnalysis,
 } from '@gyomu/schema/typescript'
 
@@ -290,7 +291,8 @@ const analyzeTypeStructures = (
     //   nodeName,
     //   initializer: undefined,
     // })
-    const method = analyzeFunctionMember(
+    console.log(`FunctionTypeNode: ${nodeName}`)
+    const method = analyzeTypeFunction(
       {
         sourceRelativePath,
         memberPath,
@@ -298,6 +300,39 @@ const analyzeTypeStructures = (
         node,
         ownerSymbolId,
         ownerSymbolIdentity,
+        sourceFullText,
+        declarationOrder,
+        imported,
+        options,
+        reservedNames,
+      },
+      {
+        isStatic: undefined,
+        visibility: undefined,
+        name: nodeName ? (nodeName[0] ?? '') : node.getText(),
+        jsDocableNode: Node.isJSDocable(node) ? node : undefined,
+      },
+    )
+    return {
+      member: {
+        kind: 'function',
+        parameters: method.member.parameters,
+        returnType: method.member.returnType,
+      },
+      dependencies: method.dependencies,
+    }
+  }
+  if (Node.isMethodSignature(node)) {
+    console.log(`MethodSignature: ${nodeName}`)
+    const method = analyzeTypeFunction(
+      {
+        sourceRelativePath,
+        metadata,
+        node,
+        ownerSymbolId,
+        ownerSymbolIdentity,
+        memberPath,
+
         sourceFullText,
         declarationOrder,
         imported,
@@ -342,6 +377,9 @@ const analyzeTypeStructures = (
       dependencies: membersResult?.dependencies ?? [],
     }
   }
+  console.log(`!!Unsupported Type!!`)
+  console.dir(node, { depth: null })
+
   return undefined
 }
 
@@ -350,7 +388,7 @@ const computeTargetId = (typeName: EntityName) => {
 }
 const analyzeTypeLiteralMembers = (
   args: ChildAnalysisArg<TypeLiteralNode>,
-): MemberAnalysisResult<Array<MemberAnalysis>> | undefined => {
+): MemberAnalysisResult<Array<TypeProperty>> | undefined => {
   const {
     node,
     sourceRelativePath,
@@ -363,87 +401,218 @@ const analyzeTypeLiteralMembers = (
     sourceFullText,
     reservedNames,
   } = args
-  const members: Array<MemberAnalysisResult<MemberAnalysis>> = node
+
+  const newMemberPath = [...args.memberPath, '$member']
+  const members: Array<MemberAnalysisResult<TypeProperty>> = node
     .getMembers()
     .flatMap((member, index) => {
       if (Node.isMethodSignature(member)) {
-        return analyzeFunctionMember(
-          {
-            sourceRelativePath,
-            metadata,
-            node: member,
-            ownerSymbolId,
-            ownerSymbolIdentity,
-            memberPath,
+        // const methodResult= analyzeTypeFunction(
+        //   {
+        //     sourceRelativePath,
+        //     metadata,
+        //     node: member,
+        //     ownerSymbolId,
+        //     ownerSymbolIdentity,
+        //     memberPath,
 
-            sourceFullText,
-            declarationOrder: index,
-            imported,
-            options,
-            reservedNames,
-          },
-          {
-            isStatic: undefined,
-            visibility: undefined,
-            name: member.getName(),
-            jsDocableNode: member,
-          },
+        //     sourceFullText,
+        //     declarationOrder: index,
+        //     imported,
+        //     options,
+        //     reservedNames,
+        //   },
+        //   {
+        //     isStatic: undefined,
+        //     visibility: undefined,
+        //     name: member.getName(),
+        //     jsDocableNode: member,
+        //   },
+        // )
+        const methodType = analyzeType(
+          { ...args, memberPath: newMemberPath },
+          [member.getName()],
+          member.getFullText(),
         )
+        const name = member.getName()
+        const methodIdentity = initializeMethodIdentity(
+          args.ownerSymbolId,
+          args.ownerSymbolIdentity,
+          newMemberPath,
+          name,
+          member,
+        )
+        const prepareResult = prepareMethodAnalysis(
+          args.sourceRelativePath,
+          args.metadata,
+          args.ownerSymbolId,
+          args.ownerSymbolIdentity,
+          newMemberPath,
+          name,
+          member,
+          member,
+        )
+
+        return {
+          member: {
+            documentable: true,
+            id: methodIdentity.id,
+            identity: methodIdentity.identity,
+            name,
+            optional: false,
+            readonly: false,
+            rest: false,
+            type: methodType?.member,
+            declarationOrder: index,
+            jsDoc: prepareResult.jsDoc,
+            parsedJsDoc: prepareResult.parsedJsDoc,
+            location: prepareResult.location,
+            startOffset: prepareResult.startOffset,
+          },
+          dependencies: methodType?.dependencies ?? [],
+        } satisfies MemberAnalysisResult<TypeProperty>
       }
       if (Node.isFunctionTypeNode(member)) {
-        if (Node.isJSDocable(member)) {
-          return analyzeFunctionMember(
-            {
-              sourceRelativePath,
-              metadata,
-              node: member,
-              ownerSymbolId,
-              ownerSymbolIdentity,
-              memberPath,
+        // if (Node.isJSDocable(member)) {
+        // return analyzeTypeFunction(
+        //   {
+        //     sourceRelativePath,
+        //     metadata,
+        //     node: member,
+        //     ownerSymbolId,
+        //     ownerSymbolIdentity,
+        //     memberPath,
 
-              sourceFullText,
-              declarationOrder: index,
-              imported,
-              options,
-              reservedNames,
-            },
-            {
-              isStatic: undefined,
-              visibility: undefined,
-              name: Node.isNameable(member) ? member.getName()! : member.getText(),
-              jsDocableNode: member,
-            },
-          )
-        }
+        //     sourceFullText,
+        //     declarationOrder: index,
+        //     imported,
+        //     options,
+        //     reservedNames,
+        //   },
+        //   {
+        //     isStatic: undefined,
+        //     visibility: undefined,
+        //     name: Node.isNameable(member) ? member.getName()! : member.getText(),
+        //     jsDocableNode: member,
+        //   },
+        // )
+        const name = Node.isNameable(member) ? member.getName()! : member.getText()
+        const methodType = analyzeType(
+          { ...args, node: member, memberPath: newMemberPath },
+          [name],
+          member.getFullText(),
+        )
+        const prepareResult = prepareMethodAnalysis(
+          args.sourceRelativePath,
+          args.metadata,
+          args.ownerSymbolId,
+          args.ownerSymbolIdentity,
+          newMemberPath,
+          name,
+          member,
+          member,
+        )
+
+        const methodIdentity = initializeMethodIdentity(
+          args.ownerSymbolId,
+          args.ownerSymbolIdentity,
+          newMemberPath,
+          name,
+          member,
+        )
+
+        return {
+          member: {
+            documentable: true,
+            id: methodIdentity.id,
+            identity: methodIdentity.identity,
+            name,
+            optional: false,
+            readonly: false,
+            rest: false,
+            type: methodType?.member,
+            declarationOrder: index,
+            jsDoc: prepareResult.jsDoc,
+            parsedJsDoc: prepareResult.parsedJsDoc,
+            location: prepareResult.location,
+            startOffset: prepareResult.startOffset,
+          },
+          dependencies: methodType?.dependencies ?? [],
+        } satisfies MemberAnalysisResult<TypeProperty>
+        // }
       }
 
       if (Node.isPropertySignature(member)) {
+        console.log(member.getName())
         const memberTypeNode = member.getTypeNode()
-        const newMemberPath = [...memberPath, '$member']
+
         if (Node.isFunctionTypeNode(memberTypeNode)) {
-          return analyzeFunctionMember(
-            {
-              sourceRelativePath,
-              metadata,
-              node: memberTypeNode,
-              ownerSymbolId,
-              ownerSymbolIdentity,
-              memberPath: newMemberPath,
-              sourceFullText,
-              declarationOrder: index,
-              imported,
-              options,
-              reservedNames,
-            },
-            {
-              isStatic: undefined,
-              visibility: undefined,
-              name: member.getName(),
-              jsDocableNode: member,
-            },
+          // const functionResult =  analyzeTypeFunction(
+          //   {
+          //     sourceRelativePath,
+          //     metadata,
+          //     node: memberTypeNode,
+          //     ownerSymbolId,
+          //     ownerSymbolIdentity,
+          //     memberPath: newMemberPath,
+          //     sourceFullText,
+          //     declarationOrder: index,
+          //     imported,
+          //     options,
+          //     reservedNames,
+          //   },
+          //   {
+          //     isStatic: undefined,
+          //     visibility: undefined,
+          //     name: member.getName(),
+          //     jsDocableNode: member,
+          //   },
+          // )
+          const name = member.getName()
+          const methodType = analyzeType(
+            { ...args, node: memberTypeNode, memberPath: newMemberPath },
+            [name],
+            member.getFullText(),
           )
+          const prepareResult = prepareMethodAnalysis(
+            args.sourceRelativePath,
+            args.metadata,
+            args.ownerSymbolId,
+            args.ownerSymbolIdentity,
+            newMemberPath,
+            name,
+            memberTypeNode,
+            member,
+          )
+
+          const methodIdentity = initializeMethodIdentity(
+            args.ownerSymbolId,
+            args.ownerSymbolIdentity,
+            newMemberPath,
+            name,
+            memberTypeNode,
+          )
+
+          return {
+            member: {
+              documentable: true,
+              id: methodIdentity.id,
+              identity: methodIdentity.identity,
+              name,
+              optional: false,
+              readonly: false,
+              rest: false,
+              type: methodType?.member,
+              declarationOrder: index,
+              jsDoc: prepareResult.jsDoc,
+              parsedJsDoc: prepareResult.parsedJsDoc,
+              location: prepareResult.location,
+              startOffset: prepareResult.startOffset,
+            },
+            dependencies: methodType?.dependencies ?? [],
+          } satisfies MemberAnalysisResult<TypeProperty>
         }
-        return analyzePropertyMember({
+        return analyzeTypePropertyMember({
           sourceRelativePath,
           metadata,
           node: member,

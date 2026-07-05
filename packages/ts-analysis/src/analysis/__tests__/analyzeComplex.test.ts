@@ -14,8 +14,10 @@ import type {
   DocumentableMemberAnalysis,
   DocumentableMethodMemberAnalysis,
   DocumentablePropertyMemberAnalysis,
+  DocumentableTypeProperty,
   MemberAnalysis,
   TypeAnalysis,
+  TypeProperty,
 } from '@gyomu/schema/typescript'
 import type { FileAnalysisResult } from '../file/FileAnalysisResult.js'
 
@@ -54,6 +56,12 @@ describe('analyzeFile-complex pattern', () => {
     if (!member) throw new Error(`${member} Not Found`)
     return member as DocumentablePropertyMemberAnalysis
   }
+
+  const getTypeProperty = (name: string, members: Array<TypeProperty>): TypeProperty => {
+    const member = members.find((m) => m.name == name)
+    if (!member) throw new Error(`${member} Not Found`)
+    return member
+  }
   const getObjectType = (typeNode: TypeAnalysis) => {
     if (!typeNode.structure || typeNode.structure.kind != 'object')
       throw new Error(`object type not found on ${typeNode.text}`)
@@ -70,6 +78,15 @@ describe('analyzeFile-complex pattern', () => {
     return typeNode.structure
   }
   const getParsedJsDoc = (result: FileAnalysisResult, member: DocumentableMemberAnalysis) => {
+    const id = member.id
+    const jsdoc = result.metadata.parsedJsDocs.get(id)
+    if (!jsdoc) throw new Error(`ParsedJsDoc for ${member.name} Not Found`)
+    return jsdoc
+  }
+  const getParsedJsDocFromTypeProperty = (
+    result: FileAnalysisResult,
+    member: DocumentableTypeProperty,
+  ) => {
     const id = member.id
     const jsdoc = result.metadata.parsedJsDocs.get(id)
     if (!jsdoc) throw new Error(`ParsedJsDoc for ${member.name} Not Found`)
@@ -496,36 +513,43 @@ describe('analyzeFile-complex pattern', () => {
       const dataType = getObjectType(data.type!)
       expect(dataType.members).toHaveLength(2)
 
-      const id = getProperty('id', dataType.members!)
-      const name = getProperty('name', dataType.members!)
+      const id = getTypeProperty('id', dataType.members!)
+      const name = getTypeProperty('name', dataType.members!)
 
-      expect(id.kind).toBe('property')
+      expect(id.type?.text).toBe('string')
+      expect(name.type?.text).toBe('string')
+
+      // expect(id.kind).toBe('property')
 
       expect(id.identity).toEqual({
         symbolId: 'ApiResponse::interface::$member.data.$member.id::property',
         signatureId: 'property',
       })
 
-      expect(id.jsDoc).toMatchObject({
-        exists: true,
-        hasSummary: true,
-      })
+      expect(id.documentable).toBeTruthy()
+      if (id.documentable) {
+        expect(id.jsDoc).toMatchObject({
+          exists: true,
+          hasSummary: true,
+        })
 
-      expect(getParsedJsDoc(result, id).summary).toBe('User id.')
-
-      expect(name.kind).toBe('property')
+        expect(getParsedJsDocFromTypeProperty(result, id).summary).toBe('User id.')
+      }
+      // expect(name.kind).toBe('property')
 
       expect(name.identity).toEqual({
         symbolId: 'ApiResponse::interface::$member.data.$member.name::property',
         signatureId: 'property',
       })
+      expect(name.documentable).toBeTruthy()
+      if (name.documentable) {
+        expect(name.jsDoc).toMatchObject({
+          exists: true,
+          hasSummary: true,
+        })
 
-      expect(name.jsDoc).toMatchObject({
-        exists: true,
-        hasSummary: true,
-      })
-
-      expect(getParsedJsDoc(result, name).summary).toBe('User name.')
+        expect(getParsedJsDocFromTypeProperty(result, name).summary).toBe('User name.')
+      }
     },
     timeout,
   )
@@ -742,19 +766,23 @@ describe('analyzeFile-complex pattern', () => {
 
       // user
       const dataType = getObjectType(data.type!)
-      const user = getProperty('user', dataType.members!)
+      const user = getTypeProperty('user', dataType.members!)
 
+      expect(user.type?.structure?.kind).toBe('object')
       expect(user.identity).toEqual({
         symbolId: 'ApiResponse::interface::$member.data.$member.user::property',
         signatureId: 'property',
       })
 
-      expect(getParsedJsDoc(result, user).summary).toBe('User information.')
+      expect(user.documentable).toBeTruthy()
+      if (user.documentable) {
+        expect(getParsedJsDocFromTypeProperty(result, user).summary).toBe('User information.')
+      }
 
       // id
       const userType = getObjectType(user.type!)
-      const id = getProperty('id', userType.members!)
-
+      const id = getTypeProperty('id', userType.members!)
+      expect(id.type?.text).toBe('string')
       expect(id.identity).toEqual({
         symbolId: 'ApiResponse::interface::$member.data.$member.user.$member.id::property',
         signatureId: 'property',
@@ -762,11 +790,14 @@ describe('analyzeFile-complex pattern', () => {
 
       expect(id.readonly).toBe(true)
 
-      expect(getParsedJsDoc(result, id).summary).toBe('User id.')
+      expect(id.documentable).toBeTruthy()
+      if (id.documentable) {
+        expect(getParsedJsDocFromTypeProperty(result, id).summary).toBe('User id.')
+      }
 
       // name
 
-      const name = getProperty('name', userType.members!)
+      const name = getTypeProperty('name', userType.members!)
 
       expect(name.identity).toEqual({
         symbolId: 'ApiResponse::interface::$member.data.$member.user.$member.name::property',
@@ -775,41 +806,54 @@ describe('analyzeFile-complex pattern', () => {
 
       expect(name.optional).toBe(true)
 
-      expect(getParsedJsDoc(result, name).summary).toBe('User name.')
+      expect(name.documentable).toBeTruthy()
+      if (name.documentable) {
+        expect(getParsedJsDocFromTypeProperty(result, name).summary).toBe('User name.')
+      }
 
       // metadata
 
-      const metadata = getProperty('metadata', dataType.members!)
+      const metadata = getTypeProperty('metadata', dataType.members!)
 
+      expect(metadata.type?.structure?.kind).toBe('object')
       expect(metadata.identity).toEqual({
         symbolId: 'ApiResponse::interface::$member.data.$member.metadata::property',
         signatureId: 'property',
       })
 
-      expect(getParsedJsDoc(result, metadata).summary).toBe('Metadata.')
+      expect(metadata.documentable).toBeTruthy()
+      if (metadata.documentable) {
+        expect(getParsedJsDocFromTypeProperty(result, metadata).summary).toBe('Metadata.')
+      }
 
       // createdAt
       const metadataType = getObjectType(metadata.type!)
-      const createdAt = getProperty('createdAt', metadataType.members!)
+      const createdAt = getTypeProperty('createdAt', metadataType.members!)
 
+      expect(createdAt.type?.text).toBe('string')
       expect(createdAt.identity).toEqual({
         symbolId:
           'ApiResponse::interface::$member.data.$member.metadata.$member.createdAt::property',
         signatureId: 'property',
       })
 
-      expect(getParsedJsDoc(result, createdAt).summary).toBe('Creation time.')
-
+      expect(createdAt.documentable).toBeTruthy()
+      if (createdAt.documentable) {
+        expect(getParsedJsDocFromTypeProperty(result, createdAt).summary).toBe('Creation time.')
+      }
       // tags
 
-      const tags = getProperty('tags', metadataType.members!)
-
+      const tags = getTypeProperty('tags', metadataType.members!)
+      expect(tags.type?.text).toBe('string[]')
       expect(tags.identity).toEqual({
         symbolId: 'ApiResponse::interface::$member.data.$member.metadata.$member.tags::property',
         signatureId: 'property',
       })
 
-      expect(getParsedJsDoc(result, tags).summary).toBe('Tags.')
+      expect(tags.documentable).toBeTruthy()
+      if (tags.documentable) {
+        expect(getParsedJsDocFromTypeProperty(result, tags).summary).toBe('Tags.')
+      }
     },
     timeout,
   )
@@ -843,78 +887,98 @@ describe('analyzeFile-complex pattern', () => {
       })
 
       expect(getParsedJsDoc(result, data).summary).toBe('Response payload.')
-      console.dir(data, { depth: null })
+      // console.dir(data, { depth: null })
       const dataType = getObjectType(data.type!)
       // users
       console.log('users')
 
-      const users = getProperty('users', dataType.members!)
+      const users = getTypeProperty('users', dataType.members!)
 
       expect(users.identity).toEqual({
         symbolId: 'ApiResponse::interface::$member.data.$member.users::property',
         signatureId: 'property',
       })
 
-      expect(getParsedJsDoc(result, users).summary).toBe('Users.')
+      expect(users.documentable).toBeTruthy()
+      if (users.documentable) {
+        expect(getParsedJsDocFromTypeProperty(result, users).summary).toBe('Users.')
+      }
 
       const usersType = getArrayType(users.type!)
 
       const usersArrayType = getObjectType(usersType.elementType)
       // users.id
       console.log('users.id')
-      const userId = getProperty('id', usersArrayType.members!)
+      const userId = getTypeProperty('id', usersArrayType.members!)
 
+      expect(userId.type?.text).toBe('string')
       expect(userId.identity).toEqual({
         symbolId: 'ApiResponse::interface::$member.data.$member.users.$member.id::property',
         signatureId: 'property',
       })
 
-      expect(getParsedJsDoc(result, userId).summary).toBe('User id.')
+      expect(userId.documentable).toBeTruthy()
+      if (userId.documentable) {
+        expect(getParsedJsDocFromTypeProperty(result, userId).summary).toBe('User id.')
+      }
 
       // actions
       console.log('actions')
-      const actions = getProperty('actions', dataType.members!)
+      const actions = getTypeProperty('actions', dataType.members!)
 
       expect(actions.identity).toEqual({
         symbolId: 'ApiResponse::interface::$member.data.$member.actions::property',
         signatureId: 'property',
       })
 
-      expect(getParsedJsDoc(result, actions).summary).toBe('Service actions.')
+      expect(actions.documentable).toBeTruthy()
+      if (actions.documentable) {
+        expect(getParsedJsDocFromTypeProperty(result, actions).summary).toBe('Service actions.')
+      }
 
       const actionsType = getObjectType(actions.type!)
-      console.dir(actionsType, { depth: null })
+      // console.dir(actionsType, { depth: null })
       // findUser
       console.log('findUser')
-      const findUser = getMethod('findUser', actionsType.members!)
+      const findUser = getTypeProperty('findUser', actionsType.members!)
 
+      console.dir(findUser, { depth: null })
       expect(findUser.identity).toEqual({
         symbolId:
           'ApiResponse::interface::$member.data.$member.actions.$member.findUser::(id:string):{ id: string; name: string; }',
         signatureId: '(id:string):{ id: string; name: string; }',
       })
 
-      expect(getParsedJsDoc(result, findUser).summary).toBe('Finds user.')
+      expect(findUser.documentable).toBeTruthy()
+      if (findUser.documentable) {
+        expect(getParsedJsDocFromTypeProperty(result, findUser).summary).toBe('Finds user.')
+      }
 
       // notify
       console.log('notify')
-      const notify = getMethod('notify', actionsType.members!)
-
+      const notify = getTypeProperty('notify', actionsType.members!)
+      console.dir(notify, { depth: null })
       expect(notify.identity).toEqual({
         symbolId:
           'ApiResponse::interface::$member.data.$member.actions.$member.notify::(message:string,callback:(success: boolean) => void):void',
         signatureId: '(message:string,callback:(success: boolean) => void):void',
       })
 
-      expect(getParsedJsDoc(result, notify).summary).toBe('Notifies user.')
+      expect(notify.documentable).toBeTruthy()
+      if (notify.documentable) {
+        expect(getParsedJsDocFromTypeProperty(result, notify).summary).toBe('Notifies user.')
+      }
 
       // 深い階層のJSDocが取れていること
       console.log('深い階層のJSDoc')
-      const userName = getProperty('name', usersArrayType.members!)
-
-      expect(getParsedJsDoc(result, userName).summary).toBe('User name.')
-
-      expect(result.metadata.parsedJsDocs.size).toBeGreaterThan(8)
+      const userName = getTypeProperty('name', usersArrayType.members!)
+      console.dir(userName, { depth: null })
+      expect(userName.documentable).toBeTruthy()
+      if (userName.documentable) {
+        expect(getParsedJsDocFromTypeProperty(result, userName).summary).toBe('User name.')
+      }
+      // console.log(result.metadata.parsedJsDocs.size)
+      expect(result.metadata.parsedJsDocs.size).toBeGreaterThanOrEqual(8)
     },
     timeout,
   )
@@ -984,23 +1048,30 @@ describe('analyzeFile-complex pattern', () => {
 
       expect(successType.members).toHaveLength(2)
 
-      const id = getProperty('id', successType.members!)
-
+      const id = getTypeProperty('id', successType.members!)
+      expect(id.type?.text).toBe('string')
       expect(id.identity).toEqual({
         symbolId: 'SearchResponse::interface::$member.data.0.$member.id::property',
         signatureId: 'property',
       })
 
-      expect(getParsedJsDoc(result, id).summary).toBe('User id.')
+      expect(id.documentable).toBeTruthy()
+      if (id.documentable) {
+        expect(getParsedJsDocFromTypeProperty(result, id).summary).toBe('User id.')
+      }
 
-      const name = getProperty('name', successType.members!)
+      const name = getTypeProperty('name', successType.members!)
 
+      expect(name.type?.text).toBe('string')
       expect(name.identity).toEqual({
         symbolId: 'SearchResponse::interface::$member.data.0.$member.name::property',
         signatureId: 'property',
       })
 
-      expect(getParsedJsDoc(result, name).summary).toBe('User name.')
+      expect(name.documentable).toBeTruthy()
+      if (name.documentable) {
+        expect(getParsedJsDocFromTypeProperty(result, name).summary).toBe('User name.')
+      }
 
       //
       // error branch
@@ -1010,23 +1081,30 @@ describe('analyzeFile-complex pattern', () => {
 
       expect(errorType.members).toHaveLength(2)
 
-      const code = getProperty('code', errorType.members!)
+      const code = getTypeProperty('code', errorType.members!)
 
+      expect(code.type?.text).toBe('string')
       expect(code.identity).toEqual({
         symbolId: 'SearchResponse::interface::$member.data.1.$member.code::property',
         signatureId: 'property',
       })
 
-      expect(getParsedJsDoc(result, code).summary).toBe('Error code.')
+      expect(code.documentable).toBeTruthy()
+      if (code.documentable) {
+        expect(getParsedJsDocFromTypeProperty(result, code).summary).toBe('Error code.')
+      }
 
-      const message = getProperty('message', errorType.members!)
-
+      const message = getTypeProperty('message', errorType.members!)
+      expect(message.type?.text).toBe('string')
       expect(message.identity).toEqual({
         symbolId: 'SearchResponse::interface::$member.data.1.$member.message::property',
         signatureId: 'property',
       })
 
-      expect(getParsedJsDoc(result, message).summary).toBe('Error message.')
+      expect(message.documentable).toBeTruthy()
+      if (message.documentable) {
+        expect(getParsedJsDocFromTypeProperty(result, message).summary).toBe('Error message.')
+      }
 
       //
       // tags

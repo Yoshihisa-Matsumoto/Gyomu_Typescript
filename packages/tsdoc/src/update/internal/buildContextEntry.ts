@@ -7,6 +7,7 @@ import type {
   MemberAnalysis,
   NonDocumentableMemberAnalysis,
   SymbolAnalysis,
+  TypeProperty,
   TypeStructureAnalysis,
 } from '@gyomu/schema/typescript'
 
@@ -48,7 +49,7 @@ export const buildContextEntry = (
     }
     case 'property': {
       const structure: TypeStructureAnalysis | undefined = member.type?.structure
-      const children: Array<MemberAnalysis> = []
+      const children: Array<TypeProperty> = []
       switch (structure?.kind) {
         case 'object':
           if (structure.members) children.push(...structure.members)
@@ -74,7 +75,7 @@ export const buildContextEntry = (
 
           children: children
             // .filter((p) => p.documentable)
-            .map((m) => buildContextEntry(fileResult, m, member)),
+            .map((m) => buildContextEntryFromTypeProperty(fileResult, m, member)),
         }),
         ...generateResult,
       }
@@ -112,4 +113,43 @@ const shouldGenerateDoc = (
       }
   }
   return { documentable: true }
+}
+
+const buildContextEntryFromTypeProperty = (
+  fileResult: FileAnalysisResult,
+  member: TypeProperty,
+  parent: SymbolAnalysis | MemberAnalysis,
+): ContextEntry => {
+  const children: Array<ContextEntry> = []
+  if (member.type?.structure) {
+    const structure = member.type.structure
+    if (structure.kind == 'object') {
+      const objectMembers = structure.members?.map((m) =>
+        buildContextEntryFromTypeProperty(fileResult, m, parent),
+      )
+      if (objectMembers) children.push(...objectMembers)
+    } else if (structure.kind == 'function') {
+      const functionMembers = structure.parameters?.map((m) =>
+        buildContextEntryFromTypeProperty(fileResult, m, parent),
+      )
+      if (functionMembers) children.push(...functionMembers)
+    }
+  }
+  return {
+    target: member.identity,
+    kind: 'type',
+    name: member.name,
+    effectSignals: member.type?.effect
+      ? {
+          success: member.type.effect.success,
+          error: member.type.effect.error,
+          requirements: member.type.effect.requirements,
+        }
+      : undefined,
+
+    children,
+    ...withOptional({
+      type: member.type?.text,
+    }),
+  }
 }

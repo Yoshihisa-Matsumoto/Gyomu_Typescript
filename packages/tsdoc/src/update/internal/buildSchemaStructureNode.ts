@@ -1,5 +1,5 @@
 import type { SchemaStructureNode } from '@gyomu/ai-compiler/jsdoc-update'
-import type { MemberAnalysis, TypeStructureAnalysis } from '@gyomu/schema/typescript'
+import type { TypeProperty, TypeStructureAnalysis } from '@gyomu/schema/typescript'
 
 export const buildSchemaStructureNode = (
   member: TypeStructureAnalysis,
@@ -14,7 +14,7 @@ export const buildSchemaStructureNode = (
           name,
           kind: 'object',
           children: member.members
-            .map((m) => buildSchemaStructureNodeFromMemberAnalysis(m))
+            .map((m) => buildSchemaStructureNodeFromTypeProperty(m))
             .flat()
             .filter((m) => !!m),
         }
@@ -70,13 +70,22 @@ export const buildSchemaStructureNode = (
   return undefined
 }
 
-const buildSchemaStructureNodeFromMemberAnalysis = (
-  member: MemberAnalysis,
+// const buildSchemaStructureNodeFromMemberAnalysis = (
+//   member: MemberAnalysis,
+// ): SchemaStructureNode | undefined => {
+//   if (member.documentable) {
+//     return undefined
+//   }
+//   if (member.kind == 'method') return undefined
+//   if (!member.type || member.type.source != 'effect-schema' || !member.type.structure)
+//     return undefined
+
+//   return buildSchemaStructureNode(member.type.structure, member.name)
+// }
+
+const buildSchemaStructureNodeFromTypeProperty = (
+  member: TypeProperty,
 ): SchemaStructureNode | undefined => {
-  if (member.documentable) {
-    return undefined
-  }
-  if (member.kind == 'method') return undefined
   if (!member.type || member.type.source != 'effect-schema' || !member.type.structure)
     return undefined
 

@@ -119,8 +119,6 @@ describe('calculateComplexityMetrics', () => {
                     kind: 'object',
                     members: [
                       {
-                        documentable: true,
-                        kind: 'property',
                         optional: false,
                         type: {
                           structure: {

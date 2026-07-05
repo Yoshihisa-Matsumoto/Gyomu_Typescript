@@ -6,10 +6,10 @@ import { analyzeDependency } from './analyzeDependency.js'
 import type { MemberAnalysisResult } from '../types.js'
 import type {
   MemberIdentityMemberPath,
-  NonDocumentablePropertyMemberAnalysis,
   SupportedSchemaKind,
   SymbolId,
   TypeAnalysis,
+  TypeProperty,
 } from '@gyomu/schema/typescript'
 import type {
   CallExpression,
@@ -331,7 +331,7 @@ const ObjectLiteralElementLike2MemberAnalysis = (
   ownerSymbolIdentity: SymbolIdentity,
   imported: Array<ImportAnalysis>,
   memberPath: MemberIdentityMemberPath,
-): MemberAnalysisResult<NonDocumentablePropertyMemberAnalysis> | undefined => {
+): MemberAnalysisResult<TypeProperty> | undefined => {
   if (Node.isPropertyAssignment(property)) {
     const newMemberPath = [...memberPath, property.getName()]
     const { id, identity } = createMemberIdentityAndId(
@@ -365,20 +365,14 @@ const ObjectLiteralElementLike2MemberAnalysis = (
 
     return {
       member: {
-        declarationOrder: index,
-        kind: 'property',
         documentable: false,
-        static: false,
-        visibility: 'public',
         name: propertyName,
         id,
         identity,
-        ownerSymbolId,
         readonly: false,
         rest: false,
-        source: 'property-declaration',
         optional,
-
+        declarationOrder: index,
         type: effectSchemaResult
           ? effectSchemaResult.member
           : ({

@@ -1,10 +1,13 @@
 import type { JsDocAnalysis } from '../schemas/typescript/jsdoc/JsDocAnalysis.js'
-import type { TypeAnalysis } from './SymbolModel.js'
-import type { SymbolId } from './types.js'
+
 import type { SymbolIdentity } from '../schemas/typescript/SymbolIdentity.js'
 import type { ParsedJsDoc } from '../schemas/typescript/jsdoc/ParsedJsDoc.js'
 import type { MemberAccessor } from '../schemas/typescript/MemberAccessor.js'
+import type { PropertySource } from '../schemas/typescript/PropertySource.js'
 
+import type { TypeAnalysis } from './TypeAnalysis.js'
+import type { SymbolId } from './types.js'
+import type { LineRange } from '../schemas/typescript/LineRange.js'
 /**
  * Defines a union of member analysis types, categorized by whether they are documentable.
  */
@@ -155,8 +158,6 @@ interface PropertyMemberAnalysis extends BaseMemberAnalysis {
   rest: boolean
 }
 
-type PropertySource = 'property-declaration' | 'constructor-parameter' | 'parameter-declaration'
-
 /**
  * Represents the analysis of a property member that is not documentable.
  */
@@ -189,25 +190,10 @@ export interface DocumentablePropertyMemberAnalysis extends PropertyMemberAnalys
   /**
    * The location information of the symbol within the source code.
    */
-  location: {
-    /**
-     * The starting line number of the symbol.
-     */
-    startLine: number
-
-    /**
-     * The ending line number of the symbol.
-     */
-    endLine: number
-  }
+  location: LineRange
 
   /**
    * The character offset where the symbol starts.
    */
   startOffset: number
 }
-
-// /**
-//  * Defines the access levels available for members.
-//  */
-// export type MemberAccessor = 'private' | 'protected' | 'public'
