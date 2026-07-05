@@ -25,25 +25,7 @@ export type NonDocumentableMemberAnalysis =
 export type DocumentableMemberAnalysis =
   DocumentableMethodMemberAnalysis | DocumentablePropertyMemberAnalysis
 
-// /**
-//  * Unique identifier for a class or object member.
-//  */
-// export interface MemberIdentity {
-//   /**
-//    * The identifier of the symbol that owns this member.
-//    */
-//   readonly ownerSymbolId: SymbolId
-
-//   /**
-//    * The path to the member within the owning symbol.
-//    */
-//   readonly memberPath: Readonly<MemberIdentityMemberPath>
-
-//   /**
-//    * The signature identifier, used to distinguish overloaded members.
-//    */
-//   readonly signatureId: string
-// }
+type MemberKind = 'method' | 'property'
 
 interface BaseMemberAnalysis {
   /**
@@ -68,9 +50,7 @@ interface BaseMemberAnalysis {
    */
   id: SymbolId
 
-  kind: string
-
-  documentable: boolean
+  kind: MemberKind
 
   ownerSymbolId: SymbolId
 
@@ -85,30 +65,24 @@ interface BaseMemberAnalysis {
   declarationOrder: number
 }
 
-interface MethodMemberAnalysis extends BaseMemberAnalysis {
+interface BaseMethodMemberAnalysis extends BaseMemberAnalysis {
   kind: 'method'
 
-  parameters: Array<MemberAnalysis>
+  parameters: ReadonlyArray<MemberAnalysis>
 
   returnType: TypeAnalysis | undefined
 
   snippet: string
 }
 
-/**
- * Represents the analysis of a method member that is not documentable.
- */
-export interface NonDocumentableMethodMemberAnalysis extends MethodMemberAnalysis {
+type NonDocumentableMember = {
   /**
    * Indicates that this member is not documentable.
    */
   documentable: false
 }
 
-/**
- * Represents the analysis of a class or object member that supports JSDoc, specifically for method members.
- */
-export interface DocumentableMethodMemberAnalysis extends MethodMemberAnalysis {
+type DocumentableMember = {
   /**
    * Indicates that this member is documentable.
    */
@@ -122,30 +96,31 @@ export interface DocumentableMethodMemberAnalysis extends MethodMemberAnalysis {
   /**
    * A collection of parsed JSDoc/TSDoc elements.
    */
-  parsedJsDoc: Array<ParsedJsDoc> | undefined
+  parsedJsDoc: ReadonlyArray<ParsedJsDoc> | undefined
 
   /**
    * The location information of the symbol within the source code.
    */
-  location: {
-    /**
-     * The starting line number of the symbol.
-     */
-    startLine: number
-
-    /**
-     * The ending line number of the symbol.
-     */
-    endLine: number
-  }
+  location: LineRange
 
   /**
    * The character offset where the symbol starts.
    */
   startOffset: number
 }
+/**
+ * Represents the analysis of a method member that is not documentable.
+ */
+export interface NonDocumentableMethodMemberAnalysis
+  extends BaseMethodMemberAnalysis, NonDocumentableMember {}
 
-interface PropertyMemberAnalysis extends BaseMemberAnalysis {
+/**
+ * Represents the analysis of a class or object member that supports JSDoc, specifically for method members.
+ */
+export interface DocumentableMethodMemberAnalysis
+  extends BaseMethodMemberAnalysis, DocumentableMember {}
+
+interface BasePropertyMemberAnalysis extends BaseMemberAnalysis {
   kind: 'property'
 
   type: TypeAnalysis | undefined
@@ -161,39 +136,11 @@ interface PropertyMemberAnalysis extends BaseMemberAnalysis {
 /**
  * Represents the analysis of a property member that is not documentable.
  */
-export interface NonDocumentablePropertyMemberAnalysis extends PropertyMemberAnalysis {
-  /**
-   * Indicates that this member is not documentable.
-   */
-  documentable: false
-}
+export interface NonDocumentablePropertyMemberAnalysis
+  extends BasePropertyMemberAnalysis, NonDocumentableMember {}
 
 /**
  * Represents the analysis of a class or object member that supports JSDoc, specifically for property members.
  */
-export interface DocumentablePropertyMemberAnalysis extends PropertyMemberAnalysis {
-  /**
-   * Indicates that this member is documentable.
-   */
-  documentable: true
-
-  /**
-   * Contains the structured JSDoc analysis.
-   */
-  jsDoc: JsDocAnalysis | undefined
-
-  /**
-   * A collection of parsed JSDoc/TSDoc elements.
-   */
-  parsedJsDoc: Array<ParsedJsDoc> | undefined
-
-  /**
-   * The location information of the symbol within the source code.
-   */
-  location: LineRange
-
-  /**
-   * The character offset where the symbol starts.
-   */
-  startOffset: number
-}
+export interface DocumentablePropertyMemberAnalysis
+  extends BasePropertyMemberAnalysis, DocumentableMember {}
