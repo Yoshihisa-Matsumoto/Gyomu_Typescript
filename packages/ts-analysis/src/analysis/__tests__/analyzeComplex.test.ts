@@ -14,12 +14,14 @@ import type {
   DocumentableMemberAnalysis,
   DocumentableMethodMemberAnalysis,
   DocumentablePropertyMemberAnalysis,
-  DocumentableTypeProperty,
   MemberAnalysis,
-  TypeAnalysis,
-  TypeProperty,
 } from '@gyomu/schema/typescript'
 import type { FileAnalysisResult } from '../file/FileAnalysisResult.js'
+import type {
+  DocumentableTypeProperty,
+  TypeAnalysis,
+  TypeProperty,
+} from '@gyomu/schema/schemas/typescript'
 
 const timeout = 20000
 
@@ -57,7 +59,7 @@ describe('analyzeFile-complex pattern', () => {
     return member as DocumentablePropertyMemberAnalysis
   }
 
-  const getTypeProperty = (name: string, members: Array<TypeProperty>): TypeProperty => {
+  const getTypeProperty = (name: string, members: ReadonlyArray<TypeProperty>): TypeProperty => {
     const member = members.find((m) => m.name == name)
     if (!member) throw new Error(`${member} Not Found`)
     return member

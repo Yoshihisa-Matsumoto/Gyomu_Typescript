@@ -5,7 +5,7 @@ import type { ParsedJsDoc } from '../schemas/typescript/jsdoc/ParsedJsDoc.js'
 import type { MemberAccessor } from '../schemas/typescript/MemberAccessor.js'
 import type { PropertySource } from '../schemas/typescript/PropertySource.js'
 
-import type { TypeAnalysis } from './TypeAnalysis.js'
+import type { TypeAnalysis } from '../schemas/typescript/type/TypeAnalysis.js'
 import type { SymbolId } from './types.js'
 import type { LineRange } from '../schemas/typescript/LineRange.js'
 /**

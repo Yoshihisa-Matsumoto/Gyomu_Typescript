@@ -1,5 +1,5 @@
 import { withOptional } from '@gyomu/schema'
-import type { EffectSignals, TypeAnalysis } from '@gyomu/schema/typescript'
+import type { EffectSignals, TypeAnalysis } from '@gyomu/schema/schemas/typescript'
 
 export const detectEffectSignals = (typeRawText: string): EffectSignals | undefined => {
   const genericText = extractEffectGenericText(typeRawText)

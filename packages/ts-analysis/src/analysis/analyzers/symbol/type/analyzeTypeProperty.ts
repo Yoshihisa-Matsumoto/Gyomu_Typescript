@@ -1,9 +1,9 @@
 import { SignatureId } from '@gyomu/schema/typescript'
 import { createMemberIdentityAndId } from '../../../shared/createMemberIdentity.js'
 import { analyzeType } from '../type/analyzeType.js'
-import type { NonDocumentableTypeProperty } from '@gyomu/schema/typescript'
 import type { ChildAnalysisArg, MemberAnalysisResult } from '../../types.js'
 import type { ParameterDeclaration } from 'ts-morph'
+import type { NonDocumentableTypeProperty } from '@gyomu/schema/schemas/typescript/index'
 
 export const analyzeTypeProperty = (
   args: ChildAnalysisArg<ParameterDeclaration>,
@@ -64,11 +64,11 @@ export const analyzeTypeProperty = (
 
       rest: !!node.getDotDotDotToken(),
 
-      type: typeResult?.member,
+      type: typeResult.member,
       declarationOrder: args.declarationOrder,
 
       // structure: analyzeParameterStructure(withOptional({ node: typeNode, initializer })),
     } satisfies NonDocumentableTypeProperty,
-    dependencies: typeResult?.dependencies ?? [],
+    dependencies: typeResult.dependencies,
   }
 }

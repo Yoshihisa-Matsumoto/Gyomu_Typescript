@@ -1,4 +1,4 @@
-import type { TypeAnalysis } from './TypeAnalysis.js'
+import type { TypeAnalysis } from '../schemas/typescript/type/TypeAnalysis.js'
 import type { DependencyCandidate } from '../schemas/typescript/DependencyCandidate.js'
 import type { MemberAnalysis } from './MemberAnalysis.js'
 import type { SignatureId } from './types.js'

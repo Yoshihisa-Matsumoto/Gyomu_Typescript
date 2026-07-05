@@ -16,8 +16,12 @@ import type {
   SetAccessorDeclaration,
 } from 'ts-morph'
 import type { ChildAnalysisArg, MemberAnalysisResult } from '../../types.js'
-import type { FunctionStructureAnalysis, TypeAnalysis } from '@gyomu/schema/typescript'
-import type { MemberAccessor } from '@gyomu/schema/schemas/typescript'
+
+import type {
+  FunctionStructureAnalysis,
+  MemberAccessor,
+  TypeAnalysis,
+} from '@gyomu/schema/schemas/typescript'
 
 export const analyzeTypeFunction = (
   args: ChildAnalysisArg<
@@ -111,7 +115,7 @@ const analyzeTypeFunctionInternal = (
     name: string
     isStatic: boolean
     visibility: MemberAccessor
-    returnType: MemberAnalysisResult<TypeAnalysis> | undefined
+    returnType: MemberAnalysisResult<TypeAnalysis>
     jsDocableNode: (JSDocableNode & Node) | undefined
   },
 ): MemberAnalysisResult<FunctionStructureAnalysis> => {
@@ -171,11 +175,11 @@ const analyzeTypeFunctionInternal = (
 
         parameters: parametersResult.map((p) => p.member),
 
-        returnType: returnType?.member,
+        returnType: returnType.member,
       } satisfies FunctionStructureAnalysis,
       dependencies: [
         ...parametersResult.map((p) => p.dependencies).flat(),
-        ...(returnType?.dependencies ?? []),
+        ...returnType.dependencies,
         ...genericsResult.dependencies,
       ],
     }

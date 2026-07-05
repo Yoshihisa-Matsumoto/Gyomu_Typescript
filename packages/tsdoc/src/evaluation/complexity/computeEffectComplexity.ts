@@ -1,4 +1,4 @@
-import type { EffectSignals } from '@gyomu/schema/typescript'
+import type { EffectSignals } from '@gyomu/schema/schemas/typescript'
 
 export const computeEffectComplexity = (effectSignal: EffectSignals): number => {
   let complexity = 1

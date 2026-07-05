@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { SignatureId, SymbolId } from '@gyomu/schema/typescript'
 import { calculateComplexityMetrics } from '../calculateComplexityMetrics.js'
+import type { TypeAnalysis } from '@gyomu/schema/schemas/typescript/index'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
 import type { FileAnalysisResult } from '@gyomu/ts-analysis'
 
@@ -124,7 +125,7 @@ describe('calculateComplexityMetrics', () => {
                           structure: {
                             kind: 'reference',
                           },
-                        },
+                        } as TypeAnalysis,
                       },
                     ],
                   },
@@ -134,7 +135,7 @@ describe('calculateComplexityMetrics', () => {
           },
         ],
       },
-    } as FileAnalysisResult)
+    } as any as FileAnalysisResult)
 
     expect(result.get(symbolId)).toMatchObject({
       referencedTypeCount: 1,

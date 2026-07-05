@@ -8,10 +8,12 @@ import type {
   MemberAnalysis,
   SymbolAnalysis,
   SymbolId,
+} from '@gyomu/schema/typescript'
+import type {
   TypeAnalysis,
   TypeProperty,
   TypeStructureAnalysis,
-} from '@gyomu/schema/typescript'
+} from '@gyomu/schema/schemas/typescript'
 import type { FileAnalysisResult } from '@gyomu/ts-analysis'
 
 import type { ComplexityMetrics } from './ComplexityMetrics.js'
@@ -57,7 +59,7 @@ const calculateComplexityMetricsFromMembers = (
 }
 
 const calculateComplexityMetricsFromTypeProperties = (
-  members: Array<TypeProperty>,
+  members: ReadonlyArray<TypeProperty>,
   currentDepth: number,
 ): ComplexityMetrics => {
   currentDepth++

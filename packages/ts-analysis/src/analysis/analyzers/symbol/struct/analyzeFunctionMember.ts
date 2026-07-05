@@ -25,9 +25,12 @@ import type { ChildAnalysisArg, MemberAnalysisResult, MethodAnalysisResult } fro
 import type {
   DocumentableMethodMemberAnalysis,
   NonDocumentableMethodMemberAnalysis,
-  TypeAnalysis,
 } from '@gyomu/schema/typescript'
-import type { DependencyCandidate, MemberAccessor } from '@gyomu/schema/schemas/typescript'
+import type {
+  DependencyCandidate,
+  MemberAccessor,
+  TypeAnalysis,
+} from '@gyomu/schema/schemas/typescript'
 
 export const analyzeFunctionMember = (
   args: ChildAnalysisArg<

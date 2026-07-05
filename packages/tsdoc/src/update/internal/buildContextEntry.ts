@@ -7,9 +7,8 @@ import type {
   MemberAnalysis,
   NonDocumentableMemberAnalysis,
   SymbolAnalysis,
-  TypeProperty,
-  TypeStructureAnalysis,
 } from '@gyomu/schema/typescript'
+import type { TypeProperty, TypeStructureAnalysis } from '@gyomu/schema/schemas/typescript'
 
 export const buildContextEntry = (
   fileResult: FileAnalysisResult,

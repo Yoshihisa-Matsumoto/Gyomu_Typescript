@@ -8,3 +8,5 @@ export * from './MemberIdentityMemberPath.js'
 
 export * from './SymbolIdentity.js'
 export * from './SymbolKind.js'
+
+export * from './type/index.js'

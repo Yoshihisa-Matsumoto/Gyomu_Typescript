@@ -6,8 +6,12 @@ import { computeComplexityScore } from '../../evaluation/complexity/computeCompl
 import { buildContextEntry } from './buildContextEntry.js'
 import { buildExistingJsDoc } from './buildExistingJsDoc.js'
 import { buildSchemaStructureNode } from './buildSchemaStructureNode.js'
-import type { DependencyCandidate, DependencySummary } from '@gyomu/schema/schemas/typescript'
-import type { EffectSignals, MemberIdentityMemberPath, SymbolId } from '@gyomu/schema/typescript'
+import type {
+  DependencyCandidate,
+  DependencySummary,
+  EffectSignals,
+} from '@gyomu/schema/schemas/typescript'
+import type { MemberIdentityMemberPath, SymbolId } from '@gyomu/schema/typescript'
 import type { ComplexityMetrics } from '../../evaluation/complexity/ComplexityMetrics.js'
 import type { TsDocFileContext, TsDocSymbolContext } from '@gyomu/ai-compiler/jsdoc-update'
 import type { FileAnalysisResult } from '@gyomu/ts-analysis'

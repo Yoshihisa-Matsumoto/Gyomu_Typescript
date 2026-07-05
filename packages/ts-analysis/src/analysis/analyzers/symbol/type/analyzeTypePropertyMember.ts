@@ -13,13 +13,15 @@ import type {
   TypeNode,
 } from 'ts-morph'
 
-import type { DocumentableTypeProperty, SymbolId, TypeProperty } from '@gyomu/schema/typescript'
+import type { SymbolId } from '@gyomu/schema/typescript'
 import type {
   DependencyCandidate,
+  DocumentableTypeProperty,
   JsDocAnalysis,
   MemberAccessor,
   ParsedJsDoc,
   SymbolIdentity,
+  TypeProperty,
 } from '@gyomu/schema/schemas/typescript'
 
 export const analyzeTypePropertyMember = (
@@ -140,7 +142,7 @@ const analyzeTypePropertyMemberInternal = (
     readonly,
     optional,
 
-    type: typeResult?.member,
+    type: typeResult.member,
 
     rest: Node.isDotDotDotTokenable(node) ? !!node.getDotDotDotToken() : false,
     declarationOrder,
@@ -157,6 +159,6 @@ const analyzeTypePropertyMemberInternal = (
   )
   return {
     member: property,
-    dependencies: [...(typeResult?.dependencies ?? []), ...genercsDependencies],
+    dependencies: [...typeResult.dependencies, ...genercsDependencies],
   }
 }

@@ -8,7 +8,7 @@ import type { LineRange } from '../schemas/typescript/LineRange.js'
 import type { MemberAnalysis } from './MemberAnalysis.js'
 import type { SignatureAnalysis } from './SymbolModel.js'
 import type { SymbolId } from './types.js'
-import type { TypeAnalysis } from './TypeAnalysis.js'
+import type { TypeAnalysis } from '../schemas/typescript/type/TypeAnalysis.js'
 
 /**
  * Detailed analysis result for a symbol declaration.

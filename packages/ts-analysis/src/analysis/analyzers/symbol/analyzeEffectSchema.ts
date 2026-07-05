@@ -8,8 +8,6 @@ import type {
   MemberIdentityMemberPath,
   SupportedSchemaKind,
   SymbolId,
-  TypeAnalysis,
-  TypeProperty,
 } from '@gyomu/schema/typescript'
 import type {
   CallExpression,
@@ -18,7 +16,12 @@ import type {
   ObjectLiteralElementLike,
   PropertyAccessExpression,
 } from 'ts-morph'
-import type { ImportAnalysis, SymbolIdentity } from '@gyomu/schema/schemas/typescript'
+import type {
+  ImportAnalysis,
+  SymbolIdentity,
+  TypeAnalysis,
+  TypeProperty,
+} from '@gyomu/schema/schemas/typescript'
 
 export const getSupportedEffectSchemaType = (
   initializer: Expression | undefined,

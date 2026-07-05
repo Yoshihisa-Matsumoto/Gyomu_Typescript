@@ -6,13 +6,12 @@ import { initializeMethodIdentity, prepareMethodAnalysis } from '../prepareMembe
 import { analyzeTypeFunction } from './analyzeTypeFunction.js'
 import { analyzeTypePropertyMember } from './analyzeTypePropertyMember.js'
 import type { ChildAnalysisArg, MemberAnalysisResult } from '../../types.js'
+import type { MemberIdentityMemberPath } from '@gyomu/schema/typescript'
 import type {
-  MemberIdentityMemberPath,
   TypeAnalysis,
   TypeProperty,
   TypeStructureAnalysis,
-} from '@gyomu/schema/typescript'
-
+} from '@gyomu/schema/schemas/typescript'
 import type { CallExpression, EntityName, Expression, TypeLiteralNode, TypeNode } from 'ts-morph'
 
 export const analyzeType = (

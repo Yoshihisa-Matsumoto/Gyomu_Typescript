@@ -1,5 +1,5 @@
 import type { SchemaStructureNode } from '@gyomu/ai-compiler/jsdoc-update'
-import type { TypeProperty, TypeStructureAnalysis } from '@gyomu/schema/typescript'
+import type { TypeProperty, TypeStructureAnalysis } from '@gyomu/schema/schemas/typescript'
 
 export const buildSchemaStructureNode = (
   member: TypeStructureAnalysis,
@@ -62,7 +62,7 @@ export const buildSchemaStructureNode = (
         kind: 'union',
         children: member.types
           .filter((tp) => tp.source == 'effect-schema' && tp.structure)
-          .map((tp) => buildSchemaStructureNode(tp.structure!, tp.text))
+          .map((tp) => buildSchemaStructureNode(tp.structure as TypeStructureAnalysis, tp.text))
           .filter((c) => !!c),
       }
     }

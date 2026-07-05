@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { computeEffectComplexity } from '../computeEffectComplexity.js'
-import type { EffectSignals } from '@gyomu/schema/typescript'
+import type { EffectSignals } from '@gyomu/schema/schemas/typescript'
 
 describe('computeEffectComplexity', () => {
   it('returns base complexity when no effect features are present', () => {
@@ -36,7 +36,7 @@ describe('computeEffectComplexity', () => {
           types: [{}, {}, {}],
         },
       },
-    } as EffectSignals
+    } as any as EffectSignals
 
     expect(computeEffectComplexity(signals)).toBe(7)
     // base 1 + (3 * 2)
@@ -62,7 +62,7 @@ describe('computeEffectComplexity', () => {
           types: [{}, {}],
         },
       },
-    } as EffectSignals
+    } as any as EffectSignals
 
     expect(computeEffectComplexity(signals)).toBe(7)
     // base 1 + (2 * 3)
@@ -96,7 +96,7 @@ describe('computeEffectComplexity', () => {
           types: [{}, {}, {}],
         },
       },
-    } as EffectSignals
+    } as any as EffectSignals
 
     expect(computeEffectComplexity(signals)).toBe(19)
 
