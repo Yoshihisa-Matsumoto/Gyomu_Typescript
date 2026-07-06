@@ -7,10 +7,9 @@ import { analyzeObjectMembers } from './analyzeObjectMembers.js'
 import { computeIndent } from './computeIndent.js'
 import { analyzeGenericsParameters } from './analyzeGenericsParameters.js'
 import { analyzeType } from './type/analyzeType.js'
-import type { SymbolAnalysis } from '@gyomu/schema/typescript'
 import type { TypeAliasDeclaration, TypeNode } from 'ts-morph'
 import type { ChildAnalysisArg, TagAnalysisArg } from '../types.js'
-import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
+import type { SymbolAnalysis, SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
 export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => {
   const {

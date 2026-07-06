@@ -2,11 +2,11 @@ import { withOptional } from '@gyomu/schema'
 import { buildExistingJsDoc } from './buildExistingJsDoc.js'
 import type { FileAnalysisResult } from '@gyomu/ts-analysis'
 import type { ContextEntry, DocumentableInfo } from '@gyomu/ai-compiler/jsdoc-update'
-import type { SymbolAnalysis } from '@gyomu/schema/typescript'
 import type {
   DocumentableMemberAnalysis,
   MemberAnalysis,
   NonDocumentableMemberAnalysis,
+  SymbolAnalysis,
   TypeProperty,
   TypeStructureAnalysis,
 } from '@gyomu/schema/schemas/typescript'

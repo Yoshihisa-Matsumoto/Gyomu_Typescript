@@ -1,8 +1,8 @@
 import { analyzeTypeAlias } from './symbol/analyzeTypeAlias.js'
-import type { SymbolAnalysis } from '@gyomu/schema/typescript'
+
 import type { StatementAnalysisArgument, StatementAnalysisResult } from './types.js'
 import type { TypeAliasDeclaration } from 'ts-morph'
-import type { ExportAnalysis } from '@gyomu/schema/schemas/typescript'
+import type { ExportAnalysis, SymbolAnalysis } from '@gyomu/schema/schemas/typescript'
 
 export const analyzeTypeAliasStatement = (
   statement: TypeAliasDeclaration,

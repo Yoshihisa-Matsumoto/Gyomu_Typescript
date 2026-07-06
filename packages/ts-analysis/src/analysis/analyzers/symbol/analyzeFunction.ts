@@ -8,7 +8,7 @@ import { computeIndent } from './computeIndent.js'
 import { analyzeFunctionBody, analyzeFunctionMember } from './struct/analyzeFunctionMember.js'
 import { analyzeParameter } from './analyzeParameter.js'
 import { analyzeGenericsParameters } from './analyzeGenericsParameters.js'
-import type { SignatureAnalysis, SymbolAnalysis } from '@gyomu/schema/typescript'
+
 import type { FunctionDeclaration } from 'ts-morph'
 import type {
   ChildAnalysisArg,
@@ -16,7 +16,12 @@ import type {
   MemberAnalysisResult,
   TagAnalysisArg,
 } from '../types.js'
-import type { MemberAnalysis, SymbolIdentity } from '@gyomu/schema/schemas/typescript'
+import type {
+  MemberAnalysis,
+  SignatureAnalysis,
+  SymbolAnalysis,
+  SymbolIdentity,
+} from '@gyomu/schema/schemas/typescript'
 
 export const analyzeFunction = (args: TagAnalysisArg<FunctionDeclaration>) => {
   const { sourceRelativePath, sourceFullText, imported, options, metadata, declaration } = args

@@ -10,10 +10,9 @@ import {
   isFunctionLikeInitializer,
 } from './analyzeFunction.js'
 import type { Builder } from '@gyomu/schema/entity'
-import type { SymbolAnalysis } from '@gyomu/schema/typescript'
 import type { GetSignatureIdArg, MemberAnalysisResult, TagAnalysisArg } from '../../types.js'
 import type { VariableDeclaration } from 'ts-morph'
-import type { SymbolIdentity, TypeAnalysis } from '@gyomu/schema/schemas/typescript'
+import type { SymbolAnalysis, SymbolIdentity, TypeAnalysis } from '@gyomu/schema/schemas/typescript'
 
 export const analyzeVariable = (args: TagAnalysisArg<VariableDeclaration>) => {
   const statement = args.declaration.getVariableStatement()

@@ -6,6 +6,9 @@ export * from './MemberAccessor.js'
 export * from './MemberIdentity.js'
 export * from './MemberIdentityMemberPath.js'
 
+export * from './SignatureAnalysis.js'
+export * from './SymbolAnalysis.js'
+
 export * from './SymbolIdentity.js'
 export * from './SymbolKind.js'
 

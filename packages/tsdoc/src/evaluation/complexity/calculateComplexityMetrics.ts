@@ -2,11 +2,12 @@ import { equalSymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIden
 import { mergeComplexityMetrics } from './mergeComplexityMetrics.js'
 import { emptyComplexityMetrics } from './emptyComplexityMetrics.js'
 import { computeEffectComplexity } from './computeEffectComplexity.js'
-import type { SymbolAnalysis, SymbolId } from '@gyomu/schema/typescript'
+import type { SymbolId } from '@gyomu/schema/typescript'
 import type {
   DocumentableMethodMemberAnalysis,
   DocumentablePropertyMemberAnalysis,
   MemberAnalysis,
+  SymbolAnalysis,
   TypeAnalysis,
   TypeProperty,
   TypeStructureAnalysis,

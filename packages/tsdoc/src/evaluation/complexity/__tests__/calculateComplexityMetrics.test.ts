@@ -48,7 +48,7 @@ describe('calculateComplexityMetrics', () => {
           },
         ],
       },
-    } as FileAnalysisResult)
+    } as any as FileAnalysisResult)
 
     expect(result.get(symbolId)).toMatchObject({
       parameterCount: 1,

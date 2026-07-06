@@ -40,7 +40,7 @@ const tempJsdocProgram = (sourceFile: string) => {
 describe('analyzeFile-complex pattern', () => {
   const getMethod = (
     name: string,
-    members: Array<MemberAnalysis>,
+    members: ReadonlyArray<MemberAnalysis>,
   ): DocumentableMethodMemberAnalysis => {
     const member = members.find((m) => m.name == name && m.kind == 'method')
     if (!member) throw new Error(`${member} Not Found`)
@@ -49,7 +49,7 @@ describe('analyzeFile-complex pattern', () => {
 
   const getProperty = (
     name: string,
-    members: Array<MemberAnalysis>,
+    members: ReadonlyArray<MemberAnalysis>,
   ): DocumentablePropertyMemberAnalysis => {
     const member = members.find((m) => m.name == name && m.kind == 'property')
     if (!member) throw new Error(`${member} Not Found`)

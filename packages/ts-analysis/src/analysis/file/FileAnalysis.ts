@@ -1,6 +1,10 @@
-import type { ExportAnalysis, ImportAnalysis } from '@gyomu/schema/schemas/typescript'
+import type {
+  ExportAnalysis,
+  ImportAnalysis,
+  SymbolAnalysis,
+} from '@gyomu/schema/schemas/typescript'
 import type { DependencyEdge } from '../graph/DependencyEdge.js'
-import type { ProjectRelativePath, SymbolAnalysis } from '@gyomu/schema/typescript'
+import type { ProjectRelativePath } from '@gyomu/schema/typescript'
 
 /**
  * Complete analysis result for a source file.

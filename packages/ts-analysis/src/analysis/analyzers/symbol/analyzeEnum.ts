@@ -3,11 +3,11 @@ import { registerSymbolSymbolAnalysis } from '../../file/registerSymbolSymbolAna
 import { prepareSymbolAnalysis } from './prepareSymbolAnalysis.js'
 import { detectEffectSignals } from './analyzeEffectType.js'
 import { computeIndent } from './computeIndent.js'
-import type { SymbolAnalysis } from '@gyomu/schema/typescript'
+
 import type { EnumDeclaration } from 'ts-morph'
 
 import type { TagAnalysisArg } from '../types.js'
-import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
+import type { SymbolAnalysis, SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
 export const analyzeEnum = (args: TagAnalysisArg<EnumDeclaration>) => {
   const typeName = args.declaration.getName()

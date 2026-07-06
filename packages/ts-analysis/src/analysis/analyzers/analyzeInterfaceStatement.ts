@@ -1,8 +1,8 @@
 import { analyzeInterface } from './symbol/analyzeInterface.js'
-import type { SymbolAnalysis } from '@gyomu/schema/typescript'
+
 import type { StatementAnalysisArgument, StatementAnalysisResult } from './types.js'
 import type { InterfaceDeclaration } from 'ts-morph'
-import type { ExportAnalysis } from '@gyomu/schema/schemas/typescript'
+import type { ExportAnalysis, SymbolAnalysis } from '@gyomu/schema/schemas/typescript'
 
 export const analyzeInterfaceStatement = (
   statement: InterfaceDeclaration,

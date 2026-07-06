@@ -1,8 +1,7 @@
 import { analyzeFunction } from './symbol/analyzeFunction.js'
-import type { SymbolAnalysis } from '@gyomu/schema/typescript'
 import type { StatementAnalysisArgument, StatementAnalysisResult } from './types.js'
 import type { FunctionDeclaration } from 'ts-morph'
-import type { ExportAnalysis } from '@gyomu/schema/schemas/typescript'
+import type { ExportAnalysis, SymbolAnalysis } from '@gyomu/schema/schemas/typescript'
 
 export const analyzeFunctionStatement = (
   statement: FunctionDeclaration,

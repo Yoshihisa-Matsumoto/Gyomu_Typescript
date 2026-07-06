@@ -2,8 +2,8 @@ import { toIdentityKey } from '@gyomu/schema/schemas/typescript'
 import type {
   DocumentableMemberAnalysis,
   DocumentableTypeProperty,
+  SymbolAnalysis,
 } from '@gyomu/schema/schemas/typescript'
-import type { SymbolAnalysis } from '@gyomu/schema/typescript'
 import type { FileAnalysisMetadata } from './FileAnalysisResult.js'
 
 export const registerSymbolSymbolAnalysis = (

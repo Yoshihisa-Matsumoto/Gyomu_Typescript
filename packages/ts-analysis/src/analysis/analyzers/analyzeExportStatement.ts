@@ -1,12 +1,9 @@
 import { Node, SyntaxKind } from 'ts-morph'
 import { moduleSpecifierToSourcePath } from '../../shared/module/moduleSpecifierToSourcePath.js'
+import type { Builder } from '@gyomu/schema/entity'
 import type { FileAnalysisMetadata } from '../file/FileAnalysisResult.js'
-import type {
-  MemberIdentityMemberPath,
-  ProjectRelativePath,
-  SymbolAnalysis,
-} from '@gyomu/schema/typescript'
-import type { ExportAnalysis } from '@gyomu/schema/schemas/typescript'
+import type { MemberIdentityMemberPath, ProjectRelativePath } from '@gyomu/schema/typescript'
+import type { ExportAnalysis, SymbolAnalysis } from '@gyomu/schema/schemas/typescript'
 import type { StatementAnalysisResult } from './types.js'
 import type { ExportDeclaration } from 'ts-morph'
 import type { AnalysisOptions } from '../AnalysisOption.js'
@@ -64,7 +61,21 @@ export const analyzeExportStatement = (
           (s) => s.identity.symbolId == referencedNodeName,
         )
         if (targetSymbol) {
-          const referencedSymbol: SymbolAnalysis = { ...targetSymbol }
+          const referencedSymbol: Builder<SymbolAnalysis> = {
+            id: targetSymbol.id,
+            declarationOrder: targetSymbol.declarationOrder,
+            dependencyCandidates: [...targetSymbol.dependencyCandidates],
+            identity: targetSymbol.identity,
+            kind: targetSymbol.kind,
+            location: targetSymbol.location,
+            members: [...targetSymbol.members],
+            signature: targetSymbol.signature,
+            snippet: targetSymbol.snippet,
+            startOffset: targetSymbol.startOffset,
+            jsDoc: targetSymbol.jsDoc,
+            parsedJsDoc: targetSymbol.parsedJsDoc ? [...targetSymbol.parsedJsDoc] : undefined,
+            type: targetSymbol.type,
+          }
           referencedSymbol.location = {
             startLine: statement.getStartLineNumber(),
             endLine: statement.getEndLineNumber(),

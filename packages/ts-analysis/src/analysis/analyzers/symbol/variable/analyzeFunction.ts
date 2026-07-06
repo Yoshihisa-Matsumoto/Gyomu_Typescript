@@ -6,11 +6,14 @@ import { createSymbolIdentity } from '../../../shared/createSymbolIdentity.js'
 import { registerSymbolSymbolAnalysis } from '../../../file/registerSymbolSymbolAnalysis.js'
 import { computeIndent } from '../computeIndent.js'
 import { analyzeGenericsParameters } from '../analyzeGenericsParameters.js'
-import type { SignatureAnalysis, SymbolAnalysis } from '@gyomu/schema/typescript'
 
 import type { ArrowFunction, Expression, FunctionExpression, VariableDeclaration } from 'ts-morph'
 import type { SymbolPreparation } from '../prepareSymbolAnalysis.js'
-import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
+import type {
+  SignatureAnalysis,
+  SymbolAnalysis,
+  SymbolIdentity,
+} from '@gyomu/schema/schemas/typescript'
 import type { GetSignatureIdArg, TagAnalysisArg } from '../../types.js'
 
 export const analyzeFunction = (

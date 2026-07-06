@@ -9,13 +9,14 @@ import { analyzeGenericsParameters } from '../analyzeGenericsParameters.js'
 import { analyzeClassPropertyMember, analyzeGetSetAccessor } from './analyzeClassPropertyMember.js'
 import { analyzeClassMethodMember } from './analyzeClassMethodMember.js'
 import { analyzeConstructor } from './analyzeConstructor.js'
-import type { SymbolAnalysis } from '@gyomu/schema/typescript'
+
 import type { ClassDeclaration } from 'ts-morph'
 
 import type { ChildAnalysisArg, MemberAnalysisResult, TagAnalysisArg } from '../../types.js'
 import type {
   DependencyCandidate,
   MemberAnalysis,
+  SymbolAnalysis,
   SymbolIdentity,
 } from '@gyomu/schema/schemas/typescript'
 

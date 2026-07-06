@@ -2,12 +2,12 @@ import type {
   DependencyCandidate,
   ExportAnalysis,
   ImportAnalysis,
+  SymbolAnalysis,
   SymbolIdentity,
 } from '@gyomu/schema/schemas/typescript'
 import type {
   MemberIdentityMemberPath,
   ProjectRelativePath,
-  SymbolAnalysis,
   SymbolId,
 } from '@gyomu/schema/typescript'
 import type { Node } from 'ts-morph'

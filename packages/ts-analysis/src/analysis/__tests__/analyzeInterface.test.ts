@@ -5,10 +5,11 @@ import { Effect } from 'effect'
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { analyzeFile } from '../analyzeFile.js'
 import { createFixtureProject } from './createFixtureProject.js'
-import type { SymbolAnalysis } from '@gyomu/schema/typescript'
+
 import type {
   DocumentableMethodMemberAnalysis,
   DocumentablePropertyMemberAnalysis,
+  SymbolAnalysis,
 } from '@gyomu/schema/schemas/typescript'
 
 const timeout = 20000
