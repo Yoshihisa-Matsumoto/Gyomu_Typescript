@@ -10,3 +10,4 @@ export * from './SymbolIdentity.js'
 export * from './SymbolKind.js'
 
 export * from './type/index.js'
+export * from './member/index.js'

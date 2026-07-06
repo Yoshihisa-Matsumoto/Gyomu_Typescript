@@ -79,5 +79,5 @@ export const analyzeEnum = (args: TagAnalysisArg<EnumDeclaration>) => {
 }
 
 const getSignatureId = () => {
-  return { id: SignatureId('enum'), parameters: [] }
+  return { id: SignatureId('enum'), parameters: [], dependencyCandidates: [] }
 }

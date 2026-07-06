@@ -1,6 +1,6 @@
 import type { TypeAnalysis } from '../schemas/typescript/type/TypeAnalysis.js'
 import type { DependencyCandidate } from '../schemas/typescript/DependencyCandidate.js'
-import type { MemberAnalysis } from './MemberAnalysis.js'
+import type { MemberAnalysis } from '../schemas/typescript/member/MemberAnalysis.js'
 import type { SignatureId } from './types.js'
 
 /**
@@ -37,5 +37,5 @@ export interface SignatureAnalysis {
    */
   isOverloadImplementation?: boolean | undefined
 
-  dependencyCandidates?: ReadonlyArray<DependencyCandidate>
+  dependencyCandidates: ReadonlyArray<DependencyCandidate>
 }

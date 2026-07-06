@@ -5,7 +5,7 @@ import type { DependencyCandidate } from '../schemas/typescript/DependencyCandid
 import type { SymbolIdentity } from '../schemas/typescript/SymbolIdentity.js'
 import type { LineRange } from '../schemas/typescript/LineRange.js'
 
-import type { MemberAnalysis } from './MemberAnalysis.js'
+import type { MemberAnalysis } from '../schemas/typescript/member/MemberAnalysis.js'
 import type { SignatureAnalysis } from './SymbolModel.js'
 import type { SymbolId } from './types.js'
 import type { TypeAnalysis } from '../schemas/typescript/type/TypeAnalysis.js'

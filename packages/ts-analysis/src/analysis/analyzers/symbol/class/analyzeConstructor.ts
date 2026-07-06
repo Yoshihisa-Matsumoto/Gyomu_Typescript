@@ -6,7 +6,7 @@ import { getAccessor } from './analyzeClassPropertyMember.js'
 import type {
   MemberAnalysis,
   NonDocumentablePropertyMemberAnalysis,
-} from '@gyomu/schema/typescript'
+} from '@gyomu/schema/schemas/typescript'
 import type { ChildAnalysisArg, MemberAnalysisResult } from '../../types.js'
 import type { ClassDeclaration, ConstructorDeclaration, ParameterDeclaration } from 'ts-morph'
 
@@ -93,12 +93,12 @@ const analyzeClassPropertyFromConstructorParameters = (
       readonly: node.isReadonly(),
       optional: !!node.getQuestionTokenNode(),
 
-      type: typeResult?.member,
+      type: typeResult.member,
 
       static: false,
       visibility: getAccessor(node),
       declarationOrder,
     },
-    dependencies: typeResult?.dependencies ?? [],
+    dependencies: typeResult.dependencies,
   }
 }

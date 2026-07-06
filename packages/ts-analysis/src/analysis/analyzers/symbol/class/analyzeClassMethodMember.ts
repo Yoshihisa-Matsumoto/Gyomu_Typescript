@@ -5,7 +5,7 @@ import type { MethodDeclaration } from 'ts-morph'
 import type {
   DocumentableMethodMemberAnalysis,
   NonDocumentableMethodMemberAnalysis,
-} from '@gyomu/schema/typescript'
+} from '@gyomu/schema/schemas/typescript'
 
 export const analyzeClassMethodMember = (
   args: ChildAnalysisArg<MethodDeclaration>,

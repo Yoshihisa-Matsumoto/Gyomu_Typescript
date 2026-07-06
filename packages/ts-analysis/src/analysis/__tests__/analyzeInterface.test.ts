@@ -5,25 +5,23 @@ import { Effect } from 'effect'
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { analyzeFile } from '../analyzeFile.js'
 import { createFixtureProject } from './createFixtureProject.js'
+import type { SymbolAnalysis } from '@gyomu/schema/typescript'
 import type {
   DocumentableMethodMemberAnalysis,
   DocumentablePropertyMemberAnalysis,
-  SymbolAnalysis,
-} from '@gyomu/schema/typescript'
+} from '@gyomu/schema/schemas/typescript'
 
 const timeout = 20000
 
 const interfaceFixture = createFixtureProject(path.join('analysis', 'interface'))
 
 const interfaceAnalysisProgram = (sourceFile: string): SymbolAnalysis => {
-  const { projectRoot } = interfaceFixture
-
   const filePath = ProjectRelativePath(path.join('src', sourceFile))
   const result = Effect.runSync(
     Effect.gen(function* () {
       return yield* analyzeFile(interfaceFixture, filePath, {
         includeDebugInfo: true,
-      }).pipe(Effect.map((result) => result.analysis.symbols[0]))
+      }).pipe(Effect.map((result2) => result2.analysis.symbols[0]))
     }),
   )
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -31,8 +29,6 @@ const interfaceAnalysisProgram = (sourceFile: string): SymbolAnalysis => {
   return result
 }
 const interfaceSymbolsDependencyProgram = (sourceFile: string, folder?: string) => {
-  const { project, projectRoot, projectName } = interfaceFixture
-
   const sourcePath = folder ? path.join('src', folder, sourceFile) : path.join('src', sourceFile)
   const filePath = ProjectRelativePath(sourcePath)
   const result = Effect.runSync(
@@ -40,10 +36,10 @@ const interfaceSymbolsDependencyProgram = (sourceFile: string, folder?: string) 
       return yield* analyzeFile(interfaceFixture, filePath, {
         includeDebugInfo: true,
       }).pipe(
-        Effect.map((result) => {
+        Effect.map((result2) => {
           if (!fs.existsSync('./log')) fs.mkdirSync('./log')
-          fs.writeFileSync('./log/fileAnalysis.txt', JSON.stringify(result.analysis, null, 2))
-          const exports = result.analysis.symbols.map((s) => {
+          fs.writeFileSync('./log/fileAnalysis.txt', JSON.stringify(result2.analysis, null, 2))
+          const exports = result2.analysis.symbols.map((s) => {
             return {
               name: s.identity.symbolId,
               dependencies: s.dependencyCandidates,

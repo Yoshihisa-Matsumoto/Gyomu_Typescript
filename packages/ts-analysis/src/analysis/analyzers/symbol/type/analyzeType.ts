@@ -305,8 +305,6 @@ const analyzeTypeStructures = (
         reservedNames,
       },
       {
-        isStatic: undefined,
-        visibility: undefined,
         name: nodeName ? (nodeName[0] ?? '') : node.getText(),
         jsDocableNode: Node.isJSDocable(node) ? node : undefined,
       },
@@ -338,8 +336,6 @@ const analyzeTypeStructures = (
         reservedNames,
       },
       {
-        isStatic: undefined,
-        visibility: undefined,
         name: nodeName ? (nodeName[0] ?? '') : node.getText(),
         jsDocableNode: Node.isJSDocable(node) ? node : undefined,
       },
@@ -400,7 +396,7 @@ const analyzeTypeLiteralMembers = (
     reservedNames,
   } = args
 
-  const newMemberPath = [...args.memberPath, '$member']
+  const newMemberPath = [...memberPath, '$member']
   const members: Array<MemberAnalysisResult<TypeProperty>> = node
     .getMembers()
     .flatMap((member, index) => {

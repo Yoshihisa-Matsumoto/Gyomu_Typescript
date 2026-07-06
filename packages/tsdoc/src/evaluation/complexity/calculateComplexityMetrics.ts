@@ -2,14 +2,11 @@ import { equalSymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIden
 import { mergeComplexityMetrics } from './mergeComplexityMetrics.js'
 import { emptyComplexityMetrics } from './emptyComplexityMetrics.js'
 import { computeEffectComplexity } from './computeEffectComplexity.js'
+import type { SymbolAnalysis, SymbolId } from '@gyomu/schema/typescript'
 import type {
   DocumentableMethodMemberAnalysis,
   DocumentablePropertyMemberAnalysis,
   MemberAnalysis,
-  SymbolAnalysis,
-  SymbolId,
-} from '@gyomu/schema/typescript'
-import type {
   TypeAnalysis,
   TypeProperty,
   TypeStructureAnalysis,
@@ -44,7 +41,7 @@ const calculateComplexityMetricsFromSymbol = (symbol: SymbolAnalysis): Complexit
 }
 
 const calculateComplexityMetricsFromMembers = (
-  members: Array<MemberAnalysis>,
+  members: ReadonlyArray<MemberAnalysis>,
   currentDepth: number,
 ): ComplexityMetrics => {
   const metricsArray: Array<ComplexityMetrics> = []

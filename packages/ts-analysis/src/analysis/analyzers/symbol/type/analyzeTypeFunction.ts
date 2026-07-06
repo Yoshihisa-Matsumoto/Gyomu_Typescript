@@ -17,11 +17,7 @@ import type {
 } from 'ts-morph'
 import type { ChildAnalysisArg, MemberAnalysisResult } from '../../types.js'
 
-import type {
-  FunctionStructureAnalysis,
-  MemberAccessor,
-  TypeAnalysis,
-} from '@gyomu/schema/schemas/typescript'
+import type { FunctionStructureAnalysis, TypeAnalysis } from '@gyomu/schema/schemas/typescript'
 
 export const analyzeTypeFunction = (
   args: ChildAnalysisArg<
@@ -39,8 +35,6 @@ export const analyzeTypeFunction = (
         FunctionTypeNode)
   >,
   args2: {
-    isStatic: boolean | undefined
-    visibility: MemberAccessor | undefined
     name: string
     jsDocableNode: (JSDocableNode & Node) | undefined
   },
@@ -59,8 +53,6 @@ export const analyzeTypeFunction = (
     reservedNames,
   } = args
   const { name, jsDocableNode } = args2
-  const isStatic = args2.isStatic ?? false
-  const visibility = args2.visibility ?? 'public'
   const returnTypeNode = node.getReturnTypeNode()
 
   const genericsResult = analyzeGenericsParameters({
@@ -100,8 +92,6 @@ export const analyzeTypeFunction = (
     {
       name,
       jsDocableNode,
-      isStatic,
-      visibility,
       returnType,
     },
   )
@@ -113,8 +103,6 @@ const analyzeTypeFunctionInternal = (
   >,
   args2: {
     name: string
-    isStatic: boolean
-    visibility: MemberAccessor
     returnType: MemberAnalysisResult<TypeAnalysis>
     jsDocableNode: (JSDocableNode & Node) | undefined
   },
@@ -132,7 +120,7 @@ const analyzeTypeFunctionInternal = (
     options,
     reservedNames,
   } = args
-  const { isStatic, visibility, returnType, jsDocableNode, name } = args2
+  const { returnType, name } = args2
 
   const methodPath = [...memberPath, name]
   const childMemberPath = [...methodPath, '$parameters']

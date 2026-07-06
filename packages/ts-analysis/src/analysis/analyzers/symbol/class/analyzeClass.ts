@@ -9,16 +9,15 @@ import { analyzeGenericsParameters } from '../analyzeGenericsParameters.js'
 import { analyzeClassPropertyMember, analyzeGetSetAccessor } from './analyzeClassPropertyMember.js'
 import { analyzeClassMethodMember } from './analyzeClassMethodMember.js'
 import { analyzeConstructor } from './analyzeConstructor.js'
-import type { MemberAnalysis, SymbolAnalysis } from '@gyomu/schema/typescript'
+import type { SymbolAnalysis } from '@gyomu/schema/typescript'
 import type { ClassDeclaration } from 'ts-morph'
 
+import type { ChildAnalysisArg, MemberAnalysisResult, TagAnalysisArg } from '../../types.js'
 import type {
-  ChildAnalysisArg,
-  GetSignatureIdArg,
-  MemberAnalysisResult,
-  TagAnalysisArg,
-} from '../../types.js'
-import type { DependencyCandidate, SymbolIdentity } from '@gyomu/schema/schemas/typescript'
+  DependencyCandidate,
+  MemberAnalysis,
+  SymbolIdentity,
+} from '@gyomu/schema/schemas/typescript'
 
 export const analyzeClass = (args: TagAnalysisArg<ClassDeclaration>) => {
   const {
@@ -267,6 +266,6 @@ const analyzeClassMembers = (
   }
 }
 
-const getSignatureId = (args: GetSignatureIdArg<ClassDeclaration>) => {
-  return { id: SignatureId('class'), parameters: [] }
+const getSignatureId = () => {
+  return { id: SignatureId('class'), parameters: [], dependencyCandidates: [] }
 }

@@ -13,9 +13,10 @@ import type {
   TypeNode,
 } from 'ts-morph'
 
-import type { DocumentablePropertyMemberAnalysis, SymbolId } from '@gyomu/schema/typescript'
+import type { SymbolId } from '@gyomu/schema/typescript'
 import type {
   DependencyCandidate,
+  DocumentablePropertyMemberAnalysis,
   JsDocAnalysis,
   MemberAccessor,
   ParsedJsDoc,
@@ -70,7 +71,7 @@ export const analyzePropertyMemberInternal = (
     id: SymbolId
     identity: SymbolIdentity
     jsDoc: JsDocAnalysis | undefined
-    parsedJsDoc: Array<ParsedJsDoc> | undefined
+    parsedJsDoc: ReadonlyArray<ParsedJsDoc> | undefined
     location: {
       startLine: number
       endLine: number
@@ -142,7 +143,7 @@ export const analyzePropertyMemberInternal = (
     readonly,
     optional,
 
-    type: typeResult?.member,
+    type: typeResult.member,
     jsDoc,
     parsedJsDoc,
 
@@ -161,6 +162,6 @@ export const analyzePropertyMemberInternal = (
   )
   return {
     member: property,
-    dependencies: [...(typeResult?.dependencies ?? []), ...genercsDependencies],
+    dependencies: [...typeResult.dependencies, ...genercsDependencies],
   }
 }

@@ -1,8 +1,9 @@
-import type { DocumentableMemberAnalysis, SymbolAnalysis, SymbolId } from '@gyomu/schema/typescript'
+import type { SymbolAnalysis, SymbolId } from '@gyomu/schema/typescript'
 
 import type { FileAnalysis } from './FileAnalysis.js'
 import type {
   DependencyCandidate,
+  DocumentableMemberAnalysis,
   DocumentableTypeProperty,
   ParsedJsDoc,
 } from '@gyomu/schema/schemas/typescript'

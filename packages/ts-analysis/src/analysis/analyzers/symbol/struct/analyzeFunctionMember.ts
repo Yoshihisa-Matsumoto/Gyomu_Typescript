@@ -22,13 +22,12 @@ import type {
   Statement,
 } from 'ts-morph'
 import type { ChildAnalysisArg, MemberAnalysisResult, MethodAnalysisResult } from '../../types.js'
-import type {
-  DocumentableMethodMemberAnalysis,
-  NonDocumentableMethodMemberAnalysis,
-} from '@gyomu/schema/typescript'
+
 import type {
   DependencyCandidate,
+  DocumentableMethodMemberAnalysis,
   MemberAccessor,
+  NonDocumentableMethodMemberAnalysis,
   TypeAnalysis,
 } from '@gyomu/schema/schemas/typescript'
 
@@ -161,7 +160,7 @@ export const analyzeFunctionMemberInternal = (
   })
 
   const newReservedNames = [...reservedNames, ...genericsResult.parameters]
-  const methodBodyResult = analyzeFunctionBody({ ...args, memberPath: methodPath }, args2)
+  const methodBodyResult = analyzeFunctionBody({ ...args, memberPath: methodPath })
   if (jsDocableNode) {
     const { id, identity, jsDoc, location, snippet, startOffset, parsedJsDoc } =
       prepareMethodAnalysis(
@@ -289,13 +288,13 @@ export const analyzeFunctionBody = (
     | ConstructorDeclaration
     | FunctionDeclaration
   >,
-  args2: {
-    name: string
-    isStatic: boolean
-    visibility: MemberAccessor
-    returnType: MemberAnalysisResult<TypeAnalysis> | undefined
-    jsDocableNode: (JSDocableNode & Node) | undefined
-  },
+  // args2: {
+  //   name: string
+  //   isStatic: boolean
+  //   visibility: MemberAccessor
+  //   returnType: MemberAnalysisResult<TypeAnalysis> | undefined
+  //   jsDocableNode: (JSDocableNode & Node) | undefined
+  // },
 ): MethodAnalysisResult => {
   // console.log('analyzeFunctionBody', args2.name, args.node.getKindName())
   if (

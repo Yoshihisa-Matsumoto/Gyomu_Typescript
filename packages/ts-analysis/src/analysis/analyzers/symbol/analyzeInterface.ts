@@ -8,15 +8,14 @@ import { detectEffectSignals } from './analyzeEffectType.js'
 import { computeIndent } from './computeIndent.js'
 import { analyzeGenericsParameters } from './analyzeGenericsParameters.js'
 import { analyzeDependency } from './analyzeDependency.js'
-import type { MemberAnalysis, SymbolAnalysis } from '@gyomu/schema/typescript'
+import type { SymbolAnalysis } from '@gyomu/schema/typescript'
 import type { InterfaceDeclaration } from 'ts-morph'
+import type { ChildAnalysisArg, MemberAnalysisResult, TagAnalysisArg } from '../types.js'
 import type {
-  ChildAnalysisArg,
-  GetSignatureIdArg,
-  MemberAnalysisResult,
-  TagAnalysisArg,
-} from '../types.js'
-import type { DependencyCandidate, SymbolIdentity } from '@gyomu/schema/schemas/typescript'
+  DependencyCandidate,
+  MemberAnalysis,
+  SymbolIdentity,
+} from '@gyomu/schema/schemas/typescript'
 
 export const analyzeInterface = (args: TagAnalysisArg<InterfaceDeclaration>) => {
   const {
@@ -141,8 +140,8 @@ export const analyzeInterface = (args: TagAnalysisArg<InterfaceDeclaration>) => 
   }
 }
 
-const getSignature = (args: GetSignatureIdArg<InterfaceDeclaration>) => {
-  return { id: SignatureId('interface'), parameters: [] }
+const getSignature = () => {
+  return { id: SignatureId('interface'), parameters: [], dependencyCandidates: [] }
 }
 
 const analyzeInterfaceMembers = (

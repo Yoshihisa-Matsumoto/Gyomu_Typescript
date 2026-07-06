@@ -113,14 +113,14 @@ export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => 
         startLine: args.declaration.getStartLineNumber(),
         endLine: args.declaration.getEndLineNumber(),
       },
-      type: typeResult?.member,
+      type: typeResult.member,
       identity,
       startOffset: args.declaration.getStart(),
       jsDoc: prepared.jsDoc,
       parsedJsDoc: prepared.parsedJsDoc,
       members: [],
       declarationOrder: args.declarationOrder,
-      dependencyCandidates: [...genericsResult.dependencies, ...(typeResult?.dependencies ?? [])],
+      dependencyCandidates: [...genericsResult.dependencies, ...typeResult.dependencies],
     } satisfies SymbolAnalysis
   } else {
     symbol = {
@@ -164,5 +164,5 @@ export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => 
 }
 
 const getSignatureId = () => {
-  return { id: SignatureId('type'), parameters: [] }
+  return { id: SignatureId('type'), parameters: [], dependencyCandidates: [] }
 }

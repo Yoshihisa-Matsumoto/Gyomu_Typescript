@@ -119,7 +119,7 @@ const getSignatureId = (args: GetSignatureIdArg<VariableDeclaration>) => {
       0,
     )
   }
-  return { id: SignatureId('variable'), parameters: [] }
+  return { id: SignatureId('variable'), parameters: [], dependencyCandidates: [] }
 }
 
 // const analyzeVariableMembers = (declaration: VariableDeclaration): Array<MemberAnalysis> => {

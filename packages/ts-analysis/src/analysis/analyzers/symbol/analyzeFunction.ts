@@ -8,7 +8,7 @@ import { computeIndent } from './computeIndent.js'
 import { analyzeFunctionBody, analyzeFunctionMember } from './struct/analyzeFunctionMember.js'
 import { analyzeParameter } from './analyzeParameter.js'
 import { analyzeGenericsParameters } from './analyzeGenericsParameters.js'
-import type { MemberAnalysis, SignatureAnalysis, SymbolAnalysis } from '@gyomu/schema/typescript'
+import type { SignatureAnalysis, SymbolAnalysis } from '@gyomu/schema/typescript'
 import type { FunctionDeclaration } from 'ts-morph'
 import type {
   ChildAnalysisArg,
@@ -16,7 +16,7 @@ import type {
   MemberAnalysisResult,
   TagAnalysisArg,
 } from '../types.js'
-import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
+import type { MemberAnalysis, SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
 export const analyzeFunction = (args: TagAnalysisArg<FunctionDeclaration>) => {
   const { sourceRelativePath, sourceFullText, imported, options, metadata, declaration } = args
@@ -98,13 +98,13 @@ export const analyzeFunction = (args: TagAnalysisArg<FunctionDeclaration>) => {
       options,
       reservedNames: genericsResult.parameters,
     },
-    {
-      isStatic: false,
-      visibility: 'public',
-      name: typeName,
-      jsDocableNode: declaration,
-      returnType: returnTypeResult,
-    },
+    // {
+    //   isStatic: false,
+    //   visibility: 'public',
+    //   name: typeName,
+    //   jsDocableNode: declaration,
+    //   returnType: returnTypeResult,
+    // },
   )
   const symbol = {
     id: prepared.id,
@@ -131,7 +131,7 @@ export const analyzeFunction = (args: TagAnalysisArg<FunctionDeclaration>) => {
       ...membersResult.dependencies,
       ...(prepared.dependencyCandidates ?? []), // GenericsDependencyはprepared側に入っている
       ...methodBodyResult.dependencies,
-      ...(returnTypeResult?.dependencies ?? []),
+      ...returnTypeResult.dependencies,
     ],
   } satisfies SymbolAnalysis
   registerSymbolSymbolAnalysis(
@@ -227,11 +227,8 @@ const getFunctionSignatureId = (
     parameters: [],
     overloadCount: declaration.getOverloads().length,
     isOverloadImplementation,
-    returnType: returnTypeResult?.member,
-    dependencyCandidates: [
-      ...(returnTypeResult?.dependencies ?? []),
-      ...genericsResult.dependencies,
-    ],
+    returnType: returnTypeResult.member,
+    dependencyCandidates: [...returnTypeResult.dependencies, ...genericsResult.dependencies],
   }
 }
 

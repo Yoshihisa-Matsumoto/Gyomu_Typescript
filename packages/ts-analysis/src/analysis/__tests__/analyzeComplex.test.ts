@@ -10,15 +10,14 @@ import { equalSymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIden
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { analyzeFile } from '../analyzeFile.js'
 import { createFixtureProject } from './createFixtureProject.js'
+import type {} from '@gyomu/schema/typescript'
+import type { FileAnalysisResult } from '../file/FileAnalysisResult.js'
 import type {
   DocumentableMemberAnalysis,
   DocumentableMethodMemberAnalysis,
   DocumentablePropertyMemberAnalysis,
-  MemberAnalysis,
-} from '@gyomu/schema/typescript'
-import type { FileAnalysisResult } from '../file/FileAnalysisResult.js'
-import type {
   DocumentableTypeProperty,
+  MemberAnalysis,
   TypeAnalysis,
   TypeProperty,
 } from '@gyomu/schema/schemas/typescript'
@@ -28,8 +27,6 @@ const timeout = 20000
 const jsDocFixture = createFixtureProject(path.join('analysis', 'jsdoc'))
 
 const tempJsdocProgram = (sourceFile: string) => {
-  const { project, projectRoot, projectName } = jsDocFixture
-
   const filePath = ProjectRelativePath(path.join('src', sourceFile))
   return Effect.runSync(
     Effect.gen(function* () {

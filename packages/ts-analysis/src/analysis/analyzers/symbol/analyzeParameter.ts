@@ -2,7 +2,7 @@ import { Node } from 'ts-morph'
 import { SignatureId } from '@gyomu/schema/typescript'
 import { createMemberIdentityAndId } from '../../shared/createMemberIdentity.js'
 import { analyzeType } from './type/analyzeType.js'
-import type { NonDocumentablePropertyMemberAnalysis } from '@gyomu/schema/typescript'
+import type { NonDocumentablePropertyMemberAnalysis } from '@gyomu/schema/schemas/typescript'
 import type { ChildAnalysisArg, MemberAnalysisResult } from '../types.js'
 import type { ParameterDeclaration } from 'ts-morph'
 
@@ -70,11 +70,11 @@ export const analyzeParameter = (
 
       rest: !!node.getDotDotDotToken(),
 
-      type: typeResult?.member,
+      type: typeResult.member,
 
       declarationOrder,
       // structure: analyzeParameterStructure(withOptional({ node: typeNode, initializer })),
     },
-    dependencies: typeResult?.dependencies ?? [],
+    dependencies: typeResult.dependencies,
   }
 }

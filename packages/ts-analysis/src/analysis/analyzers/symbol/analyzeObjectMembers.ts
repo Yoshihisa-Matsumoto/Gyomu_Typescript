@@ -3,7 +3,7 @@ import { analyzeFunctionMember } from './struct/analyzeFunctionMember.js'
 import { analyzePropertyMember } from './struct/analyzePropertyMember.js'
 import type { ChildAnalysisArg, MemberAnalysisResult } from '../types.js'
 import type { TypeAliasDeclaration, VariableDeclaration } from 'ts-morph'
-import type { MemberAnalysis } from '@gyomu/schema/typescript'
+import type { MemberAnalysis } from '@gyomu/schema/schemas/typescript'
 
 export const analyzeObjectMembers = (
   args: ChildAnalysisArg<TypeAliasDeclaration | VariableDeclaration>,
