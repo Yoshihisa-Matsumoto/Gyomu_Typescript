@@ -65,6 +65,9 @@ export const snapshotCommand = (
 
       const fileFilter = createPathMatcher(options?.filter)
 
+      console.dir(projectContext, { depth: null })
+      console.dir(projectContext.includedFiles.keys().toArray())
+
       yield* makeDirectory('./log')
       for (const fileChange of changeResult.diff) {
         switch (fileChange.type) {
@@ -75,7 +78,7 @@ export const snapshotCommand = (
               continue
             }
 
-            const targetFilePath = join(projectAbsolutePath, fileChange.projectRelativePath)
+            const targetFilePath = fileChange.projectRelativePath
             if (!projectContext.includedFiles.has(targetFilePath)) {
               console.log(`File:${targetFilePath} Not in the project`)
               continue
@@ -84,17 +87,18 @@ export const snapshotCommand = (
             console.log(fileChange.projectRelativePath)
             let fileResult = yield* analyzeFile(projectContext, targetFilePath)
 
-            // yield* writeStringToFile(
-            //   './log/fileAnalysis.txt',
-            //   JSON.stringify(fileResult.analysis, null, 2),
-            // )
+            yield* writeStringToFile(
+              './log/fileAnalysis.txt',
+              JSON.stringify(fileResult.analysis, null, 2),
+            )
 
             if (options?.buildTsDoc) {
+              console.log('TSDoc Generate')
               yield* processTsDocUpdate(projectContext, fileResult, {
                 debugInfo: {
-                  // JsDocUpdateContext: true,
-                  // JsDocUpdatePlan: true,
-                  // DumpToFile: true,
+                  JsDocUpdateContext: true,
+                  JsDocUpdatePlan: true,
+                  DumpToFile: true,
                 },
                 action: {
                   // NoLLMRequest: true,

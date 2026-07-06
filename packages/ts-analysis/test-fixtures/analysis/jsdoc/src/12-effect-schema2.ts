@@ -1,5 +1,5 @@
 import { Schema } from 'effect'
-import { StructureBase } from './StructureBase.js'
+import { LineRange } from './11-effect-schema.js'
 
 /**
  * Represents a reference to another type identifier.
@@ -19,9 +19,9 @@ export const TypeReferenceStructureAnalysis = Schema.Struct({
     description: 'The identifier of the referenced type.',
   }),
 })
-  .pipe(Schema.fieldsAssign(StructureBase.fields))
+  .pipe(Schema.fieldsAssign(LineRange.fields))
   .annotate({
-    description: 'Represents a reference to another type identifier.',
+    description: `Represents a reference to another type identifier.`,
   })
 
 export type TypeReferenceStructureAnalysis = typeof TypeReferenceStructureAnalysis.Type

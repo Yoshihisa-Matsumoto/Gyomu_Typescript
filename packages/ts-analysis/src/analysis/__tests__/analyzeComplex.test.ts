@@ -1128,4 +1128,102 @@ describe('analyzeFile-complex pattern', () => {
     },
     timeout,
   )
+  it(
+    '11-effect-schema.ts',
+    async () => {
+      const result = await tempJsdocProgram('11-effect-schema.ts')
+
+      console.dir(result, { depth: null })
+
+      const exported = result.analysis.exports[0]
+
+      expect(exported?.exportedName).toBe('LineRange')
+
+      const symbol = result.analysis.symbols[0]!
+
+      expect(symbol.kind).toBe('const')
+
+      expect(symbol?.identity).toEqual({
+        symbolId: 'LineRange',
+        signatureId: 'variable',
+      })
+
+      const symbolType = symbol.type!
+      expect(symbolType.source).toBe('effect-schema')
+
+      expect(symbolType.structure?.kind).toBe('object')
+
+      const objectStructure = symbolType.structure
+      if (objectStructure?.kind == 'object') {
+        expect(objectStructure.members?.map((m) => m.name)).toEqual(
+          expect.arrayContaining(['startLine', 'endLine']),
+        )
+        expect(objectStructure.annotations).toBeDefined()
+        const annotation = objectStructure.annotations
+        if (annotation) {
+          expect(annotation.description).toBe('A range of line numbers in a source file.')
+        }
+      }
+    },
+    timeout,
+  )
+  it(
+    '12-effect-schema2.ts',
+    async () => {
+      const result = await tempJsdocProgram('12-effect-schema2.ts')
+
+      // console.dir(result, { depth: null })
+
+      const exported = result.analysis.exports[0]
+
+      expect(exported?.exportedName).toBe('TypeReferenceStructureAnalysis')
+
+      const symbol = result.analysis.symbols[0]!
+
+      expect(symbol.kind).toBe('const')
+
+      expect(symbol?.identity).toEqual({
+        symbolId: 'TypeReferenceStructureAnalysis',
+        signatureId: 'variable',
+      })
+
+      console.dir(symbol.dependencyCandidates, { depth: null })
+
+      const symbolType = symbol.type!
+      expect(symbolType.source).toBe('effect-schema')
+
+      expect(symbolType.structure?.kind).toBe('object')
+
+      const objectStructure = symbolType.structure
+      if (objectStructure?.kind == 'object') {
+        expect(objectStructure.members?.map((m) => m.name)).toEqual(
+          expect.arrayContaining(['kind', 'targetId']),
+        )
+        expect(objectStructure.annotations).toBeDefined()
+        const annotation = objectStructure.annotations
+        if (annotation) {
+          expect(annotation.description).toBe('Represents a reference to another type identifier.')
+        }
+
+        const kindAttr = objectStructure.members?.find((m) => m.name == 'kind')
+        expect(kindAttr).toBeDefined()
+        expect(kindAttr?.type?.structure?.kind).toBe('literal')
+        if (kindAttr?.type?.structure?.kind == 'literal') {
+          expect(kindAttr.type.structure.annotations?.description).toBe(
+            'The classification of this structure.',
+          )
+        }
+
+        const targetId = objectStructure.members?.find((m) => m.name == 'targetId')
+        expect(targetId).toBeDefined()
+        expect(targetId?.type?.structure?.kind).toBe('primitive')
+        if (targetId?.type?.structure?.kind == 'primitive') {
+          expect(targetId.type.structure.annotations?.description).toBe(
+            'The identifier of the referenced type.',
+          )
+        }
+      }
+    },
+    timeout,
+  )
 })

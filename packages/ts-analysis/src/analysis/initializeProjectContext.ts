@@ -1,10 +1,11 @@
-import { join, normalize } from 'node:path'
+import { join, normalize, relative } from 'node:path'
 import { Effect } from 'effect'
 import { readStringFromFile } from '@gyomu/infra/fs'
 import { fromSync } from '@gyomu/schema/effect'
 import { wrapInfraError } from '@gyomu/schema'
 import { Project } from 'ts-morph'
 import { FullPath } from '@gyomu/schema/typescript'
+import { normalizePath } from '../shared/index.js'
 import { AnalysisError } from './error/AnalysisError.js'
 import type { WorkspaceRelativePath } from '@gyomu/schema/typescript'
 import type { FileSystem } from 'effect'
@@ -56,7 +57,10 @@ export const initializeProjectContext = (args: {
         project
           .getSourceFiles()
           .map((file) => normalize(file.getFilePath()))
-          .filter((filePath) => filePath.startsWith(projectRootAbsolutePath)),
+          .filter((filePath) => filePath.startsWith(projectRootAbsolutePath))
+          .map((fileAbsolutePath) =>
+            normalizePath(relative(projectRootAbsolutePath, fileAbsolutePath)),
+          ),
       ),
     }
   })

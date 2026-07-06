@@ -1,5 +1,6 @@
 import { Schema } from 'effect'
 import { TypeAnalysis } from './TypeAnalysis.js'
+import { StructureBase } from './StructureBase.js'
 
 /**
  * Represents an array structure.
@@ -14,7 +15,7 @@ export type ArrayStructureAnalysis = {
    * The type of the array elements.
    */
   elementType: TypeAnalysis
-}
+} & StructureBase
 
 /**
  * Represents an array structure.
@@ -33,8 +34,10 @@ export const ArrayStructureAnalysis: Schema.Schema<ArrayStructureAnalysis> = Sch
   elementType: Schema.suspend(() => TypeAnalysis).annotate({
     description: 'The type of the array elements.',
   }),
-}).annotate({
-  description: 'Represents an array structure.',
 })
+  .pipe(Schema.fieldsAssign(StructureBase.fields))
+  .annotate({
+    description: 'Represents an array structure.',
+  })
 
 // export type ArrayStructureAnalysis = typeof ArrayStructureAnalysis.Type

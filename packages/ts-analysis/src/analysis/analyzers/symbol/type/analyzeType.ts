@@ -70,7 +70,13 @@ export const analyzeType = (
     } else {
       const newMemberPath: MemberIdentityMemberPath = [...memberPath, ...(nodeName ?? [])]
       if (Node.isCallExpression(node) || Node.isPropertyAccessExpression(node)) {
-        const schemaEffectExpression = getSupportedEffectSchemaType(node)
+        const schemaEffectExpression = getSupportedEffectSchemaType(
+          node,
+          undefined,
+          [],
+          args.imported,
+          newMemberPath,
+        )
         if (schemaEffectExpression != null) {
           // console.dir(schemaEffectExpression)
           // console.log(nodeName)
@@ -80,6 +86,7 @@ export const analyzeType = (
             ownerSymbolIdentity,
             imported,
             memberPath: newMemberPath,
+            dependencies: schemaEffectExpression.dependencies,
           })
           if (effectSchema) return effectSchema
         }
@@ -369,6 +376,17 @@ const analyzeTypeStructures = (
         members: membersResult?.member,
       },
       dependencies: membersResult?.dependencies ?? [],
+    }
+  }
+  if (Node.isTypeQuery(node)) {
+    const name = computeTargetId(node.getExprName())
+    const dependencies = analyzeDependency(name, imported, memberPath)
+    return {
+      member: {
+        kind: 'reference',
+        targetId: computeTargetId(node.getExprName()),
+      },
+      dependencies: [dependencies],
     }
   }
   console.log(`!!Unsupported Type!!`)

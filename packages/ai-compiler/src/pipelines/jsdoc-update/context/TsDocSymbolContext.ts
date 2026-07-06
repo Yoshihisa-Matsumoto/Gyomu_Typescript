@@ -1,5 +1,9 @@
-import type { DependencySummary, SymbolIdentity } from '@gyomu/schema/schemas/typescript'
-import type { EffectSignals } from '@gyomu/schema/typescript'
+import type {
+  DependencySummary,
+  EffectSignals,
+  SchemaAnnotations,
+  SymbolIdentity,
+} from '@gyomu/schema/schemas/typescript'
 
 /**
  * Defines the base interface for a JSDoc update context containing project metadata and target identification.
@@ -183,6 +187,8 @@ export interface SchemaStructureNode {
   type?: string
 
   semanticHint?: string
+
+  annotations?: SchemaAnnotations | undefined
 
   children?: Array<SchemaStructureNode>
 }

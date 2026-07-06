@@ -1,4 +1,5 @@
 import { Schema } from 'effect'
+import { StructureBase } from './StructureBase.js'
 
 /**
  * Represents a primitive type.
@@ -17,8 +18,10 @@ export const PrimitiveAnalysis = Schema.Struct({
   elementType: Schema.String.annotate({
     description: 'The name of the primitive type.',
   }),
-}).annotate({
-  description: 'Represents a primitive type.',
 })
+  .pipe(Schema.fieldsAssign(StructureBase.fields))
+  .annotate({
+    description: 'Represents a primitive type.',
+  })
 
 export type PrimitiveAnalysis = typeof PrimitiveAnalysis.Type

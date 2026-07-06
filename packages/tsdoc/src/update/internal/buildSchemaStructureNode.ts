@@ -17,6 +17,7 @@ export const buildSchemaStructureNode = (
             .map((m) => buildSchemaStructureNodeFromTypeProperty(m))
             .flat()
             .filter((m) => !!m),
+          annotations: member.annotations,
         }
       }
       return undefined
@@ -32,6 +33,7 @@ export const buildSchemaStructureNode = (
               type: member.elementType.structure.targetId,
             },
           ],
+          annotations: member.annotations,
         }
       else return undefined
     }
@@ -40,6 +42,7 @@ export const buildSchemaStructureNode = (
         name,
         kind: 'literal',
         type: member.elementValue,
+        annotations: member.annotations,
       }
     }
     case 'primitive': {
@@ -47,6 +50,7 @@ export const buildSchemaStructureNode = (
         name,
         kind: 'primitive',
         type: member.elementType,
+        annotations: member.annotations,
       }
     }
     case 'reference': {
@@ -54,6 +58,7 @@ export const buildSchemaStructureNode = (
         name,
         kind: 'reference',
         type: member.targetId,
+        annotations: member.annotations,
       }
     }
     case 'union': {
@@ -64,6 +69,7 @@ export const buildSchemaStructureNode = (
           .filter((tp) => tp.source == 'effect-schema' && tp.structure)
           .map((tp) => buildSchemaStructureNode(tp.structure as TypeStructureAnalysis, tp.text))
           .filter((c) => !!c),
+        annotations: member.annotations,
       }
     }
   }

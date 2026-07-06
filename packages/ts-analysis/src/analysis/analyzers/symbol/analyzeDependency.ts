@@ -4,10 +4,13 @@ import type { MemberIdentityMemberPath } from '@gyomu/schema/typescript'
 import type { TypeParameterDeclaration, TypeReferenceNode } from 'ts-morph'
 
 export const analyzeDependency = (
-  identity: string,
+  passedIdentity: string,
   imported: Array<ImportAnalysis>,
   memberPath: MemberIdentityMemberPath,
 ): DependencyCandidate => {
+  let identity = passedIdentity
+  if (identity.includes('.')) identity = identity.split('.')[0]!
+
   if (!hasImportedBinding(identity, imported)) {
     return {
       source: { memberPath },

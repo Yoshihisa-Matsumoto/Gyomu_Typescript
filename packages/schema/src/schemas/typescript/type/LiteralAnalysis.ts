@@ -1,4 +1,5 @@
 import { Schema } from 'effect'
+import { StructureBase } from './StructureBase.js'
 
 /**
  * Represents a literal type value.
@@ -17,8 +18,10 @@ export const LiteralAnalysis = Schema.Struct({
   elementValue: Schema.String.annotate({
     description: 'The literal value.',
   }),
-}).annotate({
-  description: 'Represents a literal type value.',
 })
+  .pipe(Schema.fieldsAssign(StructureBase.fields))
+  .annotate({
+    description: 'Represents a literal type value.',
+  })
 
 export type LiteralAnalysis = typeof LiteralAnalysis.Type

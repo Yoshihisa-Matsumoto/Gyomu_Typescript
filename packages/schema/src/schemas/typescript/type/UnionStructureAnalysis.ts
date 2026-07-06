@@ -1,5 +1,6 @@
 import { Schema } from 'effect'
 import { TypeAnalysis } from './TypeAnalysis.js'
+import { StructureBase } from './StructureBase.js'
 
 /**
  * Represents a union type structure.
@@ -14,7 +15,7 @@ export type UnionStructureAnalysis = {
    * The member types of the union.
    */
   types: ReadonlyArray<TypeAnalysis>
-}
+} & StructureBase
 
 /**
  * Represents a union type structure.
@@ -33,6 +34,8 @@ export const UnionStructureAnalysis: Schema.Schema<UnionStructureAnalysis> = Sch
   types: Schema.Array(Schema.suspend(() => TypeAnalysis)).annotate({
     description: 'The member types of the union.',
   }),
-}).annotate({
-  description: 'Represents a union type structure.',
 })
+  .pipe(Schema.fieldsAssign(StructureBase.fields))
+  .annotate({
+    description: 'Represents a union type structure.',
+  })

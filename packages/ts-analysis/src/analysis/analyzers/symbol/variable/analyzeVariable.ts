@@ -53,7 +53,15 @@ export const analyzeVariable = (args: TagAnalysisArg<VariableDeclaration>) => {
     signatureId: prepared.signature.id,
   }
 
-  const effectSchemaSupportType = getSupportedEffectSchemaType(initializer)
+  const effectSchemaSupportType = getSupportedEffectSchemaType(
+    initializer,
+    undefined,
+    [],
+    imported,
+    memberPath,
+  )
+  // console.log(`Support schemaType`)
+  // console.dir(effectSchemaSupportType, { depth: 3 })
   const typeAnalysisResult: MemberAnalysisResult<TypeAnalysis> | undefined =
     effectSchemaSupportType == undefined
       ? { member: { text: variableName, source: 'typescript' }, dependencies: [] }
@@ -63,6 +71,7 @@ export const analyzeVariable = (args: TagAnalysisArg<VariableDeclaration>) => {
           ownerSymbolIdentity: identity,
           memberPath: [],
           imported,
+          dependencies: effectSchemaSupportType.dependencies,
         })
   // if (isObjectInitializer(initializer)) {
   //   return analyzeObject(args, prepared, initializer)
@@ -89,7 +98,10 @@ export const analyzeVariable = (args: TagAnalysisArg<VariableDeclaration>) => {
     members: [],
 
     declarationOrder: args.declarationOrder,
-    dependencyCandidates: typeAnalysisResult?.dependencies ?? [],
+    dependencyCandidates: [
+      ...(typeAnalysisResult?.dependencies ?? []),
+      ...(effectSchemaSupportType?.dependencies ?? []),
+    ],
   } satisfies Builder<SymbolAnalysis>
   registerSymbolSymbolAnalysis(
     args.metadata,
