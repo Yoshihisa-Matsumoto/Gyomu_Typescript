@@ -48,4 +48,7 @@ export const DocumentableTypeProperty = Schema.Struct({
     description: 'Represents a documentable type property.',
   })
 
+/**
+ * Represents the inferred type of a documentable type property.
+ */
 export type DocumentableTypeProperty = typeof DocumentableTypeProperty.Type

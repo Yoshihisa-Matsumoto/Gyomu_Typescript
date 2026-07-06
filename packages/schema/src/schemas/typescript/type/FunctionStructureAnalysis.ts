@@ -7,17 +7,17 @@ import { TypeAnalysis } from './TypeAnalysis.js'
  */
 export type FunctionStructureAnalysis = {
   /**
-   * The classification of this structure.
+   * The classification of this structure, which must be 'function'.
    */
   kind: 'function'
 
   /**
-   * Function parameters.
+   * An array of parameters for the function.
    */
   parameters: ReadonlyArray<TypeProperty>
 
   /**
-   * The function's return type.
+   * The return type of the function.
    */
   returnType: TypeAnalysis
 }

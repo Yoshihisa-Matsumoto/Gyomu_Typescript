@@ -18,7 +18,7 @@ export type ObjectStructureAnalysis = {
 } & StructureBase
 
 /**
- * Represents an object structure.
+ * Defines an Effect schema for an object structure, including the literal 'object' classification and an optional array of property members.
  */
 export const ObjectStructureAnalysis: Schema.Schema<ObjectStructureAnalysis> = Schema.Struct({
   kind: Schema.Literal('object'),

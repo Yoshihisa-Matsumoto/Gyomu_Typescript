@@ -59,6 +59,8 @@ export const LocalDate = {
 /**
  * Converts a LocalDate string to a Date object.
  *
+ * @param localDate The local date string to convert.
+ *
  * @returns The Date object representing the given date.
  */
 export const LocalDate2Date = (localDate: LocalDate): Date => {
@@ -74,6 +76,8 @@ export const LocalDate2Date = (localDate: LocalDate): Date => {
 /**
  * Converts a Date object to a LocalDate string.
  *
+ * @param date The Date object to convert.
+ *
  * @returns The formatted LocalDate string.
  */
 export const Date2LocalDate = (date: Date): LocalDate => {
@@ -85,6 +89,8 @@ type DbLocalDate = string & Brand.Brand<'LocalDate'>
 /**
  * Converts a LocalDate to a database-compatible date representation.
  *
+ * @param value The LocalDate to convert.
+ *
  * @returns The database-formatted local date string.
  */
 export function toDbLocalDate(value: LocalDate): DbLocalDate {
@@ -94,6 +100,8 @@ export function toDbLocalDate(value: LocalDate): DbLocalDate {
 /**
  * Converts a Date object to a DbLocalDate.
  *
+ * @param date The Date object to convert.
+ *
  * @returns The resulting DbLocalDate.
  */
 export const Date2DbLocalDate = (date: Date): DbLocalDate => {
@@ -102,6 +110,12 @@ export const Date2DbLocalDate = (date: Date): DbLocalDate => {
 
 /**
  * Creates a Date object from year, month, and day components.
+ *
+ * @param year The year component.
+ *
+ * @param one_base_month The one-based month component.
+ *
+ * @param day The day component.
  *
  * @returns A Date object representing the specified date.
  */
@@ -113,6 +127,8 @@ export const createDateOnly = (year: number, one_base_month: number, day: number
 /**
  * Extracts the date portion from a Date object.
  *
+ * @param date The input date object.
+ *
  * @returns A new Date object with time zeroed out.
  */
 export const extractDateOnly = (date: Date) => {
@@ -121,6 +137,8 @@ export const extractDateOnly = (date: Date) => {
 
 /**
  * Formats a JavaScript Date object into a YYYY-MM-DD string.
+ *
+ * @param date The Date object to format.
  *
  * @returns The formatted date string.
  */
@@ -131,9 +149,11 @@ export function formatDateToYmd(date: Date): string {
 /**
  * Parses a YYYY-MM-DD string into a Date object, throwing a ValueError if the input is invalid.
  *
+ * @param ymd The date string in YYYY-MM-DD format.
+ *
  * @returns A parsed Date object.
  *
- * @throws {ValueError} Throws if the date format is invalid or if the parsed date does not match the input string.
+ * @throws Throws if the date format is invalid or if the parsed date does not match the input string.
  */
 export function parseYmdToDate(ymd: string): Date {
   const date = parse(ymd, 'yyyy-MM-dd', new Date())
@@ -160,6 +180,10 @@ export const getTodayAsLocalDate = (): LocalDate => {
 
 /**
  * Adds a specified number of days to a Date object.
+ *
+ * @param date The base date.
+ *
+ * @param numberToAdd The number of days to add.
  *
  * @returns The updated Date object.
  */

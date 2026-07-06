@@ -36,7 +36,7 @@ export const equalSymbolIdentity = (a: SymbolIdentity, b: SymbolIdentity): boole
  *
  * @param identity The identity to serialize.
  *
- * @returns A string representation of the identity.
+ * @returns A unique string representation of the identity.
  */
 export const toIdentityKey = (identity: SymbolIdentity): SymbolId =>
   SymbolId(`${identity.symbolId}:%%:${identity.signatureId}`)

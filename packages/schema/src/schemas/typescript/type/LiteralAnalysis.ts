@@ -24,4 +24,7 @@ export const LiteralAnalysis = Schema.Struct({
     description: 'Represents a literal type value.',
   })
 
+/**
+ * Represents the static type of the LiteralAnalysis schema.
+ */
 export type LiteralAnalysis = typeof LiteralAnalysis.Type

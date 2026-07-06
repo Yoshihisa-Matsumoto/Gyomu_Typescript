@@ -10,4 +10,7 @@ export const StructureBase = Schema.Struct({
   description: 'Represents a  base structure',
 })
 
+/**
+ * Defines the static type of the StructureBase schema, containing optional annotations.
+ */
 export type StructureBase = typeof StructureBase.Type

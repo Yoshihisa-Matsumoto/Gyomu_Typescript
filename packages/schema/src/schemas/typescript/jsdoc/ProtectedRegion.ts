@@ -1,6 +1,9 @@
 import { Schema } from 'effect'
 import { SymbolIdentity } from '../SymbolIdentity.js'
 
+/**
+ * Defines a protected section of code, including its start and end character indices, text content, and optional references to preceding and following symbols.
+ */
 export const ProtectedRegion = Schema.Struct({
   start: Schema.Number.annotate({
     description: 'The starting character index of the protected region.',
@@ -30,4 +33,7 @@ export const ProtectedRegion = Schema.Struct({
     'Defines a protected section of code, identified by its start and end positions, content, and optional surrounding context.',
 })
 
+/**
+ * Represents the TypeScript type definition for the ProtectedRegion schema.
+ */
 export type ProtectedRegion = Schema.Schema.Type<typeof ProtectedRegion>

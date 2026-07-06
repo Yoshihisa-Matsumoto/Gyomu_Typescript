@@ -8,6 +8,9 @@ import { DocumentableMethodMemberAnalysis } from './DocumentableMethodMemberAnal
 export type DocumentableMemberAnalysis =
   DocumentableMethodMemberAnalysis | DocumentablePropertyMemberAnalysis
 
+/**
+ * Defines the Effect schema for documentable member analyses, which is a union of method and property analysis schemas.
+ */
 export const DocumentableMemberAnalysis = Schema.suspend(() =>
   Schema.Union([DocumentableMethodMemberAnalysis, DocumentablePropertyMemberAnalysis]),
 )

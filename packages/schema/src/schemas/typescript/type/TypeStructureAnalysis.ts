@@ -7,6 +7,9 @@ import { UnionStructureAnalysis } from './UnionStructureAnalysis.js'
 import { TypeReferenceStructureAnalysis } from './TypeReferenceStructureAnalysis.js'
 import { FunctionStructureAnalysis } from './FunctionStructureAnalysis.js'
 
+/**
+ * Defines a schema that encapsulates various TypeScript type structure analyses, including primitives, literals, objects, arrays, functions, unions, and type references.
+ */
 export const TypeStructureAnalysis = Schema.suspend(() =>
   Schema.Union([
     PrimitiveAnalysis,
@@ -20,4 +23,7 @@ export const TypeStructureAnalysis = Schema.suspend(() =>
   ]),
 )
 
+/**
+ * Represents the inferred type for a TypeScript structure analysis.
+ */
 export type TypeStructureAnalysis = typeof TypeStructureAnalysis.Type

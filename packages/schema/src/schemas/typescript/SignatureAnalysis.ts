@@ -4,6 +4,9 @@ import { DependencyCandidate } from './DependencyCandidate.js'
 import { MemberAnalysis } from './member/MemberAnalysis.js'
 import { TypeAnalysis } from './type/TypeAnalysis.js'
 
+/**
+ * Defines the structure for function or callable type signature analysis, containing parameters, return type, generics, and dependency metadata.
+ */
 export const SignatureAnalysis = Schema.Struct({
   id: Schema.String.pipe(Schema.brand('SignatureId')).annotate({
     description: 'Unique signature identifier, e.g. for overloads.',
@@ -36,4 +39,7 @@ export const SignatureAnalysis = Schema.Struct({
   description: 'Function or callable type signature analysis.',
 })
 
+/**
+ * The inferred type of the SignatureAnalysis schema.
+ */
 export type SignatureAnalysis = typeof SignatureAnalysis.Type

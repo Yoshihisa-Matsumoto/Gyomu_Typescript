@@ -1,5 +1,8 @@
 import { Schema } from 'effect'
 
+/**
+ * Represents a detected modification made to documentation that was not automatically generated. Includes the signal type, confidence score, and specific details about the modification location and source.
+ */
 export const HumanEditSignal = Schema.Struct({
   type: Schema.Literals([
     'manual-format',
@@ -37,8 +40,14 @@ export const HumanEditSignal = Schema.Struct({
     'Represents a detected modification made to documentation that was not automatically generated.',
 })
 
+/**
+ * The inferred static type of the HumanEditSignal schema.
+ */
 export type HumanEditSignal = Schema.Schema.Type<typeof HumanEditSignal>
 
+/**
+ * Contextual information about a specific location in documentation where human edits might occur, including the section source and optional tag name.
+ */
 export const HumanEditContext = Schema.Struct({
   source: Schema.Literals(['summary', 'remarks', 'example', 'tag']).annotate({
     description: 'The JSDoc section or tag type being edited.',
@@ -54,4 +63,7 @@ export const HumanEditContext = Schema.Struct({
     'Contextual information about a specific location in documentation where human edits might occur.',
 })
 
+/**
+ * The inferred static type of the HumanEditContext schema.
+ */
 export type HumanEditContext = Schema.Schema.Type<typeof HumanEditContext>

@@ -12,4 +12,7 @@ export const SchemaAnnotations = Schema.Struct({
   description: 'Represents a schema annotation',
 })
 
+/**
+ * Represents the inferred TypeScript type for the SchemaAnnotations schema.
+ */
 export type SchemaAnnotations = typeof SchemaAnnotations.Type

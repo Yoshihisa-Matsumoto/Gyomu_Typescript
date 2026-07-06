@@ -1,6 +1,9 @@
 import { Schema } from 'effect'
 import { SymbolIdentity } from './SymbolIdentity.js'
 
+/**
+ * Represents an export of a symbol declared within the current file.
+ */
 export const LocalExportAnalysis = Schema.Struct({
   kind: Schema.Literal('local').annotate({
     description: 'Indicates that the export refers to a symbol declared within the current file.',
@@ -24,8 +27,14 @@ export const LocalExportAnalysis = Schema.Struct({
   description: 'Represents an export of a symbol declared within the current file.',
 })
 
+/**
+ * The inferred TypeScript type for a local export analysis.
+ */
 export type LocalExportAnalysis = Schema.Schema.Type<typeof LocalExportAnalysis>
 
+/**
+ * Represents a re-export from another module.
+ */
 export const ReExportAnalysis = Schema.Struct({
   kind: Schema.Literal('re-export').annotate({
     description: 'Indicates that the export re-exports symbols from another module.',
@@ -52,11 +61,20 @@ export const ReExportAnalysis = Schema.Struct({
   description: 'Represents a re-export from another module.',
 })
 
+/**
+ * The inferred TypeScript type for a re-export analysis.
+ */
 export type ReExportAnalysis = Schema.Schema.Type<typeof ReExportAnalysis>
 
+/**
+ * Represents the analysis results for an exported symbol, which can be either a local export or a re-export.
+ */
 export const ExportAnalysis = Schema.Union([LocalExportAnalysis, ReExportAnalysis]).annotate({
   description:
     'Represents the analysis results for an exported symbol, which can be either a local export or a re-export.',
 })
 
+/**
+ * The inferred TypeScript type for an export analysis.
+ */
 export type ExportAnalysis = Schema.Schema.Type<typeof ExportAnalysis>

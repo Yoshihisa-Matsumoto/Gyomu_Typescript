@@ -3,6 +3,9 @@ import { JsDocAnalysis } from '../jsdoc/JsDocAnalysis.js'
 import { ParsedJsDoc } from '../jsdoc/ParsedJsDoc.js'
 import { LineRange } from '../LineRange.js'
 
+/**
+ * Defines a schema for a documentable member, including its JSDoc analysis, parsed documentation, source location, and offset information.
+ */
 export const DocumentableMember = Schema.Struct({
   documentable: Schema.Literal(true),
   jsDoc: Schema.optional(JsDocAnalysis),
@@ -11,4 +14,7 @@ export const DocumentableMember = Schema.Struct({
   startOffset: Schema.Number,
 })
 
+/**
+ * The TypeScript type representation for a DocumentableMember.
+ */
 export type DocumentableMember = Schema.Schema.Type<typeof DocumentableMember>

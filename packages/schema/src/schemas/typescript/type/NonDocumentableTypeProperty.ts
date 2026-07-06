@@ -17,4 +17,7 @@ export const NonDocumentableTypeProperty = Schema.Struct({
     description: 'Represents a non-documentable type property.',
   })
 
+/**
+ * Represents a non-documentable type property.
+ */
 export type NonDocumentableTypeProperty = typeof NonDocumentableTypeProperty.Type

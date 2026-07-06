@@ -2,6 +2,9 @@ import { Schema } from 'effect'
 import { SymbolIdentity } from '../SymbolIdentity.js'
 import { TypeAnalysis } from './TypeAnalysis.js'
 
+/**
+ * Common properties shared by all type properties.
+ */
 export const TypePropertyBase = Schema.Struct({
   /**
    * Stable identifier of the symbol.
@@ -69,4 +72,7 @@ export const TypePropertyBase = Schema.Struct({
   description: 'Common properties shared by all type properties.',
 })
 
+/**
+ * TypeScript type representation for the properties shared by all type properties.
+ */
 export type TypePropertyBase = typeof TypePropertyBase.Type

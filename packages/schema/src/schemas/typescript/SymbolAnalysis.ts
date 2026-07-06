@@ -10,6 +10,9 @@ import { SymbolIdentity } from './SymbolIdentity.js'
 import { SymbolKind } from './SymbolKind.js'
 import { TypeAnalysis } from './type/TypeAnalysis.js'
 
+/**
+ * Detailed analysis result for a symbol declaration, containing identification, structural metadata, location, signature, and extracted JSDoc information.
+ */
 export const SymbolAnalysis = Schema.Struct({
   id: Schema.String.pipe(Schema.brand('SymbolId')).annotate({
     description:
@@ -67,4 +70,7 @@ export const SymbolAnalysis = Schema.Struct({
   description: 'Detailed analysis result for a symbol declaration.',
 })
 
+/**
+ * TypeScript type representation of the SymbolAnalysis schema.
+ */
 export type SymbolAnalysis = typeof SymbolAnalysis.Type

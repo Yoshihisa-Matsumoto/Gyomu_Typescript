@@ -1,5 +1,8 @@
 import { Schema } from 'effect'
 
+/**
+ * Represents a marker identifying the tool and version used for generation, including the tool name, optional version, and the raw string representation.
+ */
 export const GeneratorMarker = Schema.Struct({
   tool: Schema.String.annotate({
     description: 'The name of the tool used for generation.',
@@ -18,4 +21,7 @@ export const GeneratorMarker = Schema.Struct({
   description: 'Represents a marker identifying the tool and version used for generation.',
 })
 
+/**
+ * The inferred type for the GeneratorMarker schema.
+ */
 export type GeneratorMarker = Schema.Schema.Type<typeof GeneratorMarker>

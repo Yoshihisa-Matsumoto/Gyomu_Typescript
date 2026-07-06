@@ -24,4 +24,7 @@ export const TypeReferenceStructureAnalysis = Schema.Struct({
     description: 'Represents a reference to another type identifier.',
   })
 
+/**
+ * Represents the inferred type for TypeReferenceStructureAnalysis.
+ */
 export type TypeReferenceStructureAnalysis = typeof TypeReferenceStructureAnalysis.Type

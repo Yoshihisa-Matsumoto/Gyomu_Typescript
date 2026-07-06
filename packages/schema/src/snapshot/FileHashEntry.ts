@@ -18,9 +18,7 @@ export interface FileHashEntry {
   rawHash: string
 
   /**
-   * Semantic hash generated from normalized AST structure.
-   *
-   * Used to ignore formatting-only or comment-only changes.
+   * Semantic hash generated from normalized AST structure, used to ignore formatting-only or comment-only changes.
    */
   semanticHash?: string
 

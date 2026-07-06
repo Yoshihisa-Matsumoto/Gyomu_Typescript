@@ -7,6 +7,9 @@ import { RawJsDoc } from './RawJsDoc.js'
 import { ProtectedSection } from './ProtectedSection.js'
 import { GeneratorMarker } from './GeneratorMarker.js'
 
+/**
+ * Represents the structural components and metadata extracted from a parsed JSDoc comment block.
+ */
 export const ParsedJsDoc = Schema.Struct({
   summary: Schema.optional(
     Schema.String.annotate({
@@ -89,4 +92,7 @@ export const ParsedJsDoc = Schema.Struct({
     'Represents the structural components and metadata extracted from a parsed JSDoc comment block.',
 })
 
+/**
+ * The inferred TypeScript type for a parsed JSDoc comment block.
+ */
 export type ParsedJsDoc = Schema.Schema.Type<typeof ParsedJsDoc>

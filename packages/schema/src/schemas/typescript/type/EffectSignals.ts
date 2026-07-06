@@ -6,37 +6,37 @@ import { TypeAnalysis } from './TypeAnalysis.js'
  */
 export interface EffectSignals {
   /**
-   * Whether the symbol returns an Effect.
+   * Indicates whether the symbol returns an Effect.
    */
   returnsEffect: boolean
 
   /**
-   * Success value type.
+   * The type analysis of the success value.
    */
   success: TypeAnalysis
 
   /**
-   * Error type.
+   * The type analysis of the error, if present.
    */
   error: TypeAnalysis | undefined
 
   /**
-   * Required context/environment type.
+   * The type analysis of the required context or environment, if present.
    */
   requirements: TypeAnalysis | undefined
 
   /**
-   * Whether the Effect contains an error type.
+   * Indicates whether the Effect definition specifies an error type.
    */
   hasErrorType: boolean
 
   /**
-   * Whether the Effect contains requirements/context type.
+   * Indicates whether the Effect definition specifies requirements or context.
    */
   hasRequirementsType: boolean
 
   /**
-   * Estimated Effect nesting depth.
+   * The estimated nesting depth of the Effect, if measurable.
    */
   effectDepth: number | undefined
 }

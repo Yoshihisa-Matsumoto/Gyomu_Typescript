@@ -1,5 +1,8 @@
 import { Schema } from 'effect'
 
+/**
+ * Represents a parsed @returns JSDoc tag.
+ */
 export const JsDocReturns = Schema.Struct({
   description: Schema.optional(
     Schema.String.annotate({
@@ -16,8 +19,14 @@ export const JsDocReturns = Schema.Struct({
   description: 'Represents a parsed @returns JSDoc tag.',
 })
 
+/**
+ * The TypeScript type definition for a parsed @returns JSDoc tag.
+ */
 export type JsDocReturns = Schema.Schema.Type<typeof JsDocReturns>
 
+/**
+ * Represents a parsed @throws JSDoc tag.
+ */
 export const JsDocThrows = Schema.Struct({
   type: Schema.optional(
     Schema.String.annotate({
@@ -44,8 +53,14 @@ export const JsDocThrows = Schema.Struct({
   description: 'Represents a parsed @throws JSDoc tag.',
 })
 
+/**
+ * The TypeScript type definition for a parsed @throws JSDoc tag.
+ */
 export type JsDocThrows = Schema.Schema.Type<typeof JsDocThrows>
 
+/**
+ * Represents the parsed structure of a JSDoc parameter tag.
+ */
 export const JsDocParam = Schema.Struct({
   name: Schema.String.annotate({
     description: 'Parameter name.',
@@ -82,8 +97,14 @@ export const JsDocParam = Schema.Struct({
   description: 'Represents the parsed structure of a JSDoc parameter tag.',
 })
 
+/**
+ * The TypeScript type definition for a parsed JSDoc parameter tag.
+ */
 export type JsDocParam = Schema.Schema.Type<typeof JsDocParam>
 
+/**
+ * Represents a generic parsed JSDoc tag.
+ */
 export const ParsedTag = Schema.Struct({
   tagName: Schema.String.annotate({
     description: `Tag name without '@'.
@@ -131,4 +152,7 @@ Undefined when the tag does not expose a natural identifier.`,
   description: 'Represents a generic parsed JSDoc tag.',
 })
 
+/**
+ * The TypeScript type definition for a generic parsed JSDoc tag.
+ */
 export type ParsedTag = Schema.Schema.Type<typeof ParsedTag>

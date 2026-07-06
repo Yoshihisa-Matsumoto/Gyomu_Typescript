@@ -24,4 +24,7 @@ export const PrimitiveAnalysis = Schema.Struct({
     description: 'Represents a primitive type.',
   })
 
+/**
+ * Represents a primitive type.
+ */
 export type PrimitiveAnalysis = typeof PrimitiveAnalysis.Type

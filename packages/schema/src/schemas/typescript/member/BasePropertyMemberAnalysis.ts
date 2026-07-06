@@ -4,7 +4,7 @@ import { PropertySource } from '../PropertySource.js'
 import { BaseMemberAnalysis } from './BaseMemberAnalysis.js'
 
 /**
- * Represents a non-documentable type property.
+ * Defines the base structure for property member analysis, including metadata for property type, source, modifiers like readonly or optional, and rest parameter status.
  */
 export const BasePropertyMemberAnalysis = Schema.Struct({
   kind: Schema.Literal('property'),
@@ -17,4 +17,7 @@ export const BasePropertyMemberAnalysis = Schema.Struct({
   rest: Schema.Boolean.annotate({ description: 'Whether the parameter is a rest parameter.' }),
 }).pipe(Schema.fieldsAssign(BaseMemberAnalysis.fields))
 
+/**
+ * The inferred type of the BasePropertyMemberAnalysis schema.
+ */
 export type BasePropertyMemberAnalysis = typeof BasePropertyMemberAnalysis.Type

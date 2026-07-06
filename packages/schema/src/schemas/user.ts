@@ -27,6 +27,10 @@ export type User = typeof UserSchema.Type
 
 /**
  * Provides utilities for creating a branded UserId.
+ *
+ * @param s The string identifier to decode as a UserId.
+ *
+ * @returns Returns the decoded UserId.
  */
 export const UserId = {
   make: (s: string) => Schema.decodeSync(UserIdSchema)(s),

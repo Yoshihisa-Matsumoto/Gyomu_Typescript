@@ -2,6 +2,9 @@ import { Schema } from 'effect'
 import { SymbolIdentity } from '../SymbolIdentity.js'
 import { MemberAccessor } from '../MemberAccessor.js'
 
+/**
+ * Defines the base structure for member analysis, including identity, ownership, and declaration metadata.
+ */
 export const BaseMemberAnalysis = Schema.Struct({
   id: Schema.String.pipe(Schema.brand('SymbolId')).annotate({
     title: 'Symbol identifier',
@@ -31,4 +34,7 @@ src/user/UserService.ts::UserService.getUser
   declarationOrder: Schema.Number,
 })
 
+/**
+ * Defines the base structure for symbol member analysis, including identity, visibility, and ordering metadata.
+ */
 export type BaseMemberAnalysis = Schema.Schema.Type<typeof BaseMemberAnalysis>

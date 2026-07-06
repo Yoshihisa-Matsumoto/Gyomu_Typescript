@@ -1,6 +1,9 @@
 import { Schema } from 'effect'
 import { GeneratorMarker } from './GeneratorMarker.js'
 
+/**
+ * Existing JSDoc/TSDoc quality analysis, including metrics on documentation presence, tag counts, and human-edited indicators.
+ */
 export const JsDocAnalysis = Schema.Struct({
   exists: Schema.Boolean.annotate({
     description: 'Whether documentation exists.',
@@ -78,4 +81,7 @@ Protected regions may use markers such as:
   description: 'Existing JSDoc/TSDoc quality analysis.',
 })
 
+/**
+ * The TypeScript type for the JsDocAnalysis schema.
+ */
 export type JsDocAnalysis = Schema.Schema.Type<typeof JsDocAnalysis>
