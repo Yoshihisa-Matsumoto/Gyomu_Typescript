@@ -118,13 +118,7 @@ interface AiAssistantMessage {
   readonly text: string
 }
 export type AiFinishReason =
-  | 'completed'
-  | 'max-tokens'
-  | 'tool-call'
-  | 'content-filtered'
-  | 'error'
-  | 'cancelled'
-  | 'unknown'
+  'completed' | 'max-tokens' | 'tool-call' | 'content-filtered' | 'error' | 'cancelled' | 'unknown'
 
 interface AiUsage {
   readonly inputTokens: number
@@ -171,4 +165,4 @@ export interface AiModelService {
  * =========================================
  */
 
-export const AiModelService = Context.Service<AiModelService>('@gyomu/infra/AiService')
+export const AiModelService = Context.Service<AiModelService>('@gyomu/ai/AiService')

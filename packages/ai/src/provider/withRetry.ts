@@ -25,7 +25,7 @@ const retryLoop = <A>(
   state: RetryState,
 ): Effect.Effect<A, AiError> =>
   Effect.catch(effect, (error) => {
-    if (!error.retryable) {
+    if (!error.isRetryable) {
       return Effect.fail(error)
     }
 
@@ -33,17 +33,19 @@ const retryLoop = <A>(
       return Effect.fail(error)
     }
 
-    switch (error.retryStrategy._tag) {
+    if (error.resolution._tag != 'retry') return Effect.fail(error)
+    const stragegy = error.resolution.strategy
+    switch (stragegy._tag) {
       case 'retry-after':
         // console.log(`Retry afet ${error.retryStrategy.delayMs} ms`)
         if (state.observer) {
           state.observer.onRetry({
             error,
             attempt: state.attempt,
-            delayMs: error.retryStrategy.delayMs,
+            delayMs: stragegy.delayMs,
           })
         }
-        return Effect.sleep(Duration.millis(error.retryStrategy.delayMs)).pipe(
+        return Effect.sleep(Duration.millis(stragegy.delayMs)).pipe(
           Effect.andThen(
             retryLoop(effect, {
               ...state,

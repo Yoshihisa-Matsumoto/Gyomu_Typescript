@@ -4,7 +4,7 @@ import { createGoogleGenerativeAI } from '@ai-sdk/google'
 
 import { Context, Effect, Layer } from 'effect'
 import type { EmbeddingModel, LanguageModel } from 'ai'
-import type { AiProviderError } from './AiProviderError.js'
+import type { AiProviderError } from '../error/AiProviderError.js'
 
 /**
  * =========================================
@@ -38,6 +38,14 @@ export interface AiModelRegistry {
 
   readonly embedding: EmbeddingModel
 }
+
+export type AiModelRegistryKey = {
+  [K in keyof AiModelRegistry]: AiModelRegistry[K] extends LanguageModel ? K : never
+}[keyof AiModelRegistry]
+
+export const getLanguageModel = (registry: AiModelRegistry, key: AiModelRegistryKey) =>
+  registry[key]
+export const getEmbeddingModel = (registry: AiModelRegistry) => registry.embedding
 
 /**
  * =========================================

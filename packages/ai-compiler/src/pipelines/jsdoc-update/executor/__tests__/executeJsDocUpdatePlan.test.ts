@@ -1,10 +1,11 @@
 import { describe, expect, test } from 'vitest'
 import { Effect, Layer } from 'effect'
 import { NodeFileSystem } from '@effect/platform-node'
-import { AiModelService } from '@gyomu/ai'
+import { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 
 import { SignatureId, SymbolId } from '@gyomu/schema/typescript'
-import { executeJsDocUpdatePlan } from '../executeJsDocUpdatePlan.js'
+import { TsDocRouteId, executeJsDocUpdatePlan } from '../executeJsDocUpdatePlan.js'
+import type { ModelRoute, ModelRouteId, RouteNode } from '@gyomu/ai'
 import type { JsDocUpdatePlan } from '../../schema/JsDocUpdatePlan.js'
 
 describe('executeJsDocUpdatePlan', () => {
@@ -37,12 +38,21 @@ describe('executeJsDocUpdatePlan', () => {
       },
     ]
 
-    const mockAiModelService = Layer.succeed(AiModelService, {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const mockAiModelService = Layer.succeed(AiModelRoute, {
       generateObject: () =>
         Effect.succeed({
           object: expected,
         }),
     } as any)
+
+    const modelRoute = {
+      nodes: [{ retry: 1, registry: { fast: {} } } as any as RouteNode],
+    } as ModelRoute
+    const mockModelRoutes = Layer.succeed(
+      ModelRoutes,
+      new Map<ModelRouteId, ModelRoute>([[TsDocRouteId, modelRoute]]),
+    )
 
     const context = {
       mode: 'light',
@@ -50,8 +60,9 @@ describe('executeJsDocUpdatePlan', () => {
 
     const result = await Effect.runPromise(
       executeJsDocUpdatePlan(context).pipe(
-        Effect.provide(mockAiModelService),
         Effect.provide(NodeFileSystem.layer),
+        Effect.provide(mockModelRoutes),
+        Effect.provide(mockAiModelService),
       ),
     )
 

@@ -586,6 +586,10 @@ importers:
       ts-morph:
         specifier: ^28.0.0
         version: 28.0.0
+    devDependencies:
+      dotenv:
+        specifier: 'catalog:'
+        version: 17.4.2
 
   packages/tsdoc:
     dependencies:

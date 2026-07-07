@@ -20,7 +20,7 @@ export type AIPhase =
 
 type RetryStrategy =
   | {
-      readonly _tag: 'none'
+      readonly _tag: 'immediate'
     }
   | {
       readonly _tag: 'exponential'
@@ -28,6 +28,34 @@ type RetryStrategy =
   | {
       readonly _tag: 'retry-after'
       readonly delayMs: number
+    }
+
+/**
+ * Defines the resolution strategy for an AI error, specifying whether to retry, fall back to another route, or fail.
+ */
+export type AIErrorResolution =
+  | {
+      /**
+       * Retry the same model.
+       */
+      readonly _tag: 'retry'
+
+      /**
+       * Retry strategy.
+       */
+      readonly strategy: RetryStrategy
+    }
+  | {
+      /**
+       * Give up the current model and try the next route node.
+       */
+      readonly _tag: 'fallback'
+    }
+  | {
+      /**
+       * This error is fatal.
+       */
+      readonly _tag: 'fail'
     }
 
 /**
@@ -50,14 +78,9 @@ export interface AIErrorContext extends AppErrorContext {
   readonly phase: AIPhase
 
   /**
-   * Indicates whether the error is considered retryable.
+   * Recommended resolution for this error.
    */
-  readonly retryable: boolean
-
-  /**
-   * The strategy configuration used for retries.
-   */
-  readonly retryStrategy: RetryStrategy
+  readonly resolution: AIErrorResolution
 
   /**
    * An optional HTTP-like status code associated with the error.
@@ -71,9 +94,8 @@ export interface AIErrorContext extends AppErrorContext {
 export class AiError extends withErrorTraits(
   Data.TaggedError('@gyomu/schema/AiError')<AIErrorContext>,
   {
-    isRetryable: (ctx) => {
-      return ctx.retryable
-    },
+    isRetryable: (ctx) => ctx.resolution._tag === 'retry',
+    canFallback: (ctx) => ctx.resolution._tag == 'retry' || ctx.resolution._tag == 'fallback',
   },
 ) {}
 

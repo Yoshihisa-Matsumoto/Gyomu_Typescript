@@ -31,8 +31,8 @@ export const buildPrompt = (params: {
     operation: 'generate',
     model: 'unknown',
     phase: 'request',
-    retryStrategy: { _tag: 'none' },
-    retryable: false,
+    resolution: { _tag: 'fail' },
+
     cause: undefined,
   })
 }

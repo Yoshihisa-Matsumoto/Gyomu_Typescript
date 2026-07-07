@@ -3,9 +3,10 @@ import { Effect, Layer } from 'effect'
 import * as fsRead from '@gyomu/infra/fs'
 // import * as fsWrite from '@gyomu/infra/fs'
 import { PlatformLayer } from '@gyomu/infra'
-import { AiModelService } from '@gyomu/ai'
+import { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 import * as analyze from '@gyomu/ts-analysis'
 import { FullPath } from '@gyomu/schema/typescript'
+import { TsDocRouteId } from '@gyomu/ai-compiler/jsdoc-update'
 import * as merge from '../buildMergePlan.js'
 import * as applyMerge from '../applyMergePlan.js'
 import * as render from '../renderJsDoc.js'
@@ -13,12 +14,19 @@ import * as filePlan from '../buildFileUpdatePlan.js'
 import { processTsDocUpdate } from '../processTsDocUpdate.js'
 import type { ExportAnalysis } from '@gyomu/schema/schemas/typescript'
 
-const mockAiModelService = Layer.succeed(AiModelService, {
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+const mockAiModelService = Layer.succeed(AiModelRoute, {
   generateObject: () =>
     Effect.succeed({
       object: {},
     }),
 } as any)
+
+const modelRoute = {
+  nodes: [{ retry: 1, registry: { fast: {} } } as any],
+} as any
+const mockModelRoutes = Layer.succeed(ModelRoutes, new Map([[TsDocRouteId, modelRoute]]))
+
 describe('processTsDocUpdate', () => {
   beforeEach(() => {
     vi.resetAllMocks()
@@ -90,7 +98,11 @@ describe('processTsDocUpdate', () => {
     )
 
     const result = await Effect.runPromise(
-      program.pipe(Effect.provide(mockAiModelService), Effect.provide(PlatformLayer)),
+      program.pipe(
+        Effect.provide(mockAiModelService),
+        Effect.provide(PlatformLayer),
+        Effect.provide(mockModelRoutes),
+      ),
     )
 
     // expect(writeMock).toHaveBeenCalledWith('/mock/path/file.ts', '/** test */\nfunction foo() {}')

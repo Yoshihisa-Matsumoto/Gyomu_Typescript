@@ -8,7 +8,7 @@ export {
   DocumentableInfo,
 } from './context/TsDocSymbolContext.js'
 export * from './mode/index.js'
-export { executeJsDocUpdatePlan } from './executor/executeJsDocUpdatePlan.js'
+export { executeJsDocUpdatePlan, TsDocRouteId } from './executor/executeJsDocUpdatePlan.js'
 export {
   JsDocUpdatePlan,
   JsDocUpdateEntryPlan,

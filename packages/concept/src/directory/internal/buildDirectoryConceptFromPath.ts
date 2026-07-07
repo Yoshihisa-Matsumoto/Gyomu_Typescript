@@ -2,6 +2,7 @@ import { relative } from 'node:path'
 import { Effect } from 'effect'
 import { readDirectoryDetailed } from '@gyomu/infra/fs'
 import { loadFileAnalysisResult } from '@gyomu/ts-analysis'
+import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import type { AnalysisError, ProjectContext } from '@gyomu/ts-analysis'
 import type { IOError } from '@gyomu/schema'
 import type { BuildDirectoryOption, BuildResult } from '../types.js'
@@ -37,14 +38,16 @@ export const buildDirectoryConceptFromPath = (
 
     if (option?.changedFiles) {
       const isFolderChanged =
-        option.changedFiles.filter((f) => f.path.startsWith(targetDirectoryRelativePath)).length > 0
+        option.changedFiles.filter((f) =>
+          f.projectRelativePath.startsWith(targetDirectoryRelativePath),
+        ).length > 0
       if (isFolderChanged) isChanged = true
     }
 
     const fileAnalysisList = new Array<FileAnalysis>()
     for (const file of files) {
       const fileFullPath = file.path
-      const fileRelativePath = relative(context.projectRoot, fileFullPath)
+      const fileRelativePath = ProjectRelativePath(relative(context.projectRoot, fileFullPath))
       const result = yield* loadFileAnalysisResult(context, fileRelativePath)
       fileAnalysisList.push(result.result.analysis)
     }

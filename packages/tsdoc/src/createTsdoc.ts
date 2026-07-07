@@ -1,18 +1,22 @@
-import { VercelAiModelServiceLive } from '@gyomu/ai/provider/vercel'
+import 'dotenv/config'
+import { createVercelAiLayer } from '@gyomu/ai/provider/vercel'
 import { ConfigLayer, MainLayer, PlatformLayer } from '@gyomu/infra'
 import { makeRunner } from '@gyomu/schema/effect'
 import { Effect, Layer } from 'effect'
-
-import 'dotenv/config'
+import { AI_MODELS } from '@gyomu/ai'
 import { writeStringToFile } from '@gyomu/infra/fs'
 import { analyzeFile, initializeProjectContext } from '@gyomu/ts-analysis'
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
+import { TsDocRouteId } from '@gyomu/ai-compiler/jsdoc-update'
 import { processTsDocUpdate } from './update/processTsDocUpdate.js'
 
 import { listTypescriptProject } from './shared/index.js'
 
+console.log(process.env)
 const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(Layer.provideMerge(PlatformLayer))
-const runQAWithEnvOrThrow = makeRunner(VercelAiModelServiceLive)
+const runQAWithEnvOrThrow = makeRunner(
+  createVercelAiLayer(new Map([[TsDocRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }]])),
+)
 
 const processTsDocUpdateProgram = async (
   projectName: string,
@@ -72,7 +76,7 @@ const processTsDocUpdateProgram = async (
 
 await processTsDocUpdateProgram(
   `@gyomu/schema`,
-  ProjectRelativePath(`src/typescript/jsdoc/JsDocAnalysis.ts`),
+  ProjectRelativePath(`src/schemas/typescript/jsdoc/JsDocAnalysis.ts`),
 )
 // await processTsDocUpdateProgram(`@gyomu/schema`, `src/core/result.ts`)
 // `src/conversation/index.ts`

@@ -8,7 +8,7 @@ import type { Exit } from 'effect/Exit'
  *
  * @returns The extracted error of type E.
  *
- * @throws {Error} Throws if the exit is not a Failure or if no error is found in the Cause.
+ * @throws Throws if the exit is not a Failure or if no error is found in the Cause.
  */
 export function getFailureFromExit<E>(exit: Exit<any, E>): E {
   if (exit._tag !== 'Failure') {

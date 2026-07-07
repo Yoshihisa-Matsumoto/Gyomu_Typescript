@@ -1,8 +1,9 @@
 import { join } from 'node:path'
-import { VercelAiModelServiceLive } from '@gyomu/ai/provider/vercel'
+import { createVercelAiLayer } from '@gyomu/ai/provider/vercel'
 import { ConfigLayer, MainLayer, PlatformLayer } from '@gyomu/infra'
 import { makeRunner } from '@gyomu/schema/effect'
 import {
+  TsDocRouteId,
   analyzeProjectChanges,
   commitProjectSnapshot,
   deleteSnapshot,
@@ -20,12 +21,15 @@ import {
   writeStringToFile,
 } from '@gyomu/infra/fs'
 import { analyzeFile, initializeProjectContext } from '@gyomu/ts-analysis'
+import { AI_MODELS } from '@gyomu/ai'
 
 const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(
   Layer.provideMerge(PlatformLayer),
   Layer.provideMerge(FileSearchServiceLayer),
 )
-const runQAWithEnvOrThrow = makeRunner(VercelAiModelServiceLive)
+const runQAWithEnvOrThrow = makeRunner(
+  createVercelAiLayer(new Map([[TsDocRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }]])),
+)
 export const snapshotCommand = (
   projectName: string,
   options?: { buildTsDoc?: boolean; filter?: string; commit?: boolean; recommit?: boolean },

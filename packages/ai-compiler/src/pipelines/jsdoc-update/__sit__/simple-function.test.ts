@@ -1,18 +1,20 @@
 import { describe, expect, test } from 'vitest'
 import { Layer } from 'effect'
 import { ConfigLayer, MainLayer, PlatformLayer } from '@gyomu/infra'
-import { VercelAiModelServiceLive } from '@gyomu/ai/provider/vercel'
+import { createVercelAiLayer } from '@gyomu/ai/provider/vercel'
 import { makeRunner } from '@gyomu/schema/effect'
-
+import { AI_MODELS } from '@gyomu/ai'
 import { SignatureId, SymbolId } from '@gyomu/schema/typescript'
-import { executeJsDocUpdatePlan } from '../executor/executeJsDocUpdatePlan.js'
+import { TsDocRouteId, executeJsDocUpdatePlan } from '../executor/executeJsDocUpdatePlan.js'
 import 'dotenv/config'
 import type { TsDocFileContext } from '../context/TsDocFileContext.js'
 
 const describeIfApiKey = process.env.GEMINI_API_KEY ? describe : describe.skip
 
 const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(Layer.provideMerge(PlatformLayer))
-const runQAWithEnvOrThrow = makeRunner(VercelAiModelServiceLive)
+const runQAWithEnvOrThrow = makeRunner(
+  createVercelAiLayer(new Map([[TsDocRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }]])),
+)
 
 describeIfApiKey('executeJsDocUpdatePlan integration', () => {
   test('generates update plan for simple function', async () => {

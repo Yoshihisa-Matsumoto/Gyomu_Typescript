@@ -10,7 +10,7 @@ import { createMergePlan } from './internal/createMargePlan.js'
 import type { FileSystem } from 'effect'
 import type { FileAnalysisResult } from '@gyomu/ts-analysis'
 import type { MergePlan } from './jsdoc/MergePlan.js'
-import type { AiModelService } from '@gyomu/ai'
+import type { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 import type { UpdateOptions } from './UpdateOptions.js'
 import type { IOError } from '@gyomu/schema'
 
@@ -21,7 +21,7 @@ export const buildMergePlan = (
 ): Effect.Effect<
   Array<MergePlan>,
   UpdateError | IOError,
-  FileSystem.FileSystem | AiModelService
+  FileSystem.FileSystem | AiModelRoute | ModelRoutes
 > => {
   const mapComplexity = calculateComplexityMetrics(fileResult)
 

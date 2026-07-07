@@ -2,16 +2,24 @@ import { describe, expect, test } from 'vitest'
 import { Layer } from 'effect'
 import { ConfigLayer, MainLayer, PlatformLayer } from '@gyomu/infra'
 import { makeRunner } from '@gyomu/schema/effect'
-import { VercelAiModelServiceLive } from '@gyomu/ai/provider/vercel'
+import { AI_MODELS } from '@gyomu/ai'
+import { createVercelAiLayer } from '@gyomu/ai/provider/vercel'
 import { SignatureId, SymbolId } from '@gyomu/schema/typescript'
-import { executeJsDocUpdatePlan } from '../executor/executeJsDocUpdatePlan.js'
+import { TsDocRouteId, executeJsDocUpdatePlan } from '../executor/executeJsDocUpdatePlan.js'
+import type { ModelRoute } from '@gyomu/ai'
 import 'dotenv/config'
 import type { TsDocFileContext } from '../context/TsDocFileContext.js'
 
 const describeIfApiKey = process.env.GEMINI_API_KEY ? describe : describe.skip
 
-const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(Layer.provideMerge(PlatformLayer))
-const runQAWithEnvOrThrow = makeRunner(VercelAiModelServiceLive)
+const routes = new Map([
+  [TsDocRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] } as ModelRoute],
+])
+const layer = Layer.provideMerge(MainLayer, ConfigLayer)
+  .pipe(Layer.provideMerge(PlatformLayer))
+  .pipe(Layer.provideMerge(createVercelAiLayer(routes)))
+
+const runQAWithEnvOrThrow = makeRunner(layer)
 
 describeIfApiKey('executeJsDocUpdatePlan integration', () => {
   test('prefers preserve when existing documentation already exists', async () => {
@@ -70,7 +78,7 @@ describeIfApiKey('executeJsDocUpdatePlan integration', () => {
       ],
     }
 
-    const plan = await runQAWithEnvOrThrow(executeJsDocUpdatePlan(context), layer)
+    const plan = await runQAWithEnvOrThrow(executeJsDocUpdatePlan(context))
 
     console.dir(plan, { depth: null })
 
@@ -136,7 +144,7 @@ describeIfApiKey('executeJsDocUpdatePlan integration', () => {
       ],
     }
 
-    const plan = await runQAWithEnvOrThrow(executeJsDocUpdatePlan(context), layer)
+    const plan = await runQAWithEnvOrThrow(executeJsDocUpdatePlan(context))
 
     console.dir(plan, { depth: null })
 
@@ -206,7 +214,7 @@ describeIfApiKey('executeJsDocUpdatePlan integration', () => {
       ],
     }
 
-    const plan = await runQAWithEnvOrThrow(executeJsDocUpdatePlan(context), layer)
+    const plan = await runQAWithEnvOrThrow(executeJsDocUpdatePlan(context))
 
     console.dir(plan, { depth: null })
 

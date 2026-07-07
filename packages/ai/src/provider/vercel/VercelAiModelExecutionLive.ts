@@ -3,36 +3,36 @@ import { Output, embed, generateText, streamText } from 'ai'
 import { AiError, withOptional } from '@gyomu/schema'
 
 import { fromPromise, fromSync } from '@gyomu/schema/effect'
-import { AiModelService } from '../types/AiModelService.js'
 import { withRetry } from '../withRetry.js'
+import { getEmbeddingModel, getLanguageModel } from '../../model/AiModels.js'
+import { AiModelExecution } from '../types/AiModelExecuion.js'
 import { buildToolRuntimeConfig } from './buildToolRuntimeConfig.js'
 import { mapGenerateTextResultToAiGenerateTextResult } from './mapResult.js'
 import { buildPrompt } from './buildPrompt.js'
 import { createAiErrorContext } from './mapAiSdkError.js'
-import type { Effect } from 'effect'
+import type { AiGenerateTextResult } from '../../execution/AiGenerateTextResult.js'
 import type {
-  AiGenerateTextResult,
   EmbedParams,
   GenerateObjectParams,
   GenerateTextParams,
   StreamTextParams,
-} from '../types/AiModelService.js'
+} from '../types/AiModelExecuion.js'
+import type { Effect } from 'effect'
 import type { EffectArrayableSchema } from '@gyomu/schema/entity'
+import type { AiModelRegistry } from '../../model/AiModels.js'
 
-/**
- * =========================================
- * Service Implementation
- * =========================================
- */
-
-export const makeAiService = (): AiModelService => ({
-  generateText: (params: GenerateTextParams): Effect.Effect<AiGenerateTextResult, AiError> => {
+export const makeAiModelExecution = (): AiModelExecution => ({
+  generateText: (
+    registry: AiModelRegistry,
+    params: GenerateTextParams,
+  ): Effect.Effect<AiGenerateTextResult, AiError> => {
+    const model = getLanguageModel(registry, params.key)
     return withRetry(
       fromPromise(AiError, (e) =>
-        createAiErrorContext(e, { model: params.model.toString(), operation: 'generate' }),
+        createAiErrorContext(e, { model: model.toString(), operation: 'generate' }),
       )(async () => {
         const result = await generateText({
-          model: params.model,
+          model: model,
           ...buildPrompt(params),
           ...withOptional({
             system: params.system,
@@ -51,13 +51,14 @@ export const makeAiService = (): AiModelService => ({
     )
   },
 
-  streamText: (params: StreamTextParams) => {
+  streamText: (registry: AiModelRegistry, params: StreamTextParams) => {
+    const model = getLanguageModel(registry, params.key)
     return withRetry(
       fromSync(AiError, (e) =>
-        createAiErrorContext(e, { model: params.model.toString(), operation: 'stream' }),
+        createAiErrorContext(e, { model: model.toString(), operation: 'stream' }),
       )(() =>
         streamText({
-          model: params.model,
+          model: model,
           ...buildPrompt(params),
           ...withOptional({
             system: params.system,
@@ -76,14 +77,16 @@ export const makeAiService = (): AiModelService => ({
   },
 
   generateObject: <TSchema extends EffectArrayableSchema>(
+    registry: AiModelRegistry,
     params: GenerateObjectParams<TSchema>,
   ) => {
+    const model = getLanguageModel(registry, params.key)
     return withRetry(
       fromPromise(AiError, (e) =>
-        createAiErrorContext(e, { model: params.model.toString(), operation: 'generate' }),
+        createAiErrorContext(e, { model: model.toString(), operation: 'generate' }),
       )(async () => {
         const result = await generateText({
-          model: params.model,
+          model: model,
 
           output: Output.object({
             schema: Schema.toStandardSchemaV1(Schema.toStandardJSONSchemaV1(params.schema)),
@@ -110,13 +113,14 @@ export const makeAiService = (): AiModelService => ({
     )
   },
 
-  embed: <TValue>(params: EmbedParams<TValue>) =>
-    withRetry(
+  embed: <TValue>(registry: AiModelRegistry, params: EmbedParams<TValue>) => {
+    const model = getEmbeddingModel(registry)
+    return withRetry(
       fromPromise(AiError, (e) =>
-        createAiErrorContext(e, { model: params.model.toString(), operation: 'embedding' }),
+        createAiErrorContext(e, { model: model.toString(), operation: 'embedding' }),
       )(async () => {
         const result = await embed({
-          model: params.model,
+          model: model,
           value: params.value as string,
           ...withOptional({
             abortSignal: params.abortSignal,
@@ -127,13 +131,8 @@ export const makeAiService = (): AiModelService => ({
         return result.embedding
       }),
       params.retryOption,
-    ),
+    )
+  },
 })
 
-/**
- * =========================================
- * Layer
- * =========================================
- */
-
-export const VercelAiModelServiceLive = Layer.succeed(AiModelService, makeAiService())
+export const VercelAiModelExecutionLive = Layer.succeed(AiModelExecution, makeAiModelExecution())

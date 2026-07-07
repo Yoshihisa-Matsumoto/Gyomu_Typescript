@@ -2,7 +2,7 @@ import { APICallError, RetryError } from 'ai'
 import { withOptional } from '@gyomu/schema'
 import type { AIErrorContext, AIOperation } from '@gyomu/schema'
 
-export const mapAiSdkError = (
+export const createAiErrorContext = (
   error: unknown,
   params: { model: string; operation: AIOperation },
 ): AIErrorContext => {
@@ -13,15 +13,16 @@ export const mapAiSdkError = (
       case 429: {
         const delayMs = retrieveRetryMs(actualError)
         const diagnoseResult = diagnoseApiCallError(actualError)
-        if (!diagnoseResult.isTemporally) {
+        if (diagnoseResult.shouldFallback) {
           return {
             operation: params.operation,
             model: params.model,
             cause: actualError,
             message: actualError.message,
             phase: 'rate-limit',
-            retryable: false,
-            retryStrategy: { _tag: 'none' },
+            resolution: {
+              _tag: 'fallback',
+            },
             statusCode: actualError.statusCode,
             details: diagnoseResult.error,
           }
@@ -33,8 +34,7 @@ export const mapAiSdkError = (
             cause: actualError,
             message: actualError.message,
             phase: 'rate-limit',
-            retryable: actualError.isRetryable,
-            retryStrategy: { _tag: 'retry-after', delayMs },
+            resolution: { _tag: 'retry', strategy: { _tag: 'retry-after', delayMs } },
             statusCode: actualError.statusCode,
           }
         } else {
@@ -44,8 +44,9 @@ export const mapAiSdkError = (
             cause: error,
             message: actualError.message,
             phase: 'rate-limit',
-            retryable: false,
-            retryStrategy: { _tag: 'none' },
+            resolution: {
+              _tag: 'fallback',
+            },
             statusCode: actualError.statusCode,
           }
         }
@@ -57,8 +58,12 @@ export const mapAiSdkError = (
           cause: error,
           message: actualError.message,
           phase: 'response',
-          retryable: actualError.isRetryable,
-          retryStrategy: { _tag: 'exponential' },
+          resolution: {
+            _tag: 'retry',
+            strategy: {
+              _tag: 'exponential',
+            },
+          },
           statusCode: actualError.statusCode,
         }
       case 400:
@@ -68,8 +73,9 @@ export const mapAiSdkError = (
           cause: error,
           message: actualError.message,
           phase: 'request',
-          retryable: false,
-          retryStrategy: { _tag: 'none' },
+          resolution: {
+            _tag: 'fail',
+          },
           statusCode: actualError.statusCode,
         }
       default:
@@ -79,52 +85,60 @@ export const mapAiSdkError = (
           cause: error,
           message: actualError.message,
           phase: 'request',
-          retryable: false,
-          retryStrategy: { _tag: 'none' },
+          resolution: {
+            _tag: 'fail',
+          },
           ...withOptional({ statusCode: actualError.statusCode }),
         }
     }
   }
-  if (RetryError.isInstance(error)) {
-    const delayMs = retrieveRetryMsFromRetryError(error)
+  if (RetryError.isInstance(actualError)) {
+    const delayMs = retrieveRetryMsFromRetryError(actualError)
     if (delayMs) {
       return {
         operation: params.operation,
         model: params.model,
         cause: error,
-        message: error.message,
+        message: actualError.message,
         phase: 'rate-limit',
-        retryable: true,
-        retryStrategy: { _tag: 'retry-after', delayMs },
+        resolution: {
+          _tag: 'retry',
+          strategy: {
+            _tag: 'retry-after',
+            delayMs,
+          },
+        },
         statusCode: 409,
       }
     } else {
       return {
         operation: params.operation,
         model: params.model,
-        cause: error,
-        message: error.message,
+        cause: actualError,
+        message: actualError.message,
         phase: 'rate-limit',
-        retryable: false,
-        retryStrategy: { _tag: 'none' },
+        resolution: {
+          _tag: 'fallback',
+        },
         statusCode: 409,
       }
     }
   }
 
   return {
-    cause: error,
+    cause: actualError,
     message: 'Unknown Error',
     model: params.model,
     operation: params.operation,
     phase: 'request',
-    retryStrategy: { _tag: 'none' },
-    retryable: false,
+    resolution: {
+      _tag: 'fail',
+    },
   }
 }
 const diagnoseApiCallError = (
   error: APICallError,
-): { isTemporally: false; error: string | undefined } | { isTemporally: true } => {
+): { shouldFallback: true; error: string | undefined } | { shouldFallback: false } => {
   if (error.responseBody) {
     try {
       const responseObj = JSON.parse(error.responseBody)
@@ -138,14 +152,14 @@ const diagnoseApiCallError = (
           (v) => v.quotaId && v.quotaid == 'GenerateRequestsPerDayPerProjectPerModel-FreeTier',
         )
         if (targetViolation) {
-          return { isTemporally: false, error: JSON.stringify(targetViolation) }
+          return { shouldFallback: true, error: JSON.stringify(targetViolation) }
         }
       }
     } catch {
       // ignore
     }
   }
-  return { isTemporally: true }
+  return { shouldFallback: false }
 }
 const retrieveRetryMs = (error: APICallError) => {
   if (error.responseBody) {

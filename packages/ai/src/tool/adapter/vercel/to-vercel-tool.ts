@@ -23,8 +23,8 @@ export const toVercelTool = <
 
     execute: (input) =>
       toolDef.execute(
-        undefined as any as Schema.Schema.Type<ConfigSchema>,
         input as Schema.Schema.Type<Input>,
+        undefined as any as Schema.Schema.Type<ConfigSchema>,
       ),
   })
   return result

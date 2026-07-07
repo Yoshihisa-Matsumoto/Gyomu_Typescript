@@ -4,10 +4,11 @@ import { Effect, Schema } from 'effect'
 import { embed, generateText, streamText } from 'ai'
 
 import { makeRunner } from '@gyomu/schema/effect'
-import { AiModelService } from '../../types/AiModelService.js'
-import { VercelAiModelServiceLive } from '../VercelAiModelServiceLive.js'
+import { VercelAiModelExecutionLive } from '../VercelAiModelExecutionLive.js'
+import { AiModelExecution } from '../../types/AiModelExecuion.js'
+import type { AiModelRegistry } from '../../../model/AiModels.js'
 
-const runVercelQAWithEnvOrThrow = makeRunner(VercelAiModelServiceLive)
+const runVercelQAWithEnvOrThrow = makeRunner(VercelAiModelExecutionLive)
 /**
  * =========================================
  * Mock ai sdk
@@ -39,7 +40,15 @@ const mockModel = {
   modelId: 'test-model',
 } as any
 
-describe('VercelAiServiceLive', () => {
+const mockRegistry: AiModelRegistry = {
+  fast: mockModel,
+  embedding: mockModel,
+  reasoning: mockModel,
+  smart: mockModel,
+  vision: mockModel,
+}
+
+describe('VercelAiModelExecutionLive', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
@@ -52,9 +61,9 @@ describe('VercelAiServiceLive', () => {
 
       const result = await runVercelQAWithEnvOrThrow(
         Effect.gen(function* () {
-          const service = yield* AiModelService
-          return yield* service.generateText({
-            model: mockModel,
+          const service = yield* AiModelExecution
+          return yield* service.generateText(mockRegistry, {
+            key: 'fast',
             prompt: 'hi',
           })
         }),
@@ -75,9 +84,9 @@ describe('VercelAiServiceLive', () => {
       await expect(
         runVercelQAWithEnvOrThrow(
           Effect.gen(function* () {
-            const service = yield* AiModelService
-            return yield* service.generateText({
-              model: mockModel,
+            const service = yield* AiModelExecution
+            return yield* service.generateText(mockRegistry, {
+              key: 'fast',
               prompt: 'hi',
             })
           }),
@@ -104,9 +113,9 @@ describe('VercelAiServiceLive', () => {
 
       const result = await runVercelQAWithEnvOrThrow(
         Effect.gen(function* () {
-          const service = yield* AiModelService
-          return yield* service.generateObject({
-            model: mockModel,
+          const service = yield* AiModelExecution
+          return yield* service.generateObject(mockRegistry, {
+            key: 'fast',
             prompt: 'generate user',
             schema: UserSchema,
           })
@@ -129,9 +138,8 @@ describe('VercelAiServiceLive', () => {
 
       const result = await runVercelQAWithEnvOrThrow(
         Effect.gen(function* () {
-          const service = yield* AiModelService
-          return yield* service.embed({
-            model: mockModel,
+          const service = yield* AiModelExecution
+          return yield* service.embed(mockRegistry, {
             value: 'hello',
           })
         }),
@@ -149,9 +157,9 @@ describe('VercelAiServiceLive', () => {
 
       const result = await runVercelQAWithEnvOrThrow(
         Effect.gen(function* () {
-          const service = yield* AiModelService
-          return yield* service.streamText({
-            model: mockModel,
+          const service = yield* AiModelExecution
+          return yield* service.streamText(mockRegistry, {
+            key: 'fast',
             prompt: 'hi',
           })
         }),

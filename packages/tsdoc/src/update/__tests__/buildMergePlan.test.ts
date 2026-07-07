@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { Effect, Layer } from 'effect'
 
-import { AiModelService } from '@gyomu/ai'
+import { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 import { PlatformLayer } from '@gyomu/infra'
+import { TsDocRouteId } from '@gyomu/ai-compiler/jsdoc-update'
 import { buildMergePlan } from '../buildMergePlan.js'
 import { UpdateError } from '../error/UpdateError.js'
 import type { SymbolId } from '@gyomu/schema/typescript'
@@ -42,12 +43,18 @@ vi.mock('../internal/createMargePlan.js', () => ({
   createMergePlan: mockCreateMergePlan,
 }))
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-const mockAiModelService = Layer.succeed(AiModelService, {
+const mockAiModelService = Layer.succeed(AiModelRoute, {
   generateObject: () =>
     Effect.succeed({
       object: {},
     }),
 } as any)
+
+const modelRoute = {
+  nodes: [{ retry: 1, registry: { fast: {} } } as any],
+} as any
+const mockModelRoutes = Layer.succeed(ModelRoutes, new Map([[TsDocRouteId, modelRoute]]))
+
 describe('buildMergePlan', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -129,6 +136,7 @@ describe('buildMergePlan', () => {
       buildMergePlan('test-project', fileResult).pipe(
         Effect.provide(mockAiModelService),
         Effect.provide(PlatformLayer),
+        Effect.provide(mockModelRoutes),
       ),
     )
 
@@ -159,6 +167,7 @@ describe('buildMergePlan', () => {
         buildMergePlan('test-project', fileResult).pipe(
           Effect.provide(mockAiModelService),
           Effect.provide(PlatformLayer),
+          Effect.provide(mockModelRoutes),
         ),
       ),
     ).rejects.toBeInstanceOf(UpdateError)
@@ -174,6 +183,7 @@ describe('buildMergePlan', () => {
         buildMergePlan('test-project', fileResult).pipe(
           Effect.provide(mockAiModelService),
           Effect.provide(PlatformLayer),
+          Effect.provide(mockModelRoutes),
         ),
       ),
     ).rejects.toBeInstanceOf(UpdateError)

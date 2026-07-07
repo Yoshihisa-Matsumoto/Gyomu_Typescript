@@ -16,9 +16,8 @@ describe('withRetry', () => {
           operation: 'generate',
           model: 'test',
           phase: 'request',
-          retryable: false,
+          resolution: { _tag: 'fail' },
           cause: undefined,
-          retryStrategy: { _tag: 'none' },
         }),
       )
     })
@@ -41,11 +40,14 @@ describe('withRetry', () => {
             operation: 'generate',
             model: 'test',
             phase: 'rate-limit',
-            retryable: true,
-            retryStrategy: {
-              _tag: 'retry-after',
-              delayMs: 1,
+            resolution: {
+              _tag: 'retry',
+              strategy: {
+                _tag: 'retry-after',
+                delayMs: 1,
+              },
             },
+
             cause: undefined,
           }),
         )
@@ -73,9 +75,11 @@ describe('withRetry', () => {
             operation: 'generate',
             model: 'test',
             phase: 'request',
-            retryable: true,
+            resolution: {
+              _tag: 'retry',
+              strategy: { _tag: 'exponential' },
+            },
             cause: undefined,
-            retryStrategy: { _tag: 'exponential' },
           }),
         )
       }
@@ -101,9 +105,8 @@ describe('withRetry', () => {
           operation: 'generate',
           model: 'test',
           phase: 'request',
-          retryable: true,
+          resolution: { _tag: 'retry', strategy: { _tag: 'exponential' } },
           cause: undefined,
-          retryStrategy: { _tag: 'exponential' },
         }),
       )
     })
@@ -126,12 +129,14 @@ describe('withRetry', () => {
             operation: 'generate',
             model: 'test',
             phase: 'rate-limit',
-            retryable: true,
-            cause: undefined,
-            retryStrategy: {
-              _tag: 'retry-after',
-              delayMs: 1,
+            resolution: {
+              _tag: 'retry',
+              strategy: {
+                _tag: 'retry-after',
+                delayMs: 1,
+              },
             },
+            cause: undefined,
           }),
         )
       }
