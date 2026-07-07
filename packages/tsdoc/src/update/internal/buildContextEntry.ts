@@ -129,10 +129,10 @@ const buildContextEntryFromTypeProperty = (
       )
       if (objectMembers) children.push(...objectMembers)
     } else if (structure.kind == 'function') {
-      const functionMembers = structure.parameters?.map((m) =>
+      const functionMembers = structure.parameters.map((m) =>
         buildContextEntryFromTypeProperty(fileResult, m, parent),
       )
-      if (functionMembers) children.push(...functionMembers)
+      children.push(...functionMembers)
     }
   }
   return {

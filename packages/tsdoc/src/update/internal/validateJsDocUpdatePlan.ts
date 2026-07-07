@@ -1,11 +1,11 @@
 import { toIdentityKey, toSymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
+import type { SymbolId } from '@gyomu/schema/typescript'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
 import type {
   ContextEntry,
   JsDocUpdatePlan,
   TsDocFileContext,
 } from '@gyomu/ai-compiler/jsdoc-update'
-import { SymbolId } from '@gyomu/schema/typescript'
 
 export const validateJsDocUpdatePlan = (
   context: TsDocFileContext,

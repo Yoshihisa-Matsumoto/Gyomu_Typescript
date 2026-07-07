@@ -13,7 +13,9 @@
     "@gyomu/config": "0.2.4-beta.0",
     "@gyomu/agent": "0.2.4-beta.3",
     "@gyomu/tsdoc": "0.2.4-beta.4",
-    "@gyomu/ai-compiler": "0.2.4-beta.5"
+    "@gyomu/ai-compiler": "0.2.4-beta.5",
+    "@gyomu/concept": "0.2.4-beta.7",
+    "@gyomu/ts-analysis": "0.2.4-beta.7"
   },
   "changesets": [
     "big-dodos-relate",
@@ -24,6 +26,7 @@
     "gentle-fans-rhyme",
     "shiny-balloons-walk",
     "sparkly-spoons-argue",
-    "spicy-banks-return"
+    "spicy-banks-return",
+    "wet-foxes-thank"
   ]
 }

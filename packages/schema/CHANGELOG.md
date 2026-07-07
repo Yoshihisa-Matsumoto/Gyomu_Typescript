@@ -1,5 +1,11 @@
 # @gyomu/schema
 
+## 0.2.4-beta.8
+
+### Patch Changes
+
+- Ai Model Route support
+
 ## 0.2.4-beta.7
 
 ### Patch Changes
