@@ -154,12 +154,13 @@ export const analyzePropertyMemberInternal = (
     static: args2.isStatic,
     visibility: args2.visibility,
     declarationOrder: args.declarationOrder,
+    docIndent: computeIndent(
+      args.sourceFullText,
+      args.node.getStart(),
+      args.node.getStartLinePos(),
+    ),
   } satisfies DocumentablePropertyMemberAnalysis
-  registerSymbolSymbolAnalysis(
-    metadata,
-    property,
-    computeIndent(args.sourceFullText, args.node.getStart(), args.node.getStartLinePos()),
-  )
+  registerSymbolSymbolAnalysis(metadata, property)
   return {
     member: property,
     dependencies: [...typeResult.dependencies, ...genercsDependencies],

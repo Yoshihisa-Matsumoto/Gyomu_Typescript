@@ -42,6 +42,14 @@ export const DocumentableTypeProperty = Schema.Struct({
   startOffset: Schema.Number.annotate({
     description: 'The character offset where the symbol starts.',
   }),
+
+  /**
+   * Leading whitespace of the declaration line, used when generating or updating JSDoc/TSDoc comments.
+   */
+  docIndent: Schema.String.annotate({
+    description:
+      'Leading whitespace of the declaration line, used when generating or updating JSDoc/TSDoc comments.',
+  }),
 })
   .pipe(Schema.fieldsAssign(TypePropertyBase.fields))
   .annotate({

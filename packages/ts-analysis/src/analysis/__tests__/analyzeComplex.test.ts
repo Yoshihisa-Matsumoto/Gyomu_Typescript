@@ -11,7 +11,7 @@ import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { analyzeFile } from '../analyzeFile.js'
 import { createFixtureProject } from './createFixtureProject.js'
 import type {} from '@gyomu/schema/typescript'
-import type { FileAnalysisResult } from '../file/FileAnalysisResult.js'
+import type { FileAnalysisContext } from '../file/FileAnalysisResult.js'
 import type {
   DocumentableMemberAnalysis,
   DocumentableMethodMemberAnalysis,
@@ -30,9 +30,11 @@ const tempJsdocProgram = (sourceFile: string) => {
   const filePath = ProjectRelativePath(path.join('src', sourceFile))
   return Effect.runSync(
     Effect.gen(function* () {
-      return yield* analyzeFile(jsDocFixture, filePath, {
+      const result = yield* analyzeFile(jsDocFixture, filePath, {
         includeDebugInfo: true,
       })
+
+      return result
     }),
   )
 }
@@ -76,14 +78,14 @@ describe('analyzeFile-complex pattern', () => {
       throw new Error(`union type not found on ${typeNode.text}`)
     return typeNode.structure
   }
-  const getParsedJsDoc = (result: FileAnalysisResult, member: DocumentableMemberAnalysis) => {
+  const getParsedJsDoc = (result: FileAnalysisContext, member: DocumentableMemberAnalysis) => {
     const id = member.id
     const jsdoc = result.metadata.parsedJsDocs.get(id)
     if (!jsdoc) throw new Error(`ParsedJsDoc for ${member.name} Not Found`)
     return jsdoc
   }
   const getParsedJsDocFromTypeProperty = (
-    result: FileAnalysisResult,
+    result: FileAnalysisContext,
     member: DocumentableTypeProperty,
   ) => {
     const id = member.id

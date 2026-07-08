@@ -138,16 +138,13 @@ export const analyzeFunction = (args: TagAnalysisArg<FunctionDeclaration>) => {
       ...methodBodyResult.dependencies,
       ...returnTypeResult.dependencies,
     ],
-  } satisfies SymbolAnalysis
-  registerSymbolSymbolAnalysis(
-    args.metadata,
-    symbol,
-    computeIndent(
+    docIndent: computeIndent(
       args.sourceFullText,
       args.declaration.getStart(),
       args.declaration.getStartLinePos(),
     ),
-  )
+  } satisfies SymbolAnalysis
+  registerSymbolSymbolAnalysis(args.metadata, symbol)
   return {
     symbol,
     isDefault: args.declaration.isDefaultExport(),

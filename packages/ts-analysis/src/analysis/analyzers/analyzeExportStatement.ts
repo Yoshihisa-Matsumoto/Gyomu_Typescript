@@ -75,6 +75,7 @@ export const analyzeExportStatement = (
             jsDoc: targetSymbol.jsDoc,
             parsedJsDoc: targetSymbol.parsedJsDoc ? [...targetSymbol.parsedJsDoc] : undefined,
             type: targetSymbol.type,
+            docIndent: targetSymbol.docIndent,
           }
           referencedSymbol.location = {
             startLine: statement.getStartLineNumber(),

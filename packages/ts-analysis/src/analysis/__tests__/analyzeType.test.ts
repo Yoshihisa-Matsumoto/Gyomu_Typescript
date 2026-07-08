@@ -19,11 +19,14 @@ const typeAnalysisProgram = (sourceFile: string): SymbolAnalysis => {
   const filePath = ProjectRelativePath(path.join('src', sourceFile))
   const result = Effect.runSync(
     Effect.gen(function* () {
-      return yield* analyzeFile(typeFixture, filePath, {
+      const fileResult = yield* analyzeFile(typeFixture, filePath, {
         includeDebugInfo: true,
-      }).pipe(Effect.map((result2) => result2.analysis.symbols[0]))
-    }),
+      })
+
+      return fileResult
+    }).pipe(Effect.map((result2) => result2.analysis.symbols[0])),
   )
+
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!result) throw new Error('Unexpected symbol should exist')
   return result

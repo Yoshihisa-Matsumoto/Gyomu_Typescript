@@ -66,6 +66,14 @@ export const SymbolAnalysis = Schema.Struct({
   dependencyCandidates: Schema.Array(DependencyCandidate).annotate({
     description: 'Dependency candidates referenced by this symbol.',
   }),
+
+  /**
+   * Leading whitespace of the declaration line, used when generating or updating JSDoc/TSDoc comments.
+   */
+  docIndent: Schema.String.annotate({
+    description:
+      'Leading whitespace of the declaration line, used when generating or updating JSDoc/TSDoc comments.',
+  }),
 }).annotate({
   description: 'Detailed analysis result for a symbol declaration.',
 })

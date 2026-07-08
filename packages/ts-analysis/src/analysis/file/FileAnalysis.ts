@@ -1,10 +1,5 @@
-import type {
-  ExportAnalysis,
-  ImportAnalysis,
-  SymbolAnalysis,
-} from '@gyomu/schema/schemas/typescript'
-import type { DependencyEdge } from '../graph/DependencyEdge.js'
-import type { ProjectRelativePath } from '@gyomu/schema/typescript'
+import { ExportAnalysis, ImportAnalysis, SymbolAnalysis } from '@gyomu/schema/schemas/typescript'
+import { Schema } from 'effect'
 
 /**
  * Complete analysis result for a source file.
@@ -13,26 +8,25 @@ import type { ProjectRelativePath } from '@gyomu/schema/typescript'
  * dependency relationships, metrics,
  * and scoring hints used for TSDoc generation.
  */
-export interface FileAnalysis {
-  /**
-   * Relative file path from project root.
-   */
-  path: ProjectRelativePath
+export const FileAnalysis = Schema.Struct({
+  path: Schema.String.pipe(Schema.brand('ProjectRelativePath')).annotate({
+    description: 'Relative file path from project root.',
+  }),
 
-  /**
-   * Imported module analysis.
-   */
-  imports: Array<ImportAnalysis>
+  imports: Schema.Array(ImportAnalysis).annotate({
+    description: 'Imported module analysis.',
+  }),
 
-  /**
-   * Exported symbol analysis.
-   */
-  exports: Array<ExportAnalysis>
+  exports: Schema.Array(ExportAnalysis).annotate({
+    description: 'Exported symbol analysis.',
+  }),
 
-  symbols: Array<SymbolAnalysis>
+  symbols: Schema.Array(SymbolAnalysis).annotate({
+    description: 'Symbols declared in the source file.',
+  }),
+}).annotate({
+  description:
+    'Complete analysis result for a source file. Contains extracted symbol information, dependency relationships, metrics, and scoring hints used for TSDoc generation.',
+})
 
-  /**
-   * File dependency relationships.
-   */
-  dependencyGraph?: Array<DependencyEdge>
-}
+export type FileAnalysis = typeof FileAnalysis.Type

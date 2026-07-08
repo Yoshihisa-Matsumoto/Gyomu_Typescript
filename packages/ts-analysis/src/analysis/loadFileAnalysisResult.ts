@@ -5,8 +5,8 @@ import type { FileSystem } from 'effect'
 import type { AnalysisError } from './error/AnalysisError.js'
 import type {
   DocumentableTarget,
+  FileAnalysisContext,
   FileAnalysisMetadata,
-  FileAnalysisResult,
   FileAnalysisTransient,
 } from './file/FileAnalysisResult.js'
 import type { LoadAnalysisOptions } from './AnalysisOption.js'
@@ -22,7 +22,7 @@ export const loadFileAnalysisResult = (
   sourceFilePath: ProjectRelativePath,
   option?: LoadAnalysisOptions,
 ): Effect.Effect<
-  { result: FileAnalysisResult; created: boolean },
+  { result: FileAnalysisContext; created: boolean },
   AnalysisError,
   FileSystem.FileSystem
 > =>

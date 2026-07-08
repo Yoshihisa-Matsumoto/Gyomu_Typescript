@@ -1,14 +1,18 @@
+import fs from 'node:fs'
+import path from 'node:path'
 import { Effect } from 'effect'
 import { Project } from 'ts-morph'
 import { toAbsolutePath } from '../shared/path/toAbsolutePath.js'
 import { loadSourceFile } from './shared/loadSourceFile.js'
 import { extractSymbols } from './extract/extractSymbol.js'
+import { buildIndex } from './buildIndex.js'
+import { compareFileAnalysisMetadata } from './compareFileAnalysisMetadata.js'
 import type { DependencyCandidate, ParsedJsDoc } from '@gyomu/schema/schemas/typescript'
 import type { AnalysisError } from './error/AnalysisError.js'
 import type {
   DocumentableTarget,
+  FileAnalysisContext,
   FileAnalysisMetadata,
-  FileAnalysisResult,
   FileAnalysisTransient,
 } from './file/FileAnalysisResult.js'
 import type { AnalysisOptions } from './AnalysisOption.js'
@@ -42,7 +46,7 @@ export const analyzeFile = (
    */
   sourceFilePath: ProjectRelativePath,
   option?: AnalysisOptions,
-): Effect.Effect<FileAnalysisResult, AnalysisError> =>
+): Effect.Effect<FileAnalysisContext, AnalysisError> =>
   Effect.gen(function* () {
     const metadata: FileAnalysisMetadata = {
       parsedJsDocs: new Map<SymbolId, ParsedJsDoc>(),
@@ -74,6 +78,12 @@ export const analyzeFile = (
       imports: statements.imported,
       symbols: statements.internals,
     } satisfies FileAnalysis
+
+    const index = buildIndex(analysis)
+
+    fs.writeFileSync(path.join('log', `FileAnalysis.txt`), JSON.stringify(analysis, null, 2))
+    // console.dir(analysis, { depth: null })
+    compareFileAnalysisMetadata(metadata, index)
 
     return {
       analysis,

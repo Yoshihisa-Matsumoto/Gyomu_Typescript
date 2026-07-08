@@ -128,17 +128,14 @@ export const analyzeClass = (args: TagAnalysisArg<ClassDeclaration>) => {
       ...memberResult.dependencies,
       ...genericsResult.dependencies,
     ],
-  } satisfies SymbolAnalysis
-
-  registerSymbolSymbolAnalysis(
-    args.metadata,
-    symbol,
-    computeIndent(
+    docIndent: computeIndent(
       args.sourceFullText,
       args.declaration.getStart(),
       args.declaration.getStartLinePos(),
     ),
-  )
+  } satisfies SymbolAnalysis
+
+  registerSymbolSymbolAnalysis(args.metadata, symbol)
 
   return {
     symbol,

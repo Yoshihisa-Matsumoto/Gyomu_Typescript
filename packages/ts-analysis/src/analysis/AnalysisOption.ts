@@ -5,4 +5,5 @@ export interface AnalysisOptions {
 
 export interface LoadAnalysisOptions extends AnalysisOptions {
   computeMetadataAndTransient?: boolean
+  createNewIfNotExistOrInvalid?: boolean
 }

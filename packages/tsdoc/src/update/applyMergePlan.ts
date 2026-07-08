@@ -62,7 +62,7 @@ export const applyMergePlan = (
       endOffset: existingJsDoc?.endOffset ?? targetSymbolData.analysis.startOffset,
     }
 
-    return yield* Effect.succeed({ updatedJsDoc, indent: targetSymbolData.indent })
+    return yield* Effect.succeed({ updatedJsDoc, indent: targetSymbolData.analysis.docIndent })
   })
 }
 

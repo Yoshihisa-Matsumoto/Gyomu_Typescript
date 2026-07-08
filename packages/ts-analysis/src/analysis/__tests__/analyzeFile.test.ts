@@ -5,7 +5,7 @@ import { equalSymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIden
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { analyzeFile } from '../analyzeFile.js'
 import { createFixtureProject } from './createFixtureProject.js'
-import type { FileAnalysisResult } from '../file/FileAnalysisResult.js'
+import type { FileAnalysisContext } from '../file/FileAnalysisResult.js'
 
 const timeout = 20000
 
@@ -342,14 +342,14 @@ describe('analyzeFile', () => {
     )
   })
   describe('analyzeFile jsdoc analysis', () => {
-    const firstJsDoc = (result: FileAnalysisResult) => {
+    const firstJsDoc = (result: FileAnalysisContext) => {
       const jsDoc = result.metadata.parsedJsDocs.values().next().value
 
       expect(jsDoc).toBeDefined()
 
       return jsDoc!
     }
-    const firstJsDocAnalysis = (result: FileAnalysisResult) => {
+    const firstJsDocAnalysis = (result: FileAnalysisContext) => {
       const analysis = result.analysis.symbols[0]?.jsDoc
 
       expect(analysis).toBeDefined()

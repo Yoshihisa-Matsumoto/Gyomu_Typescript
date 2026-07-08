@@ -151,12 +151,13 @@ const analyzeTypePropertyMemberInternal = (
     location,
     parsedJsDoc,
     startOffset,
+    docIndent: computeIndent(
+      args.sourceFullText,
+      args.node.getStart(),
+      args.node.getStartLinePos(),
+    ),
   } satisfies DocumentableTypeProperty
-  registerSymbolSymbolAnalysis(
-    metadata,
-    property,
-    computeIndent(args.sourceFullText, args.node.getStart(), args.node.getStartLinePos()),
-  )
+  registerSymbolSymbolAnalysis(metadata, property)
   return {
     member: property,
     dependencies: [...typeResult.dependencies, ...genercsDependencies],

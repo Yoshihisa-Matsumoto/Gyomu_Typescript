@@ -21,7 +21,7 @@ export const buildContextEntry = (
 
   const generateResult = shouldGenerateDoc(member, parent)
 
-  const parsedJsDoc = fileResult.metadata.parsedJsDocs.get(JSON.stringify(member.identity))
+  const parsedJsDoc = fileResult.metadata.parsedJsDocs.get(member.id)
 
   switch (member.kind) {
     case 'method': {

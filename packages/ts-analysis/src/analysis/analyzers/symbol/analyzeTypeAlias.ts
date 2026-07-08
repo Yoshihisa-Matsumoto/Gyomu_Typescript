@@ -92,6 +92,11 @@ export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => 
       members: membersResult.member,
       declarationOrder: args.declarationOrder,
       dependencyCandidates: [...genericsResult.dependencies, ...membersResult.dependencies],
+      docIndent: computeIndent(
+        args.sourceFullText,
+        args.declaration.getStart(),
+        args.declaration.getStartLinePos(),
+      ),
     } satisfies SymbolAnalysis
   } else if (Node.isTypeNode(typeOfType)) {
     const typeAnalysisArg: ChildAnalysisArg<TypeNode> = {
@@ -120,6 +125,11 @@ export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => 
       members: [],
       declarationOrder: args.declarationOrder,
       dependencyCandidates: [...genericsResult.dependencies, ...typeResult.dependencies],
+      docIndent: computeIndent(
+        args.sourceFullText,
+        args.declaration.getStart(),
+        args.declaration.getStartLinePos(),
+      ),
     } satisfies SymbolAnalysis
   } else {
     symbol = {
@@ -143,17 +153,14 @@ export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => 
       members: [],
       declarationOrder: args.declarationOrder,
       dependencyCandidates: [...genericsResult.dependencies],
+      docIndent: computeIndent(
+        args.sourceFullText,
+        args.declaration.getStart(),
+        args.declaration.getStartLinePos(),
+      ),
     } satisfies SymbolAnalysis
   }
-  registerSymbolSymbolAnalysis(
-    args.metadata,
-    symbol,
-    computeIndent(
-      args.sourceFullText,
-      args.declaration.getStart(),
-      args.declaration.getStartLinePos(),
-    ),
-  )
+  registerSymbolSymbolAnalysis(args.metadata, symbol)
   return {
     symbol: symbol,
     isDefault: args.declaration.isDefaultExport(),

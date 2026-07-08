@@ -209,16 +209,13 @@ export const analyzeFunctionMemberInternal = (
       declarationOrder: args.declarationOrder,
       visibility,
       ownerSymbolId,
-    } satisfies DocumentableMethodMemberAnalysis
-    registerSymbolSymbolAnalysis(
-      metadata,
-      method,
-      computeIndent(
+      docIndent: computeIndent(
         args.sourceFullText,
         (args2.jsDocableNode ?? args.node).getStart(),
         (args2.jsDocableNode ?? args.node).getStartLinePos(),
       ),
-    )
+    } satisfies DocumentableMethodMemberAnalysis
+    registerSymbolSymbolAnalysis(metadata, method)
     return {
       member: method,
       dependencies: [

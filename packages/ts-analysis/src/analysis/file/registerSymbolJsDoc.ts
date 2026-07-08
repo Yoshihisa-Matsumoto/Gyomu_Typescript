@@ -25,3 +25,21 @@ export const registerSymbolJsDoc = (
     if (!metadata.parsedJsDocs.has(symbolId)) metadata.parsedJsDocs.set(symbolId, parsed)
   }
 }
+
+export const registerParsedJsDoc = (
+  symbolId: SymbolId,
+  metadata: FileAnalysisMetadata,
+  parsedArray: ReadonlyArray<ParsedJsDoc> | undefined,
+) => {
+  if (parsedArray) {
+    if (parsedArray.length == 1) {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      const parsed: ParsedJsDoc = parsedArray[0]!
+
+      if (!metadata.parsedJsDocs.has(symbolId)) {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+        metadata.parsedJsDocs.set(symbolId, parsed)
+      }
+    }
+  }
+}

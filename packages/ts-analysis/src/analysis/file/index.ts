@@ -1,1 +1,1 @@
-export { FileAnalysisResult } from './FileAnalysisResult.js'
+export { FileAnalysisContext as FileAnalysisResult } from './FileAnalysisResult.js'

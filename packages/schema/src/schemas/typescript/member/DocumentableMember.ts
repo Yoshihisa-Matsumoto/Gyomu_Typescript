@@ -12,6 +12,13 @@ export const DocumentableMember = Schema.Struct({
   parsedJsDoc: Schema.Union([Schema.Array(ParsedJsDoc), Schema.Undefined]),
   location: LineRange,
   startOffset: Schema.Number,
+  /**
+   * Leading whitespace of the declaration line, used when generating or updating JSDoc/TSDoc comments.
+   */
+  docIndent: Schema.String.annotate({
+    description:
+      'Leading whitespace of the declaration line, used when generating or updating JSDoc/TSDoc comments.',
+  }),
 })
 
 /**

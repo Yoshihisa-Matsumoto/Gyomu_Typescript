@@ -9,21 +9,19 @@ import type {
   SymbolAnalysis,
 } from '@gyomu/schema/schemas/typescript'
 
-export interface FileAnalysisResult {
+export interface FileAnalysisContext {
   analysis: FileAnalysis
   metadata: FileAnalysisMetadata
   transient: FileAnalysisTransient
 }
 
 export interface FileAnalysisMetadata {
-  parsedJsDocs: Map<string, ParsedJsDoc>
+  parsedJsDocs: Map<SymbolId, ParsedJsDoc>
   symbols: Map<SymbolId, DocumentableTarget>
 }
 
 export interface DocumentableTarget {
   analysis: SymbolAnalysis | DocumentableMemberAnalysis | DocumentableTypeProperty
-
-  indent: string
 }
 
 export interface FileAnalysisTransient {

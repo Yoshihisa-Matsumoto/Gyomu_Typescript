@@ -59,17 +59,14 @@ export const analyzeEnum = (args: TagAnalysisArg<EnumDeclaration>) => {
     members: [],
     declarationOrder: args.declarationOrder,
     dependencyCandidates: [],
-  } satisfies SymbolAnalysis
-
-  registerSymbolSymbolAnalysis(
-    args.metadata,
-    symbol,
-    computeIndent(
+    docIndent: computeIndent(
       args.sourceFullText,
       args.declaration.getStart(),
       args.declaration.getStartLinePos(),
     ),
-  )
+  } satisfies SymbolAnalysis
+
+  registerSymbolSymbolAnalysis(args.metadata, symbol)
 
   return {
     symbol,

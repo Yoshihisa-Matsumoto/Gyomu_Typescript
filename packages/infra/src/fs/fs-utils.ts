@@ -4,6 +4,8 @@ import { tmpdir } from 'node:os'
 import { Effect, FileSystem, Stream } from 'effect'
 import { wrapIOError } from '@gyomu/schema'
 import { parse } from 'yaml'
+import { convertToSchemaObjectWithResult } from '@gyomu/schema/entity'
+import type { Schema } from 'effect'
 import type { IOError, NetworkError } from '@gyomu/schema'
 import type { PlatformError } from 'effect/PlatformError'
 
@@ -195,6 +197,16 @@ export const readJsonFromFile = <T>(path: string, encoding?: string) =>
     const text = yield* readStringFromFile(path, encoding)
     return JSON.parse(text) as T
   })
+export const readJsonFromFileAndValidate = <S extends Schema.Schema<any>>(
+  schema: S,
+  path: string,
+  encoding?: string,
+) =>
+  Effect.gen(function* () {
+    const jsonData = yield* readJsonFromFile(path, encoding)
+    return convertToSchemaObjectWithResult(schema, jsonData)
+  })
+
 export const readYamlFromFile = <T>(path: string, encoding?: string) =>
   Effect.gen(function* () {
     const text = yield* readStringFromFile(path, encoding)

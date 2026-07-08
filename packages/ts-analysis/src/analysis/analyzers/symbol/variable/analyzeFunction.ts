@@ -48,16 +48,13 @@ export const analyzeFunction = (
 
     declarationOrder: args.declarationOrder,
     dependencyCandidates: prepared.dependencyCandidates ?? [],
-  } satisfies SymbolAnalysis
-  registerSymbolSymbolAnalysis(
-    args.metadata,
-    symbol,
-    computeIndent(
+    docIndent: computeIndent(
       args.sourceFullText,
       args.declaration.getStart(),
       args.declaration.getStartLinePos(),
     ),
-  )
+  } satisfies SymbolAnalysis
+  registerSymbolSymbolAnalysis(args.metadata, symbol)
 
   return {
     symbol,

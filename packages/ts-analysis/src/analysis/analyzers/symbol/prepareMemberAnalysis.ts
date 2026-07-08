@@ -132,6 +132,7 @@ const prepareMemberAnalysis = (args: {
   const { id, identity, node, jsDocableNode, metadata } = args
 
   const extractedJsDoc = extractJsDoc(jsDocableNode)
+  if (id.includes('findUser')) console.log(id)
   registerSymbolJsDoc(id, metadata, extractedJsDoc)
 
   return {
