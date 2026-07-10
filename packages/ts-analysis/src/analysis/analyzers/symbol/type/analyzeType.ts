@@ -1,4 +1,4 @@
-import { Node } from 'ts-morph'
+import { Node, SyntaxKind } from 'ts-morph'
 import { detectEffectSignals } from '../analyzeEffectType.js'
 import { tracePlaceIdentity } from '../../../trace/traceUtil.js'
 import { analyzeTypeStructures } from './analyzeTypeStructure.js'
@@ -67,13 +67,10 @@ export const analyzeType = (
           source: 'typescript',
 
           effect: detectEffectSignals(nodeContent),
-          structure: structureResult?.member,
+          structure: structureResult.member,
           generics: genericsParametersResult.member,
         },
-        dependencies: [
-          ...genericsParametersResult.dependencies,
-          ...(structureResult?.dependencies ?? []),
-        ],
+        dependencies: [...genericsParametersResult.dependencies, ...structureResult.dependencies],
         reservedNames: [...genericsParametersResult.reservedNames],
       }
     } else if (Node.isExpression(node)) {
@@ -107,9 +104,33 @@ export const analyzeType = (
         ],
       }
     }
-    console.dir(node, { depth: null })
+    const kind = (node as Node).getKind()
+    switch (kind) {
+      case SyntaxKind.VoidKeyword:
+        return {
+          member: {
+            text: 'void',
+            source: 'typescript',
+          },
+          dependencies: [],
+          reservedNames: [],
+        }
+      case SyntaxKind.NeverKeyword:
+        return {
+          member: {
+            text: 'never',
+            source: 'typescript',
+          },
+          dependencies: [],
+          reservedNames: [],
+        }
+    }
+    console.log(`${(node as Node).getKindName()}`)
+    // console.dir(node, { depth: null })
   }
-  console.log(`!!!!WHY???!!!!`)
+  console.log(`!!!!WHY???!!!!  ${rawText} `)
+  console.dir(node, { depth: null })
+
   {
     return {
       member: {

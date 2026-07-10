@@ -26,7 +26,7 @@ import type { EntityName, TypeNode } from 'ts-morph'
 export const analyzeTypeStructures = (
   args: ChildAnalysisArg<TypeNode>,
   nodeName: Array<string> | undefined,
-): MemberAnalysisWithReservedResult<TypeStructureAnalysis> | undefined => {
+): MemberAnalysisWithReservedResult<TypeStructureAnalysis> => {
   tracePlaceIdentity(args, args.options, 'analyzeTypeStructures')
   const {
     sourceRelativePath,
@@ -217,6 +217,7 @@ export const analyzeTypeStructures = (
     }
   }
   if (Node.isMethodSignature(node)) {
+    // Somehow It's NOT called??
     // console.log(`MethodSignature: ${nodeName}`)
     const method = analyzeTypeFunction(
       {
@@ -373,7 +374,6 @@ export const analyzeTypeStructures = (
   console.log(`!!Unsupported Type!!`)
   console.dir(node, { depth: null })
   throw new Error('Unsupported Type')
-  return undefined
 }
 
 const computeTargetId = (typeName: EntityName) => {

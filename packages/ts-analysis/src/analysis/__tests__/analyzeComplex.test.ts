@@ -997,7 +997,7 @@ describe('analyzeFile-complex pattern', () => {
     async () => {
       const result = await tempJsdocProgram('10-union-type.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
 
       expect(result.metadata.parsedJsDocs.size).toBe(8)
 
@@ -1144,7 +1144,7 @@ describe('analyzeFile-complex pattern', () => {
     async () => {
       const result = await tempJsdocProgram('11-effect-schema.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
 
       const exported = result.analysis.exports[0]
 
@@ -1244,7 +1244,7 @@ describe('analyzeFile-complex pattern', () => {
     async () => {
       const result = await tempJsdocProgram('13-throws-tag.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       let symbol = result.analysis.symbols[0]!
       expect(symbol.parsedJsDoc?.[0]?.throws).toEqual([
         {
@@ -1286,7 +1286,7 @@ describe('analyzeFile-complex pattern', () => {
     async () => {
       const result = await tempJsdocProgram('14-template-tag.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       let symbol = result.analysis.symbols[0]!
       expect(symbol.parsedJsDoc?.[0]?.templates).toEqual(['Item type', 'Result type'])
 
@@ -1323,7 +1323,7 @@ describe('analyzeFile-complex pattern', () => {
     async () => {
       const result = await tempJsdocProgram('15-effect-schema3.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
 
       // const exported = result.analysis.exports[0]
 
