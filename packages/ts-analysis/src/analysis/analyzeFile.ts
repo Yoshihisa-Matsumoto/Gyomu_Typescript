@@ -6,7 +6,7 @@ import { toAbsolutePath } from '../shared/path/toAbsolutePath.js'
 import { loadSourceFile } from './shared/loadSourceFile.js'
 import { extractSymbols } from './extract/extractSymbol.js'
 import { buildIndex } from './buildIndex.js'
-import { compareFileAnalysisMetadata } from './compareFileAnalysisMetadata.js'
+// import { compareFileAnalysisMetadata } from './compareFileAnalysisMetadata.js'
 import type { DependencyCandidate, ParsedJsDoc } from '@gyomu/schema/schemas/typescript'
 import type { AnalysisError } from './error/AnalysisError.js'
 import type {
@@ -84,11 +84,11 @@ export const analyzeFile = (
     if (option?.DumpToFile)
       fs.writeFileSync(path.join('log', `FileAnalysis.txt`), JSON.stringify(analysis, null, 2))
     // console.dir(analysis, { depth: null })
-    compareFileAnalysisMetadata(metadata, index)
+    // compareFileAnalysisMetadata(metadata, index)
 
     return {
       analysis,
-      metadata,
+      metadata: index,
       transient,
     }
   })

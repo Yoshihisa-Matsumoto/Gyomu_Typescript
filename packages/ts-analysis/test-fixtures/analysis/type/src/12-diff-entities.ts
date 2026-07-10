@@ -64,6 +64,7 @@ export const diffEntities =
       const recordId = getKey(record)
       const current = existingMap.get(recordId)
       if (!current) {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
         inserts.push(record as TInsert)
         continue
       }
@@ -93,6 +94,7 @@ export const diffEntities =
       updates.push({
         id: recordId,
         existing: current,
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
         incoming: { ...record, id: currentRecordId } as TUpdate,
         changedFields,
         changedValues: { id: currentRecordId, ...changedValues },

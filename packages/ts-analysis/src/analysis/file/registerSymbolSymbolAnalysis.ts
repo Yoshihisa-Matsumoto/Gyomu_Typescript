@@ -1,4 +1,4 @@
-import { toIdentityKey } from '@gyomu/schema/schemas/typescript'
+// import { registerSymbolSymbolAnalysisInternal } from '../buildIndex.js'
 import type {
   DocumentableMemberAnalysis,
   DocumentableTypeProperty,
@@ -12,11 +12,12 @@ export const registerSymbolSymbolAnalysis = (
   symbolAnalysis:
     DocumentableMemberAnalysis | SymbolAnalysis | DocumentableTypeProperty | IndexSignatureAnalysis,
 ) => {
-  const id = toIdentityKey(symbolAnalysis.identity)
-  if (
-    id ==
-    'CrudRepository::type::$member.synchronizeRecords.$return.$member.insertedRows::property:%%:property'
-  )
-    throw new Error('HERE!!')
-  if (!metadata.symbols.has(id)) metadata.symbols.set(id, { analysis: symbolAnalysis })
+  // const id = toIdentityKey(symbolAnalysis.identity)
+  // if (
+  //   id ==
+  //   'CrudRepository::type::$member.synchronizeRecords.$return.$member.insertedRows::property:%%:property'
+  // )
+  //   throw new Error('HERE!!')
+  // if (!metadata.symbols.has(id)) metadata.symbols.set(id, { analysis: symbolAnalysis })
+  // registerSymbolSymbolAnalysisInternal(metadata, symbolAnalysis)
 }

@@ -1,4 +1,5 @@
-import { AnalysisError } from '../error/AnalysisError.js'
+// import { AnalysisError } from '../error/AnalysisError.js'
+import { registerParsedJsDocInternal } from '../buildIndex.js'
 import type { ExtractedJsDoc } from '../jsdoc/ExtractedJsDoc.js'
 import type { SymbolId } from '@gyomu/schema/typescript'
 import type { FileAnalysisMetadata } from './FileAnalysisResult.js'
@@ -9,21 +10,20 @@ export const registerSymbolJsDoc = (
   metadata: FileAnalysisMetadata,
   extractedjsDoc?: ExtractedJsDoc,
 ) => {
-  if (extractedjsDoc) {
-    const parsed: ParsedJsDoc | undefined = extractedjsDoc.parsed[0]
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (extractedjsDoc.parsed.length !== 1 || !parsed) {
-      throw new AnalysisError({
-        message: `Multiple JSDoc comments found for symbol ${symbolId}. This is not supported.`,
-        cause: undefined,
-        details: extractedjsDoc,
-        filePath: symbolId,
-        phase: 'jsdoc-extract',
-      })
-    }
-
-    if (!metadata.parsedJsDocs.has(symbolId)) metadata.parsedJsDocs.set(symbolId, parsed)
-  }
+  // if (extractedjsDoc) {
+  //   const parsed: ParsedJsDoc | undefined = extractedjsDoc.parsed[0]
+  //   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  //   if (extractedjsDoc.parsed.length !== 1 || !parsed) {
+  //     throw new AnalysisError({
+  //       message: `Multiple JSDoc comments found for symbol ${symbolId}. This is not supported.`,
+  //       cause: undefined,
+  //       details: extractedjsDoc,
+  //       filePath: symbolId,
+  //       phase: 'jsdoc-extract',
+  //     })
+  //   }
+  //   if (!metadata.parsedJsDocs.has(symbolId)) metadata.parsedJsDocs.set(symbolId, parsed)
+  // }
 }
 
 export const registerParsedJsDoc = (
@@ -31,15 +31,5 @@ export const registerParsedJsDoc = (
   metadata: FileAnalysisMetadata,
   parsedArray: ReadonlyArray<ParsedJsDoc> | undefined,
 ) => {
-  if (parsedArray) {
-    if (parsedArray.length == 1) {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-      const parsed: ParsedJsDoc = parsedArray[0]!
-
-      if (!metadata.parsedJsDocs.has(symbolId)) {
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-        metadata.parsedJsDocs.set(symbolId, parsed)
-      }
-    }
-  }
+  registerParsedJsDocInternal(symbolId, metadata, parsedArray)
 }

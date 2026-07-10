@@ -1,10 +1,12 @@
-import { registerSymbolSymbolAnalysis } from './file/registerSymbolSymbolAnalysis.js'
-import { registerParsedJsDoc } from './file/registerSymbolJsDoc.js'
+import { toIdentityKey } from '@gyomu/schema/schemas/typescript'
 import type {
+  DocumentableMemberAnalysis,
+  DocumentableTypeProperty,
   IndexSignatureAnalysis,
   MemberAnalysis,
   ParsedJsDoc,
   SignatureAnalysis,
+  SymbolAnalysis,
   TypeAnalysis,
   TypeProperty,
 } from '@gyomu/schema/schemas/typescript'
@@ -28,8 +30,8 @@ export const buildIndex = (analysis: FileAnalysis): FileAnalysisMetadata => {
     buildIndexFromSignature(symbol.signature, metadata)
     buildIndexFromType(symbol.type, metadata)
 
-    registerParsedJsDoc(symbolId, metadata, symbol.parsedJsDoc)
-    registerSymbolSymbolAnalysis(metadata, symbol)
+    registerParsedJsDocInternal(symbolId, metadata, symbol.parsedJsDoc)
+    registerSymbolSymbolAnalysisInternal(metadata, symbol)
   })
   return metadata
 }
@@ -52,8 +54,8 @@ const buildIndexFromMember = (member: MemberAnalysis, metadata: FileAnalysisMeta
       break
   }
   if (member.documentable) {
-    registerParsedJsDoc(member.id, metadata, member.parsedJsDoc)
-    registerSymbolSymbolAnalysis(metadata, member)
+    registerParsedJsDocInternal(member.id, metadata, member.parsedJsDoc)
+    registerSymbolSymbolAnalysisInternal(metadata, member)
   }
 }
 
@@ -152,8 +154,8 @@ const buildIndexFromIndexSignature = (
 ) => {
   if (!indexSignature) return
   if (indexSignature.documentable) {
-    registerParsedJsDoc(indexSignature.id, metadata, indexSignature.parsedJsDoc)
-    registerSymbolSymbolAnalysis(metadata, indexSignature)
+    registerParsedJsDocInternal(indexSignature.id, metadata, indexSignature.parsedJsDoc)
+    registerSymbolSymbolAnalysisInternal(metadata, indexSignature)
   }
   buildIndexFromType(indexSignature.parameterType, metadata)
   buildIndexFromType(indexSignature.type, metadata)
@@ -163,10 +165,42 @@ const buildIndexFromTypeProperty = (
   metadata: FileAnalysisMetadata,
 ) => {
   if (property && property.documentable) {
-    registerParsedJsDoc(property.id, metadata, property.parsedJsDoc)
-    registerSymbolSymbolAnalysis(metadata, property)
+    registerParsedJsDocInternal(property.id, metadata, property.parsedJsDoc)
+    registerSymbolSymbolAnalysisInternal(metadata, property)
   }
   if (property) {
     buildIndexFromType(property.type, metadata)
+  }
+}
+
+export const registerSymbolSymbolAnalysisInternal = (
+  metadata: FileAnalysisMetadata,
+  symbolAnalysis:
+    DocumentableMemberAnalysis | SymbolAnalysis | DocumentableTypeProperty | IndexSignatureAnalysis,
+) => {
+  const id = toIdentityKey(symbolAnalysis.identity)
+  if (
+    id ==
+    'CrudRepository::type::$member.synchronizeRecords.$return.$member.insertedRows::property:%%:property'
+  )
+    throw new Error('HERE!!')
+  if (!metadata.symbols.has(id)) metadata.symbols.set(id, { analysis: symbolAnalysis })
+}
+
+export const registerParsedJsDocInternal = (
+  symbolId: SymbolId,
+  metadata: FileAnalysisMetadata,
+  parsedArray: ReadonlyArray<ParsedJsDoc> | undefined,
+) => {
+  if (parsedArray) {
+    if (parsedArray.length == 1) {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      const parsed: ParsedJsDoc = parsedArray[0]!
+
+      if (!metadata.parsedJsDocs.has(symbolId)) {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+        metadata.parsedJsDocs.set(symbolId, parsed)
+      }
+    }
   }
 }
