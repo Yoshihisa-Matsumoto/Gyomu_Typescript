@@ -1,5 +1,5 @@
 import { Node, SyntaxKind } from 'ts-morph'
-import { analyzeEffectSchema, getSupportedEffectSchemaType } from '../analyzeEffectSchema.js'
+import { analyzeEffectSchema, getSupportedEffectSchemaType } from '../schema/index.js'
 import { analyzeDependency } from '../analyzeDependency.js'
 import { analyzeGenericsParameters } from './analyzeGenericsParameters.js'
 import { analyzeTypeFunction } from './analyzeTypeFunction.js'

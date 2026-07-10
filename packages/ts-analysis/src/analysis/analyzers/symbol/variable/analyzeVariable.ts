@@ -3,7 +3,7 @@ import { SignatureId, SymbolId } from '@gyomu/schema/typescript'
 import { prepareSymbolAnalysis } from '../prepareSymbolAnalysis.js'
 import { registerSymbolSymbolAnalysis } from '../../../file/registerSymbolSymbolAnalysis.js'
 import { computeIndent } from '../computeIndent.js'
-import { analyzeEffectSchema, getSupportedEffectSchemaType } from '../analyzeEffectSchema.js'
+import { analyzeEffectSchema, getSupportedEffectSchemaType } from '../schema/index.js'
 import {
   analyzeFunction,
   getFunctionSignature,

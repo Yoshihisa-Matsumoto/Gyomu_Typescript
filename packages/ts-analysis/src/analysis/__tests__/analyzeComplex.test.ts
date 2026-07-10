@@ -30,7 +30,7 @@ const tempJsdocProgram = (sourceFile: string) => {
   const filePath = ProjectRelativePath(path.join('src', sourceFile))
   return Effect.runSync(
     Effect.gen(function* () {
-      const result = yield* analyzeFile(jsDocFixture, filePath, {})
+      const result = yield* analyzeFile(jsDocFixture, filePath)
 
       return result
     }),
@@ -1315,6 +1315,66 @@ describe('analyzeFile-complex pattern', () => {
           text: '',
         }),
       )
+    },
+    timeout,
+  )
+  it(
+    '15-effect-schema3.ts',
+    async () => {
+      const result = await tempJsdocProgram('15-effect-schema3.ts')
+
+      console.dir(result, { depth: null })
+
+      // const exported = result.analysis.exports[0]
+
+      // expect(exported?.exportedName).toBe('TypeReferenceStructureAnalysis')
+
+      const symbol = result.analysis.symbols[0]!
+
+      // expect(symbol.kind).toBe('const')
+
+      expect(symbol?.identity).toEqual({
+        symbolId: 'User',
+        signatureId: 'class',
+      })
+
+      // console.dir(symbol.dependencyCandidates, { depth: null })
+
+      // const symbolType = symbol.type!
+      // expect(symbolType.source).toBe('effect-schema')
+
+      // expect(symbolType.structure?.kind).toBe('object')
+
+      // const objectStructure = symbolType.structure
+
+      // if (objectStructure?.kind == 'object') {
+      //   expect(objectStructure.properties?.map((m) => m.name)).toEqual(
+      //     expect.arrayContaining(['kind', 'targetId']),
+      //   )
+      //   expect(objectStructure.annotations).toBeDefined()
+      //   const annotation = objectStructure.annotations
+      //   if (annotation) {
+      //     expect(annotation.description).toBe('Represents a reference to another type identifier.')
+      //   }
+
+      //   const kindAttr = objectStructure.properties?.find((m) => m.name == 'kind')
+      //   expect(kindAttr).toBeDefined()
+      //   expect(kindAttr?.type?.structure?.kind).toBe('literal')
+      //   if (kindAttr?.type?.structure?.kind == 'literal') {
+      //     expect(kindAttr.type.structure.annotations?.description).toBe(
+      //       'The classification of this structure.',
+      //     )
+      //   }
+
+      //   const targetId = objectStructure.properties?.find((m) => m.name == 'targetId')
+      //   expect(targetId).toBeDefined()
+      //   expect(targetId?.type?.structure?.kind).toBe('primitive')
+      //   if (targetId?.type?.structure?.kind == 'primitive') {
+      //     expect(targetId.type.structure.annotations?.description).toBe(
+      //       'The identifier of the referenced type.',
+      //     )
+      //   }
+      // }
     },
     timeout,
   )
