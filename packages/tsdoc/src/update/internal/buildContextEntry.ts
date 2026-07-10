@@ -4,6 +4,7 @@ import type { FileAnalysisResult } from '@gyomu/ts-analysis'
 import type { ContextEntry, DocumentableInfo } from '@gyomu/ai-compiler/jsdoc-update'
 import type {
   DocumentableMemberAnalysis,
+  IndexSignatureAnalysis,
   MemberAnalysis,
   NonDocumentableMemberAnalysis,
   SymbolAnalysis,
@@ -52,7 +53,7 @@ export const buildContextEntry = (
       const children: Array<TypeProperty> = []
       switch (structure?.kind) {
         case 'object':
-          if (structure.members) children.push(...structure.members)
+          if (structure.properties) children.push(...structure.properties)
           break
         case 'function':
           children.push(...structure.parameters)
@@ -124,10 +125,14 @@ const buildContextEntryFromTypeProperty = (
   if (member.type?.structure) {
     const structure = member.type.structure
     if (structure.kind == 'object') {
-      const objectMembers = structure.members?.map((m) =>
+      const objectMembers = structure.properties?.map((m) =>
         buildContextEntryFromTypeProperty(fileResult, m, parent),
       )
       if (objectMembers) children.push(...objectMembers)
+      const indexSignatures = structure.indexSignatures?.map((i) =>
+        buildContextEntryFromIndexSignature(fileResult, i, parent),
+      )
+      if (indexSignatures) children.push(...indexSignatures)
     } else if (structure.kind == 'function') {
       const functionMembers = structure.parameters.map((m) =>
         buildContextEntryFromTypeProperty(fileResult, m, parent),
@@ -139,6 +144,32 @@ const buildContextEntryFromTypeProperty = (
     target: member.identity,
     kind: 'type',
     name: member.name,
+    effectSignals: member.type?.effect
+      ? {
+          success: member.type.effect.success,
+          error: member.type.effect.error,
+          requirements: member.type.effect.requirements,
+        }
+      : undefined,
+
+    children,
+    ...withOptional({
+      type: member.type?.text,
+    }),
+  }
+}
+
+const buildContextEntryFromIndexSignature = (
+  fileResult: FileAnalysisResult,
+  member: IndexSignatureAnalysis,
+  parent: SymbolAnalysis | MemberAnalysis,
+): ContextEntry => {
+  const children: Array<ContextEntry> = []
+
+  return {
+    target: member.identity,
+    kind: 'type',
+    name: member.parameterName,
     effectSignals: member.type?.effect
       ? {
           success: member.type.effect.success,

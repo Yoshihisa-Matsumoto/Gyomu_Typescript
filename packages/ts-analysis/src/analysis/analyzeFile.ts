@@ -81,7 +81,8 @@ export const analyzeFile = (
 
     const index = buildIndex(analysis)
 
-    fs.writeFileSync(path.join('log', `FileAnalysis.txt`), JSON.stringify(analysis, null, 2))
+    if (option?.DumpToFile)
+      fs.writeFileSync(path.join('log', `FileAnalysis.txt`), JSON.stringify(analysis, null, 2))
     // console.dir(analysis, { depth: null })
     compareFileAnalysisMetadata(metadata, index)
 

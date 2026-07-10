@@ -7,7 +7,11 @@ import type {
   MemberAnalysis,
   NonDocumentablePropertyMemberAnalysis,
 } from '@gyomu/schema/schemas/typescript'
-import type { ChildAnalysisArg, MemberAnalysisResult } from '../../types.js'
+import type {
+  ChildAnalysisArg,
+  MemberAnalysisResult,
+  MemberAnalysisWithReservedResult,
+} from '../../types.js'
 import type { ClassDeclaration, ConstructorDeclaration, ParameterDeclaration } from 'ts-morph'
 
 export const analyzeConstructor = (
@@ -52,7 +56,7 @@ export const analyzeConstructor = (
         reservedNames,
       }),
     )
-
+  // BODY
   return {
     member: [method.member, ...parameters.map((p) => p.member)],
     dependencies: [...method.dependencies, ...parameters.map((p) => p.dependencies).flat()],
@@ -60,7 +64,7 @@ export const analyzeConstructor = (
 }
 const analyzeClassPropertyFromConstructorParameters = (
   args: ChildAnalysisArg<ParameterDeclaration>,
-): MemberAnalysisResult<NonDocumentablePropertyMemberAnalysis> => {
+): MemberAnalysisWithReservedResult<NonDocumentablePropertyMemberAnalysis> => {
   const { node, ownerSymbolId, ownerSymbolIdentity, memberPath, declarationOrder } = args
   const typeNode = node.getTypeNode()
   const initializer = node.getInitializer()
@@ -73,6 +77,7 @@ const analyzeClassPropertyFromConstructorParameters = (
     },
     ownerSymbolIdentity,
   )
+  // analyzeFunctionBody({...args, node:node})
   const typeResult = analyzeType(
     {
       ...args,
@@ -80,6 +85,7 @@ const analyzeClassPropertyFromConstructorParameters = (
     },
     [nodeName],
   )
+
   return {
     member: {
       kind: 'property',
@@ -100,5 +106,6 @@ const analyzeClassPropertyFromConstructorParameters = (
       declarationOrder,
     },
     dependencies: typeResult.dependencies,
+    reservedNames: typeResult.reservedNames,
   }
 }

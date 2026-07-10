@@ -3,14 +3,14 @@ import type {
   MemberIdentityMemberPath,
   TypeStructureAnalysis,
 } from '@gyomu/schema/schemas/typescript'
-import type { ChildAnalysisArg, MemberAnalysisResult } from '../../../types.js'
+import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../../types.js'
 import type { TypeNode, TypePredicateNode } from 'ts-morph'
 
 export const analyzeTypePredicateNode = (
   args: ChildAnalysisArg<TypeNode>,
   newMemberPath: MemberIdentityMemberPath,
   node: TypePredicateNode,
-): MemberAnalysisResult<TypeStructureAnalysis> => {
+): MemberAnalysisWithReservedResult<TypeStructureAnalysis> => {
   const nodeType = node.getTypeNode()
   const nodeTypeResult = analyzeType(
     { ...args, node: nodeType, memberPath: [...newMemberPath], declarationOrder: 0 },
@@ -24,5 +24,6 @@ export const analyzeTypePredicateNode = (
       type: nodeTypeResult.member,
     },
     dependencies: [...nodeTypeResult.dependencies],
+    reservedNames: nodeTypeResult.reservedNames,
   }
 }

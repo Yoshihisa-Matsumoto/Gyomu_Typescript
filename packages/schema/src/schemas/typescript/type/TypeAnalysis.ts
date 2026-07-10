@@ -2,6 +2,7 @@ import { Schema } from 'effect'
 import { TypeSource } from '../TypeSource.js'
 import { TypeStructureAnalysis } from './TypeStructureAnalysis.js'
 import { EffectSignals } from './EffectSignals.js'
+import { GenericsProperty } from './GenericsProperty.js'
 
 /**
  * Represents the analysis of a TypeScript type, including its text representation, origin, structural details, and any associated Effect-related signals.
@@ -26,6 +27,11 @@ export interface TypeAnalysis {
    * Effect-related semantic signals.
    */
   effect?: EffectSignals | undefined
+
+  /**
+   * Generics parameters
+   */
+  generics?: ReadonlyArray<GenericsProperty> | undefined
 }
 
 /**
@@ -58,6 +64,10 @@ export const TypeAnalysis: Schema.Schema<TypeAnalysis> = Schema.Struct({
    */
   effect: Schema.optionalKey(Schema.suspend(() => EffectSignals)).annotate({
     description: 'Effect-related semantic signals.',
+  }),
+
+  generics: Schema.optionalKey(Schema.Array(Schema.suspend(() => GenericsProperty))).annotate({
+    description: 'Generics parameters',
   }),
 }).annotate({
   description:

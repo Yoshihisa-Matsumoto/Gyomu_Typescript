@@ -205,6 +205,14 @@ const parseReturnTag = (tag: JSDocReturnTag): JsDocReturns => {
   })
 }
 
+const getNormalizedRawTag = (tag: JSDocTag): string => {
+  return tag
+    .getText()
+    .replace(/\r\n/g, '\n')
+    .replace(/\n\s*\*\s*$/, '')
+    .trimEnd()
+}
+
 const parseThrowTag = (tag: JSDocThrowsTag, order: number): JsDocThrows | undefined => {
   const text = getNormalizedCommentText(tag) ?? ''
   const match = text.match(/^(\w+)\s+(.*)$/)
@@ -214,7 +222,7 @@ const parseThrowTag = (tag: JSDocThrowsTag, order: number): JsDocThrows | undefi
         type: match[1],
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         description: match[2] ?? text,
-        raw: tag.getText(),
+        raw: getNormalizedRawTag(tag),
       }),
 
       order,

@@ -5,13 +5,13 @@ import type {
   MemberIdentityMemberPath,
   TypeStructureAnalysis,
 } from '@gyomu/schema/schemas/typescript'
-import type { ChildAnalysisArg, MemberAnalysisResult } from '../../../types.js'
+import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../../types.js'
 
 export const analyzeTypeOperatorTypeNode = (
   args: ChildAnalysisArg<TypeNode>,
   newMemberPath: MemberIdentityMemberPath,
   node: TypeOperatorTypeNode,
-): MemberAnalysisResult<TypeStructureAnalysis> => {
+): MemberAnalysisWithReservedResult<TypeStructureAnalysis> => {
   const operator = node.getOperator()
 
   const targetResult = analyzeType(
@@ -23,6 +23,7 @@ export const analyzeTypeOperatorTypeNode = (
     },
     undefined,
   )
+
   return {
     member: {
       kind: 'typeOperator',
@@ -35,5 +36,6 @@ export const analyzeTypeOperatorTypeNode = (
       target: targetResult.member,
     },
     dependencies: [...targetResult.dependencies],
+    reservedNames: targetResult.reservedNames,
   }
 }

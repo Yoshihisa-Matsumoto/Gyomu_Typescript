@@ -92,7 +92,9 @@ export const getFunctionSignature = (
   let initializer: Expression | undefined = undefined
   if (!node.getReturnTypeNode()) {
     const body = node.getBody()
-    if (Node.isExpression(body)) initializer = body
+    if (Node.isArrowFunction(body)) {
+      initializer = body
+    } else if (Node.isExpression(body)) initializer = body
   }
   const genericsResult = analyzeGenericsParameters({
     node,
@@ -138,6 +140,7 @@ export const getFunctionSignature = (
     },
     [nodeName, '$return'],
   )
+
   return {
     id: SignatureId('function'),
     parameters: parametersResult.map((p) => p.member),

@@ -87,6 +87,11 @@ export type MemberAnalysisResult<T> = {
   member: T
   dependencies: Array<DependencyCandidate>
 }
+export type MemberAnalysisWithReservedResult<T> = {
+  member: T
+  dependencies: Array<DependencyCandidate>
+  reservedNames: Array<string>
+}
 
 export type MethodAnalysisResult = {
   dependencies: Array<DependencyCandidate>

@@ -3,12 +3,12 @@ import { SignatureId } from '@gyomu/schema/typescript'
 import { createMemberIdentityAndId } from '../../shared/createMemberIdentity.js'
 import { analyzeType } from './type/analyzeType.js'
 import type { NonDocumentablePropertyMemberAnalysis } from '@gyomu/schema/schemas/typescript'
-import type { ChildAnalysisArg, MemberAnalysisResult } from '../types.js'
+import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../types.js'
 import type { ParameterDeclaration } from 'ts-morph'
 
 export const analyzeParameter = (
   args: ChildAnalysisArg<ParameterDeclaration>,
-): MemberAnalysisResult<NonDocumentablePropertyMemberAnalysis> => {
+): MemberAnalysisWithReservedResult<NonDocumentablePropertyMemberAnalysis> => {
   const {
     node,
     sourceRelativePath,
@@ -20,7 +20,6 @@ export const analyzeParameter = (
     declarationOrder,
     imported,
     options,
-    reservedNames,
   } = args
   const typeNode = node.getTypeNode()
   const name = node.getName()
@@ -48,7 +47,7 @@ export const analyzeParameter = (
       declarationOrder,
       imported,
       options,
-      reservedNames,
+      reservedNames: [],
     },
     [name],
     undefined,
@@ -76,5 +75,6 @@ export const analyzeParameter = (
       // structure: analyzeParameterStructure(withOptional({ node: typeNode, initializer })),
     },
     dependencies: typeResult.dependencies,
+    reservedNames: [...typeResult.reservedNames],
   }
 }

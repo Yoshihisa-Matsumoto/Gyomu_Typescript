@@ -7,6 +7,7 @@ export const PropertySource = Schema.Literals([
   'property-declaration',
   'constructor-parameter',
   'parameter-declaration',
+  'enum-parameter',
 ])
 
 /**

@@ -21,7 +21,12 @@ import type {
   SetAccessorDeclaration,
   Statement,
 } from 'ts-morph'
-import type { ChildAnalysisArg, MemberAnalysisResult, MethodAnalysisResult } from '../../types.js'
+import type {
+  ChildAnalysisArg,
+  MemberAnalysisResult,
+  MemberAnalysisWithReservedResult,
+  MethodAnalysisResult,
+} from '../../types.js'
 
 import type {
   DependencyCandidate,
@@ -52,7 +57,9 @@ export const analyzeFunctionMember = (
     name: string
     jsDocableNode: (JSDocableNode & Node) | undefined
   },
-): MemberAnalysisResult<NonDocumentableMethodMemberAnalysis | DocumentableMethodMemberAnalysis> => {
+): MemberAnalysisWithReservedResult<
+  NonDocumentableMethodMemberAnalysis | DocumentableMethodMemberAnalysis
+> => {
   const {
     sourceRelativePath,
     memberPath,
@@ -126,7 +133,9 @@ export const analyzeFunctionMemberInternal = (
     returnType: MemberAnalysisResult<TypeAnalysis> | undefined
     jsDocableNode: (JSDocableNode & Node) | undefined
   },
-): MemberAnalysisResult<NonDocumentableMethodMemberAnalysis | DocumentableMethodMemberAnalysis> => {
+): MemberAnalysisWithReservedResult<
+  NonDocumentableMethodMemberAnalysis | DocumentableMethodMemberAnalysis
+> => {
   const {
     sourceRelativePath,
     memberPath,
@@ -225,6 +234,7 @@ export const analyzeFunctionMemberInternal = (
 
         ...methodBodyResult.dependencies,
       ],
+      reservedNames: [...parametersResult.map((p) => p.reservedNames).flat()],
     }
   } else {
     const { id, identity } = initializeMethodIdentity(
@@ -273,6 +283,7 @@ export const analyzeFunctionMemberInternal = (
         ...methodBodyResult.dependencies,
         ...genericsResult.dependencies,
       ],
+      reservedNames: [...parametersResult.map((p) => p.reservedNames).flat()],
     }
   }
 }

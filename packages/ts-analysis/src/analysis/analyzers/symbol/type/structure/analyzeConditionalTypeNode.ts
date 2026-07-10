@@ -3,14 +3,14 @@ import type {
   MemberIdentityMemberPath,
   TypeStructureAnalysis,
 } from '@gyomu/schema/schemas/typescript'
-import type { ChildAnalysisArg, MemberAnalysisResult } from '../../../types.js'
+import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../../types.js'
 import type { ConditionalTypeNode, TypeNode } from 'ts-morph'
 
 export const analyzeConditionalTypeNode = (
   args: ChildAnalysisArg<TypeNode>,
   newMemberPath: MemberIdentityMemberPath,
   node: ConditionalTypeNode,
-): MemberAnalysisResult<TypeStructureAnalysis> => {
+): MemberAnalysisWithReservedResult<TypeStructureAnalysis> => {
   const checkTypeNodeResult = analyzeType(
     {
       ...args,
@@ -60,6 +60,12 @@ export const analyzeConditionalTypeNode = (
       ...extendsTypeResult.dependencies,
       ...trueTypeResult.dependencies,
       ...falseTypeResult.dependencies,
+    ],
+    reservedNames: [
+      ...checkTypeNodeResult.reservedNames,
+      ...extendsTypeResult.reservedNames,
+      ...trueTypeResult.reservedNames,
+      ...falseTypeResult.reservedNames,
     ],
   }
 }

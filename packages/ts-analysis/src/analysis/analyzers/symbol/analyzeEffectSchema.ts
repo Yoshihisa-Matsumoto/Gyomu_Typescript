@@ -81,7 +81,7 @@ export const getSupportedEffectSchemaType = (
     // const expression = getRootCallExpression(initializer)
     const propertyAccess = initializer.getExpression()
     if (Node.isPropertyAccessExpression(propertyAccess)) {
-      console.log(`PropertyAccessExpression: ${propertyAccess.getName()}`)
+      // console.log(`PropertyAccessExpression: ${propertyAccess.getName()}`)
       if (propertyAccess.getName() == 'annotate') {
         const annotationObject = initializer.getArguments()[0]
         if (Node.isObjectLiteralExpression(annotationObject)) {
@@ -125,8 +125,8 @@ export const getSupportedEffectSchemaType = (
 
       if (propertyAccess.getExpression().getText() == 'Schema') {
         const targetSchemaType = propertyAccess.getNameNode().getText()
-        console.log(targetSchemaType)
-        console.log(annotations)
+        // console.log(targetSchemaType)
+        // console.log(annotations)
         if (isSupportedSchemaType(targetSchemaType)) {
           return { kind: targetSchemaType, expression: initializer, annotations, dependencies }
         }
@@ -142,8 +142,8 @@ export const getSupportedEffectSchemaType = (
         childExpression.getExpression().getText() == 'Schema'
       ) {
         const targetSchemaType = childExpression.getNameNode().getText()
-        console.log(targetSchemaType)
-        console.log(annotations)
+        // console.log(targetSchemaType)
+        // console.log(annotations)
         if (isSupportedSchemaType(targetSchemaType)) {
           return { kind: targetSchemaType, expression: initializer, annotations, dependencies }
         }
@@ -276,6 +276,28 @@ export const analyzeEffectSchema = (
     )
   const dependency = analyzeDependency(arg1.expression.getText(), arg2.imported, arg2.memberPath)
   if (arg1.kind == 'Reference') {
+    const expression = arg1.expression
+    if (Node.isCallExpression(expression)) {
+      // const parametersResult = expression.getTypeArguments().map((argument, index) => {
+      //         const newMemberPath = [...arg2.memberPath, '$generics', index]
+      //         return analyzeType(
+      //           {
+      //             sourceRelativePath,
+      //             metadata,
+      //             ownerSymbolId,
+      //             ownerSymbolIdentity,
+      //             memberPath: newMemberPath,
+      //             node: argument,
+      //             sourceFullText,
+      //             declarationOrder,
+      //             arg2.imported,
+      //             options,
+      //             reservedNames,
+      //           },
+      //           undefined,
+      //         )
+      //       })
+    }
     return {
       member: {
         source: 'effect-schema',
@@ -284,6 +306,7 @@ export const analyzeEffectSchema = (
           kind: 'reference',
           targetId: arg1.expression.getText(),
           annotations: arg1.annotations,
+          typeParameters: [],
         },
       },
       dependencies: [dependency],
@@ -342,7 +365,8 @@ const analyzeEffectSchemaForNonPrimitive = (args: {
             source: 'effect-schema',
             structure: {
               kind: 'object',
-              members: [],
+              properties: [],
+              indexSignatures: [],
               annotations: args.annotations,
             },
           },
@@ -371,7 +395,8 @@ const analyzeEffectSchemaForNonPrimitive = (args: {
             source: 'effect-schema',
             structure: {
               kind: 'object',
-              members: membersResult.map((m) => m.member),
+              properties: membersResult.map((m) => m.member),
+              indexSignatures: [],
               annotations: args.annotations,
             },
           },
@@ -453,6 +478,7 @@ const analyzeEffectSchemaForNonPrimitive = (args: {
               kind: 'reference',
               targetId: targetContent,
               annotations: args.annotations,
+              typeParameters: [],
             },
           },
           dependencies: [dependency],
@@ -539,6 +565,7 @@ const ObjectLiteralElementLike2TypeProperty = (
               structure: {
                 kind: 'reference',
                 targetId: property.getInitializer()?.getText() ?? '',
+                typeParameters: [],
               },
             } satisfies TypeAnalysis),
       },

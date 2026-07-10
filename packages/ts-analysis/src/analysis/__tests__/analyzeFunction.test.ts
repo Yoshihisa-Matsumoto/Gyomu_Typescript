@@ -17,9 +17,9 @@ const functionAnalysisProgram = (sourceFile: string): SymbolAnalysis => {
   const filePath = ProjectRelativePath(path.join('src', sourceFile))
   const result = Effect.runSync(
     Effect.gen(function* () {
-      return yield* analyzeFile(functionFixture, filePath, {
-        includeDebugInfo: true,
-      }).pipe(Effect.map((result) => result.analysis.symbols[0]))
+      return yield* analyzeFile(functionFixture, filePath, {}).pipe(
+        Effect.map((result) => result.analysis.symbols[0]),
+      )
     }),
   )
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -34,9 +34,7 @@ const functionSymbolsDependencyProgram = (sourceFile: string, folder?: string) =
   const filePath = ProjectRelativePath(sourcePath)
   const result = Effect.runSync(
     Effect.gen(function* () {
-      return yield* analyzeFile(functionFixture, filePath, {
-        includeDebugInfo: true,
-      }).pipe(
+      return yield* analyzeFile(functionFixture, filePath, {}).pipe(
         Effect.map((result) => {
           if (!fs.existsSync('./log')) fs.mkdirSync('./log')
           fs.writeFileSync('./log/fileAnalysis.txt', JSON.stringify(result.analysis, null, 2))

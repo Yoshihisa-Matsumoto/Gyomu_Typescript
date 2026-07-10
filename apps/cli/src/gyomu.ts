@@ -14,6 +14,7 @@ cli
   .option('--filter <filePath>', 'TsDoc Filter')
   .option('--commit', 'Commit')
   .option('--recommit', 'Remove Snapshot and Commit all files')
+  .option('--loggingKeyword <keyword>', 'Specify logging keyword in the symbol')
   .action(snapshotCommand)
 
 cli.help()

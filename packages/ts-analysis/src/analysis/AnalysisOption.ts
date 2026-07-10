@@ -1,5 +1,7 @@
 export interface AnalysisOptions {
-  includeDebugInfo?: boolean
+  includeDebugInfo?: {
+    keyword: string
+  }
   DumpToFile?: boolean
 }
 

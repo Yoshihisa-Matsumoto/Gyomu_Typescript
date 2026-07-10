@@ -4,14 +4,14 @@ import type {
   TypeAnalysis,
   TypeStructureAnalysis,
 } from '@gyomu/schema/schemas/typescript'
-import type { ChildAnalysisArg, MemberAnalysisResult } from '../../../types.js'
+import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../../types.js'
 import type { MappedTypeNode, TypeNode } from 'ts-morph'
 
 export const analyzeMappedTypeNode = (
   args: ChildAnalysisArg<TypeNode>,
   newMemberPath: MemberIdentityMemberPath,
   node: MappedTypeNode,
-): MemberAnalysisResult<TypeStructureAnalysis> => {
+): MemberAnalysisWithReservedResult<TypeStructureAnalysis> => {
   const typeParameter = node.getTypeParameter()
   const constraint = typeParameter.getConstraint()
   const typeNode = node.getTypeNode()
@@ -33,7 +33,7 @@ export const analyzeMappedTypeNode = (
     undefined,
   )
 
-  let nameTypeResult: MemberAnalysisResult<TypeAnalysis> | undefined = undefined
+  let nameTypeResult: MemberAnalysisWithReservedResult<TypeAnalysis> | undefined = undefined
   if (nameType) {
     nameTypeResult = analyzeType(
       { ...args, node: nameType, declarationOrder: 1, memberPath: [...newMemberPath, 'name'] },
@@ -55,6 +55,11 @@ export const analyzeMappedTypeNode = (
       ...constraintResult.dependencies,
       ...valueTypeResult.dependencies,
       ...(nameTypeResult?.dependencies ?? []),
+    ],
+    reservedNames: [
+      ...constraintResult.reservedNames,
+      ...valueTypeResult.reservedNames,
+      ...(nameTypeResult?.reservedNames ?? []),
     ],
   }
 }

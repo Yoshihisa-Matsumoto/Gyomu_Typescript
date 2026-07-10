@@ -1,6 +1,7 @@
 import { registerSymbolSymbolAnalysis } from './file/registerSymbolSymbolAnalysis.js'
 import { registerParsedJsDoc } from './file/registerSymbolJsDoc.js'
 import type {
+  IndexSignatureAnalysis,
   MemberAnalysis,
   ParsedJsDoc,
   SignatureAnalysis,
@@ -58,11 +59,17 @@ const buildIndexFromMember = (member: MemberAnalysis, metadata: FileAnalysisMeta
 
 const buildIndexFromType = (type: TypeAnalysis | undefined, metadata: FileAnalysisMetadata) => {
   if (!type || !type.structure) return
+  if (type.generics) {
+    type.generics.forEach((gp) => {
+      buildIndexFromType(gp.type, metadata)
+    })
+  }
   const structure = type.structure
+
   switch (structure.kind) {
     case 'object':
-      structure.members?.forEach((member) => buildIndexFromTypeProperty(member, metadata))
-
+      structure.properties?.forEach((member) => buildIndexFromTypeProperty(member, metadata))
+      structure.indexSignatures?.forEach((member) => buildIndexFromIndexSignature(member, metadata))
       break
     case 'function':
       structure.parameters.forEach((parameter) => buildIndexFromTypeProperty(parameter, metadata))
@@ -76,6 +83,7 @@ const buildIndexFromType = (type: TypeAnalysis | undefined, metadata: FileAnalys
     case 'primitive':
       break
     case 'reference':
+      structure.typeParameters.forEach((tp) => buildIndexFromType(tp, metadata))
       break
     case 'union':
       structure.types.forEach((tp) => buildIndexFromType(tp, metadata))
@@ -113,14 +121,43 @@ const buildIndexFromType = (type: TypeAnalysis | undefined, metadata: FileAnalys
       structure.parameters.forEach((p) => buildIndexFromTypeProperty(p, metadata))
       break
     case 'parenthesized':
+    case 'optional':
+    case 'namedTupleMember':
+    case 'rest':
       buildIndexFromType(structure.type, metadata)
       break
-    // default:
-    //   console.log(`Unsupported: ${structure.kind}`)
-    //   throw new Error(`Unsupported: ${structure.kind}`)
+    case 'templateLiteral':
+      structure.spans.forEach((span) => {
+        if (typeof span != 'string') buildIndexFromType(span, metadata)
+      })
+      break
+    case 'tuple':
+      structure.elements.forEach((element) => buildIndexFromTypeProperty(element, metadata))
+      break
+    case 'import':
+      structure.typeArguments.forEach((argument) => buildIndexFromType(argument, metadata))
+      break
+    case 'this':
+      break
+    default:
+      assertNever(structure)
   }
 }
-
+const assertNever = (value: never): never => {
+  throw new Error(`Unexpected kind: ${value}`)
+}
+const buildIndexFromIndexSignature = (
+  indexSignature: IndexSignatureAnalysis | undefined,
+  metadata: FileAnalysisMetadata,
+) => {
+  if (!indexSignature) return
+  if (indexSignature.documentable) {
+    registerParsedJsDoc(indexSignature.id, metadata, indexSignature.parsedJsDoc)
+    registerSymbolSymbolAnalysis(metadata, indexSignature)
+  }
+  buildIndexFromType(indexSignature.parameterType, metadata)
+  buildIndexFromType(indexSignature.type, metadata)
+}
 const buildIndexFromTypeProperty = (
   property: TypeProperty | undefined,
   metadata: FileAnalysisMetadata,

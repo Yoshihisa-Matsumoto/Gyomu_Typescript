@@ -4,13 +4,21 @@ import { analyzeType } from '../analyzeType.js'
 import { computeIndent } from '../../computeIndent.js'
 import { registerSymbolSymbolAnalysis } from '../../../../file/registerSymbolSymbolAnalysis.js'
 import { analyzeTypePropertyMember } from '../analyzeTypePropertyMember.js'
+import { tracePlaceIdentity } from '../../../../trace/traceUtil.js'
+import { analyzeIndexSignature } from '../analyzeIndexSignature.js'
 import type { TypeLiteralNode } from 'ts-morph'
-import type { ChildAnalysisArg, MemberAnalysisResult } from '../../../types.js'
-import type { DocumentableTypeProperty, TypeProperty } from '@gyomu/schema/schemas/typescript/index'
+import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../../types.js'
+import type {
+  DocumentableTypeProperty,
+  IndexSignatureAnalysis,
+  TypeProperty,
+  TypeStructureAnalysis,
+} from '@gyomu/schema/schemas/typescript/index'
 
 export const analyzeTypeLiteralNode = (
   args: ChildAnalysisArg<TypeLiteralNode>,
-): MemberAnalysisResult<Array<TypeProperty>> | undefined => {
+): MemberAnalysisWithReservedResult<TypeStructureAnalysis> => {
+  tracePlaceIdentity(args, args.options, 'analyzeTypeLiteralNode')
   const {
     node,
     sourceRelativePath,
@@ -25,34 +33,14 @@ export const analyzeTypeLiteralNode = (
   } = args
 
   const newMemberPath = [...memberPath, '$member']
-  const members: Array<MemberAnalysisResult<TypeProperty>> = node
+  const properties: Array<MemberAnalysisWithReservedResult<TypeProperty>> = node
     .getMembers()
     .flatMap((member, index) => {
+      // console.dir(member.getKindName())
       if (Node.isMethodSignature(member)) {
-        // const methodResult= analyzeTypeFunction(
-        //   {
-        //     sourceRelativePath,
-        //     metadata,
-        //     node: member,
-        //     ownerSymbolId,
-        //     ownerSymbolIdentity,
-        //     memberPath,
-
-        //     sourceFullText,
-        //     declarationOrder: index,
-        //     imported,
-        //     options,
-        //     reservedNames,
-        //   },
-        //   {
-        //     isStatic: undefined,
-        //     visibility: undefined,
-        //     name: member.getName(),
-        //     jsDocableNode: member,
-        //   },
-        // )
+        tracePlaceIdentity(args, args.options, 'analyzeTypeLiteralNode:MethodSignature')
         const methodType = analyzeType(
-          { ...args, memberPath: newMemberPath },
+          { ...args, node: member, memberPath: newMemberPath },
           [member.getName()],
           member.getFullText(),
         )
@@ -98,32 +86,10 @@ export const analyzeTypeLiteralNode = (
         return {
           member: property,
           dependencies: methodType.dependencies,
-        } satisfies MemberAnalysisResult<TypeProperty>
+          reservedNames: methodType.reservedNames,
+        } satisfies MemberAnalysisWithReservedResult<TypeProperty>
       }
       if (Node.isFunctionTypeNode(member)) {
-        // if (Node.isJSDocable(member)) {
-        // return analyzeTypeFunction(
-        //   {
-        //     sourceRelativePath,
-        //     metadata,
-        //     node: member,
-        //     ownerSymbolId,
-        //     ownerSymbolIdentity,
-        //     memberPath,
-
-        //     sourceFullText,
-        //     declarationOrder: index,
-        //     imported,
-        //     options,
-        //     reservedNames,
-        //   },
-        //   {
-        //     isStatic: undefined,
-        //     visibility: undefined,
-        //     name: Node.isNameable(member) ? member.getName()! : member.getText(),
-        //     jsDocableNode: member,
-        //   },
-        // )
         const name = Node.isNameable(member) ? member.getName()! : member.getText()
         const methodType = analyzeType({ ...args, node: member, memberPath: newMemberPath }, [name])
         const prepareResult = prepareMethodAnalysis(
@@ -170,7 +136,8 @@ export const analyzeTypeLiteralNode = (
         return {
           member: property,
           dependencies: methodType.dependencies,
-        } satisfies MemberAnalysisResult<TypeProperty>
+          reservedNames: methodType.reservedNames,
+        } satisfies MemberAnalysisWithReservedResult<TypeProperty>
         // }
       }
 
@@ -205,6 +172,7 @@ export const analyzeTypeLiteralNode = (
             { ...args, node: memberTypeNode, memberPath: newMemberPath },
             [name],
           )
+          console.dir(methodType.dependencies, { depth: null })
           const prepareResult = prepareMethodAnalysis(
             args.sourceRelativePath,
             args.metadata,
@@ -247,7 +215,8 @@ export const analyzeTypeLiteralNode = (
           return {
             member: property,
             dependencies: methodType.dependencies,
-          } satisfies MemberAnalysisResult<TypeProperty>
+            reservedNames: methodType.reservedNames,
+          } satisfies MemberAnalysisWithReservedResult<TypeProperty>
         }
         return analyzeTypePropertyMember({
           sourceRelativePath,
@@ -263,14 +232,56 @@ export const analyzeTypeLiteralNode = (
           reservedNames,
         })
       }
+      if (Node.isIndexSignatureDeclaration(member)) {
+        return undefined
+      }
       console.log(`Unsupported Member on TypeLiteral ${member.getKindName()}`)
       return undefined
     })
     .filter((m) => !!m)
-  if (members.length > 0)
-    return {
-      member: members.map((m) => m.member),
-      dependencies: members.map((m) => m.dependencies).flat(),
-    }
-  return undefined
+  const indexSignatures: Array<MemberAnalysisWithReservedResult<IndexSignatureAnalysis>> = node
+    .getMembers()
+    .flatMap((member, index) => {
+      // console.dir(member.getKindName())
+      if (Node.isMethodSignature(member)) {
+        return undefined
+      }
+      if (Node.isFunctionTypeNode(member)) {
+        return undefined
+      }
+
+      if (Node.isPropertySignature(member)) {
+        return undefined
+      }
+      if (Node.isIndexSignatureDeclaration(member)) {
+        const indexSignature = member
+        return analyzeIndexSignature({
+          ...args,
+          node: indexSignature,
+          memberPath: newMemberPath,
+          declarationOrder: index,
+        })
+      }
+      console.log(`Unsupported Member on TypeLiteral ${member.getKindName()}`)
+      return undefined
+    })
+    .filter((m) => !!m)
+  // if (members.length > 0)
+  return {
+    member: {
+      kind: 'object',
+      properties: properties.map((m) => m.member),
+      indexSignatures: indexSignatures.map((m) => m.member),
+    },
+
+    dependencies: [
+      ...properties.map((m) => m.dependencies).flat(),
+      ...indexSignatures.map((m) => m.dependencies).flat(),
+    ],
+    reservedNames: [
+      ...properties.map((m) => m.reservedNames).flat(),
+      ...indexSignatures.map((m) => m.reservedNames).flat(),
+    ],
+  }
+  // return undefined
 }

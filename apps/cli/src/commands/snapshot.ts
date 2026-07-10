@@ -22,6 +22,7 @@ import {
 } from '@gyomu/infra/fs'
 import { analyzeFile, initializeProjectContext } from '@gyomu/ts-analysis'
 import { AI_MODELS } from '@gyomu/ai'
+import type { AnalysisOptions } from '@gyomu/ts-analysis'
 
 const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(
   Layer.provideMerge(PlatformLayer),
@@ -32,10 +33,23 @@ const runQAWithEnvOrThrow = makeRunner(
 )
 export const snapshotCommand = (
   projectName: string,
-  options?: { buildTsDoc?: boolean; filter?: string; commit?: boolean; recommit?: boolean },
+  options?: {
+    buildTsDoc?: boolean
+    filter?: string
+    commit?: boolean
+    recommit?: boolean
+    loggingKeyword?: string
+  },
 ) => {
   return runQAWithEnvOrThrow(
     Effect.gen(function* () {
+      const analysisOption: AnalysisOptions = { DumpToFile: true }
+      if (options?.loggingKeyword) {
+        analysisOption.includeDebugInfo = {
+          keyword: options.loggingKeyword,
+        }
+      }
+
       const projects = yield* listTypescriptProject()
       const targetProject = projects.projects.find((p) => p.name == projectName)
       if (!targetProject) {
@@ -89,7 +103,7 @@ export const snapshotCommand = (
             }
             if (isTestFile(targetFilePath)) continue
             console.log(fileChange.projectRelativePath)
-            let fileResult = yield* analyzeFile(projectContext, targetFilePath)
+            let fileResult = yield* analyzeFile(projectContext, targetFilePath, analysisOption)
 
             yield* writeStringToFile(
               './log/fileAnalysis.txt',
@@ -122,7 +136,7 @@ export const snapshotCommand = (
                   },
                 },
               })
-              fileResult = yield* analyzeFile(projectContext, targetFilePath)
+              fileResult = yield* analyzeFile(projectContext, targetFilePath, analysisOption)
             }
             if (options?.commit || options?.recommit) {
               // Save FileAnalysis on project/.gyomu/<filePath>.json

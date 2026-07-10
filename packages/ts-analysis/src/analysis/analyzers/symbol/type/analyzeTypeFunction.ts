@@ -1,7 +1,7 @@
-import { analyzeGenericsParameters } from '../analyzeGenericsParameters.js'
 import { analyzeType } from './analyzeType.js'
 import { analyzeTypeProperty } from './analyzeTypeProperty.js'
 import type {
+  ArrowFunction,
   CallSignatureDeclaration,
   ConstructSignatureDeclaration,
   ConstructorDeclaration,
@@ -15,7 +15,7 @@ import type {
   PropertySignature,
   SetAccessorDeclaration,
 } from 'ts-morph'
-import type { ChildAnalysisArg, MemberAnalysisResult } from '../../types.js'
+import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../types.js'
 
 import type { FunctionStructureAnalysis, TypeAnalysis } from '@gyomu/schema/schemas/typescript'
 
@@ -24,6 +24,7 @@ export const analyzeTypeFunction = (
     | MethodSignature
     | FunctionTypeNode
     | MethodDeclaration
+    | ArrowFunction
     | ((
         | PropertySignature
         | ConstructSignatureDeclaration
@@ -38,7 +39,7 @@ export const analyzeTypeFunction = (
     name: string
     jsDocableNode: (JSDocableNode & Node) | undefined
   },
-): MemberAnalysisResult<FunctionStructureAnalysis> => {
+): MemberAnalysisWithReservedResult<FunctionStructureAnalysis> => {
   const {
     sourceRelativePath,
     memberPath,
@@ -55,21 +56,21 @@ export const analyzeTypeFunction = (
   const { name, jsDocableNode } = args2
   const returnTypeNode = node.getReturnTypeNode()
 
-  const genericsResult = analyzeGenericsParameters({
-    node,
-    sourceRelativePath,
-    metadata,
-    memberPath: [...memberPath, name],
-    ownerSymbolId,
-    ownerSymbolIdentity,
-    sourceFullText,
-    declarationOrder: 0,
-    imported,
-    options,
-    reservedNames: [],
-  })
+  // const genericsResult = analyzeGenericsParameters({
+  //   node,
+  //   sourceRelativePath,
+  //   metadata,
+  //   memberPath: [...memberPath, name],
+  //   ownerSymbolId,
+  //   ownerSymbolIdentity,
+  //   sourceFullText,
+  //   declarationOrder: 0,
+  //   imported,
+  //   options,
+  //   reservedNames: [],
+  // })
 
-  const newReservedNames = [...reservedNames, ...genericsResult.parameters]
+  const newReservedNames = [...reservedNames]
 
   const returnType = analyzeType(
     {
@@ -85,7 +86,7 @@ export const analyzeTypeFunction = (
       options,
       reservedNames: newReservedNames,
     },
-    [name, '$return'],
+    name ? [name, '$return'] : ['$return'],
   )
   return analyzeTypeFunctionInternal(
     { ...args, reservedNames: newReservedNames },
@@ -99,14 +100,14 @@ export const analyzeTypeFunction = (
 
 const analyzeTypeFunctionInternal = (
   args: ChildAnalysisArg<
-    MethodSignature | FunctionTypeNode | MethodDeclaration | ConstructorDeclaration
+    MethodSignature | FunctionTypeNode | MethodDeclaration | ConstructorDeclaration | ArrowFunction
   >,
   args2: {
     name: string
-    returnType: MemberAnalysisResult<TypeAnalysis>
+    returnType: MemberAnalysisWithReservedResult<TypeAnalysis>
     jsDocableNode: (JSDocableNode & Node) | undefined
   },
-): MemberAnalysisResult<FunctionStructureAnalysis> => {
+): MemberAnalysisWithReservedResult<FunctionStructureAnalysis> => {
   const {
     sourceRelativePath,
     memberPath,
@@ -122,24 +123,10 @@ const analyzeTypeFunctionInternal = (
   } = args
   const { returnType, name } = args2
 
-  const methodPath = [...memberPath, name]
+  const methodPath = name ? [...memberPath, name] : [...memberPath]
   const childMemberPath = [...methodPath, '$parameters']
 
-  const genericsResult = analyzeGenericsParameters({
-    node,
-    sourceRelativePath,
-    metadata,
-    memberPath: methodPath,
-    ownerSymbolId,
-    ownerSymbolIdentity,
-    sourceFullText,
-    declarationOrder,
-    imported,
-    options,
-    reservedNames,
-  })
-
-  const newReservedNames = [...reservedNames, ...genericsResult.parameters]
+  const newReservedNames = [...reservedNames]
   const parametersResult = node.getParameters().map((p, index) =>
     analyzeTypeProperty({
       node: p,
@@ -168,8 +155,8 @@ const analyzeTypeFunctionInternal = (
       dependencies: [
         ...parametersResult.map((p) => p.dependencies).flat(),
         ...returnType.dependencies,
-        ...genericsResult.dependencies,
       ],
+      reservedNames: [...parametersResult.map((p) => p.reservedNames).flat()],
     }
   }
 }

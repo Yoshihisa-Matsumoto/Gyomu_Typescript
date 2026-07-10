@@ -9,6 +9,7 @@ import type {
 } from '@gyomu/schema/typescript'
 import type {
   ConstructorDeclaration,
+  EnumMember,
   FunctionTypeNode,
   GetAccessorDeclaration,
   JSDocableNode,
@@ -28,7 +29,7 @@ export const preparePropertyAnalysis = (
   ownerSymbolIdentity: SymbolIdentity,
   memberPath: MemberIdentityMemberPath,
   propertyName: string,
-  node: PropertySignature | PropertyDeclaration,
+  node: PropertySignature | PropertyDeclaration | EnumMember,
   jsDocableNode: JSDocableNode & Node,
 ): {
   id: SymbolId
@@ -113,7 +114,7 @@ export const initializeMethodIdentity = (
   )
 }
 
-const prepareMemberAnalysis = (args: {
+export const prepareMemberAnalysis = (args: {
   sourcePath: ProjectRelativePath
   metadata: FileAnalysisMetadata
   id: SymbolId
@@ -132,7 +133,7 @@ const prepareMemberAnalysis = (args: {
   const { id, identity, node, jsDocableNode, metadata } = args
 
   const extractedJsDoc = extractJsDoc(jsDocableNode)
-  if (id.includes('findUser')) console.log(id)
+
   registerSymbolJsDoc(id, metadata, extractedJsDoc)
 
   return {

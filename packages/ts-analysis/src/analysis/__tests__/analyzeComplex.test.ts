@@ -30,9 +30,7 @@ const tempJsdocProgram = (sourceFile: string) => {
   const filePath = ProjectRelativePath(path.join('src', sourceFile))
   return Effect.runSync(
     Effect.gen(function* () {
-      const result = yield* analyzeFile(jsDocFixture, filePath, {
-        includeDebugInfo: true,
-      })
+      const result = yield* analyzeFile(jsDocFixture, filePath, {})
 
       return result
     }),
@@ -321,7 +319,7 @@ describe('analyzeFile-complex pattern', () => {
       expect(exported?.exportedName).toBe('User')
 
       const symbol = result.analysis.symbols[0]
-
+      console.dir(symbol, { depth: null })
       expect(symbol?.kind).toBe('type')
       expect(symbol?.identity).toEqual({
         symbolId: 'User',
@@ -333,60 +331,71 @@ describe('analyzeFile-complex pattern', () => {
         hasSummary: true,
         summaryLength: 10,
       })
+      expect(symbol?.type?.structure).toBeDefined()
+      if (!symbol?.type?.structure) throw new Error('')
+      const structure = symbol.type.structure
+      expect(structure.kind).toBe('object')
+      if (structure.kind == 'object') {
+        expect(structure.properties).toHaveLength(3)
 
-      expect(symbol?.members).toHaveLength(3)
+        const members = structure.properties!
 
-      const members = symbol?.members!
+        const id = getTypeProperty('id', members)
+        const name = getTypeProperty('name', members)
+        const getDisplayName = getTypeProperty('getDisplayName', members)
 
-      const id = getProperty('id', members)
-      const name = getProperty('name', members)
-      const getDisplayName = getMethod('getDisplayName', members)
+        // id
 
-      // id
+        expect(id.identity.signatureId).toBe('property')
 
-      expect(id.kind).toBe('property')
+        expect(id.identity).toEqual({
+          symbolId: 'User::type::$member.id::property',
+          signatureId: 'property',
+        })
+        expect(id.documentable).toBeTruthy()
+        if (id.documentable) {
+          expect(id.jsDoc).toMatchObject({
+            exists: true,
+            hasSummary: true,
+          })
 
-      expect(id.identity).toEqual({
-        symbolId: 'User::type::$member.id::property',
-        signatureId: 'property',
-      })
+          expect(getParsedJsDocFromTypeProperty(result, id).summary).toBe('User id.')
+        }
+        // name
 
-      expect(id.jsDoc).toMatchObject({
-        exists: true,
-        hasSummary: true,
-      })
+        expect(name.identity.signatureId).toBe('property')
 
-      expect(getParsedJsDoc(result, id).summary).toBe('User id.')
+        expect(name.identity).toEqual({
+          symbolId: 'User::type::$member.name::property',
+          signatureId: 'property',
+        })
 
-      // name
+        expect(name.documentable).toBeTruthy()
+        if (name.documentable) {
+          expect(name.jsDoc).toMatchObject({
+            exists: true,
+            hasSummary: true,
+          })
 
-      expect(name.kind).toBe('property')
+          expect(getParsedJsDocFromTypeProperty(result, name).summary).toBe('User name.')
+        }
+        // getDisplayName
 
-      expect(name.identity).toEqual({
-        symbolId: 'User::type::$member.name::property',
-        signatureId: 'property',
-      })
+        expect(getDisplayName.type?.structure?.kind).toBe('function')
+        expect(getDisplayName.identity).toMatchObject({
+          symbolId: 'User::type::$member.getDisplayName::():string',
+          signatureId: '():string',
+        })
+        if (getDisplayName.type?.structure?.kind == 'function') {
+          expect(getDisplayName.type?.structure?.parameters).toEqual([])
+        }
+        expect(getDisplayName.documentable).toBeTruthy()
+        if (getDisplayName.documentable) {
+          const getDisplayNameDoc = getParsedJsDocFromTypeProperty(result, getDisplayName)
 
-      expect(name.jsDoc).toMatchObject({
-        exists: true,
-        hasSummary: true,
-      })
-
-      expect(getParsedJsDoc(result, name).summary).toBe('User name.')
-
-      // getDisplayName
-
-      expect(getDisplayName.kind).toBe('method')
-      expect(getDisplayName.identity).toMatchObject({
-        symbolId: 'User::type::$member.getDisplayName::():string',
-        signatureId: '():string',
-      })
-
-      expect(getDisplayName.parameters).toEqual([])
-
-      const getDisplayNameDoc = getParsedJsDoc(result, getDisplayName)
-
-      expect(getDisplayNameDoc.summary).toBe('Gets display name.')
+          expect(getDisplayNameDoc.summary).toBe('Gets display name.')
+        }
+      }
     },
     timeout,
   )
@@ -512,10 +521,10 @@ describe('analyzeFile-complex pattern', () => {
 
       // nested members
       const dataType = getObjectType(data.type!)
-      expect(dataType.members).toHaveLength(2)
+      expect(dataType.properties).toHaveLength(2)
 
-      const id = getTypeProperty('id', dataType.members!)
-      const name = getTypeProperty('name', dataType.members!)
+      const id = getTypeProperty('id', dataType.properties!)
+      const name = getTypeProperty('name', dataType.properties!)
 
       expect(id.type?.text).toBe('string')
       expect(name.type?.text).toBe('string')
@@ -767,7 +776,7 @@ describe('analyzeFile-complex pattern', () => {
 
       // user
       const dataType = getObjectType(data.type!)
-      const user = getTypeProperty('user', dataType.members!)
+      const user = getTypeProperty('user', dataType.properties!)
 
       expect(user.type?.structure?.kind).toBe('object')
       expect(user.identity).toEqual({
@@ -782,7 +791,7 @@ describe('analyzeFile-complex pattern', () => {
 
       // id
       const userType = getObjectType(user.type!)
-      const id = getTypeProperty('id', userType.members!)
+      const id = getTypeProperty('id', userType.properties!)
       expect(id.type?.text).toBe('string')
       expect(id.identity).toEqual({
         symbolId: 'ApiResponse::interface::$member.data.$member.user.$member.id::property',
@@ -798,7 +807,7 @@ describe('analyzeFile-complex pattern', () => {
 
       // name
 
-      const name = getTypeProperty('name', userType.members!)
+      const name = getTypeProperty('name', userType.properties!)
 
       expect(name.identity).toEqual({
         symbolId: 'ApiResponse::interface::$member.data.$member.user.$member.name::property',
@@ -814,7 +823,7 @@ describe('analyzeFile-complex pattern', () => {
 
       // metadata
 
-      const metadata = getTypeProperty('metadata', dataType.members!)
+      const metadata = getTypeProperty('metadata', dataType.properties!)
 
       expect(metadata.type?.structure?.kind).toBe('object')
       expect(metadata.identity).toEqual({
@@ -829,7 +838,7 @@ describe('analyzeFile-complex pattern', () => {
 
       // createdAt
       const metadataType = getObjectType(metadata.type!)
-      const createdAt = getTypeProperty('createdAt', metadataType.members!)
+      const createdAt = getTypeProperty('createdAt', metadataType.properties!)
 
       expect(createdAt.type?.text).toBe('string')
       expect(createdAt.identity).toEqual({
@@ -844,7 +853,7 @@ describe('analyzeFile-complex pattern', () => {
       }
       // tags
 
-      const tags = getTypeProperty('tags', metadataType.members!)
+      const tags = getTypeProperty('tags', metadataType.properties!)
       expect(tags.type?.text).toBe('string[]')
       expect(tags.identity).toEqual({
         symbolId: 'ApiResponse::interface::$member.data.$member.metadata.$member.tags::property',
@@ -893,7 +902,7 @@ describe('analyzeFile-complex pattern', () => {
       // users
       console.log('users')
 
-      const users = getTypeProperty('users', dataType.members!)
+      const users = getTypeProperty('users', dataType.properties!)
 
       expect(users.identity).toEqual({
         symbolId: 'ApiResponse::interface::$member.data.$member.users::property',
@@ -910,7 +919,7 @@ describe('analyzeFile-complex pattern', () => {
       const usersArrayType = getObjectType(usersType.elementType)
       // users.id
       console.log('users.id')
-      const userId = getTypeProperty('id', usersArrayType.members!)
+      const userId = getTypeProperty('id', usersArrayType.properties!)
 
       expect(userId.type?.text).toBe('string')
       expect(userId.identity).toEqual({
@@ -925,7 +934,7 @@ describe('analyzeFile-complex pattern', () => {
 
       // actions
       console.log('actions')
-      const actions = getTypeProperty('actions', dataType.members!)
+      const actions = getTypeProperty('actions', dataType.properties!)
 
       expect(actions.identity).toEqual({
         symbolId: 'ApiResponse::interface::$member.data.$member.actions::property',
@@ -941,7 +950,7 @@ describe('analyzeFile-complex pattern', () => {
       // console.dir(actionsType, { depth: null })
       // findUser
       console.log('findUser')
-      const findUser = getTypeProperty('findUser', actionsType.members!)
+      const findUser = getTypeProperty('findUser', actionsType.properties!)
 
       console.dir(findUser, { depth: null })
       expect(findUser.identity).toEqual({
@@ -957,7 +966,7 @@ describe('analyzeFile-complex pattern', () => {
 
       // notify
       console.log('notify')
-      const notify = getTypeProperty('notify', actionsType.members!)
+      const notify = getTypeProperty('notify', actionsType.properties!)
       console.dir(notify, { depth: null })
       expect(notify.identity).toEqual({
         symbolId:
@@ -972,7 +981,7 @@ describe('analyzeFile-complex pattern', () => {
 
       // 深い階層のJSDocが取れていること
       console.log('深い階層のJSDoc')
-      const userName = getTypeProperty('name', usersArrayType.members!)
+      const userName = getTypeProperty('name', usersArrayType.properties!)
       console.dir(userName, { depth: null })
       expect(userName.documentable).toBeTruthy()
       if (userName.documentable) {
@@ -1047,9 +1056,9 @@ describe('analyzeFile-complex pattern', () => {
 
       const successType = getObjectType(dataType.types[0]!)
 
-      expect(successType.members).toHaveLength(2)
+      expect(successType.properties).toHaveLength(2)
 
-      const id = getTypeProperty('id', successType.members!)
+      const id = getTypeProperty('id', successType.properties!)
       expect(id.type?.text).toBe('string')
       expect(id.identity).toEqual({
         symbolId: 'SearchResponse::interface::$member.data.0.$member.id::property',
@@ -1061,7 +1070,7 @@ describe('analyzeFile-complex pattern', () => {
         expect(getParsedJsDocFromTypeProperty(result, id).summary).toBe('User id.')
       }
 
-      const name = getTypeProperty('name', successType.members!)
+      const name = getTypeProperty('name', successType.properties!)
 
       expect(name.type?.text).toBe('string')
       expect(name.identity).toEqual({
@@ -1080,9 +1089,9 @@ describe('analyzeFile-complex pattern', () => {
 
       const errorType = getObjectType(dataType.types[1]!)
 
-      expect(errorType.members).toHaveLength(2)
+      expect(errorType.properties).toHaveLength(2)
 
-      const code = getTypeProperty('code', errorType.members!)
+      const code = getTypeProperty('code', errorType.properties!)
 
       expect(code.type?.text).toBe('string')
       expect(code.identity).toEqual({
@@ -1095,7 +1104,7 @@ describe('analyzeFile-complex pattern', () => {
         expect(getParsedJsDocFromTypeProperty(result, code).summary).toBe('Error code.')
       }
 
-      const message = getTypeProperty('message', errorType.members!)
+      const message = getTypeProperty('message', errorType.properties!)
       expect(message.type?.text).toBe('string')
       expect(message.identity).toEqual({
         symbolId: 'SearchResponse::interface::$member.data.1.$member.message::property',
@@ -1157,7 +1166,8 @@ describe('analyzeFile-complex pattern', () => {
 
       const objectStructure = symbolType.structure
       if (objectStructure?.kind == 'object') {
-        expect(objectStructure.members?.map((m) => m.name)).toEqual(
+        console.dir(objectStructure, { depth: null })
+        expect(objectStructure.properties?.map((m) => m.name)).toEqual(
           expect.arrayContaining(['startLine', 'endLine']),
         )
         expect(objectStructure.annotations).toBeDefined()
@@ -1197,8 +1207,9 @@ describe('analyzeFile-complex pattern', () => {
       expect(symbolType.structure?.kind).toBe('object')
 
       const objectStructure = symbolType.structure
+
       if (objectStructure?.kind == 'object') {
-        expect(objectStructure.members?.map((m) => m.name)).toEqual(
+        expect(objectStructure.properties?.map((m) => m.name)).toEqual(
           expect.arrayContaining(['kind', 'targetId']),
         )
         expect(objectStructure.annotations).toBeDefined()
@@ -1207,7 +1218,7 @@ describe('analyzeFile-complex pattern', () => {
           expect(annotation.description).toBe('Represents a reference to another type identifier.')
         }
 
-        const kindAttr = objectStructure.members?.find((m) => m.name == 'kind')
+        const kindAttr = objectStructure.properties?.find((m) => m.name == 'kind')
         expect(kindAttr).toBeDefined()
         expect(kindAttr?.type?.structure?.kind).toBe('literal')
         if (kindAttr?.type?.structure?.kind == 'literal') {
@@ -1216,7 +1227,7 @@ describe('analyzeFile-complex pattern', () => {
           )
         }
 
-        const targetId = objectStructure.members?.find((m) => m.name == 'targetId')
+        const targetId = objectStructure.properties?.find((m) => m.name == 'targetId')
         expect(targetId).toBeDefined()
         expect(targetId?.type?.structure?.kind).toBe('primitive')
         if (targetId?.type?.structure?.kind == 'primitive') {
@@ -1225,6 +1236,85 @@ describe('analyzeFile-complex pattern', () => {
           )
         }
       }
+    },
+    timeout,
+  )
+  it(
+    'analyzes 13-throws-tag.ts',
+    async () => {
+      const result = await tempJsdocProgram('13-throws-tag.ts')
+
+      console.dir(result, { depth: null })
+      let symbol = result.analysis.symbols[0]!
+      expect(symbol.parsedJsDoc?.[0]?.throws).toEqual([
+        {
+          order: 0,
+          type: 'ValidationError',
+          description: 'Invalid parameter.',
+          raw: '@throws ValidationError Invalid parameter.',
+        },
+        {
+          order: 1,
+          type: 'NetworkError',
+          description: 'Network failed.',
+          raw: '@throws NetworkError Network failed.',
+        },
+      ])
+
+      expect(symbol.parsedJsDoc?.[0]?.tags).toContainEqual(
+        expect.objectContaining({
+          tagName: 'throws',
+          key: 'ValidationError',
+        }),
+      )
+
+      symbol = result.analysis.symbols[1]!
+
+      expect(symbol.parsedJsDoc?.[0]?.throws).toEqual([])
+
+      expect(symbol.parsedJsDoc?.[0]?.tags).toContainEqual(
+        expect.objectContaining({
+          tagName: 'throws',
+          text: 'ValidationError',
+        }),
+      )
+    },
+    timeout,
+  )
+  it(
+    'analyzes 14-template-tag.ts',
+    async () => {
+      const result = await tempJsdocProgram('14-template-tag.ts')
+
+      console.dir(result, { depth: null })
+      let symbol = result.analysis.symbols[0]!
+      expect(symbol.parsedJsDoc?.[0]?.templates).toEqual(['Item type', 'Result type'])
+
+      expect(symbol.parsedJsDoc?.[0]?.tags).toContainEqual(
+        expect.objectContaining({
+          tagName: 'template',
+          key: 'T',
+          text: 'Item type',
+        }),
+      )
+
+      expect(symbol.parsedJsDoc?.[0]?.tags).toContainEqual(
+        expect.objectContaining({
+          tagName: 'template',
+          key: 'TResult',
+          text: 'Result type',
+        }),
+      )
+
+      symbol = result.analysis.symbols[1]!
+      expect(symbol.parsedJsDoc?.[0]?.templates).toEqual([''])
+      expect(symbol.parsedJsDoc?.[0]?.tags).toContainEqual(
+        expect.objectContaining({
+          tagName: 'template',
+          key: 'T',
+          text: '',
+        }),
+      )
     },
     timeout,
   )

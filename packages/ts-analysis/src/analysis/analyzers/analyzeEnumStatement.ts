@@ -1,4 +1,4 @@
-import { analyzeEnum } from './symbol/analyzeEnum.js'
+import { analyzeEnum } from './symbol/enum/analyzeEnum.js'
 import type { ExportAnalysis, SymbolAnalysis } from '@gyomu/schema/schemas/typescript'
 import type { StatementAnalysisArgument, StatementAnalysisResult } from './types.js'
 import type { EnumDeclaration } from 'ts-morph'

@@ -1,10 +1,10 @@
 import { Node } from 'ts-morph'
 import { preparePropertyAnalysis } from '../prepareMemberAnalysis.js'
-import { analyzeGenericsParameters } from '../analyzeGenericsParameters.js'
 import { computeIndent } from '../computeIndent.js'
 import { registerSymbolSymbolAnalysis } from '../../../file/registerSymbolSymbolAnalysis.js'
+import { tracePlaceIdentity } from '../../../trace/traceUtil.js'
 import { analyzeType } from './analyzeType.js'
-import type { ChildAnalysisArg, MemberAnalysisResult } from '../../types.js'
+import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../types.js'
 import type {
   Expression,
   GetAccessorDeclaration,
@@ -15,7 +15,6 @@ import type {
 
 import type { SymbolId } from '@gyomu/schema/typescript'
 import type {
-  DependencyCandidate,
   DocumentableTypeProperty,
   JsDocAnalysis,
   MemberAccessor,
@@ -28,7 +27,8 @@ export const analyzeTypePropertyMember = (
   args: ChildAnalysisArg<PropertySignature | PropertyDeclaration>,
   isStatic: boolean = false,
   visibility: MemberAccessor = 'public',
-): MemberAnalysisResult<TypeProperty> => {
+): MemberAnalysisWithReservedResult<TypeProperty> => {
+  tracePlaceIdentity(args, args.options, 'analyzeTypePropertyMember')
   const { sourceRelativePath, metadata, node, ownerSymbolId, ownerSymbolIdentity, memberPath } =
     args
   const typeNode = args.node.getTypeNode()
@@ -79,7 +79,7 @@ const analyzeTypePropertyMemberInternal = (
     }
     startOffset: number
   },
-): MemberAnalysisResult<DocumentableTypeProperty> => {
+): MemberAnalysisWithReservedResult<DocumentableTypeProperty> => {
   const {
     sourceRelativePath,
     metadata,
@@ -97,24 +97,7 @@ const analyzeTypePropertyMemberInternal = (
   const name = node.getName()
 
   const newReservedNames = [...reservedNames]
-  const genercsDependencies: Array<DependencyCandidate> = []
-  if (Node.isTypeParametered(node)) {
-    const genericsResult = analyzeGenericsParameters({
-      node,
-      sourceRelativePath,
-      metadata,
-      memberPath,
-      ownerSymbolId,
-      ownerSymbolIdentity,
-      sourceFullText,
-      declarationOrder: 0,
-      imported,
-      options,
-      reservedNames,
-    })
-    newReservedNames.push(...genericsResult.parameters)
-    genercsDependencies.push(...genericsResult.dependencies)
-  }
+
   // console.dir(typeNode)
   const typeResult = analyzeType(
     {
@@ -160,6 +143,7 @@ const analyzeTypePropertyMemberInternal = (
   registerSymbolSymbolAnalysis(metadata, property)
   return {
     member: property,
-    dependencies: [...typeResult.dependencies, ...genercsDependencies],
+    dependencies: [...typeResult.dependencies],
+    reservedNames: typeResult.reservedNames,
   }
 }

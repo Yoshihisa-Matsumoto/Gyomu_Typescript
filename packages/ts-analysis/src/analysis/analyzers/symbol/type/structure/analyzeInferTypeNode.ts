@@ -4,16 +4,16 @@ import type {
   TypeAnalysis,
   TypeStructureAnalysis,
 } from '@gyomu/schema/schemas/typescript'
-import type { ChildAnalysisArg, MemberAnalysisResult } from '../../../types.js'
+import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../../types.js'
 import type { InferTypeNode, TypeNode } from 'ts-morph'
 
 export const analyzeInferTypeNode = (
   args: ChildAnalysisArg<TypeNode>,
   newMemberPath: MemberIdentityMemberPath,
   node: InferTypeNode,
-): MemberAnalysisResult<TypeStructureAnalysis> => {
+): MemberAnalysisWithReservedResult<TypeStructureAnalysis> => {
   const parameter = node.getTypeParameter()
-  let constraintResult: MemberAnalysisResult<TypeAnalysis> | undefined = undefined
+  let constraintResult: MemberAnalysisWithReservedResult<TypeAnalysis> | undefined = undefined
   const constraint = parameter.getConstraint()
   if (constraint) {
     constraintResult = analyzeType(
@@ -33,5 +33,6 @@ export const analyzeInferTypeNode = (
       constraint: constraintResult?.member,
     },
     dependencies: [...(constraintResult?.dependencies ?? [])],
+    reservedNames: [...(constraintResult?.reservedNames ?? [])],
   }
 }

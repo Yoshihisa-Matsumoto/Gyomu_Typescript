@@ -3,14 +3,14 @@ import type {
   MemberIdentityMemberPath,
   TypeStructureAnalysis,
 } from '@gyomu/schema/schemas/typescript'
-import type { ChildAnalysisArg, MemberAnalysisResult } from '../../../types.js'
+import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../../types.js'
 import type { IndexedAccessTypeNode, TypeNode } from 'ts-morph'
 
 export const analyzeIndexedAccessTypeNode = (
   args: ChildAnalysisArg<TypeNode>,
   newMemberPath: MemberIdentityMemberPath,
   typeNode: IndexedAccessTypeNode,
-): MemberAnalysisResult<TypeStructureAnalysis> => {
+): MemberAnalysisWithReservedResult<TypeStructureAnalysis> => {
   const objectType = typeNode.getObjectTypeNode()
   const indexType = typeNode.getIndexTypeNode()
 
@@ -29,5 +29,6 @@ export const analyzeIndexedAccessTypeNode = (
       objectType: objectTypeResult.member,
     },
     dependencies: [...indexTypeResult.dependencies, ...objectTypeResult.dependencies],
+    reservedNames: [...indexTypeResult.reservedNames, ...objectTypeResult.reservedNames],
   }
 }

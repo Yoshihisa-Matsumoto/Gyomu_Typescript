@@ -6,6 +6,7 @@ import type { SymbolId } from '@gyomu/schema/typescript'
 import type {
   DocumentableMethodMemberAnalysis,
   DocumentablePropertyMemberAnalysis,
+  IndexSignatureAnalysis,
   MemberAnalysis,
   SymbolAnalysis,
   TypeAnalysis,
@@ -70,6 +71,33 @@ const calculateComplexityMetricsFromTypeProperties = (
   return mergeComplexityMetrics(metricsArray)
 }
 
+const calculateComplexityMetricsFromIndexSignatures = (
+  members: ReadonlyArray<IndexSignatureAnalysis>,
+  currentDepth: number,
+): ComplexityMetrics => {
+  currentDepth++
+  const metricsArray: Array<ComplexityMetrics> = []
+  for (const member of members) {
+    if (member.type)
+      metricsArray.push(calculateComplexityMetricsFromIndexSignature(member, currentDepth))
+  }
+
+  return mergeComplexityMetrics(metricsArray)
+}
+
+const calculateComplexityMetricsFromTypeAnalysisMembers = (
+  members: ReadonlyArray<TypeAnalysis>,
+  currentDepth: number,
+): ComplexityMetrics => {
+  currentDepth++
+  const metricsArray: Array<ComplexityMetrics> = []
+  for (const member of members) {
+    metricsArray.push(calculateComplexityMetricsFromTypeAnalysis(member, currentDepth))
+  }
+
+  return mergeComplexityMetrics(metricsArray)
+}
+
 const calculateComplexityMetricsFromMethod = (
   method: DocumentableMethodMemberAnalysis,
   currentDepth: number,
@@ -128,6 +156,25 @@ const calculateComplexityMetricsFromTypeAnalysis = (
   return mergeComplexityMetrics(metricsArray)
 }
 
+const calculateComplexityMetricsFromIndexSignature = (
+  indexSignature: IndexSignatureAnalysis,
+  currentDepth: number,
+): ComplexityMetrics => {
+  currentDepth++
+  const metricsArray: Array<ComplexityMetrics> = []
+  const initial = emptyComplexityMetrics()
+  initial.nestingDepth = currentDepth
+
+  metricsArray.push(initial)
+
+  metricsArray.push(
+    calculateComplexityMetricsFromTypeAnalysis(indexSignature.parameterType, currentDepth),
+  )
+  metricsArray.push(calculateComplexityMetricsFromTypeAnalysis(indexSignature.type, currentDepth))
+
+  return mergeComplexityMetrics(metricsArray)
+}
+
 const calculateComplexityMetricsFromTypeStructureAnalysis = (
   typeStructure: TypeStructureAnalysis,
   currentDepth: number,
@@ -143,8 +190,13 @@ const calculateComplexityMetricsFromTypeStructureAnalysis = (
     case 'function':
       return calculateComplexityMetricsFromTypeProperties(typeStructure.parameters, currentDepth)
     case 'object':
-      if (typeStructure.members)
-        return calculateComplexityMetricsFromTypeProperties(typeStructure.members, currentDepth)
+      if (typeStructure.properties)
+        return calculateComplexityMetricsFromTypeProperties(typeStructure.properties, currentDepth)
+      if (typeStructure.indexSignatures)
+        return calculateComplexityMetricsFromIndexSignatures(
+          typeStructure.indexSignatures,
+          currentDepth,
+        )
       return emptyComplexityMetrics()
     case 'reference':
       initial.referencedTypeCount = 1
@@ -159,5 +211,75 @@ const calculateComplexityMetricsFromTypeStructureAnalysis = (
         array.push(calculateComplexityMetricsFromTypeAnalysis(typeAnalysis, currentDepth))
       }
       return mergeComplexityMetrics(array)
+    case 'conditional':
+      array.push(initial)
+      array.push(calculateComplexityMetricsFromTypeAnalysis(typeStructure.checkType, currentDepth))
+      array.push(
+        calculateComplexityMetricsFromTypeAnalysis(typeStructure.extendsType, currentDepth),
+      )
+      array.push(calculateComplexityMetricsFromTypeAnalysis(typeStructure.trueType, currentDepth))
+      array.push(calculateComplexityMetricsFromTypeAnalysis(typeStructure.falseType, currentDepth))
+      return mergeComplexityMetrics(array)
+    case 'constructor':
+      array.push(initial)
+      array.push(
+        calculateComplexityMetricsFromTypeProperties(typeStructure.parameters, currentDepth),
+      )
+      if (typeStructure.returnType)
+        array.push(
+          calculateComplexityMetricsFromTypeAnalysis(typeStructure.returnType, currentDepth),
+        )
+      return mergeComplexityMetrics(array)
+    case 'generics':
+      return calculateComplexityMetricsFromTypeAnalysisMembers(
+        typeStructure.typeParameters,
+        currentDepth,
+      )
+    case 'parenthesized':
+    case 'optional':
+    case 'rest':
+    case 'namedTupleMember':
+      return calculateComplexityMetricsFromTypeAnalysis(typeStructure.type, currentDepth)
+    case 'this':
+      return initial
+    case 'import':
+      return calculateComplexityMetricsFromTypeAnalysisMembers(
+        typeStructure.typeArguments,
+        currentDepth,
+      )
+    case 'indexedAccess':
+      array.push(initial)
+      array.push(calculateComplexityMetricsFromTypeAnalysis(typeStructure.indexType, currentDepth))
+      array.push(calculateComplexityMetricsFromTypeAnalysis(typeStructure.objectType, currentDepth))
+      return mergeComplexityMetrics(array)
+    case 'infer':
+      array.push(initial)
+      if (typeStructure.constraint)
+        array.push(
+          calculateComplexityMetricsFromTypeAnalysis(typeStructure.constraint, currentDepth),
+        )
+
+      return mergeComplexityMetrics(array)
+    case 'mapped':
+      array.push(initial)
+      array.push(calculateComplexityMetricsFromTypeAnalysis(typeStructure.constraint, currentDepth))
+      if (typeStructure.nameType)
+        array.push(calculateComplexityMetricsFromTypeAnalysis(typeStructure.nameType, currentDepth))
+      array.push(calculateComplexityMetricsFromTypeAnalysis(typeStructure.valueType, currentDepth))
+      return mergeComplexityMetrics(array)
+    case 'templateLiteral': {
+      array.push(initial)
+      const spans = typeStructure.spans.filter((span) => typeof span != 'string')
+      array.push(calculateComplexityMetricsFromTypeAnalysisMembers(spans, currentDepth))
+      return mergeComplexityMetrics(array)
+    }
+    case 'tuple':
+      array.push(initial)
+      array.push(calculateComplexityMetricsFromTypeProperties(typeStructure.elements, currentDepth))
+      return mergeComplexityMetrics(array)
+    case 'typeOperator':
+      return calculateComplexityMetricsFromTypeAnalysis(typeStructure.target, currentDepth)
+    case 'typePredicate':
+      return calculateComplexityMetricsFromTypeAnalysis(typeStructure.type, currentDepth)
   }
 }

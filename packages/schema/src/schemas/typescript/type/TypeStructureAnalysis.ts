@@ -1,20 +1,27 @@
 import { Schema } from 'effect'
-import { PrimitiveAnalysis } from './PrimitiveAnalysis.js'
-import { LiteralAnalysis } from './LiteralAnalysis.js'
-import { ObjectStructureAnalysis } from './ObjectStructureAnalysis.js'
-import { ArrayStructureAnalysis } from './ArrayStructureAnalysis.js'
-import { UnionStructureAnalysis } from './UnionStructureAnalysis.js'
-import { TypeReferenceStructureAnalysis } from './TypeReferenceStructureAnalysis.js'
-import { FunctionStructureAnalysis } from './FunctionStructureAnalysis.js'
-import { GenericsStructureAnalysis } from './GenericsStructureAnalysis.js'
-import { IndexedAccessStructureAnalysis } from './IndexedAccessStructureAnalysis.js'
-import { MappedStructureAnalysis } from './MappedTypeStructureAnalysis.js'
-import { TypePredicateAnalysis } from './TypePredicateAnalysis.js'
-import { ConditionalStructureAnalysis } from './ConditionalStructureTypeAnalysis.js'
-import { InferStructureAnalysis } from './InferStructureAnalysis.js'
-import { TypeOperatorStructureAnalysis } from './TypeOperatorStructureAnalysis.js'
-import { ConstructorStructureAnalysis } from './ConstructorStructureAnalysis.js'
-import { ParenthesizedStructureAnalysis } from './ParenthesizedStructureAnalysis.js'
+import { PrimitiveAnalysis } from './structure/PrimitiveAnalysis.js'
+import { LiteralAnalysis } from './structure/LiteralAnalysis.js'
+import { ObjectStructureAnalysis } from './structure/ObjectStructureAnalysis.js'
+import { ArrayStructureAnalysis } from './structure/ArrayStructureAnalysis.js'
+import { UnionStructureAnalysis } from './structure/UnionStructureAnalysis.js'
+import { TypeReferenceStructureAnalysis } from './structure/TypeReferenceStructureAnalysis.js'
+import { FunctionStructureAnalysis } from './structure/FunctionStructureAnalysis.js'
+import { GenericsStructureAnalysis } from './structure/GenericsStructureAnalysis.js'
+import { IndexedAccessStructureAnalysis } from './structure/IndexedAccessStructureAnalysis.js'
+import { MappedStructureAnalysis } from './structure/MappedTypeStructureAnalysis.js'
+import { TypePredicateAnalysis } from './structure/TypePredicateAnalysis.js'
+import { ConditionalStructureAnalysis } from './structure/ConditionalStructureTypeAnalysis.js'
+import { InferStructureAnalysis } from './structure/InferStructureAnalysis.js'
+import { TypeOperatorStructureAnalysis } from './structure/TypeOperatorStructureAnalysis.js'
+import { ConstructorStructureAnalysis } from './structure/ConstructorStructureAnalysis.js'
+import { ParenthesizedStructureAnalysis } from './structure/ParenthesizedStructureAnalysis.js'
+import { TemplateLiteralStructureAnalysis } from './structure/TemplateLiteralStructureAnalysis.js'
+import { TupleStructureAnalysis } from './structure/TupleStructureAnalysis.js'
+import { ImportStructureAnalysis } from './structure/ImportStructureAnalysis.js'
+import { ThisStructureAnalysis } from './structure/ThisStructureAnalysis.js'
+import { OptionalStructureAnalysis } from './structure/OptionalStructureAnalysis.js'
+import { RestStructureAnalysis } from './structure/RestStructureAnalysis.js'
+import { NamedTupleMemberStructureAnalysis } from './structure/NamedTupleMemberStructureAnalysis.js'
 
 /**
  * Defines a schema that encapsulates various TypeScript type structure analyses, including primitives, literals, objects, arrays, functions, unions, and type references.
@@ -26,7 +33,6 @@ export const TypeStructureAnalysis = Schema.suspend(() =>
     ObjectStructureAnalysis,
     ArrayStructureAnalysis,
     FunctionStructureAnalysis,
-    ObjectStructureAnalysis,
     UnionStructureAnalysis,
     TypeReferenceStructureAnalysis,
     GenericsStructureAnalysis,
@@ -38,6 +44,13 @@ export const TypeStructureAnalysis = Schema.suspend(() =>
     TypeOperatorStructureAnalysis,
     ConstructorStructureAnalysis,
     ParenthesizedStructureAnalysis,
+    TemplateLiteralStructureAnalysis,
+    TupleStructureAnalysis,
+    ImportStructureAnalysis,
+    ThisStructureAnalysis,
+    OptionalStructureAnalysis,
+    RestStructureAnalysis,
+    NamedTupleMemberStructureAnalysis,
   ]),
 )
 

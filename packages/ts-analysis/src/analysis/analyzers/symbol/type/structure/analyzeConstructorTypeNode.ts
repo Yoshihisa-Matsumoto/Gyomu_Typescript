@@ -5,14 +5,14 @@ import type {
   TypeAnalysis,
   TypeStructureAnalysis,
 } from '@gyomu/schema/schemas/typescript'
-import type { ChildAnalysisArg, MemberAnalysisResult } from '../../../types.js'
+import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../../types.js'
 import type { ConstructorTypeNode, TypeNode } from 'ts-morph'
 
 export const analyzeConstructorTypeNode = (
   args: ChildAnalysisArg<TypeNode>,
   newMemberPath: MemberIdentityMemberPath,
   node: ConstructorTypeNode,
-): MemberAnalysisResult<TypeStructureAnalysis> => {
+): MemberAnalysisWithReservedResult<TypeStructureAnalysis> => {
   const parametersNode = node.getParameters()
   const returnTypeNode = node.getReturnTypeNode()
 
@@ -25,7 +25,7 @@ export const analyzeConstructorTypeNode = (
       memberPath: childMemberPath,
     }),
   )
-  let returnTypeResult: MemberAnalysisResult<TypeAnalysis> | undefined = undefined
+  let returnTypeResult: MemberAnalysisWithReservedResult<TypeAnalysis> | undefined = undefined
   if (returnTypeNode)
     returnTypeResult = analyzeType(
       {
@@ -47,6 +47,10 @@ export const analyzeConstructorTypeNode = (
     dependencies: [
       ...(returnTypeResult?.dependencies ?? []),
       ...parametersResult.map((p) => p.dependencies).flat(),
+    ],
+    reservedNames: [
+      ...(returnTypeResult?.reservedNames ?? []),
+      ...parametersResult.map((p) => p.reservedNames).flat(),
     ],
   }
 }

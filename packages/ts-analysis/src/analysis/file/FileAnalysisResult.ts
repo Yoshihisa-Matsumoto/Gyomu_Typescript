@@ -5,6 +5,7 @@ import type {
   DependencyCandidate,
   DocumentableMemberAnalysis,
   DocumentableTypeProperty,
+  IndexSignatureAnalysis,
   ParsedJsDoc,
   SymbolAnalysis,
 } from '@gyomu/schema/schemas/typescript'
@@ -21,7 +22,8 @@ export interface FileAnalysisMetadata {
 }
 
 export interface DocumentableTarget {
-  analysis: SymbolAnalysis | DocumentableMemberAnalysis | DocumentableTypeProperty
+  analysis:
+    SymbolAnalysis | DocumentableMemberAnalysis | DocumentableTypeProperty | IndexSignatureAnalysis
 }
 
 export interface FileAnalysisTransient {

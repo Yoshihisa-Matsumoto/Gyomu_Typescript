@@ -13,7 +13,7 @@ import type { FunctionDeclaration } from 'ts-morph'
 import type {
   ChildAnalysisArg,
   GetSignatureIdArg,
-  MemberAnalysisResult,
+  MemberAnalysisWithReservedResult,
   TagAnalysisArg,
 } from '../types.js'
 import type {
@@ -236,7 +236,7 @@ const getFunctionSignatureId = (
 
 const analyzeFunctionMembers = (
   args: ChildAnalysisArg<FunctionDeclaration>,
-): MemberAnalysisResult<Array<MemberAnalysis>> => {
+): MemberAnalysisWithReservedResult<Array<MemberAnalysis>> => {
   const {
     node,
     sourceRelativePath,
@@ -293,5 +293,6 @@ const analyzeFunctionMembers = (
   return {
     member: parameters.map((p) => p.member),
     dependencies: parameters.map((p) => p.dependencies).flat(),
+    reservedNames: parameters.map((p) => p.reservedNames).flat(),
   }
 }

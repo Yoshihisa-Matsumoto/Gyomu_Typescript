@@ -5,26 +5,61 @@ import { Effect } from 'effect'
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { analyzeFile } from '../analyzeFile.js'
 import { createFixtureProject } from './createFixtureProject.js'
+import type { OptionalStructureAnalysis } from '@gyomu/schema/schemas/typescript/type/structure/OptionalStructureAnalysis'
 
-import type {
-  DocumentableMethodMemberAnalysis,
-  SymbolAnalysis,
-} from '@gyomu/schema/schemas/typescript'
+import type { SymbolAnalysis, TypeStructureAnalysis } from '@gyomu/schema/schemas/typescript'
 
 const timeout = 20000
 
 const typeFixture = createFixtureProject(path.join('analysis', 'type'))
 
-const typeAnalysisProgram = (sourceFile: string): SymbolAnalysis => {
+const typeAnalysisProgram = (sourceFile: string, index: number = 0): SymbolAnalysis => {
   const filePath = ProjectRelativePath(path.join('src', sourceFile))
   const result = Effect.runSync(
     Effect.gen(function* () {
       const fileResult = yield* analyzeFile(typeFixture, filePath, {
-        includeDebugInfo: true,
+        // includeDebugInfo: true,
       })
 
       return fileResult
-    }).pipe(Effect.map((result2) => result2.analysis.symbols[0])),
+    }).pipe(Effect.map((result2) => result2.analysis.symbols[index])),
+  )
+
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  if (!result) throw new Error('Unexpected symbol should exist')
+  return result
+}
+const typeAnalysisSymbolsProgram = (
+  sourceFile: string,
+  keyword: string = '',
+): ReadonlyArray<SymbolAnalysis> => {
+  const filePath = ProjectRelativePath(path.join('src', sourceFile))
+  const result = Effect.runSync(
+    Effect.gen(function* () {
+      const fileResult = yield* analyzeFile(typeFixture, filePath, {
+        includeDebugInfo: { keyword },
+      })
+
+      return fileResult
+    }).pipe(Effect.map((result2) => result2.analysis.symbols)),
+  )
+
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  if (!result) throw new Error('Unexpected symbol should exist')
+  return result
+}
+const typeStructureProgram = (sourceFile: string): ReadonlyArray<TypeStructureAnalysis> => {
+  const filePath = ProjectRelativePath(path.join('src', sourceFile))
+  const result = Effect.runSync(
+    Effect.gen(function* () {
+      const fileResult = yield* analyzeFile(typeFixture, filePath, {})
+
+      return fileResult
+    }).pipe(
+      Effect.map((result2) =>
+        result2.analysis.symbols.map((symbol) => symbol.type?.structure).filter((s) => !!s),
+      ),
+    ),
   )
 
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -36,9 +71,7 @@ const typeSymbolsDependencyProgram = (sourceFile: string, folder?: string) => {
   const filePath = ProjectRelativePath(sourcePath)
   const result = Effect.runSync(
     Effect.gen(function* () {
-      return yield* analyzeFile(typeFixture, filePath, {
-        includeDebugInfo: true,
-      }).pipe(
+      return yield* analyzeFile(typeFixture, filePath, {}).pipe(
         Effect.map((result2) => {
           if (!fs.existsSync('./log')) fs.mkdirSync('./log')
           fs.writeFileSync('./log/fileAnalysis.txt', JSON.stringify(result2.analysis, null, 2))
@@ -64,70 +97,79 @@ describe('analyze TypeLiteral pattern', () => {
       const result = await typeAnalysisProgram('01-type-literal-members-everything.ts')
 
       console.dir(result, { depth: null })
-      expect(result.members).toMatchObject([
-        {
-          kind: 'property',
-          name: 'serviceName',
-          readonly: true,
-          optional: false,
-          static: false,
-          visibility: 'public',
-          type: {
-            text: 'string',
-          },
-        },
-
-        {
-          kind: 'property',
-          name: 'cache',
-          readonly: false,
-          optional: true,
-          static: false,
-          visibility: 'public',
-          type: {
-            text: 'Map<string, string>',
-          },
-        },
-
-        {
-          kind: 'method',
-          name: 'getName',
-          parameters: [],
-          static: false,
-          visibility: 'public',
-          returnType: {
-            text: 'string',
-          },
-        },
-
-        {
-          kind: 'method',
-          name: 'find',
-          parameters: [
+      expect(result.type?.structure).toBeDefined()
+      if (result.type?.structure) {
+        const structure = result.type.structure
+        expect(structure.kind).toBe('object')
+        if (structure.kind == 'object') {
+          expect(structure.properties).toMatchObject([
             {
-              name: 'id',
+              name: 'serviceName',
+              readonly: true,
               optional: false,
-              rest: false,
               type: {
                 text: 'string',
               },
             },
+
             {
-              name: 'options',
-              optional: false,
-              rest: true,
+              name: 'cache',
+              readonly: false,
+              optional: true,
               type: {
-                text: 'Array<string>',
+                structure: {
+                  kind: 'reference',
+                },
+
+                text: 'Map<string, string>',
               },
             },
-          ],
-          static: false,
-          visibility: 'public',
-          returnType: {
-            text: 'Promise<T>',
-          },
-        },
-      ])
+
+            {
+              name: 'getName',
+              type: {
+                structure: {
+                  parameters: [],
+                  kind: 'function',
+                  returnType: {
+                    text: 'string',
+                  },
+                },
+              },
+            },
+
+            {
+              name: 'find',
+              type: {
+                structure: {
+                  kind: 'function',
+                  parameters: [
+                    {
+                      name: 'id',
+                      optional: false,
+                      rest: false,
+                      type: {
+                        text: 'string',
+                      },
+                    },
+                    {
+                      name: 'options',
+                      optional: false,
+                      rest: true,
+                      type: {
+                        text: 'Array<string>',
+                      },
+                    },
+                  ],
+                  returnType: {
+                    text: 'Promise<T>',
+                  },
+                },
+              },
+            },
+          ])
+        }
+      }
     },
     timeout,
   )
@@ -173,17 +215,143 @@ describe('analyze TypeLiteral pattern', () => {
       const result = await typeAnalysisProgram('06-type-literal-effect.ts')
 
       console.dir(result, { depth: null })
-      expect(
-        (result.members[0] as DocumentableMethodMemberAnalysis).returnType?.effect,
-      ).toMatchObject({
-        returnsEffect: true,
-        success: { text: 'User' },
-        error: { text: 'Error' },
-        requirements: { text: 'Repository' },
-        hasErrorType: true,
-        hasRequirementsType: true,
-        effectDepth: 1,
-      })
+      const structure = result.type?.structure
+      expect(structure).toBeDefined()
+      if (structure) {
+        expect(structure.kind).toBe('object')
+        if (structure.kind == 'object' && structure.properties?.[0]) {
+          const member = structure.properties[0]
+          expect(member.name).toBe('findUser')
+          expect(member.type?.structure).toBeDefined()
+          if (member.type?.structure) {
+            const functionStructure = member.type.structure
+            expect(functionStructure.kind).toBe('function')
+            if (functionStructure.kind == 'function') {
+              expect(functionStructure.returnType.effect).toMatchObject({
+                returnsEffect: true,
+                success: { text: 'User' },
+                error: { text: 'Error' },
+                requirements: { text: 'Repository' },
+                hasErrorType: true,
+                hasRequirementsType: true,
+                effectDepth: 1,
+              })
+            }
+          }
+        }
+      }
+    },
+    timeout,
+  )
+  it(
+    '07-type-structure.ts',
+    async () => {
+      const result = await typeAnalysisProgram('07-type-structure.ts')
+
+      console.dir(result, { depth: null })
+    },
+    timeout,
+  )
+  it(
+    '08-type-import.ts',
+    async () => {
+      const result = await typeStructureProgram('08-type-import.ts')
+
+      console.dir(result, { depth: null })
+      expect(result).toEqual(
+        expect.arrayContaining([
+          {
+            kind: 'import',
+            moduleSpecifier: 'src/types.ts',
+            qualifier: 'User',
+            typeArguments: [],
+          },
+          {
+            kind: 'import',
+            moduleSpecifier: 'src/types.ts',
+            qualifier: 'Box',
+            typeArguments: [{ text: 'string', source: 'typescript' }],
+          },
+          {
+            kind: 'import',
+            moduleSpecifier: 'src/types.ts',
+            qualifier: 'Namespace.Member',
+            typeArguments: [],
+          },
+        ]),
+      )
+    },
+    timeout,
+  )
+  it(
+    '09-type-rest.ts',
+    async () => {
+      const a = await typeAnalysisProgram('09-type-rest.ts', 1)
+      console.dir(a, { depth: null })
+      const result = await typeStructureProgram('09-type-rest.ts')
+
+      const rests = result
+        .filter((s) => s.kind == 'tuple')
+        .map((t) => t.elements.find((e) => e.type?.structure?.kind == 'rest')?.type?.structure)
+        .filter((s) => !!s)
+      expect(rests.filter((r) => r.kind == 'rest').map((r) => r.type.structure)).toEqual(
+        expect.arrayContaining([
+          { kind: 'array', elementType: { text: 'number', source: 'typescript' } },
+          { kind: 'reference', targetId: 'T', typeParameters: [] },
+          { kind: 'reference', targetId: 'T', typeParameters: [] },
+        ]),
+      )
+    },
+    timeout,
+  )
+  it(
+    '10-type-optional.ts',
+    async () => {
+      const result = await typeStructureProgram('10-type-optional.ts')
+
+      console.dir(result, { depth: null })
+      const options: ReadonlyArray<OptionalStructureAnalysis> = result
+        .filter((s) => s.kind == 'tuple')
+        .map((s) => s.elements)
+        .flat()
+        .filter((s) => s.type?.structure?.kind == 'optional')
+        .map((s) => s.type?.structure as OptionalStructureAnalysis)
+      // console.dir(options, { depth: null })
+      expect(options.map((o) => o.type.text)).toEqual(
+        expect.arrayContaining(['string', 'string', 'boolean']),
+      )
+    },
+    timeout,
+  )
+  it(
+    '11-type-literal-node.ts',
+    async () => {
+      const result = await typeAnalysisSymbolsProgram('11-type-literal-node.ts', 'MethodSignature')
+      // console.dir(result, { depth: null })
+      expect(result.length).toBe(7)
+      const converted = result.map((s) => ({
+        name: s.identity.symbolId,
+        members: s.members,
+        type: s.type,
+      }))
+
+      // console.dir(converted, { depth: null })
+    },
+    timeout,
+  )
+  it(
+    '12-diff-entities.ts',
+    async () => {
+      const result = await typeAnalysisSymbolsProgram('12-diff-entities.ts', 'diffEntities')
+      // console.dir(result, { depth: null })
+      expect(result.length).toBe(1)
+      const converted = result.map((s) => ({
+        name: s.identity.symbolId,
+        members: s.members,
+        type: s.type,
+      }))
+
+      // console.dir(converted, { depth: null })
     },
     timeout,
   )
@@ -255,11 +423,11 @@ describe('analyze Type dependency pattern', () => {
       expect(ImportedCallbackAlias?.dependencies).toEqual(
         expect.arrayContaining([
           {
-            source: { memberPath: ['$type'] },
+            source: { memberPath: [] },
             target: { scope: 'import', localSymbolName: 'ImportedCallback' },
           },
           {
-            source: { memberPath: ['$type', '$generics', 0] },
+            source: { memberPath: ['$generics', 0] },
             target: { scope: 'import', localSymbolName: 'ImportedType' },
           },
         ]),
@@ -268,7 +436,7 @@ describe('analyze Type dependency pattern', () => {
       expect(LocalClassAlias?.dependencies).toEqual(
         expect.arrayContaining([
           {
-            source: { memberPath: ['$type'] },
+            source: { memberPath: [] },
             target: { scope: 'local-file', localSymbolName: 'LocalClass' },
           },
         ]),
@@ -277,11 +445,11 @@ describe('analyze Type dependency pattern', () => {
       expect(IntersectionAlias?.dependencies).toEqual(
         expect.arrayContaining([
           {
-            source: { memberPath: ['$type', 0] },
+            source: { memberPath: [0] },
             target: { scope: 'import', localSymbolName: 'ImportedType' },
           },
           {
-            source: { memberPath: ['$type', 1] },
+            source: { memberPath: [1] },
             target: { scope: 'local-file', localSymbolName: 'LocalType' },
           },
         ]),

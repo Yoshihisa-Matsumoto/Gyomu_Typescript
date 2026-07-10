@@ -9,14 +9,16 @@ export const buildSchemaStructureNode = (
 
   switch (member.kind) {
     case 'object':
-      if (member.members) {
+      if (member.properties) {
         return {
           name,
           kind: 'object',
-          children: member.members
-            .map((m) => buildSchemaStructureNodeFromTypeProperty(m))
-            .flat()
-            .filter((m) => !!m),
+          children: [
+            ...member.properties
+              .map((m) => buildSchemaStructureNodeFromTypeProperty(m))
+              .flat()
+              .filter((m) => !!m),
+          ],
           annotations: member.annotations,
         }
       }
@@ -41,7 +43,8 @@ export const buildSchemaStructureNode = (
       return {
         name,
         kind: 'literal',
-        type: member.elementValue,
+
+        type: member.elementValue?.toString() ?? '',
         annotations: member.annotations,
       }
     }
@@ -97,3 +100,20 @@ const buildSchemaStructureNodeFromTypeProperty = (
 
   return buildSchemaStructureNode(member.type.structure, member.name)
 }
+
+// const buildSchemaStructureNodeFromIndexSignature = (
+//   member: IndexSignatureAnalysis,
+// ): Array<SchemaStructureNode> => {
+//   const result:Array<SchemaStructureNode>=[]
+//   if (!member.parameterType || member.parameterType.source != 'effect-schema' || !member.parameterType.structure)
+//   {
+//     // Do nothing
+//   }else {
+//     const structure = member.parameterType.structure
+//     if(structure)
+//       result.push( buildSchemaStructureNode(structure, member.parameterName))
+//   }
+
+//   if(member.type && member.type.structure && member.type.)
+//   return result
+// }

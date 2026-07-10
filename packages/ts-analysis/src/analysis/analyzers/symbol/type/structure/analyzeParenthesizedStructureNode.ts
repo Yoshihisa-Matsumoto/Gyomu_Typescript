@@ -3,14 +3,14 @@ import type {
   MemberIdentityMemberPath,
   TypeStructureAnalysis,
 } from '@gyomu/schema/schemas/typescript'
-import type { ChildAnalysisArg, MemberAnalysisResult } from '../../../types.js'
+import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../../types.js'
 import type { ParenthesizedTypeNode, TypeNode } from 'ts-morph'
 
 export const analyzeParenthesizedStructureNode = (
   args: ChildAnalysisArg<TypeNode>,
   newMemberPath: MemberIdentityMemberPath,
   node: ParenthesizedTypeNode,
-): MemberAnalysisResult<TypeStructureAnalysis> => {
+): MemberAnalysisWithReservedResult<TypeStructureAnalysis> => {
   const nodeType = node.getTypeNode()
   const nodeTypeResult = analyzeType(
     { ...args, node: nodeType, memberPath: [...newMemberPath], declarationOrder: 0 },
@@ -22,5 +22,6 @@ export const analyzeParenthesizedStructureNode = (
       type: nodeTypeResult.member,
     },
     dependencies: [...nodeTypeResult.dependencies],
+    reservedNames: nodeTypeResult.reservedNames,
   }
 }
