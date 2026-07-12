@@ -36,9 +36,9 @@ export const analyzeType = (
         ...(args as ChildAnalysisArg<TypeNode | Expression | MethodSignature>),
         memberPath: newMemberPath,
       })
-      console.log(`TypeNode: ${JSON.stringify(nodeName)}`)
-      if (genericsParametersResult.dependencies.length > 0)
-        console.dir(genericsParametersResult.dependencies, { depth: null })
+      // console.log(`TypeNode: ${JSON.stringify(nodeName)}`)
+      // if (genericsParametersResult.dependencies.length > 0)
+      //   console.dir(genericsParametersResult.dependencies, { depth: null })
       const nodeContent = node.getText()
       // console.log(`${nodeContent}`)
       // console.log(args.declarationOrder)
@@ -74,7 +74,7 @@ export const analyzeType = (
         reservedNames: [...genericsParametersResult.reservedNames],
       }
     } else if (Node.isExpression(node)) {
-      console.log(`Expression: ${JSON.stringify(nodeName)} ${node.getKindName()}`)
+      // console.log(`Expression: ${JSON.stringify(nodeName)} ${node.getKindName()}`)
       const newMemberPath: MemberIdentityMemberPath = [...memberPath, ...(nodeName ?? [])]
       return analyzeExpression({ ...args, node: node, memberPath: newMemberPath }, undefined)
     } else if (Node.isMethodSignature(node)) {

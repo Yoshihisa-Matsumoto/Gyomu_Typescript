@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { Effect, Schema } from 'effect'
 import {
+  convertFromSchemaObjectToJsonWithEffect,
   convertFromSchemaObjectWithEffect,
   convertToSchemaObjectWithEffect,
   convertToSchemaObjectWithResult,
@@ -55,6 +56,29 @@ describe('convertToSchemaObjectWithEffect', () => {
   })
 })
 
+describe('convertFromSchemaObjectToJsonWithEffect', () => {
+  const convert = convertFromSchemaObjectToJsonWithEffect('UserSchema')
+
+  it('正常系: 正しいオブジェクトをエンコードできる', async () => {
+    const input = { id: 2, name: 'Charlie' }
+
+    const effect = convert(UserSchema, input)
+
+    const result = await Effect.runPromise(effect)
+    const obj = JSON.parse(result)
+    expect(obj).toEqual(input)
+  })
+
+  it('異常系: 不正なオブジェクトでAppErrorに変換される', async () => {
+    const invalidInput = { id: 'invalid', name: 'Charlie' } as any
+
+    const effect = convert(UserSchema, invalidInput)
+
+    await expect(Effect.runPromise(effect)).rejects.toMatchObject({
+      _tag: '@gyomu/schema/SchemaErrorContext',
+    })
+  })
+})
 describe('convertFromSchemaObjectWithEffect', () => {
   const convert = convertFromSchemaObjectWithEffect('UserSchema')
 

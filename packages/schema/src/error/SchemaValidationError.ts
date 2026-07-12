@@ -1,11 +1,12 @@
 import { Data } from 'effect'
 import { withErrorTraits } from './BaseError.js'
+import type { SchemaIssue } from 'effect'
 import type { AppErrorContext } from './BaseError.js'
 
 interface SchemaErrorContext extends AppErrorContext {
   schemaName: string
   phase: 'decode' | 'encode'
-  issues?: unknown // SchemaErrorの詳細
+  issues?: SchemaIssue.Issue // SchemaErrorの詳細
 }
 
 /**

@@ -1,9 +1,12 @@
 import path from 'node:path'
-import fs from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { Effect } from 'effect'
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
+import { flattenIssues } from '@gyomu/schema/entity'
+import { PlatformLayer } from '@gyomu/infra'
 import { analyzeFile } from '../analyzeFile.js'
+import { saveFileAnalysis } from '../saveFileAnalysis.js'
+import { loadFileAnalysis } from '../loadFileAnalysis.js'
 import { createFixtureProject } from './createFixtureProject.js'
 import type { SymbolAnalysis } from '@gyomu/schema/schemas/typescript'
 
@@ -11,39 +14,98 @@ const timeout = 20000
 
 const functionFixture = createFixtureProject(path.join('analysis', 'function'))
 
-const functionAnalysisProgram = (sourceFile: string): SymbolAnalysis => {
+const functionAnalysisProgram = async (sourceFile: string): Promise<SymbolAnalysis> => {
   const filePath = ProjectRelativePath(path.join('src', sourceFile))
-  const result = Effect.runSync(
+  const result = await Effect.runPromise(
     Effect.gen(function* () {
-      return yield* analyzeFile(functionFixture, filePath, { verifyIndex: true }).pipe(
-        Effect.map((result) => result.analysis.symbols[0]),
+      const fileResult = yield* analyzeFile(functionFixture, filePath, { verifyIndex: true })
+      yield* saveFileAnalysis(functionFixture, fileResult.analysis).pipe(
+        Effect.catch((e) => {
+          if (e._tag == '@gyomu/schema/SchemaErrorContext') {
+            if (e.issues) {
+              const issue = flattenIssues(e.issues)
+              // fs.writeFileSync(path.join('log', 'SaveError.txt'), JSON.stringify(issue, null, 2))
+              console.log('Save')
+              console.dir(issue, { depth: null })
+            }
+          }
+
+          return Effect.fail(e)
+        }),
       )
-    }),
+
+      const loaded = yield* loadFileAnalysis(functionFixture, fileResult.analysis.path).pipe(
+        Effect.catch((e) => {
+          if (e._tag == '@gyomu/agent/tsdoc/AnalysisError') {
+            const error = e.cause as object
+            if ('issues' in error) {
+              if (error.issues) {
+                const issue = flattenIssues(error.issues as any)
+                console.dir(issue, { depth: null })
+              }
+            }
+          }
+
+          return Effect.fail(e)
+        }),
+      )
+
+      expect(loaded).toEqual(fileResult.analysis)
+      return fileResult.analysis.symbols[0]
+    }).pipe(Effect.provide(PlatformLayer)),
   )
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!result) throw new Error('Unexpected symbol should exist')
   return result
 }
 
-const functionSymbolsDependencyProgram = (sourceFile: string, folder?: string) => {
+const functionSymbolsDependencyProgram = async (sourceFile: string, folder?: string) => {
   const sourcePath = folder ? path.join('src', folder, sourceFile) : path.join('src', sourceFile)
   const filePath = ProjectRelativePath(sourcePath)
-  const result = Effect.runSync(
+  const result = await Effect.runPromise(
     Effect.gen(function* () {
-      return yield* analyzeFile(functionFixture, filePath, { verifyIndex: true }).pipe(
-        Effect.map((result) => {
-          if (!fs.existsSync('./log')) fs.mkdirSync('./log')
-          fs.writeFileSync('./log/fileAnalysis.txt', JSON.stringify(result.analysis, null, 2))
-          const exports = result.analysis.symbols.map((s) => {
-            return {
-              name: s.identity.symbolId,
-              dependencies: s.dependencyCandidates,
+      const fileResult = yield* analyzeFile(functionFixture, filePath, { verifyIndex: true })
+      yield* saveFileAnalysis(functionFixture, fileResult.analysis).pipe(
+        Effect.catch((e) => {
+          if (e._tag == '@gyomu/schema/SchemaErrorContext') {
+            if (e.issues) {
+              const issue = flattenIssues(e.issues)
+              // fs.writeFileSync(path.join('log', 'SaveError.txt'), JSON.stringify(issue, null, 2))
+              console.log('Save')
+              console.dir(issue, { depth: null })
             }
-          })
-          return exports
+          }
+
+          return Effect.fail(e)
         }),
       )
-    }),
+
+      const loaded = yield* loadFileAnalysis(functionFixture, fileResult.analysis.path).pipe(
+        Effect.catch((e) => {
+          if (e._tag == '@gyomu/agent/tsdoc/AnalysisError') {
+            const error = e.cause as object
+            if ('issues' in error) {
+              if (error.issues) {
+                const issue = flattenIssues(error.issues as any)
+                console.dir(issue, { depth: null })
+              }
+            }
+          }
+
+          return Effect.fail(e)
+        }),
+      )
+
+      expect(loaded).toEqual(fileResult.analysis)
+
+      const exports = fileResult.analysis.symbols.map((s) => {
+        return {
+          name: s.identity.symbolId,
+          dependencies: s.dependencyCandidates,
+        }
+      })
+      return exports
+    }).pipe(Effect.provide(PlatformLayer)),
   )
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!result) throw new Error('Unexpected symbol should exist')

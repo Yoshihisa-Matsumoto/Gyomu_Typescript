@@ -3,7 +3,10 @@ import { describe, expect, it } from 'vitest'
 import { Effect } from 'effect'
 import { equalSymbolIdentity } from '@gyomu/schema/schemas/typescript'
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
+import { PlatformLayer } from '@gyomu/infra'
 import { analyzeFile } from '../analyzeFile.js'
+import { saveFileAnalysis } from '../saveFileAnalysis.js'
+import { loadFileAnalysis } from '../loadFileAnalysis.js'
 import { createFixtureProject } from './createFixtureProject.js'
 import type { FileAnalysisContext } from '@gyomu/schema/typescript'
 
@@ -17,14 +20,21 @@ const jsDocFixture = createFixtureProject(path.join('analysis', 'jsdoc'))
 
 const importPatternsFixture = createFixtureProject(path.join('analysis', 'import-patterns'))
 
-const tempJsdocProgram = (sourceFile: string) => {
+const tempJsdocProgram = async (sourceFile: string) => {
   const { project, projectRoot, projectName } = jsDocFixture
 
-  const filePath = ProjectRelativePath(path.join(projectRoot, path.join('src', sourceFile)))
-  return Effect.runSync(
+  const filePath = ProjectRelativePath(path.join('src', sourceFile))
+  return await Effect.runPromise(
     Effect.gen(function* () {
-      return yield* analyzeFile(jsDocFixture, filePath, { verifyIndex: true })
-    }),
+      console.log(filePath)
+      const analysis = yield* analyzeFile(jsDocFixture, filePath, { verifyIndex: true })
+      yield* saveFileAnalysis(jsDocFixture, analysis.analysis)
+
+      const loaded = yield* loadFileAnalysis(jsDocFixture, analysis.analysis.path)
+
+      expect(loaded).toEqual(analysis.analysis)
+      return analysis
+    }).pipe(Effect.provide(PlatformLayer)),
   )
 }
 

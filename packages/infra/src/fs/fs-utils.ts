@@ -6,7 +6,6 @@ import { FullPath, wrapIOError } from '@gyomu/schema'
 import { parse } from 'yaml'
 import { convertToSchemaObjectWithEffect } from '@gyomu/schema/entity'
 import type { EntryInfo } from './types.js'
-import type { Decode } from '@gyomu/schema/effect'
 import type { Schema } from 'effect'
 import type { IOError, NetworkError, SchemaValidationError } from '@gyomu/schema'
 import type { PlatformError } from 'effect/PlatformError'
@@ -204,11 +203,7 @@ export const readJsonFromFileAndValidate = <S extends Schema.Top>(
   schema: S,
   path: string,
   encoding?: string,
-): Effect.Effect<
-  Schema.Schema.Type<S>,
-  IOError | SchemaValidationError,
-  FileSystem.FileSystem | Decode<S>
-> =>
+): Effect.Effect<Schema.Schema.Type<S>, IOError | SchemaValidationError, FileSystem.FileSystem> =>
   Effect.gen(function* () {
     const jsonData = yield* readJsonFromFile(path, encoding)
     return yield* convertToSchemaObjectWithEffect(schemaName)(schema, jsonData)

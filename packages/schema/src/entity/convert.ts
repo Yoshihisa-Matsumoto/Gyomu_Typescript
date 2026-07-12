@@ -53,10 +53,7 @@ export const convertToSchemaObjectWithResult = <S extends Constraint>(
  */
 export const convertToSchemaObjectWithEffect =
   (schemaName: string) =>
-  <S extends Schema.Schema<any>>(
-    schema: S,
-    input: unknown,
-  ): Effect.Effect<Schema.Schema.Type<S>, SchemaValidationError, S['DecodingServices']> =>
+  <S extends Schema.Schema<any>>(schema: S, input: unknown) =>
     Schema.decodeUnknownEffect(schema)(input).pipe(
       Effect.mapError(
         (e: SchemaError) =>
@@ -65,11 +62,27 @@ export const convertToSchemaObjectWithEffect =
             cause: e,
             schemaName,
             phase: 'decode',
-            issues: e, // ← 生の情報を保持
+            issues: e.issue, // ← 生の情報を保持
           }),
       ),
-    )
+    ) as Effect.Effect<Schema.Schema.Type<S>, SchemaValidationError, never>
 
+export const convertFromSchemaObjectToJsonWithEffect =
+  (schemaName: string) =>
+  <S extends Schema.Top>(schema: S, input: S['Type']) =>
+    Schema.encodeEffect(schema)(input).pipe(
+      Effect.map((obj) => JSON.stringify(obj, null, 2)),
+      Effect.mapError(
+        (e: SchemaError) =>
+          new SchemaValidationError({
+            message: `Failed to encode to JSON`,
+            cause: e,
+            schemaName,
+            phase: 'encode',
+            issues: e.issue,
+          }),
+      ),
+    ) as Effect.Effect<string, SchemaValidationError, never>
 /**
  * Creates an Effect operation to encode a schema object, wrapping errors in a SchemaValidationError.
  *
@@ -92,7 +105,7 @@ export const convertFromSchemaObjectWithEffect =
             cause: e,
             schemaName,
             phase: 'encode',
-            issues: e,
+            issues: e.issue,
           }),
       ),
     )

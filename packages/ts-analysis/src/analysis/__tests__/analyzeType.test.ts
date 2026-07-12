@@ -3,65 +3,147 @@ import fs from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { Effect } from 'effect'
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
+import { PlatformLayer } from '@gyomu/infra'
 import { analyzeFile } from '../analyzeFile.js'
+import { saveFileAnalysis } from '../saveFileAnalysis.js'
+import { loadFileAnalysis } from '../loadFileAnalysis.js'
 import { createFixtureProject } from './createFixtureProject.js'
 import type { OptionalStructureAnalysis } from '@gyomu/schema/schemas/typescript/type/structure/OptionalStructureAnalysis'
 
 import type { SymbolAnalysis, TypeStructureAnalysis } from '@gyomu/schema/schemas/typescript'
+import { flattenIssues } from '@gyomu/schema/entity'
 
 const timeout = 20000
 
 const typeFixture = createFixtureProject(path.join('analysis', 'type'))
 
-const typeAnalysisProgram = (sourceFile: string, index: number = 0): SymbolAnalysis => {
+const typeAnalysisProgram = async (
+  sourceFile: string,
+  index: number = 0,
+): Promise<SymbolAnalysis> => {
   const filePath = ProjectRelativePath(path.join('src', sourceFile))
-  const result = Effect.runSync(
+  const result = await Effect.runPromise(
     Effect.gen(function* () {
       const fileResult = yield* analyzeFile(typeFixture, filePath, {
         // includeDebugInfo: true,
         verifyIndex: true,
       })
+      yield* saveFileAnalysis(typeFixture, fileResult.analysis).pipe(
+        Effect.catch((e) => {
+          if (e._tag == '@gyomu/schema/SchemaErrorContext') {
+            if (e.issues) {
+              const issue = flattenIssues(e.issues)
+              // fs.writeFileSync(path.join('log', 'SaveError.txt'), JSON.stringify(issue, null, 2))
+              console.log('Save')
+              console.dir(issue, { depth: null })
+            }
+          }
 
+          return Effect.fail(e)
+        }),
+      )
+
+      const loaded = yield* loadFileAnalysis(typeFixture, fileResult.analysis.path).pipe(
+        Effect.catch((e) => {
+          if (e._tag == '@gyomu/agent/tsdoc/AnalysisError') {
+            const error = e.cause as object
+            if ('issues' in error) {
+              if (error.issues) {
+                const issue = flattenIssues(error.issues as any)
+                console.dir(issue, { depth: null })
+              }
+            }
+          }
+
+          return Effect.fail(e)
+        }),
+      )
+
+      expect(loaded).toEqual(fileResult.analysis)
       return fileResult
-    }).pipe(Effect.map((result2) => result2.analysis.symbols[index])),
+    })
+      .pipe(Effect.provide(PlatformLayer))
+      .pipe(Effect.map((result2) => result2.analysis.symbols[index])),
   )
 
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!result) throw new Error('Unexpected symbol should exist')
   return result
 }
-const typeAnalysisSymbolsProgram = (
+const typeAnalysisSymbolsProgram = async (
   sourceFile: string,
   keyword: string = '',
-): ReadonlyArray<SymbolAnalysis> => {
+): Promise<ReadonlyArray<SymbolAnalysis>> => {
   const filePath = ProjectRelativePath(path.join('src', sourceFile))
-  const result = Effect.runSync(
+  const result = await Effect.runPromise(
     Effect.gen(function* () {
       const fileResult = yield* analyzeFile(typeFixture, filePath, {
         includeDebugInfo: { keyword },
         verifyIndex: true,
       })
 
+      yield* saveFileAnalysis(typeFixture, fileResult.analysis).pipe(
+        Effect.catch((e) => {
+          if (e._tag == '@gyomu/schema/SchemaErrorContext') {
+            if (e.issues) {
+              const issue = flattenIssues(e.issues)
+              // fs.writeFileSync(path.join('log', 'SaveError.txt'), JSON.stringify(issue, null, 2))
+              console.log('Save')
+              console.dir(issue, { depth: null })
+            }
+          }
+
+          return Effect.fail(e)
+        }),
+      )
+
+      const loaded = yield* loadFileAnalysis(typeFixture, fileResult.analysis.path).pipe(
+        Effect.catch((e) => {
+          if (e._tag == '@gyomu/agent/tsdoc/AnalysisError') {
+            const error = e.cause as object
+            if ('issues' in error) {
+              if (error.issues) {
+                const issue = flattenIssues(error.issues as any)
+                console.dir(issue, { depth: null })
+              }
+            }
+          }
+
+          return Effect.fail(e)
+        }),
+      )
+
+      expect(loaded).toEqual(fileResult.analysis)
       return fileResult
-    }).pipe(Effect.map((result2) => result2.analysis.symbols)),
+    })
+      .pipe(Effect.provide(PlatformLayer))
+      .pipe(Effect.map((result2) => result2.analysis.symbols)),
   )
 
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!result) throw new Error('Unexpected symbol should exist')
   return result
 }
-const typeStructureProgram = (sourceFile: string): ReadonlyArray<TypeStructureAnalysis> => {
+const typeStructureProgram = async (
+  sourceFile: string,
+): Promise<ReadonlyArray<TypeStructureAnalysis>> => {
   const filePath = ProjectRelativePath(path.join('src', sourceFile))
-  const result = Effect.runSync(
+  const result = Effect.runPromise(
     Effect.gen(function* () {
       const fileResult = yield* analyzeFile(typeFixture, filePath, { verifyIndex: true })
+      yield* saveFileAnalysis(typeFixture, fileResult.analysis)
 
+      const loaded = yield* loadFileAnalysis(typeFixture, fileResult.analysis.path)
+
+      expect(loaded).toEqual(fileResult.analysis)
       return fileResult
-    }).pipe(
-      Effect.map((result2) =>
-        result2.analysis.symbols.map((symbol) => symbol.type?.structure).filter((s) => !!s),
+    })
+      .pipe(Effect.provide(PlatformLayer))
+      .pipe(
+        Effect.map((result2) =>
+          result2.analysis.symbols.map((symbol) => symbol.type?.structure).filter((s) => !!s),
+        ),
       ),
-    ),
   )
 
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -98,7 +180,7 @@ describe('analyze TypeLiteral pattern', () => {
     async () => {
       const result = await typeAnalysisProgram('01-type-literal-members-everything.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       expect(result.type?.structure).toBeDefined()
       if (result.type?.structure) {
         const structure = result.type.structure
@@ -180,7 +262,7 @@ describe('analyze TypeLiteral pattern', () => {
     async () => {
       const result = await typeAnalysisProgram('02-type-literal-property-types.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
     },
     timeout,
   )
@@ -189,7 +271,7 @@ describe('analyze TypeLiteral pattern', () => {
     async () => {
       const result = await typeAnalysisProgram('03-type-literal-nested-object.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
     },
     timeout,
   )
@@ -198,7 +280,7 @@ describe('analyze TypeLiteral pattern', () => {
     async () => {
       const result = await typeAnalysisProgram('04-type-literal-function-types.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
     },
     timeout,
   )
@@ -207,7 +289,7 @@ describe('analyze TypeLiteral pattern', () => {
     async () => {
       const result = await typeAnalysisProgram('05-type-literal-overloads.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
     },
     timeout,
   )
@@ -216,7 +298,7 @@ describe('analyze TypeLiteral pattern', () => {
     async () => {
       const result = await typeAnalysisProgram('06-type-literal-effect.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       const structure = result.type?.structure
       expect(structure).toBeDefined()
       if (structure) {
@@ -250,7 +332,7 @@ describe('analyze TypeLiteral pattern', () => {
     async () => {
       const result = await typeAnalysisProgram('07-type-structure.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
     },
     timeout,
   )
@@ -259,7 +341,7 @@ describe('analyze TypeLiteral pattern', () => {
     async () => {
       const result = await typeStructureProgram('08-type-import.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       expect(result).toEqual(
         expect.arrayContaining([
           {
@@ -289,7 +371,7 @@ describe('analyze TypeLiteral pattern', () => {
     '09-type-rest.ts',
     async () => {
       const a = await typeAnalysisProgram('09-type-rest.ts', 1)
-      console.dir(a, { depth: null })
+      // console.dir(a, { depth: null })
       const result = await typeStructureProgram('09-type-rest.ts')
 
       const rests = result
@@ -311,7 +393,7 @@ describe('analyze TypeLiteral pattern', () => {
     async () => {
       const result = await typeStructureProgram('10-type-optional.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       const options: ReadonlyArray<OptionalStructureAnalysis> = result
         .filter((s) => s.kind == 'tuple')
         .map((s) => s.elements)
@@ -367,7 +449,7 @@ describe('analyze Type dependency pattern', () => {
       const ImportedCallbackAlias = result.find((s) => s.name === 'ImportedCallbackAlias')
       const LocalClassAlias = result.find((s) => s.name === 'LocalClassAlias')
       const IntersectionAlias = result.find((s) => s.name === 'IntersectionAlias')
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       expect(DependencyType).toBeDefined()
       expect(DependencyType?.dependencies).toEqual(
         expect.arrayContaining([

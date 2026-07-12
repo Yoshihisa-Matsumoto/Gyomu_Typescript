@@ -8,8 +8,13 @@ import { describe, expect, it } from 'vitest'
 import { Effect } from 'effect'
 import { equalSymbolIdentity } from '@gyomu/schema/schemas/typescript'
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
+import { flattenIssues } from '@gyomu/schema/entity'
+import { PlatformLayer } from '@gyomu/infra'
 import { analyzeFile } from '../analyzeFile.js'
+import { saveFileAnalysis } from '../saveFileAnalysis.js'
+import { loadFileAnalysis } from '../loadFileAnalysis.js'
 import { createFixtureProject } from './createFixtureProject.js'
+
 import type { FileAnalysisContext } from '@gyomu/schema/typescript'
 import type {
   DocumentableMemberAnalysis,
@@ -25,14 +30,45 @@ const timeout = 20000
 
 const jsDocFixture = createFixtureProject(path.join('analysis', 'jsdoc'))
 
-const tempJsdocProgram = (sourceFile: string) => {
+const tempJsdocProgram = async (sourceFile: string) => {
   const filePath = ProjectRelativePath(path.join('src', sourceFile))
-  return Effect.runSync(
+  return await Effect.runPromise(
     Effect.gen(function* () {
-      const result = yield* analyzeFile(jsDocFixture, filePath, { verifyIndex: true })
+      const fileResult = yield* analyzeFile(jsDocFixture, filePath, { verifyIndex: true })
+      yield* saveFileAnalysis(jsDocFixture, fileResult.analysis).pipe(
+        Effect.catch((e) => {
+          if (e._tag == '@gyomu/schema/SchemaErrorContext') {
+            if (e.issues) {
+              const issue = flattenIssues(e.issues)
+              // fs.writeFileSync(path.join('log', 'SaveError.txt'), JSON.stringify(issue, null, 2))
+              console.log('Save')
+              console.dir(issue, { depth: null })
+            }
+          }
 
-      return result
-    }),
+          return Effect.fail(e)
+        }),
+      )
+
+      const loaded = yield* loadFileAnalysis(jsDocFixture, fileResult.analysis.path).pipe(
+        Effect.catch((e) => {
+          if (e._tag == '@gyomu/agent/tsdoc/AnalysisError') {
+            const error = e.cause as object
+            if ('issues' in error) {
+              if (error.issues) {
+                const issue = flattenIssues(error.issues as any)
+                console.dir(issue, { depth: null })
+              }
+            }
+          }
+
+          return Effect.fail(e)
+        }),
+      )
+
+      expect(loaded).toEqual(fileResult.analysis)
+      return fileResult
+    }).pipe(Effect.provide(PlatformLayer)),
   )
 }
 

@@ -1,5 +1,6 @@
 import { Effect } from 'effect'
 import { logger } from '@gyomu/schema'
+import { flattenIssues } from '@gyomu/schema/entity'
 import { loadFileAnalysis } from './loadFileAnalysis.js'
 import { analyzeFile } from './analyzeFile.js'
 import { buildIndex } from './buildIndex.js'
@@ -24,6 +25,16 @@ export const loadFileAnalysisResult = (
     const analysis = yield* loadFileAnalysis(context, sourceFilePath).pipe(
       Effect.catch((e) => {
         logger.info(e, 'Error on loadFileAnalysis')
+        if (e._tag == '@gyomu/agent/tsdoc/AnalysisError') {
+          const error = e.cause as object
+          if ('issues' in error) {
+            if (error.issues) {
+              const issue = flattenIssues(error.issues as any)
+              logger.info(issue, 'Schema Issue')
+            }
+          }
+        }
+
         return Effect.succeed(undefined)
       }),
     )

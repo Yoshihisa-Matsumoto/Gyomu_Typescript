@@ -62,7 +62,9 @@ export const TypeAnalysis: Schema.Schema<TypeAnalysis> = Schema.Struct({
   /**
    * Effect-related semantic signals.
    */
-  effect: Schema.optionalKey(Schema.suspend(() => EffectSignals)).annotate({
+  effect: Schema.optionalKey(
+    Schema.Union([Schema.suspend(() => EffectSignals), Schema.Undefined]),
+  ).annotate({
     description: 'Effect-related semantic signals.',
   }),
 

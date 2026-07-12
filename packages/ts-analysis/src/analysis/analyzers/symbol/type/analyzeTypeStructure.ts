@@ -186,7 +186,7 @@ export const analyzeTypeStructures = (
     //   nodeName,
     //   initializer: undefined,
     // })
-    console.log(`FunctionTypeNode: ${nodeName}`)
+    // console.log(`FunctionTypeNode: ${nodeName}`)
     const method = analyzeTypeFunction(
       {
         sourceRelativePath,

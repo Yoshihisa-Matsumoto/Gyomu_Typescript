@@ -1,9 +1,10 @@
-import { join, normalize, resolve } from 'node:path'
+import { join, normalize, relative, resolve } from 'node:path'
 import { Project } from 'ts-morph'
 import { FullPath } from '@gyomu/schema'
+import { normalizePath } from '../../shared/index.js'
 import type { ProjectContext } from '../project/ProjectContext.js'
 
-const FIXTURE_ROOT = './test-fixtures'
+const FIXTURE_ROOT = resolve('./test-fixtures')
 export const createFixtureProject = (
   fixtureName: string,
   fixtureRootPath?: string,
@@ -17,6 +18,12 @@ export const createFixtureProject = (
     project,
     projectRoot: fixtureRoot,
     projectName: 'test',
-    includedFiles: new Set(project.getSourceFiles().map((file) => normalize(file.getFilePath()))),
-  }
+    includedFiles: new Set(
+      project
+        .getSourceFiles()
+        .map((file) => normalize(file.getFilePath()))
+        .filter((filePath) => filePath.startsWith(fixtureRoot))
+        .map((fileAbsolutePath) => normalizePath(relative(fixtureRoot, fileAbsolutePath))),
+    ),
+  } satisfies ProjectContext
 }

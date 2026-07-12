@@ -9,7 +9,9 @@ export const GenericsProperty = Schema.Struct({
     description: 'The name of the property.',
   }),
 
-  type: Schema.Union([Schema.suspend(() => TypeAnalysis), Schema.Undefined]).annotate({
+  type: Schema.optional(
+    Schema.Union([Schema.suspend(() => TypeAnalysis), Schema.Undefined]),
+  ).annotate({
     description: 'The type of the property.',
   }),
 }).annotate({

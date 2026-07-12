@@ -9,7 +9,7 @@ import { LineRange } from '../LineRange.js'
 export const DocumentableMember = Schema.Struct({
   documentable: Schema.Literal(true),
   jsDoc: Schema.optional(JsDocAnalysis),
-  parsedJsDoc: Schema.Union([Schema.Array(ParsedJsDoc), Schema.Undefined]),
+  parsedJsDoc: Schema.optional(Schema.Union([Schema.Array(ParsedJsDoc), Schema.Undefined])),
   location: LineRange,
   startOffset: Schema.Number,
   /**

@@ -58,12 +58,12 @@ export interface IndexSignatureAnalysis {
   /**
    * Contains the structured JSDoc analysis.
    */
-  readonly jsDoc: JsDocAnalysis | undefined
+  readonly jsDoc?: JsDocAnalysis | undefined
 
   /**
    * A collection of parsed JSDoc/TSDoc elements.
    */
-  readonly parsedJsDoc: ReadonlyArray<ParsedJsDoc> | undefined
+  readonly parsedJsDoc?: ReadonlyArray<ParsedJsDoc> | undefined
 
   /**
    * The location information of the symbol within the source code.
@@ -153,14 +153,16 @@ export const IndexSignatureAnalysis = Schema.Struct({
   /**
    * Contains the structured JSDoc analysis.
    */
-  jsDoc: Schema.Union([JsDocAnalysis, Schema.Undefined]).annotate({
+  jsDoc: Schema.optional(Schema.Union([JsDocAnalysis, Schema.Undefined])).annotate({
     description: 'Contains the structured JSDoc analysis.',
   }),
 
   /**
    * A collection of parsed JSDoc/TSDoc elements.
    */
-  parsedJsDoc: Schema.Union([Schema.Array(ParsedJsDoc), Schema.Undefined]).annotate({
+  parsedJsDoc: Schema.optional(
+    Schema.Union([Schema.Array(ParsedJsDoc), Schema.Undefined]),
+  ).annotate({
     description: 'A collection of parsed JSDoc/TSDoc elements.',
   }),
 

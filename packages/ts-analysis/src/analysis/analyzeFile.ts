@@ -90,7 +90,7 @@ export const analyzeFile = (
       fs.writeFileSync(path.join('log', `FileAnalysis.txt`), JSON.stringify(analysis, null, 2))
 
     if (option?.verifyIndex) {
-      console.dir(analysis, { depth: null })
+      // console.dir(analysis, { depth: null })
       compareFileAnalysisMetadata(metadata, index)
     }
 

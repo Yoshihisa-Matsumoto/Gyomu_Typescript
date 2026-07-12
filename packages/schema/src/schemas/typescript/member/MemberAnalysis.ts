@@ -14,7 +14,7 @@ export type MemberAnalysis =
 /**
  * A runtime schema for validating member analysis objects.
  */
-export const MemberAnalysis = Schema.suspend(() =>
+export const MemberAnalysis: Schema.Schema<MemberAnalysis> = Schema.suspend(() =>
   Schema.Union([
     DocumentableMemberAnalysis,
     NonDocumentableMethodMemberAnalysis,

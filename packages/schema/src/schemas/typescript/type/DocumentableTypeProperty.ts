@@ -18,14 +18,16 @@ export const DocumentableTypeProperty = Schema.Struct({
   /**
    * Contains the structured JSDoc analysis.
    */
-  jsDoc: Schema.Union([JsDocAnalysis, Schema.Undefined]).annotate({
+  jsDoc: Schema.optional(Schema.Union([JsDocAnalysis, Schema.Undefined])).annotate({
     description: 'Contains the structured JSDoc analysis.',
   }),
 
   /**
    * A collection of parsed JSDoc/TSDoc elements.
    */
-  parsedJsDoc: Schema.Union([Schema.Array(ParsedJsDoc), Schema.Undefined]).annotate({
+  parsedJsDoc: Schema.optional(
+    Schema.Union([Schema.Array(ParsedJsDoc), Schema.Undefined]),
+  ).annotate({
     description: 'A collection of parsed JSDoc/TSDoc elements.',
   }),
 
