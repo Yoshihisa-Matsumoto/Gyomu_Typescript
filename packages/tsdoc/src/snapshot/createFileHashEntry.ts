@@ -1,7 +1,7 @@
 import { hashFile } from '@gyomu/infra/hash'
 import { Effect } from 'effect'
 import { toAbsolutePath, toProjectRelativePath } from '@gyomu/ts-analysis'
-import { FullPath } from '@gyomu/schema/typescript'
+import { FullPath } from '@gyomu/schema'
 import type { WorkspaceRelativePath } from '@gyomu/schema/typescript'
 import type { FileInfo } from '@gyomu/schema/gyomu/file'
 import type { FileSystem } from 'effect'

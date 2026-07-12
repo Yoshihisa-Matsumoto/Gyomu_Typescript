@@ -5,6 +5,7 @@ import { expect } from 'vitest'
 import { MainLayer, PlatformLayer } from '@gyomu/infra'
 import { makeRunner } from '@gyomu/schema/effect'
 import { pathExists, readDirectoryDetailed, readFromFile } from '@gyomu/infra/fs'
+import { FullPath } from '@gyomu/schema'
 import type { IOError } from '@gyomu/schema'
 import type { FileSystem, PlatformError } from 'effect'
 
@@ -67,14 +68,14 @@ const compareFoldersFromSourceEffect = (
   destFolder: string,
 ): Effect.Effect<boolean, PlatformError.PlatformError | IOError, FileSystem.FileSystem> => {
   return Effect.gen(function* () {
-    const dirs = yield* readDirectoryDetailed(srcFolder)
+    const dirs = yield* readDirectoryDetailed(FullPath(srcFolder))
     yield* Effect.forEach(
       dirs,
       (dirent) =>
         Effect.gen(function* () {
-          const sourceFullPath = join(resolve(srcFolder), dirent.name)
+          const sourceFullPath = FullPath(join(resolve(srcFolder), dirent.name))
 
-          const targetDestFullPath = join(resolve(destFolder), dirent.name)
+          const targetDestFullPath = FullPath(join(resolve(destFolder), dirent.name))
 
           if (dirent.type === 'File') {
             expect(yield* pathExists(targetDestFullPath)).toBeTruthy()
@@ -94,7 +95,7 @@ const compareFoldersFromSourceEffect = (
   })
 }
 
-const isEmptyDir = (path: string) =>
+const isEmptyDir = (path: FullPath) =>
   Effect.gen(function* () {
     const entries = yield* readDirectoryDetailed(path)
     return entries.length === 0
@@ -104,7 +105,7 @@ const compareFoldersFromDestEffect = (
   destFolder: string,
 ): Effect.Effect<boolean, PlatformError.PlatformError | IOError, FileSystem.FileSystem> =>
   Effect.gen(function* () {
-    const dirs = yield* readDirectoryDetailed(destFolder)
+    const dirs = yield* readDirectoryDetailed(FullPath(destFolder))
 
     yield* Effect.forEach(
       dirs,
@@ -112,14 +113,14 @@ const compareFoldersFromDestEffect = (
         Effect.gen(function* () {
           const destinationFullPath = join(resolve(destFolder), dirent.name)
           if (dirent.type !== 'File') {
-            const isEmpty = yield* isEmptyDir(destinationFullPath)
+            const isEmpty = yield* isEmptyDir(FullPath(destinationFullPath))
 
             if (isEmpty) {
               // 👇 無視
               return
             }
           }
-          const targetSourceFullPath = join(resolve(srcFolder), dirent.name)
+          const targetSourceFullPath = FullPath(join(resolve(srcFolder), dirent.name))
 
           const exists = yield* pathExists(targetSourceFullPath)
 

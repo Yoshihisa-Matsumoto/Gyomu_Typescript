@@ -6,11 +6,12 @@ import { loadSnapshot } from './loadSnapshot.js'
 import { createSnapshot } from './createSnapshot.js'
 import { ensureProjectWorkspace } from './ensureProjectWorkspace.js'
 import { GYOMU_VERSION } from './types/ProjectWorkspaceManifest.js'
+import type { FullPath } from '@gyomu/schema'
 import type { FileHashSnapshot } from './types/FileHashSnapshot.js'
 import type { FileSearchService } from '@gyomu/schema/shared/fs'
 import type { FileSystem } from 'effect'
 import type { FileHashEntry } from '@gyomu/schema/snapshot'
-import type { FullPath, WorkspaceRelativePath } from '@gyomu/schema/typescript'
+import type { WorkspaceRelativePath } from '@gyomu/schema/typescript'
 
 export interface AnalyzeProjectChangesInput {
   readonly repoRoot: FullPath

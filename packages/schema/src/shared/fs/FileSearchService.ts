@@ -1,4 +1,5 @@
 import { Context } from 'effect'
+import type { FullPath } from '../../types.js'
 import type { Effect, FileSystem } from 'effect'
 import type { IOError } from '../../error/IOError.js'
 import type { FileFilterInfo } from '../../gyomu/file/filter.js'
@@ -23,7 +24,7 @@ export interface FileSearchQuery {
   /**
    * The base directory path to perform the search within.
    */
-  readonly parentDirectory: string
+  readonly parentDirectory: FullPath
 
   /**
    * Optional list of file patterns or names to include in the search.

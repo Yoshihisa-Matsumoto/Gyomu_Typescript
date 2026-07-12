@@ -2,7 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Effect, FileSystem } from 'effect'
 
 import { removePath } from '@gyomu/infra/fs'
-import { FullPath, WorkspaceRelativePath } from '@gyomu/schema/typescript'
+import { FullPath } from '@gyomu/schema'
+import { WorkspaceRelativePath } from '@gyomu/schema/typescript'
 import { deleteSnapshot } from '../deleteSnapshot.js'
 import { ensureProjectWorkspace } from '../ensureProjectWorkspace.js'
 

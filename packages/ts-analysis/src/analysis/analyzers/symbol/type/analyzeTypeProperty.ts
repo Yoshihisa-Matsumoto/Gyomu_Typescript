@@ -59,6 +59,7 @@ export const analyzeTypeProperty = (
       readonly: node.isReadonly(),
       id,
       identity,
+      kind: 'type-property',
       name,
 
       optional: !!node.getQuestionTokenNode(),
@@ -127,6 +128,7 @@ export const analyzeTypePropertyFromTypeNode = (
       readonly: false,
       id,
       identity,
+      kind: 'type-property',
       name,
 
       optional:

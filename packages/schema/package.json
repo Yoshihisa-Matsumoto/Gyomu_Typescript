@@ -11,9 +11,9 @@
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./ai": {
-      "import": "./dist/ai/index.js",
-      "types": "./dist/ai/index.d.ts"
+    "./concept": {
+      "import": "./dist/concept/index.js",
+      "types": "./dist/concept/index.d.ts"
     },
     "./conversation": {
       "import": "./dist/conversation/index.js",
@@ -54,6 +54,10 @@
     "./snapshot": {
       "import": "./dist/snapshot/index.js",
       "types": "./dist/snapshot/index.d.ts"
+    },
+    "./schemas/concept": {
+      "import": "./dist/schemas/concept/index.js",
+      "types": "./dist/schemas/concept/index.d.ts"
     },
     "./schemas/typescript": {
       "import": "./dist/schemas/typescript/index.js",

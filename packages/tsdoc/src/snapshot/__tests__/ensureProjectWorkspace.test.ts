@@ -4,7 +4,8 @@ import { Effect } from 'effect'
 
 // mock dependencies
 import * as fsMock from 'effect/FileSystem'
-import { FullPath, WorkspaceRelativePath } from '@gyomu/schema/typescript'
+import { FullPath } from '@gyomu/schema'
+import { WorkspaceRelativePath } from '@gyomu/schema/typescript'
 import { ensureProjectWorkspace } from '../ensureProjectWorkspace.js'
 
 const run = <A, E>(eff: Effect.Effect<A, E, never>) => Effect.runSync(eff)

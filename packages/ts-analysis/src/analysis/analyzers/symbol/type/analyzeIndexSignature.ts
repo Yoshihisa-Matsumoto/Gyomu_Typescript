@@ -43,6 +43,7 @@ export const analyzeIndexSignature = (
     identity,
     node,
     jsDocableNode: node,
+    options,
   })
 
   const parameterTypeResult = analyzeType(
@@ -88,7 +89,7 @@ export const analyzeIndexSignature = (
     readonly: node.isReadonly(),
     id,
     identity,
-
+    kind: 'indexed-signature',
     parameterName,
     parameterType: parameterTypeResult.member,
     type: valueTypeResult.member,
@@ -101,7 +102,7 @@ export const analyzeIndexSignature = (
     docIndent: computeIndent(sourceFullText, node.getStart(), node.getStartLinePos()),
     // structure: analyzeParameterStructure(withOptional({ node: typeNode, initializer })),
   } satisfies IndexSignatureAnalysis
-  registerSymbolSymbolAnalysis(metadata, signature)
+  registerSymbolSymbolAnalysis(metadata, signature, options)
   return {
     member: signature,
     dependencies: [...parameterTypeResult.dependencies, ...valueTypeResult.dependencies],

@@ -11,14 +11,17 @@ import type {
   DependencySummary,
   EffectSignals,
 } from '@gyomu/schema/schemas/typescript'
-import type { MemberIdentityMemberPath, SymbolId } from '@gyomu/schema/typescript'
+import type {
+  FileAnalysisContext,
+  MemberIdentityMemberPath,
+  SymbolId,
+} from '@gyomu/schema/typescript'
 import type { ComplexityMetrics } from '../../evaluation/complexity/ComplexityMetrics.js'
 import type { TsDocFileContext, TsDocSymbolContext } from '@gyomu/ai-compiler/jsdoc-update'
-import type { FileAnalysisResult } from '@gyomu/ts-analysis'
 
 export const buildJsDocUpdateContext = (
   projectName: string,
-  fileResult: FileAnalysisResult,
+  fileResult: FileAnalysisContext,
   mapComplexity: Map<SymbolId, ComplexityMetrics>,
 ): TsDocFileContext => {
   const sourceFilePath = fileResult.analysis.path

@@ -84,7 +84,7 @@ export const analyzeEnum = (args: TagAnalysisArg<EnumDeclaration>) => {
     ),
   } satisfies SymbolAnalysis
 
-  registerSymbolSymbolAnalysis(args.metadata, symbol)
+  registerSymbolSymbolAnalysis(args.metadata, symbol, options)
 
   return {
     symbol,

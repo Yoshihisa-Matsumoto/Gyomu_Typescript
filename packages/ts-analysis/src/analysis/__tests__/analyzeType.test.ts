@@ -19,6 +19,7 @@ const typeAnalysisProgram = (sourceFile: string, index: number = 0): SymbolAnaly
     Effect.gen(function* () {
       const fileResult = yield* analyzeFile(typeFixture, filePath, {
         // includeDebugInfo: true,
+        verifyIndex: true,
       })
 
       return fileResult
@@ -38,6 +39,7 @@ const typeAnalysisSymbolsProgram = (
     Effect.gen(function* () {
       const fileResult = yield* analyzeFile(typeFixture, filePath, {
         includeDebugInfo: { keyword },
+        verifyIndex: true,
       })
 
       return fileResult
@@ -52,7 +54,7 @@ const typeStructureProgram = (sourceFile: string): ReadonlyArray<TypeStructureAn
   const filePath = ProjectRelativePath(path.join('src', sourceFile))
   const result = Effect.runSync(
     Effect.gen(function* () {
-      const fileResult = yield* analyzeFile(typeFixture, filePath, {})
+      const fileResult = yield* analyzeFile(typeFixture, filePath, { verifyIndex: true })
 
       return fileResult
     }).pipe(
@@ -71,7 +73,7 @@ const typeSymbolsDependencyProgram = (sourceFile: string, folder?: string) => {
   const filePath = ProjectRelativePath(sourcePath)
   const result = Effect.runSync(
     Effect.gen(function* () {
-      return yield* analyzeFile(typeFixture, filePath, {}).pipe(
+      return yield* analyzeFile(typeFixture, filePath, { verifyIndex: true }).pipe(
         Effect.map((result2) => {
           if (!fs.existsSync('./log')) fs.mkdirSync('./log')
           fs.writeFileSync('./log/fileAnalysis.txt', JSON.stringify(result2.analysis, null, 2))

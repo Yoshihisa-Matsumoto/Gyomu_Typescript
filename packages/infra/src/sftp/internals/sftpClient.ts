@@ -1,4 +1,10 @@
-import { IOError, NetworkError, isRetryableNetworkError, wrapInfraError } from '@gyomu/schema'
+import {
+  FullPath,
+  IOError,
+  NetworkError,
+  isRetryableNetworkError,
+  wrapInfraError,
+} from '@gyomu/schema'
 import { Effect } from 'effect'
 import { toEntryPath } from '@gyomu/schema/shared/fs'
 import { makeDirectory, readDirectoryDetailed } from '../../fs/fs-utils.js'
@@ -263,7 +269,7 @@ const mkdirRecursive =
 const uploadDir =
   (sftp: SFTPWrapper) =>
   (
-    localDir: string,
+    localDir: FullPath,
     remoteDir: string,
   ): Effect.Effect<void, IOError | NetworkError, FileSystem.FileSystem> =>
     Effect.gen(function* () {
@@ -285,7 +291,7 @@ const uploadDir =
       // )(() => fs.readdir(localDir, { withFileTypes: true }));
 
       yield* Effect.forEach(entries, (entry) => {
-        const localPath = `${localDir}/${entry.name}`
+        const localPath = FullPath(`${localDir}/${entry.name}`)
         const remotePath = `${remoteDir}/${entry.name}`
 
         if (entry.type == 'Directory') {

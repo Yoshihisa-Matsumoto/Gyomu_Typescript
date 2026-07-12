@@ -3,6 +3,7 @@ import { equalSymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIden
 import { isJsDocTargetKind } from '@gyomu/ai-compiler/jsdoc-update'
 import { UpdateError } from '../error/UpdateError.js'
 import { analyzeProtectedSection } from './analyzeProtectedSection.js'
+import type { FileAnalysisContext } from '@gyomu/schema/typescript'
 import type {
   JsDocUpdatePlan,
   MergeAction,
@@ -11,11 +12,10 @@ import type {
 } from '@gyomu/ai-compiler/jsdoc-update'
 import type { MergeActionContext, MergePlan } from '../jsdoc/MergePlan.js'
 import type { Effect } from 'effect'
-import type { FileAnalysisResult } from '@gyomu/ts-analysis'
 import type { ProtectedSection } from '@gyomu/schema/schemas/typescript'
 
 export const createMergePlan = (
-  fileResult: FileAnalysisResult,
+  fileResult: FileAnalysisContext,
   plans: JsDocUpdatePlan,
 ): Effect.Effect<Array<MergePlan>, UpdateError> => {
   const filePath = fileResult.analysis.path

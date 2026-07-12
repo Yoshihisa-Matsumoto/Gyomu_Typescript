@@ -1,11 +1,11 @@
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { Effect } from 'effect'
-import { equalSymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
+import { equalSymbolIdentity } from '@gyomu/schema/schemas/typescript'
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { analyzeFile } from '../analyzeFile.js'
 import { createFixtureProject } from './createFixtureProject.js'
-import type { FileAnalysisContext } from '../file/FileAnalysisResult.js'
+import type { FileAnalysisContext } from '@gyomu/schema/typescript'
 
 const timeout = 20000
 
@@ -23,7 +23,7 @@ const tempJsdocProgram = (sourceFile: string) => {
   const filePath = ProjectRelativePath(path.join(projectRoot, path.join('src', sourceFile)))
   return Effect.runSync(
     Effect.gen(function* () {
-      return yield* analyzeFile(jsDocFixture, filePath, {})
+      return yield* analyzeFile(jsDocFixture, filePath, { verifyIndex: true })
     }),
   )
 }
@@ -36,7 +36,7 @@ describe('analyzeFile', () => {
 
       const filePath = ProjectRelativePath(path.join('src', 'index.ts'))
       const program = Effect.gen(function* () {
-        const result = yield* analyzeFile(basicExportFixture, filePath)
+        const result = yield* analyzeFile(basicExportFixture, filePath, { verifyIndex: true })
 
         expect(result.analysis.exports).toHaveLength(5)
 
@@ -87,7 +87,7 @@ describe('analyzeFile', () => {
       const filePath = ProjectRelativePath('src/index.ts')
 
       const program = Effect.gen(function* () {
-        const result = yield* analyzeFile(exportPatternsFixture, filePath)
+        const result = yield* analyzeFile(exportPatternsFixture, filePath, { verifyIndex: true })
         // console.dir(result, { depth: null })
 
         const localExport = result.analysis.exports
@@ -262,11 +262,9 @@ describe('analyzeFile', () => {
     it(
       'analyzes import declarations',
       () => {
-        const { project, projectRoot, projectName } = importPatternsFixture
-
         const filePath = ProjectRelativePath('src/index.ts')
         const program = Effect.gen(function* () {
-          const result = yield* analyzeFile(importPatternsFixture, filePath)
+          const result = yield* analyzeFile(importPatternsFixture, filePath, { verifyIndex: true })
 
           expect(result.analysis.imports).toEqual([
             {

@@ -1,6 +1,6 @@
 import path from 'node:path'
 import { Effect, Stream } from 'effect'
-import { IOError } from '@gyomu/schema'
+import { FullPath, IOError } from '@gyomu/schema'
 // import { Readable } from 'node:stream';
 
 import { ZipFile } from 'yazl'
@@ -17,13 +17,13 @@ const addFile = (zip: ZipFile, fsPath: string, zipPath: string) =>
 
 const addDirectory = (
   zip: ZipFile,
-  fsPath: string,
+  fsPath: FullPath,
   relativeTo: string,
 ): Effect.Effect<void, IOError, FileSystem.FileSystem> =>
   readDirectoryDetailed(fsPath).pipe(
     Effect.flatMap((items) =>
       Effect.forEach(items, (item) => {
-        const itemPath = path.join(fsPath, item.name)
+        const itemPath = FullPath(path.join(fsPath, item.name))
         const zipPath = (relativeTo ? relativeTo + '/' : '') + item.name
 
         if (item.isDirectory) {

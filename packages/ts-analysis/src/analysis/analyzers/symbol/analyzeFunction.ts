@@ -144,7 +144,7 @@ export const analyzeFunction = (args: TagAnalysisArg<FunctionDeclaration>) => {
       args.declaration.getStartLinePos(),
     ),
   } satisfies SymbolAnalysis
-  registerSymbolSymbolAnalysis(args.metadata, symbol)
+  registerSymbolSymbolAnalysis(args.metadata, symbol, options)
   return {
     symbol,
     isDefault: args.declaration.isDefaultExport(),

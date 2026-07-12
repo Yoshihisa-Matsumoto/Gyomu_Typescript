@@ -41,6 +41,7 @@ export const analyzeEnumMember = (
     name,
     node,
     node,
+    options,
   )
 
   let typeResult: MemberAnalysisResult<TypeAnalysis> | undefined
@@ -107,7 +108,7 @@ export const analyzeEnumMember = (
     declarationOrder,
     docIndent: computeIndent(sourceFullText, node.getStart(), node.getStartLinePos()),
   } satisfies DocumentablePropertyMemberAnalysis
-  registerSymbolSymbolAnalysis(metadata, property)
+  registerSymbolSymbolAnalysis(metadata, property, options)
   return {
     member: property,
     dependencies: [...typeResult.dependencies],

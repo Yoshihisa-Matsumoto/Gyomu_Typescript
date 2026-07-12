@@ -1,5 +1,5 @@
 import { resolve } from 'node:path'
-import { FullPath } from '@gyomu/schema/typescript'
+import { FullPath } from '@gyomu/schema'
 import type { ProjectRelativePath, WorkspaceRelativePath } from '@gyomu/schema/typescript'
 
 /**

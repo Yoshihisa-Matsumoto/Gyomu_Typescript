@@ -5,10 +5,10 @@ import { FileAccessService } from '@gyomu/schema/shared/fs'
 import { ensure, ensureEffect, fromPromise, polling } from '@gyomu/schema/effect'
 
 import { getFileStat, pathExists } from '../fs/fs-utils.js'
-import type { IOError } from '@gyomu/schema'
+import type { FullPath, IOError } from '@gyomu/schema'
 
 const canAccessFunc = (
-  fileName: string,
+  fileName: FullPath,
   readOnly?: boolean,
 ): Effect.Effect<boolean, AccessError | IOError | TimeoutError, FileSystem.FileSystem> => {
   return Effect.gen(function* () {

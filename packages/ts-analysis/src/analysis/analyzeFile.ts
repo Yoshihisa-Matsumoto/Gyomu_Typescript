@@ -7,18 +7,23 @@ import { loadSourceFile } from './shared/loadSourceFile.js'
 import { extractSymbols } from './extract/extractSymbol.js'
 import { buildIndex } from './buildIndex.js'
 // import { compareFileAnalysisMetadata } from './compareFileAnalysisMetadata.js'
-import type { DependencyCandidate, ParsedJsDoc } from '@gyomu/schema/schemas/typescript'
+import { compareFileAnalysisMetadata } from './compareFileAnalysisMetadata.js'
+import type {
+  DependencyCandidate,
+  FileAnalysis,
+  ParsedJsDoc,
+} from '@gyomu/schema/schemas/typescript'
 import type { AnalysisError } from './error/AnalysisError.js'
+import type { AnalysisOptions } from './AnalysisOption.js'
+import type { ProjectContext } from './project/ProjectContext.js'
 import type {
   DocumentableTarget,
   FileAnalysisContext,
   FileAnalysisMetadata,
   FileAnalysisTransient,
-} from './file/FileAnalysisResult.js'
-import type { AnalysisOptions } from './AnalysisOption.js'
-import type { FileAnalysis } from './file/FileAnalysis.js'
-import type { ProjectContext } from './project/ProjectContext.js'
-import type { ProjectRelativePath, SymbolId } from '@gyomu/schema/typescript'
+  ProjectRelativePath,
+  SymbolId,
+} from '@gyomu/schema/typescript'
 
 /**
  * Analyzes a TypeScript source file and produces a {@link FileAnalysis}.
@@ -83,8 +88,11 @@ export const analyzeFile = (
 
     if (option?.DumpToFile)
       fs.writeFileSync(path.join('log', `FileAnalysis.txt`), JSON.stringify(analysis, null, 2))
-    // console.dir(analysis, { depth: null })
-    // compareFileAnalysisMetadata(metadata, index)
+
+    if (option?.verifyIndex) {
+      console.dir(analysis, { depth: null })
+      compareFileAnalysisMetadata(metadata, index)
+    }
 
     return {
       analysis,

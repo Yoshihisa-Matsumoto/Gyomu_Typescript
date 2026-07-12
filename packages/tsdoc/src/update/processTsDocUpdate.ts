@@ -4,7 +4,7 @@ import { Effect } from 'effect'
 import { makeDirectory, readStringFromFile, writeStringToFile } from '@gyomu/infra/fs'
 
 import { toAbsolutePath } from '@gyomu/ts-analysis'
-import { FullPath } from '@gyomu/schema/typescript'
+import { FullPath } from '@gyomu/schema'
 import { findWorkspaceRoot } from '../shared/path/findWorkspaceRoot.js'
 import { buildMergePlan } from './buildMergePlan.js'
 import { applyMergePlans } from './applyMergePlan.js'
@@ -12,12 +12,13 @@ import { buildFileUpdatePlan } from './buildFileUpdatePlan.js'
 import { renderJsDocs } from './renderJsDoc.js'
 import { applyFileUpdatePlan } from './applyFileUpdatePlan.js'
 import { UpdateError } from './error/UpdateError.js'
-import type { FileAnalysisResult, ProjectContext } from '@gyomu/ts-analysis'
+import type { FileAnalysisContext } from '@gyomu/schema/typescript'
+import type { ProjectContext } from '@gyomu/ts-analysis'
 import type { UpdateOptions } from './UpdateOptions.js'
 
 export const processTsDocUpdate = (
   context: ProjectContext,
-  fileResult: FileAnalysisResult,
+  fileResult: FileAnalysisContext,
   option?: UpdateOptions,
 ) => {
   return Effect.gen(function* () {

@@ -1,5 +1,4 @@
-import type { SymbolId } from '@gyomu/schema/typescript'
-import type { FileAnalysisMetadata } from './file/FileAnalysisResult.js'
+import type { FileAnalysisMetadata, SymbolId } from '@gyomu/schema/typescript'
 
 export const compareFileAnalysisMetadata = (
   source: FileAnalysisMetadata,

@@ -1,9 +1,9 @@
+import type { FileAnalysisContext } from '@gyomu/schema/typescript'
 import type { ProtectedSection } from '@gyomu/schema/schemas/typescript'
-import type { FileAnalysisResult } from '@gyomu/ts-analysis'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
 
 export const analyzeProtectedSection = (
-  fileResult: FileAnalysisResult,
+  fileResult: FileAnalysisContext,
 ): Array<{ identity: SymbolIdentity; protectedSections: Array<ProtectedSection> }> => {
   const result: Array<{ identity: SymbolIdentity; protectedSections: Array<ProtectedSection> }> = []
   for (const symbolTarget of fileResult.metadata.symbols.values()) {

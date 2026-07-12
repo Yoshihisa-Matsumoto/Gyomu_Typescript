@@ -28,8 +28,15 @@ export const analyzePropertyMember = (
   isStatic: boolean = false,
   visibility: MemberAccessor = 'public',
 ): MemberAnalysisResult<DocumentablePropertyMemberAnalysis> => {
-  const { sourceRelativePath, metadata, node, ownerSymbolId, ownerSymbolIdentity, memberPath } =
-    args
+  const {
+    sourceRelativePath,
+    metadata,
+    node,
+    ownerSymbolId,
+    ownerSymbolIdentity,
+    memberPath,
+    options,
+  } = args
   const typeNode = args.node.getTypeNode()
   const name = node.getName()
   const initializer = args.node.getInitializer()
@@ -42,6 +49,7 @@ export const analyzePropertyMember = (
     name,
     node,
     node,
+    options,
   )
   return analyzePropertyMemberInternal(args, {
     initializer,
@@ -160,7 +168,7 @@ export const analyzePropertyMemberInternal = (
       args.node.getStartLinePos(),
     ),
   } satisfies DocumentablePropertyMemberAnalysis
-  registerSymbolSymbolAnalysis(metadata, property)
+  registerSymbolSymbolAnalysis(metadata, property, options)
   return {
     member: property,
     dependencies: [...typeResult.dependencies, ...genercsDependencies],

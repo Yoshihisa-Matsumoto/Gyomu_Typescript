@@ -2,7 +2,7 @@ import { spawnSync } from 'node:child_process'
 import path from 'node:path'
 import { tmpdir } from 'node:os'
 import { Effect, Ref, Stream } from 'effect'
-import { IOError, withOptional, wrapInfraError } from '@gyomu/schema'
+import { FullPath, IOError, withOptional, wrapInfraError } from '@gyomu/schema'
 import { ensureEffect, fromSync } from '@gyomu/schema/effect'
 import { jsonToCsv } from '../../csv/write.js'
 import {
@@ -188,12 +188,12 @@ const runCompare = (
   sourceFile: ZipFileEntryItem,
   destinationFile: ZipFileEntryItem,
 
-  resultPath: string,
+  resultPath: FullPath,
   compareFunc: (option: {
     source: ZipFileEntryItem
     destination: ZipFileEntryItem
     filePath: string
-    resultPath: string
+    resultPath: FullPath
   }) => Effect.Effect<DiffResult, IOError>,
 ) =>
   compareFunc({
@@ -207,7 +207,7 @@ const runGitDiffIfNeeded = (
   sourceFile: ZipFileEntryItem,
   destinationFile: ZipFileEntryItem,
   filePath: string,
-  resultPath: string,
+  resultPath: FullPath,
   shouldRun: boolean,
 ) => (shouldRun ? compareTextfile(sourceFile, destinationFile, filePath, resultPath) : Effect.void)
 
@@ -235,12 +235,12 @@ const writeCsvIfNeeded = (
 export const runCompareFuncFlow = (
   sourceFile: ZipFileEntryItem,
   destinationFile: ZipFileEntryItem,
-  resultPath: string,
+  resultPath: FullPath,
   compareFunc: (option: {
     source: ZipFileEntryItem
     destination: ZipFileEntryItem
     filePath: string
-    resultPath: string
+    resultPath: FullPath
   }) => Effect.Effect<DiffResult, IOError>,
   targetIgnoreRule: DiffernceIgnoreRule | undefined,
   option: ZipCompareOption,
@@ -269,13 +269,13 @@ const compareTextfile = (
   source: ZipFileEntryItem,
   destination: ZipFileEntryItem,
   filePath: string,
-  resultPath: string,
+  resultPath: FullPath,
 ): Effect.Effect<boolean, IOError, FileSystem.FileSystem> => {
   return Effect.gen(function* () {
     const gitTempPath = path.join(tmpdir(), 'gitCompareTemp')
     const sourceFilename = path.join(gitTempPath, 'before')
     const destinationFilename = path.join(gitTempPath, 'after')
-    const diffFilename = path.join(resultPath, filePath.replaceAll('/', '\\') + '.diff')
+    const diffFilename = FullPath(path.join(resultPath, filePath.replaceAll('/', '\\') + '.diff'))
 
     yield* emptyDir(gitTempPath)
 

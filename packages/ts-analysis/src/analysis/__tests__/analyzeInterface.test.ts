@@ -20,7 +20,7 @@ const interfaceAnalysisProgram = (sourceFile: string): SymbolAnalysis => {
   const filePath = ProjectRelativePath(path.join('src', sourceFile))
   const result = Effect.runSync(
     Effect.gen(function* () {
-      return yield* analyzeFile(interfaceFixture, filePath, {}).pipe(
+      return yield* analyzeFile(interfaceFixture, filePath, { verifyIndex: true }).pipe(
         Effect.map((result2) => result2.analysis.symbols[0]),
       )
     }),
@@ -34,7 +34,7 @@ const interfaceSymbolsDependencyProgram = (sourceFile: string, folder?: string) 
   const filePath = ProjectRelativePath(sourcePath)
   const result = Effect.runSync(
     Effect.gen(function* () {
-      return yield* analyzeFile(interfaceFixture, filePath, {}).pipe(
+      return yield* analyzeFile(interfaceFixture, filePath, { verifyIndex: true }).pipe(
         Effect.map((result2) => {
           if (!fs.existsSync('./log')) fs.mkdirSync('./log')
           fs.writeFileSync('./log/fileAnalysis.txt', JSON.stringify(result2.analysis, null, 2))

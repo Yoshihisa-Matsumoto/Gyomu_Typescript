@@ -81,10 +81,7 @@ export const DependencyCandidate = Schema.Struct({
  */
 export type DependencyCandidate = Schema.Schema.Type<typeof DependencyCandidate>
 
-/**
- * Defines the semantic reasons for a dependency relationship, such as parameters, returns, members, or inheritance.
- */
-export const DependencyReason = Schema.Literals([
+const dependencyReason = [
   'parameter',
   'return',
   'member',
@@ -92,7 +89,16 @@ export const DependencyReason = Schema.Literals([
   'implements',
   'body',
   'generics',
-])
+] as const
+/**
+ * Defines the semantic reasons for a dependency relationship, such as parameters, returns, members, or inheritance.
+ */
+export const DependencyReason = Schema.Literals(dependencyReason)
+
+export const getDependencyReason = (value: string): DependencyReason | undefined => {
+  if (dependencyReason.includes(value as DependencyReason)) return value as DependencyReason
+  return undefined
+}
 
 /**
  * The type representation of a DependencyReason schema.

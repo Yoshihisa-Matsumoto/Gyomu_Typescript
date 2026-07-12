@@ -8,7 +8,7 @@ import { makeRunner } from '@gyomu/schema/effect'
 import 'dotenv/config'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 
-import { AiModelService } from '@gyomu/ai'
+import { AiModelRoute } from '@gyomu/ai'
 import { analyzeFile } from '@gyomu/ts-analysis'
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { buildJsDocUpdatePlanWithRetry } from '../internal/buildJsDocUpdatePlanWithRetry.js'
@@ -45,7 +45,7 @@ beforeAll(async () => {
 })
 
 const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(Layer.provideMerge(PlatformLayer))
-const mockAiModelService = Layer.succeed(AiModelService, {
+const mockAiModelService = Layer.succeed(AiModelRoute, {
   generateObject: () =>
     Effect.succeed({
       object: {},

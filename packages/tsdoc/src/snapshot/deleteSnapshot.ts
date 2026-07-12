@@ -1,7 +1,8 @@
 import { removePath } from '@gyomu/infra/fs'
 import { Effect } from 'effect'
 import { ensureProjectWorkspace } from './ensureProjectWorkspace.js'
-import type { FullPath, WorkspaceRelativePath } from '@gyomu/schema/typescript'
+import type { FullPath } from '@gyomu/schema'
+import type { WorkspaceRelativePath } from '@gyomu/schema/typescript'
 
 export interface DeleteProjectSnapshotInput {
   readonly repoRoot: FullPath

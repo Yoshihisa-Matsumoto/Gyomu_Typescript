@@ -61,11 +61,13 @@ export const analyzeTypeLiteralNode = (
           name,
           member,
           member,
+          options,
         )
         const property: DocumentableTypeProperty = {
           documentable: true,
           id: methodIdentity.id,
           identity: methodIdentity.identity,
+          kind: 'type-property',
           name,
           optional: false,
           readonly: false,
@@ -82,7 +84,7 @@ export const analyzeTypeLiteralNode = (
             member.getStartLinePos(),
           ), // TODO : Not sure about it
         }
-        registerSymbolSymbolAnalysis(metadata, property)
+        registerSymbolSymbolAnalysis(metadata, property, options)
         return {
           member: property,
           dependencies: methodType.dependencies,
@@ -101,6 +103,7 @@ export const analyzeTypeLiteralNode = (
           name,
           member,
           member,
+          options,
         )
 
         const methodIdentity = initializeMethodIdentity(
@@ -115,6 +118,7 @@ export const analyzeTypeLiteralNode = (
           documentable: true,
           id: methodIdentity.id,
           identity: methodIdentity.identity,
+          kind: 'type-property',
           name,
           optional: false,
           readonly: false,
@@ -131,7 +135,7 @@ export const analyzeTypeLiteralNode = (
             member.getStartLinePos(),
           ), // TODO : Not sure about it
         }
-        registerSymbolSymbolAnalysis(metadata, property)
+        registerSymbolSymbolAnalysis(metadata, property, options)
 
         return {
           member: property,
@@ -182,6 +186,7 @@ export const analyzeTypeLiteralNode = (
             name,
             memberTypeNode,
             member,
+            options,
           )
 
           const methodIdentity = initializeMethodIdentity(
@@ -195,6 +200,7 @@ export const analyzeTypeLiteralNode = (
             documentable: true,
             id: methodIdentity.id,
             identity: methodIdentity.identity,
+            kind: 'type-property',
             name,
             optional: false,
             readonly: false,
@@ -211,7 +217,7 @@ export const analyzeTypeLiteralNode = (
               memberTypeNode.getStartLinePos(),
             ), // TODO : Not sure about it
           }
-          registerSymbolSymbolAnalysis(metadata, property)
+          registerSymbolSymbolAnalysis(metadata, property, options)
           return {
             member: property,
             dependencies: methodType.dependencies,

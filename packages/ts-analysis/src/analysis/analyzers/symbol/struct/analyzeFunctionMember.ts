@@ -181,6 +181,7 @@ export const analyzeFunctionMemberInternal = (
         name,
         node,
         jsDocableNode,
+        options,
       )
     const parametersResult = node.getParameters().map((p, index) =>
       analyzeParameter({
@@ -224,7 +225,7 @@ export const analyzeFunctionMemberInternal = (
         (args2.jsDocableNode ?? args.node).getStartLinePos(),
       ),
     } satisfies DocumentableMethodMemberAnalysis
-    registerSymbolSymbolAnalysis(metadata, method)
+    registerSymbolSymbolAnalysis(metadata, method, options)
     return {
       member: method,
       dependencies: [

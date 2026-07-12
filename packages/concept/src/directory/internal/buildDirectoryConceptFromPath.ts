@@ -2,21 +2,34 @@ import { relative } from 'node:path'
 import { Effect } from 'effect'
 import { readDirectoryDetailed } from '@gyomu/infra/fs'
 import { loadFileAnalysisResult } from '@gyomu/ts-analysis'
-import { ProjectRelativePath } from '@gyomu/schema/typescript'
+import { DirectoryRelativePath, ProjectRelativePath } from '@gyomu/schema/typescript'
+import { wrapInfraError } from '@gyomu/schema'
+import { ConceptError } from '../../error/ConceptError.js'
+import { buildFileSummaryRecord } from './buildFileSummaryRecord.js'
+import { loadDirectoryConcept } from './loadDirectoryConcept.js'
+import { generateDirectoryConcept } from './generateDirectoryConcept.js'
+import type { FullPath, IOError } from '@gyomu/schema'
+import type { DirectoryConceptInput, FileSummary } from '@gyomu/schema/concept'
+import type { FileAnalysisSchema } from '@gyomu/schema/schemas/typescript'
+import type { Decode } from '@gyomu/schema/effect'
+import type { DirectoryConcept } from '@gyomu/schema/schemas/concept'
 import type { AnalysisError, ProjectContext } from '@gyomu/ts-analysis'
-import type { IOError } from '@gyomu/schema'
 import type { BuildDirectoryOption, BuildResult } from '../types.js'
 import type { FileSystem } from 'effect'
-import type { DirectoryConcept } from '@gyomu/ai-compiler/directory-concept'
-import type { FileAnalysis } from '../../../../ts-analysis/dist/analysis/file/FileAnalysis.js'
 
 export const buildDirectoryConceptFromPath = (
   context: ProjectContext,
-  targetDirectory: string,
+  targetDirectory: FullPath,
   option?: BuildDirectoryOption,
-): Effect.Effect<BuildResult, IOError | AnalysisError, FileSystem.FileSystem> =>
+): Effect.Effect<
+  BuildResult,
+  IOError | AnalysisError | ConceptError,
+  FileSystem.FileSystem | Decode<typeof FileAnalysisSchema>
+> =>
   Effect.gen(function* () {
-    const targetDirectoryRelativePath = relative(context.projectRoot, targetDirectory)
+    const targetDirectoryRelativePath = ProjectRelativePath(
+      relative(context.projectRoot, targetDirectory),
+    )
 
     const entries = yield* readDirectoryDetailed(targetDirectory)
 
@@ -28,14 +41,6 @@ export const buildDirectoryConceptFromPath = (
 
     let isChanged = false
 
-    const directoryConcepts: Array<{ path: string; concept: DirectoryConcept }> = []
-
-    for (const folder of folders) {
-      const result = yield* buildDirectoryConceptFromPath(context, folder.path, option)
-      if (result.changed) isChanged = true
-      directoryConcepts.push({ path: folder.path, concept: result.concept })
-    }
-
     if (option?.changedFiles) {
       const isFolderChanged =
         option.changedFiles.filter((f) =>
@@ -44,22 +49,47 @@ export const buildDirectoryConceptFromPath = (
       if (isFolderChanged) isChanged = true
     }
 
-    const fileAnalysisList = new Array<FileAnalysis>()
+    if (!isChanged) {
+      const directoryConcept = yield* loadDirectoryConcept(context, targetDirectoryRelativePath)
+      if (directoryConcept) return { concept: directoryConcept, changed: false }
+    }
+
+    const directoryConcepts: Array<{ path: DirectoryRelativePath; concept: DirectoryConcept }> = []
+
+    for (const folder of folders) {
+      const result = yield* buildDirectoryConceptFromPath(context, folder.path, option)
+      if (result.changed) isChanged = true
+      directoryConcepts.push({
+        path: DirectoryRelativePath(relative(folder.path, targetDirectoryRelativePath)),
+        concept: result.concept,
+      })
+    }
+
+    const fileSummaryList = new Array<FileSummary>()
     for (const file of files) {
       const fileFullPath = file.path
       const fileRelativePath = ProjectRelativePath(relative(context.projectRoot, fileFullPath))
       const result = yield* loadFileAnalysisResult(context, fileRelativePath)
-      fileAnalysisList.push(result.result.analysis)
+      fileSummaryList.push(buildFileSummaryRecord(result.result))
     }
 
+    const input: DirectoryConceptInput = {
+      files: fileSummaryList,
+      subDirectories: directoryConcepts,
+    }
+
+    const concept = yield* generateDirectoryConcept(targetDirectoryRelativePath, input, option)
     return {
-      concept: {
-        summary: '',
-        responsibilities: [],
-        concepts: [],
-        relationships: [],
-        designDecisions: [],
-      },
+      concept,
       changed: isChanged,
     }
-  })
+  }).pipe(
+    Effect.mapError((e) =>
+      wrapInfraError(ConceptError, e, () => ({
+        filePath: targetDirectory,
+        message: 'Fail to generate Directory Concept',
+        phase: 'directory-summary' as const,
+        details: context.projectName,
+      })),
+    ),
+  )

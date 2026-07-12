@@ -1,6 +1,6 @@
 import { withOptional } from '@gyomu/schema'
 import { buildExistingJsDoc } from './buildExistingJsDoc.js'
-import type { FileAnalysisResult } from '@gyomu/ts-analysis'
+import type { FileAnalysisContext } from '@gyomu/schema/typescript'
 import type { ContextEntry, DocumentableInfo } from '@gyomu/ai-compiler/jsdoc-update'
 import type {
   DocumentableMemberAnalysis,
@@ -13,7 +13,7 @@ import type {
 } from '@gyomu/schema/schemas/typescript'
 
 export const buildContextEntry = (
-  fileResult: FileAnalysisResult,
+  fileResult: FileAnalysisContext,
   member: DocumentableMemberAnalysis | NonDocumentableMemberAnalysis,
   parent: SymbolAnalysis | MemberAnalysis,
 ): ContextEntry => {
@@ -117,7 +117,7 @@ const shouldGenerateDoc = (
 }
 
 const buildContextEntryFromTypeProperty = (
-  fileResult: FileAnalysisResult,
+  fileResult: FileAnalysisContext,
   member: TypeProperty,
   parent: SymbolAnalysis | MemberAnalysis,
 ): ContextEntry => {
@@ -160,7 +160,7 @@ const buildContextEntryFromTypeProperty = (
 }
 
 const buildContextEntryFromIndexSignature = (
-  fileResult: FileAnalysisResult,
+  fileResult: FileAnalysisContext,
   member: IndexSignatureAnalysis,
   parent: SymbolAnalysis | MemberAnalysis,
 ): ContextEntry => {
@@ -170,7 +170,7 @@ const buildContextEntryFromIndexSignature = (
     target: member.identity,
     kind: 'type',
     name: member.parameterName,
-    effectSignals: member.type?.effect
+    effectSignals: member.type.effect
       ? {
           success: member.type.effect.success,
           error: member.type.effect.error,
@@ -180,7 +180,7 @@ const buildContextEntryFromIndexSignature = (
 
     children,
     ...withOptional({
-      type: member.type?.text,
+      type: member.type.text,
     }),
   }
 }

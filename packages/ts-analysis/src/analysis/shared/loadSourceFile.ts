@@ -2,7 +2,7 @@ import { relative } from 'node:path'
 import { fromSync } from '@gyomu/schema/effect'
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { AnalysisError } from '../error/AnalysisError.js'
-import type { FullPath } from '@gyomu/schema/typescript'
+import type { FullPath } from '@gyomu/schema'
 import type { SourceFileContext } from '../file/SourceFileContext.js'
 import type { ProjectContext } from '../project/ProjectContext.js'
 

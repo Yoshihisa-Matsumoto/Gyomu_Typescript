@@ -6,12 +6,11 @@ import { writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { describe, expect, it } from 'vitest'
 import { Effect } from 'effect'
-import { equalSymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
+import { equalSymbolIdentity } from '@gyomu/schema/schemas/typescript'
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { analyzeFile } from '../analyzeFile.js'
 import { createFixtureProject } from './createFixtureProject.js'
-import type {} from '@gyomu/schema/typescript'
-import type { FileAnalysisContext } from '../file/FileAnalysisResult.js'
+import type { FileAnalysisContext } from '@gyomu/schema/typescript'
 import type {
   DocumentableMemberAnalysis,
   DocumentableMethodMemberAnalysis,
@@ -30,7 +29,7 @@ const tempJsdocProgram = (sourceFile: string) => {
   const filePath = ProjectRelativePath(path.join('src', sourceFile))
   return Effect.runSync(
     Effect.gen(function* () {
-      const result = yield* analyzeFile(jsDocFixture, filePath)
+      const result = yield* analyzeFile(jsDocFixture, filePath, { verifyIndex: true })
 
       return result
     }),

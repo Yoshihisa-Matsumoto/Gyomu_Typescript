@@ -1,4 +1,5 @@
 import path from 'node:path'
+import fs from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { Effect } from 'effect'
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
@@ -18,7 +19,7 @@ const enumAnalysisProgram = (sourceFile: string): ReadonlyArray<SymbolAnalysis> 
   const filePath = ProjectRelativePath(path.join('src', sourceFile))
   const result = Effect.runSync(
     Effect.gen(function* () {
-      return yield* analyzeFile(enumFixture, filePath, {}).pipe(
+      return yield* analyzeFile(enumFixture, filePath, { verifyIndex: true }).pipe(
         Effect.map((result2) => result2.analysis.symbols),
       )
     }),
@@ -27,32 +28,6 @@ const enumAnalysisProgram = (sourceFile: string): ReadonlyArray<SymbolAnalysis> 
   if (!result) throw new Error('Unexpected symbol should exist')
   return result
 }
-// const enumSymbolsDependencyProgram = (sourceFile: string, folder?: string) => {
-//   const sourcePath = folder ? path.join('src', folder, sourceFile) : path.join('src', sourceFile)
-//   const filePath = ProjectRelativePath(sourcePath)
-//   const result = Effect.runSync(
-//     Effect.gen(function* () {
-//       return yield* analyzeFile(enumFixture, filePath, {
-//         includeDebugInfo: true,
-//       }).pipe(
-//         Effect.map((result2) => {
-//           if (!fs.existsSync('./log')) fs.mkdirSync('./log')
-//           fs.writeFileSync('./log/fileAnalysis.txt', JSON.stringify(result2.analysis, null, 2))
-//           const exports = result2.analysis.symbols.map((s) => {
-//             return {
-//               name: s.identity.symbolId,
-//               dependencies: s.dependencyCandidates,
-//             }
-//           })
-//           return exports
-//         }),
-//       )
-//     }),
-//   )
-//   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-//   if (!result) throw new Error('Unexpected symbol should exist')
-//   return result
-// }
 
 const getEnum = (symbols: ReadonlyArray<SymbolAnalysis>, name: string): SymbolAnalysis => {
   const targetSymbol = symbols.find((symbol) => symbol.identity.symbolId == name)
@@ -160,91 +135,3 @@ describe('analyze Enum pattern', () => {
     timeout,
   )
 })
-// describe('analyze Enum dependency pattern', () => {
-//   it(
-//     '01-enum-dependency.ts',
-//     async () => {
-//       const result = await enumSymbolsDependencyProgram(
-//         '01-enum-dependency.ts',
-//         'dependency',
-//       )
-//       const dependencies = result.find((s) => s.name === 'DependencyEnum')
-
-//       console.dir(result, { depth: null })
-//       expect(dependencies).toBeDefined()
-//       expect(dependencies?.dependencies).toEqual(
-//         expect.arrayContaining([
-//           {
-//             source: { memberPath: ['$generics', 'T'] },
-//             target: { scope: 'import', localSymbolName: 'ImportedType' },
-//           },
-//           {
-//             source: { memberPath: ['$generics', 'U'] },
-//             target: { scope: 'local-file', localSymbolName: 'LocalClass' },
-//           },
-//           {
-//             source: { memberPath: ['$extend', 0] },
-//             target: { scope: 'import', localSymbolName: 'ImportedBase' },
-//           },
-//           {
-//             source: { memberPath: ['$extend', 1] },
-//             target: { scope: 'local-file', localSymbolName: 'LocalBase' },
-//           },
-//           {
-//             source: { memberPath: ['$member', 'localProperty'] },
-//             target: { scope: 'local-file', localSymbolName: 'LocalType' },
-//           },
-//           {
-//             source: { memberPath: ['$member', 'importedProperty'] },
-//             target: { scope: 'import', localSymbolName: 'ImportedType' },
-//           },
-//           {
-//             source: { memberPath: ['$member', 'localMethod', '$parameters', 'value'] },
-//             target: { scope: 'local-file', localSymbolName: 'LocalType' },
-//           },
-//           {
-//             source: { memberPath: ['$member', 'localMethod', '$return'] },
-//             target: { scope: 'import', localSymbolName: 'ImportedType' },
-//           },
-//           {
-//             source: { memberPath: ['$member', 'importedMethod', '$parameters', 'value'] },
-//             target: { scope: 'import', localSymbolName: 'ImportedType' },
-//           },
-//           {
-//             source: { memberPath: ['$member', 'importedMethod', '$return'] },
-//             target: { scope: 'local-file', localSymbolName: 'LocalType' },
-//           },
-//           {
-//             source: { memberPath: ['$member', 'callback', '$generics', 'A'] },
-//             target: { scope: 'import', localSymbolName: 'ImportedType' },
-//           },
-//           {
-//             source: { memberPath: ['$member', 'callback', '$generics', 'B'] },
-//             target: { scope: 'local-file', localSymbolName: 'LocalClass' },
-//           },
-//           {
-//             source: { memberPath: ['$member', 'callback', '$parameters', 'local'] },
-//             target: { scope: 'local-file', localSymbolName: 'LocalType' },
-//           },
-//           {
-//             source: { memberPath: ['$member', 'callback', '$parameters', 'imported'] },
-//             target: { scope: 'import', localSymbolName: 'ImportedType' },
-//           },
-//           {
-//             source: { memberPath: ['$member', 'callback', '$return'] },
-//             target: { scope: 'import', localSymbolName: 'ImportedClass' },
-//           },
-//           {
-//             source: { memberPath: ['$member', 'nested', 0, '$generics', 0] },
-//             target: { scope: 'import', localSymbolName: 'ImportedType' },
-//           },
-//           {
-//             source: { memberPath: ['$member', 'nested', 1, '$generics', 1, '$generics', 0] },
-//             target: { scope: 'local-file', localSymbolName: 'LocalType' },
-//           },
-//         ]),
-//       )
-//     },
-//     timeout,
-//   )
-// })

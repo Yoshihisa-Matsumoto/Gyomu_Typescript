@@ -249,6 +249,7 @@ const ObjectLiteralElementLike2TypeProperty = (
         name: propertyName,
         id,
         identity,
+        kind: 'type-property',
         readonly: false,
         rest: false,
         optional,

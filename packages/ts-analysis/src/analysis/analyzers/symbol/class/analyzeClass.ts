@@ -135,7 +135,7 @@ export const analyzeClass = (args: TagAnalysisArg<ClassDeclaration>) => {
     ),
   } satisfies SymbolAnalysis
 
-  registerSymbolSymbolAnalysis(args.metadata, symbol)
+  registerSymbolSymbolAnalysis(args.metadata, symbol, options)
 
   return {
     symbol,

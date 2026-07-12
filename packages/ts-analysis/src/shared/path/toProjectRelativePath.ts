@@ -1,5 +1,5 @@
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
-import type { FullPath } from '@gyomu/schema/typescript'
+import type { FullPath } from '@gyomu/schema'
 
 /**
  * Converts an absolute file path into a project-relative path.

@@ -108,7 +108,7 @@ export const analyzeVariable = (args: TagAnalysisArg<VariableDeclaration>) => {
       args.declaration.getStartLinePos(),
     ),
   } satisfies Builder<SymbolAnalysis>
-  registerSymbolSymbolAnalysis(args.metadata, symbol)
+  registerSymbolSymbolAnalysis(args.metadata, symbol, options)
 
   return {
     symbol,

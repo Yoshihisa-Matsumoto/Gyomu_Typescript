@@ -6,12 +6,12 @@ import type {
   SymbolIdentity,
 } from '@gyomu/schema/schemas/typescript'
 import type {
+  FileAnalysisMetadata,
   MemberIdentityMemberPath,
   ProjectRelativePath,
   SymbolId,
 } from '@gyomu/schema/typescript'
 import type { Node } from 'ts-morph'
-import type { FileAnalysisMetadata } from '../file/FileAnalysisResult.js'
 import type { AnalysisOptions } from '../AnalysisOption.js'
 
 export type TagAnalysisArg<T extends Node> = {

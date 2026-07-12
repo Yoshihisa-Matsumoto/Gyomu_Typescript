@@ -9,6 +9,7 @@ export type AnalysisPhase =
   | 'symbol-extract'
   | 'jsdoc-extract'
   | 'analysis'
+  | 'post-analysis'
 
 export interface AnalysisErrorContext extends AppErrorContext {
   /**

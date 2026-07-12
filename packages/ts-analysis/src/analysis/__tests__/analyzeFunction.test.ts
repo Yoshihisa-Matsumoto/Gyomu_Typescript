@@ -12,12 +12,10 @@ const timeout = 20000
 const functionFixture = createFixtureProject(path.join('analysis', 'function'))
 
 const functionAnalysisProgram = (sourceFile: string): SymbolAnalysis => {
-  const { project, projectRoot, projectName } = functionFixture
-
   const filePath = ProjectRelativePath(path.join('src', sourceFile))
   const result = Effect.runSync(
     Effect.gen(function* () {
-      return yield* analyzeFile(functionFixture, filePath, {}).pipe(
+      return yield* analyzeFile(functionFixture, filePath, { verifyIndex: true }).pipe(
         Effect.map((result) => result.analysis.symbols[0]),
       )
     }),
@@ -28,13 +26,11 @@ const functionAnalysisProgram = (sourceFile: string): SymbolAnalysis => {
 }
 
 const functionSymbolsDependencyProgram = (sourceFile: string, folder?: string) => {
-  const { project, projectRoot, projectName } = functionFixture
-
   const sourcePath = folder ? path.join('src', folder, sourceFile) : path.join('src', sourceFile)
   const filePath = ProjectRelativePath(sourcePath)
   const result = Effect.runSync(
     Effect.gen(function* () {
-      return yield* analyzeFile(functionFixture, filePath, {}).pipe(
+      return yield* analyzeFile(functionFixture, filePath, { verifyIndex: true }).pipe(
         Effect.map((result) => {
           if (!fs.existsSync('./log')) fs.mkdirSync('./log')
           fs.writeFileSync('./log/fileAnalysis.txt', JSON.stringify(result.analysis, null, 2))

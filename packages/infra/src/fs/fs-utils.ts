@@ -2,11 +2,13 @@ import { dirname, extname, join } from 'node:path'
 import { randomUUID } from 'node:crypto'
 import { tmpdir } from 'node:os'
 import { Effect, FileSystem, Stream } from 'effect'
-import { wrapIOError } from '@gyomu/schema'
+import { FullPath, wrapIOError } from '@gyomu/schema'
 import { parse } from 'yaml'
-import { convertToSchemaObjectWithResult } from '@gyomu/schema/entity'
+import { convertToSchemaObjectWithEffect } from '@gyomu/schema/entity'
+import type { EntryInfo } from './types.js'
+import type { Decode } from '@gyomu/schema/effect'
 import type { Schema } from 'effect'
-import type { IOError, NetworkError } from '@gyomu/schema'
+import type { IOError, NetworkError, SchemaValidationError } from '@gyomu/schema'
 import type { PlatformError } from 'effect/PlatformError'
 
 /**
@@ -197,14 +199,19 @@ export const readJsonFromFile = <T>(path: string, encoding?: string) =>
     const text = yield* readStringFromFile(path, encoding)
     return JSON.parse(text) as T
   })
-export const readJsonFromFileAndValidate = <S extends Schema.Schema<any>>(
+export const readJsonFromFileAndValidate = <S extends Schema.Top>(
+  schemaName: string,
   schema: S,
   path: string,
   encoding?: string,
-) =>
+): Effect.Effect<
+  Schema.Schema.Type<S>,
+  IOError | SchemaValidationError,
+  FileSystem.FileSystem | Decode<S>
+> =>
   Effect.gen(function* () {
     const jsonData = yield* readJsonFromFile(path, encoding)
-    return convertToSchemaObjectWithResult(schema, jsonData)
+    return yield* convertToSchemaObjectWithEffect(schemaName)(schema, jsonData)
   })
 
 export const readYamlFromFile = <T>(path: string, encoding?: string) =>
@@ -261,7 +268,7 @@ export const getFileStat = (path: string) =>
       ),
     )
   })
-export const pathExists = (path: string) =>
+export const pathExists = (path: FullPath) =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem
     return yield* fs.exists(path).pipe(
@@ -275,7 +282,7 @@ export const pathExists = (path: string) =>
       ),
     )
   })
-export const readDirectoryDetailed = (dir: string) =>
+export const readDirectoryDetailed = (dir: FullPath) =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem
     const names = yield* fs.readDirectory(dir).pipe(
@@ -293,7 +300,7 @@ export const readDirectoryDetailed = (dir: string) =>
       names,
       (name) =>
         Effect.gen(function* () {
-          const path = `${dir}/${name}`
+          const path = FullPath(`${dir}/${name}`)
           const stat = yield* fs.stat(path).pipe(
             Effect.mapError(() =>
               wrapIOError(() => ({
@@ -311,7 +318,7 @@ export const readDirectoryDetailed = (dir: string) =>
             type: stat.type,
             isFile: stat.type == 'File',
             isDirectory: stat.type == 'Directory',
-          }
+          } satisfies EntryInfo
         }),
       { concurrency: 'unbounded' },
     )

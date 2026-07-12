@@ -1,4 +1,4 @@
-export { AiModelRouteService, AiModelRoute } from './AiModelRouteService.js'
+export * from './AiModelRouteService.js'
 export { ModelRouteId } from './ModelRouteId.js'
 export { ModelRoutes } from './ModelRoutes.js'
 export * from './ModelRoute.js'

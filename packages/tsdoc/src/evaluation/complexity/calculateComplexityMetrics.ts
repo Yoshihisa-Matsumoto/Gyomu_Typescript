@@ -2,7 +2,7 @@ import { equalSymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIden
 import { mergeComplexityMetrics } from './mergeComplexityMetrics.js'
 import { emptyComplexityMetrics } from './emptyComplexityMetrics.js'
 import { computeEffectComplexity } from './computeEffectComplexity.js'
-import type { SymbolId } from '@gyomu/schema/typescript'
+import type { FileAnalysisContext, SymbolId } from '@gyomu/schema/typescript'
 import type {
   DocumentableMethodMemberAnalysis,
   DocumentablePropertyMemberAnalysis,
@@ -13,12 +13,11 @@ import type {
   TypeProperty,
   TypeStructureAnalysis,
 } from '@gyomu/schema/schemas/typescript'
-import type { FileAnalysisResult } from '@gyomu/ts-analysis'
 
 import type { ComplexityMetrics } from './ComplexityMetrics.js'
 
 export const calculateComplexityMetrics = (
-  fileAnalysisResult: FileAnalysisResult,
+  fileAnalysisResult: FileAnalysisContext,
 ): Map<SymbolId, ComplexityMetrics> => {
   const map = new Map<SymbolId, ComplexityMetrics>()
   for (const exportItem of fileAnalysisResult.analysis.exports.filter((e) => e.kind == 'local')) {
@@ -78,8 +77,7 @@ const calculateComplexityMetricsFromIndexSignatures = (
   currentDepth++
   const metricsArray: Array<ComplexityMetrics> = []
   for (const member of members) {
-    if (member.type)
-      metricsArray.push(calculateComplexityMetricsFromIndexSignature(member, currentDepth))
+    metricsArray.push(calculateComplexityMetricsFromIndexSignature(member, currentDepth))
   }
 
   return mergeComplexityMetrics(metricsArray)

@@ -1,6 +1,6 @@
 import { join, normalize, resolve } from 'node:path'
 import { Project } from 'ts-morph'
-import { FullPath } from '@gyomu/schema/typescript'
+import { FullPath } from '@gyomu/schema'
 import type { ProjectContext } from '../project/ProjectContext.js'
 
 const FIXTURE_ROOT = './test-fixtures'

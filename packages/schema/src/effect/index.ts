@@ -1,6 +1,7 @@
 export * from './exit.js'
 export * from './layer.js'
 export * from './option.js'
+export * from './schema.js'
 export * from './stream.js'
 export * from './timer.js'
 export * from './runtime.js'

@@ -1,6 +1,4 @@
-import type { SymbolId } from '@gyomu/schema/typescript'
-
-import type { FileAnalysis } from './FileAnalysis.js'
+import type { FileAnalysis } from '../schemas/typescript/FileAnalysis.js'
 import type {
   DependencyCandidate,
   DocumentableMemberAnalysis,
@@ -8,7 +6,8 @@ import type {
   IndexSignatureAnalysis,
   ParsedJsDoc,
   SymbolAnalysis,
-} from '@gyomu/schema/schemas/typescript'
+} from '../schemas/typescript/index.js'
+import type { SymbolId } from './types.js'
 
 export interface FileAnalysisContext {
   analysis: FileAnalysis

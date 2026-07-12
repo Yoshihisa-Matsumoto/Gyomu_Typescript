@@ -6,13 +6,13 @@ import { mergeTags } from './merge/mergeTags.js'
 import { mergeSummary } from './merge/mergeSummary.js'
 import { mergeReturns } from './merge/mergeReturns.js'
 import { mergeParams } from './merge/mergeParams.js'
+import type { FileAnalysisContext } from '@gyomu/schema/typescript'
 import type { UpdatedJsDoc } from './jsdoc/UpdatedJsDoc.js'
 import type { MergePlan } from './jsdoc/MergePlan.js'
-import type { FileAnalysisResult } from '@gyomu/ts-analysis'
 import type { UpdatedSymbolJsDoc } from './jsdoc/UpdatedSymbolJsDoc.js'
 
 export const applyMergePlan = (
-  fileResult: FileAnalysisResult,
+  fileResult: FileAnalysisContext,
   plan: MergePlan,
 ): Effect.Effect<{ updatedJsDoc: UpdatedJsDoc; indent: string }, UpdateError> => {
   return Effect.gen(function* () {
@@ -67,7 +67,7 @@ export const applyMergePlan = (
 }
 
 export const applyMergePlans = (
-  fileResult: FileAnalysisResult,
+  fileResult: FileAnalysisContext,
   plans: ReadonlyArray<MergePlan>,
 ): Effect.Effect<ReadonlyArray<UpdatedSymbolJsDoc>, UpdateError> => {
   const result = Effect.forEach((plan: MergePlan) =>

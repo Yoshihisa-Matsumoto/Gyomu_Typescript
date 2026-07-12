@@ -5,13 +5,13 @@ import { equalSymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIden
 import { toIdentityKey } from '@gyomu/schema/schemas/typescript'
 import { UpdateError } from '../error/UpdateError.js'
 import { getTsDocSignatureFromContext, validateJsDocUpdatePlan } from './validateJsDocUpdatePlan.js'
+import type { FileAnalysisContext } from '@gyomu/schema/typescript'
 import type { JsDocUpdatePlan, TsDocFileContext } from '@gyomu/ai-compiler/jsdoc-update'
 import type { UpdateOptions } from '../UpdateOptions.js'
-import type { FileAnalysisResult } from '@gyomu/ts-analysis'
 
 export const buildJsDocUpdatePlanWithRetry = (
   context: TsDocFileContext,
-  fileResult: FileAnalysisResult,
+  fileResult: FileAnalysisContext,
   option?: UpdateOptions,
 ) =>
   Effect.gen(function* () {

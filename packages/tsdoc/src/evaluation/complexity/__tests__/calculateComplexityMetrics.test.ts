@@ -1,9 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { SignatureId, SymbolId } from '@gyomu/schema/typescript'
 import { calculateComplexityMetrics } from '../calculateComplexityMetrics.js'
-import type { TypeAnalysis } from '@gyomu/schema/schemas/typescript/index'
-import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
-import type { FileAnalysisResult } from '@gyomu/ts-analysis'
+import type { FileAnalysisContext } from '@gyomu/schema/typescript'
+import type { SymbolIdentity, TypeAnalysis } from '@gyomu/schema/schemas/typescript'
 
 describe('calculateComplexityMetrics', () => {
   it('returns empty map when no exports exist', () => {
@@ -11,7 +10,7 @@ describe('calculateComplexityMetrics', () => {
       analysis: {
         exports: [],
       },
-    } as any as FileAnalysisResult)
+    } as any as FileAnalysisContext)
 
     expect(result.size).toBe(0)
   })
@@ -48,7 +47,7 @@ describe('calculateComplexityMetrics', () => {
           },
         ],
       },
-    } as any as FileAnalysisResult)
+    } as any as FileAnalysisContext)
 
     expect(result.get(symbolId)).toMatchObject({
       parameterCount: 1,
@@ -85,7 +84,7 @@ describe('calculateComplexityMetrics', () => {
           },
         ],
       },
-    } as any as FileAnalysisResult)
+    } as any as FileAnalysisContext)
 
     expect(result.get(symbolId)).toMatchObject({
       unionCount: 3,
@@ -118,7 +117,7 @@ describe('calculateComplexityMetrics', () => {
                 type: {
                   structure: {
                     kind: 'object',
-                    members: [
+                    properties: [
                       {
                         optional: false,
                         type: {
@@ -135,8 +134,8 @@ describe('calculateComplexityMetrics', () => {
           },
         ],
       },
-    } as any as FileAnalysisResult)
-
+    } as any as FileAnalysisContext)
+    console.dir(result.get(symbolId), { depth: null })
     expect(result.get(symbolId)).toMatchObject({
       referencedTypeCount: 1,
     })

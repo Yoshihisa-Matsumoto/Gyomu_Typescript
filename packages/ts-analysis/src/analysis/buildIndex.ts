@@ -2,6 +2,7 @@ import { toIdentityKey } from '@gyomu/schema/schemas/typescript'
 import type {
   DocumentableMemberAnalysis,
   DocumentableTypeProperty,
+  FileAnalysis,
   IndexSignatureAnalysis,
   MemberAnalysis,
   ParsedJsDoc,
@@ -10,9 +11,7 @@ import type {
   TypeAnalysis,
   TypeProperty,
 } from '@gyomu/schema/schemas/typescript'
-import type { SymbolId } from '@gyomu/schema/typescript'
-import type { FileAnalysis } from './file/FileAnalysis.js'
-import type { DocumentableTarget, FileAnalysisMetadata } from './file/FileAnalysisResult.js'
+import type { DocumentableTarget, FileAnalysisMetadata, SymbolId } from '@gyomu/schema/typescript'
 
 export const buildIndex = (analysis: FileAnalysis): FileAnalysisMetadata => {
   const metadata: FileAnalysisMetadata = {
@@ -153,10 +152,10 @@ const buildIndexFromIndexSignature = (
   metadata: FileAnalysisMetadata,
 ) => {
   if (!indexSignature) return
-  if (indexSignature.documentable) {
-    registerParsedJsDocInternal(indexSignature.id, metadata, indexSignature.parsedJsDoc)
-    registerSymbolSymbolAnalysisInternal(metadata, indexSignature)
-  }
+
+  registerParsedJsDocInternal(indexSignature.id, metadata, indexSignature.parsedJsDoc)
+  registerSymbolSymbolAnalysisInternal(metadata, indexSignature)
+
   buildIndexFromType(indexSignature.parameterType, metadata)
   buildIndexFromType(indexSignature.type, metadata)
 }
@@ -179,11 +178,7 @@ export const registerSymbolSymbolAnalysisInternal = (
     DocumentableMemberAnalysis | SymbolAnalysis | DocumentableTypeProperty | IndexSignatureAnalysis,
 ) => {
   const id = toIdentityKey(symbolAnalysis.identity)
-  if (
-    id ==
-    'CrudRepository::type::$member.synchronizeRecords.$return.$member.insertedRows::property:%%:property'
-  )
-    throw new Error('HERE!!')
+
   if (!metadata.symbols.has(id)) metadata.symbols.set(id, { analysis: symbolAnalysis })
 }
 

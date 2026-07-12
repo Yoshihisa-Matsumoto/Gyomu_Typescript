@@ -29,8 +29,15 @@ export const analyzeTypePropertyMember = (
   visibility: MemberAccessor = 'public',
 ): MemberAnalysisWithReservedResult<TypeProperty> => {
   tracePlaceIdentity(args, args.options, 'analyzeTypePropertyMember')
-  const { sourceRelativePath, metadata, node, ownerSymbolId, ownerSymbolIdentity, memberPath } =
-    args
+  const {
+    sourceRelativePath,
+    metadata,
+    node,
+    ownerSymbolId,
+    ownerSymbolIdentity,
+    memberPath,
+    options,
+  } = args
   const typeNode = args.node.getTypeNode()
   const name = node.getName()
   const initializer = args.node.getInitializer()
@@ -43,6 +50,7 @@ export const analyzeTypePropertyMember = (
     name,
     node,
     node,
+    options,
   )
   return analyzeTypePropertyMemberInternal(args, {
     initializer,
@@ -120,6 +128,7 @@ const analyzeTypePropertyMemberInternal = (
     documentable: true,
     id,
     identity,
+    kind: 'type-property',
     name,
 
     readonly,
@@ -140,7 +149,7 @@ const analyzeTypePropertyMemberInternal = (
       args.node.getStartLinePos(),
     ),
   } satisfies DocumentableTypeProperty
-  registerSymbolSymbolAnalysis(metadata, property)
+  registerSymbolSymbolAnalysis(metadata, property, options)
   return {
     member: property,
     dependencies: [...typeResult.dependencies],

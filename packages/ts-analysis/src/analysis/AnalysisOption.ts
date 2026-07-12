@@ -3,6 +3,7 @@ export interface AnalysisOptions {
     keyword: string
   }
   DumpToFile?: boolean
+  verifyIndex?: boolean
 }
 
 export interface LoadAnalysisOptions extends AnalysisOptions {

@@ -23,6 +23,8 @@ export interface IndexSignatureAnalysis {
   readonly id: SymbolId
 
   readonly identity: SymbolIdentity
+
+  readonly kind: 'indexed-signature'
   /**
    * Parameter name.
    */
@@ -118,6 +120,8 @@ export const IndexSignatureAnalysis = Schema.Struct({
   identity: SymbolIdentity.annotate({
     description: 'Symbol name/identity details.',
   }),
+
+  kind: Schema.Literal('indexed-signature'),
 
   parameterName: Schema.String.annotate({
     description: 'Parameter name.',

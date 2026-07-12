@@ -1,8 +1,11 @@
 import { Node, SyntaxKind } from 'ts-morph'
 import { moduleSpecifierToSourcePath } from '../../shared/module/moduleSpecifierToSourcePath.js'
 import type { Builder } from '@gyomu/schema/entity'
-import type { FileAnalysisMetadata } from '../file/FileAnalysisResult.js'
-import type { MemberIdentityMemberPath, ProjectRelativePath } from '@gyomu/schema/typescript'
+import type {
+  FileAnalysisMetadata,
+  MemberIdentityMemberPath,
+  ProjectRelativePath,
+} from '@gyomu/schema/typescript'
 import type { ExportAnalysis, SymbolAnalysis } from '@gyomu/schema/schemas/typescript'
 import type { StatementAnalysisResult } from './types.js'
 import type { ExportDeclaration } from 'ts-morph'

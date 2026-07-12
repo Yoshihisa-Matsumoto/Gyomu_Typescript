@@ -2,7 +2,8 @@ import path from 'node:path'
 import { describe, expect, test } from 'vitest'
 
 import { toProjectRelativePath } from '@gyomu/ts-analysis'
-import { FullPath, ProjectRelativePath } from '@gyomu/schema/typescript'
+import { FullPath } from '@gyomu/schema'
+import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { mapSourcePathToOutputPath } from '../mapSourcePathToOutputPath.js'
 
 describe('mapSourcePathToOutputPath', () => {

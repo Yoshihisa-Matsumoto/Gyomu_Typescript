@@ -2,7 +2,7 @@ import path from 'node:path'
 
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { toAbsolutePath } from '../path/toAbsolutePath.js'
-import type { FullPath } from '@gyomu/schema/typescript'
+import type { FullPath } from '@gyomu/schema'
 
 /**
  * Creates a module specifier from a project-relative source path.

@@ -1,1 +1,1 @@
-export { FileAnalysisContext as FileAnalysisResult } from './FileAnalysisResult.js'
+export { findExportSymbol } from './findExportSymbol.js'

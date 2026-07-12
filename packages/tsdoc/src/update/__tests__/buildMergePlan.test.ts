@@ -6,10 +6,9 @@ import { PlatformLayer } from '@gyomu/infra'
 import { TsDocRouteId } from '@gyomu/ai-compiler/jsdoc-update'
 import { buildMergePlan } from '../buildMergePlan.js'
 import { UpdateError } from '../error/UpdateError.js'
-import type { SymbolId } from '@gyomu/schema/typescript'
+import type { FileAnalysisContext, SymbolId } from '@gyomu/schema/typescript'
 
 import type { ComplexityMetrics } from '../../evaluation/complexity/ComplexityMetrics.js'
-import type { FileAnalysisResult } from '@gyomu/ts-analysis'
 
 const { mockBuildJsDocUpdateContext } = vi.hoisted(() => ({
   mockBuildJsDocUpdateContext: vi.fn(),
@@ -69,7 +68,7 @@ describe('buildMergePlan', () => {
     metadata: {
       parsedJsDocs: new Map(),
     },
-  } as unknown as FileAnalysisResult
+  } as unknown as FileAnalysisContext
 
   test('should build merge plans', async () => {
     const context1 = {

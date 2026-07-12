@@ -26,8 +26,15 @@ export const analyzeGetSetAccessor = (
   args: ChildAnalysisArg<GetAccessorDeclaration>,
   setter?: SetAccessorDeclaration,
 ): MemberAnalysisResult<DocumentablePropertyMemberAnalysis> => {
-  const { sourceRelativePath, metadata, node, ownerSymbolId, ownerSymbolIdentity, memberPath } =
-    args
+  const {
+    sourceRelativePath,
+    metadata,
+    node,
+    ownerSymbolId,
+    ownerSymbolIdentity,
+    memberPath,
+    options,
+  } = args
   const name = node.getName()
 
   const { id, identity, jsDoc, location, startOffset, parsedJsDoc } = prepareMethodAnalysis(
@@ -39,6 +46,7 @@ export const analyzeGetSetAccessor = (
     name,
     node,
     node,
+    options,
   )
 
   return analyzePropertyMemberInternal(args, {

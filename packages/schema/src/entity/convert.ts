@@ -53,7 +53,10 @@ export const convertToSchemaObjectWithResult = <S extends Constraint>(
  */
 export const convertToSchemaObjectWithEffect =
   (schemaName: string) =>
-  <S extends Schema.Schema<any>>(schema: S, input: unknown) =>
+  <S extends Schema.Schema<any>>(
+    schema: S,
+    input: unknown,
+  ): Effect.Effect<Schema.Schema.Type<S>, SchemaValidationError, S['DecodingServices']> =>
     Schema.decodeUnknownEffect(schema)(input).pipe(
       Effect.mapError(
         (e: SchemaError) =>
@@ -80,7 +83,7 @@ export const convertToSchemaObjectWithEffect =
  */
 export const convertFromSchemaObjectWithEffect =
   (schemaName: string) =>
-  <S extends Schema.Schema<any>>(schema: S, input: S['Type']) =>
+  <S extends Schema.Top>(schema: S, input: S['Type']) =>
     Schema.encodeEffect(schema)(input).pipe(
       Effect.mapError(
         (e: SchemaError) =>
@@ -93,6 +96,8 @@ export const convertFromSchemaObjectWithEffect =
           }),
       ),
     )
+
+// export type ValidationEffectSchema = Schema.Struct<any> | Schema.$Array<Schema.Struct<any>>
 
 /**
  * Represents a schema compatible with standard schema V1 and structurally required as a Struct.

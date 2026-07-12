@@ -54,7 +54,7 @@ export const analyzeFunction = (
       args.declaration.getStartLinePos(),
     ),
   } satisfies SymbolAnalysis
-  registerSymbolSymbolAnalysis(args.metadata, symbol)
+  registerSymbolSymbolAnalysis(args.metadata, symbol, args.options)
 
   return {
     symbol,

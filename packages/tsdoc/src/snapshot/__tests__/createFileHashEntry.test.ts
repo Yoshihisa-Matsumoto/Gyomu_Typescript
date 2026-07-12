@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { Effect } from 'effect'
 import { PlatformLayer } from '@gyomu/infra'
-
-import { FullPath, WorkspaceRelativePath } from '@gyomu/schema/typescript'
+import { FullPath } from '@gyomu/schema'
+import { WorkspaceRelativePath } from '@gyomu/schema/typescript'
 import { createFileHashEntry } from '../createFileHashEntry.js'
 
 import type { FileInfo } from '@gyomu/schema/gyomu/file'

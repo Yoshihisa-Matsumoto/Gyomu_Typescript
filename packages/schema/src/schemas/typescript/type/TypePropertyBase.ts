@@ -45,6 +45,8 @@ export const TypePropertyBase = Schema.Struct({
     description: 'Symbol name/identity details.',
   }),
 
+  kind: Schema.Literal('type-property'),
+
   name: Schema.String.annotate({
     description: 'The name of the property.',
   }),

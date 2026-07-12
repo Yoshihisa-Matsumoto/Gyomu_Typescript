@@ -1,6 +1,7 @@
 import { Effect, FileSystem } from 'effect'
 import { describe, expect, it, vi } from 'vitest'
 import { FileSearchService } from '@gyomu/schema/shared/fs'
+import { FullPath } from '@gyomu/schema'
 import { enumerateTargetFiles } from '../enumerateTargetFiles.js'
 
 describe('enumerateTargetFiles', () => {
@@ -8,7 +9,7 @@ describe('enumerateTargetFiles', () => {
     const search = vi.fn().mockReturnValue(Effect.succeed([]))
 
     await Effect.runPromise(
-      enumerateTargetFiles('/project').pipe(
+      enumerateTargetFiles(FullPath('/project')).pipe(
         Effect.provideService(FileSystem.FileSystem, {} as any),
         Effect.provideService(FileSearchService, {
           search,
@@ -40,7 +41,7 @@ describe('enumerateTargetFiles', () => {
     )
 
     const result = await Effect.runPromise(
-      enumerateTargetFiles('/project').pipe(
+      enumerateTargetFiles(FullPath('/project')).pipe(
         Effect.provideService(FileSystem.FileSystem, {} as any),
         Effect.provideService(FileSearchService, {
           search,

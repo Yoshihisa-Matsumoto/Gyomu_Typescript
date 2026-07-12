@@ -1,3 +1,4 @@
+import { Brand } from 'effect'
 import type { Config, Option } from 'effect'
 
 /**
@@ -31,3 +32,13 @@ export type NormalizeOptionObject<T> = {
 } & {
   [K in keyof T as T[K] extends Option.Option<any> ? never : K]: T[K]
 }
+
+/**
+ * Represents an absolute file system path as a string.
+ */
+export type FullPath = Brand.Branded<string, 'FullPath'>
+
+/**
+ * Nominal brand utility for FullPath.
+ */
+export const FullPath = Brand.nominal<FullPath>()

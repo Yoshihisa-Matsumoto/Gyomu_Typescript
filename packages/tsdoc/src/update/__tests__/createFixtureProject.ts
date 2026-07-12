@@ -1,5 +1,5 @@
 import { join, normalize, resolve } from 'node:path'
-import { FullPath } from '@gyomu/schema/typescript'
+import { FullPath } from '@gyomu/schema'
 import { Project } from 'ts-morph'
 import type { ProjectContext } from '@gyomu/ts-analysis'
 

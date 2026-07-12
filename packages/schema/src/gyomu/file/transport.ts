@@ -1,6 +1,7 @@
 import path from 'node:path'
 import { ValueError } from '../../error/ValueError.js'
 import type { FileFilterInfo } from './filter.js'
+import { FullPath } from '../../types.js'
 
 /**
  * Represents the metadata and path configuration for a file transport operation.
@@ -139,10 +140,10 @@ export class FileTransportInfo {
    *
    * @returns The full source path string.
    */
-  get sourceFullName(): string {
-    if (!this.sourceFolderName) return this.sourceFileName
-    if (!this.sourceFileName) return this.sourceFolderName
-    return path.join(this.sourceFolderName, this.sourceFileName)
+  get sourceFullName(): FullPath {
+    if (!this.sourceFolderName) return FullPath(this.sourceFileName)
+    if (!this.sourceFileName) return FullPath(this.sourceFolderName)
+    return FullPath(path.join(this.sourceFolderName, this.sourceFileName))
   }
 
   /**
@@ -150,9 +151,9 @@ export class FileTransportInfo {
    *
    * @returns The absolute source path.
    */
-  get sourceFullNameWithBasePath(): string {
-    if (!this.sourceFullName) return this.basePath
-    if (this.basePath) return path.join(this.basePath, this.sourceFullName)
+  get sourceFullNameWithBasePath(): FullPath {
+    if (!this.sourceFullName) return FullPath(this.basePath)
+    if (this.basePath) return FullPath(path.join(this.basePath, this.sourceFullName))
     return this.sourceFullName
   }
 
@@ -181,9 +182,9 @@ export class FileTransportInfo {
    *
    * @returns The full destination path string.
    */
-  get destinationFullName(): string {
-    if (!this.destinationPath) return this.destinationFileName
-    if (!this.destinationFileName) return this.destinationPath
-    return path.join(this.destinationPath, this.destinationFileName)
+  get destinationFullName(): FullPath {
+    if (!this.destinationPath) return FullPath(this.destinationFileName)
+    if (!this.destinationFileName) return FullPath(this.destinationPath)
+    return FullPath(path.join(this.destinationPath, this.destinationFileName))
   }
 }

@@ -5,6 +5,7 @@ import { Effect } from 'effect'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import { PlatformLayer } from '@gyomu/infra'
+import { FullPath } from '@gyomu/schema'
 import { ___resetWorkspaceRoot } from '../../path/findWorkspaceRoot.js'
 import { listTypescriptProject } from '../listTypescriptProject.js'
 
@@ -47,7 +48,7 @@ packages:
     await writeFile(join(core, 'tsconfig.json'), '{}')
 
     const result = await Effect.runPromise(
-      listTypescriptProject(root).pipe(Effect.provide(PlatformLayer)),
+      listTypescriptProject(FullPath(root)).pipe(Effect.provide(PlatformLayer)),
     )
 
     expect(result.projects).toEqual(
@@ -84,7 +85,7 @@ packages:
     await writeFile(join(pkg, 'package.json'), '{}')
 
     const result = await Effect.runPromise(
-      listTypescriptProject(root).pipe(Effect.provide(PlatformLayer)),
+      listTypescriptProject(FullPath(root)).pipe(Effect.provide(PlatformLayer)),
     )
 
     expect(result.projects).toEqual([])
@@ -104,7 +105,7 @@ packages:
     await mkdir(join(root, 'packages', 'empty'), { recursive: true })
 
     const result = await Effect.runPromise(
-      listTypescriptProject(root).pipe(Effect.provide(PlatformLayer)),
+      listTypescriptProject(FullPath(root)).pipe(Effect.provide(PlatformLayer)),
     )
 
     expect(result.projects).toEqual([])

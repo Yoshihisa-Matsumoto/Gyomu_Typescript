@@ -1,7 +1,7 @@
 import path from 'node:path'
 import { describe, expect, test } from 'vitest'
-
-import { FullPath, ProjectRelativePath } from '@gyomu/schema/typescript'
+import { FullPath } from '@gyomu/schema'
+import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { toProjectRelativePath } from '../toProjectRelativePath.js'
 import { toAbsolutePath } from '../toAbsolutePath.js'
 

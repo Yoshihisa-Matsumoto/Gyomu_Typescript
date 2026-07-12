@@ -7,8 +7,8 @@ import { buildJsDocUpdateContext } from './internal/buildJsDocUpdateContext.js'
 import { UpdateError } from './error/UpdateError.js'
 import { buildJsDocUpdatePlanWithRetry } from './internal/buildJsDocUpdatePlanWithRetry.js'
 import { createMergePlan } from './internal/createMargePlan.js'
+import type { FileAnalysisContext } from '@gyomu/schema/typescript'
 import type { FileSystem } from 'effect'
-import type { FileAnalysisResult } from '@gyomu/ts-analysis'
 import type { MergePlan } from './jsdoc/MergePlan.js'
 import type { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 import type { UpdateOptions } from './UpdateOptions.js'
@@ -16,7 +16,7 @@ import type { IOError } from '@gyomu/schema'
 
 export const buildMergePlan = (
   projectName: string,
-  fileResult: FileAnalysisResult,
+  fileResult: FileAnalysisContext,
   option?: UpdateOptions,
 ): Effect.Effect<
   Array<MergePlan>,

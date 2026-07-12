@@ -3,7 +3,8 @@ import { describe, expect, it, vi } from 'vitest'
 import { Effect, FileSystem } from 'effect'
 
 import { FileSearchService } from '@gyomu/schema/shared/fs'
-import { FullPath, WorkspaceRelativePath } from '@gyomu/schema/typescript'
+import { FullPath } from '@gyomu/schema'
+import { WorkspaceRelativePath } from '@gyomu/schema/typescript'
 import { analyzeProjectChanges } from '../analyzeProjectChanges.js'
 
 // ------------------------

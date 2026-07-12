@@ -41,9 +41,9 @@ describe('decodeRawLoadedConfig test', () => {
       },
     ] as any
 
-    mockedConvert.mockImplementation(() => {
-      return (schema: any, config: any) => Effect.succeed({ host: 'localhost' })
-    })
+    mockedConvert.mockImplementation((() => {
+      return () => Effect.succeed({ host: 'localhost' })
+    }) as typeof convertToSchemaObjectWithEffect)
 
     const result = await decodeRawLoadedConfigs(request, configs).pipe(Effect.runPromise)
 
@@ -59,12 +59,12 @@ describe('decodeRawLoadedConfig test', () => {
     ] as any
 
     mockedConvert
-      .mockImplementationOnce(() => {
-        return (schema: any, config: any) => Effect.succeed({ a: 1 })
-      })
-      .mockImplementationOnce(() => {
-        return (schema: any, config: any) => Effect.succeed({ b: 2 })
-      })
+      .mockImplementationOnce((() => {
+        return () => Effect.succeed({ a: 1 })
+      }) as typeof convertToSchemaObjectWithEffect)
+      .mockImplementationOnce((() => {
+        return () => Effect.succeed({ b: 2 })
+      }) as typeof convertToSchemaObjectWithEffect)
 
     const result = await decodeRawLoadedConfigs(request, configs).pipe(Effect.runPromise)
 

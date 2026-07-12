@@ -11,6 +11,10 @@
       "import": "./dist/pipelines/jsdoc-update/index.js",
       "types": "./dist/pipelines/jsdoc-update/index.d.ts"
     },
+    "./file-summary": {
+      "import": "./dist/pipelines/file-summary/index.js",
+      "types": "./dist/pipelines/file-summary/index.d.ts"
+    },
     "./directory-concept": {
       "import": "./dist/pipelines/directory-concept/index.js",
       "types": "./dist/pipelines/directory-concept/index.d.ts"

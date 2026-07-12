@@ -2,7 +2,9 @@ import { SignatureId } from '@gyomu/schema/typescript'
 import { registerSymbolJsDoc } from '../../file/registerSymbolJsDoc.js'
 import { extractJsDoc } from '../../extract/extractJsDoc.js'
 import { createMemberIdentityAndId } from '../../shared/createMemberIdentity.js'
+import type { AnalysisOptions } from '../../AnalysisOption.js'
 import type {
+  FileAnalysisMetadata,
   MemberIdentityMemberPath,
   ProjectRelativePath,
   SymbolId,
@@ -19,7 +21,6 @@ import type {
   PropertyDeclaration,
   PropertySignature,
 } from 'ts-morph'
-import type { FileAnalysisMetadata } from '../../file/FileAnalysisResult.js'
 import type { JsDocAnalysis, ParsedJsDoc, SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
 export const preparePropertyAnalysis = (
@@ -31,6 +32,7 @@ export const preparePropertyAnalysis = (
   propertyName: string,
   node: PropertySignature | PropertyDeclaration | EnumMember,
   jsDocableNode: JSDocableNode & Node,
+  options: AnalysisOptions | undefined,
 ): {
   id: SymbolId
   identity: SymbolIdentity
@@ -56,6 +58,7 @@ export const preparePropertyAnalysis = (
     identity,
     node,
     jsDocableNode,
+    options,
   })
 }
 
@@ -73,6 +76,7 @@ export const prepareMethodAnalysis = (
     | ConstructorDeclaration
     | GetAccessorDeclaration,
   jsDocableNode: JSDocableNode & Node,
+  options: AnalysisOptions | undefined,
 ): {
   id: SymbolId
   identity: SymbolIdentity
@@ -88,6 +92,7 @@ export const prepareMethodAnalysis = (
     ...initializeMethodIdentity(ownerSymbolId, ownerSymbolIdentity, memberPath, methodName, node),
     node,
     jsDocableNode,
+    options,
   })
 }
 
@@ -121,6 +126,7 @@ export const prepareMemberAnalysis = (args: {
   identity: SymbolIdentity
   node: Node
   jsDocableNode: JSDocableNode & Node
+  options: AnalysisOptions | undefined
 }): {
   id: SymbolId
   identity: SymbolIdentity
@@ -130,11 +136,11 @@ export const prepareMemberAnalysis = (args: {
   startOffset: number
   snippet: string
 } => {
-  const { id, identity, node, jsDocableNode, metadata } = args
+  const { id, identity, node, jsDocableNode, metadata, options } = args
 
   const extractedJsDoc = extractJsDoc(jsDocableNode)
 
-  registerSymbolJsDoc(id, metadata, extractedJsDoc)
+  registerSymbolJsDoc(id, metadata, extractedJsDoc, options)
 
   return {
     id,

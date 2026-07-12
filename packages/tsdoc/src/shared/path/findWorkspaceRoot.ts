@@ -1,7 +1,7 @@
 import { dirname, join } from 'node:path'
 import { pathExists } from '@gyomu/infra/fs'
 import { Effect } from 'effect'
-import { FullPath } from '@gyomu/schema/typescript'
+import { FullPath } from '@gyomu/schema'
 import type { IOError } from '@gyomu/schema'
 import type { FileSystem } from 'effect'
 
@@ -14,7 +14,7 @@ export interface FindWorkspaceRootOptions {
   readonly currentDirectory?: string
 }
 export const findWorkspaceRoot = (
-  startDirectory = process.cwd(),
+  startDirectory: FullPath = FullPath(process.cwd()),
 ): Effect.Effect<FullPath, IOError, FileSystem.FileSystem> => {
   if (calculatedWorkspaceRoot) return Effect.succeed(FullPath(calculatedWorkspaceRoot))
 
@@ -44,15 +44,15 @@ export const findWorkspaceRoot = (
 }
 
 const findFile = (
-  currentPath: string,
+  currentPath: FullPath,
   fileName: string,
 ): Effect.Effect<string | undefined, IOError, FileSystem.FileSystem> => {
-  const targetFilePath = join(currentPath, fileName)
+  const targetFilePath = FullPath(join(currentPath, fileName))
   return Effect.gen(function* () {
     const exists = yield* pathExists(targetFilePath)
     if (exists) return currentPath
     else {
-      const parent = dirname(currentPath)
+      const parent = FullPath(dirname(currentPath))
 
       if (parent === currentPath) return undefined
       return yield* findFile(parent, fileName)

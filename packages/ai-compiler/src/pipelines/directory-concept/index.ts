@@ -1,1 +1,1 @@
-export { DirectoryConcept } from './schema/DirectoryConcept.js'
+export * from './executor/executeDirectoryConcept.js'

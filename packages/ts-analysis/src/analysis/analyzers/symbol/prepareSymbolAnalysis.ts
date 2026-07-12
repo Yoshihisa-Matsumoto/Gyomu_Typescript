@@ -49,7 +49,7 @@ export const prepareSymbolAnalysis = <T extends Node>(
   const checkJsDockableNode = jsDocableNode ?? (declaration as unknown as JSDocableNode)
 
   const extractedJsDoc = extractJsDoc(checkJsDockableNode)
-  registerSymbolJsDoc(id, metadata, extractedJsDoc)
+  registerSymbolJsDoc(id, metadata, extractedJsDoc, options)
 
   if (extractedJsDoc?.analysis)
     return {

@@ -14,3 +14,5 @@ export * from './SymbolKind.js'
 
 export * from './type/index.js'
 export * from './member/index.js'
+
+export * from './FileAnalysis.js'

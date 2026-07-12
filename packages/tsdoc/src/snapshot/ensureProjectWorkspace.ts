@@ -1,11 +1,10 @@
 import { Effect, FileSystem } from 'effect'
 
-import { IOError, wrapInfraError } from '@gyomu/schema'
+import { FullPath, IOError, wrapInfraError } from '@gyomu/schema'
 
 import { shortSha256 } from '@gyomu/infra/hash'
 import { writeStringToFile } from '@gyomu/infra/fs'
 import { resolvePathWithinBase } from '@gyomu/schema/gyomu'
-import { FullPath } from '@gyomu/schema/typescript'
 import { GYOMU_VERSION } from './types/ProjectWorkspaceManifest.js'
 import type { WorkspaceRelativePath } from '@gyomu/schema/typescript'
 

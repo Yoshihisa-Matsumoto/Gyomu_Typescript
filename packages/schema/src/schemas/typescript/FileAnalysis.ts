@@ -1,5 +1,7 @@
-import { ExportAnalysis, ImportAnalysis, SymbolAnalysis } from '@gyomu/schema/schemas/typescript'
 import { Schema } from 'effect'
+import { ImportAnalysis } from './ImportAnalysis.js'
+import { ExportAnalysis } from './EportAnalysis.js'
+import { SymbolAnalysis } from './SymbolAnalysis.js'
 
 /**
  * Complete analysis result for a source file.
@@ -8,7 +10,7 @@ import { Schema } from 'effect'
  * dependency relationships, metrics,
  * and scoring hints used for TSDoc generation.
  */
-export const FileAnalysis = Schema.Struct({
+export const FileAnalysisSchema = Schema.Struct({
   path: Schema.String.pipe(Schema.brand('ProjectRelativePath')).annotate({
     description: 'Relative file path from project root.',
   }),
@@ -29,4 +31,4 @@ export const FileAnalysis = Schema.Struct({
     'Complete analysis result for a source file. Contains extracted symbol information, dependency relationships, metrics, and scoring hints used for TSDoc generation.',
 })
 
-export type FileAnalysis = typeof FileAnalysis.Type
+export type FileAnalysis = typeof FileAnalysisSchema.Type

@@ -191,7 +191,7 @@ export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => 
   //     ),
   //   } satisfies SymbolAnalysis
   // }
-  registerSymbolSymbolAnalysis(args.metadata, symbol)
+  registerSymbolSymbolAnalysis(args.metadata, symbol, options)
   return {
     symbol: symbol,
     isDefault: args.declaration.isDefaultExport(),
