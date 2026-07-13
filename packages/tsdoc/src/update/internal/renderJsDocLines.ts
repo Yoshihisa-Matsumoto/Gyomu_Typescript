@@ -47,12 +47,12 @@ export const renderJsDocLines = (updated: UpdatedSymbolJsDoc): Array<JsDocLine> 
     }
   }
 
-  if (jsDoc.templates.length > 0) {
-    for (const template of jsDoc.templates) {
-      lines.push({ type: 'tag', text: `@template ${template}` })
-      lines.push({ type: 'blank' })
-    }
-  }
+  // if (jsDoc.templates.length > 0) {
+  //   for (const template of jsDoc.templates) {
+  //     lines.push({ type: 'tag', text: `@template ${template}` })
+  //     lines.push({ type: 'blank' })
+  //   }
+  // }
 
   if (jsDoc.remarks) {
     const text = (jsDoc.remarks.includes('\n') ? '\n' : ' ') + jsDoc.remarks

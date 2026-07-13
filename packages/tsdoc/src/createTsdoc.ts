@@ -74,10 +74,7 @@ const processTsDocUpdateProgram = async (
   return await runQAWithEnvOrThrow(program, layer)
 }
 
-await processTsDocUpdateProgram(
-  `@gyomu/schema`,
-  ProjectRelativePath(`src/schemas/typescript/jsdoc/JsDocAnalysis.ts`),
-)
+await processTsDocUpdateProgram(`@gyomu/schema`, ProjectRelativePath(`src/types.ts`))
 // await processTsDocUpdateProgram(`@gyomu/schema`, `src/core/result.ts`)
 // `src/conversation/index.ts`
 // `src/core/result.ts`
