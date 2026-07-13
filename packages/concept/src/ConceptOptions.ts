@@ -4,7 +4,6 @@ export interface ConceptOptions {
   debugInfo?:
     | {
         DirectoryConcept?: boolean
-        FileSummaryInput?: boolean
         DumpToFile?: boolean
       }
     | undefined

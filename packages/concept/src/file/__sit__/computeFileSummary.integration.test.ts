@@ -9,7 +9,7 @@
 // import { analyzeFile } from '@gyomu/ts-analysis'
 // import { computeFileSummary } from '../computeFileSummary.js'
 // import { AI_MODELS } from '@gyomu/ai'
-// import { describe, test } from 'vitest'
+import { describe, test } from 'vitest'
 
 // const fileFixture = createFixtureProject(path.join('summary', 'simple'))
 
@@ -38,8 +38,8 @@
 //   return runQAWithEnvOrThrow(program, layer)
 // }
 
-// describe('File Summary Integration', () => {
-//   test('simple', async () => {
-//     await createFileSummaryProgram('main.ts')
-//   })
-// })
+describe('File Summary Integration', () => {
+  //   test('simple', async () => {
+  //     await createFileSummaryProgram('main.ts')
+  //   })
+})

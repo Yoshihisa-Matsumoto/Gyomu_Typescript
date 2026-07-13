@@ -66,6 +66,7 @@ export const snapshotCommand = (
         repoRoot: projects.repositoryRoot,
         projectRelativePath: targetProject.rootPath,
       })
+
       const projectAbsolutePath = projectContext.projectRoot
       if (options?.recommit) {
         yield* deleteSnapshot({
@@ -179,6 +180,10 @@ export const snapshotCommand = (
             projectPath: targetProject.rootPath,
           })
         }
+        yield* buildDirectoryConcept(projectContext, {
+          changedFiles: changeResult.diff,
+          retryOption: {},
+        })
 
         yield* commitProjectSnapshot({
           expectedSnapshot: changeResult.currentSnapshot,

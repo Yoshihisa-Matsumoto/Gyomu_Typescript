@@ -16,7 +16,7 @@ Guidelines
 - Only describe information that is directly supported by the provided file summaries and child directory concepts.
 - When uncertain, omit the information instead of inferring it.
 - Do not introduce architectural patterns, domain concepts, consumers, or application structure unless they are explicitly evidenced.
-
+- Concepts should be concise noun phrases (1–4 words).
 - Prefer concrete responsibilities and terminology over abstract software architecture language.
 - Reuse terminology from the provided summaries whenever possible.
 

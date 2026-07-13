@@ -10,5 +10,5 @@ export interface BuildResult {
 
 export type BuildDirectoryOption = {
   targetFolder?: ProjectRelativePath | undefined
-  changedFiles?: Array<FileChange> | undefined
+  changedFiles?: ReadonlyArray<FileChange> | undefined
 } & ConceptOptions

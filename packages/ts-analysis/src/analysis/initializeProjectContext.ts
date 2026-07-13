@@ -50,11 +50,14 @@ export const initializeProjectContext = (args: {
     const project = new Project({
       tsConfigFilePath: tsConfig,
     })
+    let sourceDir = project.getCompilerOptions().rootDir ?? '.'
+    if (normalizePath(sourceDir).startsWith(normalizePath(projectRootAbsolutePath)))
+      sourceDir = relative(projectRootAbsolutePath, sourceDir)
     return {
       project,
       projectName,
       projectRoot: FullPath(projectRootAbsolutePath),
-      sourceRoot: ProjectRelativePath(project.getCompilerOptions().rootDir ?? '.'),
+      sourceRoot: ProjectRelativePath(sourceDir),
       includedFiles: new Set(
         project
           .getSourceFiles()
