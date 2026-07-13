@@ -20,11 +20,21 @@ import type { SymbolId } from '../../../typescript/types.js'
  * ```
  */
 export interface IndexSignatureAnalysis {
+  /**
+   * Stable identifier of the symbol.
+   */
   readonly id: SymbolId
 
+  /**
+   * Symbol name/identity details.
+   */
   readonly identity: SymbolIdentity
 
+  /**
+   * The literal kind of the indexed signature analysis.
+   */
   readonly kind: 'indexed-signature'
+
   /**
    * Parameter name.
    */
@@ -81,6 +91,7 @@ export interface IndexSignatureAnalysis {
   readonly docIndent: string
 }
 type aa = Schema.Schema.Type<typeof IndexSignatureAnalysis>
+
 export const IndexSignatureAnalysis = Schema.Struct({
   /**
    * Stable identifier of the symbol.

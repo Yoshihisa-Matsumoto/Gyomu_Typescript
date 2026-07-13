@@ -9,6 +9,7 @@ export const buildDirectoryConcept = (context: ProjectContext, option?: BuildDir
   Effect.gen(function* () {
     const rootPath = option?.targetFolder
       ? FullPath(join(context.projectRoot, option.targetFolder))
-      : context.projectRoot
+      : FullPath(join(context.projectRoot, context.sourceRoot))
+
     return yield* buildDirectoryConceptFromPath(context, rootPath, option)
   })

@@ -4,6 +4,7 @@ import { readStringFromFile } from '@gyomu/infra/fs'
 import { fromSync } from '@gyomu/schema/effect'
 import { FullPath, wrapInfraError } from '@gyomu/schema'
 import { Project } from 'ts-morph'
+import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { normalizePath } from '../shared/index.js'
 import { AnalysisError } from './error/AnalysisError.js'
 import type { WorkspaceRelativePath } from '@gyomu/schema/typescript'
@@ -45,6 +46,7 @@ export const initializeProjectContext = (args: {
         })
       return projectNameInternal
     })
+
     const project = new Project({
       tsConfigFilePath: tsConfig,
     })
@@ -52,6 +54,7 @@ export const initializeProjectContext = (args: {
       project,
       projectName,
       projectRoot: FullPath(projectRootAbsolutePath),
+      sourceRoot: ProjectRelativePath(project.getCompilerOptions().rootDir ?? '.'),
       includedFiles: new Set(
         project
           .getSourceFiles()

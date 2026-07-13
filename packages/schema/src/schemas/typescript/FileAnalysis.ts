@@ -31,4 +31,7 @@ export const FileAnalysisSchema = Schema.Struct({
     'Complete analysis result for a source file. Contains extracted symbol information, dependency relationships, metrics, and scoring hints used for TSDoc generation.',
 })
 
+/**
+ * Represents the static type of the FileAnalysisSchema.
+ */
 export type FileAnalysis = typeof FileAnalysisSchema.Type

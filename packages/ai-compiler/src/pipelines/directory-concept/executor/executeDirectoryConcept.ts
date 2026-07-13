@@ -1,11 +1,10 @@
 import { Effect } from 'effect'
 import { AiModelRoute, ModelRouteId } from '@gyomu/ai'
 import { MessageRole } from '@gyomu/schema/conversation'
+import { DirectoryConcept } from '@gyomu/schema/schemas/concept'
 import { loadPrompt } from '../prompt/loadPrompt.js'
 import { renderFileSummary } from '../renderer/renderFileSummary.js'
 import { renderSubDirectory } from '../renderer/renderSubDirectory.js'
-import { DirectoryConceptSchema } from '../schema/DirectoryConcept.js'
-import type { DirectoryConcept } from '@gyomu/schema/schemas/concept/DirectoryConcept'
 import type { DirectoryConceptInput } from '@gyomu/schema/concept'
 import type { AiError, IOError } from '@gyomu/schema'
 import type { ModelRoutes, RetryOption, RouteNotFoundError } from '@gyomu/ai'
@@ -37,7 +36,7 @@ export const executeDirectoryConcepts = (
       routeId: DirectoryConceptRouteId,
       key: 'fast',
       messages: [{ id: '1', role: MessageRole.user, content: userPrompt }],
-      schema: DirectoryConceptSchema,
+      schema: DirectoryConcept,
       retryOption,
     })
     return result.object

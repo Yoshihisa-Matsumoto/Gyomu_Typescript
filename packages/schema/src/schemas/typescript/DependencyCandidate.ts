@@ -90,11 +90,19 @@ const dependencyReason = [
   'body',
   'generics',
 ] as const
+
 /**
  * Defines the semantic reasons for a dependency relationship, such as parameters, returns, members, or inheritance.
  */
 export const DependencyReason = Schema.Literals(dependencyReason)
 
+/**
+ * Validates and returns a dependency reason if it exists within the allowed set.
+ *
+ * @param value The string value to validate as a dependency reason.
+ *
+ * @returns The valid DependencyReason or undefined if the value is not recognized.
+ */
 export const getDependencyReason = (value: string): DependencyReason | undefined => {
   if (dependencyReason.includes(value as DependencyReason)) return value as DependencyReason
   return undefined
@@ -133,7 +141,7 @@ export type DependencySummary = Schema.Schema.Type<typeof DependencySummary>
  *
  * @param b The second dependency candidate.
  *
- * @returns boolean
+ * @returns True if the dependency candidates are equal, false otherwise.
  */
 export const equalTargetCandidate = (
   a: LocalFileDependencyCandidate | ImportedSymbolDependency,
@@ -156,7 +164,7 @@ export const equalTargetCandidate = (
  *
  * @param b The second summary dependency.
  *
- * @returns boolean
+ * @returns True if the dependency summaries are equal, false otherwise.
  */
 export const equalDependencySummary = (a: DependencySummary, b: DependencySummary): boolean => {
   return a.reason == b.reason && equalTargetCandidate(a.target, b.target)

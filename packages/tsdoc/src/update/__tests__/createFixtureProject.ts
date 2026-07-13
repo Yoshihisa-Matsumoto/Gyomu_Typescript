@@ -1,6 +1,7 @@
 import { join, normalize, resolve } from 'node:path'
 import { FullPath } from '@gyomu/schema'
 import { Project } from 'ts-morph'
+import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import type { ProjectContext } from '@gyomu/ts-analysis'
 
 const FIXTURE_ROOT = './test-fixtures'
@@ -16,6 +17,7 @@ export const createFixtureProject = (
   return {
     project,
     projectRoot: fixtureRoot,
+    sourceRoot: ProjectRelativePath('.'),
     projectName: 'test',
     includedFiles: new Set(project.getSourceFiles().map((file) => normalize(file.getFilePath()))),
   }

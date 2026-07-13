@@ -1,3 +1,10 @@
+/**
+ * Retrieves the name of the caller function or file location from the stack trace based on the specified depth.
+ *
+ * @param depth The depth level in the stack trace to extract. Defaults to 1.
+ *
+ * @returns The name of the function, the file location, or 'unknown'/'anonymous' if the caller cannot be determined.
+ */
 export function getCaller(depth = 1): string {
   const stack = new Error().stack
   if (!stack) {

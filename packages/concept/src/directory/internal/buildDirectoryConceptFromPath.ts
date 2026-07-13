@@ -8,12 +8,12 @@ import { ConceptError } from '../../error/ConceptError.js'
 import { buildFileSummaryRecord } from './buildFileSummaryRecord.js'
 import { loadDirectoryConcept } from './loadDirectoryConcept.js'
 import { generateDirectoryConcept } from './generateDirectoryConcept.js'
-import type { FullPath, IOError } from '@gyomu/schema'
+import { saveDirectoryConcept } from './saveDirectoryConcept.js'
+import type { AiModelRoute, ModelRoutes } from '@gyomu/ai'
+import type { FullPath } from '@gyomu/schema'
 import type { DirectoryConceptInput, FileSummary } from '@gyomu/schema/concept'
-import type { FileAnalysisSchema } from '@gyomu/schema/schemas/typescript'
-import type { Decode } from '@gyomu/schema/effect'
 import type { DirectoryConcept } from '@gyomu/schema/schemas/concept'
-import type { AnalysisError, ProjectContext } from '@gyomu/ts-analysis'
+import type { ProjectContext } from '@gyomu/ts-analysis'
 import type { BuildDirectoryOption, BuildResult } from '../types.js'
 import type { FileSystem } from 'effect'
 
@@ -21,11 +21,7 @@ export const buildDirectoryConceptFromPath = (
   context: ProjectContext,
   targetDirectory: FullPath,
   option?: BuildDirectoryOption,
-): Effect.Effect<
-  BuildResult,
-  IOError | AnalysisError | ConceptError,
-  FileSystem.FileSystem | Decode<typeof FileAnalysisSchema>
-> =>
+): Effect.Effect<BuildResult, ConceptError, FileSystem.FileSystem | AiModelRoute | ModelRoutes> =>
   Effect.gen(function* () {
     const targetDirectoryRelativePath = ProjectRelativePath(
       relative(context.projectRoot, targetDirectory),
@@ -60,7 +56,7 @@ export const buildDirectoryConceptFromPath = (
       const result = yield* buildDirectoryConceptFromPath(context, folder.path, option)
       if (result.changed) isChanged = true
       directoryConcepts.push({
-        path: DirectoryRelativePath(relative(folder.path, targetDirectoryRelativePath)),
+        path: DirectoryRelativePath(relative(targetDirectory, folder.path)),
         concept: result.concept,
       })
     }
@@ -69,7 +65,7 @@ export const buildDirectoryConceptFromPath = (
     for (const file of files) {
       const fileFullPath = file.path
       const fileRelativePath = ProjectRelativePath(relative(context.projectRoot, fileFullPath))
-      const result = yield* loadFileAnalysisResult(context, fileRelativePath)
+      const result = yield* loadFileAnalysisResult(context, fileRelativePath, { DumpToFile: true })
       fileSummaryList.push(buildFileSummaryRecord(result.result))
     }
 
@@ -79,6 +75,8 @@ export const buildDirectoryConceptFromPath = (
     }
 
     const concept = yield* generateDirectoryConcept(targetDirectoryRelativePath, input, option)
+
+    yield* saveDirectoryConcept(context, targetDirectoryRelativePath, concept)
     return {
       concept,
       changed: isChanged,

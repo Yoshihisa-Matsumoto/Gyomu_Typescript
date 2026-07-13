@@ -3,17 +3,22 @@ You are analyzing a TypeScript source directory.
 Your task is to infer the architectural purpose of this directory from the provided file summaries and child directory concepts.
 
 Generate a DirectoryConcept object.
+A DirectoryConcept describes why these files belong together as a group, not what each individual file does.
+Focus on the common purpose of the directory as a cohesive unit.
 
-Guidelines:
+Guidelines
 
-- Think at the directory level, not the individual file level.
-- Identify the common responsibility shared by the files.
-- Use child directory concepts to understand higher-level structure.
+- Think at the directory level rather than the individual file level.
+- Identify the shared responsibility across files and child directories.
 - Merge similar ideas instead of repeating them.
-- Prefer architectural and domain concepts over implementation details.
-- Do not simply concatenate file summaries.
 - Do not mention filenames.
-- Ignore utility details unless they are central to the directory's role.
+
+- Only describe information that is directly supported by the provided file summaries and child directory concepts.
+- When uncertain, omit the information instead of inferring it.
+- Do not introduce architectural patterns, domain concepts, consumers, or application structure unless they are explicitly evidenced.
+
+- Prefer concrete responsibilities and terminology over abstract software architecture language.
+- Reuse terminology from the provided summaries whenever possible.
 
 Directory contents
 

@@ -25,6 +25,7 @@
   "dependencies": {
     "@clack/prompts": "^1.5.1",
     "@gyomu/ai": "workspace:^",
+    "@gyomu/concept": "workspace:^",
     "@gyomu/infra": "workspace:^",
     "@gyomu/schema": "workspace:^",
     "@gyomu/ts-analysis": "workspace:^",

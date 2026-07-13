@@ -1,5 +1,5 @@
+import type { DirectoryConcept } from '@gyomu/schema/schemas/concept'
 import type { DirectoryRelativePath } from '@gyomu/schema/typescript'
-import type { DirectoryConcept } from '../schema/DirectoryConcept.js'
 
 export const renderSubDirectory = (dir: {
   path: DirectoryRelativePath

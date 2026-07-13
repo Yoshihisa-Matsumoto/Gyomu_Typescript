@@ -5,8 +5,19 @@ import { JsonObjectSchema } from '../core/jsonValue.js'
  * Defines the role of a message participant, such as assistant, user, or system.
  */
 export enum MessageRole {
+  /**
+   * Represents the assistant role.
+   */
   assistant = 'assistant',
+
+  /**
+   * Represents the user role.
+   */
   user = 'user',
+
+  /**
+   * Represents the system role.
+   */
   system = 'system',
 }
 

@@ -11,6 +11,7 @@ import {
   listTypescriptProject,
   processTsDocUpdate,
 } from '@gyomu/tsdoc'
+import { DirectoryConceptRouteId, buildDirectoryConcept } from '@gyomu/concept/directory'
 import { Effect, Layer } from 'effect'
 
 import {
@@ -29,7 +30,12 @@ const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(
   Layer.provideMerge(FileSearchServiceLayer),
 )
 const runQAWithEnvOrThrow = makeRunner(
-  createVercelAiLayer(new Map([[TsDocRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }]])),
+  createVercelAiLayer(
+    new Map([
+      [TsDocRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
+      [DirectoryConceptRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
+    ]),
+  ),
 )
 export const snapshotCommand = (
   projectName: string,
@@ -173,6 +179,7 @@ export const snapshotCommand = (
             projectPath: targetProject.rootPath,
           })
         }
+
         yield* commitProjectSnapshot({
           expectedSnapshot: changeResult.currentSnapshot,
           projectPath: targetProject.rootPath,

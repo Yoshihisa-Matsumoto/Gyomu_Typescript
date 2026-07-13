@@ -2,12 +2,13 @@ import { dirname, extname, join } from 'node:path'
 import { randomUUID } from 'node:crypto'
 import { tmpdir } from 'node:os'
 import { Effect, FileSystem, Stream } from 'effect'
-import { FullPath, wrapIOError } from '@gyomu/schema'
+import { FullPath, IOError, wrapIOError } from '@gyomu/schema'
 import { parse } from 'yaml'
 import { convertToSchemaObjectWithEffect } from '@gyomu/schema/entity'
+import { fromSync } from '@gyomu/schema/effect'
+import type { NetworkError, SchemaValidationError } from '@gyomu/schema'
 import type { EntryInfo } from './types.js'
 import type { Schema } from 'effect'
-import type { IOError, NetworkError, SchemaValidationError } from '@gyomu/schema'
 import type { PlatformError } from 'effect/PlatformError'
 
 /**
@@ -196,7 +197,11 @@ export const readStringFromFile = (path: string, encoding?: string) =>
 export const readJsonFromFile = <T>(path: string, encoding?: string) =>
   Effect.gen(function* () {
     const text = yield* readStringFromFile(path, encoding)
-    return JSON.parse(text) as T
+    return yield* fromSync(IOError, (e) => ({
+      layer: 'filesystem' as const,
+      message: 'fail to parse JSON',
+      operation: 'transform' as const,
+    }))(() => JSON.parse(text) as T)
   })
 export const readJsonFromFileAndValidate = <S extends Schema.Top>(
   schemaName: string,

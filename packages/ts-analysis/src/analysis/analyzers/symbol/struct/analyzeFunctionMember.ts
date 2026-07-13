@@ -7,10 +7,12 @@ import { computeIndent } from '../computeIndent.js'
 import { analyzeDependency } from '../analyzeDependency.js'
 import { analyzeGenericsParameters } from '../analyzeGenericsParameters.js'
 import type {
+  ArrowFunction,
   CallSignatureDeclaration,
   ConstructSignatureDeclaration,
   ConstructorDeclaration,
   FunctionDeclaration,
+  FunctionExpression,
   FunctionTypeNode,
   GetAccessorDeclaration,
   IndexSignatureDeclaration,
@@ -296,6 +298,8 @@ export const analyzeFunctionBody = (
     | MethodDeclaration
     | ConstructorDeclaration
     | FunctionDeclaration
+    | ArrowFunction
+    | FunctionExpression
   >,
   // args2: {
   //   name: string
@@ -309,9 +313,11 @@ export const analyzeFunctionBody = (
   if (
     Node.isConstructorDeclaration(args.node) ||
     Node.isMethodDeclaration(args.node) ||
-    Node.isFunctionDeclaration(args.node)
+    Node.isFunctionDeclaration(args.node) ||
+    Node.isArrowFunction(args.node) ||
+    Node.isFunctionExpression(args.node)
   ) {
-    // console.log('Constructor or Method', args2.name)
+    // console.log('Constructor or Method')
     const body = args.node.getBody()
     if (Node.isBlock(body)) {
       const statementsResult = body
@@ -338,12 +344,15 @@ const analyzeStatement = (
     | MethodDeclaration
     | ConstructorDeclaration
     | FunctionDeclaration
+    | ArrowFunction
+    | FunctionExpression
   >,
   bodyStatement: Statement,
 ): MethodAnalysisResult => {
+  // console.log(bodyStatement.getKindName())
   if (Node.isExpressionStatement(bodyStatement)) {
     const expression = bodyStatement.getExpression()
-    // console.log('ExpressionStatement', expression.getKindName(), expression.getText())
+    console.log('ExpressionStatement', expression.getKindName(), expression.getText())
     if (Node.isCallExpression(expression)) {
       const expressionText = expression.getExpression().getText()
       const dependency = analyzeDependency(expressionText, args.imported, args.memberPath)
@@ -385,7 +394,22 @@ const analyzeStatement = (
       }
     }
   }
-
+  if (Node.isReturnStatement(bodyStatement)) {
+    const dependencies = new Array<DependencyCandidate>()
+    const funcExpression = bodyStatement.getExpression()
+    if (Node.isCallExpression(funcExpression)) {
+      funcExpression.getArguments().forEach((arg) => {
+        if (Node.isIdentifier(arg))
+          dependencies.push(analyzeDependency(arg.getText(), args.imported, args.memberPath))
+      })
+      const identifier = funcExpression.getExpression()
+      if (Node.isIdentifier(identifier))
+        dependencies.push(analyzeDependency(identifier.getText(), args.imported, args.memberPath))
+    }
+    return {
+      dependencies,
+    }
+  }
   return {
     dependencies: [],
   }

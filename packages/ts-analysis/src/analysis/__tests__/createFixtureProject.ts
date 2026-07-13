@@ -1,6 +1,7 @@
 import { join, normalize, relative, resolve } from 'node:path'
 import { Project } from 'ts-morph'
 import { FullPath } from '@gyomu/schema'
+import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { normalizePath } from '../../shared/index.js'
 import type { ProjectContext } from '../project/ProjectContext.js'
 
@@ -18,6 +19,7 @@ export const createFixtureProject = (
     project,
     projectRoot: fixtureRoot,
     projectName: 'test',
+    sourceRoot: ProjectRelativePath('./src'),
     includedFiles: new Set(
       project
         .getSourceFiles()

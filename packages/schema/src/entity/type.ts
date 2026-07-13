@@ -66,6 +66,9 @@ export type DeepMutable<T> =
       ? { -readonly [K in keyof T]: Mutable<T[K]> }
       : T
 
+/**
+ * Creates a mutable copy of a type by removing readonly modifiers recursively.
+ */
 export type Builder<T> = DeepMutable<T>
 
 /**
@@ -133,7 +136,7 @@ export type UIAnnotationMap = {
   date: object
 
   /**
-   * Configuration for hidden fields.
+   * Configuration for fields hidden from the user interface.
    */
   hidden: {
     /**
@@ -153,7 +156,7 @@ export type UIAnnotationMap = {
   }
 
   /**
-   * Configuration for select input widgets.
+   * Configuration for select or dropdown input widgets.
    */
   select: {
     /**

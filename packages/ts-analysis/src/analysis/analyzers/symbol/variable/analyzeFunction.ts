@@ -7,6 +7,7 @@ import { registerSymbolSymbolAnalysis } from '../../../file/registerSymbolSymbol
 import { computeIndent } from '../computeIndent.js'
 import { analyzeGenericsParameters } from '../analyzeGenericsParameters.js'
 
+import { analyzeFunctionBody } from '../struct/analyzeFunctionMember.js'
 import type { ArrowFunction, Expression, FunctionExpression, VariableDeclaration } from 'ts-morph'
 import type { SymbolPreparation } from '../prepareSymbolAnalysis.js'
 import type {
@@ -21,11 +22,26 @@ export const analyzeFunction = (
   prepared: SymbolPreparation,
   node: ArrowFunction | FunctionExpression,
 ) => {
+  const { sourceRelativePath, metadata, imported, options, sourceFullText } = args
   const name = args.declaration.getName()
   const identity: SymbolIdentity = {
     symbolId: SymbolId(name),
     signatureId: prepared.signature.id,
   }
+
+  const methodBodyResult = analyzeFunctionBody({
+    sourceRelativePath,
+    metadata,
+    node,
+    ownerSymbolId: prepared.id,
+    ownerSymbolIdentity: identity,
+    memberPath: [],
+    sourceFullText,
+    declarationOrder: 0,
+    imported,
+    options,
+    reservedNames: [],
+  })
 
   const symbol = {
     id: prepared.id,
@@ -47,7 +63,10 @@ export const analyzeFunction = (
     members: [],
 
     declarationOrder: args.declarationOrder,
-    dependencyCandidates: prepared.dependencyCandidates ?? [],
+    dependencyCandidates: [
+      ...(prepared.dependencyCandidates ?? []),
+      ...methodBodyResult.dependencies,
+    ],
     docIndent: computeIndent(
       args.sourceFullText,
       args.declaration.getStart(),

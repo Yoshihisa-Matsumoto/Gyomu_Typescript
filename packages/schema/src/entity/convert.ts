@@ -67,6 +67,17 @@ export const convertToSchemaObjectWithEffect =
       ),
     ) as Effect.Effect<Schema.Schema.Type<S>, SchemaValidationError, never>
 
+/**
+ * Creates an Effect operation to encode a schema object into a JSON string, wrapping errors in a SchemaValidationError.
+ *
+ * @param schemaName The identifier for the schema used for error reporting.
+ *
+ * @param schema The schema definition.
+ *
+ * @param input The object to encode.
+ *
+ * @returns An Effect performing the encode-to-JSON operation, failing with a SchemaValidationError on error.
+ */
 export const convertFromSchemaObjectToJsonWithEffect =
   (schemaName: string) =>
   <S extends Schema.Top>(schema: S, input: S['Type']) =>
@@ -83,6 +94,7 @@ export const convertFromSchemaObjectToJsonWithEffect =
           }),
       ),
     ) as Effect.Effect<string, SchemaValidationError, never>
+
 /**
  * Creates an Effect operation to encode a schema object, wrapping errors in a SchemaValidationError.
  *

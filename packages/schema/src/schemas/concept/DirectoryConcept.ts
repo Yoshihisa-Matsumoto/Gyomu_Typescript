@@ -1,5 +1,8 @@
 import { Schema } from 'effect'
 
+/**
+ * Defines a schema for capturing the architectural intent and conceptual structure of a project directory, including its purpose, responsibilities, core concepts, relationships, and design decisions.
+ */
 export const DirectoryConcept = Schema.Struct({
   summary: Schema.String.annotate({
     description:
@@ -27,4 +30,7 @@ export const DirectoryConcept = Schema.Struct({
   }),
 })
 
+/**
+ * The inferred TypeScript type for a DirectoryConcept schema.
+ */
 export type DirectoryConcept = Schema.Schema.Type<typeof DirectoryConcept>

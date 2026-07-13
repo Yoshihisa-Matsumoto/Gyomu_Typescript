@@ -3,11 +3,11 @@ import { Effect, Layer } from 'effect'
 import { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 import { NodeFileSystem } from '@effect/platform-node'
 import { MessageRole } from '@gyomu/schema/conversation'
+import { DirectoryConcept } from '@gyomu/schema/schemas/concept'
 import { DirectoryConceptRouteId, executeDirectoryConcepts } from '../executeDirectoryConcept.js'
 import { loadPrompt } from '../../prompt/loadPrompt.js'
 import { renderFileSummary } from '../../renderer/renderFileSummary.js'
 import { renderSubDirectory } from '../../renderer/renderSubDirectory.js'
-import { DirectoryConceptSchema } from '../../schema/DirectoryConcept.js'
 import type { ModelRoute, ModelRouteId, RouteNode } from '@gyomu/ai'
 
 vi.mock('../../prompt/loadPrompt.js', () => ({
@@ -107,7 +107,7 @@ DIRS
 DIR`,
         },
       ],
-      schema: DirectoryConceptSchema,
+      schema: DirectoryConcept,
       retryOption,
     })
   })

@@ -153,6 +153,9 @@ importers:
       '@gyomu/ai':
         specifier: workspace:^
         version: link:../../packages/ai
+      '@gyomu/concept':
+        specifier: workspace:^
+        version: link:../../packages/concept
       '@gyomu/infra':
         specifier: workspace:^
         version: link:../../packages/infra

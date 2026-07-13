@@ -1,14 +1,14 @@
 import type { RetryOption } from '@gyomu/ai'
 
 export interface ConceptOptions {
-  debugInfo:
+  debugInfo?:
     | {
         DirectoryConcept?: boolean
         FileSummaryInput?: boolean
         DumpToFile?: boolean
       }
     | undefined
-  action:
+  action?:
     | {
         NoLLMRequest?: boolean
         NoUpdateTSDoc?: boolean

@@ -87,6 +87,8 @@ export class FileTransportInfo {
    * 		        x		        x			                    Sname		        Sname	Dname		        Dname
    * 		        x					                            Sname		        Sname	Sname		        Sname
    *
+   * @param options Configuration object containing base paths, source/destination naming, and operational flags.
+   *
    * @returns The configured FileTransportInfo instance.
    */
   constructor({
