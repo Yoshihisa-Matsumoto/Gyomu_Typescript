@@ -5,12 +5,10 @@ import { makeRunner } from '@gyomu/schema/effect'
 import { Effect, Layer } from 'effect'
 import { AI_MODELS } from '@gyomu/ai'
 import { writeStringToFile } from '@gyomu/infra/fs'
-import { analyzeFile, initializeProjectContext } from '@gyomu/ts-analysis'
+import { analyzeFile, initializeProjectContext, listTypescriptProject } from '@gyomu/ts-analysis'
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { TsDocRouteId } from '@gyomu/ai-compiler/jsdoc-update'
 import { processTsDocUpdate } from './update/processTsDocUpdate.js'
-
-import { listTypescriptProject } from './shared/index.js'
 
 console.log(process.env)
 const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(Layer.provideMerge(PlatformLayer))

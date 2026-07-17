@@ -1,5 +1,5 @@
-import { Confidence } from '@gyomu/schema/schemas/Confidence'
-import { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
+import { Confidence } from '@gyomu/schema/schemas'
+import { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 import { Schema } from 'effect'
 
 export const MergeActionSchema = Schema.Union([

@@ -60,6 +60,7 @@ describe('buildFileSummaryRecord', () => {
           summary: 'Foo summary',
         },
       ],
+      reExports: [],
     })
   })
 
@@ -168,6 +169,8 @@ describe('buildFileSummaryRecord', () => {
         exports: [
           {
             kind: 're-export',
+            moduleSpecifier: 'module',
+            exportedName: 'symbol',
           },
         ],
         symbols: [],
@@ -181,6 +184,7 @@ describe('buildFileSummaryRecord', () => {
       path: 'src/sample.ts',
       exports: [],
       dependencies: [],
+      reExports: [{ exportAll: false, module: 'module', symbol: 'symbol' }],
     })
   })
 

@@ -41,7 +41,7 @@ describe('initializeProjectContext', () => {
   })
   it('loads project with invalid package.json returns error', async () => {
     expect(await loadProgramWithExit('invalid-json')).toMatchObject({
-      message: 'fail to analyze package.json',
+      message: 'fail to parse package.json',
     })
   })
   it('loads project with package.json without name', async () => {

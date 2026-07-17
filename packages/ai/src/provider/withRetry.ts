@@ -1,7 +1,6 @@
 import { Duration, Effect } from 'effect'
 import { withOptional } from '@gyomu/schema'
-import type { AiError } from '@gyomu/schema'
-import type { RetryObserver, RetryOption } from './types/RetryObserver.js'
+import type { AiError, RetryObserver, RetryOption } from '@gyomu/schema'
 
 export const withRetry = <A>(
   effect: Effect.Effect<A, AiError>,

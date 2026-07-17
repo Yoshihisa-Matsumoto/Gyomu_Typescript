@@ -4,14 +4,17 @@ import { describe, expect, it } from 'vitest'
 import { Effect } from 'effect'
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { PlatformLayer } from '@gyomu/infra'
+import { flattenIssues } from '@gyomu/schema/entity'
 import { analyzeFile } from '../analyzeFile.js'
 import { saveFileAnalysis } from '../saveFileAnalysis.js'
 import { loadFileAnalysis } from '../loadFileAnalysis.js'
 import { createFixtureProject } from './createFixtureProject.js'
-import type { OptionalStructureAnalysis } from '@gyomu/schema/schemas/typescript/type/structure/OptionalStructureAnalysis'
 
-import type { SymbolAnalysis, TypeStructureAnalysis } from '@gyomu/schema/schemas/typescript'
-import { flattenIssues } from '@gyomu/schema/entity'
+import type {
+  OptionalStructureAnalysis,
+  SymbolAnalysis,
+  TypeStructureAnalysis,
+} from '@gyomu/schema/schemas/typescript'
 
 const timeout = 20000
 
@@ -26,7 +29,7 @@ const typeAnalysisProgram = async (
     Effect.gen(function* () {
       const fileResult = yield* analyzeFile(typeFixture, filePath, {
         // includeDebugInfo: true,
-        verifyIndex: true,
+        debugInfo: { verifyIndex: true },
       })
       yield* saveFileAnalysis(typeFixture, fileResult.analysis).pipe(
         Effect.catch((e) => {
@@ -78,8 +81,7 @@ const typeAnalysisSymbolsProgram = async (
   const result = await Effect.runPromise(
     Effect.gen(function* () {
       const fileResult = yield* analyzeFile(typeFixture, filePath, {
-        includeDebugInfo: { keyword },
-        verifyIndex: true,
+        debugInfo: { verifyIndex: true, keyword },
       })
 
       yield* saveFileAnalysis(typeFixture, fileResult.analysis).pipe(
@@ -130,7 +132,9 @@ const typeStructureProgram = async (
   const filePath = ProjectRelativePath(path.join('src', sourceFile))
   const result = Effect.runPromise(
     Effect.gen(function* () {
-      const fileResult = yield* analyzeFile(typeFixture, filePath, { verifyIndex: true })
+      const fileResult = yield* analyzeFile(typeFixture, filePath, {
+        debugInfo: { verifyIndex: true },
+      })
       yield* saveFileAnalysis(typeFixture, fileResult.analysis)
 
       const loaded = yield* loadFileAnalysis(typeFixture, fileResult.analysis.path)
@@ -155,7 +159,7 @@ const typeSymbolsDependencyProgram = (sourceFile: string, folder?: string) => {
   const filePath = ProjectRelativePath(sourcePath)
   const result = Effect.runSync(
     Effect.gen(function* () {
-      return yield* analyzeFile(typeFixture, filePath, { verifyIndex: true }).pipe(
+      return yield* analyzeFile(typeFixture, filePath, { debugInfo: { verifyIndex: true } }).pipe(
         Effect.map((result2) => {
           if (!fs.existsSync('./log')) fs.mkdirSync('./log')
           fs.writeFileSync('./log/fileAnalysis.txt', JSON.stringify(result2.analysis, null, 2))

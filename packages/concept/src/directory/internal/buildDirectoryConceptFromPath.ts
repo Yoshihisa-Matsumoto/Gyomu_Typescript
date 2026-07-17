@@ -65,7 +65,7 @@ export const buildDirectoryConceptFromPath = (
     for (const file of files) {
       const fileFullPath = file.path
       const fileRelativePath = ProjectRelativePath(relative(context.projectRoot, fileFullPath))
-      const result = yield* loadFileAnalysisResult(context, fileRelativePath, { DumpToFile: true })
+      const result = yield* loadFileAnalysisResult(context, fileRelativePath, option)
       fileSummaryList.push(buildFileSummaryRecord(result.result))
     }
 

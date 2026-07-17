@@ -22,7 +22,9 @@ const enumAnalysisProgram = async (sourceFile: string): Promise<ReadonlyArray<Sy
   const filePath = ProjectRelativePath(path.join('src', sourceFile))
   const result = await Effect.runPromise(
     Effect.gen(function* () {
-      const fileResult = yield* analyzeFile(enumFixture, filePath, { verifyIndex: true })
+      const fileResult = yield* analyzeFile(enumFixture, filePath, {
+        debugInfo: { verifyIndex: true },
+      })
 
       yield* saveFileAnalysis(enumFixture, fileResult.analysis).pipe(
         Effect.catch((e) => {

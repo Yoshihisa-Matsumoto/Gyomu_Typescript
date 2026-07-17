@@ -1,6 +1,5 @@
 import type { FileAnalysisContext } from '@gyomu/schema/typescript'
-import type { ProtectedSection } from '@gyomu/schema/schemas/typescript'
-import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
+import type { ProtectedSection, SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
 export const analyzeProtectedSection = (
   fileResult: FileAnalysisContext,

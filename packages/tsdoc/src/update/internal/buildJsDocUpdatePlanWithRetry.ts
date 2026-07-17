@@ -1,7 +1,7 @@
 import { executeJsDocUpdatePlan } from '@gyomu/ai-compiler/jsdoc-update'
 import { Effect } from 'effect'
 import { writeStringToFile } from '@gyomu/infra/fs'
-import { equalSymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
+import { equalSymbolIdentity } from '@gyomu/schema/schemas/typescript'
 import { toIdentityKey } from '@gyomu/schema/schemas/typescript'
 import { UpdateError } from '../error/UpdateError.js'
 import { getTsDocSignatureFromContext, validateJsDocUpdatePlan } from './validateJsDocUpdatePlan.js'

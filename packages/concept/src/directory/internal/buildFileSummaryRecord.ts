@@ -14,7 +14,7 @@ import type {
 } from '@gyomu/schema/concept'
 
 export const buildFileSummaryRecord = (context: FileAnalysisContext): FileSummary => {
-  console.dir(context.analysis, { depth: null })
+  // console.dir(context.analysis, { depth: null })
   return {
     path: ProjectRelativePath(normalizePath(context.analysis.path)),
     exports: context.analysis.exports

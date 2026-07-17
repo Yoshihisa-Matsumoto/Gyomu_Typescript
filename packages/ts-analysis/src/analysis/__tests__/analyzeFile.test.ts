@@ -27,7 +27,9 @@ const tempJsdocProgram = async (sourceFile: string) => {
   return await Effect.runPromise(
     Effect.gen(function* () {
       console.log(filePath)
-      const analysis = yield* analyzeFile(jsDocFixture, filePath, { verifyIndex: true })
+      const analysis = yield* analyzeFile(jsDocFixture, filePath, {
+        debugInfo: { verifyIndex: true },
+      })
       yield* saveFileAnalysis(jsDocFixture, analysis.analysis)
 
       const loaded = yield* loadFileAnalysis(jsDocFixture, analysis.analysis.path)
@@ -46,7 +48,9 @@ describe('analyzeFile', () => {
 
       const filePath = ProjectRelativePath(path.join('src', 'index.ts'))
       const program = Effect.gen(function* () {
-        const result = yield* analyzeFile(basicExportFixture, filePath, { verifyIndex: true })
+        const result = yield* analyzeFile(basicExportFixture, filePath, {
+          debugInfo: { verifyIndex: true },
+        })
 
         expect(result.analysis.exports).toHaveLength(5)
 
@@ -97,7 +101,9 @@ describe('analyzeFile', () => {
       const filePath = ProjectRelativePath('src/index.ts')
 
       const program = Effect.gen(function* () {
-        const result = yield* analyzeFile(exportPatternsFixture, filePath, { verifyIndex: true })
+        const result = yield* analyzeFile(exportPatternsFixture, filePath, {
+          debugInfo: { verifyIndex: true },
+        })
         // console.dir(result, { depth: null })
 
         const localExport = result.analysis.exports
@@ -159,28 +165,28 @@ describe('analyzeFile', () => {
               exportAll: false,
               isTypeOnly: true,
               exportedName: 'User',
-              moduleSpecifier: "'./intrnal.js'",
+              moduleSpecifier: './intrnal.js',
             },
             {
               kind: 're-export',
               exportAll: false,
               isTypeOnly: false,
               exportedName: 'foo',
-              moduleSpecifier: "'./intrnal.js'",
+              moduleSpecifier: './intrnal.js',
             },
             {
               kind: 're-export',
               exportAll: false,
               isTypeOnly: false,
               exportedName: 'foo2',
-              moduleSpecifier: "'./intrnal.js'",
+              moduleSpecifier: './intrnal.js',
             },
             {
               kind: 're-export',
               exportAll: false,
               isTypeOnly: false,
               exportedName: 'UserRole',
-              moduleSpecifier: "'./intrnal.js'",
+              moduleSpecifier: './intrnal.js',
             },
           ]),
         )
@@ -192,28 +198,28 @@ describe('analyzeFile', () => {
               exportAll: false,
               isTypeOnly: false,
               exportedName: 'fooAlias',
-              moduleSpecifier: "'./intrnal.js'",
+              moduleSpecifier: './intrnal.js',
             },
             {
               kind: 're-export',
               exportAll: false,
               isTypeOnly: true,
               exportedName: 'UserAlias',
-              moduleSpecifier: "'./intrnal.js'",
+              moduleSpecifier: './intrnal.js',
             },
             {
               kind: 're-export',
               exportAll: true,
               isTypeOnly: false,
               exportedName: '$*',
-              moduleSpecifier: "'./intrnal.js'",
+              moduleSpecifier: './intrnal.js',
             },
             {
               kind: 're-export',
               exportAll: true,
               isTypeOnly: false,
               exportedName: 'Internal',
-              moduleSpecifier: "'./intrnal.js'",
+              moduleSpecifier: './intrnal.js',
             },
           ]),
         )
@@ -274,7 +280,9 @@ describe('analyzeFile', () => {
       () => {
         const filePath = ProjectRelativePath('src/index.ts')
         const program = Effect.gen(function* () {
-          const result = yield* analyzeFile(importPatternsFixture, filePath, { verifyIndex: true })
+          const result = yield* analyzeFile(importPatternsFixture, filePath, {
+            debugInfo: { verifyIndex: true },
+          })
 
           expect(result.analysis.imports).toEqual([
             {

@@ -11,7 +11,7 @@ import { loadDirectoryConcept } from '../loadDirectoryConcept.js'
 import { ConceptError } from '../../../error/ConceptError.js'
 
 import { saveDirectoryConcept } from '../saveDirectoryConcept.js'
-import type { DirectoryConcept } from '@gyomu/schema/schemas/concept/DirectoryConcept'
+import type { DirectoryConcept } from '@gyomu/schema/schemas/concept'
 import type { ProjectContext } from '@gyomu/ts-analysis'
 
 describe('loadDirectoryConcept', () => {

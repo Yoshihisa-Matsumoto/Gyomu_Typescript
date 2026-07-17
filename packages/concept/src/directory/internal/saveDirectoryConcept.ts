@@ -1,7 +1,7 @@
 import { Effect } from 'effect'
 import { writeStringToFile } from '@gyomu/infra/fs'
 import { convertFromSchemaObjectToJsonWithEffect, flattenIssues } from '@gyomu/schema/entity'
-import { DirectoryConcept } from '@gyomu/schema/schemas/concept/DirectoryConcept'
+import { DirectoryConcept } from '@gyomu/schema/schemas/concept'
 
 import { SchemaValidationError, wrapInfraError } from '@gyomu/schema'
 import { ConceptError } from '../../error/ConceptError.js'

@@ -37,7 +37,7 @@
     },
     "./gyomu/*": {
       "import": "./dist/gyomu/*/index.js",
-      "types": "./dist/gyomu/*/index.js"
+      "types": "./dist/gyomu/*/index.d.ts"
     },
     "./shared": {
       "import": "./dist/shared/index.js",
@@ -47,9 +47,13 @@
       "import": "./dist/shared/*/index.js",
       "types": "./dist/shared/*/index.d.ts"
     },
+    "./schemas": {
+      "import": "./dist/schemas/index.js",
+      "types": "./dist/schemas/index.d.ts"
+    },
     "./schemas/*": {
-      "import": "./dist/schemas/*.js",
-      "types": "./dist/schemas/*.d.ts"
+      "import": "./dist/schemas/*/index.js",
+      "types": "./dist/schemas/*/index.d.ts"
     },
     "./snapshot": {
       "import": "./dist/snapshot/index.js",

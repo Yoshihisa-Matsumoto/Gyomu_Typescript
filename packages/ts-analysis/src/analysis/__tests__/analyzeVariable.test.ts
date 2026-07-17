@@ -21,7 +21,9 @@ const variableAnalysisProgram = async (
   const filePath = ProjectRelativePath(path.join('src', sourceFile))
   const result = await Effect.runPromise(
     Effect.gen(function* () {
-      const fileResult = yield* analyzeFile(variableFixture, filePath, { verifyIndex: true })
+      const fileResult = yield* analyzeFile(variableFixture, filePath, {
+        debugInfo: { verifyIndex: true },
+      })
 
       yield* saveFileAnalysis(variableFixture, fileResult.analysis).pipe(
         Effect.catch((e) => {

@@ -4,7 +4,6 @@ import { analyzeDependency } from '../analyzeDependency.js'
 import { getSupportedEffectSchemaType } from './getSupportedEffectSchemaType.js'
 import { analyzeEffectSchemaPrimitive } from './analyzeEffectSchemaPrimitive.js'
 import { analyzeEffectSchemaForNonPrimitive } from './analyzeEffectSchemaForNonPrimitive.js'
-import type { SchemaAnnotations } from '@gyomu/schema/schemas/typescript/type/SchemaAnnotations'
 import type { MemberAnalysisResult } from '../../types.js'
 import type {
   MemberIdentityMemberPath,
@@ -15,6 +14,7 @@ import type { CallExpression, Expression, Identifier, PropertyAccessExpression }
 import type {
   DependencyCandidate,
   ImportAnalysis,
+  SchemaAnnotations,
   SymbolIdentity,
   TypeAnalysis,
 } from '@gyomu/schema/schemas/typescript'

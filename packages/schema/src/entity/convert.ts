@@ -16,7 +16,9 @@ export const jsonString2SchemaObjectWithoutEffect = <S extends Schema.Schema<any
   content: string,
 ) =>
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  Schema.decodeUnknownSync(schema as unknown as ConstraintDecoder<S>)(JSON.parse(content))
+  Schema.decodeUnknownSync(schema as unknown as ConstraintDecoder<Schema.Schema.Type<S>>)(
+    JSON.parse(content),
+  )
 
 /**
  * Decodes an unknown input into a schema object, returning a ParseResult.

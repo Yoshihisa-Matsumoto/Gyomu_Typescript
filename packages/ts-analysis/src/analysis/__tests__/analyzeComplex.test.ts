@@ -34,7 +34,9 @@ const tempJsdocProgram = async (sourceFile: string) => {
   const filePath = ProjectRelativePath(path.join('src', sourceFile))
   return await Effect.runPromise(
     Effect.gen(function* () {
-      const fileResult = yield* analyzeFile(jsDocFixture, filePath, { verifyIndex: true })
+      const fileResult = yield* analyzeFile(jsDocFixture, filePath, {
+        debugInfo: { verifyIndex: true },
+      })
       yield* saveFileAnalysis(jsDocFixture, fileResult.analysis).pipe(
         Effect.catch((e) => {
           if (e._tag == '@gyomu/schema/SchemaErrorContext') {

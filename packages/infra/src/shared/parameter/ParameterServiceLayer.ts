@@ -3,7 +3,7 @@ import { Effect, Layer, Schedule } from 'effect'
 import { GyomuRepository } from '@gyomu/schema/gyomu'
 import { formatDateToYmd } from '@gyomu/schema/entity'
 import { ParameterService } from '@gyomu/schema/shared/parameter'
-import type { User } from '@gyomu/schema/schemas/user'
+import type { User } from '@gyomu/schema/schemas'
 
 type ParameterType = string | number | boolean
 

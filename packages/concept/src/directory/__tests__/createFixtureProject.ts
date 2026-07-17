@@ -17,6 +17,7 @@ export const createFixtureProject = (
   return {
     project,
     projectRoot: fixtureRoot,
+    packageJson: {} as any,
     sourceRoot: ProjectRelativePath('./src'),
     projectName: 'test',
     includedFiles: new Set(project.getSourceFiles().map((file) => normalize(file.getFilePath()))),

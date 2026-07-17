@@ -14,7 +14,7 @@ import type {
   ParsedJsDoc,
 } from '@gyomu/schema/schemas/typescript'
 import type { AnalysisError } from './error/AnalysisError.js'
-import type { AnalysisOptions } from './AnalysisOption.js'
+import type { AnalysisOptions } from '@gyomu/schema'
 import type { ProjectContext } from './project/ProjectContext.js'
 import type {
   DocumentableTarget,
@@ -31,7 +31,7 @@ import type {
  * @param context project containing the target source file.
  *
  * @param sourceFilePath Path used to locate the source file via
- * {@link Project.getSourceFile}.
+ * {@link Project.getSourceFile()}.
  *
  * This value may be either:
  *
@@ -86,11 +86,11 @@ export const analyzeFile = (
 
     const index = buildIndex(analysis)
 
-    if (option?.DumpToFile) {
+    if (option?.debugInfo?.DumpToFile) {
       if (!fs.existsSync('log')) fs.mkdirSync('log')
       fs.writeFileSync(path.join('log', `FileAnalysis.txt`), JSON.stringify(analysis, null, 2))
     }
-    if (option?.verifyIndex) {
+    if (option?.debugInfo?.verifyIndex) {
       // console.dir(analysis, { depth: null })
       compareFileAnalysisMetadata(metadata, index)
     }

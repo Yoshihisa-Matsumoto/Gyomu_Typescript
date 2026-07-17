@@ -9,7 +9,7 @@ import type {
   StatusHandlerSchema,
   StatusInformationSchema,
   StatusTypeSchema,
-} from '../schemas/gyomu.js'
+} from '../schemas/gyomu/gyomu.js'
 import type {
   CrudRepositoryFromSchemasWithFindAll,
   CrudRepositoryFromSchemasWithFindAllAndFindByColumn,

@@ -1,4 +1,4 @@
-import type { ProjectRelativePath } from '@gyomu/schema/typescript'
+import type { PackageJsonAnalysis, ProjectRelativePath } from '@gyomu/schema/typescript'
 import type { FullPath } from '@gyomu/schema'
 import type { Project } from 'ts-morph'
 
@@ -14,6 +14,8 @@ export interface ProjectContext {
   projectRoot: FullPath
 
   sourceRoot: ProjectRelativePath
+
+  packageJson: PackageJsonAnalysis
 
   /**
    * Project name

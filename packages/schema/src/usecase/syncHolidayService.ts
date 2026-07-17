@@ -1,7 +1,7 @@
 import { Effect } from 'effect'
 import { GyomuRepository } from '../gyomu/GyomuRepository.js'
 import { diffEntities } from '../data/crud/diffEntities.js'
-import { MarketHolidaySchema } from '../schemas/gyomu.js'
+import { MarketHolidaySchema } from '../schemas/gyomu/gyomu.js'
 import { HolidayFetcher } from '../gyomu/holiday/HolidayFetcher.js'
 import { gyomuExternalFailure } from '../error/GyomuError.js'
 

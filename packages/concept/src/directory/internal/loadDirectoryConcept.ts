@@ -1,6 +1,6 @@
 import { pathExists, readJsonFromFileAndValidate } from '@gyomu/infra/fs'
 import { SchemaValidationError, wrapInfraError } from '@gyomu/schema'
-import { DirectoryConcept } from '@gyomu/schema/schemas/concept/DirectoryConcept'
+import { DirectoryConcept } from '@gyomu/schema/schemas/concept'
 import { Effect } from 'effect'
 import { flattenIssues } from '@gyomu/schema/entity'
 import { ConceptError } from '../../error/ConceptError.js'
@@ -28,15 +28,15 @@ export const loadDirectoryConcept = (
     )
   }).pipe(
     Effect.mapError((e) =>
-      wrapInfraError(ConceptError, e, (e) => ({
+      wrapInfraError(ConceptError, e, (e2) => ({
         filePath: targetDirectory,
         message: 'Fail to load Directory Concept',
         phase: 'directory-summary' as const,
         context: context.projectRoot,
         details:
-          e instanceof SchemaValidationError
-            ? e.issues
-              ? flattenIssues(e.issues as any)
+          e2 instanceof SchemaValidationError
+            ? e2.issues
+              ? flattenIssues(e2.issues as any)
               : undefined
             : undefined,
       })),

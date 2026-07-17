@@ -5,7 +5,6 @@ import { createMemberIdentityAndId } from '../../../shared/createMemberIdentity.
 import { analyzeDependency } from '../analyzeDependency.js'
 import { getSupportedEffectSchemaType } from './getSupportedEffectSchemaType.js'
 import { analyzeEffectSchema, checkAndAnalyzeEffectSchema } from './analyzeEffectSchema.js'
-import type { SchemaAnnotations } from '@gyomu/schema/schemas/typescript/type/SchemaAnnotations'
 import type { MemberAnalysisResult } from '../../types.js'
 import type {
   MemberIdentityMemberPath,
@@ -16,6 +15,7 @@ import type { CallExpression, ObjectLiteralElementLike } from 'ts-morph'
 import type {
   DependencyCandidate,
   ImportAnalysis,
+  SchemaAnnotations,
   SymbolIdentity,
   TypeAnalysis,
   TypeProperty,

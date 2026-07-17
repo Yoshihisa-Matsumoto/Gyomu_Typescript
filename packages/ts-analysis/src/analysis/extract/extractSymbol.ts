@@ -8,7 +8,7 @@ import type {
   SymbolAnalysis,
 } from '@gyomu/schema/schemas/typescript'
 import type { FileAnalysisMetadata, MemberIdentityMemberPath } from '@gyomu/schema/typescript'
-import type { AnalysisOptions } from '../AnalysisOption.js'
+import type { AnalysisOptions } from '@gyomu/schema'
 import type { SourceFileContext } from '../file/SourceFileContext.js'
 
 export const extractSymbols = (

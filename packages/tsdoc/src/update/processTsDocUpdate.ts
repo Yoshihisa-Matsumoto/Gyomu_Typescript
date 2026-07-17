@@ -3,9 +3,8 @@ import { join, relative } from 'node:path'
 import { Effect } from 'effect'
 import { makeDirectory, readStringFromFile, writeStringToFile } from '@gyomu/infra/fs'
 
-import { toAbsolutePath } from '@gyomu/ts-analysis'
+import { findWorkspaceRoot, toAbsolutePath } from '@gyomu/ts-analysis'
 import { FullPath } from '@gyomu/schema'
-import { findWorkspaceRoot } from '../shared/path/findWorkspaceRoot.js'
 import { buildMergePlan } from './buildMergePlan.js'
 import { applyMergePlans } from './applyMergePlan.js'
 import { buildFileUpdatePlan } from './buildFileUpdatePlan.js'
@@ -24,7 +23,7 @@ export const processTsDocUpdate = (
   return Effect.gen(function* () {
     if (fileResult.analysis.exports.length == 0) return
     const mergePlans = yield* buildMergePlan(context.projectName, fileResult, option)
-    if (option?.action?.NoLLMRequest) {
+    if (option?.action?.noLLMRequest) {
       return
     }
     // console.dir(fileResult.metadata.symbols.keys())

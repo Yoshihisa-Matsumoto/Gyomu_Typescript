@@ -1,6 +1,6 @@
-import { toIdentityKey, toSymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
+import { toIdentityKey, toSymbolIdentity } from '@gyomu/schema/schemas/typescript'
 import type { SymbolId } from '@gyomu/schema/typescript'
-import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
+import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 import type {
   ContextEntry,
   JsDocUpdatePlan,

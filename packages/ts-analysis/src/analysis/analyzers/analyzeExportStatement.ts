@@ -1,5 +1,5 @@
 import { Node, SyntaxKind } from 'ts-morph'
-import { moduleSpecifierToSourcePath } from '../../shared/module/moduleSpecifierToSourcePath.js'
+// import { moduleSpecifierToSourcePath } from '../../shared/module/moduleSpecifierToSourcePath.js'
 import type { Builder } from '@gyomu/schema/entity'
 import type {
   FileAnalysisMetadata,
@@ -9,7 +9,7 @@ import type {
 import type { ExportAnalysis, SymbolAnalysis } from '@gyomu/schema/schemas/typescript'
 import type { StatementAnalysisResult } from './types.js'
 import type { ExportDeclaration } from 'ts-morph'
-import type { AnalysisOptions } from '../AnalysisOption.js'
+import type { AnalysisOptions } from '@gyomu/schema'
 
 export const analyzeExportStatement = (
   statement: ExportDeclaration,
@@ -95,12 +95,12 @@ export const analyzeExportStatement = (
           })
         }
       } else {
-        const fromModule = module.getText()
+        const fromModule = module.getLiteralText()
 
         // Graph (non within file)
         if (fromModule.startsWith('.')) {
           // within the project
-          const moduleSpecifier = moduleSpecifierToSourcePath(fromModule, args.sourceRelativePath)
+          const moduleSpecifier = fromModule
           result.exported.push({
             kind: 're-export',
             exportAll: false,
@@ -124,12 +124,12 @@ export const analyzeExportStatement = (
   const namespaceExport = statementChildren.find((c) => Node.isNamespaceExport(c))
   if (namespaceExport) {
     if (module) {
-      const fromModule = module.getText()
+      const fromModule = module.getLiteralText()
       const exportName = namespaceExport.getName()
       // Graph (non within file)
       if (fromModule.startsWith('.')) {
         // within the project
-        const moduleSpecifier = moduleSpecifierToSourcePath(fromModule, args.sourceRelativePath)
+        const moduleSpecifier = fromModule
         result.exported.push({
           kind: 're-export',
           exportAll: true,
@@ -165,11 +165,11 @@ export const analyzeExportStatement = (
         if (generator && generator.getAsteriskToken()) isAsterisk = true
       }
       if (isAsterisk) {
-        const fromModule = module.getText()
+        const fromModule = module.getLiteralText()
         // Graph (non within file)
         if (fromModule.startsWith('.')) {
           // within the project
-          const moduleSpecifier = moduleSpecifierToSourcePath(fromModule, args.sourceRelativePath)
+          const moduleSpecifier = fromModule
           result.exported.push({
             kind: 're-export',
             exportAll: true,

@@ -10,7 +10,7 @@ import { buildDirectoryConcept } from '../buildDirectoryConcept.js'
 import { generateDirectoryConcept } from '../internal/generateDirectoryConcept.js'
 import { saveDirectoryConcept } from '../internal/saveDirectoryConcept.js'
 import { createFixtureProject } from './createFixtureProject.js'
-import type { DirectoryConcept } from '@gyomu/schema/schemas/concept/DirectoryConcept'
+import type { DirectoryConcept } from '@gyomu/schema/schemas/concept'
 import type { FileChange } from '@gyomu/schema/snapshot'
 
 const dummyConcept = {
@@ -197,7 +197,9 @@ describe('buildDirectoryConcept', () => {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
     const input = mockedGenerate.mock.calls[1]?.[1]!
     console.dir(input, { depth: null })
-    expect(input.files).toHaveLength(2)
-    expect(input.subDirectories).toEqual([])
+    expect(input.files).toHaveLength(1)
+    expect(input.subDirectories).toHaveLength(1)
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    expect(input.subDirectories[0]!.path).toBe('service')
   })
 })

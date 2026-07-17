@@ -18,7 +18,9 @@ const functionAnalysisProgram = async (sourceFile: string): Promise<SymbolAnalys
   const filePath = ProjectRelativePath(path.join('src', sourceFile))
   const result = await Effect.runPromise(
     Effect.gen(function* () {
-      const fileResult = yield* analyzeFile(functionFixture, filePath, { verifyIndex: true })
+      const fileResult = yield* analyzeFile(functionFixture, filePath, {
+        debugInfo: { verifyIndex: true },
+      })
       yield* saveFileAnalysis(functionFixture, fileResult.analysis).pipe(
         Effect.catch((e) => {
           if (e._tag == '@gyomu/schema/SchemaErrorContext') {
@@ -64,7 +66,9 @@ const functionSymbolsDependencyProgram = async (sourceFile: string, folder?: str
   const filePath = ProjectRelativePath(sourcePath)
   const result = await Effect.runPromise(
     Effect.gen(function* () {
-      const fileResult = yield* analyzeFile(functionFixture, filePath, { verifyIndex: true })
+      const fileResult = yield* analyzeFile(functionFixture, filePath, {
+        debugInfo: { verifyIndex: true },
+      })
       yield* saveFileAnalysis(functionFixture, fileResult.analysis).pipe(
         Effect.catch((e) => {
           if (e._tag == '@gyomu/schema/SchemaErrorContext') {

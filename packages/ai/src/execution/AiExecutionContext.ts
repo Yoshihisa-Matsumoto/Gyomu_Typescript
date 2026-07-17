@@ -1,4 +1,4 @@
-import type { RetryOption } from '../provider/index.js'
+import type { RetryOption } from '@gyomu/schema'
 
 export interface AiExecutionContext {
   readonly system?: string

@@ -1,11 +1,14 @@
 import { Node } from 'ts-morph'
 
 import { analyzeDependency } from '../analyzeDependency.js'
-import type { SchemaAnnotations } from '@gyomu/schema/schemas/typescript/type/SchemaAnnotations'
 import type { MemberAnalysisResult } from '../../types.js'
 import type { MemberIdentityMemberPath, SupportedSchemaKind } from '@gyomu/schema/typescript'
 import type { CallExpression, PropertyAccessExpression } from 'ts-morph'
-import type { ImportAnalysis, TypeAnalysis } from '@gyomu/schema/schemas/typescript'
+import type {
+  ImportAnalysis,
+  SchemaAnnotations,
+  TypeAnalysis,
+} from '@gyomu/schema/schemas/typescript'
 
 export const analyzeEffectSchemaPrimitive = (
   name: string,

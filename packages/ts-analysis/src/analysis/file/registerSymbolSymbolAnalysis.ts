@@ -6,7 +6,7 @@ import type {
   IndexSignatureAnalysis,
   SymbolAnalysis,
 } from '@gyomu/schema/schemas/typescript'
-import type { AnalysisOptions } from '../AnalysisOption.js'
+import type { AnalysisOptions } from '@gyomu/schema'
 import type { FileAnalysisMetadata } from '@gyomu/schema/typescript'
 
 export const registerSymbolSymbolAnalysis = (
@@ -15,7 +15,7 @@ export const registerSymbolSymbolAnalysis = (
     DocumentableMemberAnalysis | SymbolAnalysis | DocumentableTypeProperty | IndexSignatureAnalysis,
   option: AnalysisOptions | undefined,
 ) => {
-  if (option?.verifyIndex) {
+  if (option?.debugInfo?.verifyIndex) {
     const id = toIdentityKey(symbolAnalysis.identity)
     if (
       id ==

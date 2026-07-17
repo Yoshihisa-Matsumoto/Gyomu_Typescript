@@ -4,7 +4,7 @@ import { createMemberIdentityAndId } from '../../../shared/createMemberIdentity.
 import { analyzeType } from '../type/analyzeType.js'
 import type { ParameterDeclaration, TypeNode } from 'ts-morph'
 import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../types.js'
-import type { NonDocumentableTypeProperty } from '@gyomu/schema/schemas/typescript/index'
+import type { NonDocumentableTypeProperty } from '@gyomu/schema/schemas/typescript'
 
 export const analyzeTypeProperty = (
   args: ChildAnalysisArg<ParameterDeclaration>,

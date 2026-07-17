@@ -1,4 +1,4 @@
-import { equalSymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
+import { equalSymbolIdentity } from '@gyomu/schema/schemas/typescript'
 import { mergeComplexityMetrics } from './mergeComplexityMetrics.js'
 import { emptyComplexityMetrics } from './emptyComplexityMetrics.js'
 import { computeEffectComplexity } from './computeEffectComplexity.js'

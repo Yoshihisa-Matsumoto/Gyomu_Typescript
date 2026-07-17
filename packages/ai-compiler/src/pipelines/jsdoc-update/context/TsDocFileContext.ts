@@ -1,4 +1,4 @@
-import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
+import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 import type { TsDocSymbolContext } from './TsDocSymbolContext.js'
 
 export interface TsDocFileContext {

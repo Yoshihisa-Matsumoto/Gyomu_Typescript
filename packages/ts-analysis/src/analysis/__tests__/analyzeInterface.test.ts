@@ -23,7 +23,9 @@ const interfaceAnalysisProgram = async (sourceFile: string): Promise<SymbolAnaly
   const filePath = ProjectRelativePath(path.join('src', sourceFile))
   const result = await Effect.runPromise(
     Effect.gen(function* () {
-      const fileResult = yield* analyzeFile(interfaceFixture, filePath, { verifyIndex: true })
+      const fileResult = yield* analyzeFile(interfaceFixture, filePath, {
+        debugInfo: { verifyIndex: true },
+      })
       yield* saveFileAnalysis(interfaceFixture, fileResult.analysis).pipe(
         Effect.catch((e) => {
           if (e._tag == '@gyomu/schema/SchemaErrorContext') {
@@ -68,7 +70,9 @@ const interfaceSymbolsDependencyProgram = async (sourceFile: string, folder?: st
   const filePath = ProjectRelativePath(sourcePath)
   const result = await Effect.runPromise(
     Effect.gen(function* () {
-      const fileResult = yield* analyzeFile(interfaceFixture, filePath, { verifyIndex: true })
+      const fileResult = yield* analyzeFile(interfaceFixture, filePath, {
+        debugInfo: { verifyIndex: true },
+      })
 
       yield* saveFileAnalysis(interfaceFixture, fileResult.analysis).pipe(
         Effect.catch((e) => {

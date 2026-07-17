@@ -13,7 +13,7 @@ import type {
   IndexSignatureAnalysis,
   TypeProperty,
   TypeStructureAnalysis,
-} from '@gyomu/schema/schemas/typescript/index'
+} from '@gyomu/schema/schemas/typescript'
 
 export const analyzeTypeLiteralNode = (
   args: ChildAnalysisArg<TypeLiteralNode>,

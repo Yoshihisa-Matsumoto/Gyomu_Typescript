@@ -2,7 +2,7 @@ import { SignatureId } from '@gyomu/schema/typescript'
 import { registerSymbolJsDoc } from '../../file/registerSymbolJsDoc.js'
 import { extractJsDoc } from '../../extract/extractJsDoc.js'
 import { createMemberIdentityAndId } from '../../shared/createMemberIdentity.js'
-import type { AnalysisOptions } from '../../AnalysisOption.js'
+import type { AnalysisOptions } from '@gyomu/schema'
 import type {
   FileAnalysisMetadata,
   MemberIdentityMemberPath,

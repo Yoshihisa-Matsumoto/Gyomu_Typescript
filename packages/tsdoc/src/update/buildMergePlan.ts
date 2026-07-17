@@ -41,7 +41,7 @@ export const buildMergePlan = (
     if (option?.debugInfo?.JsDocUpdatePlan) {
       if (option.debugInfo.DumpToFile) yield* writeStringToFile('./log/JsDocUpdatePlan.txt', '')
     }
-    if (option?.action?.NoLLMRequest) {
+    if (option?.action?.noLLMRequest) {
       return []
     }
     const plans = yield* buildJsDocUpdatePlanWithRetry(contexts, fileResult, option)

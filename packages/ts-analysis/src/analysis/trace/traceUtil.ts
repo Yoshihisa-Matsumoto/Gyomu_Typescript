@@ -2,7 +2,7 @@ import { getCaller } from '@gyomu/schema'
 import { Node } from 'ts-morph'
 import type { ChildAnalysisArg } from '../analyzers/types.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
-import type { AnalysisOptions } from '../AnalysisOption.js'
+import type { AnalysisOptions } from '@gyomu/schema'
 
 export function tracePlaceIdentity<T extends Node | undefined>(
   target: SymbolIdentity | ChildAnalysisArg<T>,
@@ -10,8 +10,8 @@ export function tracePlaceIdentity<T extends Node | undefined>(
   functionName?: string | undefined,
 ) {
   // if (functionName) console.log(functionName)
-  if (!options || !options.includeDebugInfo) return
-  const keyword = options.includeDebugInfo.keyword
+  if (!options || !options.debugInfo) return
+  const keyword = options.debugInfo.keyword
   if (!keyword) return
   let targetIdentity: string | undefined
   if ('symbolId' in target) {

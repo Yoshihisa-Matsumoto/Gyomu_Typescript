@@ -1,18 +1,8 @@
-import type { RetryOption } from '@gyomu/ai'
+import type { AiOptions, AnalysisOptions } from '@gyomu/schema'
 
-export interface ConceptOptions {
-  debugInfo?:
-    | {
-        DirectoryConcept?: boolean
-        DumpToFile?: boolean
-      }
-    | undefined
-  action?:
-    | {
-        NoLLMRequest?: boolean
-        NoUpdateTSDoc?: boolean
-        WriteToTempFolder?: boolean
-      }
-    | undefined
-  retryOption: RetryOption | undefined
+export interface ConceptOptions extends AnalysisOptions, AiOptions {
+  debugInfo?: AnalysisOptions['debugInfo'] &
+    AiOptions['debugInfo'] & {
+      DirectoryConcept?: boolean
+    }
 }

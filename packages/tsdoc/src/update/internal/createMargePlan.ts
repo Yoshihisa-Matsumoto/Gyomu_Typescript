@@ -1,5 +1,5 @@
 import { fromSync } from '@gyomu/schema/effect'
-import { equalSymbolIdentity } from '@gyomu/schema/schemas/typescript/SymbolIdentity'
+import { equalSymbolIdentity } from '@gyomu/schema/schemas/typescript'
 import { isJsDocTargetKind } from '@gyomu/ai-compiler/jsdoc-update'
 import { UpdateError } from '../error/UpdateError.js'
 import { analyzeProtectedSection } from './analyzeProtectedSection.js'

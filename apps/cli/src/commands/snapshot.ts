@@ -8,7 +8,6 @@ import {
   commitProjectSnapshot,
   deleteSnapshot,
   isTestFile,
-  listTypescriptProject,
   processTsDocUpdate,
 } from '@gyomu/tsdoc'
 import { DirectoryConceptRouteId, buildDirectoryConcept } from '@gyomu/concept/directory'
@@ -21,9 +20,9 @@ import {
   removePath,
   writeStringToFile,
 } from '@gyomu/infra/fs'
-import { analyzeFile, initializeProjectContext } from '@gyomu/ts-analysis'
+import { analyzeFile, initializeProjectContext, listTypescriptProject } from '@gyomu/ts-analysis'
 import { AI_MODELS } from '@gyomu/ai'
-import type { AnalysisOptions } from '@gyomu/ts-analysis'
+import type { AnalysisOptions } from '@gyomu/schema'
 
 const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(
   Layer.provideMerge(PlatformLayer),
@@ -49,9 +48,9 @@ export const snapshotCommand = (
 ) => {
   return runQAWithEnvOrThrow(
     Effect.gen(function* () {
-      const analysisOption: AnalysisOptions = { DumpToFile: true }
+      const analysisOption: AnalysisOptions = { debugInfo: { DumpToFile: true } }
       if (options?.loggingKeyword) {
-        analysisOption.includeDebugInfo = {
+        analysisOption.debugInfo = {
           keyword: options.loggingKeyword,
         }
       }

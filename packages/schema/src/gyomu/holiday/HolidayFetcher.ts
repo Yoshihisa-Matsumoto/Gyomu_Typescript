@@ -3,7 +3,7 @@
 import { Context } from 'effect'
 import type { Effect } from 'effect'
 import type { GyomuError } from '../../error/GyomuError.js'
-import type { MarketHolidaySchema } from '../../schemas/gyomu.js'
+import type { MarketHolidaySchema } from '../../schemas/gyomu/gyomu.js'
 
 /**
  * Defines a service for retrieving market-specific holiday schedules.

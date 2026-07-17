@@ -6,6 +6,7 @@ import { describe, expect, test } from 'vitest'
 // import type { FileAnalysisContext } from '@gyomu/schema/typescript'
 
 describe('buildFilConceptInput', () => {
+  test('')
   // test('builds export summaries', () => {
   //   const exportItem = {
   //     kind: 'local',

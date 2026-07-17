@@ -2,10 +2,13 @@ import { Node } from 'ts-morph'
 
 import { isSupportedSchemaType } from '@gyomu/schema/typescript'
 import { analyzeDependency } from '../analyzeDependency.js'
-import type { SchemaAnnotations } from '@gyomu/schema/schemas/typescript/type/SchemaAnnotations'
 import type { MemberIdentityMemberPath, SupportedSchemaKind } from '@gyomu/schema/typescript'
 import type { CallExpression, Expression, Identifier, PropertyAccessExpression } from 'ts-morph'
-import type { DependencyCandidate, ImportAnalysis } from '@gyomu/schema/schemas/typescript'
+import type {
+  DependencyCandidate,
+  ImportAnalysis,
+  SchemaAnnotations,
+} from '@gyomu/schema/schemas/typescript'
 import type { Builder } from '@gyomu/schema/entity'
 
 export const getSupportedEffectSchemaType = (

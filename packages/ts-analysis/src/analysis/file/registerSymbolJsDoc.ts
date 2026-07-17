@@ -1,6 +1,6 @@
 // import { AnalysisError } from '../error/AnalysisError.js'
 import { AnalysisError } from '../error/AnalysisError.js'
-import type { AnalysisOptions } from '../AnalysisOption.js'
+import type { AnalysisOptions } from '@gyomu/schema'
 import type { ExtractedJsDoc } from '../jsdoc/ExtractedJsDoc.js'
 import type { FileAnalysisMetadata, SymbolId } from '@gyomu/schema/typescript'
 import type { ParsedJsDoc } from '@gyomu/schema/schemas/typescript'
@@ -11,7 +11,7 @@ export const registerSymbolJsDoc = (
   extractedjsDoc: ExtractedJsDoc | undefined,
   option: AnalysisOptions | undefined,
 ) => {
-  if (option?.verifyIndex) {
+  if (option?.debugInfo?.verifyIndex) {
     if (extractedjsDoc) {
       const parsed: ParsedJsDoc | undefined = extractedjsDoc.parsed[0]
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition

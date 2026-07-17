@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { diffEntities } from '../crud/diffEntities.js' // パス調整
-import { AppInfoSchema } from '../../schemas/gyomu.js'
+import { AppInfoSchema } from '../../schemas/gyomu/gyomu.js'
 // import { testSchemas } from './helpers/schema';
 
 describe('diffEntities', () => {

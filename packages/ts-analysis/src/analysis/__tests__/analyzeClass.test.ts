@@ -29,7 +29,9 @@ const classAnalysisProgram = async (
   const filePath = ProjectRelativePath(sourcePath)
   const result = await Effect.runPromise(
     Effect.gen(function* () {
-      const fileResult = yield* analyzeFile(classFixture, filePath, { verifyIndex: true })
+      const fileResult = yield* analyzeFile(classFixture, filePath, {
+        debugInfo: { verifyIndex: true },
+      })
       yield* saveFileAnalysis(classFixture, fileResult.analysis).pipe(
         Effect.catch((e) => {
           if (e._tag == '@gyomu/schema/SchemaErrorContext') {
@@ -76,7 +78,7 @@ const classSymbolsDependencyProgram = (sourceFile: string, folder?: string) => {
   const filePath = ProjectRelativePath(sourcePath)
   const result = Effect.runSync(
     Effect.gen(function* () {
-      return yield* analyzeFile(classFixture, filePath, { verifyIndex: true }).pipe(
+      return yield* analyzeFile(classFixture, filePath, { debugInfo: { verifyIndex: true } }).pipe(
         Effect.map((result2) => {
           if (!fs.existsSync('./log')) fs.mkdirSync('./log')
           fs.writeFileSync('./log/fileAnalysis.txt', JSON.stringify(result2.analysis, null, 2))

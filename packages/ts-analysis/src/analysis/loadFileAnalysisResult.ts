@@ -5,7 +5,7 @@ import { loadFileAnalysis } from './loadFileAnalysis.js'
 import { analyzeFile } from './analyzeFile.js'
 import { buildIndex } from './buildIndex.js'
 
-import type { LoadAnalysisOptions } from './AnalysisOption.js'
+import type { AnalysisOptions } from '@gyomu/schema'
 import type { ProjectContext } from './project/ProjectContext.js'
 import type { FileAnalysisTransient, ProjectRelativePath, SymbolId } from '@gyomu/schema/typescript'
 import type { DependencyCandidate } from '@gyomu/schema/schemas/typescript'
@@ -16,7 +16,7 @@ export const loadFileAnalysisResult = (
    * Path accepted by {@link Project.getSourceFile}.
    */
   sourceFilePath: ProjectRelativePath,
-  option?: LoadAnalysisOptions,
+  option?: AnalysisOptions,
 ) =>
   Effect.gen(function* () {
     const transient: FileAnalysisTransient = {

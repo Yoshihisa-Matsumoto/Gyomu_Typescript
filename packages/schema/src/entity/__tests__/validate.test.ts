@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { AppInfoSchema } from '../../schemas/gyomu.js'
+import { AppInfoSchema } from '../../schemas/gyomu/gyomu.js'
 import { validateUnknowObject } from '../validate.js'
 
 describe('validateUnknowObject', () => {

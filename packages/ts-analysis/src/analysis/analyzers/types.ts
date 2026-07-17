@@ -12,7 +12,7 @@ import type {
   SymbolId,
 } from '@gyomu/schema/typescript'
 import type { Node } from 'ts-morph'
-import type { AnalysisOptions } from '../AnalysisOption.js'
+import type { AnalysisOptions } from '@gyomu/schema'
 
 export type TagAnalysisArg<T extends Node> = {
   declaration: T
