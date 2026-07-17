@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { Effect, FileSystem } from 'effect'
-import { getFailureFromExit } from '@gyomu/schema/effect'
+import { getFailureFromExit } from '@gyomu/schema'
 import { ConfigService } from '@gyomu/infra'
 import { getConfigRootDiretory } from '../getConfigRootDiretory.js'
 import { ConfigRootDirectory } from '../../../services/ConfigRootDirectory.js'
