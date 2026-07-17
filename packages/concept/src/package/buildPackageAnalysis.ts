@@ -1,19 +1,25 @@
+import { dirname } from 'node:path'
 import { listTypescriptProject } from '@gyomu/ts-analysis'
 import { Effect } from 'effect'
 import { wrapInfraError } from '@gyomu/schema'
+import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { ConceptError } from '../error/ConceptError.js'
+import { loadDirectoryConcept } from '../directory/internal/loadDirectoryConcept.js'
 import { collectDependencies } from './internal/collectDependencies.js'
 import { resolvePackageExportTargets } from './internal/resolvePackageExportTargets.js'
 import { findSourceFiles } from './internal/findSourceFiles.js'
 import { buildPackageExportAnalysis } from './internal/buildPackageExportAnalysisResult.js'
 import type { FileSystem } from 'effect'
-import type { FileSummary, PackageAnalysis } from '@gyomu/schema/concept'
+import type { DirectoryAnalysis, FileSummary, PackageAnalysis } from '@gyomu/schema/concept'
 import type { ProjectContext } from '@gyomu/ts-analysis'
 import type { FileSearchService } from '@gyomu/schema/shared/fs'
 import type { PackageExportAnalysisResult } from './internal/types.js'
+import type { DirectoryConcept } from '@gyomu/schema/schemas/concept'
+import type { ConceptOptions } from '../ConceptOptions.js'
 
 export const buildPackageAnalysis = (
   context: ProjectContext,
+  option?: ConceptOptions,
 ): Effect.Effect<PackageAnalysis, ConceptError, FileSystem.FileSystem | FileSearchService> =>
   Effect.gen(function* () {
     const workspace = yield* listTypescriptProject(context.projectRoot)
@@ -23,18 +29,19 @@ export const buildPackageAnalysis = (
       { outDir: compilerOptions.outDir, rootDir: compilerOptions.rootDir },
       context.projectRoot,
     )
-    const exportedSourceFiles = yield* Effect.forEach(exportTarget, (target) =>
-      findSourceFiles(context.projectRoot, target),
+    const exportResult = yield* Effect.forEach(exportTarget, (target) =>
+      findSourceFiles(context.projectRoot, target).pipe(
+        Effect.flatMap((resolvedSourceFile) =>
+          buildPackageExportAnalysis(resolvedSourceFile, context),
+        ),
+      ),
     )
-
-    const exportResult = yield* Effect.forEach(exportedSourceFiles, (resolvedSourceFile) =>
-      buildPackageExportAnalysis(context, resolvedSourceFile),
-    )
+    const aggregateResult = yield* aggregateFileAndLoadDirectory(context, exportResult, option)
 
     return {
       dependencies: collectDependencies(context, workspace),
-      directories: [],
-      exportedFiles: [],
+      directories: aggregateResult.directories,
+      exportedFiles: aggregateResult.files,
       exports: exportResult.map((e) => e.exports),
       package: {
         name: context.packageJson.name,
@@ -43,7 +50,7 @@ export const buildPackageAnalysis = (
         description: context.packageJson.description,
         type: context.packageJson.moduleType,
       },
-    }
+    } satisfies PackageAnalysis
   }).pipe(
     Effect.mapError((e) =>
       wrapInfraError(ConceptError, e, () => ({
@@ -54,12 +61,48 @@ export const buildPackageAnalysis = (
     ),
   )
 
-const aggregateFileAndLoadDirectory = (exportResult: Array<PackageExportAnalysisResult>) => {
+const aggregateFileAndLoadDirectory = (
+  context: ProjectContext,
+  exportResult: Array<PackageExportAnalysisResult>,
+  option?: ConceptOptions,
+) => {
   const files = exportResult.map((exp) => exp.files).flat()
   const filePathSet = new Map<string, FileSummary>()
-  files.forEach((fileSummary) => {
-    if (!filePathSet.has(fileSummary.path)) {
-      filePathSet.set(fileSummary.path, fileSummary)
+  const dirPathSet = new Map<string, DirectoryConcept>()
+
+  return Effect.gen(function* () {
+    yield* Effect.forEach(files, (fileSummary) =>
+      Effect.gen(function* () {
+        if (filePathSet.has(fileSummary.path)) {
+          return Effect.void
+        }
+        filePathSet.set(fileSummary.path, fileSummary)
+        const directory = ProjectRelativePath(dirname(fileSummary.path))
+
+        if (dirPathSet.has(directory)) {
+          return Effect.void
+        }
+
+        const directoryConcept = yield* loadDirectoryConcept(context, directory, option)
+
+        if (directoryConcept) dirPathSet.set(directory, directoryConcept)
+      }),
+    )
+
+    const dirList = dirPathSet
+      .entries()
+      .map(
+        ([path, concept]: [string, DirectoryConcept]) =>
+          ({
+            path: ProjectRelativePath(path),
+            summary: concept,
+          }) satisfies DirectoryAnalysis,
+      )
+      .toArray()
+
+    return {
+      files: filePathSet.values().toArray(),
+      directories: dirList,
     }
   })
 }

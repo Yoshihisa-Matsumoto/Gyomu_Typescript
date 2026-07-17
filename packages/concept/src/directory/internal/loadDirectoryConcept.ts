@@ -7,18 +7,20 @@ import { ConceptError } from '../../error/ConceptError.js'
 import { getDirectoryConceptPath } from './getDirectoryConceptPath.js'
 import type { ProjectRelativePath } from '@gyomu/schema/typescript'
 import type { ProjectContext } from '@gyomu/ts-analysis'
+import type { ConceptOptions } from '../../ConceptOptions.js'
 
 export const loadDirectoryConcept = (
   context: ProjectContext,
   targetDirectory: ProjectRelativePath,
+  option?: ConceptOptions,
 ) =>
   Effect.gen(function* () {
-    const directoryConceptPath = getDirectoryConceptPath(context, targetDirectory)
+    const directoryConceptPath = getDirectoryConceptPath(context, targetDirectory, option)
 
     // FullPath(
     //   join(context.projectRoot, '.gyomu', targetDirectory, '$Directory' + '.json'),
     // )
-    console.log(directoryConceptPath)
+    // console.log(directoryConceptPath)
     const fileExists = yield* pathExists(directoryConceptPath)
     if (!fileExists) return undefined
     return yield* readJsonFromFileAndValidate(

@@ -11,6 +11,7 @@ import { loadDirectoryConcept } from '../loadDirectoryConcept.js'
 import { ConceptError } from '../../../error/ConceptError.js'
 
 import { saveDirectoryConcept } from '../saveDirectoryConcept.js'
+import { createFixtureProject } from '../../__tests__/createFixtureProject.js'
 import type { DirectoryConcept } from '@gyomu/schema/schemas/concept'
 import type { ProjectContext } from '@gyomu/ts-analysis'
 
@@ -121,5 +122,16 @@ describe('loadDirectoryConcept', () => {
       expect(failure.filePath).toBe('src')
       expect(failure.message).toBe('Fail to load Directory Concept')
     }
+  })
+  it('loads from metadataRoot when specified', async () => {
+    const project = createFixtureProject('load-directory-concept')
+
+    const result = await Effect.runPromise(
+      loadDirectoryConcept(project, ProjectRelativePath('src/sample'), {
+        metadataRoot: 'mock-gyomu',
+      }).pipe(Effect.provide(PlatformLayer)),
+    )
+
+    expect(result?.summary).toBe('mock')
   })
 })

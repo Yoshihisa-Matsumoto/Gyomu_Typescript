@@ -12,7 +12,7 @@ export const loadSourceFile = (context: ProjectContext, sourceFullPath: FullPath
     message: 'fail to load source',
     phase: 'source-file-load' as const,
   }))(() => {
-    console.log(sourceFullPath)
+    // console.log(sourceFullPath)
     const sourceFile = context.project.getSourceFile(sourceFullPath)
 
     if (!sourceFile) {

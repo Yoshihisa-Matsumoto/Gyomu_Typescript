@@ -1,7 +1,8 @@
-import type { DependencyAnalysis } from './DependencyAnalysis.js'
 import type { DirectoryConcept } from '../../schemas/concept/DirectoryConcept.js'
+import type { DependencyAnalysis } from './DependencyAnalysis.js'
 import type { FileSummary } from '../FileSummary.js'
 import type { PackageExportAnalysis } from './PackageExportAnalysis.js'
+import type { ProjectRelativePath } from '../../typescript/types.js'
 
 export interface PackageAnalysis {
   /**
@@ -22,7 +23,7 @@ export interface PackageAnalysis {
   /**
    * Directories that participate in the public implementation of this package.
    */
-  directories: ReadonlyArray<DirectoryConcept>
+  directories: ReadonlyArray<DirectoryAnalysis>
 
   /**
    * Summaries of files that are relevant to this package.
@@ -30,6 +31,10 @@ export interface PackageAnalysis {
   exportedFiles: ReadonlyArray<FileSummary>
 }
 
+export interface DirectoryAnalysis {
+  path: ProjectRelativePath
+  summary: DirectoryConcept
+}
 export interface PackageInfoAnalysis {
   /**
    * Package name.

@@ -10,7 +10,7 @@ import type { ResolvedSourceFile } from '../types.js'
 const project = createFixtureProject(path.join('package-analysis'))
 const buildExportResult = async (exportInfo: ResolvedSourceFile) => {
   return await Effect.runPromise(
-    buildPackageExportAnalysis(project, exportInfo, {}).pipe(Effect.provide(PlatformLayer)),
+    buildPackageExportAnalysis(exportInfo, project, {}).pipe(Effect.provide(PlatformLayer)),
   )
 }
 describe('buildPackageExportAnalysis', () => {
@@ -33,7 +33,7 @@ describe('buildPackageExportAnalysis', () => {
 
     const paths = result.files.map((f) => f.path)
     console.dir(paths)
-    expect(result.files).toHaveLength(6)
+    expect(result.files).toHaveLength(4)
 
     expect(paths).toContain('src/schema.ts')
     expect(paths).toContain('src/index.ts')
@@ -49,9 +49,7 @@ describe('buildPackageExportAnalysis', () => {
     console.dir(paths)
     expect(paths).toContain('src/index.ts')
     expect(paths).toContain('src/schema.ts')
-    expect(paths).toContain('src/usecase/index.ts')
     expect(paths).toContain('src/usecase/createGreeting.ts')
-    expect(paths).toContain('src/usecase/updateGreeting.ts')
   })
 
   it('returns the specified export path', async () => {

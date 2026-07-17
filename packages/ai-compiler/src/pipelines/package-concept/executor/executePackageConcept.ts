@@ -1,42 +1,37 @@
 import { Effect } from 'effect'
 import { AiModelRoute, ModelRouteId } from '@gyomu/ai'
 import { MessageRole } from '@gyomu/schema/conversation'
+import { PackageConceptSchema } from '@gyomu/schema/schemas/concept'
 import { loadPrompt } from '../prompt/loadPrompt.js'
-import { JsDocUpdatePlanSchema } from '../schema/JsDocUpdatePlan.js'
+import type { PackageConcept } from '@gyomu/schema/schemas/concept'
+import type { PackageAnalysis } from '@gyomu/schema/concept'
 import type { AiError, IOError, RetryOption } from '@gyomu/schema'
 import type { ModelRoutes, RouteNotFoundError } from '@gyomu/ai'
-import type { JsDocUpdatePlan } from '../schema/JsDocUpdatePlan.js'
 import type { FileSystem } from 'effect'
-import type { TsDocFileContext } from '../context/TsDocFileContext.js'
 
-export const TsDocRouteId = ModelRouteId('tsdoc')
-export const executeJsDocUpdatePlan = (
-  context: TsDocFileContext,
+export const PackageConceptRouteId = ModelRouteId('package-concept')
+export const executePackageConcept = (
+  context: PackageAnalysis,
   retryOption?: RetryOption,
 ): Effect.Effect<
-  JsDocUpdatePlan,
+  PackageConcept,
   IOError | AiError | RouteNotFoundError,
   AiModelRoute | FileSystem.FileSystem | ModelRoutes
 > => {
-  const promptFilename = `tsdoc-update-base.md`
+  const promptFilename = `package-concept.md`
   // const deepPromptFilename = `tsdoc-update-deep.md`
 
   return Effect.gen(function* () {
     const service = yield* AiModelRoute
     const basePrompt = yield* loadPrompt(promptFilename)
     // const deepPrompt = yield* loadPrompt(deepPromptFilename)
-    const prompt = basePrompt
-    // if (context.mode === 'deep') {
-    //   prompt += '\n\n' + deepPrompt
-    // }
+    const userPrompt = basePrompt.replace('<##PACKAGE##>', JSON.stringify(context, null, 2))
+
     const result = yield* service.generateObject({
-      routeId: TsDocRouteId,
+      routeId: PackageConceptRouteId,
       key: 'fast',
-      messages: [
-        { id: '1', role: MessageRole.system, content: prompt },
-        { id: '2', role: MessageRole.user, content: JSON.stringify(context, null, 2) },
-      ],
-      schema: JsDocUpdatePlanSchema,
+      messages: [{ id: '1', role: MessageRole.user, content: userPrompt }],
+      schema: PackageConceptSchema,
       retryOption,
     })
     return result.object

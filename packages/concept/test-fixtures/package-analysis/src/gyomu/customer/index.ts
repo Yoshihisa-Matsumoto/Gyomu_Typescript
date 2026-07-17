@@ -1,3 +1,4 @@
+export * from '../../schema.js'
 /**
  * Creates a customer greeting.
  */
