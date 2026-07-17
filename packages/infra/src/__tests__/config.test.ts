@@ -4,8 +4,7 @@ import { tmpdir } from 'node:os'
 import { describe, expect, it } from 'vitest'
 import { Config, Effect, Exit, Layer } from 'effect'
 import { NodeFileSystem } from '@effect/platform-node'
-import { ConfigError } from '@gyomu/schema'
-import { getFailureFromExit } from '@gyomu/schema/effect'
+import { ConfigError, getFailureFromExit } from '@gyomu/schema'
 
 import { ConfigProviderTest, ConfigService } from '../config.js'
 

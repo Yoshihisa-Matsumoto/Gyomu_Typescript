@@ -16,7 +16,7 @@
     "build": "turbo run build",
     "build:local": "pnpm run build:types",
     "build:all": "pnpm run build ",
-    "build:clean": "tsc -b --clean && pnpm run build:all",
+    "build:clean": "rimraf .turbo && tsc -b --clean && pnpm run build:all",
     "test": "turbo run test",
     "test:coverage": "turbo run test -- --coverage",
     "test:ci:coverage": "turbo run test --filter=\"...[origin/main]\" -- --coverage",

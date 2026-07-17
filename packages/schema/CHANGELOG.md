@@ -1,5 +1,17 @@
 # @gyomu/schema
 
+## 0.2.4-beta.10
+
+### Patch Changes
+
+- build bug fix
+
+## 0.2.4-beta.9
+
+### Patch Changes
+
+- PackageAnalysis completes
+
 ## 0.2.4-beta.8
 
 ### Patch Changes
