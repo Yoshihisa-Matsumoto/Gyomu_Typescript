@@ -19,15 +19,15 @@ export function getFailureFromExit<E>(exit: Exit<any, E>): E {
 
   if (Option.isNone(opt)) {
     const die = Cause.findDie(exit.cause)
-    if (die) {
-      if (Result.isFailure(die)) {
-        opt = Cause.findErrorOption(die.failure)
-        if (Option.isNone(opt)) {
-          throw new Error('No failure inside Cause')
-        }
-        return opt.value
+
+    if (Result.isFailure(die)) {
+      opt = Cause.findErrorOption(die.failure)
+      if (Option.isNone(opt)) {
+        throw new Error('No failure inside Cause')
       }
+      return opt.value
     }
+
     throw new Error('No failure inside Cause')
   } else return opt.value
 }

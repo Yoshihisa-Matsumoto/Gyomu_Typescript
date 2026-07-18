@@ -1,7 +1,7 @@
 import path from 'node:path'
 import { ValueError } from '../../error/ValueError.js'
-import type { FileFilterInfo } from './filter.js'
 import { FullPath } from '../../types.js'
+import type { FileFilterInfo } from './filter.js'
 
 /**
  * Represents the metadata and path configuration for a file transport operation.

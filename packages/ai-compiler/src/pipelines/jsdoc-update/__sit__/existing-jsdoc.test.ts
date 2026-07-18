@@ -13,6 +13,7 @@ import type { TsDocFileContext } from '../context/TsDocFileContext.js'
 const describeIfApiKey = process.env.GEMINI_API_KEY ? describe : describe.skip
 
 const routes = new Map([
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   [TsDocRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] } as ModelRoute],
 ])
 const layer = Layer.provideMerge(MainLayer, ConfigLayer)

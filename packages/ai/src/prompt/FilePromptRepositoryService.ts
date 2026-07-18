@@ -39,7 +39,9 @@ const FilePromptRepositoryService: PromptRepositoryService = {
       const result = yield* loadPromptFileType(key)
       return getPromptVersion(result, version)
     }),
+  // eslint-disable-next-line unused-imports/no-unused-vars
   saveDraft: (prompt: string) => Effect.succeed(undefined),
+  // eslint-disable-next-line unused-imports/no-unused-vars
   publish: (key: string, version: number) => Effect.succeed(undefined),
 }
 

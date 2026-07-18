@@ -38,7 +38,7 @@ const groupHumanEditSignals = (
   for (const signal of signals) {
     const targetSection = signal.details.targetSection
 
-    const key = targetSection ?? ''
+    const key = targetSection
 
     const existing = map.get(key)
 
