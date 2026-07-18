@@ -54,6 +54,7 @@ export const buildPackageAnalysis = (
   }).pipe(
     Effect.mapError((e) =>
       wrapInfraError(ConceptError, e, () => ({
+        packageName: context.projectName,
         phase: 'context-build' as const,
         filePath: context.projectRoot,
         message: 'fail to build package analysis',

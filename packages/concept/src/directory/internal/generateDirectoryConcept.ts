@@ -10,6 +10,7 @@ import type { FileSystem } from 'effect/FileSystem'
 import type { DirectoryConcept } from '@gyomu/schema/schemas/concept'
 
 export const generateDirectoryConcept = (
+  packageName: string,
   targetDirectory: ProjectRelativePath,
   context: DirectoryConceptInput,
   option?: ConceptOptions,
@@ -21,6 +22,7 @@ export const generateDirectoryConcept = (
   }).pipe(
     Effect.mapError((e) =>
       wrapInfraError(ConceptError, e, () => ({
+        packageName,
         filePath: targetDirectory,
         message: 'Fail to generate Directory Concept',
         phase: 'directory-summary' as const,

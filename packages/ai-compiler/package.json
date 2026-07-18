@@ -18,6 +18,10 @@
     "./directory-concept": {
       "import": "./dist/pipelines/directory-concept/index.js",
       "types": "./dist/pipelines/directory-concept/index.d.ts"
+    },
+    "./package-concept": {
+      "import": "./dist/pipelines/package-concept/index.js",
+      "types": "./dist/pipelines/package-concept/index.d.ts"
     }
   },
   "scripts": {

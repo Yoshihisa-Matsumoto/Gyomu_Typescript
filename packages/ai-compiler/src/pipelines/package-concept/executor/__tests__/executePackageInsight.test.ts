@@ -3,11 +3,11 @@ import { Effect, Layer } from 'effect'
 import { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 import { NodeFileSystem } from '@effect/platform-node'
 import { MessageRole } from '@gyomu/schema/conversation'
-import { PackageConceptSchema } from '@gyomu/schema/schemas/concept'
+import { PackageInsightSchema } from '@gyomu/schema/schemas/concept'
 import { loadPrompt } from '../../prompt/loadPrompt.js'
-import { PackageConceptRouteId, executePackageConcept } from '../executePackageConcept.js'
+import { PackageConceptRouteId, executePackageInsight } from '../executePackageInsight.js'
 import type { ModelRoute, ModelRouteId, RouteNode } from '@gyomu/ai'
-import type { PackageConcept } from '@gyomu/schema/schemas/concept'
+import type { PackageInsight } from '@gyomu/schema/schemas/concept'
 
 vi.mock('../../prompt/loadPrompt.js', () => ({
   loadPrompt: vi.fn(),
@@ -43,18 +43,19 @@ describe('executePackageConcept', () => {
           responsibilities: ['r1'],
           capabilities: [{ name: 'skill', description: 'aaa' }],
           designDecisions: ['design'],
-          outOfScope: ['outofscope'],
-          publicApi: [{ exportedSymbol: 'symbol', purpose: 'purpose' }],
-          relationships: [{ target: 'symbol', relationship: 'abc' }],
           usageGuidance: ['abc'],
-        } satisfies PackageConcept,
+        } satisfies PackageInsight,
       }),
     )
   })
 
   it('renders the prompt and invokes generateObject', async () => {
     const context = {
-      name: '@gyomu/test',
+      package: 'test',
+      exports: [],
+      directories: [],
+      dependencies: [],
+      exportedFiles: [],
     } as any
 
     const retryOption = {
@@ -62,7 +63,7 @@ describe('executePackageConcept', () => {
     } as any
 
     const result = await Effect.runPromise(
-      executePackageConcept(context, retryOption).pipe(
+      executePackageInsight(context, retryOption).pipe(
         Effect.provide(NodeFileSystem.layer),
         Effect.provide(mockModelRoutes),
         Effect.provide(mockAiModelService),
@@ -84,11 +85,15 @@ describe('executePackageConcept', () => {
           role: MessageRole.user,
           content: `PackageAnalysis:
 {
-  "name": "@gyomu/test"
+  "packageInfo": "test",
+  "publicApi": [],
+  "directoryConcepts": [],
+  "dependencySummary": [],
+  "fileSummary": []
 }`,
         },
       ],
-      schema: PackageConceptSchema,
+      schema: PackageInsightSchema,
       retryOption,
     })
   })

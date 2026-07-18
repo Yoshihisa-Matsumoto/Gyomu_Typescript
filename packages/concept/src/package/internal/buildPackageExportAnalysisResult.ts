@@ -21,10 +21,16 @@ export const buildPackageExportAnalysis = (
       files: result.map((r) => r.file),
       exports: {
         exportPath: exportInfo.exportPath,
-        exportedSymbols: result.map((r) => r.exports).flat(),
+        exportedSymbols: aggregateExports(result.map((r) => r.exports).flat()),
       },
     }
   })
+
+const aggregateExports = (
+  exports: Array<ExportedSymbolAnalysis>,
+): Array<ExportedSymbolAnalysis> => {
+  return [...new Map(exports.map((item) => [`${item.sourceFile}:${item.name}`, item])).values()]
+}
 
 type SourceExportResult = {
   file: FileSummary

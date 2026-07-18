@@ -48,7 +48,7 @@ describe('generateDirectoryConcept', () => {
     vi.mocked(executeDirectoryConcepts).mockReturnValue(Effect.succeed(concept))
 
     const result = await Effect.runPromise(
-      generateDirectoryConcept(targetDirectory, context).pipe(
+      generateDirectoryConcept('test', targetDirectory, context).pipe(
         Effect.provide(mockAiModelService),
         Effect.provide(PlatformLayer),
         Effect.provide(mockModelRoutes),
@@ -68,7 +68,7 @@ describe('generateDirectoryConcept', () => {
     vi.mocked(executeDirectoryConcepts).mockReturnValue(Effect.succeed(concept))
 
     await Effect.runPromise(
-      generateDirectoryConcept(targetDirectory, context, {
+      generateDirectoryConcept('test', targetDirectory, context, {
         retryOption,
       }).pipe(
         Effect.provide(mockAiModelService),
@@ -88,7 +88,7 @@ describe('generateDirectoryConcept', () => {
     )
 
     const exit = await Effect.runPromiseExit(
-      generateDirectoryConcept(targetDirectory, context).pipe(
+      generateDirectoryConcept('test', targetDirectory, context).pipe(
         Effect.provide(mockAiModelService),
         Effect.provide(PlatformLayer),
         Effect.provide(mockModelRoutes),

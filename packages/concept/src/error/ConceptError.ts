@@ -3,11 +3,20 @@ import { Data } from 'effect'
 import type { AppErrorContext } from '@gyomu/schema'
 
 export type ConceptPhase =
-  'context-build' | 'file-summary' | 'directory-summary' | 'concept-build' | 'export'
+  | 'context-build'
+  | 'file-summary'
+  | 'directory-summary'
+  | 'package-concept'
+  | 'concept-build'
+  | 'export'
 
 export interface ConceptErrorContext extends AppErrorContext {
   /**
-   * Target file path being processed.
+   * Target package name
+   */
+  readonly packageName: string
+  /**
+   * Target file/directory path being processed.
    */
   readonly filePath: string
 

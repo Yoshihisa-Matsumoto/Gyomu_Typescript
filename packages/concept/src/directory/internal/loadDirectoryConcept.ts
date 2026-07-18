@@ -31,6 +31,7 @@ export const loadDirectoryConcept = (
   }).pipe(
     Effect.mapError((e) =>
       wrapInfraError(ConceptError, e, (e2) => ({
+        packageName: context.projectName,
         filePath: targetDirectory,
         message: 'Fail to load Directory Concept',
         phase: 'directory-summary' as const,

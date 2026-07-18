@@ -91,7 +91,7 @@ describe('buildDirectoryConcept', () => {
     expect(mockedGenerate).toHaveBeenCalledTimes(1)
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-    const input = mockedGenerate.mock.calls[0]?.[1]!
+    const input = mockedGenerate.mock.calls[0]?.[2]!
 
     expect(input.files).toHaveLength(2)
     expect(input.subDirectories).toEqual([])
@@ -104,7 +104,7 @@ describe('buildDirectoryConcept', () => {
     expect(mockedGenerate).toHaveBeenCalledTimes(2)
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-    const input1 = mockedGenerate.mock.calls[0]?.[1]!
+    const input1 = mockedGenerate.mock.calls[0]?.[2]!
 
     expect(input1.files.map((f) => f.path)).toEqual(
       expect.arrayContaining(['src/service/service.ts', 'src/service/helper.ts']),
@@ -112,7 +112,7 @@ describe('buildDirectoryConcept', () => {
     expect(input1.subDirectories).toEqual([])
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-    const input2 = mockedGenerate.mock.calls[1]?.[1]!
+    const input2 = mockedGenerate.mock.calls[1]?.[2]!
 
     expect(input2.files.map((f) => f.path)).toEqual(expect.arrayContaining(['src/index.ts']))
     expect(input2.files[0]?.dependencies).toEqual(
@@ -128,7 +128,7 @@ describe('buildDirectoryConcept', () => {
     expect(mockedGenerate).toHaveBeenCalledTimes(1)
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-    const input = mockedGenerate.mock.calls[0]?.[1]!
+    const input = mockedGenerate.mock.calls[0]?.[2]!
 
     expect(input.files).toHaveLength(0)
     expect(input.subDirectories).toEqual([])
@@ -143,7 +143,7 @@ describe('buildDirectoryConcept', () => {
     expect(mockedGenerate).toHaveBeenCalledTimes(1)
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-    const input = mockedGenerate.mock.calls[0]?.[1]!
+    const input = mockedGenerate.mock.calls[0]?.[2]!
 
     expect(input.files).toHaveLength(2)
     expect(input.subDirectories).toEqual([])
@@ -183,7 +183,7 @@ describe('buildDirectoryConcept', () => {
     expect(mockedGenerate).toHaveBeenCalledTimes(1)
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-    const input = mockedGenerate.mock.calls[0]?.[1]!
+    const input = mockedGenerate.mock.calls[0]?.[2]!
 
     expect(input.files).toHaveLength(2)
     expect(input.subDirectories).toEqual([])
@@ -195,7 +195,7 @@ describe('buildDirectoryConcept', () => {
     expect(mockedGenerate).toHaveBeenCalledTimes(2)
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-    const input = mockedGenerate.mock.calls[1]?.[1]!
+    const input = mockedGenerate.mock.calls[1]?.[2]!
     console.dir(input, { depth: null })
     expect(input.files).toHaveLength(1)
     expect(input.subDirectories).toHaveLength(1)

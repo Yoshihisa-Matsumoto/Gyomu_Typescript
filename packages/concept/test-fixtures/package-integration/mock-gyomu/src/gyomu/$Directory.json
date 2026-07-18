@@ -1,0 +1,26 @@
+{
+  "summary": "This directory serves as the root domain layer for the application, organizing core business logic and data definitions into distinct functional modules. It acts as a centralized repository for managing entity identification, data schemas, and domain-specific operations for the system.",
+  "responsibilities": [
+    "Manage domain-specific business logic for core entities",
+    "Define and export shared data schemas",
+    "Provision unique identifiers for system entities",
+    "Provide centralized interfaces for modular domain access"
+  ],
+  "concepts": [
+    "Domain Logic",
+    "Data Schemas",
+    "Entity Identification",
+    "Module Encapsulation"
+  ],
+  "relationships": [
+    "Domain modules utilize shared schema definitions to ensure data consistency across operations.",
+    "Identifier generation logic relies on domain-specific structures to create unique entity references.",
+    "Centralized export interfaces allow external consumers to interact with domain functionality without deep dependency paths."
+  ],
+  "designDecisions": [
+    "Modular domain separation for administrative, customer, and order contexts",
+    "Centralized export strategy for simplified module consumption",
+    "Logical isolation of identifier generation from data schema definitions",
+    "Namespace-based organization to enforce domain boundaries"
+  ]
+}

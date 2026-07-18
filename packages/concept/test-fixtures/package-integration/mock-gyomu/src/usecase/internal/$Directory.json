@@ -1,0 +1,21 @@
+{
+  "summary": "This directory serves as an internal utility layer that provides shared logic and helper functions to support core use case operations, ensuring consistency and reducing code duplication within the use case implementation.",
+  "responsibilities": [
+    "Providing shared utility functions",
+    "Encapsulating common internal logic",
+    "Supporting domain use case execution"
+  ],
+  "concepts": [
+    "Internal helpers",
+    "Utility functions",
+    "Use case support"
+  ],
+  "relationships": [
+    "Helper functions provide foundational logic utilized by higher-level use cases.",
+    "Internal utilities abstract repetitive tasks to streamline use case implementation."
+  ],
+  "designDecisions": [
+    "Internal visibility to restrict utility usage to the use case layer",
+    "Functional decomposition of repetitive logic"
+  ]
+}

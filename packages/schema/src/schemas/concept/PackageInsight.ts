@@ -1,0 +1,52 @@
+import { Schema } from 'effect'
+
+export const CapabilityConceptSchema = Schema.Struct({
+  name: Schema.String.annotate({
+    description:
+      'Short capability name. Use 2-5 words. Examples: "Text Generation", "Schema Validation".',
+  }),
+
+  description: Schema.String.annotate({
+    description: 'Brief explanation of what this capability provides to consumers of the package.',
+  }),
+})
+
+export const RelationshipConceptSchema = Schema.Struct({
+  target: Schema.String.annotate({
+    description: 'Name of the related package, project, or external system.',
+  }),
+
+  relationship: Schema.String.annotate({
+    description:
+      'Describe the relationship, such as depends on, provides services for, integrates with, or consumed by.',
+  }),
+})
+
+export const PackageInsightSchema = Schema.Struct({
+  summary: Schema.String.annotate({
+    description:
+      'High-level summary of the package. Write 2-4 concise sentences describing its primary purpose and overall role within the project.',
+  }),
+
+  responsibilities: Schema.Array(Schema.String).annotate({
+    description:
+      'List the primary responsibilities of this package. Focus on responsibilities rather than implementation details.',
+  }),
+
+  capabilities: Schema.Array(CapabilityConceptSchema).annotate({
+    description:
+      'Major capabilities provided by this package. Group related functionality into meaningful capabilities instead of listing every exported API.',
+  }),
+
+  designDecisions: Schema.Array(Schema.String).annotate({
+    description:
+      'Important architectural or design decisions that explain why the package is structured this way. Focus on stable design principles rather than temporary implementation choices.',
+  }),
+
+  usageGuidance: Schema.Array(Schema.String).annotate({
+    description:
+      'Recommendations and best practices for consumers of this package. Explain how the package is intended to be used.',
+  }),
+})
+
+export type PackageInsight = Schema.Schema.Type<typeof PackageInsightSchema>

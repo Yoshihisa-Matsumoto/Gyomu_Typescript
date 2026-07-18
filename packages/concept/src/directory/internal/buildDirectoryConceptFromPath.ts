@@ -3,7 +3,7 @@ import { Effect } from 'effect'
 import { readDirectoryDetailed } from '@gyomu/infra/fs'
 import { loadFileAnalysisResult } from '@gyomu/ts-analysis'
 import { DirectoryRelativePath, ProjectRelativePath } from '@gyomu/schema/typescript'
-import { wrapInfraError } from '@gyomu/schema'
+import { logger, wrapInfraError } from '@gyomu/schema'
 import { ConceptError } from '../../error/ConceptError.js'
 import { buildFileSummaryRecord } from './buildFileSummaryRecord.js'
 import { loadDirectoryConcept } from './loadDirectoryConcept.js'
@@ -14,13 +14,14 @@ import type { FullPath } from '@gyomu/schema'
 import type { DirectoryConceptInput, FileSummary } from '@gyomu/schema/concept'
 import type { DirectoryConcept } from '@gyomu/schema/schemas/concept'
 import type { ProjectContext } from '@gyomu/ts-analysis'
-import type { BuildDirectoryOption, BuildResult } from '../types.js'
+import type { BuildResult } from '../types.js'
 import type { FileSystem } from 'effect'
+import { ConceptOptions } from '../../ConceptOptions.js'
 
 export const buildDirectoryConceptFromPath = (
   context: ProjectContext,
   targetDirectory: FullPath,
-  option?: BuildDirectoryOption,
+  option?: ConceptOptions,
 ): Effect.Effect<BuildResult, ConceptError, FileSystem.FileSystem | AiModelRoute | ModelRoutes> =>
   Effect.gen(function* () {
     const targetDirectoryRelativePath = ProjectRelativePath(
@@ -46,7 +47,21 @@ export const buildDirectoryConceptFromPath = (
     }
 
     if (!isChanged) {
-      const directoryConcept = yield* loadDirectoryConcept(context, targetDirectoryRelativePath)
+      const directoryConcept = yield* loadDirectoryConcept(
+        context,
+        targetDirectoryRelativePath,
+        option,
+      ).pipe(
+        Effect.catch((e) => {
+          logger.info(e, 'Error on loadDirectoryConcept')
+
+          if (e.details) {
+            logger.info(e.details, 'Schema Issue')
+          }
+
+          return Effect.succeed(undefined)
+        }),
+      )
       if (directoryConcept) return { concept: directoryConcept, changed: false }
     }
 
@@ -74,7 +89,12 @@ export const buildDirectoryConceptFromPath = (
       subDirectories: directoryConcepts,
     }
 
-    const concept = yield* generateDirectoryConcept(targetDirectoryRelativePath, input, option)
+    const concept = yield* generateDirectoryConcept(
+      context.projectName,
+      targetDirectoryRelativePath,
+      input,
+      option,
+    )
 
     yield* saveDirectoryConcept(context, targetDirectoryRelativePath, concept)
     return {
@@ -84,6 +104,7 @@ export const buildDirectoryConceptFromPath = (
   }).pipe(
     Effect.mapError((e) =>
       wrapInfraError(ConceptError, e, () => ({
+        packageName: context.projectName,
         filePath: targetDirectory,
         message: 'Fail to generate Directory Concept',
         phase: 'directory-summary' as const,

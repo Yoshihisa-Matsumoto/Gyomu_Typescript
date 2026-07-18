@@ -3,9 +3,9 @@ import { Effect } from 'effect'
 import { FullPath } from '@gyomu/schema'
 import { buildDirectoryConceptFromPath } from './internal/buildDirectoryConceptFromPath.js'
 import type { ProjectContext } from '@gyomu/ts-analysis'
-import type { BuildDirectoryOption } from './types.js'
+import { ConceptOptions } from '../ConceptOptions.js'
 
-export const buildDirectoryConcept = (context: ProjectContext, option?: BuildDirectoryOption) =>
+export const buildDirectoryConcept = (context: ProjectContext, option?: ConceptOptions) =>
   Effect.gen(function* () {
     const rootPath = option?.targetFolder
       ? FullPath(join(context.projectRoot, option.targetFolder))
