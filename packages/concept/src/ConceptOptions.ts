@@ -1,6 +1,6 @@
+import type { FileChange } from '@gyomu/schema/snapshot'
+import type { ProjectRelativePath } from '@gyomu/schema/typescript'
 import type { AiOptions, AnalysisOptions } from '@gyomu/schema'
-import { FileChange } from '@gyomu/schema/snapshot'
-import { ProjectRelativePath } from '@gyomu/schema/typescript'
 
 export interface ConceptOptions extends AnalysisOptions, AiOptions {
   debugInfo?: AnalysisOptions['debugInfo'] &

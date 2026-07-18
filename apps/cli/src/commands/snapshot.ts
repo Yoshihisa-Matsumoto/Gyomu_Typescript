@@ -127,7 +127,7 @@ export const snapshotCommand = (
                 action: {
                   // NoLLMRequest: true,
                   // NoUpdateTSDoc: true,
-                  WriteToTempFolder: true,
+                  // WriteToTempFolder: true,
                 },
                 retryOption: {
                   observer: {

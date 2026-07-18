@@ -1,17 +1,13 @@
 import { Effect } from 'effect'
 import { writeStringToFile } from '@gyomu/infra/fs'
 import { convertFromSchemaObjectToJsonWithEffect, flattenIssues } from '@gyomu/schema/entity'
-import {
-  DirectoryConcept,
-  PackageConcept,
-  PackageConceptSchema,
-} from '@gyomu/schema/schemas/concept'
-
+import { PackageConceptSchema } from '@gyomu/schema/schemas/concept'
 import { SchemaValidationError, wrapInfraError } from '@gyomu/schema'
-import type { ProjectContext } from '@gyomu/ts-analysis'
-import type { ProjectRelativePath } from '@gyomu/schema/typescript'
-import { getPackageConceptPath } from './getPackageConceptPath.js'
 import { ConceptError } from '../../error/ConceptError.js'
+import { getPackageConceptPath } from './getPackageConceptPath.js'
+import type { PackageConcept } from '@gyomu/schema/schemas/concept'
+
+import type { ProjectContext } from '@gyomu/ts-analysis'
 
 export const savePackageConcept = (context: ProjectContext, concept: PackageConcept) =>
   Effect.gen(function* () {

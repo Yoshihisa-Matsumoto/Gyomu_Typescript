@@ -9,6 +9,7 @@ import { buildFileSummaryRecord } from './buildFileSummaryRecord.js'
 import { loadDirectoryConcept } from './loadDirectoryConcept.js'
 import { generateDirectoryConcept } from './generateDirectoryConcept.js'
 import { saveDirectoryConcept } from './saveDirectoryConcept.js'
+import type { ConceptOptions } from '../../ConceptOptions.js'
 import type { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 import type { FullPath } from '@gyomu/schema'
 import type { DirectoryConceptInput, FileSummary } from '@gyomu/schema/concept'
@@ -16,7 +17,6 @@ import type { DirectoryConcept } from '@gyomu/schema/schemas/concept'
 import type { ProjectContext } from '@gyomu/ts-analysis'
 import type { BuildResult } from '../types.js'
 import type { FileSystem } from 'effect'
-import { ConceptOptions } from '../../ConceptOptions.js'
 
 export const buildDirectoryConceptFromPath = (
   context: ProjectContext,
