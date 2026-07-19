@@ -8,7 +8,7 @@ import type { FileSystem } from 'effect'
 import type { PackageExportAnalysisResult, ResolvedSourceFile } from './types.js'
 import type { ExportedSymbolAnalysis, FileSummary } from '@gyomu/schema/concept'
 
-export const buildPackageExportAnalysis = (
+export const buildPackageExportAnalysisResult = (
   exportInfo: ResolvedSourceFile,
   context: ProjectContext,
   option?: AnalysisOptions,

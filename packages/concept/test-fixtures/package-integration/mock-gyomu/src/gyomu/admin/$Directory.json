@@ -1,18 +1,19 @@
 {
-  "summary": "This directory serves as the centralized location for administrative user management within the system, specifically focusing on the generation and identification of administrative user accounts.",
+  "summary": "This directory acts as the authoritative module for managing administrative user identity identifiers. It ensures consistent generation and structure of unique IDs specifically for administrative accounts, serving as a dedicated namespace for admin-level user identification logic.",
   "responsibilities": [
-    "Manage administrative user identification",
-    "Provision unique administrative account identifiers"
+    "Generate unique identifiers for administrative accounts",
+    "Maintain consistent structure for administrative identities",
+    "Encapsulate logic for user identifier assignment"
   ],
-  "concepts": [
-    "Administrative User",
-    "Identifier Generation"
-  ],
+  "concepts": ["Administrator Identifier", "User Identity", "Identity Generation"],
   "relationships": [
-    "The administrative user service relies on identifier generation logic to provision distinct credentials for system administrators."
+    "The administrator identifier serves as the unique key representing an administrative user within the user domain.",
+    "The generation logic strictly defines how an administrative identity is formed to ensure uniqueness."
   ],
   "designDecisions": [
-    "Functional encapsulation of user identity creation",
-    "Namespace-based organization for administrative domain logic"
-  ]
+    "Centralization of administrative identity management",
+    "Encapsulation of identifier generation rules",
+    "Domain-specific isolation of administrative user logic"
+  ],
+  "importance": "Core"
 }

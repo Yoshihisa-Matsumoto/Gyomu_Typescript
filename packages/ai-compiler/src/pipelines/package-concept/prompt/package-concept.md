@@ -16,5 +16,11 @@ Guidelines
 - Base every statement on the analyzed package.
 - Do not introduce architectural assumptions or best practices unless they are directly supported by the analysis.
 
+The directories are ordered from the most important
+to the least important.
+
+Focus primarily on the first few directories when
+summarizing the package.
+
 PackageAnalysis:
 <##PACKAGE##>

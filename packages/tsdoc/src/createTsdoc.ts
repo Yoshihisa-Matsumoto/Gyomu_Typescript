@@ -72,7 +72,10 @@ const processTsDocUpdateProgram = async (
   return await runQAWithEnvOrThrow(program, layer)
 }
 
-await processTsDocUpdateProgram(`@gyomu/schema`, ProjectRelativePath(`src/types.ts`))
+await processTsDocUpdateProgram(
+  `@gyomu/schema`,
+  ProjectRelativePath(`src/concept/package/PackageAnalysis.ts`),
+)
 // await processTsDocUpdateProgram(`@gyomu/schema`, `src/core/result.ts`)
 // `src/conversation/index.ts`
 // `src/core/result.ts`
@@ -87,5 +90,6 @@ await processTsDocUpdateProgram(`@gyomu/schema`, ProjectRelativePath(`src/types.
 // `src/gyomu/core/security/path.ts`  throws タグ解析がおかしい？あるいは既存Tagとの互換性？
 // `src/typescript/ImportAnalysis.ts`
 // `src/typescript/jsdoc/JsDocAnalysis.ts`
+// `src/concept/package/PackageAnalysis.ts`
 
 // await processTsDocUpdateProgram(`@gyomu/tsdoc`, `src/analysis/symbol/SymbolAnalysis.ts`)

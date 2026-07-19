@@ -1213,6 +1213,12 @@ describe('analyzeFile-complex pattern', () => {
           expect(annotation.description).toBe('A range of line numbers in a source file.')
         }
       }
+
+      expect(symbol?.jsDoc?.summaryLength).toBeGreaterThan(10)
+
+      expect(symbol.parsedJsDoc?.[0]?.summary).toBe(
+        'Defines a range of line numbers in a source file, consisting of a starting line number and an ending line number.',
+      )
     },
     timeout,
   )

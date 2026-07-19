@@ -60,14 +60,14 @@ export const getTsDocSignatureFromContext = (context: TsDocFileContext) => {
 
 const checkContextEntries = (entires: Array<ContextEntry>, keySet: Set<string>, depth: number) => {
   for (const member of entires) {
-    if (member.kind == 'method' || member.kind == 'property') {
-      if (member.documentable == false) continue
-      const key = toIdentityKey(member.target)
-      keySet.add(key)
+    // if (member.kind == 'method' || member.kind == 'property') {
+    if (member.documentable == false || member.documentable == undefined) continue
+    const key = toIdentityKey(member.target)
+    keySet.add(key)
 
-      if (member.children && depth < 2) {
-        checkContextEntries(member.children, keySet, depth + 1)
-      }
+    if (member.children && depth < 2) {
+      checkContextEntries(member.children, keySet, depth + 1)
     }
+    // }
   }
 }

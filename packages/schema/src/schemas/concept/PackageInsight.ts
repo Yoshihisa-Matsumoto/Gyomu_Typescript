@@ -1,5 +1,8 @@
 import { Schema } from 'effect'
 
+/**
+ * Defines the schema for a single package capability, including its name and a brief functional description.
+ */
 export const CapabilityConceptSchema = Schema.Struct({
   name: Schema.String.annotate({
     description:
@@ -11,6 +14,9 @@ export const CapabilityConceptSchema = Schema.Struct({
   }),
 })
 
+/**
+ * Defines the schema for a relationship between the package and another entity, identifying the target and the nature of the association.
+ */
 export const RelationshipConceptSchema = Schema.Struct({
   target: Schema.String.annotate({
     description: 'Name of the related package, project, or external system.',
@@ -22,6 +28,9 @@ export const RelationshipConceptSchema = Schema.Struct({
   }),
 })
 
+/**
+ * Defines the complete schema for package insights, including a high-level summary, responsibilities, architectural capabilities, design decisions, and usage guidance.
+ */
 export const PackageInsightSchema = Schema.Struct({
   summary: Schema.String.annotate({
     description:
@@ -49,4 +58,7 @@ export const PackageInsightSchema = Schema.Struct({
   }),
 })
 
+/**
+ * Represents the inferred type structure for package insights derived from PackageInsightSchema.
+ */
 export type PackageInsight = Schema.Schema.Type<typeof PackageInsightSchema>

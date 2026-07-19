@@ -1,18 +1,16 @@
 {
-  "summary": "This directory serves as a collection of foundational string manipulation utilities that provide reusable text transformation logic across the internal codebase.",
+  "summary": "This directory provides a centralized collection of utility functions dedicated to string manipulation and transformation within the internal scope of the package.",
   "responsibilities": [
-    "Provide utility functions for modifying string content",
-    "Encapsulate common text processing logic for consistent application"
+    "Provide reusable string processing operations",
+    "Encapsulate common string transformation logic"
   ],
-  "concepts": [
-    "String transformation",
-    "Utility functions"
-  ],
+  "concepts": ["String utilities", "Text transformation"],
   "relationships": [
-    "The string utility functions provide basic text modification capabilities for internal use."
+    "The internal utility functions provide standardized string manipulation capabilities that can be used by other parts of the codebase."
   ],
   "designDecisions": [
-    "Utility-based functional design",
-    "Centralization of string processing logic"
-  ]
+    "Collocation of pure utility functions in an internal scope to prevent leakage into the public API",
+    "Favor functional transformation of input data"
+  ],
+  "importance": "Utility"
 }

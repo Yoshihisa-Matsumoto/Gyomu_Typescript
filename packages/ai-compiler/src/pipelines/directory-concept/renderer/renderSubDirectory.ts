@@ -8,6 +8,9 @@ export const renderSubDirectory = (dir: {
   return `Directory:
 ${dir.path}
 
+Importance:
+${dir.concept.importance}
+
 Summary:
 ${dir.concept.summary}
 

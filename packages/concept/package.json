@@ -14,6 +14,10 @@
     "./directory": {
       "import": "./dist/directory/index.js",
       "types": "./dist/directory/index.d.ts"
+    },
+    "./package": {
+      "import": "./dist/package/index.js",
+      "types": "./dist/package/index.d.ts"
     }
   },
   "scripts": {

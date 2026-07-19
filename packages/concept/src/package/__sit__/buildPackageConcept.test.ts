@@ -12,6 +12,7 @@ import { makeRunner } from '@gyomu/schema/effect'
 import { createVercelAiLayer } from '@gyomu/ai/provider/vercel'
 import { PackageConceptRouteId } from '@gyomu/ai-compiler/package-concept'
 import { AI_MODELS } from '@gyomu/ai'
+import { DirectoryConceptRouteId } from '@gyomu/ai-compiler/directory-concept'
 import { buildPackageConcept } from '../buildPackageConcept.js'
 import type { FileChange } from '@gyomu/schema/snapshot'
 
@@ -21,7 +22,10 @@ const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(
 )
 const runQAWithEnvOrThrow = makeRunner(
   createVercelAiLayer(
-    new Map([[PackageConceptRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }]]),
+    new Map([
+      [PackageConceptRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
+      [DirectoryConceptRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
+    ]),
   ),
 )
 
@@ -77,5 +81,5 @@ describeIfApiKey('buildPackageConcept', () => {
   test('integration test', async () => {
     const result = await createPackageConceptProgram()
     console.dir(result, { depth: null })
-  }, 30000)
+  }, 270000)
 })

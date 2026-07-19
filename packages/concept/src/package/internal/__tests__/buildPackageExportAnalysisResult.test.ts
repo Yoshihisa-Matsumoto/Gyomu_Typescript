@@ -4,13 +4,13 @@ import { Effect } from 'effect'
 import { describe, expect, it } from 'vitest'
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { createFixtureProject } from '../../../directory/__tests__/createFixtureProject.js'
-import { buildPackageExportAnalysis } from '../buildPackageExportAnalysisResult.js'
+import { buildPackageExportAnalysisResult } from '../buildPackageExportAnalysisResult.js'
 import type { ResolvedSourceFile } from '../types.js'
 
 const project = createFixtureProject(path.join('package-analysis'))
 const buildExportResult = async (exportInfo: ResolvedSourceFile) => {
   return await Effect.runPromise(
-    buildPackageExportAnalysis(exportInfo, project, {}).pipe(Effect.provide(PlatformLayer)),
+    buildPackageExportAnalysisResult(exportInfo, project, {}).pipe(Effect.provide(PlatformLayer)),
   )
 }
 describe('buildPackageExportAnalysis', () => {

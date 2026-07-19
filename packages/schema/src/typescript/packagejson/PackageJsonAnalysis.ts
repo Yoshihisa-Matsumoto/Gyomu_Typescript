@@ -2,6 +2,9 @@ import type { PackageImportEntry } from './PackageImportEntry.js'
 import type { PackageDependency } from './PackageDependency.js'
 import type { PackageExportEntry } from './PackageExportEntry.js'
 
+/**
+ * Represents a parsed and analyzed package.json file containing metadata, dependencies, and configuration settings.
+ */
 export interface PackageJsonAnalysis {
   /**
    * パッケージ名
@@ -13,10 +16,19 @@ export interface PackageJsonAnalysis {
    */
   readonly version: string
 
+  /**
+   * Indicates whether the package is private.
+   */
   readonly private: boolean
 
+  /**
+   * The package description.
+   */
   readonly description?: string
 
+  /**
+   * The specified package manager, e.g., 'npm@x.y.z' or 'yarn@x.y.z'.
+   */
   readonly packageManager?: string
 
   /**

@@ -7,7 +7,11 @@ import type { Config, Option } from 'effect'
  * @template T The type to transform.
  */
 export type DeepPartial<T> = {
-  [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K]
+  [P in keyof T]?: T[P] extends ReadonlyArray<infer U>
+    ? ReadonlyArray<DeepPartial<U>>
+    : T[P] extends object
+      ? DeepPartial<T[P]>
+      : T[P]
 }
 
 /**

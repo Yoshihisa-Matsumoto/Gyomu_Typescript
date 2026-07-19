@@ -85,7 +85,7 @@ export const buildContextEntry = (
 }
 
 const shouldGenerateDoc = (
-  member: MemberAnalysis,
+  member: MemberAnalysis | TypeProperty,
   parent: SymbolAnalysis | MemberAnalysis,
 ): DocumentableInfo => {
   if (!member.documentable) {
@@ -122,6 +122,13 @@ const buildContextEntryFromTypeProperty = (
   parent: SymbolAnalysis | MemberAnalysis,
 ): ContextEntry => {
   const children: Array<ContextEntry> = []
+
+  const jsDocAnalysis = member.documentable ? member.jsDoc : undefined
+
+  const generateResult = shouldGenerateDoc(member, parent)
+
+  const parsedJsDoc = fileResult.metadata.parsedJsDocs.get(member.id)
+
   if (member.type?.structure) {
     const structure = member.type.structure
     if (structure.kind == 'object') {
@@ -155,7 +162,9 @@ const buildContextEntryFromTypeProperty = (
     children,
     ...withOptional({
       type: member.type?.text,
+      existingJsDoc: buildExistingJsDoc(jsDocAnalysis, parsedJsDoc),
     }),
+    ...generateResult,
   }
 }
 

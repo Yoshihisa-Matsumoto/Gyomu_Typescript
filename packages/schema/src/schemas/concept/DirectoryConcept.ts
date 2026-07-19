@@ -28,6 +28,18 @@ export const DirectoryConcept = Schema.Struct({
     description:
       'List significant architectural decisions, design patterns, layering, dependency direction, immutability, caching, or other notable implementation strategies.',
   }),
+
+  importance: Schema.Literals(['Core', 'Supporting', 'Utility']).annotate({
+    description: `Indicates how essential this directory is to the package's primary purpose.
+
+Choose:
+- Core: This directory represents one of the primary reasons the package exists. Without it, the package would lose its core identity.
+- Supporting: This directory mainly supports or extends the core functionality but is not itself the primary purpose of the package.
+- Utility: This directory provides auxiliary or reusable helper functionality. It is useful but not essential for understanding the package's main responsibility.
+
+Classify based on the package's overall purpose, not on implementation size, number of files, or complexity.
+`,
+  }),
 })
 
 /**

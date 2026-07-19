@@ -102,6 +102,7 @@ describe('buildPackageAnalysis', () => {
             concepts: [],
             relationships: [],
             designDecisions: [],
+            importance: 'Core',
           },
         },
       ]),

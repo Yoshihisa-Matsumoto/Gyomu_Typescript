@@ -19,6 +19,7 @@ const dummyConcept = {
   designDecisions: [],
   relationships: [],
   responsibilities: [],
+  importance: 'Core',
 } satisfies DirectoryConcept
 
 vi.mock('../internal/generateDirectoryConcept.js', async () => {
@@ -156,6 +157,7 @@ describe('buildDirectoryConcept', () => {
       designDecisions: [],
       relationships: [],
       responsibilities: [],
+      importance: 'Core',
     } satisfies DirectoryConcept
     await Effect.runPromise(
       saveDirectoryConcept(

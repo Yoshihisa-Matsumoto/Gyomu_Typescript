@@ -27,6 +27,7 @@ describe('loadDirectoryConcept', () => {
     concepts: ['Concept1'],
     relationships: ['Relationship1'],
     designDecisions: ['Decision1'],
+    importance: 'Core',
   }
 
   it('loads directory concept', async () => {

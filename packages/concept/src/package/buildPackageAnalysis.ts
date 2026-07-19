@@ -8,7 +8,7 @@ import { loadDirectoryConcept } from '../directory/internal/loadDirectoryConcept
 import { collectDependencies } from './internal/collectDependencies.js'
 import { resolvePackageExportTargets } from './internal/resolvePackageExportTargets.js'
 import { findSourceFiles } from './internal/findSourceFiles.js'
-import { buildPackageExportAnalysis } from './internal/buildPackageExportAnalysisResult.js'
+import { buildPackageExportAnalysisResult } from './internal/buildPackageExportAnalysisResult.js'
 import type { FileSystem } from 'effect'
 import type { DirectoryAnalysis, FileSummary, PackageAnalysis } from '@gyomu/schema/concept'
 import type { ProjectContext } from '@gyomu/ts-analysis'
@@ -29,10 +29,11 @@ export const buildPackageAnalysis = (
       { outDir: compilerOptions.outDir, rootDir: compilerOptions.rootDir },
       context.projectRoot,
     )
+
     const exportResult = yield* Effect.forEach(exportTarget, (target) =>
       findSourceFiles(context.projectRoot, target).pipe(
         Effect.flatMap((resolvedSourceFile) =>
-          buildPackageExportAnalysis(resolvedSourceFile, context),
+          buildPackageExportAnalysisResult(resolvedSourceFile, context),
         ),
       ),
     )
@@ -67,36 +68,93 @@ const aggregateFileAndLoadDirectory = (
   exportResult: Array<PackageExportAnalysisResult>,
   option?: ConceptOptions,
 ) => {
-  const files = exportResult.map((exp) => exp.files).flat()
+  // const files = exportResult.map((exp) => exp.files).flat()
   const filePathSet = new Map<string, FileSummary>()
-  const dirPathSet = new Map<string, DirectoryConcept>()
+  // const dirPathSet = new Map<string, DirectoryConcept>()
+  const dirPathFactSet = new Map<
+    string,
+    {
+      publicApiSymbols: Set<string>
+      rootApiSymbols: Set<string>
+      concept: DirectoryConcept
+    }
+  >()
 
   return Effect.gen(function* () {
-    yield* Effect.forEach(files, (fileSummary) =>
+    yield* Effect.forEach(exportResult, (exp) =>
       Effect.gen(function* () {
-        if (filePathSet.has(fileSummary.path)) {
-          return Effect.void
-        }
-        filePathSet.set(fileSummary.path, fileSummary)
-        const directory = ProjectRelativePath(dirname(fileSummary.path))
+        const exportPath = exp.exports.exportPath
+        const isRootExportPath = exportPath == '.'
 
-        if (dirPathSet.has(directory)) {
-          return Effect.void
-        }
+        yield* Effect.forEach(exp.files, (fileSummary) =>
+          Effect.gen(function* () {
+            if (filePathSet.has(fileSummary.path)) {
+              return Effect.void
+            }
+            filePathSet.set(fileSummary.path, fileSummary)
+            const directory = ProjectRelativePath(dirname(fileSummary.path))
 
-        const directoryConcept = yield* loadDirectoryConcept(context, directory, option)
+            if (!dirPathFactSet.has(directory)) {
+              const directoryConcept = yield* loadDirectoryConcept(context, directory, option)
 
-        if (directoryConcept) dirPathSet.set(directory, directoryConcept)
+              if (directoryConcept)
+                dirPathFactSet.set(directory, {
+                  concept: directoryConcept,
+                  publicApiSymbols: new Set<string>(),
+                  rootApiSymbols: new Set<string>(),
+                })
+            }
+            const entry = dirPathFactSet.get(directory)
+            if (entry) {
+              const targetExportSymbols = exp.exports.exportedSymbols
+                .filter((sym) => dirname(sym.sourceFile) == directory)
+                .map((sym) => sym.name)
+              targetExportSymbols.forEach((symName) => {
+                entry.publicApiSymbols.add(symName)
+                if (isRootExportPath) entry.rootApiSymbols.add(symName)
+              })
+            }
+          }),
+        )
       }),
     )
 
-    const dirList = dirPathSet
+    // yield* Effect.forEach(files, (fileSummary) =>
+    //       Effect.gen(function* () {
+    //         if (filePathSet.has(fileSummary.path)) {
+    //           return Effect.void
+    //         }
+    //         filePathSet.set(fileSummary.path, fileSummary)
+    //         const directory = ProjectRelativePath(dirname(fileSummary.path))
+
+    //         if (dirPathSet.has(directory)) {
+    //           return Effect.void
+    //         }
+
+    //         const directoryConcept = yield* loadDirectoryConcept(context, directory, option)
+
+    //         if (directoryConcept) dirPathSet.set(directory, directoryConcept)
+    //       }),
+    //     )
+
+    const dirList = dirPathFactSet
       .entries()
       .map(
-        ([path, concept]: [string, DirectoryConcept]) =>
+        ([path, entry]: [
+          string,
+          {
+            publicApiSymbols: Set<string>
+            rootApiSymbols: Set<string>
+            concept: DirectoryConcept
+          },
+        ]) =>
           ({
             path: ProjectRelativePath(path),
-            summary: concept,
+            facts: {
+              publicApiSymbolCount: entry.publicApiSymbols.size,
+              rootApiSymbolCount: entry.rootApiSymbols.size,
+            },
+            concept: entry.concept,
           }) satisfies DirectoryAnalysis,
       )
       .toArray()

@@ -1,22 +1,17 @@
 {
-  "summary": "This directory acts as the central entry point for order-related business logic, providing essential utilities for identifier generation while serving as a unified module to expose shared order schemas and definitions to the rest of the application.",
+  "summary": "This directory manages the core identity generation and schema definitions for order entities. It provides the foundational structure for creating unique order identifiers and serves as a central access point for shared order-related data models within the system.",
   "responsibilities": [
-    "Generate unique identifiers for order entities",
-    "Consolidate and export shared order domain definitions",
-    "Provide a centralized interface for order-related operations"
+    "Generation of unique order identifiers",
+    "Consolidation of order schema definitions",
+    "Provision of consistent order identity and data structure interfaces"
   ],
-  "concepts": [
-    "Order Identifier",
-    "Order Schema",
-    "Domain Definitions"
-  ],
+  "concepts": ["Order Identifier", "Order Schema"],
   "relationships": [
-    "The order identifier generation utility relies on the underlying domain structures defined in the shared schemas.",
-    "The directory serves as a single source of truth for both order logic and data structure definitions."
+    "The order identifier generation logic relies on the underlying order schema definitions to ensure consistent entity identification."
   ],
   "designDecisions": [
-    "Centralized export strategy to minimize consumer dependency paths",
-    "Separation of identifier logic from schema definitions",
-    "Module-based encapsulation for domain-specific business logic"
-  ]
+    "Centralized export of schema definitions to ensure consistent usage across the domain",
+    "Encapsulation of identifier generation to maintain consistency in order creation"
+  ],
+  "importance": "Core"
 }

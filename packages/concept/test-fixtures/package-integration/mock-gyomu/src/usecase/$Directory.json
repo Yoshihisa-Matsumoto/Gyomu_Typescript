@@ -1,0 +1,19 @@
+{
+  "summary": "This directory contains the primary use case logic for managing greeting entities. It serves as the orchestration layer where business requirements are translated into executable actions such as creation and modification of greeting data.",
+  "responsibilities": [
+    "Execute core business logic for greeting management",
+    "Orchestrate operations related to the lifecycle of greeting objects",
+    "Provide public entry points for executing domain-specific tasks"
+  ],
+  "concepts": ["Use Cases", "Business Logic", "Greeting Operations", "Service Orchestration"],
+  "relationships": [
+    "Use cases invoke internal utilities to perform common helper tasks during business processes.",
+    "Operations within the use case layer coordinate the transformation of data through internal service logic."
+  ],
+  "designDecisions": [
+    "Centralized entry point for domain operations",
+    "Separation of concerns by encapsulating domain tasks into discrete units",
+    "Dependency on internal utility layer for shared procedural logic"
+  ],
+  "importance": "Core"
+}

@@ -11,6 +11,7 @@ import {
   processTsDocUpdate,
 } from '@gyomu/tsdoc'
 import { DirectoryConceptRouteId, buildDirectoryConcept } from '@gyomu/concept/directory'
+import { PackageConceptRouteId, buildPackageConcept } from '@gyomu/concept/package'
 import { Effect, Layer } from 'effect'
 
 import {
@@ -33,6 +34,7 @@ const runQAWithEnvOrThrow = makeRunner(
     new Map([
       [TsDocRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
       [DirectoryConceptRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
+      [PackageConceptRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
     ]),
   ),
 )
@@ -180,6 +182,11 @@ export const snapshotCommand = (
           })
         }
         yield* buildDirectoryConcept(projectContext, {
+          changedFiles: changeResult.diff,
+          retryOption: {},
+        })
+
+        yield* buildPackageConcept(projectContext, {
           changedFiles: changeResult.diff,
           retryOption: {},
         })

@@ -85,11 +85,10 @@ describe('executePackageConcept', () => {
           role: MessageRole.user,
           content: `PackageAnalysis:
 {
-  "packageInfo": "test",
+  "package": "test",
+  "dependencies": [],
   "publicApi": [],
-  "directoryConcepts": [],
-  "dependencySummary": [],
-  "fileSummary": []
+  "topDirectories": []
 }`,
         },
       ],

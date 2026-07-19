@@ -3,5 +3,6 @@
   "responsibilities": [],
   "concepts": [],
   "relationships": [],
-  "designDecisions": []
+  "designDecisions": [],
+  "importance": "Core"
 }

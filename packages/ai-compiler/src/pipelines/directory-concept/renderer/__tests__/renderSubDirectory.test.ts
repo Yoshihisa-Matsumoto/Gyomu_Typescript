@@ -12,11 +12,15 @@ describe('renderSubDirectory', () => {
         concepts: ['Entity', 'Value Object'],
         relationships: ['Entities reference Value Objects.'],
         designDecisions: ['Domain logic is isolated from infrastructure.'],
+        importance: 'Core',
       },
     })
 
     expect(result).toBe(`Directory:
 ./core
+
+Importance:
+Core
 
 Summary:
 Provides the core domain model.

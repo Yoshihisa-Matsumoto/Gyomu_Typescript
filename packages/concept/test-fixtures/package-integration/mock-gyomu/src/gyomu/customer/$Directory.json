@@ -1,21 +1,17 @@
 {
-  "summary": "This directory manages customer-related business logic and interface definitions. It provides centralized access to customer greeting creation functions and exports shared schema definitions required for consistent customer data handling across the application.",
+  "summary": "This directory manages customer-related business logic and public-facing interfaces. It acts as a central access point for customer greeting generation while exposing necessary data schemas for the broader application.",
   "responsibilities": [
-    "Generate personalized customer greetings",
-    "Expose domain-specific schema definitions for customer data",
-    "Provide a unified entry point for customer-related business logic"
+    "Generation of customer greetings",
+    "Provisioning of customer-related domain schemas"
   ],
-  "concepts": [
-    "Customer greetings",
-    "Customer schema",
-    "Business logic"
-  ],
+  "concepts": ["Customer Greeting", "Customer Schema"],
   "relationships": [
-    "The customer greeting service relies on the shared schema definitions to structure data correctly.",
-    "The index file aggregates domain functionality and schema definitions to simplify imports for consumers."
+    "The customer greeting creation process utilizes the exported customer schemas to ensure data consistency."
   ],
   "designDecisions": [
-    "Centralized export strategy to maintain a clean interface for external modules",
-    "Separation of business logic from underlying data schemas"
-  ]
+    "Uses index files for public API surface control",
+    "Encapsulates domain logic within a dedicated namespace",
+    "Re-exports shared schemas to maintain a unified interface"
+  ],
+  "importance": "Core"
 }
