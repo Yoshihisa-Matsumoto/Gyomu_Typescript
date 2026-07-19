@@ -184,11 +184,21 @@ export const snapshotCommand = (
         yield* buildDirectoryConcept(projectContext, {
           changedFiles: changeResult.diff,
           retryOption: {},
+          debugInfo: {
+            DumpToFile: true,
+            DirectoryConcept: true,
+          },
         })
 
         yield* buildPackageConcept(projectContext, {
           changedFiles: changeResult.diff,
           retryOption: {},
+          debugInfo: {
+            DumpToFile: true,
+            PackageAnalysis: true,
+            PackageConcept: true,
+            PackageInsight: true,
+          },
         })
 
         yield* commitProjectSnapshot({

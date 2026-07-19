@@ -6,7 +6,7 @@ import type { ExecutionOptions } from './ExecutionOptions.js'
  */
 export interface AiOptions extends ExecutionOptions {
   /**
-   * Optional configuration for retrying AI operations.
+   * Optional configuration for retrying AI operations
    */
   retryOption?: RetryOption
 }

@@ -69,7 +69,13 @@ const buildExportSummary = (
     const symbol = findExportSymbol(context, exportItem)
     return {
       kind: symbol.kind,
-      summary: symbol.jsDoc?.hasSummary ? (symbol.parsedJsDoc?.[0]?.summary ?? '') : '',
+      summary: symbol.jsDoc?.hasSummary
+        ? (symbol.parsedJsDoc?.[0]?.summary ?? '')
+        : symbol.type?.source == 'effect-schema'
+          ? symbol.type.structure?.kind == 'object'
+            ? (symbol.type.structure.annotations?.description ?? '')
+            : ''
+          : '',
       symbol: symbol.identity.symbolId,
     }
   } else return undefined

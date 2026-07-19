@@ -3,17 +3,17 @@
  */
 export interface PackageDependency {
   /**
-   * package名
+   * The name of the package.
    */
   readonly packageName: string
 
   /**
-   * package.jsonの書かれた値
+   * The version specifier or source locator for the dependency.
    */
   readonly specifier: string
 
   /**
-   * specifierの種類
+   * The category or type of the specifier.
    */
   readonly kind: DependencyKind
 }

@@ -1,10 +1,12 @@
 import { Effect } from 'effect'
-import { logger } from '@gyomu/schema'
+import { logger, wrapInfraError } from '@gyomu/schema'
 import { flattenIssues } from '@gyomu/schema/entity'
 import { loadFileAnalysis } from './loadFileAnalysis.js'
 import { analyzeFile } from './analyzeFile.js'
 import { buildIndex } from './buildIndex.js'
 
+import { saveFileAnalysis } from './saveFileAnalysis.js'
+import { AnalysisError } from './error/AnalysisError.js'
 import type { AnalysisOptions } from '@gyomu/schema'
 import type { ProjectContext } from './project/ProjectContext.js'
 import type { FileAnalysisTransient, ProjectRelativePath, SymbolId } from '@gyomu/schema/typescript'
@@ -39,7 +41,18 @@ export const loadFileAnalysisResult = (
       }),
     )
     if (!analysis) {
-      return { result: yield* analyzeFile(context, sourceFilePath, option), created: true }
+      const fileAnalysis = yield* analyzeFile(context, sourceFilePath, option)
+      yield* saveFileAnalysis(context, fileAnalysis.analysis).pipe(
+        Effect.mapError((e) =>
+          wrapInfraError(AnalysisError, e, () => ({
+            cause: e,
+            phase: 'analysis' as const,
+            filePath: sourceFilePath,
+            message: 'fail to save FileAnalysis',
+          })),
+        ),
+      )
+      return { result: fileAnalysis, created: true }
     }
 
     const metadata = buildIndex(analysis)

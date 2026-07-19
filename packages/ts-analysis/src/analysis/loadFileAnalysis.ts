@@ -1,8 +1,9 @@
 import { join } from 'node:path'
 import { Effect } from 'effect'
 import { pathExists, readJsonFromFileAndValidate } from '@gyomu/infra/fs'
-import { FullPath, wrapInfraError } from '@gyomu/schema'
+import { FullPath, SchemaValidationError, wrapInfraError } from '@gyomu/schema'
 import { FileAnalysisSchema } from '@gyomu/schema/schemas/typescript'
+import { flattenIssues } from '@gyomu/schema/entity'
 import { AnalysisError } from './error/AnalysisError.js'
 import type { FileAnalysis } from '@gyomu/schema/schemas/typescript'
 import type { IOError } from '@gyomu/schema'
@@ -31,6 +32,12 @@ export const loadFileAnalysis = (
         phase: 'analysis' as const,
         filePath: sourceFilePath,
         message: 'fail to load FileAnalysis',
+        details:
+          e instanceof SchemaValidationError
+            ? e.issues
+              ? flattenIssues(e.issues as any)
+              : undefined
+            : undefined,
       })),
     ),
   )

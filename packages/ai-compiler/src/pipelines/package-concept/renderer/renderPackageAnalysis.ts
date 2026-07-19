@@ -9,5 +9,7 @@ export const renderPackageAnalysis = (context: PackageAnalysis): string => {
   //   dependencySummary: context.dependencies,
   //   fileSummary: context.exportedFiles,
   // }
-  return JSON.stringify(buildPackageConceptInput(context), null, 2)
+  const input = buildPackageConceptInput(context)
+  console.dir(input, { depth: null })
+  return JSON.stringify(input, null, 2)
 }

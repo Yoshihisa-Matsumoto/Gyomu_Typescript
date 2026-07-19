@@ -38,13 +38,37 @@ export const PackageInsightSchema = Schema.Struct({
   }),
 
   responsibilities: Schema.Array(Schema.String).annotate({
-    description:
-      'List the primary responsibilities of this package. Focus on responsibilities rather than implementation details.',
+    description: `
+- What the package is responsible for within the system
+- Not APIs
+- Not implementation
+- Long-term architectural responsibilities
+- 3-6 items
+
+Examples:
+- Define business domain schemas.
+- Model TypeScript source code structures.
+- Provide shared validation models.
+
+`,
   }),
 
   capabilities: Schema.Array(CapabilityConceptSchema).annotate({
-    description:
-      'Major capabilities provided by this package. Group related functionality into meaningful capabilities instead of listing every exported API.',
+    description: `
+- What consumers can accomplish
+- Cohesive feature areas
+- Group multiple related APIs
+- Capability names should be concise nouns or noun phrases that describe a feature area, not an implementation mechanism.
+- Do not list exported symbols
+- Do not repeat responsibilities
+- 3-8 items
+
+Examples:
+- Business Entity Schemas
+- AI Conversation Models
+- Type Analysis Framework
+
+`,
   }),
 
   designDecisions: Schema.Array(Schema.String).annotate({
