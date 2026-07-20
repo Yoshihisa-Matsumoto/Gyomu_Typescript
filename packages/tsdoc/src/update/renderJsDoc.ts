@@ -1,7 +1,7 @@
 import { renderJsDocLines } from './internal/renderJsDocLines.js'
 import { renderJsDocString } from './internal/renderJsDocString.js'
-import type { UpdatedSymbolJsDoc } from './jsdoc/UpdatedSymbolJsDoc.js'
-import type { RenderedSymbolJsDoc } from './jsdoc/RenderedSymbolJsDoc.js'
+import type { UpdatedSymbolJsDoc } from './jsDoc/UpdatedSymbolJsDoc.js'
+import type { RenderedSymbolJsDoc } from './jsDoc/RenderedSymbolJsDoc.js'
 
 export const renderJsDoc = (updated: UpdatedSymbolJsDoc): RenderedSymbolJsDoc => {
   const lines = renderJsDocLines(updated)

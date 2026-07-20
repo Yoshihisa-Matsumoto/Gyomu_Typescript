@@ -1,6 +1,6 @@
 import type { JsDocParam, JsDocThrows, ParsedTag } from '@gyomu/schema/schemas/typescript'
-import type { JsDocLine } from '../jsdoc/JsDocLine.js'
-import type { UpdatedSymbolJsDoc } from '../jsdoc/UpdatedSymbolJsDoc.js'
+import type { JsDocLine } from '../jsDoc/JsDocLine.js'
+import type { UpdatedSymbolJsDoc } from '../jsDoc/UpdatedSymbolJsDoc.js'
 
 export const renderJsDocLines = (updated: UpdatedSymbolJsDoc): Array<JsDocLine> => {
   const lines: Array<JsDocLine> = []

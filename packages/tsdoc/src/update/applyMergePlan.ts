@@ -7,9 +7,9 @@ import { mergeSummary } from './merge/mergeSummary.js'
 import { mergeReturns } from './merge/mergeReturns.js'
 import { mergeParams } from './merge/mergeParams.js'
 import type { FileAnalysisContext } from '@gyomu/schema/typescript'
-import type { UpdatedJsDoc } from './jsdoc/UpdatedJsDoc.js'
-import type { MergePlan } from './jsdoc/MergePlan.js'
-import type { UpdatedSymbolJsDoc } from './jsdoc/UpdatedSymbolJsDoc.js'
+import type { UpdatedJsDoc } from './jsDoc/UpdatedJsDoc.js'
+import type { MergePlan } from './jsDoc/MergePlan.js'
+import type { UpdatedSymbolJsDoc } from './jsDoc/UpdatedSymbolJsDoc.js'
 
 export const applyMergePlan = (
   fileResult: FileAnalysisContext,

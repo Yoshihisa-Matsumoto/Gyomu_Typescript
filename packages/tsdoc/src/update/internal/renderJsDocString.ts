@@ -1,4 +1,4 @@
-import type { JsDocLine } from '../jsdoc/JsDocLine.js'
+import type { JsDocLine } from '../jsDoc/JsDocLine.js'
 
 export const renderJsDocString = (
   lines: Array<JsDocLine>,

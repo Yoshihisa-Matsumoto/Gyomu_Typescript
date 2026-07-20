@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { toIdentityKey } from '@gyomu/schema/schemas/typescript'
 import { SignatureId, SymbolId } from '@gyomu/schema/typescript'
 import { buildFileUpdatePlan } from '../buildFileUpdatePlan.js'
-import type { RenderedSymbolJsDoc } from '../jsdoc/RenderedSymbolJsDoc.js'
+import type { RenderedSymbolJsDoc } from '../jsDoc/RenderedSymbolJsDoc.js'
 
 describe('buildFileUpdatePlan', () => {
   it('should create edit plan from matching symbols', () => {

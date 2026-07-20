@@ -9,7 +9,7 @@ import { buildJsDocUpdatePlanWithRetry } from './internal/buildJsDocUpdatePlanWi
 import { createMergePlan } from './internal/createMargePlan.js'
 import type { FileAnalysisContext } from '@gyomu/schema/typescript'
 import type { FileSystem } from 'effect'
-import type { MergePlan } from './jsdoc/MergePlan.js'
+import type { MergePlan } from './jsDoc/MergePlan.js'
 import type { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 import type { UpdateOptions } from './UpdateOptions.js'
 import type { IOError } from '@gyomu/schema'
