@@ -2,7 +2,6 @@ import fs, { mkdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { Effect, Exit } from 'effect'
-import { NodeFileSystem } from '@effect/platform-node'
 import { FullPath, getFailureFromExit } from '@gyomu/schema'
 import { describe, expect, it } from 'vitest'
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
@@ -48,7 +47,7 @@ describe('loadDirectoryConcept', () => {
 
     const result = await Effect.runPromise(
       loadDirectoryConcept(context, ProjectRelativePath('src'))
-        .pipe(Effect.provide(NodeFileSystem.layer))
+        .pipe(Effect.provide(PlatformLayer))
         .pipe(
           Effect.catch((e) => {
             if (e.details) console.dir(e, { depth: null })
@@ -66,7 +65,7 @@ describe('loadDirectoryConcept', () => {
 
     const result = await Effect.runPromise(
       loadDirectoryConcept(createContext(root), ProjectRelativePath('src')).pipe(
-        Effect.provide(NodeFileSystem.layer),
+        Effect.provide(PlatformLayer),
       ),
     )
 
@@ -82,7 +81,7 @@ describe('loadDirectoryConcept', () => {
 
     const exit = await Effect.runPromiseExit(
       loadDirectoryConcept(createContext(root), ProjectRelativePath('src')).pipe(
-        Effect.provide(NodeFileSystem.layer),
+        Effect.provide(PlatformLayer),
       ),
     )
 
@@ -112,7 +111,7 @@ describe('loadDirectoryConcept', () => {
 
     const exit = await Effect.runPromiseExit(
       loadDirectoryConcept(createContext(root), ProjectRelativePath('src')).pipe(
-        Effect.provide(NodeFileSystem.layer),
+        Effect.provide(PlatformLayer),
       ),
     )
 
