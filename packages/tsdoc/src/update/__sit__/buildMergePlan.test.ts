@@ -10,8 +10,8 @@ import { analyzeFile } from '@gyomu/ts-analysis'
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { AI_MODELS } from '@gyomu/ai'
 import { TsDocRouteId } from '@gyomu/ai-compiler/jsdoc-update'
+import { createFixtureProject } from '@gyomu/ts-analysis/testing'
 import { buildMergePlan } from '../buildMergePlan.js'
-import { createFixtureProject } from '../__tests__/createFixtureProject.js'
 
 const timeout = 20000
 

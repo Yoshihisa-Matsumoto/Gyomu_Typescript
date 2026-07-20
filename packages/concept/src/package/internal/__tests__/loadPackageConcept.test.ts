@@ -6,11 +6,11 @@ import { NodeFileSystem } from '@effect/platform-node'
 import { FullPath, getFailureFromExit } from '@gyomu/schema'
 import { describe, expect, it } from 'vitest'
 import { PlatformLayer } from '@gyomu/infra'
+import { createFixtureProject } from '@gyomu/ts-analysis/testing'
 import { loadPackageConcept } from '../loadPackageConcept.js'
 import { ConceptError } from '../../../error/ConceptError.js'
 
 import { savePackageConcept } from '../savePackageConcept.js'
-import { createFixtureProject } from '../../../directory/__tests__/createFixtureProject.js'
 import type { PackageConcept } from '@gyomu/schema/schemas/concept'
 import type { ProjectContext } from '@gyomu/ts-analysis'
 

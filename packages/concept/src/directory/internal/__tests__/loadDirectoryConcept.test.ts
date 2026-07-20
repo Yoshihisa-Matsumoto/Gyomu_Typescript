@@ -7,11 +7,11 @@ import { FullPath, getFailureFromExit } from '@gyomu/schema'
 import { describe, expect, it } from 'vitest'
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { PlatformLayer } from '@gyomu/infra'
+import { createFixtureProject } from '@gyomu/ts-analysis/testing'
 import { loadDirectoryConcept } from '../loadDirectoryConcept.js'
 import { ConceptError } from '../../../error/ConceptError.js'
 
 import { saveDirectoryConcept } from '../saveDirectoryConcept.js'
-import { createFixtureProject } from '../../__tests__/createFixtureProject.js'
 import type { DirectoryConcept } from '@gyomu/schema/schemas/concept'
 import type { ProjectContext } from '@gyomu/ts-analysis'
 
