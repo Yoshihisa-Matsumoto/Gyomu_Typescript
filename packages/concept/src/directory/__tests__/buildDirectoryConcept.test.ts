@@ -1,5 +1,5 @@
-import path from 'node:path'
-import { readdir, rm } from 'node:fs/promises'
+import path, { join } from 'node:path'
+import { readdir, rm, mkdir } from 'node:fs/promises'
 import { ConfigLayer, MainLayer, PlatformLayer } from '@gyomu/infra'
 import { Effect, Layer, Result } from 'effect'
 import { makeRunner, makeRunnerAsReturn } from '@gyomu/schema/effect'
@@ -12,6 +12,8 @@ import { generateDirectoryConcept } from '../internal/generateDirectoryConcept.j
 import { saveDirectoryConcept } from '../internal/saveDirectoryConcept.js'
 import type { DirectoryConcept } from '@gyomu/schema/schemas/concept'
 import type { FileChange } from '@gyomu/schema/snapshot'
+import { makeDirectory } from '@gyomu/infra/fs'
+import { existsSync } from 'node:fs'
 
 const dummyConcept = {
   summary: 'dummy',
@@ -142,6 +144,9 @@ describe('buildDirectoryConcept', () => {
   })
 
   test('empty', async () => {
+    const targetDir = join('test-fixtures', 'directory', 'empty', 'src')
+    if (!existsSync(targetDir)) await mkdir(targetDir)
+
     const result2 = await createDirectoryConceptProgram2('empty')
 
     if (Result.isSuccess(result2)) {
