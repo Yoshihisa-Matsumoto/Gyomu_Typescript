@@ -1,20 +1,20 @@
 import { Effect } from 'effect'
 import { wrapInfraError } from '@gyomu/schema'
-import { executePackageInsight } from '@gyomu/ai-compiler/package-concept'
+import { executePackageConcept } from '@gyomu/ai-compiler/package-concept'
 
 import { ConceptError } from '../../error/ConceptError.js'
 import type { ConceptOptions } from '../../ConceptOptions.js'
 import type { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 import type { PackageAnalysis } from '@gyomu/schema/concept'
 import type { FileSystem } from 'effect/FileSystem'
-import type { PackageInsight } from '@gyomu/schema/schemas/concept'
+import type { PackageConcept } from '@gyomu/schema/schemas/concept'
 
-export const generatePackageInsight = (
+export const generatePackageConcept = (
   packageAnalysis: PackageAnalysis,
   option?: ConceptOptions,
-): Effect.Effect<PackageInsight, ConceptError, AiModelRoute | FileSystem | ModelRoutes> =>
+): Effect.Effect<PackageConcept, ConceptError, AiModelRoute | FileSystem | ModelRoutes> =>
   Effect.gen(function* () {
-    const concept = yield* executePackageInsight(packageAnalysis, option?.retryOption)
+    const concept = yield* executePackageConcept(packageAnalysis, option?.retryOption)
 
     return concept
   }).pipe(

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { SignatureId, SymbolId } from '@gyomu/schema/typescript'
 import { applyFileUpdatePlan } from '../applyFileUpdatePlan.js'
-import type { FileUpdatePlan } from '../jsdoc/FileUpdatePlan.js'
+import type { FileUpdatePlan } from '../jsDoc/FileUpdatePlan.js'
 
 describe('applyFileUpdatePlan', () => {
   it('should replace existing text (start != end)', () => {

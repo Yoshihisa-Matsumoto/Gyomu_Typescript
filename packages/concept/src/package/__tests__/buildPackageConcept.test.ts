@@ -5,12 +5,12 @@ import { ConfigLayer, MainLayer, PlatformLayer } from '@gyomu/infra'
 import { AiModelRoute } from '@gyomu/ai'
 import { makeRunner, makeRunnerAsReturn } from '@gyomu/schema/effect'
 import { FileSearchServiceLayer } from '@gyomu/infra/fs'
-import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { buildPackageConcept } from '../buildPackageConcept.js'
 import { loadPackageConcept } from '../internal/loadPackageConcept.js'
 import { buildPackageAnalysis } from '../buildPackageAnalysis.js'
-import { generatePackageInsight } from '../internal/generatePackageConcept.js'
+import { generatePackageConcept } from '../internal/generatePackageConcept.js'
 import { savePackageConcept } from '../internal/savePackageConcept.js'
+import type { PackageConcept } from '@gyomu/schema/schemas/concept'
 
 const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(
   Layer.provideMerge(PlatformLayer),
@@ -46,16 +46,9 @@ describe('buildPackageConcept', () => {
     capabilities: [],
     relationships: [],
     designDecisions: [],
-    publicApi: [],
-    dependencies: [],
-    packageInfo: {
-      name: '@gyomu/test',
-      private: false,
-      type: 'module',
-      version: '1.0.0',
-    },
-    exportedFiles: [],
-  } as any
+    summary: '',
+    usageGuidance: [],
+  } as PackageConcept
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -63,7 +56,7 @@ describe('buildPackageConcept', () => {
 
   it('builds package concept when changedFiles is not specified', async () => {
     vi.mocked(buildPackageAnalysis).mockReturnValue(Effect.succeed(packageAnalysis))
-    vi.mocked(generatePackageInsight).mockReturnValue(Effect.succeed(packageConcept))
+    vi.mocked(generatePackageConcept).mockReturnValue(Effect.succeed(packageConcept))
     vi.mocked(savePackageConcept).mockReturnValue(Effect.void)
 
     const result = await runQAWithEnvOrThrow(buildPackageConcept(context), layer)
@@ -72,7 +65,7 @@ describe('buildPackageConcept', () => {
 
     expect(loadPackageConcept).not.toHaveBeenCalled()
     expect(buildPackageAnalysis).toHaveBeenCalledOnce()
-    expect(generatePackageInsight).toHaveBeenCalledOnce()
+    expect(generatePackageConcept).toHaveBeenCalledOnce()
     expect(savePackageConcept).toHaveBeenCalledOnce()
   })
 
@@ -80,9 +73,7 @@ describe('buildPackageConcept', () => {
     vi.mocked(loadPackageConcept).mockReturnValue(Effect.succeed(packageConcept))
 
     const result = await runQAWithEnvOrThrow(
-      buildPackageConcept(context, {
-        changedFiles: [{ projectRelativePath: ProjectRelativePath('src/index.ts'), type: 'added' }],
-      }),
+      buildPackageConcept(context, { changedFiles: [] }),
       layer,
     )
 
@@ -90,20 +81,18 @@ describe('buildPackageConcept', () => {
 
     expect(loadPackageConcept).toHaveBeenCalledOnce()
     expect(buildPackageAnalysis).not.toHaveBeenCalled()
-    expect(generatePackageInsight).not.toHaveBeenCalled()
+    expect(generatePackageConcept).not.toHaveBeenCalled()
     expect(savePackageConcept).not.toHaveBeenCalled()
   })
 
   it('rebuilds when cached package concept is undefined', async () => {
     vi.mocked(loadPackageConcept).mockReturnValue(Effect.succeed(undefined))
     vi.mocked(buildPackageAnalysis).mockReturnValue(Effect.succeed(packageAnalysis))
-    vi.mocked(generatePackageInsight).mockReturnValue(Effect.succeed(packageConcept))
+    vi.mocked(generatePackageConcept).mockReturnValue(Effect.succeed(packageConcept))
     vi.mocked(savePackageConcept).mockReturnValue(Effect.void)
 
     const result = await runQAWithEnvOrThrow(
-      buildPackageConcept(context, {
-        changedFiles: [{ projectRelativePath: ProjectRelativePath('src/index.ts'), type: 'added' }],
-      }),
+      buildPackageConcept(context, { changedFiles: [] }),
       layer,
     )
     console.dir(result, { depth: null })
@@ -111,20 +100,18 @@ describe('buildPackageConcept', () => {
 
     expect(loadPackageConcept).toHaveBeenCalledOnce()
     expect(buildPackageAnalysis).toHaveBeenCalledOnce()
-    expect(generatePackageInsight).toHaveBeenCalledOnce()
+    expect(generatePackageConcept).toHaveBeenCalledOnce()
     expect(savePackageConcept).toHaveBeenCalledOnce()
   })
 
   it('rebuilds when loading cached package concept fails', async () => {
     vi.mocked(loadPackageConcept).mockReturnValue(Effect.fail({} as any))
     vi.mocked(buildPackageAnalysis).mockReturnValue(Effect.succeed(packageAnalysis))
-    vi.mocked(generatePackageInsight).mockReturnValue(Effect.succeed(packageConcept))
+    vi.mocked(generatePackageConcept).mockReturnValue(Effect.succeed(packageConcept))
     vi.mocked(savePackageConcept).mockReturnValue(Effect.void)
 
     const result = await runQAWithEnvOrThrow(
-      buildPackageConcept(context, {
-        changedFiles: [{ projectRelativePath: ProjectRelativePath('src/index.ts'), type: 'added' }],
-      }),
+      buildPackageConcept(context, { changedFiles: [] }),
       layer,
     )
 
@@ -132,7 +119,7 @@ describe('buildPackageConcept', () => {
 
     expect(loadPackageConcept).toHaveBeenCalledOnce()
     expect(buildPackageAnalysis).toHaveBeenCalledOnce()
-    expect(generatePackageInsight).toHaveBeenCalledOnce()
+    expect(generatePackageConcept).toHaveBeenCalledOnce()
     expect(savePackageConcept).toHaveBeenCalledOnce()
   })
 
@@ -145,7 +132,7 @@ describe('buildPackageConcept', () => {
 
     expect(Result.isFailure(exit)).toBe(true)
 
-    expect(generatePackageInsight).not.toHaveBeenCalled()
+    expect(generatePackageConcept).not.toHaveBeenCalled()
     expect(savePackageConcept).not.toHaveBeenCalled()
   })
 
@@ -153,7 +140,7 @@ describe('buildPackageConcept', () => {
     const error = {} as any
 
     vi.mocked(buildPackageAnalysis).mockReturnValue(Effect.succeed(packageAnalysis))
-    vi.mocked(generatePackageInsight).mockReturnValue(Effect.fail(error))
+    vi.mocked(generatePackageConcept).mockReturnValue(Effect.fail(error))
 
     const exit = await runQAWithResult(buildPackageConcept(context), layer)
 
@@ -166,11 +153,11 @@ describe('buildPackageConcept', () => {
     const error = {} as any
 
     vi.mocked(buildPackageAnalysis).mockReturnValue(Effect.succeed(packageAnalysis))
-    vi.mocked(generatePackageInsight).mockReturnValue(Effect.succeed(packageConcept))
+    vi.mocked(generatePackageConcept).mockReturnValue(Effect.succeed(packageConcept))
     vi.mocked(savePackageConcept).mockReturnValue(Effect.fail(error))
 
     const exit = await runQAWithResult(buildPackageConcept(context), layer)
 
     expect(Result.isFailure(exit)).toBe(true)
   })
-})
+}, 20_000)

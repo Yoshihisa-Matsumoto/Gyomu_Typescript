@@ -1,0 +1,25 @@
+{
+  "summary": "This directory manages the application-wide logging infrastructure, providing a unified interface for recording events and lifecycle status. It includes mechanisms for configuring the active logger, handling debug-specific data comparisons, and specialized logging for system effects.",
+  "responsibilities": [
+    "Define the contract for application logging",
+    "Maintain the active global logger instance",
+    "Provide specialized logging utilities for debugging and effect tracking"
+  ],
+  "concepts": [
+    "Logging interface",
+    "Log levels",
+    "Lifecycle management",
+    "Debug mode logging",
+    "Effect logging"
+  ],
+  "relationships": [
+    "The logger interface establishes a standard for event recording that specialized instances like the effect logger implement.",
+    "The logging utility uses the active logger instance to perform conditional debug operations based on current system state."
+  ],
+  "designDecisions": [
+    "Use of a proxy instance for default logging access",
+    "Centralized setter for configuring global logger implementations",
+    "Separation of generic logging interface from specific effect-tracking implementations"
+  ],
+  "importance": "Supporting"
+}

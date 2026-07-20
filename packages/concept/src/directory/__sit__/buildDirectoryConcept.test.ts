@@ -7,8 +7,8 @@ import { AI_MODELS } from '@gyomu/ai'
 import { beforeAll, describe, expect, test } from 'vitest'
 import { DirectoryConceptRouteId } from '@gyomu/ai-compiler/directory-concept'
 import { createVercelAiLayer } from '@gyomu/ai/provider/vercel'
+import { createFixtureProject } from '@gyomu/ts-analysis/testing'
 import { buildDirectoryConcept } from '../buildDirectoryConcept.js'
-import { createFixtureProject } from '../__tests__/createFixtureProject.js'
 import type { ProjectRelativePath } from '@gyomu/schema/typescript'
 import type { FileChange } from '@gyomu/schema/snapshot'
 
@@ -32,6 +32,7 @@ const createDirectoryConceptProgram = async (
       retryOption: {},
       changedFiles: changedFiles,
       targetFolder,
+      action: { WriteToTempFolder: true },
     })
   })
   return await runQAWithEnvOrThrow(program, layer)

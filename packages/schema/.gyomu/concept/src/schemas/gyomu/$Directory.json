@@ -1,0 +1,25 @@
+{
+  "summary": "This directory centralizes the definition of CRUD schemas for the core business (gyomu) domain. It acts as the single source of truth for the data structures and validation rules required for managing application services, tasks, milestones, and status tracking information.",
+  "responsibilities": [
+    "Define CRUD operation schemas for application business entities",
+    "Specify structural validation rules for domain-specific data models",
+    "Maintain consistent interface definitions for service and task-related information"
+  ],
+  "concepts": [
+    "CRUD Schemas",
+    "Business Entities",
+    "Data Validation",
+    "Task Management Schemas",
+    "Service Schemas"
+  ],
+  "relationships": [
+    "The CRUD schemas define the shape of data models used across various task and service management modules.",
+    "Business entities are represented as validated schema objects to ensure data integrity during system operations."
+  ],
+  "designDecisions": [
+    "Centralized schema definition approach",
+    "Declarative schema modeling for CRUD operations",
+    "Domain-driven grouping of related business entity schemas"
+  ],
+  "importance": "Core"
+}

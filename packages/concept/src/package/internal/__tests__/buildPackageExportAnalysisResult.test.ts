@@ -3,7 +3,7 @@ import { PlatformLayer } from '@gyomu/infra'
 import { Effect } from 'effect'
 import { describe, expect, it } from 'vitest'
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
-import { createFixtureProject } from '../../../directory/__tests__/createFixtureProject.js'
+import { createFixtureProject } from '@gyomu/ts-analysis/testing'
 import { buildPackageExportAnalysisResult } from '../buildPackageExportAnalysisResult.js'
 import type { ResolvedSourceFile } from '../types.js'
 

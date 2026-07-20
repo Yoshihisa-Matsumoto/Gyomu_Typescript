@@ -10,7 +10,7 @@ import type {
   ParamActionValue,
   ParamMergeAction,
 } from '@gyomu/ai-compiler/jsdoc-update'
-import type { MergeActionContext, MergePlan } from '../jsdoc/MergePlan.js'
+import type { MergeActionContext, MergePlan } from '../jsDoc/MergePlan.js'
 import type { Effect } from 'effect'
 import type { ProtectedSection } from '@gyomu/schema/schemas/typescript'
 

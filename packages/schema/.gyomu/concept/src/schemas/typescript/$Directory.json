@@ -1,0 +1,30 @@
+{
+  "summary": "This directory serves as the centralized schema definition layer for TypeScript code analysis. It provides structured data models and runtime schemas for representing symbols, types, documentation, and relationships, enabling consistent analysis across the codebase.",
+  "responsibilities": [
+    "Defining schema structures for TypeScript code entities and documentation metadata",
+    "Providing runtime validation schemas for analyzed code elements",
+    "Modeling relationships between symbols, including dependencies and imports",
+    "Capturing structural details of class members, signatures, and type definitions",
+    "Representing documentation and JSDoc/TSDoc metadata for analysis"
+  ],
+  "concepts": [
+    "TypeScript schemas",
+    "Code analysis",
+    "Symbol identity",
+    "Dependency representation",
+    "Runtime validation"
+  ],
+  "relationships": [
+    "Symbol analysis schemas aggregate structural metadata, signatures, and documentation into comprehensive file analysis records.",
+    "Member and type schemas provide granular building blocks for defining the properties and composition of symbols.",
+    "Dependency and import schemas define the connections between different files and symbols identified during analysis.",
+    "Documentation schemas integrate with symbol analysis to link technical metadata with human-readable documentation."
+  ],
+  "designDecisions": [
+    "Use of paired TypeScript types and runtime schema constants for every definition",
+    "Consistent application of structural typing to enable metadata extraction and validation",
+    "Modular organization based on code domains like members, types, and JSDoc",
+    "Extensive use of discriminated unions for categorization of code elements"
+  ],
+  "importance": "Core"
+}

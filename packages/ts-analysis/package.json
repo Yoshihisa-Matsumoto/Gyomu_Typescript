@@ -1,6 +1,6 @@
 {
   "name": "@gyomu/ts-analysis",
-  "version": "0.2.4-beta.10",
+  "version": "0.2.4-beta.11",
   "description": "",
   "type": "module",
   "publishConfig": {
@@ -10,6 +10,10 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
+    },
+    "./testing": {
+      "import": "./dist/analysis/__tests__/createFixtureProject.js",
+      "types": "./dist/analysis/__tests__/createFixtureProject.d.ts"
     }
   },
   "scripts": {

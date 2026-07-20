@@ -1,0 +1,29 @@
+{
+  "summary": "This directory defines the core TypeScript schemas for JSDoc and TSDoc parsing, analysis, and management. It provides structured representations for raw comments, parsed tags, documentation quality metrics, human-edit signals, and protected documentation regions.",
+  "responsibilities": [
+    "Defining schema structures for JSDoc/TSDoc metadata and content",
+    "Modeling parsed documentation tags and block structures",
+    "Representing analysis metrics for documentation quality",
+    "Identifying protected code regions and sections within documentation",
+    "Tracking manual human modifications to generated documentation"
+  ],
+  "concepts": [
+    "JSDoc schemas",
+    "Parsed documentation",
+    "Documentation quality metrics",
+    "Human edit signals",
+    "Protected regions"
+  ],
+  "relationships": [
+    "ParsedJsDoc aggregates individual tag structures like JsDocParam, JsDocReturns, and JsDocThrows.",
+    "JsDocAnalysis utilizes human edit signals to determine the modification state of documentation.",
+    "RawJsDoc acts as the source for generating ParsedJsDoc structures.",
+    "ProtectedRegion and ProtectedSection define constraints on which documentation parts remain immutable during generation."
+  ],
+  "designDecisions": [
+    "Strong typing using TypeScript schemas to ensure structural consistency for parsed documentation",
+    "Separation of concerns between raw comment content and structured parsed metadata",
+    "Inclusion of metadata for change tracking and protection to support automated documentation workflows"
+  ],
+  "importance": "Core"
+}

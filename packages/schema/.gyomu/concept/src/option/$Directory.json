@@ -1,0 +1,25 @@
+{
+  "summary": "This directory manages the configuration interfaces for various execution processes within the system. It defines specialized option sets for AI tasks, general analysis procedures, and retry mechanisms to control behavior, debugging, and state management during execution.",
+  "responsibilities": [
+    "Define schema for configuration options used across execution modules",
+    "Specify retry behavior parameters and observation hooks",
+    "Extend base execution configuration with domain-specific settings",
+    "Provide standardized interfaces for metadata and debug control"
+  ],
+  "concepts": [
+    "Execution Configuration",
+    "Retry Strategy",
+    "Execution Options",
+    "Retry Observer"
+  ],
+  "relationships": [
+    "The core execution options serve as a foundation that specialized interfaces like AI and analysis options extend.",
+    "Retry options define logic that dictates how execution processes handle failures through attempt limits and observer interfaces."
+  ],
+  "designDecisions": [
+    "Use of TypeScript interfaces to enforce configuration schema",
+    "Interface inheritance for extending base execution capabilities",
+    "Observer pattern implementation for retry event monitoring"
+  ],
+  "importance": "Core"
+}

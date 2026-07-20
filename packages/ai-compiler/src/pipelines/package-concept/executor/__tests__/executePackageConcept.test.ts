@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Effect, Layer } from 'effect'
 import { AiModelRoute, ModelRoutes } from '@gyomu/ai'
-import { NodeFileSystem } from '@effect/platform-node'
 import { MessageRole } from '@gyomu/schema/conversation'
-import { PackageInsightSchema } from '@gyomu/schema/schemas/concept'
+import { PackageConceptSchema } from '@gyomu/schema/schemas/concept'
+import { PlatformLayer } from '@gyomu/infra'
 import { loadPrompt } from '../../prompt/loadPrompt.js'
-import { PackageConceptRouteId, executePackageInsight } from '../executePackageInsight.js'
+import { PackageConceptRouteId, executePackageConcept } from '../executePackageConcept.js'
 import type { ModelRoute, ModelRouteId, RouteNode } from '@gyomu/ai'
-import type { PackageInsight } from '@gyomu/schema/schemas/concept'
+import type { PackageConcept } from '@gyomu/schema/schemas/concept'
 
 vi.mock('../../prompt/loadPrompt.js', () => ({
   loadPrompt: vi.fn(),
@@ -44,7 +44,7 @@ describe('executePackageConcept', () => {
           capabilities: [{ name: 'skill', description: 'aaa' }],
           designDecisions: ['design'],
           usageGuidance: ['abc'],
-        } satisfies PackageInsight,
+        } satisfies PackageConcept,
       }),
     )
   })
@@ -63,8 +63,8 @@ describe('executePackageConcept', () => {
     } as any
 
     const result = await Effect.runPromise(
-      executePackageInsight(context, retryOption).pipe(
-        Effect.provide(NodeFileSystem.layer),
+      executePackageConcept(context, retryOption).pipe(
+        Effect.provide(PlatformLayer),
         Effect.provide(mockModelRoutes),
         Effect.provide(mockAiModelService),
       ),
@@ -92,7 +92,7 @@ describe('executePackageConcept', () => {
 }`,
         },
       ],
-      schema: PackageInsightSchema,
+      schema: PackageConceptSchema,
       retryOption,
     })
   })

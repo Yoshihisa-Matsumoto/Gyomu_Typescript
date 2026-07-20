@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Effect, Exit, Layer } from 'effect'
-import { PackageConceptRouteId, executePackageInsight } from '@gyomu/ai-compiler/package-concept'
+import { PackageConceptRouteId, executePackageConcept } from '@gyomu/ai-compiler/package-concept'
 import { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 import { PlatformLayer } from '@gyomu/infra'
 import { IOError, getFailureFromExit } from '@gyomu/schema'
-import { generatePackageInsight } from '../generatePackageConcept.js'
+import { generatePackageConcept } from '../generatePackageConcept.js'
 import { ConceptError } from '../../../error/ConceptError.js'
 
 import type { PackageAnalysis } from '@gyomu/schema/concept'
@@ -14,7 +14,7 @@ vi.mock(import('@gyomu/ai-compiler/package-concept'), async (importOriginal) => 
   const actual = await importOriginal()
   return {
     ...actual,
-    executePackageInsight: vi.fn(),
+    executePackageConcept: vi.fn(),
   }
 })
 
@@ -39,10 +39,10 @@ describe('generatePackageConcept', () => {
   })
 
   it('returns generated directory concept', async () => {
-    vi.mocked(executePackageInsight).mockReturnValue(Effect.succeed(concept))
+    vi.mocked(executePackageConcept).mockReturnValue(Effect.succeed(concept))
 
     const result = await Effect.runPromise(
-      generatePackageInsight(context).pipe(
+      generatePackageConcept(context).pipe(
         Effect.provide(mockAiModelService),
         Effect.provide(PlatformLayer),
         Effect.provide(mockModelRoutes),
@@ -51,7 +51,7 @@ describe('generatePackageConcept', () => {
 
     expect(result).toBe(concept)
 
-    expect(executePackageInsight).toHaveBeenCalledWith(context, undefined)
+    expect(executePackageConcept).toHaveBeenCalledWith(context, undefined)
   })
 
   it('passes retry option', async () => {
@@ -59,10 +59,10 @@ describe('generatePackageConcept', () => {
       maxAttempts: 3,
     } as any
 
-    vi.mocked(executePackageInsight).mockReturnValue(Effect.succeed(concept))
+    vi.mocked(executePackageConcept).mockReturnValue(Effect.succeed(concept))
 
     await Effect.runPromise(
-      generatePackageInsight(context, {
+      generatePackageConcept(context, {
         retryOption,
       }).pipe(
         Effect.provide(mockAiModelService),
@@ -71,18 +71,18 @@ describe('generatePackageConcept', () => {
       ),
     )
 
-    expect(executePackageInsight).toHaveBeenCalledWith(context, retryOption)
+    expect(executePackageConcept).toHaveBeenCalledWith(context, retryOption)
   })
 
   it('wraps errors with ConceptError', async () => {
-    vi.mocked(executePackageInsight).mockReturnValue(
+    vi.mocked(executePackageConcept).mockReturnValue(
       Effect.fail(
         new IOError({ cause: undefined, layer: 'filesystem', message: 'boom', operation: 'read' }),
       ),
     )
 
     const exit = await Effect.runPromiseExit(
-      generatePackageInsight(context).pipe(
+      generatePackageConcept(context).pipe(
         Effect.provide(mockAiModelService),
         Effect.provide(PlatformLayer),
         Effect.provide(mockModelRoutes),

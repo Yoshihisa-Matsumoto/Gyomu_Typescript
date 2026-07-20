@@ -1,10 +1,10 @@
 import { copyFileSync, mkdirSync, readdirSync, statSync } from 'node:fs'
-import { join, relative } from 'node:path'
+import { join } from 'node:path'
 
 const srcRoot = 'src/pipelines'
 const distRoot = 'dist/pipelines'
 
-function copyDir(src: string, dest: string) {
+function copyDir(src, dest) {
   mkdirSync(dest, { recursive: true })
 
   for (const file of readdirSync(src)) {

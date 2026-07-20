@@ -1,0 +1,23 @@
+{
+  "summary": "This directory manages the execution environment metadata, capturing essential system-level identifiers required to describe the service's current runtime state across distributed environments.",
+  "responsibilities": [
+    "Identify current service host and network details",
+    "Expose system process information",
+    "Provide consistent runtime environment context for service operations"
+  ],
+  "concepts": [
+    "Runtime Context",
+    "Service Identification",
+    "System Metadata",
+    "Network Addressing"
+  ],
+  "relationships": [
+    "The Runtime Context acts as a container for system-level data including the host name and network address.",
+    "The process identifier is maintained within the Runtime Context to uniquely track the lifecycle of the service instance."
+  ],
+  "designDecisions": [
+    "Centralized runtime state tracking",
+    "Encapsulation of environmental identifiers within a single context class"
+  ],
+  "importance": "Core"
+}

@@ -1,0 +1,27 @@
+{
+  "summary": "This directory defines the data structures and interface contracts required to represent the static analysis of software packages. It captures essential metadata, structural composition, exported symbols, and dependency relationships derived from a project's codebase.",
+  "responsibilities": [
+    "Define schemas for representing package-level metadata and configuration",
+    "Model the structural analysis of exported symbols and code modules",
+    "Structure information regarding package dependencies and their origins",
+    "Encapsulate analytical insights about project directories and file hierarchies"
+  ],
+  "concepts": [
+    "Package Metadata",
+    "Exported Symbols",
+    "Dependency Analysis",
+    "Module Structure",
+    "Project Directories"
+  ],
+  "relationships": [
+    "Package analysis aggregates package metadata, dependency information, and module exports into a unified structure.",
+    "Package export analysis details the relationship between specific export paths and the symbols defined within source files.",
+    "Dependency analysis tracks the identification and versioning of external requirements linked to a package."
+  ],
+  "designDecisions": [
+    "Utilizes TypeScript interfaces to provide strongly-typed definitions for analytical data",
+    "Groups related structural models by domain context to facilitate modular consumption",
+    "Employs an index file pattern to expose core analysis contracts via a single entry point"
+  ],
+  "importance": "Core"
+}

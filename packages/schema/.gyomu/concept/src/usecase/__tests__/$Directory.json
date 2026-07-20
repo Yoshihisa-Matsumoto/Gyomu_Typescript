@@ -1,0 +1,22 @@
+{
+  "summary": "This directory serves as a dedicated location for defining, organizing, and validating application use cases, specifically focusing on the business logic and orchestration required to synchronize holiday data within the system.",
+  "responsibilities": [
+    "Orchestrate application business processes",
+    "Execute holiday synchronization workflows",
+    "Encapsulate application-level logic separate from infrastructure concerns"
+  ],
+  "concepts": [
+    "Use Cases",
+    "Business Orchestration",
+    "Holiday Synchronization"
+  ],
+  "relationships": [
+    "Use cases orchestrate the flow of data between external entities and the internal domain model.",
+    "Business logic within the use cases defines the execution flow of the synchronization process."
+  ],
+  "designDecisions": [
+    "Separation of concerns by isolating business workflows from delivery mechanisms",
+    "Test-driven development approach for core business logic"
+  ],
+  "importance": "Core"
+}

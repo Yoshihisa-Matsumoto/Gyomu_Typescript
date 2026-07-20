@@ -1,0 +1,24 @@
+{
+  "summary": "This directory manages the data structures and state representation required to track file modifications and content integrity. It provides the mechanism to detect changes in the codebase and determine if specific files require re-analysis or documentation updates.",
+  "responsibilities": [
+    "Define the types of modifications applicable to files",
+    "Represent individual file change events",
+    "Maintain cacheable file state through hashing"
+  ],
+  "concepts": [
+    "File change events",
+    "Change tracking",
+    "Content integrity hashing",
+    "State caching"
+  ],
+  "relationships": [
+    "File change types classify the modifications reported within file change interfaces.",
+    "File hash entries are used to evaluate whether a file change necessitates further processing."
+  ],
+  "designDecisions": [
+    "Use of interfaces for immutable data representation",
+    "Centralized export point for snapshot-related entities",
+    "Separation of change metadata from content hashing logic"
+  ],
+  "importance": "Supporting"
+}

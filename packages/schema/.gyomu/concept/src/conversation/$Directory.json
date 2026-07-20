@@ -1,0 +1,27 @@
+{
+  "summary": "This directory centralizes the data contracts and type definitions for AI-driven conversations, establishing a formal structure for messages, attachments, and the request-response payloads required for communication between the client and an AI service.",
+  "responsibilities": [
+    "Define schemas for AI chat requests and responses",
+    "Model the structure of message entities and their associated metadata",
+    "Specify the format for message attachments",
+    "Standardize participant roles within a conversation"
+  ],
+  "concepts": [
+    "Chat Request",
+    "Chat Response",
+    "Message Entity",
+    "Attachment",
+    "Message Role"
+  ],
+  "relationships": [
+    "A chat request contains a history of messages and a current message input.",
+    "A chat response wraps a single message entity within a standard result structure.",
+    "Messages can include multiple attachments and utilize specific roles to define participant behavior."
+  ],
+  "designDecisions": [
+    "Use of schema-based validation to infer types",
+    "Centralized export strategy for domain models",
+    "Strict separation of request and response payloads"
+  ],
+  "importance": "Core"
+}

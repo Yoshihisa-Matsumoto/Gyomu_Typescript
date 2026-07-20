@@ -1,0 +1,31 @@
+{
+  "summary": "This directory provides a structured framework for defining, organizing, and managing application-specific error types, ensuring that all failures across different domains contain consistent contextual metadata and follow unified error handling protocols.",
+  "responsibilities": [
+    "Defining custom error classes for domain-specific failures",
+    "Standardizing contextual metadata and traits for all application errors",
+    "Providing utilities for wrapping and transforming generic errors into domain-specific types",
+    "Establishing operational policies for error logging and retry behavior",
+    "Ensuring consistency in error reporting and observability across the codebase"
+  ],
+  "concepts": [
+    "Error Context",
+    "Error Traits",
+    "Operational Policy",
+    "Error Hierarchy",
+    "Domain Error"
+  ],
+  "relationships": [
+    "Each domain error class implements specific context interfaces to capture metadata relevant to its respective layer or operation.",
+    "The base error configuration provides common traits and severity levels that are inherited or injected into specialized error classes.",
+    "Operational policies define how specific error types should be handled, logged, or retried throughout the application.",
+    "Helper functions enable the consistent transformation of infrastructure errors into categorized domain errors."
+  ],
+  "designDecisions": [
+    "Use of tagged error classes to ensure type safety and consistent classification",
+    "Implementation of a shared context interface pattern for debugging and tracing",
+    "Inclusion of behavioral traits such as retryability within the error model",
+    "Centralized definition of operational policies to decouple error identification from error response logic",
+    "Use of factory functions for wrapping generic or external errors"
+  ],
+  "importance": "Core"
+}

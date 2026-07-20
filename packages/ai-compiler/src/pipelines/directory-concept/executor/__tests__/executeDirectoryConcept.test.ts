@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Effect, Layer } from 'effect'
 import { AiModelRoute, ModelRoutes } from '@gyomu/ai'
-import { NodeFileSystem } from '@effect/platform-node'
 import { MessageRole } from '@gyomu/schema/conversation'
 import { DirectoryConcept } from '@gyomu/schema/schemas/concept'
+import { PlatformLayer } from '@gyomu/infra'
 import { DirectoryConceptRouteId, executeDirectoryConcepts } from '../executeDirectoryConcept.js'
 import { loadPrompt } from '../../prompt/loadPrompt.js'
 import { renderFileSummary } from '../../renderer/renderFileSummary.js'
@@ -77,7 +77,7 @@ DIRS
 
     const result = await Effect.runPromise(
       executeDirectoryConcepts(context, retryOption).pipe(
-        Effect.provide(NodeFileSystem.layer),
+        Effect.provide(PlatformLayer),
         Effect.provide(mockModelRoutes),
         Effect.provide(mockAiModelService),
       ),

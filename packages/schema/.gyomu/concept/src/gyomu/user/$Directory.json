@@ -1,0 +1,22 @@
+{
+  "summary": "This directory centralizes user management functionality by providing service-level operations to retrieve, identify, and verify user account information and organizational membership relations.",
+  "responsibilities": [
+    "Retrieve current user information",
+    "Identify users by unique identifiers",
+    "Verify user membership and relations"
+  ],
+  "concepts": [
+    "User Service",
+    "User Identity",
+    "Membership Verification"
+  ],
+  "relationships": [
+    "The User Service acts as the primary interface for fetching and validating user-specific data.",
+    "Membership verification relies on the service's ability to cross-reference user identities with existing system relations."
+  ],
+  "designDecisions": [
+    "Service-oriented interface for domain entity management",
+    "Encapsulation of retrieval logic behind a unified service class"
+  ],
+  "importance": "Core"
+}

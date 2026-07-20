@@ -1,9 +1,9 @@
 import { describe, expect, test } from 'vitest'
 import { Effect, Layer } from 'effect'
-import { NodeFileSystem } from '@effect/platform-node'
 import { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 
 import { SignatureId, SymbolId } from '@gyomu/schema/typescript'
+import { PlatformLayer } from '@gyomu/infra'
 import { TsDocRouteId, executeJsDocUpdatePlan } from '../executeJsDocUpdatePlan.js'
 import type { ModelRoute, ModelRouteId, RouteNode } from '@gyomu/ai'
 import type { JsDocUpdatePlan } from '../../schema/JsDocUpdatePlan.js'
@@ -38,7 +38,6 @@ describe('executeJsDocUpdatePlan', () => {
       },
     ]
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const mockAiModelService = Layer.succeed(AiModelRoute, {
       generateObject: () =>
         Effect.succeed({
@@ -60,7 +59,7 @@ describe('executeJsDocUpdatePlan', () => {
 
     const result = await Effect.runPromise(
       executeJsDocUpdatePlan(context).pipe(
-        Effect.provide(NodeFileSystem.layer),
+        Effect.provide(PlatformLayer),
         Effect.provide(mockModelRoutes),
         Effect.provide(mockAiModelService),
       ),

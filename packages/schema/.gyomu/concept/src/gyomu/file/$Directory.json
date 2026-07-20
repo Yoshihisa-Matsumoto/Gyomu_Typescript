@@ -1,0 +1,26 @@
+{
+  "summary": "This directory centralizes the definitions, metadata structures, and configuration types required for handling file system operations, transport configurations, and file filtering criteria within the application.",
+  "responsibilities": [
+    "Define metadata structures for file transport operations",
+    "Specify filtering criteria and comparison logic for file system processing",
+    "Provide standardized type definitions for file archiving and information handling"
+  ],
+  "concepts": [
+    "File Metadata",
+    "Transport Configuration",
+    "Filtering Criteria",
+    "Archive Formats",
+    "File System Operations"
+  ],
+  "relationships": [
+    "File metadata serves as the foundational data structure for transport configuration and filtering logic.",
+    "Filtering criteria define the constraints applied during file transport operations.",
+    "Archive formats specify the supported methods for compressing or packaging file information."
+  ],
+  "designDecisions": [
+    "Centralized type definitions for consistent cross-module file handling",
+    "Separation of concerns between metadata representation and operational logic",
+    "Use of typed constants to restrict file filtering and comparison options"
+  ],
+  "importance": "Core"
+}

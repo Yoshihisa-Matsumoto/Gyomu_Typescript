@@ -1,0 +1,27 @@
+{
+  "summary": "The gyomu directory functions as the central domain services hub, providing standardized access to core business entities, system milestones, and operational data. It acts as an integration layer that orchestrates domain-specific logic, repository access, and cross-cutting service utilities.",
+  "responsibilities": [
+    "Manage CRUD operations for domain entities",
+    "Provide centralized service access for business processes",
+    "Orchestrate interactions between domain data and system utilities",
+    "Enforce domain-specific logic for task and user management"
+  ],
+  "concepts": [
+    "Domain Repository",
+    "Business Services",
+    "Domain Entities",
+    "Service Orchestration"
+  ],
+  "relationships": [
+    "The repository serves as the primary data access layer for various domain entities.",
+    "Business services consume the repository to perform complex operational tasks.",
+    "Domain entity schemas define the data structures processed by the repository and services."
+  ],
+  "designDecisions": [
+    "Service-oriented architecture for domain entity management",
+    "Centralized repository pattern for data access",
+    "Modular grouping of domain-related utilities and services",
+    "Encapsulation of business logic behind unified interfaces"
+  ],
+  "importance": "Core"
+}

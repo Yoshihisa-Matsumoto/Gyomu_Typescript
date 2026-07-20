@@ -1,0 +1,28 @@
+{
+  "summary": "This directory contains the test suite for the entity definition and management system. It validates the core logic related to data conversion, date handling, CRUD schema definitions, field validation, and abstract syntax tree matching for data entities.",
+  "responsibilities": [
+    "Verifying data conversion logic for entities",
+    "Testing date handling and formatting within entities",
+    "Validating CRUD schema generation for defined entities",
+    "Ensuring field-level constraints and properties are correctly enforced",
+    "Testing AST matcher logic for internal issue identification"
+  ],
+  "concepts": [
+    "Entity Schemas",
+    "Data Conversion",
+    "CRUD Operations",
+    "Field Validation",
+    "AST Matching"
+  ],
+  "relationships": [
+    "Entity schemas provide the structural definition used by field validation and conversion processes.",
+    "CRUD schema definitions rely on entity field definitions to generate appropriate operations.",
+    "The AST matcher inspects entity-related structures to identify specific issues or patterns."
+  ],
+  "designDecisions": [
+    "Collocation of test files with implementation logic to ensure developer accessibility.",
+    "Granular unit testing approach covering distinct functional areas of the entity layer.",
+    "Focus on schema-driven testing to ensure type safety and consistency across entity definitions."
+  ],
+  "importance": "Core"
+}

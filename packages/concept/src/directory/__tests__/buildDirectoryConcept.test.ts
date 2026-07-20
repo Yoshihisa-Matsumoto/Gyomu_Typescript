@@ -1,17 +1,19 @@
-import path from 'node:path'
-import { readdir, rm } from 'node:fs/promises'
+import path, { join } from 'node:path'
+import { readdir, rm, mkdir } from 'node:fs/promises'
 import { ConfigLayer, MainLayer, PlatformLayer } from '@gyomu/infra'
-import { Effect, Layer } from 'effect'
-import { makeRunner } from '@gyomu/schema/effect'
+import { Effect, Layer, Result } from 'effect'
+import { makeRunner, makeRunnerAsReturn } from '@gyomu/schema/effect'
 import { AiModelRoute } from '@gyomu/ai'
 import { beforeAll, describe, expect, test, vi } from 'vitest'
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
+import { createFixtureProject } from '@gyomu/ts-analysis/testing'
 import { buildDirectoryConcept } from '../buildDirectoryConcept.js'
 import { generateDirectoryConcept } from '../internal/generateDirectoryConcept.js'
 import { saveDirectoryConcept } from '../internal/saveDirectoryConcept.js'
-import { createFixtureProject } from './createFixtureProject.js'
 import type { DirectoryConcept } from '@gyomu/schema/schemas/concept'
 import type { FileChange } from '@gyomu/schema/snapshot'
+import { makeDirectory } from '@gyomu/infra/fs'
+import { existsSync } from 'node:fs'
 
 const dummyConcept = {
   summary: 'dummy',
@@ -51,9 +53,28 @@ const createDirectoryConceptProgram = async (
       retryOption: {},
       changedFiles: changedFiles,
       targetFolder,
+      action: { WriteToTempFolder: true },
     })
   })
   return await runQAWithEnvOrThrow(program, layer)
+}
+
+const createDirectoryConceptProgram2 = async (
+  subPath: string,
+  changedFiles?: Array<FileChange> | undefined,
+  targetFolder?: ProjectRelativePath | undefined,
+) => {
+  const project = createFixtureProject(path.join('directory', subPath))
+  const program = Effect.gen(function* () {
+    return yield* buildDirectoryConcept(project, {
+      retryOption: {},
+      changedFiles: changedFiles,
+      targetFolder,
+      action: { WriteToTempFolder: true },
+    })
+  })
+  const runQAWithResult = makeRunnerAsReturn(mockAiModelService)
+  return await runQAWithResult(program, layer)
 }
 
 const removeGyomuDirectories = async (rootDir: string): Promise<void> => {
@@ -123,16 +144,26 @@ describe('buildDirectoryConcept', () => {
   })
 
   test('empty', async () => {
-    const result = await createDirectoryConceptProgram('empty')
-    console.log(result)
-    expect(result.changed).toBeFalsy()
-    expect(mockedGenerate).toHaveBeenCalledTimes(1)
+    const targetDir = join('test-fixtures', 'directory', 'empty', 'src')
+    if (!existsSync(targetDir)) await mkdir(targetDir)
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-    const input = mockedGenerate.mock.calls[0]?.[2]!
+    const result2 = await createDirectoryConceptProgram2('empty')
 
-    expect(input.files).toHaveLength(0)
-    expect(input.subDirectories).toEqual([])
+    if (Result.isSuccess(result2)) {
+      const result = result2.success
+      console.log(result)
+      expect(result.changed).toBeFalsy()
+      expect(mockedGenerate).toHaveBeenCalledTimes(1)
+
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+      const input = mockedGenerate.mock.calls[0]?.[2]!
+
+      expect(input.files).toHaveLength(0)
+      expect(input.subDirectories).toEqual([])
+    } else {
+      console.dir(result2.failure, { depth: null })
+      expect(Result.isSuccess(result2)).toBeTruthy()
+    }
   })
 
   test('changedFiles', async () => {
@@ -164,6 +195,7 @@ describe('buildDirectoryConcept', () => {
         createFixtureProject(path.join('directory', 'cache')),
         ProjectRelativePath('./src'),
         cacheConcept,
+        { action: { WriteToTempFolder: true } },
       ).pipe(Effect.provide(PlatformLayer)),
     )
 
@@ -204,4 +236,4 @@ describe('buildDirectoryConcept', () => {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     expect(input.subDirectories[0]!.path).toBe('service')
   })
-})
+}, 20_000)

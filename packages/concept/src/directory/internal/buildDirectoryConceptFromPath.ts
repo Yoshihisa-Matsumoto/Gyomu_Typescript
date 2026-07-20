@@ -96,7 +96,7 @@ export const buildDirectoryConceptFromPath = (
       option,
     )
 
-    yield* saveDirectoryConcept(context, targetDirectoryRelativePath, concept)
+    yield* saveDirectoryConcept(context, targetDirectoryRelativePath, concept, option)
     return {
       concept,
       changed: isChanged,

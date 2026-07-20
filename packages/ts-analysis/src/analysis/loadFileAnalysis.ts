@@ -1,10 +1,10 @@
-import { join } from 'node:path'
 import { Effect } from 'effect'
 import { pathExists, readJsonFromFileAndValidate } from '@gyomu/infra/fs'
-import { FullPath, SchemaValidationError, wrapInfraError } from '@gyomu/schema'
+import { SchemaValidationError, wrapInfraError } from '@gyomu/schema'
 import { FileAnalysisSchema } from '@gyomu/schema/schemas/typescript'
 import { flattenIssues } from '@gyomu/schema/entity'
 import { AnalysisError } from './error/AnalysisError.js'
+import { getFileAnalysisPath } from './getFileAnalysisPath.js'
 import type { FileAnalysis } from '@gyomu/schema/schemas/typescript'
 import type { IOError } from '@gyomu/schema'
 import type { FileSystem } from 'effect'
@@ -20,7 +20,7 @@ export const loadFileAnalysis = (
   sourceFilePath: ProjectRelativePath,
 ): Effect.Effect<FileAnalysis | undefined, IOError | AnalysisError, FileSystem.FileSystem> =>
   Effect.gen(function* () {
-    const fileAnalysisPath = FullPath(join(context.projectRoot, '.gyomu', sourceFilePath + '.json'))
+    const fileAnalysisPath = getFileAnalysisPath(context, sourceFilePath)
 
     const fileExists = yield* pathExists(fileAnalysisPath)
     if (!fileExists) return undefined

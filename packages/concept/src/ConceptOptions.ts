@@ -8,7 +8,6 @@ export interface ConceptOptions extends AnalysisOptions, AiOptions {
       DirectoryConcept?: boolean
       PackageConcept?: boolean
       PackageAnalysis?: boolean
-      PackageInsight?: boolean
     }
   targetFolder?: ProjectRelativePath | undefined
   changedFiles?: ReadonlyArray<FileChange> | undefined

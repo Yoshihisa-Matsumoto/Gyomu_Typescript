@@ -1,0 +1,24 @@
+{
+  "summary": "This directory manages data validation schemas specifically designed for AI-driven services. It centralizes the definition of structured formats for temporal data, ensuring consistent input and output handling for artificial intelligence components within the application.",
+  "responsibilities": [
+    "Define structural validation rules for holiday data",
+    "Provide reusable schemas for AI input and output processing",
+    "Maintain consistency in data formats used across AI service interactions"
+  ],
+  "concepts": [
+    "Holiday data range",
+    "AI service schemas",
+    "Input validation",
+    "Temporal data structures"
+  ],
+  "relationships": [
+    "The HolidayRangeSchema defines the expected format for temporal data used by AI services.",
+    "Validation schemas act as a foundational layer to ensure data integrity before processing by AI logic."
+  ],
+  "designDecisions": [
+    "Centralized schema definitions for modular reuse",
+    "Standardized naming conventions for schema exports",
+    "Separation of concerns by grouping AI-specific data structures"
+  ],
+  "importance": "Core"
+}

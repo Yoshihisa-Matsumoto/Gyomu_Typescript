@@ -1,4 +1,4 @@
-import type { FileUpdatePlan } from './jsdoc/FileUpdatePlan.js'
+import type { FileUpdatePlan } from './jsDoc/FileUpdatePlan.js'
 
 export const applyFileUpdatePlan = (sourceContent: string, plan: FileUpdatePlan) => {
   // const lines = sourceContent.split('\n')

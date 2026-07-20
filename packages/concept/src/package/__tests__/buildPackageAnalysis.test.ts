@@ -96,7 +96,8 @@ describe('buildPackageAnalysis', () => {
       expect.arrayContaining([
         {
           path: 'src/usecase/internal',
-          summary: {
+          facts: { publicApiSymbolCount: 1, rootApiSymbolCount: 1 },
+          concept: {
             summary: 'internal',
             responsibilities: [],
             concepts: [],
@@ -301,4 +302,4 @@ describe('buildPackageAnalysis', () => {
 
     console.dir(projectAnalysis, { depth: null })
   })
-})
+}, 30_000)

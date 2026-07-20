@@ -1,8 +1,8 @@
 import { describe, expect, test, vi } from 'vitest'
 import { Effect, Layer } from 'effect'
-import { NodeFileSystem } from '@effect/platform-node'
 import { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 
+import { PlatformLayer } from '@gyomu/infra'
 import { FileSummaryRouteId, executeFileSummary } from '../executeFileSummary.js'
 import { renderFileConceptInput } from '../../renderer/renderFileConceptInput.js'
 import type { GenerateTextParams, ModelRoute, ModelRouteId, RouteNode } from '@gyomu/ai'
@@ -38,7 +38,7 @@ describe('executeFileSummary', () => {
 
     const result = await Effect.runPromise(
       executeFileSummary(context).pipe(
-        Effect.provide(NodeFileSystem.layer),
+        Effect.provide(PlatformLayer),
         Effect.provide(mockModelRoutes),
         Effect.provide(mockAiModelRoute),
       ),

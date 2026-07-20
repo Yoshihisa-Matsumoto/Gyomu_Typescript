@@ -1,0 +1,28 @@
+{
+  "summary": "This directory defines the structural schemas for analyzing TypeScript class and interface members. It provides a comprehensive framework to categorize and validate member metadata, specifically distinguishing between documentable and non-documentable properties and methods.",
+  "responsibilities": [
+    "Define schemas for TypeScript class and interface member analysis",
+    "Categorize members as documentable or non-documentable",
+    "Capture metadata for property and method members including modifiers, types, and JSDoc information",
+    "Provide runtime validation schemas for member analysis objects"
+  ],
+  "concepts": [
+    "Member Analysis",
+    "Member Metadata",
+    "Documentable Member",
+    "Non-documentable Member",
+    "Method Member",
+    "Property Member"
+  ],
+  "relationships": [
+    "Member analysis is classified into either documentable or non-documentable categories based on documentation requirements.",
+    "Property and method analysis schemas act as the fundamental building blocks for both documentable and non-documentable member structures.",
+    "Base member schemas provide shared identity and visibility metadata that all specific member analyses inherit."
+  ],
+  "designDecisions": [
+    "Use of Effect schemas for runtime validation and type inference",
+    "Categorization by documentation capability using discriminated unions",
+    "Composition of specific member types from base analysis definitions"
+  ],
+  "importance": "Core"
+}

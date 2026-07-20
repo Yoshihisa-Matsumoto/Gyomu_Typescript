@@ -3,12 +3,12 @@ import { logger } from '@gyomu/schema'
 import { writeStringToFile } from '@gyomu/infra/fs'
 import { loadPackageConcept } from './internal/loadPackageConcept.js'
 import { buildPackageAnalysis } from './buildPackageAnalysis.js'
-import { generatePackageInsight } from './internal/generatePackageConcept.js'
+import { generatePackageConcept } from './internal/generatePackageConcept.js'
 import { savePackageConcept } from './internal/savePackageConcept.js'
 import type { ConceptOptions } from '../ConceptOptions.js'
 import type { ConceptError } from '../error/ConceptError.js'
 import type { FileSystem } from 'effect'
-import type { PackageConcept, PackageDependency } from '@gyomu/schema/schemas/concept'
+import type { PackageConcept } from '@gyomu/schema/schemas/concept'
 import type { ProjectContext } from '@gyomu/ts-analysis'
 import type { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 import type { FileSearchService } from '@gyomu/schema/shared/fs'
@@ -48,36 +48,14 @@ export const buildPackageConcept = (
         ).pipe(Effect.catch(() => Effect.succeed(undefined)))
       else console.dir(packageAnalysis, { depth: null })
     }
-    const packageInsight = yield* generatePackageInsight(packageAnalysis, option)
-    if (option?.debugInfo?.PackageInsight) {
+    const packageConcept = yield* generatePackageConcept(packageAnalysis, option)
+    if (option?.debugInfo?.PackageConcept) {
       if (option.debugInfo.DumpToFile)
         yield* writeStringToFile(
-          './log/PackageInsight.txt',
-          JSON.stringify(packageInsight, null, 2),
+          './log/PackageConcept.txt',
+          JSON.stringify(packageConcept, null, 2),
         ).pipe(Effect.catch(() => Effect.succeed(undefined)))
-      else console.dir(packageInsight, { depth: null })
-    }
-    const packageConcept: PackageConcept = {
-      ...packageInsight,
-      packageInfo: {
-        name: packageAnalysis.package.name,
-        private: packageAnalysis.package.private,
-        type: packageAnalysis.package.type,
-        version: packageAnalysis.package.version,
-        description: packageAnalysis.package.description,
-      },
-      publicApi: packageAnalysis.exportedFiles.map((f) => ({
-        exportPath: f.path,
-        symbols: f.exports.map((e) => ({ kind: e.kind, name: e.symbol, summary: e.summary })),
-      })),
-      dependencies: packageAnalysis.dependencies.map(
-        (dep) =>
-          ({
-            packageName: dep.packageName,
-            source: dep.source,
-            version: dep.resolvedVersion ?? '',
-          }) satisfies PackageDependency,
-      ),
+      else console.dir(packageConcept, { depth: null })
     }
     yield* savePackageConcept(context, packageConcept)
     return packageConcept

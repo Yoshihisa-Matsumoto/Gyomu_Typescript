@@ -3,9 +3,9 @@ import { describe, expect, it } from 'vitest'
 import { Effect } from 'effect'
 import { analyzeFile } from '@gyomu/ts-analysis'
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
+import { createFixtureProject } from '@gyomu/ts-analysis/testing'
 import { buildJsDocUpdateContext } from '../buildJsDocUpdateContext.js'
 import { calculateComplexityMetrics } from '../../../evaluation/complexity/calculateComplexityMetrics.js'
-import { createFixtureProject } from '../../__tests__/createFixtureProject.js'
 // import type { FileAnalysisResult } from '../../../analysis/file/FileAnalysisResult.js'
 
 const timeout = 20000

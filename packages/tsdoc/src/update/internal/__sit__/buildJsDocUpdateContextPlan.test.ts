@@ -10,10 +10,10 @@ import { analyzeFile } from '@gyomu/ts-analysis'
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { TsDocRouteId } from '@gyomu/ai-compiler/jsdoc-update'
 import { AI_MODELS } from '@gyomu/ai'
+import { createFixtureProject } from '@gyomu/ts-analysis/testing'
 import { buildJsDocUpdateContext } from '../buildJsDocUpdateContext.js'
 import { buildJsDocUpdatePlanWithRetry } from '../buildJsDocUpdatePlanWithRetry.js'
 import { calculateComplexityMetrics } from '../../../evaluation/complexity/calculateComplexityMetrics.js'
-import { createFixtureProject } from '../../__tests__/createFixtureProject.js'
 
 const timeout = 20000
 

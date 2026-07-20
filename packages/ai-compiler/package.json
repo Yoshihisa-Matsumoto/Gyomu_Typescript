@@ -1,6 +1,6 @@
 {
   "name": "@gyomu/ai-compiler",
-  "version": "0.2.4-beta.10",
+  "version": "0.2.4-beta.11",
   "description": "",
   "type": "module",
   "publishConfig": {
@@ -32,7 +32,7 @@
     "@test:ci:coverage": "vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json --coverage",
     "start": "pnpm run build:live",
     "watch": "tsc -w",
-    "build": "tsc && tsx scripts/copy-prompts.ts",
+    "build": "tsc && node scripts/copy-prompts.js",
     "build:ci": "pnpm run clean && pnpm run build",
     "sit": "dotenv -e .env -- vitest --config=./vitest.sit.config.ts --typecheck.tsconfig=./tsconfig.vitest.json"
   },

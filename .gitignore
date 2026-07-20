@@ -94,5 +94,6 @@ __unconfig*
 todos.json
 
 # gyomu ai related
-.gyomu
+**/.gyomu/cache
+**/.gyomu/snapshot
 

@@ -1,0 +1,29 @@
+{
+  "summary": "This directory provides foundational utility functions and shared schema definitions that support core application logic, including type safety helpers, JSON validation, and standardized API result structures.",
+  "responsibilities": [
+    "Provide type-safe wrappers and assertions for control flow",
+    "Define standardized JSON and result schemas for API consistency",
+    "Expose utilities for stack trace analysis and debugging",
+    "Implement consistent error handling and result mapping for public APIs"
+  ],
+  "concepts": [
+    "Exhaustiveness checking",
+    "JSON serialization types",
+    "API result schemas",
+    "Error normalization",
+    "Stack trace introspection"
+  ],
+  "relationships": [
+    "Result schemas and error definitions provide a standardized structure for API responses.",
+    "JSON value schemas ensure type integrity for data interchange formats.",
+    "Exhaustive checks ensure that all possible result states are handled within application logic.",
+    "Public API execution helpers rely on result schemas to map internal errors into external-facing response formats."
+  ],
+  "designDecisions": [
+    "Use of Effect Schema for runtime validation and type inference",
+    "Standardization of API success and failure responses via result schemas",
+    "Encapsulation of common logic to ensure architectural consistency across the project",
+    "Separation of public error formats from internal exception handling"
+  ],
+  "importance": "Core"
+}
