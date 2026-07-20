@@ -32,6 +32,7 @@ const createDirectoryConceptProgram = async (
       retryOption: {},
       changedFiles: changedFiles,
       targetFolder,
+      action: { WriteToTempFolder: true },
     })
   })
   return await runQAWithEnvOrThrow(program, layer)

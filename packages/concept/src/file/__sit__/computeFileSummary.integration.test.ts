@@ -39,7 +39,7 @@ import { describe, test } from 'vitest'
 // }
 
 describe('File Summary Integration', () => {
-  //   test('simple', async () => {
-  //     await createFileSummaryProgram('main.ts')
-  //   })
+  test('simple', async () => {
+    // await createFileSummaryProgram('main.ts')q
+  })
 })
