@@ -51,6 +51,7 @@ const createDirectoryConceptProgram = async (
       retryOption: {},
       changedFiles: changedFiles,
       targetFolder,
+      action: { WriteToTempFolder: true },
     })
   })
   return await runQAWithEnvOrThrow(program, layer)
@@ -164,6 +165,7 @@ describe('buildDirectoryConcept', () => {
         createFixtureProject(path.join('directory', 'cache')),
         ProjectRelativePath('./src'),
         cacheConcept,
+        { action: { WriteToTempFolder: true } },
       ).pipe(Effect.provide(PlatformLayer)),
     )
 

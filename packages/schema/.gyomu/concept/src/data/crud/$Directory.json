@@ -1,0 +1,28 @@
+{
+  "summary": "This directory provides a standardized abstraction layer for data access by defining generic CRUD repository interfaces and utilities for synchronizing entity states between application data and database records.",
+  "responsibilities": [
+    "Defining generic interfaces for CRUD data operations",
+    "Deriving repository implementations from schema definitions",
+    "Calculating synchronization requirements between data sets",
+    "Validating field mappings between record definitions and database tables"
+  ],
+  "concepts": [
+    "CRUD repository",
+    "Data synchronization",
+    "Schema definitions",
+    "Entity diffing",
+    "Audit field integration"
+  ],
+  "relationships": [
+    "Repository interfaces define the standard operations available for data access.",
+    "Schema definitions serve as the basis for generating specific repository types.",
+    "Entity diffing logic determines the necessary inserts, updates, and deletes based on schema constraints."
+  ],
+  "designDecisions": [
+    "Use of generic interfaces for type-safe data access",
+    "Composition of repository capabilities through interface extension",
+    "Derivation of repository types from static schema structures",
+    "Separation of synchronization logic from repository interfaces"
+  ],
+  "importance": "Core"
+}

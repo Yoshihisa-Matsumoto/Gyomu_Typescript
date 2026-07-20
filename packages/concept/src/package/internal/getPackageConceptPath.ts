@@ -10,7 +10,8 @@ export const getPackageConceptPath = (
   return FullPath(
     join(
       context.projectRoot,
-      option?.metadataRoot ?? join('.gyomu', 'concept'),
+      option?.metadataRoot ??
+        join('.gyomu', option?.action?.WriteToTempFolder ? 'cache' : 'concept'),
       '$Package' + '.json',
     ),
   )

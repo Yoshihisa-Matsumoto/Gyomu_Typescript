@@ -1,0 +1,24 @@
+{
+  "summary": "This directory provides a collection of structural analysis definitions for TypeScript types. It serves as a schema layer that represents various TypeScript type constructs as data structures, enabling their representation, classification, and analysis within the system.",
+  "responsibilities": [
+    "Define structural models for diverse TypeScript type categories",
+    "Provide constant schemas for validating and classifying type structures",
+    "Enable the systematic representation of complex type expressions"
+  ],
+  "concepts": [
+    "TypeScript type structures",
+    "Type schema definitions",
+    "Structural type analysis"
+  ],
+  "relationships": [
+    "Each file defines a specific structure for a corresponding TypeScript type construct, such as arrays, functions, or unions.",
+    "The structure base provides shared properties for all type constructs, ensuring consistency across different schema definitions.",
+    "Constant schemas are utilized to validate the structural integrity of types during analysis."
+  ],
+  "designDecisions": [
+    "Used a modular, file-per-structure approach to maintain separation of concerns for different TypeScript type categories.",
+    "Implemented a dual-definition strategy for each structure, pairing a TypeScript interface or type with a runtime schema constant.",
+    "Followed a consistent naming convention where each structure is paired with a corresponding analysis schema."
+  ],
+  "importance": "Core"
+}

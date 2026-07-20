@@ -1,0 +1,25 @@
+{
+  "summary": "This directory defines the core interfaces and data structures required to interact with AI models. It establishes a standardized contract for chat conversations, message content, and streaming generation requests, serving as the abstraction layer for AI integration.",
+  "responsibilities": [
+    "Define the structure of chat messages and message content",
+    "Specify the interface for interacting with AI models",
+    "Provide standardized contracts for streaming and text generation responses"
+  ],
+  "concepts": [
+    "AI Client",
+    "Chat Message",
+    "Message Content",
+    "Streaming Response"
+  ],
+  "relationships": [
+    "The AI Client interface depends on Chat Message definitions to handle conversation state and message transmission.",
+    "Chat Messages utilize Chat Content to represent diverse data types like text, images, or tool results.",
+    "The AI Client manages the orchestration of Chat Messages during text generation and streaming operations."
+  ],
+  "designDecisions": [
+    "Use of TypeScript interfaces to enforce strict contracts for AI interactions.",
+    "Decoupling of AI model implementations through a generalized client interface.",
+    "Standardized definition of message types to support polymorphic content."
+  ],
+  "importance": "Core"
+}

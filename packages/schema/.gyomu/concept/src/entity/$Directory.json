@@ -1,0 +1,32 @@
+{
+  "summary": "This directory manages the core entity definition system, providing tools for schema generation, data validation, and structural management. It centralizes CRUD schema definitions, field metadata, and type-safe data conversion utilities for consistent application-wide data modeling.",
+  "responsibilities": [
+    "Defining and generating CRUD schemas for domain entities",
+    "Providing reusable field definitions and metadata configurations",
+    "Implementing data conversion and serialization logic for entities",
+    "Handling specialized data types such as localized dates",
+    "Validating data structures against entity schema definitions",
+    "Analyzing schema ASTs for error reporting and field mapping"
+  ],
+  "concepts": [
+    "Entity Schemas",
+    "CRUD Operations",
+    "Data Conversion",
+    "Field Metadata",
+    "Schema AST",
+    "Temporal Data Types"
+  ],
+  "relationships": [
+    "Entity definitions serve as the foundational schema models used by CRUD generators to create insert, update, and select operations.",
+    "Field definitions provide the granular constraints and metadata that constitute the structure of an entity.",
+    "The data conversion utilities rely on schema definitions to safely encode and decode data between external formats and internal types.",
+    "The AST matcher interacts with schema structures to resolve and flatten validation errors into field-specific issues."
+  ],
+  "designDecisions": [
+    "Use of schema-based definitions to derive CRUD operations and UI annotations consistently.",
+    "Type branding for specialized domain types to ensure runtime and compile-time data integrity.",
+    "Integration of Effect-based patterns for robust error handling during encoding and decoding.",
+    "Centralization of business entity definitions to maintain a single source of truth for domain models."
+  ],
+  "importance": "Core"
+}

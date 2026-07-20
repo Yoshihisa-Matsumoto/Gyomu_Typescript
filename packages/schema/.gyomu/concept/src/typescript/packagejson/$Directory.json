@@ -1,0 +1,27 @@
+{
+  "summary": "This directory provides the structural representation and analysis models for package.json configuration files, enabling the parsing and definition of dependency specifications, export mappings, and import configurations used in a project environment.",
+  "responsibilities": [
+    "Define schema interfaces for core package.json fields",
+    "Categorize and identify dependency types within a package",
+    "Model path mapping for export and import configurations",
+    "Analyze and aggregate package metadata into a structured object"
+  ],
+  "concepts": [
+    "Package Metadata",
+    "Dependency Specification",
+    "Export Configuration",
+    "Import Mapping",
+    "Dependency Kind"
+  ],
+  "relationships": [
+    "PackageJsonAnalysis aggregates various dependencies, export entries, and import entries into a single cohesive model.",
+    "PackageDependency defines the classification of dependencies based on their source and usage context within the configuration.",
+    "PackageExportEntry and PackageImportEntry describe mapping logic between source paths and target destinations."
+  ],
+  "designDecisions": [
+    "Use of TypeScript interfaces to enforce schema structure for configuration data",
+    "Enumeration of dependency types to provide type-safe classification",
+    "Modular decomposition of complex configuration fields into dedicated interface types"
+  ],
+  "importance": "Core"
+}

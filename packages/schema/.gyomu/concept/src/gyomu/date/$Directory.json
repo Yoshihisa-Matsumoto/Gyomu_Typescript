@@ -1,0 +1,27 @@
+{
+  "summary": "This directory provides a framework for managing business calendars and performing date-related calculations specific to financial or operational markets. It defines the interface for holiday lookups and adjustment logic required for business day scheduling.",
+  "responsibilities": [
+    "Define interfaces for business day calculations",
+    "Identify market-specific holidays and working days",
+    "Perform adjustments for month-end and year-end dates",
+    "Provide access to business calendar services based on market identifiers"
+  ],
+  "concepts": [
+    "Business Calendar",
+    "Business Day",
+    "Holiday Lookup",
+    "Market Calendar",
+    "Date Adjustment"
+  ],
+  "relationships": [
+    "The Business Calendar interface establishes the standard rules for determining valid working days and holidays within a specific market.",
+    "The Business Calendar Service acts as a provider to retrieve specific calendar implementations based on the required market context.",
+    "Business day calculations rely on the holiday data provided by the calendar implementation to determine accurate scheduling."
+  ],
+  "designDecisions": [
+    "Interface-based abstraction for calendar behavior",
+    "Service-oriented access pattern for retrieving market-specific calendars",
+    "Separation of calendar definitions from business logic operations"
+  ],
+  "importance": "Core"
+}

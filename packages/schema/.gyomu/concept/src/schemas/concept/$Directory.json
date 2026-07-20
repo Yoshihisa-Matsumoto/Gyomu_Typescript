@@ -1,0 +1,27 @@
+{
+  "summary": "This directory defines the core data schemas and TypeScript types used to model and document the architectural intent, package metadata, and conceptual structure of a software project.",
+  "responsibilities": [
+    "Define structural schemas for representing package metadata and dependencies",
+    "Define schemas for documenting public API exports and symbols",
+    "Capture architectural concepts, responsibilities, and relationships of code directories",
+    "Standardize the format for package insights and functional capabilities"
+  ],
+  "concepts": [
+    "Architectural Schemas",
+    "Package Metadata",
+    "Public API Definition",
+    "Conceptual Structure",
+    "Package Insights"
+  ],
+  "relationships": [
+    "The PackageConcept schema integrates package metadata, dependencies, and public APIs into a comprehensive definition.",
+    "PackageInsights utilize functional capabilities and relationships to describe the high-level intent of a package.",
+    "DirectoryConcepts provide a standardized way to describe the architectural purpose of individual project folders."
+  ],
+  "designDecisions": [
+    "Use of Zod-like schemas for runtime validation of architectural definitions",
+    "Separation of concerns by defining distinct schemas for metadata, API surfaces, and conceptual insights",
+    "Strong typing derived from schemas to ensure consistency across the documentation tooling"
+  ],
+  "importance": "Core"
+}

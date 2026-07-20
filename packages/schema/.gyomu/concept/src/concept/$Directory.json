@@ -1,0 +1,27 @@
+{
+  "summary": "This directory defines the core data models and type interfaces required to represent the static structure and metadata of a software package, providing a foundational schema for capturing file-level exports, directory hierarchies, and project dependency relationships.",
+  "responsibilities": [
+    "Define schemas for package metadata and static code analysis",
+    "Model the structural composition of modules and exported symbols",
+    "Represent dependency relationships between source files and external modules",
+    "Provide a unified structure for capturing project directory hierarchies"
+  ],
+  "concepts": [
+    "Package Metadata",
+    "Exported Symbols",
+    "Dependency Analysis",
+    "Module Structure",
+    "Project Directories"
+  ],
+  "relationships": [
+    "Package metadata provides the high-level context for understanding dependency analysis and module composition.",
+    "Exported symbols are mapped to specific modules to define the public interface of the package structure.",
+    "Dependency analysis informs the relationship between local modules and the external requirements defined within the package metadata."
+  ],
+  "designDecisions": [
+    "Uses TypeScript interfaces to enforce strong typing for analysis schemas",
+    "Implements an index-based entry point to centralize access to core analytical models",
+    "Organizes data structures by domain context to support modular and consistent consumption"
+  ],
+  "importance": "Core"
+}

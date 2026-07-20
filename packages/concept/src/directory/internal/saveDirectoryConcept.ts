@@ -6,6 +6,7 @@ import { DirectoryConcept } from '@gyomu/schema/schemas/concept'
 import { SchemaValidationError, wrapInfraError } from '@gyomu/schema'
 import { ConceptError } from '../../error/ConceptError.js'
 import { getDirectoryConceptPath } from './getDirectoryConceptPath.js'
+import type { ConceptOptions } from '../../ConceptOptions.js'
 import type { ProjectContext } from '@gyomu/ts-analysis'
 import type { ProjectRelativePath } from '@gyomu/schema/typescript'
 
@@ -13,9 +14,10 @@ export const saveDirectoryConcept = (
   context: ProjectContext,
   targetDirectory: ProjectRelativePath,
   concept: DirectoryConcept,
+  option?: ConceptOptions,
 ) =>
   Effect.gen(function* () {
-    const directoryConceptPath = getDirectoryConceptPath(context, targetDirectory)
+    const directoryConceptPath = getDirectoryConceptPath(context, targetDirectory, option)
 
     // join(
     //   context.projectRoot,

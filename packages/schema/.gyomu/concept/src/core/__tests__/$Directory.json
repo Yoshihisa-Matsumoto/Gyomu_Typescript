@@ -1,0 +1,21 @@
+{
+  "summary": "This directory contains the testing suite for the fundamental internal utilities and foundational helper functions that support the core operations of the application.",
+  "responsibilities": [
+    "Verify the correct behavior of internal utility functions",
+    "Ensure robustness of shared logic used across the core modules"
+  ],
+  "concepts": [
+    "Test suite",
+    "Internal utilities",
+    "Utility verification"
+  ],
+  "relationships": [
+    "The test suite ensures that the logic within internal utilities remains consistent and reliable.",
+    "These tests serve as a verification layer for the fundamental helper functions used by core modules."
+  ],
+  "designDecisions": [
+    "Colocation of test files with their corresponding core logic",
+    "Isolation of unit testing concerns from primary business logic"
+  ],
+  "importance": "Supporting"
+}

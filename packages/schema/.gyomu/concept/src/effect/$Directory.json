@@ -1,0 +1,30 @@
+{
+  "summary": "This directory provides a suite of specialized utilities and helper functions for working with the Effect framework, focusing on runtime execution, stream management, asynchronous task handling, and conditional validation within the Effect ecosystem.",
+  "responsibilities": [
+    "Facilitating the execution of effects via runner functions",
+    "Managing asynchronous operations and stream integration",
+    "Providing utilities for error handling and type narrowing within effects",
+    "Implementing time-based operations like polling and delays",
+    "Wrapping synchronous and promise-based code into effects"
+  ],
+  "concepts": [
+    "Effect runners",
+    "Layer casting",
+    "Stream adapters",
+    "Polling operations",
+    "Condition enforcement"
+  ],
+  "relationships": [
+    "Runners utilize base layers to execute effects and return either results or promises.",
+    "Utility functions transform standard synchronous or promise-based code into effects with defined error handling.",
+    "Polling and timer operations rely on effect-based pausing and loop execution logic.",
+    "Option helpers provide specialized extraction logic for internal effect configuration data."
+  ],
+  "designDecisions": [
+    "Functional style for effect composition and transformation",
+    "Use of identity functions for type narrowing",
+    "Encapsulation of complex asynchronous logic into reusable runner factories",
+    "Consistent error wrapping for both sync and async boundary transitions"
+  ],
+  "importance": "Core"
+}

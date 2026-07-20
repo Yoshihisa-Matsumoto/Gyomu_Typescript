@@ -73,7 +73,7 @@ describe('ensureProjectWorkspace', () => {
     const dirs = Array.from(mock.state.createdDirs)
 
     expect(dirs.some((d) => d.includes('.gyomu'))).toBe(true)
-    expect(dirs.some((d) => d.includes('cache/tsdoc'))).toBe(true)
+    expect(dirs.some((d) => d.includes('snapshot'))).toBe(true)
   })
 
   it('writes manifest file on first run', () => {
