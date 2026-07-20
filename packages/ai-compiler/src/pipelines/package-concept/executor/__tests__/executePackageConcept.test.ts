@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Effect, Layer } from 'effect'
 import { AiModelRoute, ModelRoutes } from '@gyomu/ai'
-import { NodeFileSystem } from '@effect/platform-node'
 import { MessageRole } from '@gyomu/schema/conversation'
 import { PackageConceptSchema } from '@gyomu/schema/schemas/concept'
+import { PlatformLayer } from '@gyomu/infra'
 import { loadPrompt } from '../../prompt/loadPrompt.js'
 import { PackageConceptRouteId, executePackageConcept } from '../executePackageConcept.js'
 import type { ModelRoute, ModelRouteId, RouteNode } from '@gyomu/ai'
@@ -64,7 +64,7 @@ describe('executePackageConcept', () => {
 
     const result = await Effect.runPromise(
       executePackageConcept(context, retryOption).pipe(
-        Effect.provide(NodeFileSystem.layer),
+        Effect.provide(PlatformLayer),
         Effect.provide(mockModelRoutes),
         Effect.provide(mockAiModelService),
       ),
