@@ -12,7 +12,7 @@ export const getDirectoryConceptPath = (
   return FullPath(
     join(
       context.projectRoot,
-      option?.metadataRoot ?? '.gyomu',
+      option?.metadataRoot ?? join('.gyomu', 'concept'),
       targetDirectory,
       '$Directory' + '.json',
     ),

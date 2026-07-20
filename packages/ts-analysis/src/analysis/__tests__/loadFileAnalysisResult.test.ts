@@ -25,10 +25,15 @@ vi.mock('../buildIndex.js', () => ({
 }))
 
 describe('loadFileAnalysisResult', () => {
-  const context = {} as ProjectContext
+  const context = { projectRoot: '' } as ProjectContext
   const sourceFile = ProjectRelativePath('src/index.ts')
 
-  const analysis = {} as FileAnalysis
+  const analysis = {
+    path: ProjectRelativePath(''),
+    imports: [],
+    exports: [],
+    symbols: [],
+  } as FileAnalysis
   const metadata = {} as FileAnalysisMetadata
 
   const analyzeResult = {

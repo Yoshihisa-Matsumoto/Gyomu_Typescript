@@ -34,7 +34,7 @@ describe('loadDirectoryConcept', () => {
     const root = await fs.mkdtemp(join(tmpdir(), '.tmp-'))
     const context = createContext(root)
 
-    await mkdir(join(root, '.gyomu', 'src'), { recursive: true })
+    await mkdir(join(root, '.gyomu', 'concept', 'src'), { recursive: true })
 
     // await writeFile(
     //   join(root, '.gyomu', 'src', '$Directory.json'),
@@ -76,9 +76,9 @@ describe('loadDirectoryConcept', () => {
   it('wraps invalid json as ConceptError', async () => {
     const root = await fs.mkdtemp(join(tmpdir(), '.tmp-'))
 
-    await mkdir(join(root, '.gyomu', 'src'), { recursive: true })
+    await mkdir(join(root, '.gyomu', 'concept', 'src'), { recursive: true })
 
-    await writeFile(join(root, '.gyomu', 'src', '$Directory.json'), '{')
+    await writeFile(join(root, '.gyomu', 'concept', 'src', '$Directory.json'), '{')
 
     const exit = await Effect.runPromiseExit(
       loadDirectoryConcept(createContext(root), ProjectRelativePath('src')).pipe(
@@ -103,9 +103,12 @@ describe('loadDirectoryConcept', () => {
   it('wraps schema validation error as ConceptError', async () => {
     const root = await fs.mkdtemp(join(tmpdir(), '.tmp-'))
 
-    await mkdir(join(root, '.gyomu', 'src'), { recursive: true })
+    await mkdir(join(root, '.gyomu', 'concept', 'src'), { recursive: true })
 
-    await writeFile(join(root, '.gyomu', 'src', '$Directory.json'), JSON.stringify({}, null, 2))
+    await writeFile(
+      join(root, '.gyomu', 'concept', 'src', '$Directory.json'),
+      JSON.stringify({}, null, 2),
+    )
 
     const exit = await Effect.runPromiseExit(
       loadDirectoryConcept(createContext(root), ProjectRelativePath('src')).pipe(

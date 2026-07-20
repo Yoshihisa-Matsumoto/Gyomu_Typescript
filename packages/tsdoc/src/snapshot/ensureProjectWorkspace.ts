@@ -34,12 +34,11 @@ const toProjectId = (projectPath: string): string => {
  *
  * ```
  * .gyomu/
- *   <projectId>/
- *     manifest.json
- *     cache/
- *       tsdoc/
- *         v1/
- *           file-hashes.json
+ *   snapshot/
+ *     <projectId>/
+ *       manifest.json
+ *       v1/
+ *         file-hashes.json
  * ```
  *
  * @property projectId - Stable hashed identifier for the project (derived from normalized project path)
@@ -78,12 +77,11 @@ export interface ProjectWorkspace {
  *
  * ```
  * .gyomu/
- *   <projectId>/
- *     manifest.json
- *     cache/
- *       tsdoc/
- *         v1/
- *           file-hashes.json
+ *   snapshot/
+ *     <projectId>/
+ *       manifest.json
+ *       v1/
+ *         file-hashes.json
  * ```
  *
  * The manifest contains:
@@ -117,15 +115,15 @@ export const ensureProjectWorkspace = (
 
     const projectId = toProjectId(normalizedProjectPath)
 
-    const projectRoot = FullPath(`${repoRoot}/.gyomu/${projectId}`)
+    const projectRoot = FullPath(`${repoRoot}/.gyomu/snapshot/${projectId}`)
 
     const manifestPath = FullPath(`${projectRoot}/manifest.json`)
 
-    const snapshotPath = FullPath(`${projectRoot}/cache/tsdoc/v${GYOMU_VERSION}/file-hashes.json`)
+    const snapshotPath = FullPath(`${projectRoot}/v${GYOMU_VERSION}/file-hashes.json`)
 
     // 1. ensure directory
     yield* fs.makeDirectory(projectRoot, { recursive: true })
-    yield* fs.makeDirectory(`${projectRoot}/cache/tsdoc/v${GYOMU_VERSION}`, {
+    yield* fs.makeDirectory(`${projectRoot}/v${GYOMU_VERSION}`, {
       recursive: true,
     })
 

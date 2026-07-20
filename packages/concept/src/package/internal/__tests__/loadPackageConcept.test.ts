@@ -25,11 +25,6 @@ describe('loadPackageConcept', () => {
     responsibilities: ['Responsibility1', 'Responsibility2'],
     capabilities: [{ name: 'Capability1', description: 'Capability Description1' }],
     designDecisions: ['Decision1'],
-    publicApi: [
-      { exportPath: '.', symbols: [{ kind: 'const', name: 'symbol', summary: 'summary' }] },
-    ],
-    dependencies: [{ packageName: 'effect', source: 'dependency', version: '1.0' }],
-    packageInfo: { name: '@gyomu/test', private: false, type: 'module', version: '1.0.0' },
     usageGuidance: ['Usage1'],
   } satisfies PackageConcept
 
@@ -37,7 +32,7 @@ describe('loadPackageConcept', () => {
     const root = await fs.mkdtemp(join(tmpdir(), '.tmp-'))
     const context = createContext(root)
 
-    await mkdir(join(root, '.gyomu', 'src'), { recursive: true })
+    await mkdir(join(root, '.gyomu', 'concept', 'src'), { recursive: true })
 
     // await writeFile(
     //   join(root, '.gyomu', 'src', '$Package.json'),
@@ -75,9 +70,9 @@ describe('loadPackageConcept', () => {
   it('wraps invalid json as ConceptError', async () => {
     const root = await fs.mkdtemp(join(tmpdir(), '.tmp-'))
 
-    await mkdir(join(root, '.gyomu'), { recursive: true })
+    await mkdir(join(root, '.gyomu', 'concept'), { recursive: true })
 
-    await writeFile(join(root, '.gyomu', '$Package.json'), '{')
+    await writeFile(join(root, '.gyomu', 'concept', '$Package.json'), '{')
 
     const exit = await Effect.runPromiseExit(
       loadPackageConcept(createContext(root)).pipe(Effect.provide(NodeFileSystem.layer)),
@@ -99,9 +94,9 @@ describe('loadPackageConcept', () => {
   it('wraps schema validation error as ConceptError', async () => {
     const root = await fs.mkdtemp(join(tmpdir(), '.tmp-'))
 
-    await mkdir(join(root, '.gyomu'), { recursive: true })
+    await mkdir(join(root, '.gyomu', 'concept'), { recursive: true })
 
-    await writeFile(join(root, '.gyomu', '$Package.json'), JSON.stringify({}, null, 2))
+    await writeFile(join(root, '.gyomu', 'concept', '$Package.json'), JSON.stringify({}, null, 2))
 
     const exit = await Effect.runPromiseExit(
       loadPackageConcept(createContext(root)).pipe(Effect.provide(NodeFileSystem.layer)),
