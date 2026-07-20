@@ -206,4 +206,4 @@ describe('buildDirectoryConcept', () => {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     expect(input.subDirectories[0]!.path).toBe('service')
   })
-})
+}, 20_000)

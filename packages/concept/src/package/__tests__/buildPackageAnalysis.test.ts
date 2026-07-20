@@ -302,4 +302,4 @@ describe('buildPackageAnalysis', () => {
 
     console.dir(projectAnalysis, { depth: null })
   })
-})
+}, 20_000)

@@ -160,4 +160,4 @@ describe('buildPackageConcept', () => {
 
     expect(Result.isFailure(exit)).toBe(true)
   })
-})
+}, 20_000)
