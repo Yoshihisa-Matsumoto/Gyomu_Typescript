@@ -1,2 +1,4 @@
 export * from './result.js'
 export * from './jsonValue.js'
+export * from './assertNever.js'
+export * from './getCaller.js'

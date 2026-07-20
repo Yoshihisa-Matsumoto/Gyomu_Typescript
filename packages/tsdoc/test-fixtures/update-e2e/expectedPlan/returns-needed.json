@@ -1,0 +1,41 @@
+[
+  [
+    {
+      "identity": {
+        "symbolId": "sum",
+        "signatureId": "(a:number,b:number):number"
+      },
+
+      "summary": {
+        "action": {
+          "type": "replace",
+          "value": "Sum two numbers."
+        },
+        "confidence": 0.95
+      },
+
+      "params": [],
+
+      "tags": [],
+
+      "returns": {
+        "action": {
+          "type": "replace",
+          "value": "sum of a and b"
+        },
+        "confidence": 0.95
+      },
+
+      "reasoning": {
+        "summary": "Function adds two numeric values together.",
+        "paramMapping": "Parameter documentation is omitted for this scenario.",
+        "returnMapping": "The return value is the sum of the two inputs."
+      },
+
+      "risk": {
+        "hasHumanConflict": false,
+        "riskLevel": "low"
+      }
+    }
+  ]
+]

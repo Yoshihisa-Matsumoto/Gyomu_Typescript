@@ -2,8 +2,13 @@ import { dirname, extname, join } from 'node:path'
 import { randomUUID } from 'node:crypto'
 import { tmpdir } from 'node:os'
 import { Effect, FileSystem, Stream } from 'effect'
-import { wrapIOError } from '@gyomu/schema'
-import type { IOError, NetworkError } from '@gyomu/schema'
+import { FullPath, IOError, wrapIOError } from '@gyomu/schema'
+import { parse } from 'yaml'
+import { convertToSchemaObjectWithEffect } from '@gyomu/schema/entity'
+import { fromSync } from '@gyomu/schema/effect'
+import type { NetworkError, SchemaValidationError } from '@gyomu/schema'
+import type { EntryInfo } from './types.js'
+import type { Schema } from 'effect'
 import type { PlatformError } from 'effect/PlatformError'
 
 /**
@@ -97,6 +102,22 @@ export const writeToFile = (
 ) =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem
+    const dir = dirname(path)
+
+    yield* fs
+      .makeDirectory(dir, {
+        recursive: true,
+      })
+      .pipe(
+        Effect.mapError((e) =>
+          wrapIOError(e, () => ({
+            message: 'fail to create directory',
+            target: path,
+            layer: 'filesystem' as const,
+            operation: 'write' as const,
+          })),
+        ),
+      )
     return yield* fs.writeFile(path, data, options).pipe(
       Effect.mapError((e) =>
         wrapIOError(e, () => ({
@@ -118,6 +139,22 @@ export const writeStringToFile = (
 ) =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem
+    const dir = dirname(path)
+
+    yield* fs
+      .makeDirectory(dir, {
+        recursive: true,
+      })
+      .pipe(
+        Effect.mapError((e) =>
+          wrapIOError(e, () => ({
+            message: 'fail to create directory',
+            target: path,
+            layer: 'filesystem' as const,
+            operation: 'write' as const,
+          })),
+        ),
+      )
     return yield* fs.writeFileString(path, data, options).pipe(
       Effect.mapError((e) =>
         wrapIOError(e, () => ({
@@ -156,6 +193,31 @@ export const readStringFromFile = (path: string, encoding?: string) =>
         })),
       ),
     )
+  })
+export const readJsonFromFile = <T>(path: string, encoding?: string) =>
+  Effect.gen(function* () {
+    const text = yield* readStringFromFile(path, encoding)
+    return yield* fromSync(IOError, (e) => ({
+      layer: 'filesystem' as const,
+      message: 'fail to parse JSON',
+      operation: 'transform' as const,
+    }))(() => JSON.parse(text) as T)
+  })
+export const readJsonFromFileAndValidate = <S extends Schema.Top>(
+  schemaName: string,
+  schema: S,
+  path: string,
+  encoding?: string,
+): Effect.Effect<Schema.Schema.Type<S>, IOError | SchemaValidationError, FileSystem.FileSystem> =>
+  Effect.gen(function* () {
+    const jsonData = yield* readJsonFromFile(path, encoding)
+    return yield* convertToSchemaObjectWithEffect(schemaName)(schema, jsonData)
+  })
+
+export const readYamlFromFile = <T>(path: string, encoding?: string) =>
+  Effect.gen(function* () {
+    const text = yield* readStringFromFile(path, encoding)
+    return parse(text) as T
   })
 export const copyFile = (source: string, destination: string) =>
   Effect.gen(function* () {
@@ -206,7 +268,7 @@ export const getFileStat = (path: string) =>
       ),
     )
   })
-export const pathExists = (path: string) =>
+export const pathExists = (path: FullPath) =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem
     return yield* fs.exists(path).pipe(
@@ -220,7 +282,7 @@ export const pathExists = (path: string) =>
       ),
     )
   })
-export const readDirectoryDetailed = (dir: string) =>
+export const readDirectoryDetailed = (dir: FullPath) =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem
     const names = yield* fs.readDirectory(dir).pipe(
@@ -238,7 +300,7 @@ export const readDirectoryDetailed = (dir: string) =>
       names,
       (name) =>
         Effect.gen(function* () {
-          const path = `${dir}/${name}`
+          const path = FullPath(`${dir}/${name}`)
           const stat = yield* fs.stat(path).pipe(
             Effect.mapError(() =>
               wrapIOError(() => ({
@@ -256,11 +318,53 @@ export const readDirectoryDetailed = (dir: string) =>
             type: stat.type,
             isFile: stat.type == 'File',
             isDirectory: stat.type == 'Directory',
-          }
+          } satisfies EntryInfo
         }),
       { concurrency: 'unbounded' },
     )
   })
+
+export const expandDirectoryGlob = (repositoryRoot: string, pattern: string) =>
+  Effect.gen(function* () {
+    if (!pattern.endsWith('/*')) {
+      return []
+    }
+    if (pattern.startsWith('!')) {
+      return []
+    }
+    const fs = yield* FileSystem.FileSystem
+    const parentDir = pattern.slice(0, -2)
+
+    const targetDir = join(repositoryRoot, parentDir)
+
+    const entries = yield* fs.readDirectory(targetDir)
+
+    const results = yield* Effect.forEach(
+      entries,
+      (entry) =>
+        Effect.gen(function* () {
+          const fullPath = join(targetDir, entry)
+
+          const directory = (yield* fs.stat(fullPath)).type == 'Directory'
+
+          return directory ? join(parentDir, entry) : undefined
+        }),
+      {
+        concurrency: 'unbounded',
+      },
+    )
+
+    return results.filter((x): x is string => x !== undefined)
+  }).pipe(
+    Effect.mapError((e) =>
+      wrapIOError(e, () => ({
+        layer: 'filesystem' as const,
+        message: 'fail to expand directory',
+        target: repositoryRoot,
+        details: pattern,
+      })),
+    ),
+  )
 export const removePath = (
   path: string,
   options?: {
@@ -306,21 +410,24 @@ export const emptyDir = (dir: string) =>
       })),
     ),
   )
-export const makeDirectory = (dir: string) =>
+export const makeDirectory = (dir: string, fromFile: boolean = false) =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem
 
-    yield* fs.makeDirectory(dir, { recursive: true }).pipe(
+    let targetPath = dir
+    if (fromFile) targetPath = dirname(dir)
+    yield* fs.makeDirectory(targetPath, { recursive: true }).pipe(
       Effect.mapError((e) =>
         wrapIOError(e, () => ({
           message: 'fail to make directory',
-          target: dir,
+          target: targetPath,
           layer: 'filesystem' as const,
           operation: 'write' as const,
         })),
       ),
     )
   })
+
 export const ensureFile = (filePath: string): Effect.Effect<void, IOError, FileSystem.FileSystem> =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem

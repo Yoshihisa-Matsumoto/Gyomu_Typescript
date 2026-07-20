@@ -1,4 +1,5 @@
-import type { FileHashEntry } from './FileHashEntry.js'
+import type { WorkspaceRelativePath } from '@gyomu/schema/typescript'
+import type { FileHashEntry } from '@gyomu/schema/snapshot'
 import type { GyomuVersion } from './ProjectWorkspaceManifest.js'
 
 /**
@@ -17,6 +18,13 @@ export interface FileHashSnapshot {
    * and backward compatibility handling.
    */
   readonly version: GyomuVersion
+
+  /**
+   * Project root path
+   * relative from workspace root.
+   */
+  readonly projectRoot: WorkspaceRelativePath
+
   /**
    * Collected file hash entries.
    */

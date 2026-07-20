@@ -6,9 +6,9 @@ import { Effect, Layer, Option, Redacted, Result, Stream } from 'effect'
 import { ConfigError, NetworkError } from '@gyomu/schema'
 import { FileTransportInfo } from '@gyomu/schema/gyomu/file'
 import { NodeFileSystem } from '@effect/platform-node'
+import { makeRunner, makeRunnerAsReturn } from '@gyomu/schema/effect'
 import { SftpService } from '../SftpService.js'
 import { ConfigService } from '../../config.js'
-import { makeRunner, makeRunnerAsReturn } from '../../runtime.js'
 import { MainLayer, PlatformLayer } from '../../layer.js'
 
 const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer)

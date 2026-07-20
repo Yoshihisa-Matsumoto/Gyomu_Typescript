@@ -29,9 +29,12 @@ import type { Effect } from 'effect'
  * // throws GyomuError
  * ```
  *
- * @param basePath - The allowed root directory (security boundary root)
- * @param targetPath - The input path to resolve relative to the base
- * @returns A normalized relative path within the base directory
+ * @param basePath The allowed root directory (security boundary root)
+ *
+ * @param targetPath The input path to resolve relative to the base
+ *
+ * @returns An Effect containing a normalized relative path within the base directory.
+ *
  * @throws GyomuError when the resolved path escapes the base boundary
  *
  * @remarks

@@ -5,11 +5,11 @@ import { describe, expect, it } from 'vitest'
 import { Effect, Layer, Schema, Stream } from 'effect'
 import { NodeFileSystem } from '@effect/platform-node'
 import { IOError, wrapInfraError } from '@gyomu/schema'
+import { makeRunner } from '@gyomu/schema/effect'
 import { writeCsv } from '../write.js'
 import { parseCsv, readCsv } from '../read.js'
 import { fileStream, writeTextStreamToFile } from '../../fs/fs-utils.js'
 import { MainLayer, PlatformLayer } from '../../layer.js'
-import { makeRunner } from '../../runtime.js'
 
 const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer)
 const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer)

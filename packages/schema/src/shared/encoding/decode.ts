@@ -1,13 +1,26 @@
 import { Transform } from 'node:stream'
 import { TextDecoder } from 'node:util'
 
+/**
+ * Decodes a Uint8Array into a string using the specified encoding.
+ *
+ * @param content The byte array to decode.
+ *
+ * @param encoding The character encoding to use. Defaults to 'utf-8'.
+ *
+ * @returns The decoded string.
+ */
 export const decode = (content: Uint8Array, encoding: string = 'utf-8'): string => {
   const decoder = new TextDecoder(encoding)
   return decoder.decode(content)
 }
 
 /**
- * Shift-JIS 用のデコードストリームを作成するファクトリ
+ * Creates a Transform stream that decodes input chunks into strings using the specified encoding.
+ *
+ * @param encoding The character encoding to use for decoding.
+ *
+ * @returns A Transform stream for decoding character data.
  */
 export function createDecoder(encoding: string) {
   const decoder = new TextDecoder(encoding, { fatal: false })

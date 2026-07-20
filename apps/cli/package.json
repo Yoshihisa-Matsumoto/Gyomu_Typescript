@@ -23,9 +23,16 @@
     "tsup": "^8.5.1"
   },
   "dependencies": {
-    "@gyomu/schema": "workspace:*",
-    "@gyomu/infra": "workspace:*",
-    "effect": "4.0.0-beta.57"
+    "@clack/prompts": "^1.5.1",
+    "@gyomu/ai": "workspace:^",
+    "@gyomu/concept": "workspace:^",
+    "@gyomu/infra": "workspace:^",
+    "@gyomu/schema": "workspace:^",
+    "@gyomu/ts-analysis": "workspace:^",
+    "@gyomu/tsdoc": "workspace:^",
+    "cac": "^7.0.0",
+    "dotenv": "catalog:",
+    "effect": "catalog:"
   },
   "files": [
     "dist",

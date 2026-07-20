@@ -1,0 +1,158 @@
+[
+  [
+    {
+      "identity": {
+        "symbolId": "ApiResponse",
+        "signatureId": "interface"
+      },
+      "summary": {
+        "action": {
+          "type": "replace",
+          "value": "Represents an API response."
+        },
+        "confidence": 0.8
+      },
+      "params": [],
+      "tags": [],
+      "returns": {
+        "action": {
+          "type": "preserve"
+        },
+        "confidence": 1.0
+      },
+      "reasoning": {
+        "summary": "The interface lacks documentation.",
+        "paramMapping": "No parameters.",
+        "returnMapping": "Not applicable."
+      },
+      "risk": {
+        "hasHumanConflict": false,
+        "riskLevel": "low"
+      }
+    },
+
+    {
+      "identity": {
+        "symbolId": "ApiResponse::interface::data::property",
+        "signatureId": "property"
+      },
+      "summary": {
+        "action": {
+          "type": "replace",
+          "value": "Response payload data."
+        },
+        "confidence": 0.8
+      },
+      "params": [],
+      "tags": [],
+      "returns": {
+        "action": {
+          "type": "preserve"
+        },
+        "confidence": 1.0
+      },
+      "reasoning": {
+        "summary": "Property lacks documentation.",
+        "paramMapping": "No parameters.",
+        "returnMapping": "Not applicable."
+      },
+      "risk": {
+        "hasHumanConflict": false,
+        "riskLevel": "low"
+      }
+    },
+
+    {
+      "identity": {
+        "symbolId": "ApiResponse::interface::data.id::property",
+        "signatureId": "property"
+      },
+      "summary": {
+        "action": {
+          "type": "replace",
+          "value": "Unique identifier."
+        },
+        "confidence": 0.8
+      },
+      "params": [],
+      "tags": [],
+      "returns": {
+        "action": {
+          "type": "preserve"
+        },
+        "confidence": 1.0
+      },
+      "reasoning": {
+        "summary": "Property lacks documentation.",
+        "paramMapping": "No parameters.",
+        "returnMapping": "Not applicable."
+      },
+      "risk": {
+        "hasHumanConflict": false,
+        "riskLevel": "low"
+      }
+    },
+
+    {
+      "identity": {
+        "symbolId": "ApiResponse::interface::data.profile::property",
+        "signatureId": "property"
+      },
+      "summary": {
+        "action": {
+          "type": "replace",
+          "value": "Profile information."
+        },
+        "confidence": 0.8
+      },
+      "params": [],
+      "tags": [],
+      "returns": {
+        "action": {
+          "type": "preserve"
+        },
+        "confidence": 1.0
+      },
+      "reasoning": {
+        "summary": "Property lacks documentation.",
+        "paramMapping": "No parameters.",
+        "returnMapping": "Not applicable."
+      },
+      "risk": {
+        "hasHumanConflict": false,
+        "riskLevel": "low"
+      }
+    },
+
+    {
+      "identity": {
+        "symbolId": "ApiResponse::interface::data.profile.displayName::property",
+        "signatureId": "property"
+      },
+      "summary": {
+        "action": {
+          "type": "replace",
+          "value": "Display name."
+        },
+        "confidence": 0.8
+      },
+      "params": [],
+      "tags": [],
+      "returns": {
+        "action": {
+          "type": "preserve"
+        },
+        "confidence": 1.0
+      },
+      "reasoning": {
+        "summary": "Property lacks documentation.",
+        "paramMapping": "No parameters.",
+        "returnMapping": "Not applicable."
+      },
+      "risk": {
+        "hasHumanConflict": false,
+        "riskLevel": "low"
+      }
+    }
+  ]
+]

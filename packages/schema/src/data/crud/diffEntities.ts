@@ -1,6 +1,15 @@
 import type { Schema } from 'effect'
 import type { CrudSchemas } from './types.js'
 
+/**
+ * Calculates the differences between incoming data records and existing records to determine required insert, update, and delete operations.
+ *
+ * @param schemas The schemas defining the CRUD operations and field names.
+ *
+ * @param args An object containing the incoming records, existing records, and a function to extract the unique record key.
+ *
+ * @returns An object containing arrays of records to be inserted, updated (with field change details), deleted, or those that remained unchanged.
+ */
 export const diffEntities =
   <Insert extends Schema.Top, Select extends Schema.Top, Update extends Schema.Top>(
     schemas: CrudSchemas<Insert, Select, Update>,

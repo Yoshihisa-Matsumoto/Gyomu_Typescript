@@ -1,5 +1,5 @@
 import { createTool } from '@mastra/core/tools'
-import { HolidayRangeSchema } from '@gyomu/schema/schemas/ai/holiday'
+import { HolidayRangeSchema } from '@gyomu/schema/schemas/ai'
 import { Effect, Layer, Schema } from 'effect'
 import { LocalDateSchema } from '@gyomu/schema/entity'
 import { BusinessCalendarService } from '@gyomu/schema/gyomu/date'

@@ -1,6 +1,6 @@
 {
   "name": "@gyomu/agent",
-  "version": "0.2.4-beta.5",
+  "version": "0.2.4-beta.10",
   "description": "",
   "type": "module",
   "publishConfig": {
@@ -35,7 +35,7 @@
     "@gyomu/infra": "workspace:^",
     "@gyomu/schema": "workspace:^",
     "@gyomu/tsdoc": "workspace:^",
-    "effect": "4.0.0-beta.57",
+    "effect": "catalog:",
     "ts-morph": "^28.0.0"
   }
 }

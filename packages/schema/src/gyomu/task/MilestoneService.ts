@@ -3,11 +3,14 @@ import type { Effect, Schema } from 'effect'
 import type { GyomuRepository } from '../GyomuRepository.js'
 import type { DBError } from '../../error/DBError.js'
 import type { SchemaValidationError } from '../../error/SchemaValidationError.js'
-import type { MilestoneSchema } from '../../schemas/gyomu.js'
+import type { MilestoneSchema } from '../../schemas/gyomu/gyomu.js'
 import type { LocalDate } from '../../entity/date.js'
 import type { MilestoneDailyDomainSchema } from '../../entity/gyomuDefinition.js'
 import type { TimeoutError } from '../../error/TimeoutError.js'
 
+/**
+ * Defines the result of a milestone existence check, containing an indicator of existence and optionally the last update timestamp.
+ */
 export type MilestoneExistResultType =
   | {
       exists: true
@@ -25,6 +28,9 @@ export type MilestoneExistResultType =
 //   return targetDateYmD;
 // };
 
+/**
+ * Service interface for managing milestones, providing operations for checking existence, registering, waiting, retrieving lists, and managing milestone configurations.
+ */
 export class MilestoneService extends Context.Service<
   MilestoneService,
   {

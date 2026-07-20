@@ -1,7 +1,7 @@
 import { Effect } from 'effect'
 import { FileSearchService } from '@gyomu/schema/shared/fs'
 import type { FileSystem } from 'effect'
-import type { IOError } from '@gyomu/schema'
+import type { FullPath, IOError } from '@gyomu/schema'
 import type { FileInfo } from '@gyomu/schema/gyomu/file'
 
 const TARGET_PATTERNS = ['**/*.ts', '**/*.tsx']
@@ -29,7 +29,7 @@ const EXCLUDE_PATTERNS = ['**/node_modules/**', '**/dist/**', '**/coverage/**', 
  * @param rootDirectory Root directory to search
  */
 export const enumerateTargetFiles = (
-  rootDirectory: string,
+  rootDirectory: FullPath,
 ): Effect.Effect<ReadonlyArray<FileInfo>, IOError, FileSearchService | FileSystem.FileSystem> =>
   Effect.gen(function* () {
     const fileSearch = yield* FileSearchService

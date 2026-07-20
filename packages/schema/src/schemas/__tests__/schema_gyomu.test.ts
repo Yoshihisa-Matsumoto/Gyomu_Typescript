@@ -19,7 +19,7 @@ import {
   TaskInstanceSchema,
   TaskInstanceSubmitInformationSchema,
   VariableParameterSchema,
-} from '../gyomu.js'
+} from '../gyomu/gyomu.js'
 
 const testId = 'f6ae5f2d-bd14-4c5f-9cc3-3a69ef90dd5b'
 

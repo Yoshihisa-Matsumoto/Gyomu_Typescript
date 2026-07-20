@@ -6,6 +6,9 @@ import type { ValueError } from '../../error/ValueError.js'
 import type { BusinessCalendarService } from '../../gyomu/date/BusinessCalendar.js'
 import type { LocalDate } from '../../entity/date.js'
 
+/**
+ * Provides services for parsing variables and dates within specific market contexts.
+ */
 export class VariableTranslatorService extends Context.Service<
   VariableTranslatorService,
   {

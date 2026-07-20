@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "react": "^19.0.0",
+    "@gyomu/core": "workspace:*",
+    "@effect/schema": "catalog:",
+    "foo": "file:../foo",
+    "bar": "link:../bar"
+  },
+  "devDependencies": {
+    "dev": "0.1.5"
+  },
+  "peerDependencies": {
+    "peer": "1.0.2"
+  },
+  "optionalDependencies": {
+    "optional": "0.1.4"
+  }
+}

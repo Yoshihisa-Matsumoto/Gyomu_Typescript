@@ -1,0 +1,39 @@
+[
+  [
+    {
+      "identity": {
+        "symbolId": "greet",
+        "signatureId": "(name:string):string"
+      },
+
+      "summary": {
+        "action": {
+          "type": "preserve"
+        },
+        "confidence": 1.0
+      },
+
+      "params": [],
+
+      "tags": [],
+
+      "returns": {
+        "action": {
+          "type": "preserve"
+        },
+        "confidence": 1.0
+      },
+
+      "reasoning": {
+        "summary": "Existing human-authored summary should be preserved.",
+        "paramMapping": "No parameter documentation changes required.",
+        "returnMapping": "No return documentation changes required."
+      },
+
+      "risk": {
+        "hasHumanConflict": false,
+        "riskLevel": "low"
+      }
+    }
+  ]
+]

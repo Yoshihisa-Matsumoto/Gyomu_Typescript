@@ -1,11 +1,12 @@
 import { Effect, FileSystem } from 'effect'
 
-import { IOError, wrapInfraError } from '@gyomu/schema'
+import { FullPath, IOError, wrapInfraError } from '@gyomu/schema'
 
 import { shortSha256 } from '@gyomu/infra/hash'
 import { writeStringToFile } from '@gyomu/infra/fs'
 import { resolvePathWithinBase } from '@gyomu/schema/gyomu'
 import { GYOMU_VERSION } from './types/ProjectWorkspaceManifest.js'
+import type { WorkspaceRelativePath } from '@gyomu/schema/typescript'
 
 const toProjectId = (projectPath: string): string => {
   return shortSha256(projectPath)
@@ -106,8 +107,8 @@ export interface ProjectWorkspace {
  * - Writes manifest file if missing
  */
 export const ensureProjectWorkspace = (
-  repoRoot: string,
-  projectPath: string,
+  repoRoot: FullPath,
+  projectPath: WorkspaceRelativePath,
 ): Effect.Effect<ProjectWorkspace, IOError, FileSystem.FileSystem> =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem
@@ -116,11 +117,11 @@ export const ensureProjectWorkspace = (
 
     const projectId = toProjectId(normalizedProjectPath)
 
-    const projectRoot = `${repoRoot}/.gyomu/${projectId}`
+    const projectRoot = FullPath(`${repoRoot}/.gyomu/${projectId}`)
 
-    const manifestPath = `${projectRoot}/manifest.json`
+    const manifestPath = FullPath(`${projectRoot}/manifest.json`)
 
-    const snapshotPath = `${projectRoot}/cache/tsdoc/v${GYOMU_VERSION}/file-hashes.json`
+    const snapshotPath = FullPath(`${projectRoot}/cache/tsdoc/v${GYOMU_VERSION}/file-hashes.json`)
 
     // 1. ensure directory
     yield* fs.makeDirectory(projectRoot, { recursive: true })

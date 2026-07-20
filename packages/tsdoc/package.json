@@ -1,6 +1,6 @@
 {
   "name": "@gyomu/tsdoc",
-  "version": "0.2.4-beta.4",
+  "version": "0.2.4-beta.10",
   "description": "",
   "type": "module",
   "publishConfig": {
@@ -31,9 +31,12 @@
     "dist"
   ],
   "dependencies": {
+    "@gyomu/ai": "workspace:^",
+    "@gyomu/ai-compiler": "workspace:^",
     "@gyomu/infra": "workspace:^",
     "@gyomu/schema": "workspace:^",
-    "effect": "4.0.0-beta.57",
+    "@gyomu/ts-analysis": "workspace:^",
+    "effect": "catalog:",
     "ts-morph": "^28.0.0"
   }
 }

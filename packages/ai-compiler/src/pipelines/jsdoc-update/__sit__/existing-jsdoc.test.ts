@@ -1,0 +1,228 @@
+import { describe, expect, test } from 'vitest'
+import { Layer } from 'effect'
+import { ConfigLayer, MainLayer, PlatformLayer } from '@gyomu/infra'
+import { makeRunner } from '@gyomu/schema/effect'
+import { AI_MODELS } from '@gyomu/ai'
+import { createVercelAiLayer } from '@gyomu/ai/provider/vercel'
+import { SignatureId, SymbolId } from '@gyomu/schema/typescript'
+import { TsDocRouteId, executeJsDocUpdatePlan } from '../executor/executeJsDocUpdatePlan.js'
+import type { ModelRoute } from '@gyomu/ai'
+import 'dotenv/config'
+import type { TsDocFileContext } from '../context/TsDocFileContext.js'
+
+const describeIfApiKey = process.env.GEMINI_API_KEY ? describe : describe.skip
+
+const routes = new Map([
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  [TsDocRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] } as ModelRoute],
+])
+const layer = Layer.provideMerge(MainLayer, ConfigLayer)
+  .pipe(Layer.provideMerge(PlatformLayer))
+  .pipe(Layer.provideMerge(createVercelAiLayer(routes)))
+
+const runQAWithEnvOrThrow = makeRunner(layer)
+
+describeIfApiKey('executeJsDocUpdatePlan integration', () => {
+  test('prefers preserve when existing documentation already exists', async () => {
+    const context: TsDocFileContext = {
+      project: { name: 'simple test' },
+      source: { relativePath: 'test/existing-jsdoc.ts' },
+
+      // mode: 'light',
+      symbols: [
+        {
+          target: {
+            signatureId: SignatureId('(a: number, b: number) => number'),
+            symbolId: SymbolId('add'),
+          },
+          symbol: {
+            name: 'add',
+            kind: 'function',
+          },
+          relatedSymbols: [],
+          code: {
+            //         declarationSnippet: `
+            // export const add = (
+            //   a: number,
+            //   b: number,
+            // ): number
+            // `,
+            snippet: 'return a + b',
+          },
+
+          existingJsDoc: {
+            summary: 'Adds two numbers.',
+
+            params: [
+              {
+                name: 'a',
+                type: 'number',
+                description: 'The first number.',
+                sortOrder: 1,
+              },
+              {
+                name: 'b',
+                type: 'number',
+                description: 'The second number.',
+                sortOrder: 2,
+              },
+            ],
+
+            returns: 'The sum of the two numbers.',
+
+            tags: [],
+          },
+          effectSignals: undefined,
+          analysis: undefined,
+          dependencies: undefined,
+        },
+      ],
+    }
+
+    const plan = await runQAWithEnvOrThrow(executeJsDocUpdatePlan(context))
+
+    console.dir(plan, { depth: null })
+
+    expect(plan[0]?.summary.action.type).toBe('preserve')
+
+    expect(plan[0]?.params.every((p) => p.action.type === 'preserve')).toBe(true)
+
+    expect(plan[0]?.returns.action.type).toBe('preserve')
+  }, 60_000)
+  test('slightly different jsdoc expects replacement in summary', async () => {
+    const context: TsDocFileContext = {
+      project: { name: 'simple test' },
+      source: { relativePath: 'test/existing-jsdoc.ts' },
+
+      // mode: 'light',
+      symbols: [
+        {
+          target: {
+            signatureId: SignatureId('(a: number, b: number) => number'),
+            symbolId: SymbolId('add'),
+          },
+          symbol: {
+            name: 'add',
+            kind: 'function',
+          },
+          relatedSymbols: [],
+          code: {
+            //         declarationSnippet: `
+            // export const add = (
+            //   a: number,
+            //   b: number,
+            // ): number
+            // `,
+            snippet: 'return a + b',
+          },
+
+          existingJsDoc: {
+            summary: 'Adds three numbers.',
+
+            params: [
+              {
+                name: 'a',
+                type: 'number',
+                description: 'The first number.',
+                sortOrder: 1,
+              },
+              {
+                name: 'b',
+                type: 'number',
+                description: 'The second number.',
+                sortOrder: 2,
+              },
+            ],
+
+            returns: 'The sum of the two numbers.',
+
+            tags: [],
+          },
+          effectSignals: undefined,
+          analysis: undefined,
+          dependencies: undefined,
+        },
+      ],
+    }
+
+    const plan = await runQAWithEnvOrThrow(executeJsDocUpdatePlan(context))
+
+    console.dir(plan, { depth: null })
+
+    expect(plan[0]?.summary.action.type).toBe('replace')
+
+    expect(plan[0]?.params.every((p) => p.action.type === 'preserve')).toBe(true)
+
+    expect(plan[0]?.returns.action.type).toBe('preserve')
+  }, 60_000)
+  test('deletes parameter documentation for removed parameter', async () => {
+    const context: TsDocFileContext = {
+      project: { name: 'simple test' },
+      source: { relativePath: 'test/existing-jsdoc.ts' },
+
+      // mode: 'light',
+
+      symbols: [
+        {
+          target: {
+            signatureId: SignatureId('(a: number, b: number) => number'),
+            symbolId: SymbolId('add'),
+          },
+
+          symbol: {
+            name: 'add',
+            kind: 'function',
+          },
+
+          relatedSymbols: [],
+
+          code: {
+            snippet: 'return a + b',
+          },
+
+          existingJsDoc: {
+            summary: 'Adds two numbers.',
+
+            params: [
+              {
+                name: 'a',
+                type: 'number',
+                description: 'The first number.',
+                sortOrder: 1,
+              },
+              {
+                name: 'b',
+                type: 'number',
+                description: 'The second number.',
+                sortOrder: 2,
+              },
+              {
+                name: 'removedParam',
+                type: 'number',
+                description: 'No longer exists.',
+                sortOrder: 3,
+              },
+            ],
+
+            returns: 'The sum of the two numbers.',
+
+            tags: [],
+          },
+          effectSignals: undefined,
+          analysis: undefined,
+          dependencies: undefined,
+        },
+      ],
+    }
+
+    const plan = await runQAWithEnvOrThrow(executeJsDocUpdatePlan(context))
+
+    console.dir(plan, { depth: null })
+
+    const removedParamPlan = plan[0]?.params.find((p) => p.name === 'removedParam')
+
+    expect(removedParamPlan).toBeDefined()
+
+    expect(removedParamPlan?.action.type).toBe('delete')
+  }, 60_000)
+})

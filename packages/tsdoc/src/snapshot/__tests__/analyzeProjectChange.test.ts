@@ -3,6 +3,8 @@ import { describe, expect, it, vi } from 'vitest'
 import { Effect, FileSystem } from 'effect'
 
 import { FileSearchService } from '@gyomu/schema/shared/fs'
+import { FullPath } from '@gyomu/schema'
+import { WorkspaceRelativePath } from '@gyomu/schema/typescript'
 import { analyzeProjectChanges } from '../analyzeProjectChanges.js'
 
 // ------------------------
@@ -30,7 +32,6 @@ import { loadSnapshot } from '../loadSnapshot.js'
 import { createSnapshot } from '../createSnapshot.js'
 import { diffSnapshot } from '../diffSnapshot.js'
 import { GYOMU_VERSION } from '../types/ProjectWorkspaceManifest.js'
-import { toProjectAbsolutePath } from '../../shared/path/toProjectAbsolutePath.js'
 import type { FileHashSnapshot } from '../types/FileHashSnapshot.js'
 
 const run = <A, E>(eff: Effect.Effect<A, E, FileSystem.FileSystem | FileSearchService>) =>
@@ -42,8 +43,8 @@ const run = <A, E>(eff: Effect.Effect<A, E, FileSystem.FileSystem | FileSearchSe
   )
 
 describe('analyzeProjectChanges', () => {
-  const repoRoot = '/repo'
-  const projectPath = 'packages/app'
+  const repoRoot = FullPath('/repo')
+  const projectPath = WorkspaceRelativePath('packages/app')
 
   const workspace = {
     projectId: 'abc123',
@@ -52,6 +53,7 @@ describe('analyzeProjectChanges', () => {
 
   const currentSnapshot: FileHashSnapshot = {
     version: GYOMU_VERSION,
+    projectRoot: WorkspaceRelativePath(''),
     files: [{ path: 'a.ts', rawHash: '1' } as any],
   }
 
@@ -95,7 +97,7 @@ describe('analyzeProjectChanges', () => {
     expect(result.previousSnapshot).toBe(null)
 
     expect(diffSnapshot).toHaveBeenCalledWith(
-      { version: GYOMU_VERSION, files: [] },
+      { version: GYOMU_VERSION, projectRoot: 'packages/app', files: [] },
       currentSnapshot,
     )
   })
@@ -110,7 +112,7 @@ describe('analyzeProjectChanges', () => {
 
     run(analyzeProjectChanges({ repoRoot, projectPath }))
 
-    expect(createSnapshot).toHaveBeenCalledWith(toProjectAbsolutePath(projectPath, repoRoot))
+    expect(createSnapshot).toHaveBeenCalledWith({ projectPath, repoRoot })
   })
 
   it('propagates workspace data correctly', () => {

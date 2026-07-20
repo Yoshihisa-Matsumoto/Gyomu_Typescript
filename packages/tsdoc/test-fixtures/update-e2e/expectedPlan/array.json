@@ -1,0 +1,156 @@
+[
+  {
+    "identity": {
+      "symbolId": "ApiResponse",
+      "signatureId": "interface"
+    },
+    "summary": {
+      "action": {
+        "type": "replace",
+        "value": "Represents an API response."
+      },
+      "confidence": 0.8
+    },
+    "params": [],
+    "tags": [],
+    "returns": {
+      "action": {
+        "type": "preserve"
+      },
+      "confidence": 1.0
+    },
+    "reasoning": {
+      "summary": "The interface lacks documentation.",
+      "paramMapping": "No parameters.",
+      "returnMapping": "Not applicable."
+    },
+    "risk": {
+      "hasHumanConflict": false,
+      "riskLevel": "low"
+    }
+  },
+
+  {
+    "identity": {
+      "symbolId": "ApiResponse::interface::$member.users::property",
+      "signatureId": "property"
+    },
+    "summary": {
+      "action": {
+        "type": "replace",
+        "value": "Collection of users."
+      },
+      "confidence": 0.8
+    },
+    "params": [],
+    "tags": [],
+    "returns": {
+      "action": {
+        "type": "preserve"
+      },
+      "confidence": 1.0
+    },
+    "reasoning": {
+      "summary": "Property lacks documentation.",
+      "paramMapping": "No parameters.",
+      "returnMapping": "Not applicable."
+    },
+    "risk": {
+      "hasHumanConflict": false,
+      "riskLevel": "low"
+    }
+  },
+
+  {
+    "identity": {
+      "symbolId": "ApiResponse::interface::$member.users.$member.id::property",
+      "signatureId": "property"
+    },
+    "summary": {
+      "action": {
+        "type": "replace",
+        "value": "Unique user identifier."
+      },
+      "confidence": 0.8
+    },
+    "params": [],
+    "tags": [],
+    "returns": {
+      "action": {
+        "type": "preserve"
+      },
+      "confidence": 1.0
+    },
+    "reasoning": {
+      "summary": "Property lacks documentation.",
+      "paramMapping": "No parameters.",
+      "returnMapping": "Not applicable."
+    },
+    "risk": {
+      "hasHumanConflict": false,
+      "riskLevel": "low"
+    }
+  },
+
+  {
+    "identity": {
+      "symbolId": "ApiResponse::interface::$member.users.$member.profile::property",
+      "signatureId": "property"
+    },
+    "summary": {
+      "action": {
+        "type": "replace",
+        "value": "User profile information."
+      },
+      "confidence": 0.8
+    },
+    "params": [],
+    "tags": [],
+    "returns": {
+      "action": {
+        "type": "preserve"
+      },
+      "confidence": 1.0
+    },
+    "reasoning": {
+      "summary": "Property lacks documentation.",
+      "paramMapping": "No parameters.",
+      "returnMapping": "Not applicable."
+    },
+    "risk": {
+      "hasHumanConflict": false,
+      "riskLevel": "low"
+    }
+  },
+
+  {
+    "identity": {
+      "symbolId": "ApiResponse::interface::$member.users.$member.profile.$member.displayName::property",
+      "signatureId": "property"
+    },
+    "summary": {
+      "action": {
+        "type": "replace",
+        "value": "Display name."
+      },
+      "confidence": 0.8
+    },
+    "params": [],
+    "tags": [],
+    "returns": {
+      "action": {
+        "type": "preserve"
+      },
+      "confidence": 1.0
+    },
+    "reasoning": {
+      "summary": "Property lacks documentation.",
+      "paramMapping": "No parameters.",
+      "returnMapping": "Not applicable."
+    },
+    "risk": {
+      "hasHumanConflict": false,
+      "riskLevel": "low"
+    }
+  }
+]

@@ -1,0 +1,17 @@
+{
+  "summary": "This directory serves as an internal utility hub for supporting functional components within the use case layer. It encapsulates shared logic and helper utilities required to facilitate the execution of primary business logic processes.",
+  "responsibilities": [
+    "Provide reusable helper functions for use case operations",
+    "Centralize internal logic to support core domain workflows"
+  ],
+  "concepts": ["Internal Utilities", "Support Logic", "Shared Helpers"],
+  "relationships": [
+    "Internal utilities provide functional support to the broader use case layer.",
+    "Shared helpers encapsulate logic that is invoked by multiple use case processes to maintain code consistency."
+  ],
+  "designDecisions": [
+    "Internal scoping to restrict utility visibility to the use case package",
+    "Functional decomposition to isolate common procedural logic"
+  ],
+  "importance": "Utility"
+}

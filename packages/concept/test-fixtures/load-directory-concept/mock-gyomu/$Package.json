@@ -1,0 +1,13 @@
+{
+  "summary": "Summary",
+  "responsibilities": ["Responsibility1", "Responsibility2"],
+  "capabilities": [{ "name": "Capability1", "description": "Capability Description1" }],
+  "relationships": [{ "target": "symbol1", "relationship": "relationship1" }],
+  "designDecisions": ["Decision1"],
+  "publicApi": [
+    { "exportPath": ".", "symbols": [{ "kind": "const", "name": "symbol", "summary": "summary" }] }
+  ],
+  "dependencies": [{ "packageName": "effect", "source": "dependency", "version": "1.0" }],
+  "packageInfo": { "name": "@gyomu/test", "private": false, "type": "module", "version": "1.0.0" },
+  "usageGuidance": ["Usage1"]
+}

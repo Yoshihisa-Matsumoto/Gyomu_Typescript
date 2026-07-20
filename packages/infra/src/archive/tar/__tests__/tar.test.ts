@@ -8,11 +8,11 @@ import { Effect, Layer, Option, Result, Stream } from 'effect'
 import { IOError } from '@gyomu/schema'
 // import { fs } from '../fs/index.js';
 import { FileTransportInfo } from '@gyomu/schema/gyomu/file'
+import { makeRunner, makeRunnerAsReturn } from '@gyomu/schema/effect'
 import { compareFiles, validateFolders } from '../../../__tests__/baseClass.js'
 import { copyFolder, emptyDir, fileStream, readFromFile } from '../../../fs/fs-utils.js'
 import { TarService, existsInTar, filterEntries, requireEntry } from '../index.js'
 import { MainLayer, PlatformLayer } from '../../../layer.js'
-import { makeRunner, makeRunnerAsReturn } from '../../../runtime.js'
 
 const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer)
 const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer)

@@ -1,0 +1,569 @@
+import path from 'node:path'
+import fs from 'node:fs'
+import { describe, expect, it } from 'vitest'
+import { Effect } from 'effect'
+import { ProjectRelativePath } from '@gyomu/schema/typescript'
+import { flattenIssues } from '@gyomu/schema/entity'
+import { PlatformLayer } from '@gyomu/infra'
+import { analyzeFile } from '../analyzeFile.js'
+import { saveFileAnalysis } from '../saveFileAnalysis.js'
+import { loadFileAnalysis } from '../loadFileAnalysis.js'
+import { createFixtureProject } from './createFixtureProject.js'
+
+import type {
+  DependencyCandidate,
+  DocumentableMethodMemberAnalysis,
+  DocumentablePropertyMemberAnalysis,
+  SymbolAnalysis,
+} from '@gyomu/schema/schemas/typescript'
+
+const timeout = 20000
+
+const classFixture = createFixtureProject(path.join('analysis', 'class'))
+
+const classAnalysisProgram = async (
+  sourceFile: string,
+  folder?: string,
+): Promise<SymbolAnalysis> => {
+  const sourcePath = folder ? path.join('src', folder, sourceFile) : path.join('src', sourceFile)
+  const filePath = ProjectRelativePath(sourcePath)
+  const result = await Effect.runPromise(
+    Effect.gen(function* () {
+      const fileResult = yield* analyzeFile(classFixture, filePath, {
+        debugInfo: { verifyIndex: true },
+      })
+      yield* saveFileAnalysis(classFixture, fileResult.analysis).pipe(
+        Effect.catch((e) => {
+          if (e._tag == '@gyomu/schema/SchemaErrorContext') {
+            if (e.issues) {
+              const issue = flattenIssues(e.issues)
+              // fs.writeFileSync(path.join('log', 'SaveError.txt'), JSON.stringify(issue, null, 2))
+              console.log('Save')
+              console.dir(issue, { depth: null })
+            }
+          }
+
+          return Effect.fail(e)
+        }),
+      )
+
+      const loaded = yield* loadFileAnalysis(classFixture, fileResult.analysis.path).pipe(
+        Effect.catch((e) => {
+          if (e._tag == '@gyomu/agent/tsdoc/AnalysisError') {
+            const error = e.cause as object
+            if ('issues' in error) {
+              if (error.issues) {
+                const issue = flattenIssues(error.issues as any)
+                console.dir(issue, { depth: null })
+              }
+            }
+          }
+
+          return Effect.fail(e)
+        }),
+      )
+
+      expect(loaded).toEqual(fileResult.analysis)
+
+      return fileResult.analysis.symbols.find((s) => s.signature.id == 'class')
+    }).pipe(Effect.provide(PlatformLayer)),
+  )
+
+  if (!result) throw new Error('Unexpected symbol should exist')
+  return result
+}
+
+const classSymbolsDependencyProgram = (sourceFile: string, folder?: string) => {
+  const sourcePath = folder ? path.join('src', folder, sourceFile) : path.join('src', sourceFile)
+  const filePath = ProjectRelativePath(sourcePath)
+  const result = Effect.runSync(
+    Effect.gen(function* () {
+      return yield* analyzeFile(classFixture, filePath, { debugInfo: { verifyIndex: true } }).pipe(
+        Effect.map((result2) => {
+          if (!fs.existsSync('./log')) fs.mkdirSync('./log')
+          fs.writeFileSync('./log/fileAnalysis.txt', JSON.stringify(result2.analysis, null, 2))
+          const exports = result2.analysis.symbols.map((s) => {
+            return {
+              name: s.identity.symbolId,
+              dependencies: s.dependencyCandidates,
+            }
+          })
+          return exports
+        }),
+      )
+    }),
+  )
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  if (!result) throw new Error('Unexpected symbol should exist')
+  return result
+}
+
+describe('analyze Class pattern', () => {
+  it(
+    '01-class-members-basic.ts',
+    async () => {
+      const result = await classAnalysisProgram('01-class-members-basic.ts')
+
+      console.dir(result, { depth: null })
+      expect(
+        result.members.map((m) => {
+          return {
+            kind: m.kind,
+            name: m.name,
+          }
+        }),
+      ).toMatchObject([
+        { kind: 'property', name: 'name' },
+        { kind: 'method', name: 'getName' },
+      ])
+    },
+    timeout,
+  )
+  it(
+    '02-class-members-readonly.ts',
+    async () => {
+      const result = await classAnalysisProgram('02-class-members-readonly.ts')
+
+      console.dir(result, { depth: null })
+      expect(result.members.find((m) => m.kind == 'property')?.readonly).toBeTruthy()
+    },
+    timeout,
+  )
+  it(
+    '03-class-members-optional.ts',
+    async () => {
+      const result = await classAnalysisProgram('03-class-members-optional.ts')
+
+      console.dir(result, { depth: null })
+      expect(result.members.find((m) => m.kind == 'property')?.optional).toBeTruthy()
+      expect(
+        (
+          result.members.find((m) => m.kind == 'method')
+            ?.parameters[0] as DocumentablePropertyMemberAnalysis
+        ).optional,
+      ).toBeTruthy()
+    },
+    timeout,
+  )
+  it(
+    '04-class-members-parameters.ts',
+    async () => {
+      const result = await classAnalysisProgram('04-class-members-parameters.ts')
+
+      console.dir(result, { depth: null })
+      const method = result.members.find((m) => m.kind == 'method')!
+      const parameters = method.parameters
+      expect(parameters.length).toBe(3)
+      expect((parameters[0] as DocumentablePropertyMemberAnalysis).optional).toBeFalsy()
+    },
+    timeout,
+  )
+  it(
+    '05-class-members-complex-types.ts',
+    async () => {
+      const result = await classAnalysisProgram('05-class-members-complex-types.ts')
+
+      console.dir(result, { depth: null })
+      expect(result.members.length).toBe(2)
+      const property = result.members.find((m) => m.kind == 'property')
+      expect(property?.type?.text).toBe('User | undefined')
+      const method = result.members.find((m) => m.kind == 'method')
+      expect(method?.returnType?.text).toBe('Promise<Array<User>>')
+      // TODO : more precise analysis of type
+    },
+    timeout,
+  )
+  it(
+    '06-class-members-accessors.ts',
+    async () => {
+      const result = await classAnalysisProgram('06-class-members-accessors.ts')
+
+      console.dir(result, { depth: null })
+    },
+    timeout,
+  )
+  it(
+    '07-class-members-static.ts',
+    async () => {
+      const result = await classAnalysisProgram('07-class-members-static.ts')
+
+      console.dir(result, { depth: null })
+      expect(result.members.length).toBe(2)
+      expect(result.members.filter((v) => v.static).length).toBe(2)
+    },
+    timeout,
+  )
+  it(
+    '08-class-members-constructor.ts',
+    async () => {
+      const result = await classAnalysisProgram('08-class-members-constructor.ts')
+
+      console.dir(result, { depth: null })
+      expect(result.members.length).toBe(3)
+      expect(result.members.filter((v) => v.kind == 'method').length).toBe(2)
+      const constructor: DocumentableMethodMemberAnalysis = result.members.find(
+        (m) => m.name == '$constructor' && m.kind == 'method',
+      )! as DocumentableMethodMemberAnalysis
+      expect(constructor).toBeDefined()
+      expect(constructor.parameters.length).toBe(1)
+      expect(constructor.parameters[0]?.name).toBe('id')
+    },
+    timeout,
+  )
+  it(
+    '09-class-members-generics.ts',
+    async () => {
+      const result = await classAnalysisProgram('09-class-members-generics.ts')
+
+      console.dir(result, { depth: null })
+      expect(result.members.length).toBe(1)
+      // TODO Generics
+    },
+    timeout,
+  )
+  it(
+    '10-class-members-effect.ts',
+    async () => {
+      const result = await classAnalysisProgram('10-class-members-effect.ts')
+
+      const member: DocumentableMethodMemberAnalysis = result
+        .members[0] as DocumentableMethodMemberAnalysis
+
+      expect(member.returnType?.effect).toMatchObject({
+        returnsEffect: true,
+
+        success: {
+          text: 'User',
+        },
+
+        error: {
+          text: 'Error',
+        },
+
+        requirements: {
+          text: 'Repository',
+        },
+
+        hasErrorType: true,
+
+        hasRequirementsType: true,
+
+        effectDepth: 1,
+      })
+    },
+    timeout,
+  )
+  it(
+    '11-class-members-everything.ts',
+    async () => {
+      const result = await classAnalysisProgram('11-class-members-everything.ts')
+
+      console.dir(result, { depth: null })
+      expect(result.members.length).toBe(7)
+    },
+    timeout,
+  )
+})
+
+describe('analyze Class dependency pattern', () => {
+  it(
+    '01-heritage.ts',
+    async () => {
+      const result = await classSymbolsDependencyProgram('01-heritage.ts', 'dependency')
+
+      console.dir(result, { depth: null })
+      expect(result).toEqual(
+        expect.arrayContaining([
+          {
+            name: 'HeritageClass',
+            dependencies: [
+              {
+                source: { memberPath: ['$extend', 0] },
+                target: { scope: 'import', localSymbolName: 'ImportedBaseClass' },
+              },
+              {
+                source: { memberPath: ['$implement', 1] },
+                target: { scope: 'import', localSymbolName: 'ImportedInterface' },
+              },
+              {
+                source: { memberPath: ['$implement', 2] },
+                target: { scope: 'local-file', localSymbolName: 'LocalInterface' },
+              },
+            ],
+          },
+          {
+            name: 'LocalHeritageClass',
+            dependencies: [
+              {
+                source: { memberPath: ['$extend', 0] },
+                target: { scope: 'local-file', localSymbolName: 'LocalBaseClass' },
+              },
+              {
+                source: { memberPath: ['$implement', 1] },
+                target: { scope: 'local-file', localSymbolName: 'LocalInterface' },
+              },
+            ],
+          },
+        ]),
+      )
+    },
+    timeout,
+  )
+  it(
+    '02-members.ts',
+    async () => {
+      const result = await classSymbolsDependencyProgram('02-members.ts', 'dependency')
+
+      console.dir(result, { depth: null })
+      const member = result.find((r) => r.name == 'MemberDependencyClass')
+      const dependencies = member?.dependencies
+      expect(dependencies).toBeDefined()
+
+      if (dependencies) {
+        expect(dependencies).toEqual(
+          expect.arrayContaining([
+            {
+              source: { memberPath: ['$member', 'localProperty'] },
+              target: {
+                scope: 'local-file',
+                localSymbolName: 'LocalType',
+              },
+            },
+            {
+              source: { memberPath: ['$member', 'importedProperty'] },
+              target: {
+                scope: 'import',
+                localSymbolName: 'ImportedType',
+              },
+            },
+            {
+              source: { memberPath: ['$member', 'localInitialized'] },
+              target: {
+                scope: 'local-file',
+                localSymbolName: 'localFactory',
+              },
+            },
+            {
+              source: { memberPath: ['$constructor', '$parameters', 'local'] },
+              target: {
+                scope: 'local-file',
+                localSymbolName: 'LocalType',
+              },
+            },
+            {
+              source: { memberPath: ['$constructor', '$parameters', 'imported'] },
+              target: {
+                scope: 'import',
+                localSymbolName: 'ImportedType',
+              },
+            },
+            {
+              source: { memberPath: ['$constructor', '$body'] },
+              target: {
+                scope: 'local-file',
+                localSymbolName: 'localFunction',
+              },
+            },
+            {
+              source: { memberPath: ['$constructor', '$body'] },
+              target: {
+                scope: 'import',
+                localSymbolName: 'importedFunction',
+              },
+            },
+            {
+              source: { memberPath: ['$constructor', '$body'] },
+              target: {
+                scope: 'local-file',
+                localSymbolName: 'LocalClass',
+              },
+            },
+            {
+              source: { memberPath: ['$constructor', '$body'] },
+              target: {
+                scope: 'import',
+                localSymbolName: 'ImportedClass',
+              },
+            },
+            {
+              source: { memberPath: ['$constructor', '$body'] },
+              target: {
+                scope: 'local-file',
+                localSymbolName: 'localProperty',
+              },
+            },
+            {
+              source: { memberPath: ['$constructor', '$body'] },
+              target: {
+                scope: 'local-file',
+                localSymbolName: 'local',
+              },
+            },
+            {
+              source: { memberPath: ['$constructor', '$body'] },
+              target: {
+                scope: 'local-file',
+                localSymbolName: 'importedProperty',
+              },
+            },
+            {
+              source: { memberPath: ['$constructor', '$body'] },
+              target: {
+                scope: 'local-file',
+                localSymbolName: 'imported',
+              },
+            },
+            {
+              source: { memberPath: ['method', '$parameters', 'local'] },
+              target: {
+                scope: 'local-file',
+                localSymbolName: 'LocalType',
+              },
+            },
+            {
+              source: { memberPath: ['method', '$parameters', 'imported'] },
+              target: {
+                scope: 'import',
+                localSymbolName: 'ImportedType',
+              },
+            },
+            {
+              source: { memberPath: ['method', '$return'] },
+              target: {
+                scope: 'import',
+                localSymbolName: 'ImportedType',
+              },
+            },
+            {
+              source: { memberPath: ['method', '$body'] },
+              target: {
+                scope: 'local-file',
+                localSymbolName: 'localFunction',
+              },
+            },
+            {
+              source: { memberPath: ['method', '$body'] },
+              target: {
+                scope: 'import',
+                localSymbolName: 'importedFunction',
+              },
+            },
+            {
+              source: { memberPath: ['method', '$body'] },
+              target: {
+                scope: 'local-file',
+                localSymbolName: 'LocalClass',
+              },
+            },
+            {
+              source: { memberPath: ['method', '$body'] },
+              target: {
+                scope: 'import',
+                localSymbolName: 'ImportedClass',
+              },
+            },
+          ] satisfies Array<DependencyCandidate>),
+        )
+      }
+    },
+    timeout,
+  )
+  it(
+    '03-nested-types.ts',
+    async () => {
+      const result = await classSymbolsDependencyProgram('03-nested-types.ts', 'dependency')
+
+      console.dir(result, { depth: null })
+      const member = result.find((r) => r.name == 'NestedTypes')
+      const dependencies = member?.dependencies
+      expect(dependencies).toBeDefined()
+
+      if (dependencies) {
+        expect(dependencies).toEqual(
+          expect.arrayContaining([
+            {
+              source: { memberPath: ['$member', 'a', '$generics', 0] },
+              target: { scope: 'import', localSymbolName: 'ImportedType' },
+            },
+            {
+              source: { memberPath: ['$member', 'b', '$generics', 1, '$generics', 0] },
+              target: { scope: 'import', localSymbolName: 'ImportedType' },
+            },
+            {
+              source: { memberPath: ['$member', 'c', '$generics', 0] },
+              target: { scope: 'local-file', localSymbolName: 'LocalType' },
+            },
+            {
+              source: { memberPath: ['$member', 'd', '$generics', 0, '$generics', 1] },
+              target: { scope: 'local-file', localSymbolName: 'LocalType' },
+            },
+            {
+              source: { memberPath: ['$member', 'e', 0] },
+              target: { scope: 'import', localSymbolName: 'ImportedType' },
+            },
+            {
+              source: { memberPath: ['$member', 'e', 1] },
+              target: { scope: 'local-file', localSymbolName: 'LocalType' },
+            },
+            {
+              source: { memberPath: ['$member', 'f'] },
+              target: { scope: 'import', localSymbolName: 'ImportedResult' },
+            },
+            {
+              source: { memberPath: ['$member', 'f', '$generics', 0] },
+              target: { scope: 'local-file', localSymbolName: 'LocalType' },
+            },
+            {
+              source: { memberPath: ['$member', 'g', '$generics', 1] },
+              target: { scope: 'import', localSymbolName: 'ImportedType' },
+            },
+            {
+              source: { memberPath: ['$member', 'h', 0] },
+              target: { scope: 'local-file', localSymbolName: 'LocalClass' },
+            },
+            {
+              source: { memberPath: ['$member', 'h', 1] },
+              target: { scope: 'import', localSymbolName: 'ImportedType' },
+            },
+          ] satisfies Array<DependencyCandidate>),
+        )
+      }
+    },
+    timeout,
+  )
+  it(
+    '04-generics.ts',
+    async () => {
+      const result = await classSymbolsDependencyProgram('04-generics.ts', 'dependency')
+
+      console.dir(result, { depth: null })
+      const member = result.find((r) => r.name == 'GenericClass')
+      const dependencies = member?.dependencies
+      expect(dependencies).toBeDefined()
+
+      if (dependencies) {
+        expect(dependencies).toEqual(
+          expect.arrayContaining([
+            {
+              source: { memberPath: ['method', '$generics', 'A'] },
+              target: { scope: 'import', localSymbolName: 'ImportedType' },
+            },
+            {
+              source: { memberPath: ['method', '$generics', 'B'] },
+              target: { scope: 'local-file', localSymbolName: 'LocalClass' },
+            },
+            {
+              source: { memberPath: ['$generics', 'T'] },
+              target: { scope: 'import', localSymbolName: 'ImportedType' },
+            },
+            {
+              source: { memberPath: ['$generics', 'U'] },
+              target: { scope: 'local-file', localSymbolName: 'LocalClass' },
+            },
+          ] satisfies Array<DependencyCandidate>),
+        )
+      }
+    },
+    timeout,
+  )
+})

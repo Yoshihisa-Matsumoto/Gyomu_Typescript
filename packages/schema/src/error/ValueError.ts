@@ -19,6 +19,10 @@ interface ValueErrorShape extends AppErrorContext {
 //     super(ctx);
 //   }
 // }
+
+/**
+ * Represents an error occurring when a value does not conform to the expected schema, providing structured metadata about the validation failure.
+ */
 export class ValueError extends withErrorTraits(
   Data.TaggedError('@gyomu/schema/ValueError')<ValueErrorShape>,
 ) {}

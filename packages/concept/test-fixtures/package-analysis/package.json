@@ -1,0 +1,20 @@
+{
+  "name": "@test/package-analysis",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js",
+    "./schema": {
+      "import": "./dist/schema.js",
+      "types": "./dist/schema.d.ts"
+    },
+    "./usecase/*": "./dist/usecase/*.js",
+    "./gyomu/*": "./dist/gyomu/*/index.js"
+  },
+  "dependencies": {
+    "effect": "^4.0.0"
+  },
+  "devDependencies": {
+    "vitest": "^3.0.0"
+  }
+}

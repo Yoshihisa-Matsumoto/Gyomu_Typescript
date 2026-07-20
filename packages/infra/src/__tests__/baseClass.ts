@@ -2,8 +2,8 @@ import { join, resolve, sep } from 'node:path'
 import { tmpdir } from 'node:os'
 import { Effect, Layer } from 'effect'
 import { expect } from 'vitest'
+import { makeRunner } from '@gyomu/schema/effect'
 import { MainLayer, PlatformLayer } from '../layer.js'
-import { makeRunner } from '../runtime.js'
 import {
   pathExists,
   readDirectoryDetailed,

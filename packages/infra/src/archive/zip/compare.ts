@@ -2,7 +2,7 @@ import { spawnSync } from 'node:child_process'
 import path from 'node:path'
 import { tmpdir } from 'node:os'
 import { Effect, Ref, Stream } from 'effect'
-import { IOError, withOptional, wrapInfraError } from '@gyomu/schema'
+import { FullPath, IOError, withOptional, wrapInfraError } from '@gyomu/schema'
 import { ensureEffect, fromSync } from '@gyomu/schema/effect'
 import { jsonToCsv } from '../../csv/write.js'
 import {
@@ -182,173 +182,18 @@ export const compareZip = (
 
     return results
   })
-  // let interimOutput: InterimOutputType | undefined = undefined;
-  // const result = result2Async(
-  //   ensure(
-  //     path.existsSync(sourceFilename),
-  //     IOError,
-  //     `${sourceFilename} Not exist`,
-  //   ),
-  // )
-  //   .andThen(() =>
-  //     ensure(
-  //       path.existsSync(destinationFilename),
-  //       IOError,
-  //       `${destinationFilename} Not exist`,
-  //     ),
-  //   )
-  //   .andThen(() =>
-  //     result2Async(
-  //       run(
-  //         () => {
-  //           path.removeSync(resultPath);
-  //           path.emptyDirSync(resultPath);
-  //         },
-  //         IOError,
-  //         'fail to prepare files to compare',
-  //       ).map(() => true),
-  //     ),
-  //   )
-  // .andThen(() =>
-  //   runAsync(
-  //     async () => {
-  //       //状態初期化
-  //       interimOutput = {
-  //         sourceFiles:
-  //           await ZipArchive.retrieveCentralDirectories(sourceFilename),
-  //         destinationFiles:
-  //           await ZipArchive.retrieveCentralDirectories(destinationFilename),
-  //         results: [],
-  //         promises: [],
-  //       };
-  //       return interimOutput;
-  //     },
-  //     IOError,
-  //     'fail to initialize interim output',
-  //   ),
-  // )
-  // .andThen((interimOutput) => {
-  //   //ソースファイルから比較するパターン
-  //   return sequenceReduce(
-  //     Array.from(interimOutput.sourceFiles.entries.values()),
-  //     interimOutput,
-  //     (previousOutput, sourceFile) => {
-  //       if (
-  //         option.fileNameExcludeRule &&
-  //         isComparisionExcludeTarget(
-  //           sourceFile.path.replaceAll('/', '\\'),
-  //           option.fileNameExcludeRule,
-  //           Object.keys(option.fileNameExcludeRule),
-  //         )
-  //       ) {
-  //         //比較除外条件に入ったものは何もしないvalues()
-  //         return okAsync(previousOutput);
-  //       }
-  //       const destinationFile = interimOutput.destinationFiles.entries.get(
-  //         sourceFile.path,
-  //       );
-  //       if (destinationFile) {
-  //         if (sourceFile.isDirectory || destinationFile.isDirectory) {
-  //           return okAsync(interimOutput);
-  //         }
-  //         //File exist on both zip, need comparison
-  //         return internalCompareFileEntry(
-  //           sourceFile,
-  //           destinationFile,
-  //           interimOutput,
-  //           option,
-  //           compareFunc,
-  //         );
-  //       } else {
-  //         //File exist only in source zip
-  //         return handleMissingFileInComparison(
-  //           sourceFile,
-  //           true,
-  //           interimOutput,
-  //           option,
-  //         );
-  //       }
-  //     },
-  //   );
-  // })
-  // .andThen((interimOutput) => {
-  //   //デスティネーションファイルから比較するパターン
-  //   return sequenceReduce(
-  //     Array.from(interimOutput.destinationFiles.entries.values()),
-  //     interimOutput,
-  //     (_, destinationFile) => {
-  //       const sourceFile = interimOutput.sourceFiles.entries.get(
-  //         destinationFile.path,
-  //       );
-  //       if (sourceFile) return okAsync(interimOutput);
-  //       if (
-  //         option.fileNameExcludeRule &&
-  //         isComparisionExcludeTarget(
-  //           destinationFile.path.replaceAll('/', '\\'),
-  //           option.fileNameExcludeRule,
-  //           Object.keys(option.fileNameExcludeRule),
-  //         )
-  //       ) {
-  //         return okAsync(interimOutput);
-  //       }
-  //       return handleMissingFileInComparison(
-  //         destinationFile,
-  //         false,
-  //         interimOutput,
-  //         option,
-  //       );
-  //     },
-  //   );
-  // })
-  // .andThen((interimOutput) =>
-  //   runAsync(
-  //     async () => {
-  //       const allPromiseResults = await Promise.allSettled<boolean>(
-  //         interimOutput.promises,
-  //       );
-  //       const failedResult = allPromiseResults
-  //         .filter((f) => f.status === 'rejected')
-  //         .map((f) => f.reason);
-  //       if (failedResult && failedResult.length > 0) {
-  //         throw new IOError('Fail to compare zips', failedResult);
-  //       }
-  //       return interimOutput.results;
-  //     },
-  //     IOError,
-  //     'Fail to finalize zip comparison',
-  //   ),
-  // )
-  //   .andThen((results) => {
-  //     if (results.length == 0) return okAsync(undefined);
-
-  //     results.sort((a, b) => {
-  //       if (a.path < b.path) {
-  //         return -1;
-  //       } else if (a.path > b.path) {
-  //         return 1;
-  //       } else {
-  //         return 0;
-  //       }
-  //     });
-  //     return jsonToCsv(results, {
-
-  //       bom: true,
-  //       quoted: true,
-  //     },{type:'file',path: path.join(resultPath, summaryFilename),});
-  //   });
-  // return result;
 }
 
 const runCompare = (
   sourceFile: ZipFileEntryItem,
   destinationFile: ZipFileEntryItem,
 
-  resultPath: string,
+  resultPath: FullPath,
   compareFunc: (option: {
     source: ZipFileEntryItem
     destination: ZipFileEntryItem
     filePath: string
-    resultPath: string
+    resultPath: FullPath
   }) => Effect.Effect<DiffResult, IOError>,
 ) =>
   compareFunc({
@@ -362,7 +207,7 @@ const runGitDiffIfNeeded = (
   sourceFile: ZipFileEntryItem,
   destinationFile: ZipFileEntryItem,
   filePath: string,
-  resultPath: string,
+  resultPath: FullPath,
   shouldRun: boolean,
 ) => (shouldRun ? compareTextfile(sourceFile, destinationFile, filePath, resultPath) : Effect.void)
 
@@ -390,12 +235,12 @@ const writeCsvIfNeeded = (
 export const runCompareFuncFlow = (
   sourceFile: ZipFileEntryItem,
   destinationFile: ZipFileEntryItem,
-  resultPath: string,
+  resultPath: FullPath,
   compareFunc: (option: {
     source: ZipFileEntryItem
     destination: ZipFileEntryItem
     filePath: string
-    resultPath: string
+    resultPath: FullPath
   }) => Effect.Effect<DiffResult, IOError>,
   targetIgnoreRule: DiffernceIgnoreRule | undefined,
   option: ZipCompareOption,
@@ -424,13 +269,13 @@ const compareTextfile = (
   source: ZipFileEntryItem,
   destination: ZipFileEntryItem,
   filePath: string,
-  resultPath: string,
+  resultPath: FullPath,
 ): Effect.Effect<boolean, IOError, FileSystem.FileSystem> => {
   return Effect.gen(function* () {
     const gitTempPath = path.join(tmpdir(), 'gitCompareTemp')
     const sourceFilename = path.join(gitTempPath, 'before')
     const destinationFilename = path.join(gitTempPath, 'after')
-    const diffFilename = path.join(resultPath, filePath.replaceAll('/', '\\') + '.diff')
+    const diffFilename = FullPath(path.join(resultPath, filePath.replaceAll('/', '\\') + '.diff'))
 
     yield* emptyDir(gitTempPath)
 
@@ -490,53 +335,6 @@ const compareTextfile = (
 
     return true
   })
-  // }).pipe(
-  //   Effect.mapError((e) =>
-  //     unknownError(
-  //       IOError,
-  //       e,
-  //       `Fail to compare Text file ${source.path} vs ${destination.path}`,
-  //     ),
-  //   ),
-  // );
-
-  // return pipe(
-
-  //   // ④ git diff 実行
-  //   Effect.andThen(
-  //     Effect.try({
-  //       try: () => {
-  //         const commandArg = [
-  //           'diff',
-  //           '--no-index',
-  //           '--no-prefix',
-  //           '--output',
-  //           diffFilename,
-  //           sourceFilename,
-  //           destinationFilename,
-  //         ];
-
-  //         const result = spawnSync('git', commandArg, {
-  //           cwd: gitTempPath,
-  //         });
-
-  //         if (result.error) {
-  //           throw result.error;
-  //         }
-
-  //         if (!fs.existsSync(diffFilename)) {
-  //           throw new Error(result.output?.toString());
-  //         }
-
-  //         removeUnnecessaryLinesFromDiffFile(diffFilename);
-
-  //         return true;
-  //       },
-  //       catch: (e) =>
-  //         new IOError('fail to generate diff files through git diff', e),
-  //     }),
-  //   ),
-  // );
 }
 
 const removeUnnecessaryLinesFromDiffFile = (diffFilename: string) => {

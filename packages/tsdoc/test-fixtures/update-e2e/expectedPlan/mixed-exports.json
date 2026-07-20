@@ -1,0 +1,116 @@
+[
+  [
+    {
+      "identity": {
+        "symbolId": "User",
+        "signatureId": "class"
+      },
+
+      "summary": {
+        "action": {
+          "type": "replace",
+          "value": "User entity representing a system user."
+        },
+        "confidence": 0.95
+      },
+
+      "params": [],
+
+      "tags": [],
+
+      "returns": {
+        "action": {
+          "type": "preserve"
+        },
+        "confidence": 1
+      },
+
+      "reasoning": {
+        "summary": "Class represents a user entity.",
+        "paramMapping": "No parameter documentation required.",
+        "returnMapping": "No return documentation required."
+      },
+
+      "risk": {
+        "hasHumanConflict": false,
+        "riskLevel": "low"
+      }
+    }
+  ],
+  [
+    {
+      "identity": {
+        "symbolId": "createUser",
+        "signatureId": "(name:string):User"
+      },
+
+      "summary": {
+        "action": {
+          "type": "replace",
+          "value": "Create a new User instance."
+        },
+        "confidence": 0.95
+      },
+
+      "params": [],
+
+      "tags": [],
+
+      "returns": {
+        "action": {
+          "type": "preserve"
+        },
+        "confidence": 1
+      },
+
+      "reasoning": {
+        "summary": "Factory function creating a User instance.",
+        "paramMapping": "Parameter documentation omitted.",
+        "returnMapping": "Return documentation omitted."
+      },
+
+      "risk": {
+        "hasHumanConflict": false,
+        "riskLevel": "low"
+      }
+    }
+  ],
+  [
+    {
+      "identity": {
+        "symbolId": "VERSION",
+        "signatureId": "variable"
+      },
+
+      "summary": {
+        "action": {
+          "type": "replace",
+          "value": "Current version of the system."
+        },
+        "confidence": 0.95
+      },
+
+      "params": [],
+
+      "tags": [],
+
+      "returns": {
+        "action": {
+          "type": "preserve"
+        },
+        "confidence": 1
+      },
+
+      "reasoning": {
+        "summary": "Version constant for the system.",
+        "paramMapping": "No parameter documentation required.",
+        "returnMapping": "No return documentation required."
+      },
+
+      "risk": {
+        "hasHumanConflict": false,
+        "riskLevel": "low"
+      }
+    }
+  ]
+]

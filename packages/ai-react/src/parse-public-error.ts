@@ -8,7 +8,7 @@ export const parsePublicError = async (response: Response): Promise<PublicError>
     const json = await response.json()
     const result = convertToSchemaObjectWithResult(PublicErrorSchema, json, true)
     if (Result.isFailure(result)) {
-      const issue = result.failure
+      const issue = result.failure.issue
       const errorDetail = flattenIssues(issue)
       logger.error(errorDetail, 'Fail to convert to schema object')
       return {

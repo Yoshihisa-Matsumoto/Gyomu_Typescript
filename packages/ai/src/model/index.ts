@@ -1,3 +1,3 @@
 export * from './AiModels.js'
-export * from './AiProviderError.js'
+export * from '../error/AiProviderError.js'
 export * from './AiModelId.js'

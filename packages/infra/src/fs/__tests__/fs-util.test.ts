@@ -1,10 +1,13 @@
 import { createReadStream } from 'node:fs'
-import { Effect, FileSystem, Result, Stream } from 'effect'
+import { mkdtemp, writeFile } from 'node:fs/promises'
+import { join } from 'node:path'
+import { tmpdir } from 'node:os'
+import { Effect, FileSystem, Result, Schema, Stream } from 'effect'
 import { describe, expect, it } from 'vitest'
 import { NodeFileSystem, NodeStream } from '@effect/platform-node'
 import { IOError, wrapInfraError } from '@gyomu/schema'
-import { makeRunnerAsReturn } from '@gyomu/schema/effect'
-import { readStringFromFile } from '../fs-utils.js'
+import { makeRunner, makeRunnerAsReturn } from '@gyomu/schema/effect'
+import { readJsonFromFileAndValidate, readStringFromFile } from '../fs-utils.js'
 
 describe('FileSystem simple test', () => {
   it('FileSystem test', async () => {
@@ -62,5 +65,62 @@ describe('FileSystem simple test', () => {
     if (Result.isFailure(result)) {
       expect(result.failure.reason).toBe('NotFound')
     }
+  })
+})
+
+const TestSchema = Schema.Struct({
+  name: Schema.String,
+  age: Schema.Number,
+})
+
+describe('readJsonFromFileAndValidate', () => {
+  const createTempFile = async (contents: string) => {
+    const dir = await mkdtemp(join(tmpdir(), 'json-test-'))
+    const file = join(dir, 'test.json')
+    await writeFile(file, contents, 'utf8')
+    return file
+  }
+  const runner = makeRunner(NodeFileSystem.layer)
+  it('returns validated object', async () => {
+    const file = await createTempFile(
+      JSON.stringify({
+        name: 'Alice',
+        age: 20,
+      }),
+    )
+
+    const result = await runner(readJsonFromFileAndValidate('TestSchema', TestSchema, file))
+
+    expect(result).toEqual({
+      name: 'Alice',
+      age: 20,
+    })
+  })
+
+  it('fails when schema validation fails', async () => {
+    const file = await createTempFile(
+      JSON.stringify({
+        name: 'Alice',
+        age: '20',
+      }),
+    )
+
+    await expect(
+      runner(readJsonFromFileAndValidate('TestSchema', TestSchema, file)),
+    ).rejects.toThrow()
+  })
+
+  it('fails when json is invalid', async () => {
+    const file = await createTempFile('{ invalid json }')
+
+    await expect(
+      runner(readJsonFromFileAndValidate('TestSchema', TestSchema, file)),
+    ).rejects.toThrow()
+  })
+
+  it('fails when file does not exist', async () => {
+    await expect(
+      runner(readJsonFromFileAndValidate('TestSchema', TestSchema, '/not/exist/file.json')),
+    ).rejects.toThrow()
   })
 })

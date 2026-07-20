@@ -6,13 +6,43 @@ interface LeveledLogMethod {
   (message: string): void
   (meta: LogMeta, message: string, ...args: Array<any>): void
 }
+
+/**
+ * Defines a generic interface for logging application events, supporting multiple log levels and lifecycle management.
+ */
 export interface Logger {
+  /**
+   * Logs an error message.
+   */
   error: LeveledLogMethod
+
+  /**
+   * Logs a warning message.
+   */
   warn: LeveledLogMethod
+
+  /**
+   * Logs a debug message.
+   */
   debug: LeveledLogMethod
+
+  /**
+   * Logs an informational message.
+   */
   info: LeveledLogMethod
+
+  /**
+   * Checks whether debug-level logging is currently enabled.
+   *
+   * @returns True if debug logs are enabled, otherwise false.
+   */
   isDebugEnabled: () => boolean
 
+  /**
+   * Flushes or closes the logger, releasing associated resources.
+   *
+   * @returns A promise that resolves when the logger has successfully shut down.
+   */
   end: () => Promise<void>
 }
 
@@ -45,6 +75,12 @@ const consoleLogger: Logger = {
 }
 currentLogger = consoleLogger
 // 👇 差し替えポイント
+
+/**
+ * Sets the active logger instance used by the system.
+ *
+ * @param logger The logger instance to set.
+ */
 export const setLogger = (logger: Logger) => {
   currentLogger = logger
 }
@@ -65,6 +101,9 @@ const wrap = (level: 'info' | 'debug' | 'warn' | 'error'): LeveledLogMethod => {
 }
 // 👇 既存コードはこれを使う
 
+/**
+ * The default logger proxy instance.
+ */
 export const logger: Logger = {
   error: wrap('error'),
   warn: wrap('warn'),
@@ -74,6 +113,15 @@ export const logger: Logger = {
   end: () => currentLogger.end(),
 }
 
+/**
+ * Logs the differences between two objects when debug logging is active.
+ *
+ * @param objectKey The identifier for the object comparison context.
+ *
+ * @param objA The source object.
+ *
+ * @param objB The destination object.
+ */
 export const logDifferenceWhenDebugMode = (objectKey: string, objA: object, objB: object) => {
   if (logger.isDebugEnabled()) {
     const result = reconcile(objA, objB)
@@ -88,6 +136,9 @@ export const logDifferenceWhenDebugMode = (objectKey: string, objA: object, objB
 }
 // logger.info('test');
 
+/**
+ * An instance of Logger configured for logging Effect-related events.
+ */
 export const effectLogger = Logger.make(({ logLevel, message }) => {
   if (typeof message === 'object' && message !== null) {
     logWithLevel(logLevel, message, 'effect log')

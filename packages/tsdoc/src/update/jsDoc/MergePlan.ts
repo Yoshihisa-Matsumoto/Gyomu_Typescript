@@ -1,11 +1,50 @@
-import type { ProtectedRegion } from '../../analysis/jsdoc/ParsedJsDoc.js'
+import type { JsDocTarget, ParamActionValue } from '@gyomu/ai-compiler/jsdoc-update'
+import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
+
+export type MergeActionContext<T> =
+  | {
+      type: 'replace'
+      value: T
+    }
+  | {
+      type: 'delete'
+    }
+  | {
+      type: 'preserve'
+    }
+
+type ConflictType = 'human-edited' | 'missing-in-new' | 'structural-mismatch'
 
 export interface MergePlan {
-  summary?: string
+  target: SymbolIdentity
+  summary: MergeActionContext<string>
+  params: Array<{
+    name: string
+    sortOrder: number
+    action: MergeActionContext<ParamActionValue>
+    conflict?: ConflictType
+  }>
+  returns: MergeActionContext<string>
 
-  params: Map<string, string>
+  tags: Array<{
+    tag: JsDocTarget
+    sortOrder: number
+    action: MergeActionContext<string>
+    conflict?: ConflictType
+  }>
 
-  returns?: string
+  // 重要追加
+  conflicts: Array<{
+    symbol: string
+    type: ConflictType
+    message: string
+  }>
 
-  preserveRegions: Array<ProtectedRegion>
+  confidence: number // 0-1（AI更新の安全度）
+  averageConfidence: number // summary/params/returns/tagsの平均信頼度
+}
+
+export type ParamAction = {
+  type?: string
+  description?: string
 }

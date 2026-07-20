@@ -8,11 +8,15 @@
       "@gyomu/ai",
       "@gyomu/ai-react",
       "@gyomu/config",
+      "@gyomu/concept",
       "@gyomu/infra",
       "@gyomu/ui",
       "@gyomu/ui-core",
       "@gyomu/approval-core",
-      "@gyomu/agent"
+      "@gyomu/agent",
+      "@gyomu/ts-analysis",
+      "@gyomu/tsdoc",
+      "@gyomu/ai-compiler"
     ]
   ],
   "linked": [],

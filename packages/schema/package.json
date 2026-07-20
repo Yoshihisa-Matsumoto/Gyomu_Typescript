@@ -1,6 +1,6 @@
 {
   "name": "@gyomu/schema",
-  "version": "0.2.4-beta.5",
+  "version": "0.2.4-beta.10",
   "description": "",
   "type": "module",
   "publishConfig": {
@@ -11,9 +11,9 @@
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./ai": {
-      "import": "./dist/ai/index.js",
-      "types": "./dist/ai/index.d.ts"
+    "./concept": {
+      "import": "./dist/concept/index.js",
+      "types": "./dist/concept/index.d.ts"
     },
     "./conversation": {
       "import": "./dist/conversation/index.js",
@@ -37,7 +37,7 @@
     },
     "./gyomu/*": {
       "import": "./dist/gyomu/*/index.js",
-      "types": "./dist/gyomu/*/index.js"
+      "types": "./dist/gyomu/*/index.d.ts"
     },
     "./shared": {
       "import": "./dist/shared/index.js",
@@ -47,9 +47,29 @@
       "import": "./dist/shared/*/index.js",
       "types": "./dist/shared/*/index.d.ts"
     },
+    "./schemas": {
+      "import": "./dist/schemas/index.js",
+      "types": "./dist/schemas/index.d.ts"
+    },
     "./schemas/*": {
-      "import": "./dist/schemas/*.js",
-      "types": "./dist/schemas/*.d.ts"
+      "import": "./dist/schemas/*/index.js",
+      "types": "./dist/schemas/*/index.d.ts"
+    },
+    "./snapshot": {
+      "import": "./dist/snapshot/index.js",
+      "types": "./dist/snapshot/index.d.ts"
+    },
+    "./schemas/concept": {
+      "import": "./dist/schemas/concept/index.js",
+      "types": "./dist/schemas/concept/index.d.ts"
+    },
+    "./schemas/typescript": {
+      "import": "./dist/schemas/typescript/index.js",
+      "types": "./dist/schemas/typescript/index.d.ts"
+    },
+    "./typescript": {
+      "import": "./dist/typescript/index.js",
+      "types": "./dist/typescript/index.d.ts"
     },
     "./usecase/*": {
       "import": "./dist/usecase/*.js",
@@ -81,9 +101,9 @@
     "knip": "^6.4.1"
   },
   "dependencies": {
-    "date-fns": "^4.1.0",
-    "dotenv": "^17.3.1",
-    "effect": "4.0.0-beta.57",
+    "date-fns": "catalog:",
+    "dotenv": "catalog:",
+    "effect": "catalog:",
     "html-entities": "^2.6.0",
     "uuidv7": "^1.2.1"
   }

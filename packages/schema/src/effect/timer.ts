@@ -1,12 +1,22 @@
 import { Duration, Effect } from 'effect'
 import { TimeoutError } from '../error/TimeoutError.js'
+
 /**
+ * Executes an effect-based polling operation that repeatedly calls a function until it returns true or a timeout is reached.
  *
- * @param pollingActionName
- * explanation of this aciton during polling
- * @returns
- * Return success(true) when it's good result in polling. Otherwise return success(false)
- * Return Failure with TimeoutError if there is any unexpected error
+ * @param pollingActionName explanation of this aciton during polling
+ *
+ * @param timeoutSeconds The maximum duration in seconds to continue polling.
+ *
+ * @param intervalSeconds The delay in seconds between polling attempts.
+ *
+ * @param timerFunc The effectful function to execute during each poll.
+ *
+ * @param args Arguments to pass to the timer function.
+ *
+ * @returns Returns an Effect that resolves to true if the polling succeeds within the timeout, or false if the timeout is reached. Fails with a TimeoutError if an error occurs during execution.
+ *
+ * @template R
  */
 export const polling = <R = never>(
   pollingActionName: string,
@@ -60,6 +70,13 @@ export const polling = <R = never>(
     return yield* poll()
   })
 
+/**
+ * Pauses execution for a specified duration in seconds.
+ *
+ * @param second Duration to sleep in seconds.
+ *
+ * @returns A promise that resolves after the specified duration.
+ */
 export const sleep = async (second: number) => {
   await new Promise((resolve) => setTimeout(resolve, second * 1000))
 }

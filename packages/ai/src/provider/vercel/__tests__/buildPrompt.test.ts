@@ -88,13 +88,12 @@ describe('buildPrompt', () => {
       expect.unreachable()
     } catch (error) {
       expect(error).toBeInstanceOf(AiError)
-
       expect(error).toMatchObject({
         message: 'prompt or messages is required',
         operation: 'generate',
         model: 'unknown',
         phase: 'request',
-        retryable: false,
+        isRetryable: false,
       })
     }
   })

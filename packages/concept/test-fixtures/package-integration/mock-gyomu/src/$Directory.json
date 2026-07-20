@@ -1,0 +1,20 @@
+{
+  "summary": "This directory serves as the root entry point for the library, aggregating public domain entities, schema definitions, and high-level use case operations to provide a clear and organized API surface for consumers.",
+  "responsibilities": [
+    "Expose the public-facing API surface of the package",
+    "Consolidate core schemas and business use cases for external access",
+    "Provide unified export points for library functionality",
+    "Maintain internal module references to ensure consistent domain access"
+  ],
+  "concepts": ["Public API", "Module Exports", "Domain Schemas", "Entry Points"],
+  "relationships": [
+    "The root index acts as a facade that delegates domain responsibilities to the use case and schema modules.",
+    "Centralized exports ensure that schema definitions and greeting operations remain discoverable through a single package entry point."
+  ],
+  "designDecisions": [
+    "Use of index files to manage and control the public API surface",
+    "Re-exporting symbols from internal modules to simplify consumer imports",
+    "Aggregation of domain entities and logic into a single organizational hierarchy"
+  ],
+  "importance": "Core"
+}

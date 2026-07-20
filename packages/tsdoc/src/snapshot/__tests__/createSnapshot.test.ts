@@ -4,6 +4,8 @@ import { Effect, FileSystem } from 'effect'
 import { FileSearchService } from '@gyomu/schema/shared/fs'
 import { PlatformLayer } from '@gyomu/infra'
 import { FileSearchServiceLayer } from '@gyomu/infra/fs'
+import { FullPath } from '@gyomu/schema'
+import { WorkspaceRelativePath } from '@gyomu/schema/typescript'
 import { createSnapshot } from '../createSnapshot.js'
 import { GYOMU_VERSION } from '../types/ProjectWorkspaceManifest.js'
 
@@ -23,18 +25,18 @@ describe('createSnapshot', () => {
     )
 
     const result = await Effect.runPromise(
-      createSnapshot('./test-fixtures/snapshot').pipe(
-        Effect.provide(FileSearchServiceLayer),
-        Effect.provide(PlatformLayer),
-      ),
+      createSnapshot({
+        repoRoot: FullPath('./test-fixtures/snapshot'),
+        projectPath: WorkspaceRelativePath(''),
+      }).pipe(Effect.provide(FileSearchServiceLayer), Effect.provide(PlatformLayer)),
     )
 
     expect(result.files).toHaveLength(3)
-    console.log(result.files[0]?.path)
-    expect(result.files[0]?.path).contains(join('test-fixtures', 'snapshot', 'sample-a.ts'))
+    console.log(result.files[0]?.projectRelativePath)
+    expect(result.files[0]?.projectRelativePath).contains(join('sample-a.ts'))
 
-    expect(result.files[1]?.path).contains(join('test-fixtures', 'snapshot', 'sample-b.ts'))
-    expect(result.files[2]?.path).contains(join('test-fixtures', 'snapshot', 'sample.ts'))
+    expect(result.files[1]?.projectRelativePath).contains(join('sample-b.ts'))
+    expect(result.files[2]?.projectRelativePath).contains(join('sample.ts'))
 
     expect(result.files[0]?.rawHash).toBeTruthy()
 
@@ -46,7 +48,10 @@ describe('createSnapshot', () => {
     const search = vi.fn().mockReturnValue(Effect.succeed([]))
 
     const result = await Effect.runPromise(
-      createSnapshot('/project').pipe(
+      createSnapshot({
+        repoRoot: FullPath('/project'),
+        projectPath: WorkspaceRelativePath(''),
+      }).pipe(
         Effect.provideService(FileSystem.FileSystem, {} as any),
         Effect.provideService(FileSearchService, {
           search,
@@ -56,6 +61,7 @@ describe('createSnapshot', () => {
 
     expect(result).toEqual({
       version: GYOMU_VERSION,
+      projectRoot: '',
       files: [],
     })
   })

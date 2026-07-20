@@ -1,6 +1,13 @@
 import { Schema } from 'effect'
 import type { CrudSchemaType, Fields } from './type.js'
 
+/**
+ * Constructs a map of field names to their corresponding schemas from a given CRUD schema AST.
+ *
+ * @param schema The CRUD schema object containing the AST structure.
+ *
+ * @returns An object where keys are field names and values are the corresponding schema definitions.
+ */
 export const buildFieldSchemaMap = <TFields extends Fields>(
   schema: CrudSchemaType<TFields, boolean>,
 ) => {

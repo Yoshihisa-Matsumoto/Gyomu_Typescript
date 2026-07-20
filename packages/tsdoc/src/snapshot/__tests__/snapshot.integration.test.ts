@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import { Effect } from 'effect'
 import { describe, expect, it } from 'vitest'
 import { PlatformLayer } from '@gyomu/infra'
+import { ProjectRelativePath, WorkspaceRelativePath } from '@gyomu/schema/typescript'
 import { loadSnapshot } from '../loadSnapshot.js'
 import { saveSnapshot } from '../saveSnapshot.js'
 import { GYOMU_VERSION } from '../types/ProjectWorkspaceManifest.js'
@@ -12,9 +13,10 @@ describe('Snapshot Integration', () => {
   it('loads saved snapshot', async () => {
     const snapshot: FileHashSnapshot = {
       version: GYOMU_VERSION,
+      projectRoot: WorkspaceRelativePath(''),
       files: [
         {
-          path: '/a.ts',
+          projectRelativePath: ProjectRelativePath('/a.ts'),
           rawHash: 'hash',
           updatedAt: '2026-01-01T00:00:00.000Z',
         },

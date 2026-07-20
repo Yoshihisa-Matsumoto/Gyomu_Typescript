@@ -27,8 +27,8 @@ export interface AiTool<
   readonly config?: AiToolConfig<ConfigSchema>
 
   readonly execute: (
-    context: AiToolContext<ConfigSchema>,
     input: Schema.Schema.Type<Input>,
+    context: AiToolContext<ConfigSchema>,
   ) => Promise<ToolResult<Output>>
 }
 

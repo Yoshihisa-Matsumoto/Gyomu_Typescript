@@ -1,0 +1,54 @@
+{
+  "name": "@gyomu/ai-compiler",
+  "version": "0.2.4-beta.10",
+  "description": "",
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    "./jsdoc-update": {
+      "import": "./dist/pipelines/jsdoc-update/index.js",
+      "types": "./dist/pipelines/jsdoc-update/index.d.ts"
+    },
+    "./file-summary": {
+      "import": "./dist/pipelines/file-summary/index.js",
+      "types": "./dist/pipelines/file-summary/index.d.ts"
+    },
+    "./directory-concept": {
+      "import": "./dist/pipelines/directory-concept/index.js",
+      "types": "./dist/pipelines/directory-concept/index.d.ts"
+    },
+    "./package-concept": {
+      "import": "./dist/pipelines/package-concept/index.js",
+      "types": "./dist/pipelines/package-concept/index.d.ts"
+    }
+  },
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "clean": "rimraf ./dist ./coverage ./.turbo ./.tsbuildinfo",
+    "test": "bunx vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json ",
+    "@test:coverage": "vitest --config vitest.coverage.config.ts --typecheck.tsconfig ./tsconfig.vitest.json --coverage",
+    "@test:ci:coverage": "vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json --coverage",
+    "start": "pnpm run build:live",
+    "watch": "tsc -w",
+    "build": "tsc && tsx scripts/copy-prompts.ts",
+    "build:ci": "pnpm run clean && pnpm run build",
+    "sit": "dotenv -e .env -- vitest --config=./vitest.sit.config.ts --typecheck.tsconfig=./tsconfig.vitest.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@gyomu/ai": "workspace:^",
+    "@gyomu/infra": "workspace:^",
+    "@gyomu/schema": "workspace:^",
+    "effect": "catalog:"
+  },
+  "devDependencies": {
+    "dotenv": "catalog:"
+  }
+}

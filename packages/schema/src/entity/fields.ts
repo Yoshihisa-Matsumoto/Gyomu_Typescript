@@ -37,6 +37,9 @@ const IsoDateTimeString = Schema.Date.pipe(
   ),
 )
 
+/**
+ * Defines a collection of reusable Effect schemas for common data fields, including identifiers, text, numeric types, booleans, and temporal strings.
+ */
 export const schemaField = {
   id: Schema.String.check(Schema.isUUID()),
   text: textRequired,
@@ -63,15 +66,24 @@ export const schemaField = {
   optionalId: Schema.NullOr(Schema.String.check(Schema.isUUID())),
 }
 
+/**
+ * Defines the primary field schema containing a unique identifier.
+ */
 export const PrimaryFields = {
   id: schemaField.id,
 }
 
+/**
+ * Defines audit metadata fields including modification timestamp and user identifier.
+ */
 export const AuditFields = {
   modifiedAt: schemaField.timestampString,
   modifiedBy: schemaField.text({ maxLength: 100 }),
 }
 
+/**
+ * An Effect schema that transforms a string into a boolean, treating 'true' as true.
+ */
 export const BooleanFromString = Schema.String.pipe(
   Schema.decodeTo(
     Schema.Boolean,

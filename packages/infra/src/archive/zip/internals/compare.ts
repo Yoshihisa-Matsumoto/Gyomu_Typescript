@@ -7,7 +7,7 @@ import type { DiffDetail } from '@gyomu/schema/shared/object'
 
 import type { ZipEntryItem, ZipFileEntryItem } from './read.js'
 import type { PlatformError } from 'effect/PlatformError'
-import type { IOError } from '@gyomu/schema'
+import type { FullPath, IOError } from '@gyomu/schema'
 
 export type DiffernceIgnoreRule = {
   filePathRegExpression: string
@@ -25,9 +25,9 @@ export type InterimOutputType = {
   results: Array<DiffSummary>
 }
 export type ZipCompareOption = {
-  sourceFilename: string
-  destinationFilename: string
-  resultPath: string
+  sourceFilename: FullPath
+  destinationFilename: FullPath
+  resultPath: FullPath
   diffIgnoreRule?: Array<IgnoreRule>
   fileNameExcludeRule?: FileNameExclusionRule
   includeOriginalFileInDiff?: boolean
@@ -196,7 +196,7 @@ export const internalCompareFileEntry = (
     source: ZipFileEntryItem
     destination: ZipFileEntryItem
     filePath: string
-    resultPath: string
+    resultPath: FullPath
   }) => Effect.Effect<DiffResult, IOError>,
 ) => {
   const { resultPath, diffIgnoreRule } = option

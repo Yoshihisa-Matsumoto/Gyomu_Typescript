@@ -1,10 +1,10 @@
 import { Context } from 'effect'
+import type { AiError, RetryOption } from '@gyomu/schema'
 import type { Effect, Schema } from 'effect'
 import type { EmbeddingModel, LanguageModel, StreamTextResult } from 'ai'
-import type { AiError } from '@gyomu/schema'
 import type { Message } from '@gyomu/schema/conversation'
 import type { AiTool } from '../../tool/ai-tool.js'
-import type { EffectSchema } from '@gyomu/schema/entity'
+import type { EffectArrayableSchema } from '@gyomu/schema/entity'
 
 export type { StreamTextResult } from 'ai'
 /**
@@ -60,23 +60,27 @@ type BaseAiParams = {
 type TextGenerationParams = BaseAiParams & PromptInput & ToolConfig
 export type GenerateTextParams = TextGenerationParams & {
   readonly maxTokens?: number
+  readonly retryOption?: RetryOption
 }
 
 export type StreamTextParams = TextGenerationParams & {
   readonly maxTokens?: number
+  readonly retryOption?: RetryOption
 }
 
-export type GenerateObjectParams<TSchema extends EffectSchema> = BaseAiParams &
+export type GenerateObjectParams<TSchema extends EffectArrayableSchema> = BaseAiParams &
   PromptInput &
   ToolConfig & {
     readonly schema: TSchema
+    readonly retryOption?: RetryOption
   }
 
-export interface EmbedParams<TValue> {
+export type EmbedParams<TValue> = {
   readonly model: EmbeddingModel
   readonly value: TValue
   readonly abortSignal?: AbortSignal
   readonly headers?: Record<string, string>
+  readonly retryOption?: RetryOption
 }
 
 export interface AiObjectResult<T> {
@@ -113,13 +117,7 @@ interface AiAssistantMessage {
   readonly text: string
 }
 export type AiFinishReason =
-  | 'completed'
-  | 'max-tokens'
-  | 'tool-call'
-  | 'content-filtered'
-  | 'error'
-  | 'cancelled'
-  | 'unknown'
+  'completed' | 'max-tokens' | 'tool-call' | 'content-filtered' | 'error' | 'cancelled' | 'unknown'
 
 interface AiUsage {
   readonly inputTokens: number
@@ -151,7 +149,7 @@ export interface AiModelService {
     params: StreamTextParams,
   ) => Effect.Effect<StreamTextResult<Record<string, never>, never>, AiError>
 
-  readonly generateObject: <TSchema extends EffectSchema>(
+  readonly generateObject: <TSchema extends EffectArrayableSchema>(
     params: GenerateObjectParams<TSchema>,
   ) => Effect.Effect<AiObjectResult<Schema.Schema.Type<TSchema>>, AiError>
 
@@ -166,4 +164,4 @@ export interface AiModelService {
  * =========================================
  */
 
-export const AiModelService = Context.Service<AiModelService>('@gyomu/infra/AiService')
+export const AiModelService = Context.Service<AiModelService>('@gyomu/ai/AiService')

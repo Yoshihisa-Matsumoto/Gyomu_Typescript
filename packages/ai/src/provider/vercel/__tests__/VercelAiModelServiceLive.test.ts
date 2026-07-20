@@ -14,15 +14,20 @@ const runVercelQAWithEnvOrThrow = makeRunner(VercelAiModelServiceLive)
  * =========================================
  */
 
-vi.mock('ai', () => ({
-  generateText: vi.fn(),
-  streamText: vi.fn(),
-  embed: vi.fn(),
+vi.mock('ai', async (importOriginal) => {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+  const actual = await importOriginal<typeof import('ai')>()
 
-  Output: {
-    object: vi.fn((x) => x),
-  },
-}))
+  return {
+    ...actual,
+    generateText: vi.fn(),
+    streamText: vi.fn(),
+    embed: vi.fn(),
+    Output: {
+      object: vi.fn((x) => x),
+    },
+  }
+})
 
 /**
  * =========================================
@@ -78,7 +83,7 @@ describe('VercelAiServiceLive', () => {
           }),
         ),
       ).rejects.toMatchObject({
-        message: 'fail to generate text',
+        message: 'Unknown Error',
       })
     })
   })

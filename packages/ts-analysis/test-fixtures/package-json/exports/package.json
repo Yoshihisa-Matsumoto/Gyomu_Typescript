@@ -1,0 +1,7 @@
+{
+  "exports": {
+    ".": "./dist/index.js",
+    "./cli": "./dist/cli.js",
+    "./schema/*": "./dist/schema/*.js"
+  }
+}

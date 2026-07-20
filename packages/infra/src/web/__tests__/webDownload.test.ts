@@ -1,9 +1,9 @@
 import { Readable, Writable } from 'node:stream'
 import { describe, expect, it, vi } from 'vitest'
 import { Layer } from 'effect'
+import { makeRunner } from '@gyomu/schema/effect'
 import { webDownload } from '../download.js'
 import { MainLayer, PlatformLayer } from '../../layer.js'
-import { makeRunner } from '../../runtime.js'
 import { mockFetch } from './fetchMock.js'
 
 global.fetch = vi.fn().mockResolvedValue({

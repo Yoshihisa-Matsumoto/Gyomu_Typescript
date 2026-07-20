@@ -1,19 +1,20 @@
 import { Effect } from 'effect'
 
 import { GyomuError, logger, wrapInfraError } from '@gyomu/schema'
-import { toProjectAbsolutePath } from '../shared/path/toProjectAbsolutePath.js'
 import { createSnapshot } from './createSnapshot.js'
 import { saveSnapshot } from './saveSnapshot.js'
 import { ensureProjectWorkspace } from './ensureProjectWorkspace.js'
 
 import { diffSnapshot } from './diffSnapshot.js'
+import type { FullPath } from '@gyomu/schema'
+import type { WorkspaceRelativePath } from '@gyomu/schema/typescript'
 import type { FileSearchService } from '@gyomu/schema/shared/fs'
 import type { FileSystem } from 'effect'
 import type { FileHashSnapshot } from './types/FileHashSnapshot.js'
 
 export interface CommitProjectSnapshotInput {
-  readonly repoRoot: string
-  readonly projectPath: string
+  readonly repoRoot: FullPath
+  readonly projectPath: WorkspaceRelativePath
   readonly expectedSnapshot: FileHashSnapshot
 }
 
@@ -22,8 +23,11 @@ export const commitProjectSnapshot = (
 ): Effect.Effect<void, GyomuError, FileSearchService | FileSystem.FileSystem> =>
   Effect.gen(function* () {
     const projectWorkspace = yield* ensureProjectWorkspace(input.repoRoot, input.projectPath)
-    const projectAbsolutePath = toProjectAbsolutePath(input.projectPath, input.repoRoot)
-    const snapshot = yield* createSnapshot(projectAbsolutePath)
+
+    const snapshot = yield* createSnapshot({
+      projectPath: input.projectPath,
+      repoRoot: input.repoRoot,
+    })
 
     const diffResult = diffSnapshot(input.expectedSnapshot, snapshot)
     if (diffResult.length > 0) {

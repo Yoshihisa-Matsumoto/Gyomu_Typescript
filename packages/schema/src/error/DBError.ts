@@ -8,6 +8,10 @@ interface DBErrorContext extends AppErrorContext {
   readonly query?: string
   readonly params?: unknown
 }
+
+/**
+ * Represents an error encountered during database operations, containing the relevant error context.
+ */
 export class DBError extends withErrorTraits(
   Data.TaggedError('@gyomu/schema/DBError')<DBErrorContext>,
 ) {}

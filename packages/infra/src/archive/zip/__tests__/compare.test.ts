@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import { describe, expect, it, vi } from 'vitest'
 import { Effect, Layer, Ref, Stream } from 'effect'
+import { makeRunner } from '@gyomu/schema/effect'
 import {
   filterDiff,
   handleMissingFileInComparison,
@@ -8,7 +9,6 @@ import {
   isComparisionExcludeTarget,
   shouldRunGitDiff,
 } from '../internals/compare.js' // パス調整
-import { makeRunner } from '../../../runtime.js'
 import { MainLayer, PlatformLayer } from '../../../layer.js'
 import type {
   FileNameExclusionRule,

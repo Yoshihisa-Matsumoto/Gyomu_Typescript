@@ -1,0 +1,29 @@
+{
+  "summary": "This directory serves as the root container for core domain modules, organizing business logic into specialized namespaces for identity, users, and transactions to ensure consistent data structures and operational workflows across the application.",
+  "responsibilities": [
+    "Manage administrative identity assignment",
+    "Define customer interaction interfaces",
+    "Orchestrate authentication and session state",
+    "Provide standardized entity identifier generation",
+    "Consolidate domain-specific data schemas"
+  ],
+  "concepts": [
+    "Domain Logic",
+    "Identity Management",
+    "Business Entities",
+    "Application Interfaces",
+    "Data Schemas"
+  ],
+  "relationships": [
+    "Domain-specific modules utilize shared schema definitions to maintain data consistency across the application.",
+    "Identity management and session lifecycle services provide the necessary foundation for validating user-level domain interactions.",
+    "Centralized namespace encapsulation ensures that business logic for different entities remains isolated while exposing uniform public APIs."
+  ],
+  "designDecisions": [
+    "Modular architecture segregating domain concerns into dedicated sub-directories",
+    "Use of index files to manage public API surfaces and hide internal implementation details",
+    "Centralization of entity identification logic to enforce consistency across domains",
+    "Layered approach to separating identity validation from business-specific entity management"
+  ],
+  "importance": "Core"
+}

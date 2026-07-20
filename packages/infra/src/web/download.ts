@@ -4,6 +4,7 @@ import { IOError, NetworkError, withOptional } from '@gyomu/schema'
 import { networkStream } from '../network/index.js'
 import { ensureFileNotExist, getFileStat, pathExists, writeStreamToFile } from '../fs/fs-utils.js'
 import { fetchEffect } from './client.js'
+import type { FullPath } from '@gyomu/schema'
 import type { FileSystem } from 'effect'
 
 export const webDownloadStream = (
@@ -31,7 +32,7 @@ export const webDownloadStream = (
   )
 export const webDownload = (
   url: string,
-  destinationFilename: string,
+  destinationFilename: FullPath,
   headers?: Record<string, string>,
 ): Effect.Effect<boolean, NetworkError | IOError, FileSystem.FileSystem> =>
   Effect.gen(function* () {

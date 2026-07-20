@@ -3,11 +3,11 @@ import { bufferToArrayBuffer } from '@gyomu/schema/shared/binary'
 
 import { expect, test } from 'vitest'
 import { Layer } from 'effect'
+import { makeRunner } from '@gyomu/schema/effect'
 import { compareFiles } from '../../__tests__/baseClass.js'
 import * as aes from '../aes.js'
 import * as pki from '../pki.js'
 import { MainLayer, PlatformLayer } from '../../layer.js'
-import { makeRunner } from '../../runtime.js'
 import { getTempFilename } from '../../fs/fs-utils.js'
 
 const nodeTestLayer = Layer.mergeAll(PlatformLayer, MainLayer)
