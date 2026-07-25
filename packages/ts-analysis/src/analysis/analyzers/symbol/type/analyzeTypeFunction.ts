@@ -1,3 +1,4 @@
+import { tracePlaceIdentity } from '../../../trace/traceUtil.js'
 import { analyzeType } from './analyzeType.js'
 import { analyzeTypeProperty } from './analyzeTypeProperty.js'
 import type {
@@ -55,7 +56,7 @@ export const analyzeTypeFunction = (
   } = args
   const { name, jsDocableNode } = args2
   const returnTypeNode = node.getReturnTypeNode()
-
+  tracePlaceIdentity(args, args.options, 'analyzeTypeFunction')
   // const genericsResult = analyzeGenericsParameters({
   //   node,
   //   sourceRelativePath,

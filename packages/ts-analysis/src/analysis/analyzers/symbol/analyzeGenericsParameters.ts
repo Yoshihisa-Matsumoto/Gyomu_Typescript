@@ -18,6 +18,7 @@ export const analyzeGenericsParameters = (
     imported,
     memberPath,
     newReservedNames,
+    args.options,
   )
   return { parameters, dependencies, name }
 }

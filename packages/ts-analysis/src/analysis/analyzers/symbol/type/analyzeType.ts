@@ -138,8 +138,7 @@ export const analyzeType = (
     // console.dir(node, { depth: null })
   }
   console.log(`!!!!WHY???!!!!  ${rawText} `)
-  console.dir(node, { depth: null })
-
+  console.trace()
   {
     return {
       member: {

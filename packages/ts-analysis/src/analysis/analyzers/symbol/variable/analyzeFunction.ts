@@ -8,7 +8,13 @@ import { computeIndent } from '../computeIndent.js'
 import { analyzeGenericsParameters } from '../analyzeGenericsParameters.js'
 
 import { analyzeFunctionBody } from '../struct/analyzeFunctionMember.js'
-import type { ArrowFunction, Expression, FunctionExpression, VariableDeclaration } from 'ts-morph'
+import type {
+  ArrowFunction,
+  Expression,
+  FunctionExpression,
+  ReturnStatement,
+  VariableDeclaration,
+} from 'ts-morph'
 import type { SymbolPreparation } from '../prepareSymbolAnalysis.js'
 import type {
   SignatureAnalysis,
@@ -109,11 +115,20 @@ export const getFunctionSignature = (
     signatureId: SignatureId('function'),
   }
   let initializer: Expression | undefined = undefined
+
   if (!node.getReturnTypeNode()) {
     const body = node.getBody()
     if (Node.isArrowFunction(body)) {
       initializer = body
     } else if (Node.isExpression(body)) initializer = body
+    else if (Node.isBlock(body)) {
+      const returnStatement = body
+        .getStatements()
+        .find((s) => s.getKind() == SyntaxKind.ReturnStatement)
+      if (returnStatement) {
+        initializer = (returnStatement as ReturnStatement).getExpression()
+      }
+    }
   }
   const genericsResult = analyzeGenericsParameters({
     node,

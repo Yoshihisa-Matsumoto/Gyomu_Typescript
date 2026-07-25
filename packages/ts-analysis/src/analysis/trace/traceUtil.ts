@@ -1,15 +1,15 @@
 import { getCaller } from '@gyomu/schema'
-import { Node } from 'ts-morph'
+import { Node, TypeReferenceNode } from 'ts-morph'
 import type { ChildAnalysisArg } from '../analyzers/types.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 import type { AnalysisOptions } from '@gyomu/schema'
 
 export function tracePlaceIdentity<T extends Node | undefined>(
-  target: SymbolIdentity | ChildAnalysisArg<T>,
+  target: SymbolIdentity | TypeReferenceNode | ChildAnalysisArg<T>,
   options: AnalysisOptions | undefined,
   functionName?: string | undefined,
 ) {
-  // if (functionName) console.log(functionName)
+  if (options?.debugInfo?.trace && functionName) console.log(functionName)
   if (!options || !options.debugInfo) return
   const keyword = options.debugInfo.keyword
   if (!keyword) return
@@ -19,7 +19,7 @@ export function tracePlaceIdentity<T extends Node | undefined>(
       return
     }
     targetIdentity = target.symbolId
-  } else {
+  } else if (!(target instanceof TypeReferenceNode)) {
     if (!target.node) return
     {
       const node = target.node
@@ -54,6 +54,8 @@ export function tracePlaceIdentity<T extends Node | undefined>(
     // console.log(targetIdentity)
     if (!targetIdentity.includes(keyword)) return
     // identity.ownerSymbolId
+  } else {
+    targetIdentity = target.getText()
   }
 
   const caller = getCaller()

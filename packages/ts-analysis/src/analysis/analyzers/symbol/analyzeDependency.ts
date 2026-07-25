@@ -1,4 +1,6 @@
 import { Node } from 'ts-morph'
+import { tracePlaceIdentity } from '../../trace/traceUtil.js'
+import type { AnalysisOptions } from '@gyomu/schema'
 import type { DependencyCandidate, ImportAnalysis } from '@gyomu/schema/schemas/typescript'
 import type { MemberIdentityMemberPath } from '@gyomu/schema/typescript'
 import type { TypeParameterDeclaration, TypeReferenceNode } from 'ts-morph'
@@ -53,11 +55,12 @@ export const analyzeDependencyFromTypeReference = (
   imported: Array<ImportAnalysis>,
   memberPath: MemberIdentityMemberPath,
   reservedNames: Array<string>,
+  options: AnalysisOptions | undefined,
 ): Array<DependencyCandidate> => {
   // Name, TypeArguments
   const typeName = typeRef.getTypeName().getText()
   const dependencies: Array<DependencyCandidate> = []
-
+  tracePlaceIdentity(typeRef, options)
   if (!reservedTypeNames.includes(typeName) && !reservedNames.includes(typeName)) {
     dependencies.push(analyzeDependency(typeName, imported, memberPath))
   }
@@ -66,10 +69,15 @@ export const analyzeDependencyFromTypeReference = (
     const newMemberPath = [...memberPath, '$generics', index]
     if (Node.isTypeReference(arg)) {
       dependencies.push(
-        ...analyzeDependencyFromTypeReference(arg, imported, newMemberPath, reservedNames),
+        ...analyzeDependencyFromTypeReference(arg, imported, newMemberPath, reservedNames, options),
       )
     } else {
       const typeArgText = arg.getText()
+      tracePlaceIdentity(
+        typeRef,
+        options,
+        'analyzeDependencyFromTypeReference:analyzeDependency:' + typeArgText,
+      )
       if (!reservedTypeNames.includes(typeArgText) && !reservedNames.includes(typeArgText)) {
         dependencies.push(analyzeDependency(typeArgText, imported, newMemberPath))
       }
@@ -83,6 +91,7 @@ export const analyzeDependencyFromTypeParameters = (
   imported: Array<ImportAnalysis>,
   memberPath: MemberIdentityMemberPath,
   reservedNames: Array<string>,
+  options: AnalysisOptions | undefined,
 ): Array<DependencyCandidate> => {
   const dependencies: Array<DependencyCandidate> = []
 
@@ -94,7 +103,13 @@ export const analyzeDependencyFromTypeParameters = (
     // console.log(`constraint: ${constraint?.getText()}`)
     if (constraint && Node.isTypeReference(constraint)) {
       dependencies.push(
-        ...analyzeDependencyFromTypeReference(constraint, imported, newMemberPath, reservedNames),
+        ...analyzeDependencyFromTypeReference(
+          constraint,
+          imported,
+          newMemberPath,
+          reservedNames,
+          options,
+        ),
       )
     }
   })

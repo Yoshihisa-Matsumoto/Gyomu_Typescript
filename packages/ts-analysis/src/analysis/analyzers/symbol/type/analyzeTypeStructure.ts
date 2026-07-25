@@ -53,9 +53,11 @@ export const analyzeTypeStructures = (
       imported,
       memberPath,
       reservedNames,
+      options,
     )
 
     if (Node.isArrayTypeNode(node)) {
+      tracePlaceIdentity(args, args.options, 'analyzeTypeStructures:ArrayTypeNode')
       const typeAlias = analyzeType(
         {
           sourceRelativePath,
@@ -84,6 +86,7 @@ export const analyzeTypeStructures = (
       }
     }
     if (typeName.getText().includes('Array')) {
+      tracePlaceIdentity(args, args.options, 'analyzeTypeStructures:Array string')
       const typeAlias = analyzeType(
         {
           sourceRelativePath,
@@ -124,13 +127,16 @@ export const analyzeTypeStructures = (
         reservedNames: typeAlias.reservedNames,
       }
     } else {
+      tracePlaceIdentity(args, args.options, 'analyzeTypeStructures:Other')
       const targetName = typeName.getText()
-      const genericsResult = typeArguments.map((ta, index) =>
-        analyzeType(
+      // console.log(targetName)
+      const genericsResult = typeArguments.map((ta, index) => {
+        return analyzeType(
           { ...args, node: ta, memberPath: [...memberPath, '$generics', index] },
           undefined,
-        ),
-      )
+        )
+      })
+
       return {
         member: {
           kind: 'reference',
@@ -138,7 +144,7 @@ export const analyzeTypeStructures = (
           typeParameters: genericsResult.map((gr) => gr.member),
         },
         dependencies: [
-          ...analyzeDependencyFromTypeReference(node, imported, memberPath, reservedNames),
+          ...analyzeDependencyFromTypeReference(node, imported, memberPath, reservedNames, options),
           ...genericsResult.map((gr) => gr.dependencies).flat(),
         ],
         reservedNames: [],
@@ -148,6 +154,7 @@ export const analyzeTypeStructures = (
   if (Node.isUnionTypeNode(node) || Node.isIntersectionTypeNode(node)) {
     // const isUnion = Node.isUnionTypeNode(node)
     // isUnion ? '$union' : '$intersect',
+    tracePlaceIdentity(args, args.options, 'analyzeTypeStructures:Union/Intersection')
     const memberTypeResult = node.getTypeNodes().map((childType, index) =>
       analyzeType(
         {
@@ -292,7 +299,7 @@ export const analyzeTypeStructures = (
   }
   if (Node.isArrayTypeNode(node)) {
     const argumentNode = node.getElementTypeNode()
-
+    tracePlaceIdentity(args, args.options, 'analyzeTypeStructures:ArrayType')
     const typeAlias = analyzeType(
       {
         sourceRelativePath,
