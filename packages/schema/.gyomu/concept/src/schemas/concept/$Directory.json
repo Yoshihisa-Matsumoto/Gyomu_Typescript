@@ -1,27 +1,25 @@
 {
-  "summary": "This directory defines the core data schemas and TypeScript types used to model and document the architectural intent, package metadata, and conceptual structure of a software project.",
+  "summary": "This directory defines the structural schemas and TypeScript types used for documenting and modeling the architectural intent of directories and packages within a project.",
   "responsibilities": [
-    "Define structural schemas for representing package metadata and dependencies",
-    "Define schemas for documenting public API exports and symbols",
-    "Capture architectural concepts, responsibilities, and relationships of code directories",
-    "Standardize the format for package insights and functional capabilities"
+    "Define schemas for capturing architectural metadata about directories",
+    "Define schemas for modeling package capabilities and relationships",
+    "Provide TypeScript types for structural concept modeling"
   ],
   "concepts": [
-    "Architectural Schemas",
-    "Package Metadata",
-    "Public API Definition",
-    "Conceptual Structure",
-    "Package Insights"
+    "Architectural schemas",
+    "Directory concepts",
+    "Package concepts",
+    "Relationship modeling"
   ],
   "relationships": [
-    "The PackageConcept schema integrates package metadata, dependencies, and public APIs into a comprehensive definition.",
-    "PackageInsights utilize functional capabilities and relationships to describe the high-level intent of a package.",
-    "DirectoryConcepts provide a standardized way to describe the architectural purpose of individual project folders."
+    "Package concepts aggregate multiple architectural properties including summaries, responsibilities, and design decisions.",
+    "Directory concepts serve as a structural blueprint for documenting the intent of specific project folders.",
+    "Capability and relationship schemas provide granular detail for broader package-level architectural descriptions."
   ],
   "designDecisions": [
-    "Use of Zod-like schemas for runtime validation of architectural definitions",
-    "Separation of concerns by defining distinct schemas for metadata, API surfaces, and conceptual insights",
-    "Strong typing derived from schemas to ensure consistency across the documentation tooling"
+    "Schema-first approach for capturing metadata",
+    "Composition of smaller schemas into comprehensive package and directory models",
+    "Strict separation of type definitions and schema runtime definitions"
   ],
   "importance": "Core"
 }

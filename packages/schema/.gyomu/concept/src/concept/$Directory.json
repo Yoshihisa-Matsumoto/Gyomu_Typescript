@@ -1,27 +1,28 @@
 {
-  "summary": "This directory defines the core data models and type interfaces required to represent the static structure and metadata of a software package, providing a foundational schema for capturing file-level exports, directory hierarchies, and project dependency relationships.",
+  "summary": "This directory defines the core data schemas, type definitions, and structural representations used to model and document software packages. It serves as the foundational data layer for analyzing source code and generating standardized project documentation.",
   "responsibilities": [
-    "Define schemas for package metadata and static code analysis",
-    "Model the structural composition of modules and exported symbols",
-    "Represent dependency relationships between source files and external modules",
-    "Provide a unified structure for capturing project directory hierarchies"
+    "Define schema for package and file analysis",
+    "Model structural metadata and dependency graphs",
+    "Specify requirements and structures for documentation generation",
+    "Standardize input data for system analysis and reporting"
   ],
   "concepts": [
+    "Analysis Schema",
     "Package Metadata",
-    "Exported Symbols",
+    "Documentation Structure",
     "Dependency Analysis",
-    "Module Structure",
-    "Project Directories"
+    "Type Definitions"
   ],
   "relationships": [
-    "Package metadata provides the high-level context for understanding dependency analysis and module composition.",
-    "Exported symbols are mapped to specific modules to define the public interface of the package structure.",
-    "Dependency analysis informs the relationship between local modules and the external requirements defined within the package metadata."
+    "Package analysis structures aggregate internal source code metadata to provide a comprehensive view of the codebase.",
+    "Documentation structures rely on package analysis outputs to populate content based on defined section identifiers.",
+    "Type definitions enforce consistency across both the analysis of project structures and the generation of documentation outputs."
   ],
   "designDecisions": [
-    "Uses TypeScript interfaces to enforce strong typing for analysis schemas",
-    "Implements an index-based entry point to centralize access to core analytical models",
-    "Organizes data structures by domain context to support modular and consistent consumption"
+    "Use of strongly-typed TypeScript interfaces to define data structures",
+    "Compositional approach to modeling complex project components",
+    "Separation of structural metadata from generation logic",
+    "Centralization of localized configuration for documentation"
   ],
   "importance": "Core"
 }

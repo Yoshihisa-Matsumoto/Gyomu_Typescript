@@ -1,23 +1,23 @@
 {
-  "summary": "This directory provides a centralized service for managing and retrieving application parameters. It enables the retrieval of typed configuration values that are sensitive to user-specific contexts and supports historical lookup of previous parameter states.",
+  "summary": "This directory manages the lifecycle and retrieval of application-wide configuration and runtime parameters. It ensures that settings are accessible in a type-safe manner, accounting for user-specific context and historical state changes throughout the system.",
   "responsibilities": [
     "Manage typed application parameters",
-    "Retrieve configuration values based on user context",
-    "Support historical lookup of parameter changes"
+    "Enable retrieval of parameters based on user context",
+    "Support historical lookup of configuration values"
   ],
   "concepts": [
     "Application Parameters",
     "User Context",
     "Historical Data",
-    "Typed Configuration"
+    "Type Safety"
   ],
   "relationships": [
-    "The ParameterService uses user context to determine which version of a parameter to retrieve.",
-    "Historical lookups allow the system to access past states of managed application parameters."
+    "The Parameter Service utilizes user contexts to scope the retrieval of specific application parameters.",
+    "Historical lookups allow the system to reconstruct past parameter states for auditing or versioning."
   ],
   "designDecisions": [
-    "Service-oriented encapsulation of parameter access",
-    "Type-safe retrieval of configuration data"
+    "Centralized parameter management via a dedicated service class",
+    "Type-safe access patterns for application configuration"
   ],
   "importance": "Core"
 }

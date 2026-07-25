@@ -1,28 +1,29 @@
 {
-  "summary": "This directory provides a standardized abstraction layer for data access by defining generic CRUD repository interfaces and utilities for synchronizing entity states between application data and database records.",
+  "summary": "This directory provides a standardized framework for performing CRUD operations on data entities. It bridges the gap between database schemas and application data logic by defining repository interfaces, synchronization strategies, and structural schemas for data persistence.",
   "responsibilities": [
-    "Defining generic interfaces for CRUD data operations",
+    "Defining generic repository interfaces for standard data operations",
     "Deriving repository implementations from schema definitions",
-    "Calculating synchronization requirements between data sets",
-    "Validating field mappings between record definitions and database tables"
+    "Calculating synchronization requirements between incoming and existing records",
+    "Validating definition keys against database table structures",
+    "Structuring schemas for insert, select, and update actions"
   ],
   "concepts": [
     "CRUD repository",
     "Data synchronization",
     "Schema definitions",
-    "Entity diffing",
-    "Audit field integration"
+    "Entity metadata",
+    "Record operations"
   ],
   "relationships": [
-    "Repository interfaces define the standard operations available for data access.",
-    "Schema definitions serve as the basis for generating specific repository types.",
-    "Entity diffing logic determines the necessary inserts, updates, and deletes based on schema constraints."
+    "CrudRepository interfaces leverage CrudSchemas to define the structure of data actions performed on database tables.",
+    "The diffEntities logic uses entity definitions to determine the necessary database mutations required to sync record states.",
+    "The repository implementation types derive their structure and capabilities directly from provided schema definitions."
   ],
   "designDecisions": [
-    "Use of generic interfaces for type-safe data access",
-    "Composition of repository capabilities through interface extension",
-    "Derivation of repository types from static schema structures",
-    "Separation of synchronization logic from repository interfaces"
+    "Use of generic interfaces for modular CRUD operations",
+    "Schema-driven generation of repository types",
+    "Separation of schema definitions from operational logic",
+    "Type-safe validation of table keys against data schemas"
   ],
   "importance": "Core"
 }

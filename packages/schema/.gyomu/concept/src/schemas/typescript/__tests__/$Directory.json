@@ -1,22 +1,22 @@
 {
-  "summary": "This directory contains the test suite specifically for validating TypeScript identity key schemas. It ensures the consistency and correctness of the defined data structures used to identify entities within the TypeScript representation of the system.",
+  "summary": "This directory contains test suites designed to verify the correct identification and validation of identity keys within the TypeScript schema definition layer. It ensures that the schema identification logic behaves consistently according to expected specifications.",
   "responsibilities": [
-    "Verify the integrity of TypeScript identity key schemas",
-    "Test schema definitions for structural accuracy",
-    "Ensure identity keys conform to expected data standards"
+    "Verify identity key identification logic",
+    "Test schema definition consistency",
+    "Validate schema key extraction"
   ],
   "concepts": [
-    "Identity Key Schema",
-    "Schema Validation",
-    "Unit Testing"
+    "Identity Key",
+    "Schema Definition",
+    "Validation Test"
   ],
   "relationships": [
-    "The unit tests validate the structural implementation of identity keys to ensure they meet domain requirements.",
-    "Schema definitions serve as the input for these tests to confirm that data structures are correctly typed and formatted."
+    "Identity keys serve as the primary identifiers for schema definitions during validation.",
+    "The validation tests ensure the schema definition correctly recognizes and enforces the presence of identity keys."
   ],
   "designDecisions": [
-    "Co-location of tests with the schema definitions they validate",
-    "Use of specialized testing for complex schema structures"
+    "Colocation of testing logic with corresponding schema definitions",
+    "Isolated testing of identity resolution"
   ],
   "importance": "Supporting"
 }

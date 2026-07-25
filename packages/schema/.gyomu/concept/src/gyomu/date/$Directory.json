@@ -1,27 +1,24 @@
 {
-  "summary": "This directory provides a framework for managing business calendars and performing date-related calculations specific to financial or operational markets. It defines the interface for holiday lookups and adjustment logic required for business day scheduling.",
+  "summary": "This directory manages business calendar operations, providing mechanisms to calculate business days, identify holidays, and handle market-specific date adjustments. It acts as the central interface for temporal business logic within the application.",
   "responsibilities": [
     "Define interfaces for business day calculations",
-    "Identify market-specific holidays and working days",
+    "Provide access to market-specific calendar services",
     "Perform adjustments for month-end and year-end dates",
-    "Provide access to business calendar services based on market identifiers"
+    "Identify and resolve holiday schedules"
   ],
   "concepts": [
     "Business Calendar",
-    "Business Day",
-    "Holiday Lookup",
-    "Market Calendar",
-    "Date Adjustment"
+    "Holiday Lookups",
+    "Market Definitions",
+    "Temporal Logic"
   ],
   "relationships": [
-    "The Business Calendar interface establishes the standard rules for determining valid working days and holidays within a specific market.",
-    "The Business Calendar Service acts as a provider to retrieve specific calendar implementations based on the required market context.",
-    "Business day calculations rely on the holiday data provided by the calendar implementation to determine accurate scheduling."
+    "The BusinessCalendar interface defines the standard operations for date calculations.",
+    "The BusinessCalendarService manages the retrieval and availability of specific calendar configurations based on the market."
   ],
   "designDecisions": [
-    "Interface-based abstraction for calendar behavior",
-    "Service-oriented access pattern for retrieving market-specific calendars",
-    "Separation of calendar definitions from business logic operations"
+    "Use of service-based abstraction to decouple calendar lookups from specific date calculations",
+    "Interface-driven design to allow for multiple calendar implementations per market"
   ],
   "importance": "Core"
 }

@@ -1,24 +1,24 @@
 {
-  "summary": "This directory provides a collection of structural analysis definitions for TypeScript types. It serves as a schema layer that represents various TypeScript type constructs as data structures, enabling their representation, classification, and analysis within the system.",
+  "summary": "This directory defines the structural analysis schemas for various TypeScript type expressions, providing standardized representations for language constructs such as objects, functions, union types, and generics to facilitate type system analysis.",
   "responsibilities": [
-    "Define structural models for diverse TypeScript type categories",
-    "Provide constant schemas for validating and classifying type structures",
-    "Enable the systematic representation of complex type expressions"
+    "Define schema structures for representing complex TypeScript type nodes",
+    "Provide consistent definitions for primitives, literals, and specialized type structures",
+    "Map TypeScript language constructs to structured analysis objects"
   ],
   "concepts": [
     "TypeScript type structures",
-    "Type schema definitions",
-    "Structural type analysis"
+    "Type node representations",
+    "Structural analysis schemas"
   ],
   "relationships": [
-    "Each file defines a specific structure for a corresponding TypeScript type construct, such as arrays, functions, or unions.",
-    "The structure base provides shared properties for all type constructs, ensuring consistency across different schema definitions.",
-    "Constant schemas are utilized to validate the structural integrity of types during analysis."
+    "The structural analysis schemas serve as building blocks that represent specific TypeScript language features.",
+    "Specialized structures like union or object types are built upon the foundational base structures provided in this directory.",
+    "The defined schemas correspond directly to TypeScript node types, ensuring a mapping between language syntax and analysis structures."
   ],
   "designDecisions": [
-    "Used a modular, file-per-structure approach to maintain separation of concerns for different TypeScript type categories.",
-    "Implemented a dual-definition strategy for each structure, pairing a TypeScript interface or type with a runtime schema constant.",
-    "Followed a consistent naming convention where each structure is paired with a corresponding analysis schema."
+    "Modular decomposition where each TypeScript type category is isolated into its own definition file.",
+    "Dual representation using both interfaces and schema constants for each construct.",
+    "Compositional design where complex structures reference base schema patterns."
   ],
   "importance": "Core"
 }

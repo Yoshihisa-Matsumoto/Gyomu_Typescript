@@ -1,21 +1,23 @@
 {
-  "summary": "This directory manages the translation and parsing of variables and dates, ensuring that data values are correctly interpreted within specific market contexts for system-wide consumption.",
+  "summary": "This directory provides mechanisms for translating and interpreting variables within specific market contexts. It serves as a central hub for handling dynamic data parsing and variable resolution logic required for application-wide consistency.",
   "responsibilities": [
-    "Parsing and interpreting variable data",
-    "Translating date values based on market-specific rules"
+    "Parse variables from external data inputs",
+    "Interpret and format date values within specific market contexts",
+    "Provide centralized translation services for dynamic data"
   ],
   "concepts": [
-    "Variable translation",
-    "Market context",
-    "Date parsing"
+    "Variable Translator",
+    "Market Context",
+    "Date Parsing"
   ],
   "relationships": [
-    "The VariableTranslatorService uses market context definitions to determine how variables and dates are processed.",
-    "Variable translation relies on date parsing logic to ensure consistent data interpretation."
+    "The Variable Translator service utilizes market context settings to accurately parse and transform variable data.",
+    "Date parsing logic is integrated within the variable translator to ensure data format compliance across different markets."
   ],
   "designDecisions": [
-    "Encapsulation of translation logic within a service class",
-    "Exposing functionality through a centralized index module"
+    "Encapsulation of translation logic within a dedicated service class",
+    "Centralization of market-specific data processing to ensure consistency",
+    "Use of a unified interface for variable and date handling"
   ],
-  "importance": "Supporting"
+  "importance": "Core"
 }

@@ -1,27 +1,28 @@
 {
-  "summary": "This directory serves as a foundational repository for application-wide data schemas and static type definitions. It centralizes reusable models to ensure structural integrity, consistent data validation, and shared type safety across various domain-specific modules.",
+  "summary": "This directory centralizes the definition of core data structures, validation schemas, and TypeScript types used across the application to ensure data integrity, consistent formatting, and standardized communication between system components.",
   "responsibilities": [
-    "Define shared data structures and validation schemas",
-    "Provide static TypeScript types for core data entities",
-    "Maintain naming and branding standards for domain identifiers",
-    "Ensure consistent data validation logic across the application"
+    "Define structural validation schemas for core business and system entities",
+    "Provide consistent TypeScript type definitions for validated data structures",
+    "Establish standardized data contracts for serialization and parsing",
+    "Enable runtime validation of complex data objects"
   ],
   "concepts": [
     "Data schemas",
+    "Validation logic",
     "TypeScript types",
-    "Branded identifiers",
-    "Runtime validation",
-    "Domain models"
+    "Data contracts",
+    "Structural modeling"
   ],
   "relationships": [
-    "Static TypeScript types are derived directly from the schema definitions to ensure type safety.",
-    "Branded identifiers enforce strict typing on domain-specific keys, preventing incorrect usage throughout the codebase.",
-    "Centralized schema definitions provide a single source of truth for validation rules used across the application."
+    "Data schemas define the required shape of information, while TypeScript types provide static type safety for those same structures.",
+    "Centralized schema definitions facilitate consistent validation and serialization across different functional modules.",
+    "Structural models are composed of specific schema fragments to support complex entity representations."
   ],
   "designDecisions": [
-    "Consistent use of paired runtime schema constants and static TypeScript types",
-    "Utilization of branded types for strict identifier safety",
-    "Centralized storage for reusable domain primitives"
+    "Co-location of schema constants and their corresponding TypeScript types",
+    "Use of barrel files for centralized access to schema definitions",
+    "Schema-first approach to ensure runtime validation and static type safety",
+    "Modular decomposition of schemas based on domain entity types"
   ],
   "importance": "Core"
 }

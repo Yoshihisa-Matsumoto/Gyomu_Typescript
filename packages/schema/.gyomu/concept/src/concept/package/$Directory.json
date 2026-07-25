@@ -1,27 +1,28 @@
 {
-  "summary": "This directory defines the data structures and interface contracts required to represent the static analysis of software packages. It captures essential metadata, structural composition, exported symbols, and dependency relationships derived from a project's codebase.",
+  "summary": "This directory defines the conceptual data structures for analyzing software packages, their internal structure, dependencies, and exported symbols. It provides a standardized schema for representing the results of static analysis performed on packages and their components.",
   "responsibilities": [
-    "Define schemas for representing package-level metadata and configuration",
-    "Model the structural analysis of exported symbols and code modules",
-    "Structure information regarding package dependencies and their origins",
-    "Encapsulate analytical insights about project directories and file hierarchies"
+    "Define interfaces for representing package metadata and configuration",
+    "Model the structure of dependencies within a package",
+    "Describe the organization of files and directories within a package",
+    "Capture structural details and documentation of exported symbols",
+    "Map exported symbols to their corresponding source files and paths"
   ],
   "concepts": [
     "Package Metadata",
-    "Exported Symbols",
     "Dependency Analysis",
-    "Module Structure",
-    "Project Directories"
+    "Exported Symbol",
+    "Project Structure",
+    "Analysis Schema"
   ],
   "relationships": [
-    "Package analysis aggregates package metadata, dependency information, and module exports into a unified structure.",
-    "Package export analysis details the relationship between specific export paths and the symbols defined within source files.",
-    "Dependency analysis tracks the identification and versioning of external requirements linked to a package."
+    "A PackageAnalysis aggregates PackageInfoAnalysis, dependencies, and directory structures to represent a complete project.",
+    "PackageExportAnalysis links specific exported symbols to the files they originate from within the package.",
+    "ExportedSymbolAnalysis provides the internal details of specific symbols found within a PackageExportAnalysis."
   ],
   "designDecisions": [
-    "Utilizes TypeScript interfaces to provide strongly-typed definitions for analytical data",
-    "Groups related structural models by domain context to facilitate modular consumption",
-    "Employs an index file pattern to expose core analysis contracts via a single entry point"
+    "Use of TypeScript interfaces for strongly-typed data representation",
+    "Composition of smaller analysis units into a comprehensive package model",
+    "Decoupling of structural metadata from physical file storage"
   ],
   "importance": "Core"
 }

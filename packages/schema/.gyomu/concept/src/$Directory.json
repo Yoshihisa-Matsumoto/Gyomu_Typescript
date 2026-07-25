@@ -1,28 +1,28 @@
 {
-  "summary": "This directory serves as the root entry point for a TypeScript library, exposing a cohesive suite of core domain models, schema definitions, utility types, and operational logic that facilitate data validation, entity management, and business process orchestration across the package.",
+  "summary": "This directory serves as the root entry point and foundational utility layer for the package. It exports core schema definitions, type utilities, and shared configurations, providing a central access point for consistent data modeling and type safety across the entire application.",
   "responsibilities": [
-    "Expose unified access to core domain entities and analytical schemas",
-    "Provide utility types for object manipulation and structural type safety",
-    "Centralize configuration and execution options for system-wide processes",
-    "Aggregate runtime validation contracts and domain-specific error handling mechanisms"
+    "Expose primary domain interfaces and schema definitions",
+    "Provide type-safe utilities for object manipulation",
+    "Standardize configuration and type normalization logic",
+    "Facilitate access to foundational structural types and identifiers"
   ],
   "concepts": [
-    "Exported API",
+    "Core Schema",
     "Type Utilities",
-    "Domain Models",
-    "Schema Definitions",
-    "Operational Configuration"
+    "Project Configuration",
+    "Structural Data",
+    "Type Normalization"
   ],
   "relationships": [
-    "Core domain models and schema definitions serve as the foundational types for all sub-modules.",
-    "Utility types provide necessary transformations for configuration objects and internal data structures.",
-    "The unified export strategy ensures that downstream consumers access a consistent and type-safe interface for all domain operations."
+    "Core type definitions provide the foundation for consistent schema modeling across the package.",
+    "Utility functions leverage exported type definitions to perform operations like object normalization and property filtering.",
+    "The directory aggregates multiple domain-specific modules, ensuring that consumers have unified access to the package's internal data structures."
   ],
   "designDecisions": [
-    "Centralized entry point via an index file to simplify consumer access",
-    "Co-location of type-level utilities with domain-specific schemas",
-    "Standardized naming and export patterns for architectural consistency",
-    "Separation of public-facing API surfaces from internal implementation details"
+    "Use of barrel files for centralized module exports",
+    "Integration of nominal branding for path type safety",
+    "Colocation of type-level transformations with runtime utilities",
+    "Strict separation between domain entities and general-purpose type infrastructure"
   ],
   "importance": "Core"
 }

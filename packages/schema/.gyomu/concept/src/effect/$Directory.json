@@ -1,30 +1,29 @@
 {
-  "summary": "This directory provides a suite of specialized utilities and helper functions for working with the Effect framework, focusing on runtime execution, stream management, asynchronous task handling, and conditional validation within the Effect ecosystem.",
+  "summary": "This directory provides a collection of utility functions and wrappers designed to simplify the construction, execution, and management of Effect-based workflows, including stream creation, polling operations, and error handling abstractions.",
   "responsibilities": [
-    "Facilitating the execution of effects via runner functions",
-    "Managing asynchronous operations and stream integration",
-    "Providing utilities for error handling and type narrowing within effects",
-    "Implementing time-based operations like polling and delays",
-    "Wrapping synchronous and promise-based code into effects"
+    "Facilitating the creation of Effects from asynchronous promises and synchronous functions",
+    "Managing execution cycles with polling and sleep utilities",
+    "Supporting stream integration from readable sources",
+    "Providing runtime runners to execute effects with specified layers",
+    "Standardizing error handling and conditional validation within effect chains"
   ],
   "concepts": [
-    "Effect runners",
-    "Layer casting",
-    "Stream adapters",
-    "Polling operations",
-    "Condition enforcement"
+    "Effect Utilities",
+    "Execution Runners",
+    "Stream Integration",
+    "Polling Operations",
+    "Error Wrappers"
   ],
   "relationships": [
-    "Runners utilize base layers to execute effects and return either results or promises.",
-    "Utility functions transform standard synchronous or promise-based code into effects with defined error handling.",
-    "Polling and timer operations rely on effect-based pausing and loop execution logic.",
-    "Option helpers provide specialized extraction logic for internal effect configuration data."
+    "The execution runners use provided layers to resolve the context required by individual effect operations.",
+    "Utility functions transform synchronous and asynchronous results into formalized effect types for further composition.",
+    "Polling and sleep mechanisms rely on time-based controls to manage the lifecycle of long-running effect processes."
   ],
   "designDecisions": [
-    "Functional style for effect composition and transformation",
-    "Use of identity functions for type narrowing",
-    "Encapsulation of complex asynchronous logic into reusable runner factories",
-    "Consistent error wrapping for both sync and async boundary transitions"
+    "Functional approach to wrapping side-effect-prone operations into type-safe Effect structures",
+    "Centralized export strategy through an index file for ease of consumption",
+    "Use of factory functions to abstract underlying promise or stream interactions",
+    "Decoupling of effect definition from runtime execution"
   ],
   "importance": "Core"
 }

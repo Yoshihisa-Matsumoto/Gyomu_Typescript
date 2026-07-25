@@ -1,25 +1,24 @@
 {
-  "summary": "This directory centralizes the definition of CRUD schemas for the core business (gyomu) domain. It acts as the single source of truth for the data structures and validation rules required for managing application services, tasks, milestones, and status tracking information.",
+  "summary": "This directory serves as a centralized repository for defining the data validation and structure schemas for domain-specific business entities (gyomu), covering aspects such as task management, service definitions, scheduling configurations, and workflow milestones.",
   "responsibilities": [
-    "Define CRUD operation schemas for application business entities",
-    "Specify structural validation rules for domain-specific data models",
-    "Maintain consistent interface definitions for service and task-related information"
+    "Defining CRUD operation schemas for core business entities",
+    "Establishing standardized data structures for status tracking and task execution",
+    "Enforcing schema validation rules for system configurations and parameter management"
   ],
   "concepts": [
     "CRUD Schemas",
     "Business Entities",
-    "Data Validation",
-    "Task Management Schemas",
-    "Service Schemas"
+    "Task Management",
+    "Service Definitions",
+    "Workflow Milestones"
   ],
   "relationships": [
-    "The CRUD schemas define the shape of data models used across various task and service management modules.",
-    "Business entities are represented as validated schema objects to ensure data integrity during system operations."
+    "CRUD schemas define the required data shape for managing individual business entities. Each schema ensures that data interacting with system services and task handlers remains consistent. These entities collectively represent the business domain logic governing task scheduling and service monitoring."
   ],
   "designDecisions": [
-    "Centralized schema definition approach",
-    "Declarative schema modeling for CRUD operations",
-    "Domain-driven grouping of related business entity schemas"
+    "Centralized schema definition for consistent data validation",
+    "Granular schema separation per business entity type",
+    "Exporting entity schemas through a unified index interface"
   ],
   "importance": "Core"
 }

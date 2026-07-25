@@ -1,0 +1,24 @@
+{
+  "summary": "This directory manages the data structures, section definitions, and contextual requirements needed to generate package README files. It centralizes the configuration and type definitions that govern the content and structure of documentation produced by the system.",
+  "responsibilities": [
+    "Define the required context for package README generation",
+    "Specify valid sections and their identifying markers",
+    "Maintain localized mappings for section titles and display labels"
+  ],
+  "concepts": [
+    "README Context",
+    "Section Identifiers",
+    "Localization Dictionary",
+    "Documentation Structure"
+  ],
+  "relationships": [
+    "The ReadmeBuildContext provides the necessary data input to populate the document structure defined by the section identifiers.",
+    "Section identifiers act as keys to retrieve localized titles and link labels from the configuration dictionaries."
+  ],
+  "designDecisions": [
+    "Use of strict type unions for section identifiers to ensure valid documentation structure",
+    "Centralization of localized display strings for consistent output",
+    "Separation of documentation context from generation logic"
+  ],
+  "importance": "Core"
+}

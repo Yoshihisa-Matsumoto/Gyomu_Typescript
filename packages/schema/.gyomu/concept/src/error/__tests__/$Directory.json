@@ -1,24 +1,25 @@
 {
-  "summary": "This directory manages the definition and testing infrastructure for application-specific error types. It ensures that custom error classes are correctly implemented, maintain standard behaviors, and fulfill requirements for error handling across the codebase.",
+  "summary": "This directory serves as the centralized location for defining and testing custom application error types, ensuring consistent error handling and reporting across the codebase.",
   "responsibilities": [
-    "Defining custom error classes for domain-specific failures",
-    "Validating error class construction and behavior",
-    "Ensuring consistency in error reporting across the application"
+    "Define standardized error classes for the application",
+    "Provide base functionality for error reporting and identification",
+    "Validate schema-related error structures",
+    "Test error propagation and formatting"
   ],
   "concepts": [
-    "Base Error",
-    "Schema Validation Error",
-    "Error Handling",
-    "Test Infrastructure"
+    "Error Hierarchy",
+    "Exception Handling",
+    "Schema Validation",
+    "Error Diagnostics"
   ],
   "relationships": [
-    "Schema validation errors extend the base error class to provide specific context for validation failures.",
-    "Test files verify that custom error classes properly capture and report error information as expected by the application."
+    "Custom error classes inherit from a base error to ensure uniform handling across the system.",
+    "Schema validation errors act as specialized implementations that communicate specific validation failures."
   ],
   "designDecisions": [
-    "Inheritance hierarchy for shared error characteristics",
-    "Isolated testing of error classes to verify construction",
-    "Separation of error definitions from business logic"
+    "Use of class-based inheritance to manage shared error properties",
+    "Colocation of error definitions with their respective test suites",
+    "Centralization of error types to facilitate consistent error categorization"
   ],
   "importance": "Supporting"
 }

@@ -1,25 +1,23 @@
 {
-  "summary": "This directory manages the configuration interfaces for various execution processes within the system. It defines specialized option sets for AI tasks, general analysis procedures, and retry mechanisms to control behavior, debugging, and state management during execution.",
+  "summary": "This directory centralizes the configuration interfaces and option definitions used to control the execution, retry behavior, and analysis parameters of the system. It serves as a unified source for defining how various tasks are configured and monitored during operation.",
   "responsibilities": [
-    "Define schema for configuration options used across execution modules",
-    "Specify retry behavior parameters and observation hooks",
-    "Extend base execution configuration with domain-specific settings",
-    "Provide standardized interfaces for metadata and debug control"
+    "Defining schema and configuration structures for AI and analysis tasks",
+    "Managing execution-wide settings and operational flags",
+    "Providing hooks for monitoring and observing retry attempts"
   ],
   "concepts": [
-    "Execution Configuration",
-    "Retry Strategy",
-    "Execution Options",
-    "Retry Observer"
+    "Configuration interfaces",
+    "Execution settings",
+    "Retry logic",
+    "Observer hooks"
   ],
   "relationships": [
-    "The core execution options serve as a foundation that specialized interfaces like AI and analysis options extend.",
-    "Retry options define logic that dictates how execution processes handle failures through attempt limits and observer interfaces."
+    "Execution options serve as the base configuration from which AI and analysis options extend their specific functional parameters.",
+    "The retry option integrates with retry observers to allow external components to hook into and monitor automated retry lifecycle events."
   ],
   "designDecisions": [
-    "Use of TypeScript interfaces to enforce configuration schema",
-    "Interface inheritance for extending base execution capabilities",
-    "Observer pattern implementation for retry event monitoring"
+    "Inheritance-based interface extension to share common execution properties across different domain options",
+    "Composition of observability patterns to decouple retry logic from monitoring implementation"
   ],
   "importance": "Core"
 }

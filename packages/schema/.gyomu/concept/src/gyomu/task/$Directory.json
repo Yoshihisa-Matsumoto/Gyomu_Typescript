@@ -1,23 +1,23 @@
 {
-  "summary": "This directory manages the lifecycle and operations of milestones, providing a centralized service for verifying, registering, and tracking milestone progress within the application.",
+  "summary": "This directory manages milestone-related operations, providing a centralized service for checking, registering, waiting for, and configuring milestones within the business logic domain.",
   "responsibilities": [
-    "Verify existence of milestones",
-    "Register new milestone configurations",
-    "Monitor or wait for milestone completion",
-    "Retrieve collections of milestone data"
+    "Manage milestone lifecycle operations",
+    "Perform existence checks for milestones",
+    "Handle milestone registration and configuration",
+    "Provide wait mechanisms for milestone completion",
+    "Retrieve milestone lists"
   ],
   "concepts": [
     "Milestone Service",
-    "Milestone Existence",
-    "Milestone Configuration"
+    "Milestone Configuration",
+    "Milestone Existence"
   ],
   "relationships": [
-    "The Milestone Service utilizes the existence check results to determine when to register or update milestone configurations.",
-    "Milestone status information is retrieved through the service to facilitate tracking and wait operations."
+    "The Milestone Service utilizes the milestone existence result to communicate the status and update history of specific milestones."
   ],
   "designDecisions": [
-    "Exposes a service-oriented interface for centralized milestone management.",
-    "Uses specialized types to represent the result of state verification operations."
+    "Service-oriented architecture to encapsulate milestone business logic",
+    "Centralized export strategy through an index file for easier consumption"
   ],
   "importance": "Core"
 }

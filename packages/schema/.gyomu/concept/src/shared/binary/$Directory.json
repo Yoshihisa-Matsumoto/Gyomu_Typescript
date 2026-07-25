@@ -1,22 +1,22 @@
 {
-  "summary": "This directory centralizes low-level utility functions for converting between various binary and string data types. It ensures consistent and reliable transformations between Buffers, ArrayBuffers, and strings across the codebase.",
+  "summary": "This directory provides utilities for binary data manipulation and verification. It serves as a centralized location for low-level operations on binary formats, ensuring consistent handling and validation of binary structures across the application.",
   "responsibilities": [
-    "Encoding strings into binary formats",
-    "Decoding binary data into strings",
-    "Converting between different binary data representations"
+    "Providing standard operations for binary data",
+    "Ensuring consistency in binary format processing",
+    "Validating binary structures through automated testing"
   ],
   "concepts": [
-    "Binary data types",
-    "Data transformation",
-    "Character encoding"
+    "Binary data",
+    "Data validation",
+    "Binary operations"
   ],
   "relationships": [
-    "Transformation functions enable the conversion between raw byte representations and high-level string formats.",
-    "Data type conversions are essential for bridge-building between environment-specific binary buffers and standard data types."
+    "Binary operations utilize validation logic to ensure data integrity.",
+    "Automated tests verify that binary operations adhere to expected structural definitions."
   ],
   "designDecisions": [
-    "Consolidate binary conversion utilities in a shared location",
-    "Abstract environment-specific buffer handling to ensure cross-platform compatibility"
+    "Colocation of utility logic with its corresponding validation tests",
+    "Standardized interface for binary data handling"
   ],
   "importance": "Utility"
 }

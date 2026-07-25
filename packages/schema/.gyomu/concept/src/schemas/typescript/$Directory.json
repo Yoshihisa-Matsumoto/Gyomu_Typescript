@@ -1,30 +1,32 @@
 {
-  "summary": "This directory serves as the centralized schema definition layer for TypeScript code analysis. It provides structured data models and runtime schemas for representing symbols, types, documentation, and relationships, enabling consistent analysis across the codebase.",
+  "summary": "This directory defines the core TypeScript analysis schemas. It provides structural definitions for symbols, members, imports, exports, and types, enabling uniform representation of code metadata for documentation and analysis tools.",
   "responsibilities": [
-    "Defining schema structures for TypeScript code entities and documentation metadata",
-    "Providing runtime validation schemas for analyzed code elements",
-    "Modeling relationships between symbols, including dependencies and imports",
-    "Capturing structural details of class members, signatures, and type definitions",
-    "Representing documentation and JSDoc/TSDoc metadata for analysis"
+    "Define structural schemas for TypeScript code analysis",
+    "Model symbol identity and relationship metadata",
+    "Capture import, export, and member analysis data",
+    "Establish schema-based type representations",
+    "Provide runtime validation and static type definitions"
   ],
   "concepts": [
-    "TypeScript schemas",
-    "Code analysis",
-    "Symbol identity",
+    "TypeScript schema definitions",
+    "Symbol analysis",
+    "Code metadata structures",
     "Dependency representation",
-    "Runtime validation"
+    "Member categorization"
   ],
   "relationships": [
-    "Symbol analysis schemas aggregate structural metadata, signatures, and documentation into comprehensive file analysis records.",
-    "Member and type schemas provide granular building blocks for defining the properties and composition of symbols.",
-    "Dependency and import schemas define the connections between different files and symbols identified during analysis.",
-    "Documentation schemas integrate with symbol analysis to link technical metadata with human-readable documentation."
+    "Symbol analysis serves as the root structure containing signature and dependency metadata.",
+    "Dependency candidates identify relationships between imported symbols and local declarations.",
+    "Member identities and accessors define the structural properties of class or interface members.",
+    "Import and export analyses categorize module-level connectivity and visibility.",
+    "Type structures are composed of foundational language constructs defined across the schema layer."
   ],
   "designDecisions": [
-    "Use of paired TypeScript types and runtime schema constants for every definition",
-    "Consistent application of structural typing to enable metadata extraction and validation",
-    "Modular organization based on code domains like members, types, and JSDoc",
-    "Extensive use of discriminated unions for categorization of code elements"
+    "Use of schema-first definition for runtime validation and type inference",
+    "Modular decomposition of language constructs into distinct schema files",
+    "Dual representation of schemas as both constant objects and static TypeScript types",
+    "Hierarchical composition of metadata to support complex analysis",
+    "Standardized identity keys for tracking symbols across different analysis phases"
   ],
   "importance": "Core"
 }

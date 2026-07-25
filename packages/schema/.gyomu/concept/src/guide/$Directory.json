@@ -1,0 +1,27 @@
+{
+  "summary": "This directory manages the transformation, analysis, and rendering of schema information into guide documentation. It provides the structures and logic required to normalize schema definitions, process associated annotations, and serialize the resulting data into YAML format.",
+  "responsibilities": [
+    "Normalizing schema ASTs into guide node representations",
+    "Aggregating attributes from annotation checks",
+    "Rendering guide nodes into YAML-formatted strings",
+    "Defining core data types for schema guide structures"
+  ],
+  "concepts": [
+    "Schema normalization",
+    "Annotation analysis",
+    "Guide nodes",
+    "YAML rendering",
+    "Schema guide"
+  ],
+  "relationships": [
+    "The normalization process transforms schema ASTs into a consistent guide node structure.",
+    "Annotation checks are aggregated into specific records that integrate with guide nodes.",
+    "Guide nodes serve as the primary input for the YAML rendering service."
+  ],
+  "designDecisions": [
+    "Use of union types to represent diverse schema node kinds",
+    "Configuration-based normalization to support flexible schema processing",
+    "Separation of schema representation from output formatting"
+  ],
+  "importance": "Supporting"
+}

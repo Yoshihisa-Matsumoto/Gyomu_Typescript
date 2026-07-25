@@ -1,24 +1,22 @@
 {
-  "summary": "This directory provides stream transformation utilities for text encoding and decoding. It facilitates the conversion between binary data chunks and text strings to enable seamless processing of character-based data within stream pipelines.",
+  "summary": "This directory manages stream data transformations specifically focused on text encoding and decoding. It provides utilities to convert between character-based streams and binary data formats to ensure compatibility across different data processing pipelines.",
   "responsibilities": [
-    "Transform binary data streams into character streams",
-    "Convert character strings into binary data streams",
-    "Apply text encoding rules during stream processing"
+    "Transforming binary data streams into character-based text streams",
+    "Converting text-based strings into binary data buffers for streaming output",
+    "Applying specified text encodings to stream data"
   ],
   "concepts": [
     "Text Encoding",
     "Stream Transformation",
-    "Binary Data",
-    "Character Streams"
+    "Binary Data Handling"
   ],
   "relationships": [
-    "Text encoding facilitates the conversion between binary buffers and readable character streams.",
-    "Stream transformations act as intermediaries to process data flows between encoding and decoding stages."
+    "The encoding utility functions transform stream data formats to bridge the gap between binary buffers and readable text.",
+    "Stream transformation logic depends on encoding definitions to ensure that data chunks are correctly processed during stream flow."
   ],
   "designDecisions": [
-    "Functional approach for transformation logic",
-    "Support for standardized text encoding formats",
-    "Stream-based data processing architecture"
+    "Functional approach to stream transformation using composable encoder and decoder functions",
+    "Abstracting buffer management to provide a consistent stream interface"
   ],
   "importance": "Utility"
 }

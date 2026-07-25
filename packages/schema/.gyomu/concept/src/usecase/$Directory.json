@@ -1,22 +1,24 @@
 {
-  "summary": "This directory centralizes application use cases, providing a dedicated space to manage and execute core business processes such as holiday data synchronization. It serves as an orchestration layer that mediates interactions between data sources and the persistent system state.",
+  "summary": "This directory provides a testing environment for validating the holiday synchronization service, ensuring that market holiday data processing, fetching, and reconciliation logic function correctly according to defined business rules.",
   "responsibilities": [
-    "Orchestrate application business processes",
-    "Execute holiday synchronization workflows",
-    "Encapsulate application-level logic separate from infrastructure concerns"
+    "Verify the accuracy of synchronized market holiday records",
+    "Validate business logic governing holiday data updates",
+    "Ensure the reliability of service operations through automated checks"
   ],
   "concepts": [
-    "Use Cases",
-    "Business Orchestration",
-    "Holiday Synchronization"
+    "Service testing",
+    "Holiday synchronization",
+    "Test suite",
+    "Business logic verification"
   ],
   "relationships": [
-    "Use cases orchestrate the flow of data between external entities and the internal domain model.",
-    "Business logic within the use cases defines the execution flow of the synchronization process."
+    "The test suite acts as a verification layer for the holiday synchronization service to ensure it adheres to required business processes.",
+    "Automated tests evaluate the reconciliation logic between fetched data and the existing database state."
   ],
   "designDecisions": [
-    "Separation of concerns by isolating business workflows from delivery mechanisms",
-    "Test-driven development approach for core business logic"
+    "Co-location of tests with the corresponding service implementation",
+    "Utilization of behavioral verification to ensure data integrity",
+    "Isolation of service logic to facilitate unit and integration testing"
   ],
-  "importance": "Core"
+  "importance": "Supporting"
 }

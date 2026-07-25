@@ -12,7 +12,11 @@ import {
 } from '@gyomu/tsdoc'
 import { DirectoryConceptRouteId, buildDirectoryConcept } from '@gyomu/concept/directory'
 import { PackageConceptRouteId, buildPackageConcept } from '@gyomu/concept/package'
-import { generateReadmeFiles } from '@gyomu/concept/readme'
+import {
+  ReadmeSectionRouteId,
+  TranslationRouteId,
+  generateReadmeFiles,
+} from '@gyomu/concept/readme'
 import { Effect, Layer } from 'effect'
 
 import {
@@ -22,7 +26,12 @@ import {
   removePath,
   writeStringToFile,
 } from '@gyomu/infra/fs'
-import { analyzeFile, initializeProjectContext, listTypescriptProject } from '@gyomu/ts-analysis'
+import {
+  analyzeFile,
+  initializeProjectContext,
+  listTypescriptProject,
+  saveFileAnalysis,
+} from '@gyomu/ts-analysis'
 import { AI_MODELS } from '@gyomu/ai'
 import type { AnalysisOptions } from '@gyomu/schema'
 
@@ -36,6 +45,8 @@ const runQAWithEnvOrThrow = makeRunner(
       [TsDocRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
       [DirectoryConceptRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
       [PackageConceptRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
+      [ReadmeSectionRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
+      [TranslationRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
     ]),
   ),
 )
@@ -76,7 +87,7 @@ export const snapshotCommand = (
           repoRoot: projects.repositoryRoot,
         })
 
-        yield* removePath(join(projectAbsolutePath, '.gyomu'), { recursive: true })
+        yield* removePath(join(projectAbsolutePath, '.gyomu', 'cache'), { recursive: true })
       }
 
       let changeResult = yield* analyzeProjectChanges({
@@ -149,15 +160,7 @@ export const snapshotCommand = (
             }
             if (options?.commit || options?.recommit) {
               // Save FileAnalysis on project/.gyomu/<filePath>.json
-              const fileAnalysisPath = join(
-                projectAbsolutePath,
-                '.gyomu',
-                fileChange.projectRelativePath + '.json',
-              )
-              yield* writeStringToFile(
-                fileAnalysisPath,
-                JSON.stringify(fileResult.analysis, null, 2),
-              )
+              yield* saveFileAnalysis(projectContext, fileResult.analysis)
             }
             break
           }

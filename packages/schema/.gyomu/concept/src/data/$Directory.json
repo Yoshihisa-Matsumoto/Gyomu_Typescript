@@ -1,28 +1,29 @@
 {
-  "summary": "This directory manages the core data access layer by providing standardized CRUD repository interfaces, entity state synchronization mechanisms, and automated field mapping, while ensuring logical correctness through dedicated verification suites.",
+  "summary": "This directory manages the core CRUD framework and data synchronization logic. It provides the essential infrastructure for mapping database schemas to application data models and executing standardized persistence operations across the system.",
   "responsibilities": [
-    "Define generic data access interfaces",
-    "Synchronize entity states with database records",
-    "Derive repository implementations from schema definitions",
-    "Verify integrity of data differentiation logic"
+    "Defining generic repository interfaces for data operations",
+    "Deriving repository implementations from schema definitions",
+    "Calculating synchronization requirements for data records",
+    "Validating keys against database table structures",
+    "Managing entity metadata and structural schemas"
   ],
   "concepts": [
-    "CRUD Repository",
-    "Data Synchronization",
-    "Schema Definitions",
-    "Entity Differentiation",
-    "Audit Field Integration"
+    "CRUD repository",
+    "Data synchronization",
+    "Schema definitions",
+    "Entity metadata",
+    "Record operations"
   ],
   "relationships": [
-    "Repository interfaces standardize how CRUD operations interact with schema definitions.",
-    "Data synchronization logic utilizes entity differentiation to determine necessary state changes between application and database records.",
-    "Verification suites validate that entity differentiation logic correctly processes data transformations."
+    "Repository interfaces utilize schema definitions to structure data operations performed on database tables.",
+    "Synchronization logic compares entity states to determine necessary database mutations.",
+    "Repository types are derived directly from the underlying schema definitions to ensure type safety."
   ],
   "designDecisions": [
-    "Use of generic interfaces for type-safe data access",
-    "Separation of synchronization logic from repository interfaces",
-    "Co-location of verification tests with implementation logic",
-    "Composition of repository capabilities through interface extension"
+    "Use of generic interfaces for modular CRUD operations",
+    "Schema-driven generation of repository types",
+    "Separation of schema definitions from operational logic",
+    "Type-safe validation of table keys against data schemas"
   ],
   "importance": "Core"
 }

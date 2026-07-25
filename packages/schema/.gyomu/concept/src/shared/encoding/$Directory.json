@@ -1,25 +1,22 @@
 {
-  "summary": "This directory provides a collection of utility modules focused on data encoding and decoding. It serves as a centralized location for handling various character sets and binary-to-text representations, ensuring consistent data transformation logic across the shared codebase.",
+  "summary": "This directory centralizes data encoding and decoding utilities, providing consistent logic for transforming data formats such as Base64 and character sets like Shift-JIS across the application.",
   "responsibilities": [
-    "Encoding raw data into various formats",
-    "Decoding encoded strings back into usable data",
-    "Providing consistent character set handling"
+    "Transform data between different encoding formats",
+    "Decode encoded string or binary data",
+    "Provide uniform character set handling"
   ],
   "concepts": [
     "Data encoding",
-    "Data decoding",
-    "Character sets",
-    "Binary representation"
+    "Character decoding",
+    "Format transformation"
   ],
   "relationships": [
-    "Encoding utilities transform raw data into specific formats for storage or transmission.",
-    "Decoding utilities interpret encoded formats to restore original data representations.",
-    "Character set handlers ensure accurate conversion between different encoding standards."
+    "The encoding utilities provide the necessary logic to interpret raw data as specific character formats like Shift-JIS.",
+    "The decoding logic standardizes the conversion of varied input formats into a consistent internal data representation."
   ],
   "designDecisions": [
-    "Centralized shared logic to prevent duplication of encoding algorithms.",
-    "Unit-tested implementations for encoding and decoding correctness.",
-    "Decoupled utility functions to allow independent usage across different modules."
+    "Co-location of transformation logic for modular accessibility",
+    "Standardized interface for diverse encoding algorithms"
   ],
-  "importance": "Utility"
+  "importance": "Supporting"
 }

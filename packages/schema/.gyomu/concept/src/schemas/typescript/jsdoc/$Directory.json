@@ -1,29 +1,29 @@
 {
-  "summary": "This directory defines the core TypeScript schemas for JSDoc and TSDoc parsing, analysis, and management. It provides structured representations for raw comments, parsed tags, documentation quality metrics, human-edit signals, and protected documentation regions.",
+  "summary": "This directory defines the TypeScript schemas for representing and analyzing JSDoc documentation, including raw content, parsed structural components, protected code regions, and metadata regarding human edits and generation history.",
   "responsibilities": [
-    "Defining schema structures for JSDoc/TSDoc metadata and content",
-    "Modeling parsed documentation tags and block structures",
-    "Representing analysis metrics for documentation quality",
-    "Identifying protected code regions and sections within documentation",
-    "Tracking manual human modifications to generated documentation"
+    "Defining structural schemas for parsed JSDoc comments",
+    "Modeling protected code regions for preservation",
+    "Capturing metadata about JSDoc generation and human modifications",
+    "Providing analytical metrics for documentation quality"
   ],
   "concepts": [
-    "JSDoc schemas",
-    "Parsed documentation",
-    "Documentation quality metrics",
+    "JSDoc parsing",
+    "Documentation metadata",
+    "Protected code regions",
     "Human edit signals",
-    "Protected regions"
+    "Generator markers",
+    "Documentation quality analysis"
   ],
   "relationships": [
-    "ParsedJsDoc aggregates individual tag structures like JsDocParam, JsDocReturns, and JsDocThrows.",
-    "JsDocAnalysis utilizes human edit signals to determine the modification state of documentation.",
-    "RawJsDoc acts as the source for generating ParsedJsDoc structures.",
-    "ProtectedRegion and ProtectedSection define constraints on which documentation parts remain immutable during generation."
+    "ParsedJsDoc structures integrate individual tags like JsDocParam, JsDocReturns, and JsDocThrows.",
+    "RawJsDoc serves as the source material for generating a ParsedJsDoc representation.",
+    "JsDocAnalysis aggregates metrics about documentation quality, including references to HumanEditSignal.",
+    "ProtectedRegion and ProtectedSection define how parts of documentation are isolated and safeguarded during generation processes."
   ],
   "designDecisions": [
-    "Strong typing using TypeScript schemas to ensure structural consistency for parsed documentation",
-    "Separation of concerns between raw comment content and structured parsed metadata",
-    "Inclusion of metadata for change tracking and protection to support automated documentation workflows"
+    "Schema-first definition using const objects to provide both runtime validation and static TypeScript types.",
+    "Explicit separation between raw documentation content and parsed structural components.",
+    "Modular grouping of schema definitions by JSDoc concern."
   ],
   "importance": "Core"
 }
