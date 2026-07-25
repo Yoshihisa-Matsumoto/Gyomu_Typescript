@@ -1,5 +1,8 @@
 import { Schema } from 'effect'
 
+/**
+ * Defines a schema for a source code block, including the language, the code itself, and an optional title.
+ */
 export const CodeBlock = Schema.Struct({
   type: Schema.Literal('code'),
 
@@ -19,4 +22,7 @@ export const CodeBlock = Schema.Struct({
   description: 'A source code block.',
 })
 
+/**
+ * The TypeScript type inferred from the CodeBlock schema.
+ */
 export type CodeBlock = Schema.Schema.Type<typeof CodeBlock>

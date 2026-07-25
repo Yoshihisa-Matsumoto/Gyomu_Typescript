@@ -1,5 +1,8 @@
 import { Schema } from 'effect'
 
+/**
+ * One installation or setup step required before using this package.
+ */
 export const Installation = Schema.Struct({
   command: Schema.String.annotate({
     description: 'The command required to install or set up this package.',
@@ -13,6 +16,9 @@ export const Installation = Schema.Struct({
   description: 'One installation or setup step required before using this package.',
 })
 
+/**
+ * Describes one important dependency that developers should be aware of.
+ */
 export const Dependency = Schema.Struct({
   package: Schema.String.annotate({
     description: 'The package name or dependency identifier.',
@@ -26,6 +32,9 @@ export const Dependency = Schema.Struct({
   description: 'Describes one important dependency that developers should be aware of.',
 })
 
+/**
+ * Describes one compatibility requirement or supported environment.
+ */
 export const Compatibility = Schema.Struct({
   name: Schema.String.annotate({
     description:
@@ -46,6 +55,9 @@ export const Compatibility = Schema.Struct({
   description: 'Describes one compatibility requirement or supported environment.',
 })
 
+/**
+ * Technical reference for installing, configuring, and integrating this package.
+ */
 export const Technical = Schema.Struct({
   installation: Schema.Array(Installation).annotate({
     description:
@@ -104,4 +116,7 @@ export const Technical = Schema.Struct({
   description: 'Technical reference for installing, configuring, and integrating this package.',
 })
 
+/**
+ * The inferred TypeScript type for the Technical schema.
+ */
 export type Technical = Schema.Schema.Type<typeof Technical>

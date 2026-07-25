@@ -1,5 +1,8 @@
 import { Schema } from 'effect'
 
+/**
+ * Defines location information used to pinpoint the exact position of a translation target within a README section.
+ */
 export const SectionLocationSchema = Schema.Struct({
   sectionId: Schema.String.annotate({
     identifier: 'SectionId',
@@ -16,8 +19,14 @@ export const SectionLocationSchema = Schema.Struct({
     'Location information used to identify the exact position of a translation target within a README section.',
 })
 
+/**
+ * Represents location information identifying the position of a translation target within a README section.
+ */
 export type SectionLocation = Schema.Schema.Type<typeof SectionLocationSchema>
 
+/**
+ * Defines a text fragment extracted from a README section that requires translation.
+ */
 export const TranslationTargetSchema = Schema.Struct({
   id: Schema.String.annotate({
     description:
@@ -36,8 +45,14 @@ export const TranslationTargetSchema = Schema.Struct({
   description: 'A text fragment extracted from a README section that requires translation.',
 })
 
+/**
+ * Represents a text fragment extracted from a README section that requires translation.
+ */
 export type TranslationTarget = Schema.Schema.Type<typeof TranslationTargetSchema>
 
+/**
+ * Defines a list of translation results associated with translation targets.
+ */
 export const TranslationResultSchema = Schema.Array(
   Schema.Struct({
     id: Schema.String.annotate({
@@ -53,12 +68,25 @@ export const TranslationResultSchema = Schema.Array(
   }),
 )
 
+/**
+ * Represents the translation output associated with a specific translation target.
+ */
 export type TranslationResult = Schema.Schema.Type<typeof TranslationResultSchema>
 
+/**
+ * An array of language codes supported for translation.
+ */
 export const SupportedTranslationLanguages = ['en', 'ja'] as const
 const LanguageCodeSchema = Schema.Literals(SupportedTranslationLanguages)
+
+/**
+ * Represents the set of valid language codes used for translation.
+ */
 export type LanguageCodes = Schema.Schema.Type<typeof LanguageCodeSchema>
 
+/**
+ * Defines the structure of a translation request, including target language and source text fragments.
+ */
 export const TranslationRequestSchema = Schema.Struct({
   targetLanguage: LanguageCodeSchema.annotate({
     description: 'Target language code for translation. Example: ja, en.',
@@ -77,4 +105,7 @@ export const TranslationRequestSchema = Schema.Struct({
   ),
 })
 
+/**
+ * Represents a request containing the target language and the collection of text fragments to be translated.
+ */
 export type TranslationRequest = Schema.Schema.Type<typeof TranslationRequestSchema>

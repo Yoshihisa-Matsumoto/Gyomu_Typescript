@@ -1,6 +1,17 @@
 import type { Check, Checks } from 'effect/SchemaAST'
 import type { Logger } from '../gyomu/logger/Logger.js'
 
+/**
+ * Analyzes a collection of annotation checks and aggregates their attributes into a single record.
+ *
+ * @param tag The annotation tag to be processed.
+ *
+ * @param checks The list of checks to analyze.
+ *
+ * @param logger Optional logger instance for reporting.
+ *
+ * @returns A record containing the aggregated attributes derived from all checks.
+ */
 export const analyzeAnnotationChecks = (tag: string, checks: Checks, logger?: Logger) => {
   const attributes: Record<string, any> = {}
   for (const item of checks) {

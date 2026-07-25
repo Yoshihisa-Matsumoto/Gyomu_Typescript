@@ -1,5 +1,8 @@
 import type { LanguageCodes } from '../../schemas/document/TranslationTarget.js'
 
+/**
+ * An array of valid identifiers for sections allowed in a README.
+ */
 export const README_SECTION_IDS = [
   'overview',
   'features',
@@ -13,12 +16,18 @@ export const README_SECTION_IDS = [
   'license',
 ] as const
 
+/**
+ * A union type representing a valid README section identifier.
+ */
 export type ReadmeSectionId = (typeof README_SECTION_IDS)[number]
 
 type SectionDictionaryItem = {
   [section in ReadmeSectionId]: string
 }
 
+/**
+ * A localized dictionary of README section titles mapped by language code.
+ */
 export const README_SECTION_TITLES: Record<LanguageCodes, SectionDictionaryItem> = {
   en: {
     overview: 'Overview',
@@ -46,6 +55,9 @@ export const README_SECTION_TITLES: Record<LanguageCodes, SectionDictionaryItem>
   },
 }
 
+/**
+ * A map of language codes to their corresponding display names or link labels.
+ */
 export const README_LINK: Record<LanguageCodes, string> = {
   en: 'US English',
   ja: 'JP 日本語',

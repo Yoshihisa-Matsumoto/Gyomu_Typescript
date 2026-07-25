@@ -4,8 +4,18 @@ interface GuideNodeBase {
   attributes: Record<string, any>
 }
 
+/**
+ * Represents a named node entry in a guide schema.
+ */
 export interface GuideProperty {
+  /**
+   * The identifier of the property.
+   */
   name: string
+
+  /**
+   * The node structure associated with this property.
+   */
   node: GuideNode
 }
 
@@ -21,6 +31,9 @@ interface GuideArrayNode extends GuideNodeBase {
   elementType: GuideNode
 }
 
+/**
+ * Maps schema-friendly type labels to their primitive string representations.
+ */
 export const schemaKindMap = {
   Any: 'any',
   BigInt: 'bigint',
@@ -34,7 +47,13 @@ export const schemaKindMap = {
   Void: 'void',
 } as const
 
+/**
+ * Represents a node in the guide schema corresponding to primitive types.
+ */
 export interface GuidePrimitiveNode extends GuideNodeBase {
+  /**
+   * The specific primitive kind represented by this node.
+   */
   kind:
     | 'any'
     | 'bigint'
@@ -70,6 +89,9 @@ interface GuideRecursiveNode extends GuideNodeBase {
   kind: 'recursive'
 }
 
+/**
+ * A union type representing all possible kinds of guide schema nodes.
+ */
 export type GuideNode =
   | GuideObjectNode
   | GuideArrayNode

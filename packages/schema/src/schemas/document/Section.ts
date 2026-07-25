@@ -2,6 +2,9 @@ import { Schema } from 'effect'
 import { DocumentContent } from './DocumentContent.js'
 import type { Builder } from '../../entity/type.js'
 
+/**
+ * A schema representing a logical section of a document, containing a stable identifier, an optional title, and content blocks.
+ */
 export const Section = Schema.Struct({
   /**
    * Stable section identifier.
@@ -30,4 +33,7 @@ export const Section = Schema.Struct({
   description: 'A logical section of a document.',
 })
 
+/**
+ * The inferred TypeScript type for the Section schema.
+ */
 export type Section = Builder<Schema.Schema.Type<typeof Section>>

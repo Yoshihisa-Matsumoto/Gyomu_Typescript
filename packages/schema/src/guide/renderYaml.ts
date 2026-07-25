@@ -1,5 +1,16 @@
 import type { GuideNode } from './types.js'
 
+/**
+ * Renders a guide node structure into a YAML-formatted string representation.
+ *
+ * @param node The guide node to render.
+ *
+ * @param indent The current indentation level, defaults to 0.
+ *
+ * @param prefix Optional prefix string to prepend to the output.
+ *
+ * @returns The resulting YAML-formatted string.
+ */
 export const renderyaml = (node: GuideNode, indent: number = 0, prefix?: string): string => {
   let yaml = ''
 

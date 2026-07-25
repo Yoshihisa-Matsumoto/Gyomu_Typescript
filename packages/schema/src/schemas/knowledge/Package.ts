@@ -1,5 +1,8 @@
 import { Schema } from 'effect'
 
+/**
+ * Structured knowledge definition provided to an LLM, encompassing the mission, expected behaviors, limitations, terminology, rationale, usage patterns, and practical examples for a specific topic.
+ */
 export const Package = Schema.Struct({
   displayName: Schema.String.annotate({ description: 'Package display name' }),
 
@@ -113,4 +116,7 @@ export const Package = Schema.Struct({
     'Structured knowledge provided to an LLM. It defines the mission, expected behaviors, limitations, terminology, rationale, recommended usage, and practical examples for a specific topic.',
 })
 
+/**
+ * The TypeScript type representation of the Package schema.
+ */
 export type Package = Schema.Schema.Type<typeof Package>

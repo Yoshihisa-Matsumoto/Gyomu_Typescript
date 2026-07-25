@@ -1,6 +1,9 @@
 import { Schema } from 'effect'
 import { Section } from './Section.js'
 
+/**
+ * Represents a structured document, defining its title and a collection of sections, independent of any specific output format.
+ */
 export const Document = Schema.Struct({
   /**
    * Document title.
@@ -20,4 +23,7 @@ export const Document = Schema.Struct({
   description: 'A structured document independent of any output format such as Markdown or HTML.',
 })
 
+/**
+ * The inferred static type of the Document schema.
+ */
 export type Document = Schema.Schema.Type<typeof Document>

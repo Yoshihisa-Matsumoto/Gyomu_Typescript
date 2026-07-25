@@ -1,5 +1,8 @@
 import { Schema } from 'effect'
 
+/**
+ * Developer-oriented operational knowledge including FAQ, known issues, and practical tips.
+ */
 export const Development = Schema.Struct({
   faq: Schema.Array(
     Schema.Struct({
@@ -50,4 +53,7 @@ export const Development = Schema.Struct({
     'Developer-oriented operational knowledge including FAQ, known issues, and practical tips.',
 })
 
+/**
+ * The inferred type of the Development schema.
+ */
 export type Development = Schema.Schema.Type<typeof Development>

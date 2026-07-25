@@ -5,11 +5,30 @@ import type { AST } from 'effect/SchemaAST'
 import type { Logger } from '../gyomu/logger/Logger.js'
 import type { Schema } from 'effect'
 
+/**
+ * Defines configuration options for the normalization process, including depth limits and custom logging.
+ */
 export interface NormalizeSchemaOptions {
+  /**
+   * The maximum recursion depth for schema traversal.
+   */
   maxDepth?: number
+
+  /**
+   * An optional logger for reporting normalization events.
+   */
   logger?: Logger
 }
 
+/**
+ * Normalizes a schema AST into a guide node representation.
+ *
+ * @param schema The schema to normalize.
+ *
+ * @param option Optional configuration for the normalization process.
+ *
+ * @returns The normalized guide node structure.
+ */
 export const normalizeSchema = (
   schema: Schema.Schema<any>,
   option?: NormalizeSchemaOptions,
