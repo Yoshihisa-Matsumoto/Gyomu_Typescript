@@ -24,13 +24,19 @@ import type { RawLoadedConfig } from '../../types/RawLoadedConfig.js'
  * The first matching configuration is returned.
  * Missing files or unmatched lookups result in `undefined`.
  *
- * @typeParam ConfigSchema - Configuration schema.
- * @typeParam RawConfig - Raw configuration type.
- * @param request - Resolution request.
- * @param layer - Layer that defines the lookup hierarchy.
- * @param settingFilePath - JSON settings file path.
+ * @param request The configuration resolution request.
+ *
+ * @param layer The layer defining the lookup hierarchy.
+ *
+ * @param settingFilePath The path to the JSON settings file.
+ *
  * @returns Resolved configuration or `undefined`.
+ *
  * @throws ConfigResolutionError When file access or loading fails.
+ *
+ * @typeParam:ConfigSchema ConfigSchema - The configuration schema type.
+ *
+ * @typeParam:RawConfig RawConfig - The raw configuration data type.
  */
 export const resolveJsonConfig = <
   ConfigSchema extends EffectSchema,

@@ -11,6 +11,15 @@ import type { EffectSchema } from '@gyomu/schema/entity'
 import type { ConfigRawConfig, RawConfigType } from '../types/ConfigRawConfig.js'
 import type { ExcludeOption } from '../types/ExcludeOption.js'
 
+/**
+ * Loads the environment configuration using the provided configuration service and file system.
+ *
+ * @param request The configuration resolve request containing raw configuration and query details.
+ *
+ * @returns An Effect that resolves to the loaded configuration or undefined if the configuration could not be loaded.
+ *
+ * @requires ConfigService and FileSystem.FileSystem context.
+ */
 export const loadEnvConfig = <ConfigSchema extends EffectSchema, RawConfig extends RawConfigType>(
   request: StaticConfigResolveRequest<ConfigSchema, RawConfig>,
 ): Effect.Effect<

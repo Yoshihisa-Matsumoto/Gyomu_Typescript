@@ -10,6 +10,9 @@ interface ConfigRootDirectoryService {
   ) => Effect.Effect<string, ConfigError | IOError, FileSystem.FileSystem | ConfigService>
 }
 
+/**
+ * Represents the service interface for accessing the application's configuration root directory.
+ */
 export class ConfigRootDirectory extends Context.Service<
   ConfigRootDirectory,
   ConfigRootDirectoryService
@@ -17,6 +20,9 @@ export class ConfigRootDirectory extends Context.Service<
 
 const DEFAULT_KEY = 'CONFIG_ROOT_PATH'
 
+/**
+ * A Layer that provides the live implementation of ConfigRootDirectory, using ConfigService to retrieve the root path from environment variables with a default fallback to the 'config' directory in the process working directory.
+ */
 export const ConfigRootDirectoryLive = Layer.effect(
   ConfigRootDirectory,
   Effect.gen(function* () {

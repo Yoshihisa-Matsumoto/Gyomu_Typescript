@@ -49,11 +49,13 @@ export interface ConfigResolverService {
    * The resulting configuration is validated using the provided schema
    * before being returned.
    *
-   * @typeParam ConfigSchema - Target configuration schema.
-   * @param schema Schema used to validate and decode the resolved configuration.
-   * @param query Configuration resolution criteria.
+   * @param request Configuration resolution request containing schema and criteria.
    *
-   * @returns A typed configuration value.
+   * @returns An Effect that resolves to a validated configuration, or fails with a ConfigResolutionError.
+   *
+   * @template ConfigSchema - The schema used for validation.
+   *
+   * @template RawConfig - The raw configuration type.
    */
   readonly get: <ConfigSchema extends EffectSchema, RawConfig extends RawConfigType>(
     request: ConfigRequest<ConfigSchema, RawConfig>,
@@ -74,6 +76,9 @@ export class ConfigResolver extends Context.Service<ConfigResolver, ConfigResolv
   '@gyomu/config/ConfigResolver',
 ) {}
 
+/**
+ * A live implementation of the ConfigResolver service provided as a Layer.
+ */
 export const ConfigResolverLive = Layer.effect(
   ConfigResolver,
 

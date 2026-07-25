@@ -3,6 +3,9 @@ import { Data } from 'effect'
 import type { ConfigQuery } from '../ConfigQuery.js'
 import type { AppErrorContext } from '@gyomu/schema'
 
+/**
+ * Represents the specific stage in the configuration resolution lifecycle.
+ */
 export type ConfigResolutionPhase =
   | 'path-resolve'
   | 'config-load'
@@ -12,6 +15,9 @@ export type ConfigResolutionPhase =
   | 'function-resolve'
   | 'validation'
 
+/**
+ * Defines the context for errors encountered during the configuration resolution process, including the query, phase, and retryability.
+ */
 export interface ConfigResolutionErrorContext extends AppErrorContext {
   /**
    * Resolution scope used to locate applicable configuration layers
@@ -20,7 +26,7 @@ export interface ConfigResolutionErrorContext extends AppErrorContext {
   readonly query: ConfigQuery
 
   /**
-   * Resolution phase.
+   * The specific resolution phase where the error occurred.
    */
   readonly phase: ConfigResolutionPhase
 
@@ -30,6 +36,9 @@ export interface ConfigResolutionErrorContext extends AppErrorContext {
   readonly retryable: boolean
 }
 
+/**
+ * An error thrown when a configuration resolution failure occurs.
+ */
 export class ConfigResolutionError extends withErrorTraits(
   Data.TaggedError('ConfigResolutionError')<ConfigResolutionErrorContext>,
   {

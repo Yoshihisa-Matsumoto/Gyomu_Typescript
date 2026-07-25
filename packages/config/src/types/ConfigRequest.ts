@@ -112,13 +112,21 @@ export interface RuntimeConfigRequest<
  * - Database-backed configuration
  *
  * @typeParam ConfigSchema - Schema describing the final resolved configuration.
+ *
+ * @typeParam RawConfig - The type of the raw configuration source.
  */
 export interface StaticConfigRequest<
   ConfigSchema extends EffectSchema,
   RawConfig extends RawConfigType,
 > extends BaseConfigRequest<ConfigSchema> {
+  /**
+   * The configuration resolution mode.
+   */
   readonly resolutionMode: StaticResolutionMode
 
+  /**
+   * The raw configuration source content.
+   */
   readonly rawConfig: RawConfig
 }
 
@@ -131,6 +139,8 @@ export interface StaticConfigRequest<
  * - {@link StaticConfigRequest}
  *
  * @typeParam ConfigSchema - Schema describing the final resolved configuration.
+ *
+ * @typeParam RawConfig - The type of the raw configuration source.
  */
 export type ConfigRequest<ConfigSchema extends EffectSchema, RawConfig extends RawConfigType> =
   | RuntimeConfigRequest<ConfigSchema>
