@@ -135,7 +135,7 @@ describe('calculateComplexityMetrics', () => {
         ],
       },
     } as any as FileAnalysisContext)
-    console.dir(result.get(symbolId), { depth: null })
+    // console.dir(result.get(symbolId), { depth: null })
     expect(result.get(symbolId)).toMatchObject({
       referencedTypeCount: 1,
     })

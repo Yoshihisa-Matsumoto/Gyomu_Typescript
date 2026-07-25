@@ -103,8 +103,8 @@ export const snapshotCommand = (
 
       const fileFilter = createPathMatcher(options?.filter)
 
-      console.dir(projectContext, { depth: null })
-      console.dir(projectContext.includedFiles.keys().toArray())
+      // console.dir(projectContext, { depth: null })
+      // console.dir(projectContext.includedFiles.keys().toArray())
 
       yield* makeDirectory('./log')
       for (const fileChange of changeResult.diff) {

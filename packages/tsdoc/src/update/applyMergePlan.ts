@@ -25,7 +25,7 @@ export const applyMergePlan = (
     //   )
     // })
     if (!targetSymbolData) {
-      console.log(plan.target)
+      // console.log(plan.target)
       return yield* Effect.fail(
         new UpdateError({
           filePath: fileResult.analysis.path,

@@ -146,7 +146,7 @@ export const analyzeTypeLiteralNode = (
       }
 
       if (Node.isPropertySignature(member)) {
-        console.log(member.getName())
+        // console.log(member.getName())
         const memberTypeNode = member.getTypeNode()
 
         if (Node.isFunctionTypeNode(memberTypeNode)) {
@@ -176,7 +176,7 @@ export const analyzeTypeLiteralNode = (
             { ...args, node: memberTypeNode, memberPath: newMemberPath },
             [name],
           )
-          console.dir(methodType.dependencies, { depth: null })
+          // console.dir(methodType.dependencies, { depth: null })
           const prepareResult = prepareMethodAnalysis(
             args.sourceRelativePath,
             args.metadata,
