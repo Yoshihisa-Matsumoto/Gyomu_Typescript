@@ -124,6 +124,15 @@ export const analyzeType = (
           dependencies: [],
           reservedNames: [],
         }
+      case SyntaxKind.UnknownKeyword:
+        return {
+          member: {
+            text: 'unknown',
+            source: 'typescript',
+          },
+          dependencies: [],
+          reservedNames: [],
+        }
     }
     console.log(`${(node as Node).getKindName()}`)
     // console.dir(node, { depth: null })

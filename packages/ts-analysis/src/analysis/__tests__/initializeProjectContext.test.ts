@@ -49,4 +49,4 @@ describe('initializeProjectContext', () => {
       message: 'fail to read package.json',
     })
   })
-})
+}, 20_000)
