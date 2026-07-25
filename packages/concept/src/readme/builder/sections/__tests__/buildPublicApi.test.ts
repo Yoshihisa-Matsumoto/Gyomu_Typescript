@@ -29,8 +29,8 @@ describe('buildPublicApi', () => {
         {
           type: 'bullet-list',
           items: [
-            '`UserService` - Provides user management operations.',
-            '`AuthService` - Handles authentication.',
+            'UserService - Provides user management operations.',
+            'AuthService - Handles authentication.',
           ],
         },
       ],

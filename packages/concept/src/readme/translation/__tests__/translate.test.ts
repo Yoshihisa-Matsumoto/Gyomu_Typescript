@@ -49,7 +49,7 @@ describe('translate', () => {
 
     await runQAWithEnvOrThrow(translate(context, 'ja', targets))
 
-    expect(executeTranslation).toHaveBeenCalledWith({
+    expect(executeTranslation).toHaveBeenCalledWith('test-package', {
       targetLanguage: 'ja',
       translations: [
         {
