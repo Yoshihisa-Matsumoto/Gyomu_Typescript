@@ -1,0 +1,97 @@
+# yaml-language-server: $schema=../../../../schemas/Package.json
+
+displayName: Gyomu AI
+
+mission: |
+  GyomuプロジェクトにおけるAgent実行基盤を提供する。
+  AIモデルとプロジェクト解析機能を組み合わせ、
+  宣言的かつ拡張可能なAgentワークフローを構築・実行することで、
+  コード解析、自動生成、自動更新などの高度な開発支援機能の基盤となることを目的とする。
+
+policies:
+  - Agentは責務ごとに独立したコンポーネントとして設計する。
+  - Agentの振る舞いは宣言的に定義し、実装と設定を可能な限り分離する。
+  - AgentはEffectによる依存性注入を利用し、直接インフラへ依存してはならない。
+  - 長時間実行される処理は状態遷移を明確に管理する。
+  - AIによる推論結果は必要に応じてスキーマ検証を行い、安全なデータとして扱う。
+  - Agent同士は疎結合とし、再利用可能なワークフローとして構成する。
+  - エラーは構造化し、実行状況や診断情報を保持できるよう設計する。
+
+constraints:
+  - 特定のAIプロバイダーへ直接依存してはならない。
+  - ビジネスロジックを実装してはならない。
+  - エージェント内部からインフラ実装を直接利用してはならず、サービス経由でアクセスすること。
+  - Agentの状態をグローバル変数で保持してはならない。
+  - Agentは純粋な計算と副作用を明確に分離すること。
+
+nonGoals:
+  - 特定用途専用のAgentを提供すること。
+  - AIモデルの実装やSDKを提供すること。
+  - エディタやIDEとの統合を提供すること。
+  - アプリケーション固有のワークフローを実装すること。
+  - インフラストラクチャ層の責務を担うこと。
+
+terminology:
+  - term: Agent
+    definition: 特定の目的を達成するために複数の処理を調整・実行するコンポーネント。
+
+  - term: Workflow
+    definition: Agentが順序立てて実行する処理の流れ。
+
+  - term: Agent Orchestration
+    definition: 複数のAgentや処理を協調させながら実行する仕組み。
+
+  - term: Code Intelligence
+    definition: ソースコードの構造・意味・ドキュメントなどを解析し、高度な開発支援を実現する能力。
+
+rationale:
+  - Agentを独立したコンポーネントとして設計することで、再利用性と保守性を高められる。
+  - AI推論とコード解析を疎結合に保つことで、新しいモデルや解析手法へ柔軟に対応できる。
+  - 宣言的なワークフローを採用することで、Agentの動作を理解しやすくテストしやすい構造を維持できる。
+  - Effectによる依存性注入を利用することで、副作用を制御しながら複雑なAgent処理を構築できる。
+
+usage:
+  - situation: 新しいAgentを追加する
+    guidance: 既存のAgent基盤を利用し、責務ごとに独立したAgentとして実装する。
+
+  - situation: AIを利用した処理を追加する
+    guidance: AI呼び出しをワークフローの一部として組み込み、必要に応じてスキーマ検証を行う。
+
+  - situation: プロジェクト解析を実行する
+    guidance: Code Intelligence機能を利用して解析結果を取得し、Agentの判断材料として利用する。
+
+  - situation: Agentをテストする
+    guidance: テスト用の入力とモックサービスを利用し、Agentの振る舞いを副作用から独立して検証する。
+
+examples:
+  - title: README生成Agent
+    input: |
+      パッケージ情報からREADMEを生成したい。
+    output: |
+      README生成用Agentを実装し、解析・AI推論・Markdown生成をワークフローとして構成する。
+    explanation: |
+      Agentは複数の処理を統合して一つの目的を達成する。
+
+  - title: コード解析Agent
+    input: |
+      TypeScriptプロジェクトを解析したい。
+    output: |
+      Code Intelligence機能を利用して解析結果を取得し、必要な判断を行う。
+    explanation: |
+      Agent自身は解析アルゴリズムではなく、解析処理の調整を担当する。
+
+  - title: AI推論
+    input: |
+      LLMを利用してドキュメントを生成したい。
+    output: |
+      AIサービスを利用して推論を実行し、結果をスキーマ検証して利用する。
+    explanation: |
+      AI出力は信頼せず、常に検証可能なデータとして扱う。
+
+  - title: ワークフロー拡張
+    input: |
+      README生成後に翻訳処理を追加したい。
+    output: |
+      新しいAgentまたはWorkflowを追加し、既存処理へ組み込む。
+    explanation: |
+      ワークフローを宣言的に構成することで、機能追加を容易に行える。

@@ -18,6 +18,9 @@ import type { RouteNotFoundError } from '../error/RouteNotFoundError.js'
 
 export type { StreamTextResult } from 'ai'
 
+/**
+ * Parameters for generating text, including routing and model selection, prompt input, tool configuration, and optional max tokens.
+ */
 export type GenerateTextParams = Request<
   RouteSelection & ModelSelection,
   PromptInput &
@@ -26,6 +29,9 @@ export type GenerateTextParams = Request<
     }
 >
 
+/**
+ * Parameters for streaming text, including routing and model selection, prompt input, tool configuration, and optional max tokens.
+ */
 export type StreamTextParams = Request<
   RouteSelection & ModelSelection,
   PromptInput &
@@ -34,6 +40,9 @@ export type StreamTextParams = Request<
     }
 >
 
+/**
+ * Parameters for generating structured objects, including routing and model selection, prompt input, tool configuration, and the required schema.
+ */
 export type GenerateObjectParams<TSchema extends EffectArrayableSchema> = Request<
   RouteSelection & ModelSelection,
   PromptInput &
@@ -42,6 +51,9 @@ export type GenerateObjectParams<TSchema extends EffectArrayableSchema> = Reques
     }
 >
 
+/**
+ * Parameters for generating embeddings, including routing and the input value.
+ */
 export type EmbedParams<TValue> = Request<
   RouteSelection,
   {
@@ -50,16 +62,24 @@ export type EmbedParams<TValue> = Request<
 >
 
 /**
- * =========================================
- * Service Definition
- * =========================================
+ * Provides a service interface for routing AI model requests to appropriate execution handlers.
  */
 
 export interface AiModelRouteService {
+  /**
+   * Generates text content based on the provided parameters.
+   *
+   * @returns An effect that produces text generation results, requiring `ModelRoutes` and potentially failing with `RouteNotFoundError` or `AiError`.
+   */
   readonly generateText: (
     params: GenerateTextParams,
   ) => Effect.Effect<AiGenerateTextResult, RouteNotFoundError | AiError, ModelRoutes>
 
+  /**
+   * Streams text generation responses based on the provided parameters.
+   *
+   * @returns An effect that produces a stream of text results, requiring `ModelRoutes` and potentially failing with `RouteNotFoundError` or `AiError`.
+   */
   readonly streamText: (
     params: StreamTextParams,
   ) => Effect.Effect<
@@ -68,6 +88,11 @@ export interface AiModelRouteService {
     ModelRoutes
   >
 
+  /**
+   * Generates a structured object based on the provided schema and parameters.
+   *
+   * @returns An effect producing a structured object result, requiring `ModelRoutes` and potentially failing with `RouteNotFoundError` or `AiError`.
+   */
   readonly generateObject: <TSchema extends EffectArrayableSchema>(
     params: GenerateObjectParams<TSchema>,
   ) => Effect.Effect<
@@ -76,15 +101,18 @@ export interface AiModelRouteService {
     ModelRoutes
   >
 
+  /**
+   * Generates embeddings for the provided input values.
+   *
+   * @returns An effect returning an array of numbers representing the embedding, requiring `ModelRoutes` and potentially failing with `RouteNotFoundError` or `AiError`.
+   */
   readonly embed: <TValue>(
     params: EmbedParams<TValue>,
   ) => Effect.Effect<ReadonlyArray<number>, RouteNotFoundError | AiError, ModelRoutes>
 }
 
 /**
- * =========================================
- * Context Tag
- * =========================================
+ * Context service implementation for AI model routing.
  */
 
 export class AiModelRoute extends Context.Service<AiModelRoute, AiModelRouteService>()(
@@ -107,6 +135,9 @@ export class AiModelRoute extends Context.Service<AiModelRoute, AiModelRouteServ
     }),
   },
 ) {
+  /**
+   * The live layer implementation for the AI model route service.
+   */
   static readonly live = Layer.effect(this, this.make)
 }
 

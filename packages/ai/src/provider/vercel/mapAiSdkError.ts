@@ -2,6 +2,15 @@ import { APICallError, RetryError } from 'ai'
 import { withOptional } from '@gyomu/schema'
 import type { AIErrorContext, AIOperation } from '@gyomu/schema'
 
+/**
+ * Creates a structured error context from a caught exception for AI operations.
+ *
+ * @param error The error object to process.
+ *
+ * @param params Configuration object containing the model name and operation type.
+ *
+ * @returns A normalized AIErrorContext object representing the error state and recovery strategy.
+ */
 export const createAiErrorContext = (
   error: unknown,
   params: { model: string; operation: AIOperation },

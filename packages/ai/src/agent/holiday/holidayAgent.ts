@@ -1,6 +1,9 @@
 import { Agent } from '@mastra/core/agent'
 import { getHolidayTool } from '../../tool/businessCalendar/getHolidayTool.js'
 
+/**
+ * An agent configured to identify and return public holidays within a specified date range using the getHolidayTool.
+ */
 export const holidayAgent = new Agent({
   id: 'holiday-agent',
   name: 'Holiday Agent',

@@ -3,6 +3,15 @@ import type { ModelRoute } from './ModelRoute.js'
 import type { AiModelRegistry } from '../model/AiModels.js'
 import type { AiError } from '@gyomu/schema'
 
+/**
+ * Executes an operation across a sequence of model registry nodes in a route, attempting fallbacks when an error occurs.
+ *
+ * @param route The route definition containing the sequence of model registry nodes.
+ *
+ * @param execute The function to execute against a registry node.
+ *
+ * @returns An Effect representing the success result or the last encountered error if all nodes fail.
+ */
 export const runWithModelRoute = <A>(
   route: ModelRoute,
   execute: (registry: AiModelRegistry) => Effect.Effect<A, AiError>,

@@ -22,6 +22,11 @@ const targetLayer = Layer.mergeAll(
   .pipe(Layer.provideMerge(PlatformLayer))
 const runner = makeRunner(targetLayer)
 
+/**
+ * An AI tool that retrieves a list of holidays in Japan within a specified date range.
+ *
+ * @returns Returns a promise that resolves to an array of local dates representing holidays.
+ */
 export const getHolidayTool = createTool({
   id: 'getHoliday',
   description: 'Retrieve holiday list in Japan. date format must be YYYY-MM-DD ',

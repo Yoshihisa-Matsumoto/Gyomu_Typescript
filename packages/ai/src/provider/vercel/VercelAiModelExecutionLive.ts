@@ -21,6 +21,11 @@ import type { Effect } from 'effect'
 import type { EffectArrayableSchema } from '@gyomu/schema/entity'
 import type { AiModelRegistry } from '../../model/AiModels.js'
 
+/**
+ * Creates a live implementation of the AiModelExecution service configured for Vercel AI SDK providers.
+ *
+ * @returns Returns a configured AiModelExecution instance.
+ */
 export const makeAiModelExecution = (): AiModelExecution => ({
   generateText: (
     registry: AiModelRegistry,
@@ -135,4 +140,7 @@ export const makeAiModelExecution = (): AiModelExecution => ({
   },
 })
 
+/**
+ * A Layer containing the Vercel AI SDK implementation of the AiModelExecution service.
+ */
 export const VercelAiModelExecutionLive = Layer.succeed(AiModelExecution, makeAiModelExecution())

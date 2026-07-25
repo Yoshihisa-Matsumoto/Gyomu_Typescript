@@ -20,9 +20,9 @@ import type {
 import type { EffectArrayableSchema } from '@gyomu/schema/entity'
 
 /**
- * =========================================
- * Service Implementation
- * =========================================
+ * Creates an implementation of the AiModelService using Vercel AI SDK.
+ *
+ * @returns An instance of AiModelService.
  */
 
 export const makeAiService = (): AiModelService => ({
@@ -131,9 +131,7 @@ export const makeAiService = (): AiModelService => ({
 })
 
 /**
- * =========================================
- * Layer
- * =========================================
+ * A Layer that provides the Vercel-backed AiModelService implementation.
  */
 
 export const VercelAiModelServiceLive = Layer.succeed(AiModelService, makeAiService())

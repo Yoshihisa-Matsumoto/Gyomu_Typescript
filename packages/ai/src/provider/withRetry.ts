@@ -2,6 +2,15 @@ import { Duration, Effect } from 'effect'
 import { withOptional } from '@gyomu/schema'
 import type { AiError, RetryObserver, RetryOption } from '@gyomu/schema'
 
+/**
+ * Wraps an effect with a retry mechanism based on the provided configuration.
+ *
+ * @param effect The effect to execute with retries.
+ *
+ * @param option Optional configuration for the retry behavior.
+ *
+ * @returns An effect that performs the operation with retry logic applied.
+ */
 export const withRetry = <A>(
   effect: Effect.Effect<A, AiError>,
   option?: RetryOption,

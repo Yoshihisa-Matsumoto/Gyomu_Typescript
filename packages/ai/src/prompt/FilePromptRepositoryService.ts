@@ -45,6 +45,15 @@ const FilePromptRepositoryService: PromptRepositoryService = {
   publish: (key: string, version: number) => Effect.succeed(undefined),
 }
 
+/**
+ * Retrieves a specific version of a prompt from the file result.
+ *
+ * @param fileResult The file result container including creation timestamp and prompt file data.
+ *
+ * @param version The version number to retrieve.
+ *
+ * @returns The requested version data, or undefined if the version does not exist.
+ */
 export const getPromptVersion = (
   fileResult: {
     createdAt: string
@@ -65,6 +74,13 @@ export const getPromptVersion = (
   }
 }
 
+/**
+ * Loads a prompt file and its creation metadata from a YAML file.
+ *
+ * @param key The unique identifier for the prompt, used as the file name.
+ *
+ * @returns An Effect that yields the parsed prompt file and its creation timestamp, or a failure if loading fails.
+ */
 export const loadPromptFileType = (key: string) =>
   Effect.gen(function* () {
     const promptRootDirectory = yield* getPromptRepository()
@@ -86,6 +102,9 @@ export const loadPromptFileType = (key: string) =>
     ),
   )
 
+/**
+ * A Layer that provides the FilePromptRepositoryService implementation for the PromptRepository dependency.
+ */
 export const FilePromptRepositoryLayer = Layer.succeed(
   PromptRepository,
   FilePromptRepositoryService,
