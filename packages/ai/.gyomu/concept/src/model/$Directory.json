@@ -1,0 +1,27 @@
+{
+  "summary": "This directory centralizes the definition, registry management, and identification of AI models. It provides a structured mechanism to configure, retrieve, and inject various language and embedding models into the application context.",
+  "responsibilities": [
+    "Define identifiers for supported AI models",
+    "Maintain a registry of available AI and embedding models",
+    "Provide accessors to retrieve configured models",
+    "Define service context for AI model management"
+  ],
+  "concepts": [
+    "AI Model Registry",
+    "Model Identifiers",
+    "Language Models",
+    "Embedding Models",
+    "Effect Layers"
+  ],
+  "relationships": [
+    "AI model identifiers map to specific entries within the AI model registry.",
+    "The registry service provides access to both language models and embedding models.",
+    "Effect layers facilitate the dependency injection of the configured model registry into the application."
+  ],
+  "designDecisions": [
+    "Use of Effect Context Service for dependency management",
+    "Union types for model identification",
+    "Centralized registry pattern for model retrieval"
+  ],
+  "importance": "Core"
+}

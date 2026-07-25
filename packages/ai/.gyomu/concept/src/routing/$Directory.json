@@ -1,0 +1,29 @@
+{
+  "summary": "This directory orchestrates the routing of AI model requests by mapping identifiers to specific model configurations and managing the execution flow, including automated fallbacks for resilient request handling.",
+  "responsibilities": [
+    "Manage AI model route configurations and lookup services",
+    "Define routing paths for AI model requests",
+    "Execute operations across sequences of model registry nodes",
+    "Implement fallback logic for error handling during model execution",
+    "Standardize parameters for text generation, structured object generation, and embedding tasks"
+  ],
+  "concepts": [
+    "Model route",
+    "Routing service",
+    "Route node",
+    "Model execution",
+    "Fallback mechanism"
+  ],
+  "relationships": [
+    "A model route consists of a sequence of route nodes that define the hierarchy and configuration for model execution.",
+    "The routing service provides access to configured routes by their unique identifiers.",
+    "The execution utility consumes model routes to perform operations by iterating through nodes until a successful result is obtained or all fallbacks are exhausted."
+  ],
+  "designDecisions": [
+    "Use of nominal branding for model route identifiers to ensure type safety",
+    "Implementation of a tree-based routing structure to support multi-stage fallback logic",
+    "Separation of route configuration from execution logic",
+    "Unified parameter interfaces for heterogeneous AI tasks like generation and embedding"
+  ],
+  "importance": "Core"
+}

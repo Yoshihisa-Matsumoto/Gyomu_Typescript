@@ -1,0 +1,25 @@
+{
+  "summary": "This directory contains integration and live tests for Vercel AI provider functionalities, focusing on verifying model execution, service operations, and retry mechanisms within real-world execution environments.",
+  "responsibilities": [
+    "Validating model execution against the Vercel AI provider",
+    "Ensuring service operational stability",
+    "Testing integration of retry logic within provider communication"
+  ],
+  "concepts": [
+    "Vercel AI Provider",
+    "Model Execution",
+    "Service Integration",
+    "Retry Mechanisms",
+    "Live Integration Testing"
+  ],
+  "relationships": [
+    "Retry mechanisms are tested in conjunction with Vercel AI service calls to ensure reliability.",
+    "Model execution tests verify the communication interface between the application and the Vercel AI provider."
+  ],
+  "designDecisions": [
+    "Isolation of integration tests into a dedicated directory",
+    "Focus on end-to-end verification of provider-specific features",
+    "Separation of live testing concerns from core implementation"
+  ],
+  "importance": "Supporting"
+}

@@ -1,0 +1,27 @@
+{
+  "summary": "This directory contains the integration test suite for the Vercel AI provider. It validates core functionality including prompt construction, tool runtime configuration, and the live execution lifecycle of model services.",
+  "responsibilities": [
+    "Verifying the correct construction of model prompts",
+    "Validating tool runtime configurations",
+    "Testing live execution workflows for Vercel AI models",
+    "Ensuring service consistency through end-to-end integration scenarios"
+  ],
+  "concepts": [
+    "Integration Tests",
+    "Vercel AI Provider",
+    "Model Execution",
+    "Tool Runtime",
+    "Service Lifecycle"
+  ],
+  "relationships": [
+    "Integration tests validate the interaction between prompt construction logic and the Vercel AI model service.",
+    "The tool runtime configuration serves as a dependency for the successful execution of model service requests.",
+    "Test scenarios exercise the live model service to ensure expected behavior across different runtime configurations."
+  ],
+  "designDecisions": [
+    "Collocation of tests with the corresponding provider implementation logic",
+    "Focus on live service interaction rather than mocked dependencies",
+    "Isolation of configuration and execution tests within the Vercel provider namespace"
+  ],
+  "importance": "Supporting"
+}

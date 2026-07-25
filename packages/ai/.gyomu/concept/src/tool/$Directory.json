@@ -1,0 +1,27 @@
+{
+  "summary": "This directory defines the core abstractions, interfaces, and shared types for creating, configuring, and executing AI-integrated tools within the application, providing a standard contract for tool implementations and their lifecycle management.",
+  "responsibilities": [
+    "Define standard interfaces for AI-integrated tools",
+    "Establish contracts for tool execution and configuration",
+    "Track active tool execution tasks and identifiers",
+    "Define policies for tool execution approval"
+  ],
+  "concepts": [
+    "AI Tool Interface",
+    "Execution Context",
+    "Tool Configuration",
+    "Execution Task",
+    "Approval Policy"
+  ],
+  "relationships": [
+    "The AiTool interface provides the structural requirements for defining tools that can be executed within the system.",
+    "AiToolExecutionContext aggregates the configuration, identity, and environmental data necessary for a tool to function.",
+    "Approval policies act as a gatekeeper to evaluate whether a tool execution instance can proceed."
+  ],
+  "designDecisions": [
+    "Use of interfaces to enforce strict tool structure and metadata requirements",
+    "Separation of execution context from tool configuration",
+    "Strongly typed identifiers for tracking tool execution lifecycles"
+  ],
+  "importance": "Core"
+}

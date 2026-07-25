@@ -1,0 +1,28 @@
+{
+  "summary": "This directory manages the provider abstraction layer, defining core interfaces for AI model services while providing concrete implementations and retry mechanisms to ensure reliable and consistent interactions with external AI providers.",
+  "responsibilities": [
+    "Define standardized interfaces for interacting with various AI models",
+    "Provide concrete provider implementations for AI service execution",
+    "Implement reliability mechanisms like retries for external service calls",
+    "Facilitate dependency injection for AI provider services"
+  ],
+  "concepts": [
+    "AI Provider Integration",
+    "Service Interfaces",
+    "Retry Logic",
+    "Model Execution",
+    "Provider Abstraction"
+  ],
+  "relationships": [
+    "The core service interfaces define the contract that concrete provider implementations must satisfy.",
+    "Retry logic wraps service execution calls to manage transient failures during provider interactions.",
+    "Provider-specific implementations translate internal service requests into formats required by external model APIs."
+  ],
+  "designDecisions": [
+    "Use of interface-based design to decouple consumer logic from specific provider implementations",
+    "Decorator pattern for injecting retry behavior into provider operations",
+    "Layered architecture separating generic interface definitions from concrete integration logic",
+    "Dependency injection via service tags to support flexible provider selection"
+  ],
+  "importance": "Core"
+}

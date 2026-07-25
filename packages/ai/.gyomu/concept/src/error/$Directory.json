@@ -1,0 +1,23 @@
+{
+  "summary": "This directory centralizes the definition and management of domain-specific errors for the application. It provides structured error classes and context interfaces to ensure consistent error handling, debugging, and diagnostics across different service operations.",
+  "responsibilities": [
+    "Define specialized error classes for specific operational failure modes",
+    "Provide diagnostic context for troubleshooting and error analysis",
+    "Categorize errors by lifecycle phase and retryability"
+  ],
+  "concepts": [
+    "Error Hierarchy",
+    "Error Context",
+    "Operation Lifecycle",
+    "Failure Diagnostics"
+  ],
+  "relationships": [
+    "Error classes encapsulate error context interfaces to provide structured metadata during an application failure.",
+    "The operation lifecycle phase helps define the context in which a specific error occurs."
+  ],
+  "designDecisions": [
+    "Use of specialized context interfaces for each error type to enforce type-safe error metadata",
+    "Separation of concerns by creating dedicated error classes for distinct failure domains like AI providers and routing"
+  ],
+  "importance": "Supporting"
+}
