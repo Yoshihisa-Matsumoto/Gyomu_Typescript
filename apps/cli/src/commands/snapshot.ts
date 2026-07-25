@@ -66,6 +66,7 @@ export const snapshotCommand = (
       if (options?.loggingKeyword) {
         analysisOption.debugInfo = {
           keyword: options.loggingKeyword,
+          trace: true,
         }
       }
 

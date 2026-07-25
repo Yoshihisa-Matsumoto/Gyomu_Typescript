@@ -2,6 +2,13 @@ import { join, resolve } from 'node:path'
 import { Project } from 'ts-morph'
 import { initLoggerFromEnv } from '@gyomu/infra'
 
+/**
+ * Analyzes a TypeScript project at a given path to extract module import and export relationships for specified root paths.
+ *
+ * @param projectPath The filesystem path to the project root directory containing the tsconfig.json.
+ *
+ * @param exportRootPathEntries A list of relative paths within the project to analyze for imports and exports.
+ */
 export const analyzeTsProject = (projectPath: string, exportRootPathEntries: Array<string>) => {
   const project = new Project({
     tsConfigFilePath: join(projectPath, 'tsconfig.json'),

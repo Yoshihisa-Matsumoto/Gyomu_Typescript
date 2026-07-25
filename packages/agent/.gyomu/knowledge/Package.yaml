@@ -1,0 +1,97 @@
+# yaml-language-server: $schema=../../../../schemas/Package.json
+
+displayName: Gyomu Agent
+
+mission: |
+  Gyomu プロジェクト全体の設定管理基盤（Configuration Platform）を提供する。
+  グローバル・ユーザー・スコープごとの設定を階層的に解決し、
+  Effect Schema による検証を経て型安全な設定を提供することで、
+  アプリケーション全体で一貫した設定管理を実現する。
+
+policies:
+  - 設定は複数の階層（グローバル・ユーザー・スコープなど）から解決し、一貫した優先順位でマージする。
+  - すべての設定は利用前に Effect Schema により検証する。
+  - 設定取得は ConfigResolver サービスを経由して行い、設定ソースへ直接アクセスしてはならない。
+  - 設定解決は型安全かつイミュータブルに行う。
+  - 設定取得時の失敗は構造化されたエラーとして返し、原因を診断できる情報を保持する。
+  - 新しい設定種別やスコープは既存 API を壊さず拡張できる設計を維持する。
+  - 設定解決処理は宣言的に構築し、副作用を最小限に保つ。
+
+constraints:
+  - 設定の永続化方法（ファイル・環境変数・データベースなど）へ直接依存してはならない。
+  - 設定値を保持するストレージの実装を提供してはならない。
+  - アプリケーション固有の設定項目を実装してはならない。
+  - ビジネスロジックを実装してはならない。
+  - 設定取得以外の責務を持たせてはならない。
+
+nonGoals:
+  - 設定ファイルの読み込み実装を提供すること。
+  - 環境変数やデータベースへのアクセスを提供すること。
+  - AI タスクなど個別機能の設定仕様を定義すること。
+  - アプリケーション固有のデフォルト値を提供すること。
+  - 機密情報の保管や暗号化を担当すること。
+
+terminology:
+  - term: ConfigResolver
+    definition: 設定を取得・統合・検証し、型安全な結果を返すサービス。
+
+  - term: ConfigQuery
+    definition: 設定解決時に対象スコープやコンテキストを指定する問い合わせ条件。
+
+  - term: Configuration Scope
+    definition: プロジェクト・ユーザー・機能・AI タスクなど、設定を適用する対象範囲。
+
+  - term: Resolution
+    definition: 複数の設定ソースを優先順位に従って統合し、最終的な設定を決定する処理。
+
+rationale:
+  - 設定解決を一元化することで、アプリケーション全体で一貫した設定動作を実現できる。
+  - 設定取得をサービス経由に限定することで、設定ソースを変更しても利用側への影響を最小限に抑えられる。
+  - Effect Schema による検証により、設定ミスを実行時の早い段階で検出できる。
+  - 階層的な設定解決を採用することで、将来的な AI タスクやプロジェクト単位の設定追加にも柔軟に対応できる。
+
+usage:
+  - situation: パッケージから設定を取得する
+    guidance: ConfigResolver を Effect の依存性注入経由で取得し、ConfigQuery を指定して設定を解決する。
+
+  - situation: 新しい設定スコープを追加する
+    guidance: 既存の優先順位ルールを維持しながら、新しい Resolution Layer を追加する。
+
+  - situation: 新しい設定項目を追加する
+    guidance: Effect Schema を定義し、解決後に必ず検証を行う。
+
+  - situation: 設定取得エラーを処理する
+    guidance: エラーに含まれる診断情報を利用し、一時的な失敗か恒久的な失敗かを判断する。
+
+examples:
+  - title: AI タスク設定
+    input: |
+      AI タスク専用のモデル設定を取得したい。
+    output: |
+      ConfigQuery に AI タスクのスコープを指定して ConfigResolver から取得する。
+    explanation: |
+      スコープごとの優先順位に従って設定が解決される。
+
+  - title: ユーザー設定の上書き
+    input: |
+      プロジェクト設定よりユーザー設定を優先したい。
+    output: |
+      ConfigResolver が定義済みの優先順位に従って最終設定を決定する。
+    explanation: |
+      利用側で設定をマージする必要はない。
+
+  - title: 設定の追加
+    input: |
+      新しい AI Provider の設定項目を追加したい。
+    output: |
+      Effect Schema を追加し、ConfigResolver の解決対象へ組み込む。
+    explanation: |
+      新しい設定も既存の解決・検証フローへ自然に統合される。
+
+  - title: 設定取得失敗
+    input: |
+      必須設定が見つからなかった。
+    output: |
+      ConfigResolver が診断情報を含む構造化エラーを返す。
+    explanation: |
+      呼び出し側は原因を判別し、再試行やユーザーへの通知を適切に選択できる。

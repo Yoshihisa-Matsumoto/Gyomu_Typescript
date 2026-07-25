@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=../../../../schemas/Roadmap.json
+
+planned: []
+
+inProgress: []
+
+completed: []
+
+backlog:
+  - title: エージェント機能の拡充
+    description: |
+      現状は、TSDOC作成などの機能の一部を使っただけにすぎないので、あまりパッケージの価値はない。今後拡充を図りたい
+    priority: low
