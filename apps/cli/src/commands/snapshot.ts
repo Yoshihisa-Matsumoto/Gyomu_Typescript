@@ -12,6 +12,7 @@ import {
 } from '@gyomu/tsdoc'
 import { DirectoryConceptRouteId, buildDirectoryConcept } from '@gyomu/concept/directory'
 import { PackageConceptRouteId, buildPackageConcept } from '@gyomu/concept/package'
+import { generateReadmeFiles } from '@gyomu/concept/readme'
 import { Effect, Layer } from 'effect'
 
 import {
@@ -197,7 +198,15 @@ export const snapshotCommand = (
             DumpToFile: true,
             PackageAnalysis: true,
             PackageConcept: true,
-            PackageInsight: true,
+          },
+        })
+
+        yield* generateReadmeFiles(projectContext, {
+          retryOption: {},
+          debugInfo: {
+            DumpToFile: true,
+            PackageAnalysis: true,
+            PackageConcept: true,
           },
         })
 

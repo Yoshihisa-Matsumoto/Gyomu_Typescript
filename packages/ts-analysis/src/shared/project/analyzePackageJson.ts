@@ -48,6 +48,7 @@ export const analyzePackageJson = (
         devDependencies: analyzeDependencies(parsedProject.devDependencies),
         peerDependencies: analyzeDependencies(parsedProject.peerDependencies),
         optionalDependencies: analyzeDependencies(parsedProject.optionalDependencies),
+        license: parsedProject.license,
       } satisfies PackageJsonAnalysis
     })
     return result

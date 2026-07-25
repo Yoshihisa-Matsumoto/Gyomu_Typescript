@@ -1,0 +1,46 @@
+{
+  "summary": "The @gyomu/schema package provides a robust, centralized schema modeling framework built on Effect. It serves as the single source of truth for entity definitions, standardized domain error handling, and TypeScript analysis structures. By leveraging declarative schemas, the package ensures type safety, automated CRUD generation, and consistent data validation across the system.",
+  "responsibilities": [
+    "Define domain-specific entity models and their corresponding CRUD schemas.",
+    "Implement a standardized, context-aware error classification and handling framework.",
+    "Provide runtime validation schemas for TypeScript metadata and structural analysis.",
+    "Offer utility functions for safe data transformation, encoding, and API result orchestration.",
+    "Define shared interface contracts for domain services, tasks, and system operations."
+  ],
+  "capabilities": [
+    {
+      "name": "CRUD Schema Generation",
+      "description": "Automatically derives insert, update, and select operations from entity definitions to maintain consistency and reduce boilerplate."
+    },
+    {
+      "name": "Domain-Driven Error Framework",
+      "description": "Enforces a strict, context-rich error architecture that supports observability, retryability, and standardized operational policies."
+    },
+    {
+      "name": "TypeScript Analysis Modeling",
+      "description": "Provides comprehensive runtime schemas for parsing, analyzing, and documenting TypeScript symbols, types, and file relationships."
+    },
+    {
+      "name": "Type-Safe Data Interchange",
+      "description": "Ensures integrity when mapping internal domain models to external formats like JSON or API responses."
+    },
+    {
+      "name": "Operational Utilities",
+      "description": "Provides common building blocks for business logic, including logging, retry observers, and runtime environment context management."
+    }
+  ],
+  "designDecisions": [
+    "Heavy reliance on the Effect ecosystem for type-safe operations, error modeling, and runtime schema validation.",
+    "Prioritization of declarative schema definitions as the source of truth for both static types and runtime logic.",
+    "Use of branded types to distinguish identifiers and domain-specific values, preventing accidental misuse.",
+    "Separation of concerns between internal domain logic and public-facing API response schemas.",
+    "Modular architecture organized by domain (gyomu, typescript, core) to isolate schema concerns."
+  ],
+  "usageGuidance": [
+    "Always define new domain entities using the provided schema builder utilities to ensure CRUD compatibility.",
+    "Extend the internal error framework by injecting domain-specific context rather than throwing generic exceptions.",
+    "Use provided API execution helpers when exposing schemas to public endpoints to ensure error mapping is consistent.",
+    "Leverage the TypeScript analysis schemas when building tools that require introspection of project source code.",
+    "Always validate incoming data against the defined CRUD schemas before executing database or service operations."
+  ]
+}

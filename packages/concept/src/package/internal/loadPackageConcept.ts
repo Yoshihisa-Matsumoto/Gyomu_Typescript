@@ -5,10 +5,15 @@ import { Effect } from 'effect'
 import { flattenIssues } from '@gyomu/schema/entity'
 import { ConceptError } from '../../error/ConceptError.js'
 import { getPackageConceptPath } from './getPackageConceptPath.js'
+import type { FileSystem } from 'effect'
+import type { PackageConcept } from '@gyomu/schema/schemas/concept'
 import type { ProjectContext } from '@gyomu/ts-analysis'
 import type { ConceptOptions } from '../../ConceptOptions.js'
 
-export const loadPackageConcept = (context: ProjectContext, option?: ConceptOptions) =>
+export const loadPackageConcept = (
+  context: ProjectContext,
+  option?: ConceptOptions,
+): Effect.Effect<PackageConcept | undefined, ConceptError, FileSystem.FileSystem> =>
   Effect.gen(function* () {
     const packageConceptPath = getPackageConceptPath(context, option)
 
@@ -18,11 +23,12 @@ export const loadPackageConcept = (context: ProjectContext, option?: ConceptOpti
     // console.log(directoryConceptPath)
     const fileExists = yield* pathExists(packageConceptPath)
     if (!fileExists) return undefined
-    return yield* readJsonFromFileAndValidate(
+    const result = yield* readJsonFromFileAndValidate(
       'PackageConcept',
       PackageConceptSchema,
       packageConceptPath,
     )
+    return result
   }).pipe(
     Effect.mapError((e) =>
       wrapInfraError(ConceptError, e, (e2) => ({

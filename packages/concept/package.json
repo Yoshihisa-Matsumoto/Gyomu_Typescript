@@ -18,6 +18,10 @@
     "./package": {
       "import": "./dist/package/index.js",
       "types": "./dist/package/index.d.ts"
+    },
+    "./readme": {
+      "import": "./dist/readme/index.js",
+      "types": "./dist/readme/index.d.ts"
     }
   },
   "scripts": {

@@ -1,0 +1,150 @@
+{
+  "type": "object",
+  "properties": {
+    "planned": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "A short title summarizing the planned work."
+          },
+          "description": {
+            "type": "string",
+            "description": "Explain the purpose, expected outcome, or motivation for this work."
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ],
+            "description": "Relative implementation priority. High-priority items are expected to be addressed before lower-priority items."
+          }
+        },
+        "required": [
+          "title",
+          "description",
+          "priority"
+        ],
+        "additionalProperties": false,
+        "title": "RoadmapItem",
+        "description": "One roadmap item describing a planned improvement or feature."
+      },
+      "description": "Work that has been approved or planned but has not yet started."
+    },
+    "inProgress": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "A short title summarizing the planned work."
+          },
+          "description": {
+            "type": "string",
+            "description": "Explain the purpose, expected outcome, or motivation for this work."
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ],
+            "description": "Relative implementation priority. High-priority items are expected to be addressed before lower-priority items."
+          }
+        },
+        "required": [
+          "title",
+          "description",
+          "priority"
+        ],
+        "additionalProperties": false,
+        "title": "RoadmapItem",
+        "description": "One roadmap item describing a planned improvement or feature."
+      },
+      "description": "Work that is currently being implemented."
+    },
+    "completed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "A short title summarizing the planned work."
+          },
+          "description": {
+            "type": "string",
+            "description": "Explain the purpose, expected outcome, or motivation for this work."
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ],
+            "description": "Relative implementation priority. High-priority items are expected to be addressed before lower-priority items."
+          }
+        },
+        "required": [
+          "title",
+          "description",
+          "priority"
+        ],
+        "additionalProperties": false,
+        "title": "RoadmapItem",
+        "description": "One roadmap item describing a planned improvement or feature."
+      },
+      "description": "Completed work that is worth documenting because it influences future development."
+    },
+    "backlog": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "A short title summarizing the planned work."
+          },
+          "description": {
+            "type": "string",
+            "description": "Explain the purpose, expected outcome, or motivation for this work."
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ],
+            "description": "Relative implementation priority. High-priority items are expected to be addressed before lower-priority items."
+          }
+        },
+        "required": [
+          "title",
+          "description",
+          "priority"
+        ],
+        "additionalProperties": false,
+        "title": "RoadmapItem",
+        "description": "One roadmap item describing a planned improvement or feature."
+      },
+      "description": "Ideas or requests that may be implemented in the future but are not currently planned."
+    }
+  },
+  "required": [
+    "planned",
+    "inProgress",
+    "completed",
+    "backlog"
+  ],
+  "additionalProperties": false,
+  "title": "Roadmap",
+  "description": "Tracks the implementation status of planned work for this package. It is intended to communicate current priorities and future direction rather than detailed task management."
+}

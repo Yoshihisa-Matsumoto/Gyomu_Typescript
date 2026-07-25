@@ -63,6 +63,14 @@
       "import": "./dist/schemas/concept/index.js",
       "types": "./dist/schemas/concept/index.d.ts"
     },
+    "./schemas/document": {
+      "import": "./dist/schemas/document/index.js",
+      "types": "./dist/schemas/document/index.d.ts"
+    },
+    "./schemas/knowledge": {
+      "import": "./dist/schemas/knowledge/index.js",
+      "types": "./dist/schemas/knowledge/index.d.ts"
+    },
     "./schemas/typescript": {
       "import": "./dist/schemas/typescript/index.js",
       "types": "./dist/schemas/typescript/index.d.ts"
@@ -80,8 +88,7 @@
     "preinstall": "npx only-allow pnpm",
     "clean": "rimraf ./dist ./coverage ./.turbo ./.tsbuildinfo",
     "test": "bunx vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json ",
-    "@test:coverage": "vitest --config vitest.coverage.config.ts --typecheck.tsconfig ./tsconfig.vitest.json --coverage",
-    "@test:ci:coverage": "vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json --coverage",
+    "generate:schema": "tsx ./scripts/generateJsonSchema.ts",
     "start": "pnpm run build:live",
     "watch": "tsc -w",
     "build": "tsc",
@@ -92,7 +99,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "files": [
     "dist"
   ],

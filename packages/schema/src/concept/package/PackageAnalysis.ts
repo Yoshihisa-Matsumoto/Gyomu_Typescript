@@ -97,4 +97,6 @@ export interface PackageInfoAnalysis {
    * Package manager declaration.
    */
   packageManager?: string
+
+  license: string
 }

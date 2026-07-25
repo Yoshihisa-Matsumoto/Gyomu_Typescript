@@ -97,3 +97,5 @@ todos.json
 **/.gyomu/cache
 **/.gyomu/snapshot
 
+# snapshot
+__snapshots__

@@ -80,6 +80,7 @@ describe('buildPackageConceptInput', () => {
         version: '2.0.0',
         private: false,
         type: 'module',
+        license: 'MIT',
       },
 
       dependencies: [
