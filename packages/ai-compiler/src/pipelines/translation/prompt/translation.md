@@ -40,8 +40,27 @@ Translate the given README text fragments into the target language.
 - Do not introduce metaphors, analogies, or expressive language unless they are present in the source text.
 - When translating architectural concepts, preserve the original level of abstraction.
 - For Japanese translation
-  - Prefer established Japanese technical terminology.
-  - Avoid literal translations when there is a commonly accepted Japanese expression.
+  - Prefer standard Japanese technical terminology used by native developers.
+  - Use natural Japanese expressions instead of literal translations whenever possible.
+  - Translate technical concepts according to common industry usage, even if the wording differs from the source text.
+  - Avoid unnatural katakana transliterations when a well-established Japanese term exists.
+  - Prioritize readability and fluency over preserving the original sentence structure.
+  - Write as if the document were originally written by a native Japanese software engineer.
+  - Prefer documentation style over literal translation.
+  - Avoid direct translations of English idioms (e.g. "Single Source of Truth", "First-class citizen", "Correct by construction", Strongly typed", "Environment-aware", "Deterministic") unless they are widely used in Japanese technical writing.
+
+  - Use the following preferred translations consistently:
+    - Configuration -> 設定
+    - Config -> 設定
+    - Resolver -> Resolver
+    - Resolution -> 解決
+    - Schema -> スキーマ
+    - Scope -> スコープ
+    - Dependency Injection -> 依存性注入
+    - Environment -> 実行環境
+    - Type-safe -> 型安全
+    - Runtime -> ランタイム
+    - API -> API
 
 ## Input
 

@@ -4,7 +4,7 @@ import { Schema } from 'effect'
 
 import { Development, Package, Roadmap, Technical } from '../src/schemas/knowledge/index.js'
 
-const outputDir = join(import.meta.dirname, '../..', 'schemas')
+const outputDir = join(import.meta.dirname, '../../..', 'schemas')
 
 mkdirSync(outputDir, { recursive: true })
 

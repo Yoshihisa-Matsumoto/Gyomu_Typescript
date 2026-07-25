@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../../../schemas/Package.json
+# yaml-language-server: $schema=../../../../schemas/Package.json
 
 displayName: Gyomu Schema
 

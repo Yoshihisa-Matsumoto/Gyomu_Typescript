@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=../../../../schemas/Roadmap.json
+
+planned: []
+
+inProgress: []
+
+completed: []
+
+backlog:
+  - title: DBなど永続先の多様化
+    description: |
+      VS Codeの設定のようなイメージで、現在はAIのタスクの設定などで必要になると考えている。今は基本ファイル保存を念頭に置いているが、今後、DBであるとか永続先の多様化を検討
+    priority: medium

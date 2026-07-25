@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=../../../../schemas/Technical.json
 
 installation:
-  - command: pnpm add @gyomu/schema
+  - command: pnpm add @gyomu/config
     description: |
       通常の npm パッケージと同様にインストールする。
       他の特別なセットアップは不要。
@@ -13,9 +13,13 @@ dependencies:
     description: |
       Effect Runtime、Effect Schema、Context など、本パッケージの基盤となるライブラリ。
 
-  - package: date-fns
+  - package: "@gyomu/schema"
     description: |
-      日付・時刻に関する型およびユーティリティで利用する。
+      スキーマ、共通型の置き場として利用
+
+  - package: "@gyomu/infra"
+    description: |
+      I/Oなどの基盤処理全般に利用
 
 compatibility:
   - name: Effect
