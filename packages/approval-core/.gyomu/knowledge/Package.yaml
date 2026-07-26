@@ -1,0 +1,99 @@
+displayName: Gyomu AI Compiler
+
+mission: |
+  GyomuプロジェクトにおけるAIコードインテリジェンス基盤を提供する。
+  ソースコード解析、ドキュメント生成、コード要約などのAI処理を
+  宣言的なパイプラインとして構築・実行することで、
+  一貫性・再現性・保守性に優れたAI支援開発を実現することを目的とする。
+
+policies:
+  - AI処理は用途ごとに独立したPipelineとして構成する。
+  - すべてのAI入出力はSchemaを契約とし、型安全に扱う。
+  - AnalysisとPlanを明確に分離し、生成内容と変更内容を混在させてはならない。
+  - AIによる変更は必ずPlanを経由し、安全に適用できる構造とする。
+  - AIタスクはRouteによって識別し、モデル構成と処理内容を疎結合に保つ。
+  - 複雑度や対象規模に応じて実行戦略を切り替えられる設計とする。
+  - Pipelineは再利用可能なコンポーネントとして構成する。
+
+constraints:
+  - AIモデルを直接呼び出してはならず、@gyomu/aiを利用すること。
+  - ソースコードを書き換えてはならず、変更内容はPlanとして表現すること。
+  - パイプライン間で内部状態を共有してはならない。
+  - タスク固有のビジネスロジックを実装してはならない。
+  - AI出力を検証せず利用してはならない。
+
+nonGoals:
+  - AIモデルやProviderを実装すること。
+  - ソースコードの直接編集を行うこと。
+  - IDEやCLIとの統合を提供すること。
+  - プロジェクト固有のドキュメントテンプレートを提供すること。
+  - AIエージェントの実行制御を担当すること。
+
+terminology:
+  - term: Pipeline
+    definition: AI処理を構成する一連の解析・生成・検証ステップ。
+
+  - term: Analysis
+    definition: ソースコードやプロジェクトから変更を伴わない情報を収集する処理。
+
+  - term: Plan
+    definition: AIが提案する変更内容を構造化して表現したデータ。
+
+  - term: Route
+    definition: AIタスクを識別し、適切なモデル構成へ振り分ける識別子。
+
+  - term: Complexity Strategy
+    definition: コード規模や複雑度に応じてAI処理方法を切り替える戦略。
+
+rationale:
+  - AnalysisとPlanを分離することで、安全で再現可能なAI処理を実現できる。
+  - Schemaを共通契約とすることで、Pipeline間の一貫性と型安全性を維持できる。
+  - RouteによるAIタスク管理により、モデル構成と処理内容を独立して進化させられる。
+  - Strategyを導入することで、コード規模や用途に応じた最適なAI処理を選択できる。
+  - Pipelineをモジュール化することで、新しいAI処理を容易に追加できる。
+
+usage:
+  - situation: 新しいAI解析を追加する
+    guidance: Analysis、Plan、Routeを定義し、新しいPipelineとして実装する。
+
+  - situation: README生成機能を追加する
+    guidance: README生成専用Pipelineを実装し、既存Pipelineとは独立して構成する。
+
+  - situation: JSDoc更新を実装する
+    guidance: Analysisでコード情報を収集し、Planで変更内容を生成する。
+
+  - situation: AI処理を最適化する
+    guidance: Complexity Strategyを追加し、対象コードに応じてPipelineを切り替える。
+
+examples:
+  - title: JSDoc更新
+    input: |
+      TypeScriptソースからJSDocを更新したい。
+    output: |
+      Analysisで情報を収集し、Planとして更新内容を生成する。
+    explanation: |
+      ソースコードを直接変更せず、安全な変更計画として扱う。
+
+  - title: ファイル要約
+    input: |
+      ソースファイルの概要を生成したい。
+    output: |
+      File Summary Pipelineを実行して要約を生成する。
+    explanation: |
+      要約生成は独立したPipelineとして実装される。
+
+  - title: README生成
+    input: |
+      パッケージのREADMEを生成したい。
+    output: |
+      README Pipelineを実行し、各Sectionを順番に生成する。
+    explanation: |
+      ドキュメント生成も他のAI処理と同じPipelineとして扱われる。
+
+  - title: 新しいAIタスク
+    input: |
+      ディレクトリ構成の概念を生成したい。
+    output: |
+      新しいRouteとPipelineを追加して実装する。
+    explanation: |
+      Pipelineを追加するだけで既存処理へ影響なく機能拡張できる。

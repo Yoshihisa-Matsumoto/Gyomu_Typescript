@@ -1,3 +1,6 @@
+/**
+ * Represents an approval request, which can be a confirmation, a selection from multiple options, or a credential validation.
+ */
 export type ApprovalChallenge =
   | {
       type: 'confirm'

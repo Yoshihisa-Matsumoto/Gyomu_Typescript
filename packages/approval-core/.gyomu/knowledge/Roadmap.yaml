@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=../../../../schemas/Roadmap.json
+
+planned: []
+
+inProgress: []
+
+completed: []
+
+backlog:
+  - title: 承認プロセスの確立
+    description: |
+      エージェント作成時に、一緒に承認プロセスを確立させる。現在はおそらくまだ未完成
+    priority: low
