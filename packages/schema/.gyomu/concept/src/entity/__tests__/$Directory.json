@@ -1,28 +1,28 @@
 {
-  "summary": "This directory contains the test suite for the entity definition and management system. It validates the core logic related to data conversion, date handling, CRUD schema definitions, field validation, and abstract syntax tree matching for data entities.",
+  "summary": "This directory contains the testing suite for the entity management layer, focusing on validating the integrity of data structures, schema definitions, field processing, and the conversion logic required for entity handling and AST matching operations.",
   "responsibilities": [
     "Verifying data conversion logic for entities",
-    "Testing date handling and formatting within entities",
-    "Validating CRUD schema generation for defined entities",
-    "Ensuring field-level constraints and properties are correctly enforced",
-    "Testing AST matcher logic for internal issue identification"
+    "Validating entity field configurations",
+    "Ensuring correctness of CRUD schema definitions",
+    "Testing date handling logic within entities",
+    "Validating AST matching patterns"
   ],
   "concepts": [
     "Entity Schemas",
-    "Data Conversion",
     "CRUD Operations",
-    "Field Validation",
-    "AST Matching"
+    "Data Conversion",
+    "AST Matching",
+    "Field Validation"
   ],
   "relationships": [
-    "Entity schemas provide the structural definition used by field validation and conversion processes.",
-    "CRUD schema definitions rely on entity field definitions to generate appropriate operations.",
-    "The AST matcher inspects entity-related structures to identify specific issues or patterns."
+    "CRUD schema definitions govern how entities are structured and validated during runtime operations.",
+    "Data conversion logic relies on defined entity fields to transform internal representations into required formats.",
+    "AST matchers utilize the defined entity structure to identify and validate specific patterns within the entity data."
   ],
   "designDecisions": [
-    "Collocation of test files with implementation logic to ensure developer accessibility.",
-    "Granular unit testing approach covering distinct functional areas of the entity layer.",
-    "Focus on schema-driven testing to ensure type safety and consistency across entity definitions."
+    "Collocation of test files with source logic to ensure comprehensive coverage of entity behaviors.",
+    "Isolation of unit tests for specific sub-components like date parsing, schema generation, and validation rules.",
+    "Use of specialized matchers to verify complex tree structures within entity ASTs."
   ],
-  "importance": "Core"
+  "importance": "Supporting"
 }

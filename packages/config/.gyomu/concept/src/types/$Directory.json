@@ -1,0 +1,30 @@
+{
+  "summary": "This directory centralizes the definition of foundational configuration types and interfaces, establishing the schema-based structure, resolution strategies, and metadata requirements for managing application settings across various environment, file, and runtime sources.",
+  "responsibilities": [
+    "Define schema-based configuration data structures",
+    "Categorize configuration resolution sources and strategies",
+    "Specify requirements for loaded configuration metadata",
+    "Normalize raw configuration input formats",
+    "Facilitate type safety for runtime and static configuration requests"
+  ],
+  "concepts": [
+    "Configuration Schema",
+    "Resolution Modes",
+    "Configuration Layers",
+    "Configuration Sources",
+    "Metadata"
+  ],
+  "relationships": [
+    "Configuration requests utilize specific resolution modes to determine how settings are retrieved from defined sources.",
+    "Loaded configuration objects encapsulate raw data alongside metadata describing their origin layer and source.",
+    "Static and runtime request interfaces differentiate between environment-based or file-based retrieval and dynamic runtime inputs.",
+    "Partial configuration types support the incremental assembly of settings across different hierarchical layers."
+  ],
+  "designDecisions": [
+    "Strict type-based definition of configuration structure derived from schema",
+    "Explicit separation between static resolution and runtime configuration requests",
+    "Hierarchical layer modeling for configuration priority",
+    "Generic support for metadata-enriched configuration records"
+  ],
+  "importance": "Core"
+}

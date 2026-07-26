@@ -1,0 +1,23 @@
+{
+  "summary": "This directory manages error reporting for the configuration resolution process. It provides structured mechanisms to capture, categorize, and represent failures that occur while attempting to resolve configuration values during the application lifecycle.",
+  "responsibilities": [
+    "Defining error types related to configuration resolution failures",
+    "Capturing context and metadata for resolution errors",
+    "Identifying specific phases of the resolution process where failures occur"
+  ],
+  "concepts": [
+    "Configuration resolution",
+    "Resolution lifecycle",
+    "Error context",
+    "Retryability"
+  ],
+  "relationships": [
+    "ConfigResolutionError encapsulates failure details within a specific ConfigResolutionPhase.",
+    "ConfigResolutionErrorContext provides necessary metadata to determine the retryability of a resolution failure."
+  ],
+  "designDecisions": [
+    "Usage of a structured error class to enforce consistent error reporting across the resolution pipeline.",
+    "Categorization of errors by phase to enable better debugging and error handling strategies."
+  ],
+  "importance": "Supporting"
+}

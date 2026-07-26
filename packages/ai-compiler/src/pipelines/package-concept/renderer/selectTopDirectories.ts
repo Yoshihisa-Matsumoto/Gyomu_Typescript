@@ -5,6 +5,14 @@ type ScoredDirectory = {
   directory: DirectoryAnalysis
 }
 const MAX_DIRECTORY_COUNT = 5
+
+/**
+ * Selects and returns the most important directories based on API symbol density and architectural importance.
+ *
+ * @param directories The list of directory analysis records to filter.
+ *
+ * @returns A subset of the provided directories, ranked by calculated importance.
+ */
 export const selectTopDirectories = (directories: ReadonlyArray<DirectoryAnalysis>) => {
   if (directories.length === 0) return []
 
@@ -50,6 +58,17 @@ const compareDirectories = (a: ScoredDirectory, b: ScoredDirectory) => {
   )
 }
 
+/**
+ * Calculates an importance score for a directory based on public API density and architectural metadata.
+ *
+ * @param entry The directory analysis record.
+ *
+ * @param maxPublicApiCount The maximum public API count found across all evaluated directories.
+ *
+ * @param maxRootApiCount The maximum root API count found across all evaluated directories.
+ *
+ * @returns A numeric score representing the directory's priority.
+ */
 export const calculateScore = (
   entry: DirectoryAnalysis,
   maxPublicApiCount: number,

@@ -1,22 +1,22 @@
 {
-  "summary": "This directory contains the testing suite for the project's data schema definitions. Its primary architectural purpose is to ensure the integrity, validation logic, and structural correctness of the defined data schemas through automated verification processes.",
+  "summary": "This directory contains the testing suite for business domain schemas, ensuring that data structures correctly represent the internal requirements and constraints of the application's core logic.",
   "responsibilities": [
-    "Verify data schema validation logic",
-    "Ensure schema structural integrity",
-    "Execute automated tests against defined schemas"
+    "Verify data integrity of business schemas",
+    "Validate schema definition accuracy",
+    "Ensure schema compliance with business domain rules"
   ],
   "concepts": [
-    "Schema validation",
-    "Automated testing",
-    "Data structures"
+    "Business schemas",
+    "Validation testing",
+    "Data integrity"
   ],
   "relationships": [
-    "Tests validate the structural rules defined within the project schemas.",
-    "The test suite ensures that schema validation logic behaves correctly under various data scenarios."
+    "The testing suite ensures that individual business schemas adhere to defined integrity constraints.",
+    "The validation logic confirms that schemas accurately represent the business rules of the domain."
   ],
   "designDecisions": [
-    "Collocation of test files with their respective schemas",
-    "Use of unit testing for individual schema definitions"
+    "Collocation of test files with their corresponding schema definitions",
+    "Unit testing strategy for data structure validation"
   ],
   "importance": "Supporting"
 }

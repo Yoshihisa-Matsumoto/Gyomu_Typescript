@@ -352,7 +352,7 @@ const analyzeStatement = (
   // console.log(bodyStatement.getKindName())
   if (Node.isExpressionStatement(bodyStatement)) {
     const expression = bodyStatement.getExpression()
-    console.log('ExpressionStatement', expression.getKindName(), expression.getText())
+    // console.log('ExpressionStatement', expression.getKindName(), expression.getText())
     if (Node.isCallExpression(expression)) {
       const expressionText = expression.getExpression().getText()
       const dependency = analyzeDependency(expressionText, args.imported, args.memberPath)

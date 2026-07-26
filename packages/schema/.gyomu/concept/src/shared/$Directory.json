@@ -1,28 +1,28 @@
 {
-  "summary": "This directory serves as a foundational shared library, providing a collection of utility functions, core services, and helper modules that support consistent data processing, environmental management, and system-wide operations across the codebase.",
+  "summary": "This directory serves as a foundational shared layer for the application, providing cross-cutting utility functions, standardized data management, and core runtime services to ensure consistency across the codebase.",
   "responsibilities": [
-    "Provide fundamental data manipulation and transformation utilities",
-    "Encapsulate cross-cutting service logic and runtime context",
-    "Ensure consistent application-wide operations for files, parameters, and system state",
-    "Support common development tasks through shared programming abstractions"
+    "Providing reusable utility logic for data manipulation and formatting",
+    "Centralizing system configuration and runtime environment state",
+    "Managing file system interactions and path abstractions",
+    "Standardizing data transformation, encoding, and parsing processes"
   ],
   "concepts": [
-    "Utility Modules",
-    "Core Services",
-    "Data Transformation",
-    "System Metadata",
-    "Shared Abstractions"
+    "Shared utilities",
+    "Runtime environment",
+    "Data transformation",
+    "Configuration management",
+    "System abstractions"
   ],
   "relationships": [
-    "Utility modules provide the low-level processing tools that core services use to execute complex application logic.",
-    "The runtime context provides environment-specific data that informs how various services operate within the system.",
-    "Shared transformations facilitate the consistent interpretation of data across diverse services including file system, parameter, and variable management."
+    "Shared utilities provide foundational logic that is consumed by core services for tasks like variable translation and parameter management.",
+    "Runtime and configuration services rely on standard utility libraries to maintain data integrity and type safety across the environment.",
+    "The standardization of data structures and transformation utilities ensures that disparate parts of the application share a common interface for processing information."
   ],
   "designDecisions": [
-    "Centralize common code in a shared location to prevent duplication",
-    "Utilize service-oriented patterns for core application capabilities",
-    "Expose shared functionality through index modules for organized consumption",
-    "Prioritize type safety and modularity in shared implementations"
+    "Centralization of cross-cutting concerns to eliminate code duplication",
+    "Use of service-based abstractions for complex infrastructure tasks like file system access and parameter retrieval",
+    "Focus on type safety and immutable state management for runtime and configuration data",
+    "Colocation of utility logic with its corresponding validation and testing logic"
   ],
   "importance": "Core"
 }

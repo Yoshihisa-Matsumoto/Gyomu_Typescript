@@ -5,6 +5,13 @@ import { readStringFromFile } from '@gyomu/infra/fs'
 import { fromSync } from '@gyomu/schema/effect'
 import { mapOutputPathToSourcePath } from '@gyomu/tsdoc'
 
+/**
+ * Parses the `package.json` and `tsconfig.json` files within a project directory to extract and map exported entry paths to their corresponding source files.
+ *
+ * @param projectPath The absolute or relative file system path to the target project directory.
+ *
+ * @returns An `Effect` that resolves to an array of mapped source file paths or fails with a `GyomuError` if project files are missing or malformed.
+ */
 export const parseProjectExports = (projectPath: string) => {
   return Effect.gen(function* () {
     const fileService = yield* FileSystem.FileSystem

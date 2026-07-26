@@ -10,7 +10,22 @@ import type { AiError, IOError, RetryOption } from '@gyomu/schema'
 import type { ModelRoutes, RouteNotFoundError } from '@gyomu/ai'
 import type { FileSystem } from 'effect'
 
+/**
+ * The identifier for the package concept model route.
+ */
 export const PackageConceptRouteId = ModelRouteId('package-concept')
+
+/**
+ * Executes the package concept pipeline to generate a PackageConcept object based on the provided analysis.
+ *
+ * @param context The input package analysis data to be processed.
+ *
+ * @param retryOption Optional configuration for handling generation retries.
+ *
+ * @returns Returns an Effect that resolves to the generated PackageConcept.
+ *
+ * @requires AiModelRoute, FileSystem, and ModelRoutes services.
+ */
 export const executePackageConcept = (
   context: PackageAnalysis,
   retryOption?: RetryOption,

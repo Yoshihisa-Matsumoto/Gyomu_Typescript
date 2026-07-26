@@ -1,0 +1,31 @@
+{
+  "summary": "This directory manages the core orchestration of automated documentation and code analysis pipelines. It provides the infrastructure to resolve prompt templates, define structural metadata, and execute modular transformation tasks required for code maintenance and documentation generation.",
+  "responsibilities": [
+    "Orchestrate documentation and code analysis workflows",
+    "Define structural metadata schemas for source code",
+    "Resolve and manage prompt templates for automated tasks",
+    "Execute and validate documentation and code transformations",
+    "Provide testing infrastructure for pipeline verification"
+  ],
+  "concepts": [
+    "Documentation Pipeline",
+    "Structural Metadata",
+    "Prompt Templates",
+    "Execution Engine",
+    "Pipeline Validation"
+  ],
+  "relationships": [
+    "Pipeline execution engines utilize structural metadata and schemas to interpret source code context.",
+    "Prompt templates dictate the instructional logic used by pipelines for generation and translation tasks.",
+    "Verification components ensure that transformation outputs conform to structural requirements and quality standards.",
+    "Strategy registries determine the execution path for specific documentation or analysis tasks based on input complexity."
+  ],
+  "designDecisions": [
+    "Separation of concerns between data definitions, template management, and execution logic.",
+    "Use of interface-based contracts for consistent data modeling across pipelines.",
+    "Implementation of registry and strategy patterns to support modular extension.",
+    "Collocation of test infrastructure with core logic for reliable verification.",
+    "Decoupling of prompt template retrieval from pipeline execution tasks."
+  ],
+  "importance": "Core"
+}

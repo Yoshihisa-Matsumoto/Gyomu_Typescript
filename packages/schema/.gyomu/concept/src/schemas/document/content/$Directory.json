@@ -1,0 +1,23 @@
+{
+  "summary": "This directory centralizes the definitions and types for individual document content components. It provides a standardized schema structure for various elements that can appear within a document, ensuring consistent data modeling across the application.",
+  "responsibilities": [
+    "Define structural schemas for document content elements",
+    "Provide TypeScript type definitions for content structures",
+    "Expose unified interfaces for document content components"
+  ],
+  "concepts": [
+    "Document content schemas",
+    "Content component types",
+    "Data structure definitions"
+  ],
+  "relationships": [
+    "Each schema defines a specific type identifier and the corresponding content structure required for that element.",
+    "The index file aggregates multiple content definitions to provide a single entry point for importing document components."
+  ],
+  "designDecisions": [
+    "Literal type identification for schema discrimination",
+    "Co-location of schema constants and TypeScript types",
+    "Barrel file export strategy for modular access"
+  ],
+  "importance": "Core"
+}

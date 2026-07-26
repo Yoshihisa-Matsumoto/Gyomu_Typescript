@@ -1,21 +1,23 @@
 {
-  "summary": "This directory provides the infrastructure for retrieving market-specific holiday schedules. It defines an abstraction layer to fetch calendar data, ensuring consistent access to market holiday information across the application.",
+  "summary": "This directory manages the retrieval of market-specific holiday schedules. It provides a structured service interface and a context-aware wrapper to supply calendar-related data for business domain operations.",
   "responsibilities": [
-    "Define the interface for market holiday data retrieval",
-    "Provide a service wrapper to manage holiday schedule access"
+    "Define service interfaces for holiday schedule retrieval",
+    "Provide a consistent mechanism to fetch market-specific holidays",
+    "Wrap holiday retrieval logic for context-aware access"
   ],
   "concepts": [
-    "Holiday schedules",
-    "Market data",
-    "Service abstraction"
+    "Holiday schedule",
+    "Market-specific calendar",
+    "Holiday fetcher service"
   ],
   "relationships": [
-    "The service interface dictates the contract for data retrieval while the wrapper class implements this functionality.",
-    "The HolidayFetcher relies on the defined service interface to ensure consistent integration with market-specific calendars."
+    "The HolidayFetcher class serves as a wrapper for the HolidayFetcherService interface to integrate holiday data into the business domain.",
+    "The HolidayFetcherService provides the necessary abstraction to implement market-specific holiday retrieval logic."
   ],
   "designDecisions": [
-    "Use of an interface to decouple the fetcher implementation from the service consumers",
-    "Service wrapper pattern to encapsulate retrieval logic"
+    "Service-based abstraction for holiday retrieval",
+    "Use of an interface to define the service contract",
+    "Wrapper pattern for contextual service access"
   ],
   "importance": "Supporting"
 }

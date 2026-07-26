@@ -10,6 +10,11 @@ import type { MemberIdentityMemberPath } from '@gyomu/schema/typescript'
 import type { TypeAnalysis } from '@gyomu/schema/schemas/typescript'
 import type { Expression, MethodSignature, TypeNode } from 'ts-morph'
 
+export const getVoidTypeResult = (): MemberAnalysisWithReservedResult<TypeAnalysis> => ({
+  member: { text: 'void', source: 'typescript' },
+  dependencies: [],
+  reservedNames: [],
+})
 export const analyzeType = (
   args: ChildAnalysisArg<TypeNode | Expression | MethodSignature | undefined>,
   nodeName: Array<string> | undefined,
@@ -124,13 +129,21 @@ export const analyzeType = (
           dependencies: [],
           reservedNames: [],
         }
+      case SyntaxKind.UnknownKeyword:
+        return {
+          member: {
+            text: 'unknown',
+            source: 'typescript',
+          },
+          dependencies: [],
+          reservedNames: [],
+        }
     }
     console.log(`${(node as Node).getKindName()}`)
     // console.dir(node, { depth: null })
   }
   console.log(`!!!!WHY???!!!!  ${rawText} `)
-  console.dir(node, { depth: null })
-
+  console.trace()
   {
     return {
       member: {

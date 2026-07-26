@@ -1,22 +1,22 @@
 {
-  "summary": "This directory is dedicated to the automated verification and validation of security-related path processing logic, ensuring that file system access and path resolutions adhere to established safety constraints.",
+  "summary": "This directory is dedicated to the testing of core security mechanisms. It ensures that path-related security logic and access control validations function correctly under various conditions.",
   "responsibilities": [
-    "Validate path access control logic",
-    "Verify security constraints for file system operations",
-    "Test path normalization and resolution security"
+    "Verify the correctness of security-related path logic",
+    "Validate security constraints and access rules for application paths",
+    "Execute automated test suites for security components"
   ],
   "concepts": [
+    "Security Validation",
     "Path Security",
-    "Access Control",
-    "Validation Testing"
+    "Automated Testing"
   ],
   "relationships": [
-    "Test suites verify that path normalization procedures prevent unauthorized directory traversal.",
-    "Validation logic ensures that security constraints are applied consistently before any file system access occurs."
+    "Security validation logic is verified through automated tests to ensure path integrity.",
+    "Test suites define the expected behavior for security constraints applied to application paths."
   ],
   "designDecisions": [
-    "Collocation of test files with source logic to maintain strict verification cycles",
-    "Isolation of security-critical path operations from general utilities"
+    "Colocation of test files with their corresponding security logic",
+    "Use of specialized testing frameworks for verification of security requirements"
   ],
-  "importance": "Core"
+  "importance": "Supporting"
 }

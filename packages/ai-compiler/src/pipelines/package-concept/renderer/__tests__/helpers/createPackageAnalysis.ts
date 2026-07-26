@@ -16,6 +16,7 @@ export const createPackageAnalysis = (
     version: options.package?.version ?? '1.0.0',
     private: false,
     type: 'module',
+    license: 'MIT',
   },
 
   dependencies: options.dependencies ?? [],

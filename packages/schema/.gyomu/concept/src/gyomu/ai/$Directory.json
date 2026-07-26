@@ -1,25 +1,22 @@
 {
-  "summary": "This directory defines the core interfaces and data structures required to interact with AI models. It establishes a standardized contract for chat conversations, message content, and streaming generation requests, serving as the abstraction layer for AI integration.",
+  "summary": "This directory defines the core abstractions and message structures required for communicating with AI models. It establishes a consistent interface for text generation and streaming, ensuring that chat content and participant roles are structured uniformly across the application.",
   "responsibilities": [
-    "Define the structure of chat messages and message content",
-    "Specify the interface for interacting with AI models",
-    "Provide standardized contracts for streaming and text generation responses"
+    "Define the structure of chat messages and their associated content types",
+    "Provide a standard interface for AI model interaction",
+    "Support streaming and non-streaming response generation"
   ],
   "concepts": [
     "AI Client",
-    "Chat Message",
-    "Message Content",
-    "Streaming Response"
+    "Chat Messages",
+    "Conversation Content"
   ],
   "relationships": [
-    "The AI Client interface depends on Chat Message definitions to handle conversation state and message transmission.",
-    "Chat Messages utilize Chat Content to represent diverse data types like text, images, or tool results.",
-    "The AI Client manages the orchestration of Chat Messages during text generation and streaming operations."
+    "The AI client utilizes chat messages to structure interactions with the model.",
+    "Chat content defines the specific format and data types allowed within a chat message."
   ],
   "designDecisions": [
-    "Use of TypeScript interfaces to enforce strict contracts for AI interactions.",
-    "Decoupling of AI model implementations through a generalized client interface.",
-    "Standardized definition of message types to support polymorphic content."
+    "Use of interfaces to decouple implementation details from AI model interactions",
+    "Standardized definitions for message roles and content types to ensure cross-module compatibility"
   ],
   "importance": "Core"
 }

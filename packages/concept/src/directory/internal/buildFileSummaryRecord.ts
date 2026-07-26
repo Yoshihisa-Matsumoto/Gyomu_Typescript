@@ -33,17 +33,17 @@ const aggregateDependencies = (context: FileAnalysisContext): Array<DependencySu
     .flat()
     .map((c) => c.target)
     .filter((c) => c.scope == 'import')
-  console.dir(
-    context.analysis.symbols.map((symbol) => symbol.dependencyCandidates),
-    { depth: null },
-  )
-  console.dir(dependencies, { depth: null })
+  // console.dir(
+  //   context.analysis.symbols.map((symbol) => symbol.dependencyCandidates),
+  //   { depth: null },
+  // )
+  // console.dir(dependencies, { depth: null })
   const map = new Map<string, DependencySummary>()
   dependencies.forEach((d) => {
     const summary = buildDependencySummary(d, context.analysis.imports)
     if (summary) map.set(`${summary.target}:${summary.external}`, summary)
   })
-  console.dir(context.analysis.imports, { depth: null })
+  // console.dir(context.analysis.imports, { depth: null })
   return [...map.values()]
 }
 

@@ -1,0 +1,21 @@
+{
+  "summary": "This directory manages the initialization and retrieval of prompt templates required for translation operations, ensuring that the necessary prompt assets are correctly loaded and accessible for downstream processing.",
+  "responsibilities": [
+    "Load and initialize prompt templates",
+    "Expose prompt assets for translation tasks"
+  ],
+  "concepts": [
+    "Prompt Loader",
+    "Prompt Templates",
+    "Translation Prompts"
+  ],
+  "relationships": [
+    "The prompt loader initializes templates specifically for translation tasks.",
+    "Prompt templates serve as the primary resource for translation logic."
+  ],
+  "designDecisions": [
+    "Centralized prompt loading",
+    "Module-relative resource initialization"
+  ],
+  "importance": "Supporting"
+}

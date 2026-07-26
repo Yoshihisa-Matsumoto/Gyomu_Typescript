@@ -1,0 +1,19 @@
+{
+  "summary": "This directory is responsible for retrieving and managing prompt templates from the file system, acting as an abstraction layer for prompt data access.",
+  "responsibilities": [
+    "Load prompt template strings from disk",
+    "Provide access to external prompt templates"
+  ],
+  "concepts": [
+    "Prompt template",
+    "File system",
+    "Template loader"
+  ],
+  "relationships": [
+    "The template loader retrieves prompt content stored in the file system for use by the pipeline."
+  ],
+  "designDecisions": [
+    "Decoupling template retrieval from pipeline logic"
+  ],
+  "importance": "Supporting"
+}

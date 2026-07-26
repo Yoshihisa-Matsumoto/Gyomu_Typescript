@@ -1,6 +1,6 @@
 import { Node, SyntaxKind } from 'ts-morph'
 import { SignatureId, SymbolId } from '@gyomu/schema/typescript'
-import { analyzeType } from '../type/analyzeType.js'
+import { analyzeType, getVoidTypeResult } from '../type/analyzeType.js'
 import { analyzeParameter } from '../analyzeParameter.js'
 import { createSymbolIdentity } from '../../../shared/createSymbolIdentity.js'
 import { registerSymbolSymbolAnalysis } from '../../../file/registerSymbolSymbolAnalysis.js'
@@ -8,7 +8,14 @@ import { computeIndent } from '../computeIndent.js'
 import { analyzeGenericsParameters } from '../analyzeGenericsParameters.js'
 
 import { analyzeFunctionBody } from '../struct/analyzeFunctionMember.js'
-import type { ArrowFunction, Expression, FunctionExpression, VariableDeclaration } from 'ts-morph'
+import { tracePlaceIdentity } from '../../../trace/traceUtil.js'
+import type {
+  ArrowFunction,
+  Expression,
+  FunctionExpression,
+  ReturnStatement,
+  VariableDeclaration,
+} from 'ts-morph'
 import type { SymbolPreparation } from '../prepareSymbolAnalysis.js'
 import type {
   SignatureAnalysis,
@@ -108,12 +115,22 @@ export const getFunctionSignature = (
     symbolId: SymbolId(nodeName),
     signatureId: SignatureId('function'),
   }
+  tracePlaceIdentity(identity, args.options, 'getFunctionSignature')
   let initializer: Expression | undefined = undefined
+
   if (!node.getReturnTypeNode()) {
     const body = node.getBody()
     if (Node.isArrowFunction(body)) {
       initializer = body
     } else if (Node.isExpression(body)) initializer = body
+    else if (Node.isBlock(body)) {
+      const returnStatement = body
+        .getStatements()
+        .find((s) => s.getKind() == SyntaxKind.ReturnStatement)
+      if (returnStatement) {
+        initializer = (returnStatement as ReturnStatement).getExpression()
+      }
+    }
   }
   const genericsResult = analyzeGenericsParameters({
     node,
@@ -143,22 +160,25 @@ export const getFunctionSignature = (
       reservedNames: genericsResult.parameters,
     }),
   )
-  const returnTypeResult = analyzeType(
-    {
-      node: node.getReturnTypeNode() ?? initializer,
-      memberPath,
-      metadata,
-      ownerSymbolId: id,
-      ownerSymbolIdentity: identity,
-      sourceRelativePath,
-      sourceFullText,
-      declarationOrder,
-      imported,
-      options,
-      reservedNames: genericsResult.parameters,
-    },
-    [nodeName, '$return'],
-  )
+  const returnTypeResult =
+    node.getReturnTypeNode() || initializer
+      ? analyzeType(
+          {
+            node: node.getReturnTypeNode() ?? initializer,
+            memberPath,
+            metadata,
+            ownerSymbolId: id,
+            ownerSymbolIdentity: identity,
+            sourceRelativePath,
+            sourceFullText,
+            declarationOrder,
+            imported,
+            options,
+            reservedNames: genericsResult.parameters,
+          },
+          [nodeName, '$return'],
+        )
+      : getVoidTypeResult()
 
   return {
     id: SignatureId('function'),

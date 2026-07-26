@@ -1,0 +1,34 @@
+{
+  "summary": "The @gyomu/config package serves as the centralized configuration management system for the application. It orchestrates the retrieval, validation, and hierarchical merging of configuration settings from multiple sources into a strongly typed, environment-aware result.",
+  "responsibilities": [
+    "Define a hierarchical resolution strategy that merges global, user, and scope-based configurations.",
+    "Enforce schema-based validation on resolved configuration objects.",
+    "Provide a unified service-based API for accessing configuration values within the application.",
+    "Manage the lifecycle of the configuration resolution process, including state and phase tracking.",
+    "Centralize error handling for configuration retrieval failures with metadata for diagnostic and recovery purposes."
+  ],
+  "capabilities": [
+    {
+      "name": "Configuration Resolution",
+      "description": "Orchestrates the multi-layered retrieval of settings by applying precedence rules across global, user, and scope definitions."
+    },
+    {
+      "name": "Typed Configuration Access",
+      "description": "Exposes a service interface that delivers validated and type-safe configuration data to application components."
+    },
+    {
+      "name": "Resolution Diagnostics",
+      "description": "Provides structured error context to help developers troubleshoot and identify failure points during the configuration lookup process."
+    }
+  ],
+  "designDecisions": [
+    "Utilizes the Effect ecosystem to represent the configuration resolution as a modular and injectable service.",
+    "Adopts a query-based approach to configuration lookup, allowing consumers to specify filtering criteria like scope and function context.",
+    "Implements a clear distinction between resolution phases and error contexts to support reliable observability and retry logic."
+  ],
+  "usageGuidance": [
+    "Inject the ConfigResolver service via the Effect dependency injection system to access configuration within your modules.",
+    "Define your resolution requirements using the ConfigQuery object to target specific scopes or functions as needed.",
+    "Handle configuration resolution errors by inspecting the provided error context to determine if a operation should be retried or if the failure is terminal."
+  ]
+}

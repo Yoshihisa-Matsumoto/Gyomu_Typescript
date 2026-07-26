@@ -1,0 +1,29 @@
+{
+  "summary": "This directory provides the central service and entry point for application configuration resolution. It coordinates the retrieval, validation, and merging of settings from global, user, and scope-based sources into a strongly typed structure.",
+  "responsibilities": [
+    "Provide a unified entry point for resolving application configurations",
+    "Combine configuration values from multiple hierarchical sources",
+    "Apply validation logic to ensure configuration integrity",
+    "Expose interfaces for specifying configuration resolution criteria",
+    "Manage the lifecycle of configuration resolution through dedicated services"
+  ],
+  "concepts": [
+    "Configuration Resolution",
+    "Resolution Criteria",
+    "Configuration Service",
+    "Resolution Layers",
+    "Typed Configuration"
+  ],
+  "relationships": [
+    "The resolution service consumes configuration criteria to determine which scopes and functions should be applied during the retrieval process.",
+    "The integration of multiple configuration sources is facilitated by the resolution service, which applies precedence and merging rules to create a coherent result.",
+    "Validated, strongly typed results are returned to the application based on the criteria specified in the resolution query."
+  ],
+  "designDecisions": [
+    "Usage of the Service pattern to provide a consistent configuration resolution API",
+    "Strong typing for resolution criteria and resulting configuration objects",
+    "Layered architecture separating high-level service requests from internal loading and merging strategies",
+    "Provision of a live service implementation as a dependency injection layer"
+  ],
+  "importance": "Core"
+}

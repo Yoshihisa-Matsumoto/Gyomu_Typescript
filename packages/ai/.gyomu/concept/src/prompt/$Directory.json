@@ -1,0 +1,27 @@
+{
+  "summary": "This directory manages the storage, retrieval, and structural definition of versioned prompt templates. It defines the interface for repository services and provides file-based implementations for persisting and accessing prompt definitions and their associated version history.",
+  "responsibilities": [
+    "Defining the structural schema for prompt definitions and versions",
+    "Providing an interface for prompt repository management",
+    "Implementing file-based storage and retrieval of prompt data",
+    "Handling prompt metadata and versioning lifecycle"
+  ],
+  "concepts": [
+    "Prompt Repository",
+    "Prompt Definition",
+    "Prompt Version",
+    "Data Schemas"
+  ],
+  "relationships": [
+    "The prompt repository service defines the contract for managing prompt definitions which contain multiple prompt versions.",
+    "Data schemas enforce the structure of prompt definitions and versions used during storage and retrieval operations.",
+    "The file repository service implements the repository interface to bridge the gap between persistent YAML files and the application runtime."
+  ],
+  "designDecisions": [
+    "Interface-based abstraction for repository operations",
+    "Dependency injection for repository services",
+    "Schema-driven validation for prompt data structures",
+    "Layered implementation separating the contract from file system access"
+  ],
+  "importance": "Core"
+}

@@ -1,0 +1,155 @@
+{
+  "type": "object",
+  "properties": {
+    "installation": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "command": {
+            "type": "string",
+            "description": "The command required to install or set up this package."
+          },
+          "description": {
+            "type": "string",
+            "description": "Explain when or why this installation step is required."
+          }
+        },
+        "required": [
+          "command",
+          "description"
+        ],
+        "additionalProperties": false,
+        "title": "Installation",
+        "description": "One installation or setup step required before using this package."
+      },
+      "description": "Instructions for installing or enabling this package. Include only information that is required by developers."
+    },
+    "configuration": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Configuration key, option name, or environment variable."
+          },
+          "description": {
+            "type": "string",
+            "description": "Explain the purpose of this configuration item."
+          },
+          "defaultValue": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "Default value if one exists."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "key",
+          "description"
+        ],
+        "additionalProperties": false,
+        "description": "One configuration item."
+      },
+      "description": "Configuration options supported by this package."
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "package": {
+            "type": "string",
+            "description": "The package name or dependency identifier."
+          },
+          "description": {
+            "type": "string",
+            "description": "Explain why this dependency exists and how it is used within this package."
+          }
+        },
+        "required": [
+          "package",
+          "description"
+        ],
+        "additionalProperties": false,
+        "title": "Dependency",
+        "description": "Describes one important dependency that developers should be aware of."
+      },
+      "description": "Important runtime, build-time, or peer dependencies that users of this package should know about."
+    },
+    "compatibility": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The technology, runtime, library, or platform this compatibility note applies to."
+          },
+          "supported": {
+            "type": "string",
+            "description": "Describe the supported version, platform, or compatibility requirement."
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "Additional notes about compatibility, limitations, or recommendations."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "supported"
+        ],
+        "additionalProperties": false,
+        "title": "Compatibility",
+        "description": "Describes one compatibility requirement or supported environment."
+      },
+      "description": "Supported runtimes, libraries, module systems, and other compatibility information."
+    },
+    "migration": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string",
+            "description": "Version where the migration became necessary."
+          },
+          "description": {
+            "type": "string",
+            "description": "Explain the migration and required changes."
+          }
+        },
+        "required": [
+          "version",
+          "description"
+        ],
+        "additionalProperties": false,
+        "description": "One migration note."
+      },
+      "description": "Migration guides for breaking or important changes."
+    }
+  },
+  "required": [
+    "installation",
+    "configuration",
+    "dependencies",
+    "compatibility",
+    "migration"
+  ],
+  "additionalProperties": false,
+  "title": "Technical",
+  "description": "Technical reference for installing, configuring, and integrating this package."
+}

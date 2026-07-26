@@ -1,9 +1,10 @@
+import { equalSymbolIdentity } from '@gyomu/schema/schemas/typescript'
 import { renderTemplate } from './renderPrompt.js'
-import type { FileAnalysisResult } from '@gyomu/tsdoc'
+import type { FileAnalysisContext } from '@gyomu/schema/typescript'
 
 export const createAskPrompt = (args: {
   question: string
-  analysis: FileAnalysisResult
+  analysis: FileAnalysisContext
 }): string => {
   const template = `You are a code analysis assistant.
 
@@ -16,18 +17,27 @@ export const createAskPrompt = (args: {
 Answer the question using the information above.`
   const analysisObject = {
     path: args.analysis.analysis.path,
-    exports: args.analysis.analysis.exports.map((e) => {
-      const symbol = e.symbol
-      const parsedJsDoc = args.analysis.metadata.parsedJsDocs.get(symbol.id)
-      return {
-        name: e.exportedName,
-        kind: symbol.kind,
-        signature: symbol.signature,
-        jsdocSummary: parsedJsDoc?.summary,
-        jsdocParams: parsedJsDoc?.params.map((p) => ({ name: p.name, description: p.description })),
-        jsdocReturns: parsedJsDoc?.returns?.description,
-      }
-    }),
+    exports: args.analysis.analysis.exports
+      .filter((e) => e.kind == 'local')
+      .map((e) => {
+        const symbol = args.analysis.analysis.symbols.find((s) =>
+          equalSymbolIdentity(s.identity, e.identity),
+        )
+        if (!symbol) return undefined
+        const parsedJsDoc = args.analysis.metadata.parsedJsDocs.get(symbol.id)
+        return {
+          name: e.exportedName,
+          kind: symbol.kind,
+          signature: symbol.signature,
+          jsdocSummary: parsedJsDoc?.summary,
+          jsdocParams: parsedJsDoc?.params.map((p) => ({
+            name: p.name,
+            description: p.description,
+          })),
+          jsdocReturns: parsedJsDoc?.returns?.description,
+        }
+      })
+      .filter((exp) => !!exp),
   }
   const analysis = JSON.stringify(analysisObject)
 

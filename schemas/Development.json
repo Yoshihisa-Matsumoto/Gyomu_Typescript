@@ -1,0 +1,85 @@
+{
+  "type": "object",
+  "properties": {
+    "faq": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string",
+            "description": "A frequently asked question."
+          },
+          "answer": {
+            "type": "string",
+            "description": "The recommended answer."
+          }
+        },
+        "required": [
+          "question",
+          "answer"
+        ],
+        "additionalProperties": false
+      },
+      "description": "Frequently asked questions for developers."
+    },
+    "knownIssues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "issue": {
+            "type": "string",
+            "description": "Describe the known issue."
+          },
+          "workaround": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "Temporary workaround if available."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "issue"
+        ],
+        "additionalProperties": false
+      },
+      "description": "Known limitations or unresolved issues."
+    },
+    "tips": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Short title of the development tip."
+          },
+          "description": {
+            "type": "string",
+            "description": "Explain the recommendation or best practice."
+          }
+        },
+        "required": [
+          "title",
+          "description"
+        ],
+        "additionalProperties": false
+      },
+      "description": "Helpful recommendations that improve development experience."
+    }
+  },
+  "required": [
+    "faq",
+    "knownIssues",
+    "tips"
+  ],
+  "additionalProperties": false,
+  "title": "Development",
+  "description": "Developer-oriented operational knowledge including FAQ, known issues, and practical tips."
+}

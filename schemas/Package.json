@@ -1,0 +1,138 @@
+{
+  "type": "object",
+  "properties": {
+    "displayName": {
+      "type": "string",
+      "description": "Package display name"
+    },
+    "mission": {
+      "type": "string",
+      "description": "The primary mission or purpose of this knowledge. Explain what this knowledge exists to achieve in one concise paragraph."
+    },
+    "policies": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "A single policy or guideline that should normally be followed."
+      },
+      "description": "General principles or recommended behaviors. These describe what should usually be done, but are not absolute requirements."
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "A single mandatory constraint or requirement."
+      },
+      "description": "Hard requirements that must always be satisfied. Violating these constraints makes the output incorrect."
+    },
+    "nonGoals": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "A single thing that is intentionally outside the scope of this knowledge."
+      },
+      "description": "Explicitly state what this knowledge is not intended to solve or cover. This helps avoid scope creep and incorrect assumptions."
+    },
+    "terminology": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "term": {
+            "type": "string",
+            "description": "The technical term or concept."
+          },
+          "definition": {
+            "type": "string",
+            "description": "A concise explanation of the meaning of the term within this project."
+          }
+        },
+        "required": [
+          "term",
+          "definition"
+        ],
+        "additionalProperties": false,
+        "description": "A glossary entry."
+      },
+      "description": "Definitions of project-specific terminology. Include only terms that may be ambiguous or unfamiliar."
+    },
+    "rationale": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "Explain one design decision and why it exists."
+      },
+      "description": "Important reasoning behind decisions, trade-offs, or architectural choices. Focus on \"why\" rather than \"what\"."
+    },
+    "usage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "situation": {
+            "type": "string",
+            "description": "Describe the context or situation in which this guidance should be applied."
+          },
+          "guidance": {
+            "type": "string",
+            "description": "Explain the recommended action, behavior, or workflow that should be followed in this situation."
+          }
+        },
+        "required": [
+          "situation",
+          "guidance"
+        ],
+        "additionalProperties": false,
+        "description": "One recommended usage pattern consisting of a situation and the corresponding guidance."
+      },
+      "description": "Recommended ways to apply this knowledge in practice. Each entry describes when the guidance applies and what should be done."
+    },
+    "examples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "A short descriptive title that summarizes the example."
+          },
+          "input": {
+            "type": "string",
+            "description": "The input, request, or initial situation presented to the system. Use Markdown when formatting improves readability."
+          },
+          "output": {
+            "type": "string",
+            "description": "The expected or recommended output produced from the input. Use Markdown when appropriate."
+          },
+          "explanation": {
+            "type": "string",
+            "description": "Explain why this output is considered correct and what principle or policy it demonstrates."
+          }
+        },
+        "required": [
+          "title",
+          "input",
+          "output",
+          "explanation"
+        ],
+        "additionalProperties": false,
+        "description": "A complete worked example demonstrating how this knowledge should be applied."
+      },
+      "description": "Concrete examples showing correct application of this knowledge. Examples should be realistic, representative, and suitable for few-shot prompting."
+    }
+  },
+  "required": [
+    "displayName",
+    "mission",
+    "policies",
+    "constraints",
+    "nonGoals",
+    "terminology",
+    "rationale",
+    "usage",
+    "examples"
+  ],
+  "additionalProperties": false,
+  "title": "Knowledge",
+  "description": "Structured knowledge provided to an LLM. It defines the mission, expected behaviors, limitations, terminology, rationale, recommended usage, and practical examples for a specific topic."
+}

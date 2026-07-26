@@ -2,6 +2,9 @@ import { Confidence } from '@gyomu/schema/schemas'
 import { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 import { Schema } from 'effect'
 
+/**
+ * Deterministic JSDoc update action. All replacement content must be embedded directly in the action so that application does not require additional context.
+ */
 export const MergeActionSchema = Schema.Union([
   Schema.Struct({
     type: Schema.Literal('replace'),
@@ -29,6 +32,9 @@ export const MergeActionSchema = Schema.Union([
     'Deterministic JSDoc update action. All replacement content must be embedded directly in the action so that application does not require additional context.',
 })
 
+/**
+ * Update plan for the summary section. Prefer preserve. Use replace only when the summary is missing or clearly incorrect.
+ */
 export const SummaryPlan = Schema.Struct({
   action: MergeActionSchema,
   confidence: Confidence,
@@ -46,8 +52,19 @@ const TagKind = Schema.Literals([
   'remarks',
   'other',
 ])
+
+/**
+ * Determines if the given string is a valid JSDoc target kind.
+ *
+ * @param value The string to validate against known target kinds.
+ *
+ * @returns True if the value is a valid target kind, otherwise false.
+ */
 export const isJsDocTargetKind = (value: string) => Schema.is(TagKind)(value)
 
+/**
+ * Stable target reference for deterministic JsDoc application.
+ */
 export const JsDocTargetSchema = Schema.Struct({
   kind: TagKind,
 
@@ -68,6 +85,9 @@ const ParamActionValueSchema = Schema.Struct({
   }),
 })
 
+/**
+ * Deterministic JSDoc update action for parameters. All replacement content must be embedded directly in the action.
+ */
 export const ParamMergeActionSchema = Schema.Union([
   Schema.Struct({
     type: Schema.Literal('replace'),
@@ -95,6 +115,9 @@ export const ParamMergeActionSchema = Schema.Union([
     'Deterministic JSDoc update action. All replacement content must be embedded directly in the action so that application does not require additional context.',
 })
 
+/**
+ * Parameter update plan. Delete only when the parameter no longer exists in the function signature. Preserve when unsure.
+ */
 export const ParamPlan = Schema.Struct({
   target: JsDocTargetSchema,
 
@@ -115,6 +138,9 @@ export const ParamPlan = Schema.Struct({
     'Parameter update plan. Delete only when the parameter no longer exists in the function signature. Preserve when unsure.',
 })
 
+/**
+ * Return documentation update plan. Delete only when the function no longer returns a meaningful value.
+ */
 export const ReturnPlan = Schema.Struct({
   action: MergeActionSchema,
 
@@ -124,6 +150,9 @@ export const ReturnPlan = Schema.Struct({
     'Return documentation update plan. Delete only when the function no longer returns a meaningful value.',
 })
 
+/**
+ * Generic JSDoc tag update plan. Existing tags should normally be preserved. Delete only when the tag is clearly obsolete or invalid.
+ */
 export const TagPlan = Schema.Struct({
   target: JsDocTargetSchema,
 
@@ -144,6 +173,9 @@ export const TagPlan = Schema.Struct({
     'Generic JSDoc tag update plan. Existing tags should normally be preserved. Delete only when the tag is clearly obsolete or invalid.',
 })
 
+/**
+ * AI reasoning trace for debugging and validation of the documentation update process.
+ */
 export const Reasoning = Schema.Struct({
   summary: Schema.String.annotate({
     description: 'Why this update strategy was chosen',
@@ -160,6 +192,9 @@ export const Reasoning = Schema.Struct({
   description: 'AI reasoning trace for debugging and validation',
 })
 
+/**
+ * Safety risk assessment for merge operation when applying automated documentation updates.
+ */
 export const Risk = Schema.Struct({
   hasHumanConflict: Schema.Boolean.annotate({
     description: 'Whether AI detected conflict with human-edited content',
@@ -172,6 +207,9 @@ export const Risk = Schema.Struct({
   description: 'Safety risk assessment for merge operation',
 })
 
+/**
+ * AI-generated structured plan for safely updating JSDoc entries.
+ */
 export const JsDocUpdateEntrySchema = Schema.Struct({
   identity: SymbolIdentity,
   summary: SummaryPlan,
@@ -193,6 +231,10 @@ Delete actions should be rare and only used when the documented target no longer
 All replacement content must be included directly in the plan so that application can be performed without access to the original update context.
 `,
 })
+
+/**
+ * Collection of JSDoc update plans representing a batch of documentation updates.
+ */
 export const JsDocUpdatePlanSchema = Schema.Array(JsDocUpdateEntrySchema).annotate({
   description: `
 Collection of JSDoc update plans.
@@ -203,9 +245,33 @@ Additional entries may represent documentable child members or nested symbols.
 Each entry is applied independently using its identity.
 `,
 })
+
+/**
+ * Type representing the action plan for parameter documentation updates.
+ */
 export type ParamMergeAction = Schema.Schema.Type<typeof ParamMergeActionSchema>
+
+/**
+ * Defines the merge actions for JSDoc updates, including replacing, preserving, or deleting content.
+ */
 export type MergeAction = Schema.Schema.Type<typeof MergeActionSchema>
+
+/**
+ * Represents the structure of a complete JSDoc update plan, consisting of an array of individual update entries.
+ */
 export type JsDocUpdatePlan = Schema.Schema.Type<typeof JsDocUpdatePlanSchema>
+
+/**
+ * Defines the schema for a single JSDoc update plan entry, encapsulating identity, summary, parameter changes, and return documentation.
+ */
 export type JsDocUpdateEntryPlan = Schema.Schema.Type<typeof JsDocUpdateEntrySchema>
+
+/**
+ * Represents the target reference for a JSDoc update, identifying the specific documentation kind and optional key.
+ */
 export type JsDocTarget = Schema.Schema.Type<typeof JsDocTargetSchema>
+
+/**
+ * Type representing the value associated with parameter documentation replacement.
+ */
 export type ParamActionValue = Schema.Schema.Type<typeof ParamActionValueSchema>

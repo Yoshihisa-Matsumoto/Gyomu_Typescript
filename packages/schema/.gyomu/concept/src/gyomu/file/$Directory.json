@@ -1,26 +1,23 @@
 {
-  "summary": "This directory centralizes the definitions, metadata structures, and configuration types required for handling file system operations, transport configurations, and file filtering criteria within the application.",
+  "summary": "This directory centralizes the metadata definitions, filtering criteria, and transport configurations required for handling file system operations within the gyomu module, ensuring consistent representation of file-related data.",
   "responsibilities": [
-    "Define metadata structures for file transport operations",
-    "Specify filtering criteria and comparison logic for file system processing",
-    "Provide standardized type definitions for file archiving and information handling"
+    "Define metadata for file system objects and operations",
+    "Specify filtering criteria and comparison logic for file selection",
+    "Configure path and transport settings for file data movement"
   ],
   "concepts": [
     "File Metadata",
+    "File Filtering",
     "Transport Configuration",
-    "Filtering Criteria",
-    "Archive Formats",
-    "File System Operations"
+    "Archive Formats"
   ],
   "relationships": [
-    "File metadata serves as the foundational data structure for transport configuration and filtering logic.",
-    "Filtering criteria define the constraints applied during file transport operations.",
-    "Archive formats specify the supported methods for compressing or packaging file information."
+    "File filtering criteria define how file metadata is evaluated during processing.",
+    "Transport configurations utilize file metadata to manage the movement and destination of file system entities."
   ],
   "designDecisions": [
-    "Centralized type definitions for consistent cross-module file handling",
-    "Separation of concerns between metadata representation and operational logic",
-    "Use of typed constants to restrict file filtering and comparison options"
+    "Centralized type definitions for shared file operation constants",
+    "Separation of concerns between filter metadata and transport configuration models"
   ],
-  "importance": "Core"
+  "importance": "Supporting"
 }

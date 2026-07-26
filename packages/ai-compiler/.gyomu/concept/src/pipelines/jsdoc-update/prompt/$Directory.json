@@ -1,0 +1,21 @@
+{
+  "summary": "This directory is responsible for locating and retrieving prompt templates from the local file system to support pipeline operations. It acts as the interface between the filesystem storage of prompts and the automated documentation generation logic.",
+  "responsibilities": [
+    "Load prompt template content",
+    "Read prompt files from the local filesystem"
+  ],
+  "concepts": [
+    "Prompt template",
+    "File system",
+    "Resource loading"
+  ],
+  "relationships": [
+    "The loading logic accesses the file system to retrieve specific prompt content.",
+    "Retrieved prompt content is prepared for use within documentation generation pipelines."
+  ],
+  "designDecisions": [
+    "File-based template storage",
+    "Synchronous file access for template retrieval"
+  ],
+  "importance": "Supporting"
+}

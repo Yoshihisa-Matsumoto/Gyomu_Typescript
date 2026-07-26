@@ -75,4 +75,9 @@ export interface PackageJsonAnalysis {
    * optional dependency
    */
   readonly optionalDependencies: ReadonlyArray<PackageDependency>
+
+  /**
+   * The license of the package.
+   */
+  readonly license: string
 }

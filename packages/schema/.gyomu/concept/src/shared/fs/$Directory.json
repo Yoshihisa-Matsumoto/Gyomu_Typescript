@@ -1,27 +1,26 @@
 {
-  "summary": "This directory provides foundational filesystem interaction utilities and services. It encapsulates logic for normalizing file paths, searching for files based on criteria, and managing file access synchronization via locking mechanisms to ensure safe operations.",
+  "summary": "This directory provides a centralized infrastructure for file system operations, including path normalization, file accessibility management, and advanced searching capabilities within the project's internal file structures.",
   "responsibilities": [
-    "Normalize and manipulate file system paths",
-    "Perform filtered file searches within the filesystem",
-    "Manage file accessibility and concurrent access through synchronization locks"
+    "Normalize file system paths for consistent usage",
+    "Manage secure file access and synchronization",
+    "Perform file discovery using search queries and metadata filtering"
   ],
   "concepts": [
-    "Filesystem abstraction",
     "Path normalization",
-    "File search",
-    "File access control",
-    "Synchronization locks"
+    "File system access",
+    "File search service",
+    "File locking",
+    "Path abstraction"
   ],
   "relationships": [
-    "The search service utilizes path definitions to locate and return filesystem entries.",
-    "File access services use entry paths to verify permissions and manage locks on specific resources.",
-    "Path normalization utilities ensure consistent representation of filesystem locations across the search and access services."
+    "The FileSearchService utilizes search queries to locate files within the file system.",
+    "The FileAccessService manages concurrent file operations to ensure data integrity during access.",
+    "EntryPath and FsPath provide consistent type definitions used by all services to represent locations within the file system."
   ],
   "designDecisions": [
-    "Service-oriented architecture for filesystem operations",
-    "Strong typing for path representations to enforce consistency",
-    "Centralized path normalization to handle platform-specific inconsistencies",
-    "Synchronized access management to handle file concurrency"
+    "Standardization of path strings to use forward slashes",
+    "Service-based abstraction for file system interactions",
+    "Centralized type definitions for path representations"
   ],
-  "importance": "Core"
+  "importance": "Supporting"
 }

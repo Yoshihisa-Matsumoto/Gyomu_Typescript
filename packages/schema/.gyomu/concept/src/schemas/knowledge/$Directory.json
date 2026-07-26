@@ -1,0 +1,27 @@
+{
+  "summary": "This directory centralizes the definition of structured knowledge schemas designed for LLM consumption. It provides a consistent format for documenting package mission, technical requirements, operational guidelines, and development roadmaps.",
+  "responsibilities": [
+    "Defining structured formats for project-level information",
+    "Providing schemas for technical installation and integration data",
+    "Managing developer-facing operational knowledge and FAQs",
+    "Tracking feature roadmap and project development status"
+  ],
+  "concepts": [
+    "Knowledge Schemas",
+    "Technical Reference",
+    "Project Roadmap",
+    "Development Guidelines",
+    "Package Documentation"
+  ],
+  "relationships": [
+    "The Package schema acts as a container for high-level documentation, while Technical and Development schemas provide granular details for implementation and usage.",
+    "Roadmap items provide context for future development that can be referenced within the broader Package knowledge structure.",
+    "Technical reference schemas define the prerequisites and environmental constraints required for successful package adoption."
+  ],
+  "designDecisions": [
+    "Use of TypeScript const objects to enforce schema structure",
+    "Separation of concerns between high-level package rationale and low-level technical reference",
+    "Centralized export strategy for easy access to all knowledge types"
+  ],
+  "importance": "Core"
+}

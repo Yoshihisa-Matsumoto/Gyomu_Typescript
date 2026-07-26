@@ -14,6 +14,17 @@ import type { RawConfigType } from '../types/ConfigRawConfig.js'
 import type { StaticConfigResolveRequest } from '../types/ConfigResolveRequest.js'
 import type { RawLoadedConfig } from '../types/RawLoadedConfig.js'
 
+/**
+ * Loads static configurations based on the provided resolution request, performing path resolution and JSON processing for each configured layer.
+ *
+ * @param request The configuration resolution request defining the schema, raw configuration structure, and search query.
+ *
+ * @returns An Effect that resolves to a read-only array of successfully loaded configurations.
+ *
+ * @@throws {ConfigResolutionError} Thrown if configuration resolution fails.
+ *
+ * @@requires {ConfigService|FileSystem.FileSystem|ConfigRootDirectory} Requires configuration service, file system access, and the base configuration directory.
+ */
 export const loadStaticConfig = <
   ConfigSchema extends EffectSchema,
   RawConfig extends RawConfigType,

@@ -9,6 +9,14 @@ const layerOrder: Record<ConfigLayer, number> = {
   scope: 2,
   'user-scope': 3,
 }
+
+/**
+ * Sorts an array of loaded application configurations based on source and layer order.
+ *
+ * @param appConfigs The array of application configurations to sort.
+ *
+ * @returns A new sorted array of configurations.
+ */
 export const sortAppLoadedConfigArray = <ConfigSchema extends EffectSchema>(
   appConfigs: Array<AppLoadedConfig<ConfigSchema>>,
 ) =>

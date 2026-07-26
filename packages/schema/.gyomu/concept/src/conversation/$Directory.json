@@ -1,27 +1,27 @@
 {
-  "summary": "This directory centralizes the data contracts and type definitions for AI-driven conversations, establishing a formal structure for messages, attachments, and the request-response payloads required for communication between the client and an AI service.",
+  "summary": "The conversation directory provides the core data contracts and schemas required for exchanging messages with an AI system. It defines the structure of chat requests, responses, individual messages, and attachments to ensure consistent communication.",
   "responsibilities": [
-    "Define schemas for AI chat requests and responses",
-    "Model the structure of message entities and their associated metadata",
-    "Specify the format for message attachments",
-    "Standardize participant roles within a conversation"
+    "Define schema contracts for AI chat interactions",
+    "Model the structure of messages and message history",
+    "Specify requirements for sending messages and attachments",
+    "Normalize response formats for AI chat services"
   ],
   "concepts": [
-    "Chat Request",
-    "Chat Response",
+    "AI Chat Request",
+    "AI Chat Response",
     "Message Entity",
-    "Attachment",
-    "Message Role"
+    "Message Attachment",
+    "Participant Roles"
   ],
   "relationships": [
-    "A chat request contains a history of messages and a current message input.",
-    "A chat response wraps a single message entity within a standard result structure.",
-    "Messages can include multiple attachments and utilize specific roles to define participant behavior."
+    "An AI chat request contains a history of messages and a current message input.",
+    "A message entity is composed of content and optional attachments.",
+    "The AI chat response wraps a message entity within a standardized result structure."
   ],
   "designDecisions": [
-    "Use of schema-based validation to infer types",
-    "Centralized export strategy for domain models",
-    "Strict separation of request and response payloads"
+    "Use schema-based definitions for type safety",
+    "Decouple message content from transport metadata",
+    "Centralize common communication structures in a single directory"
   ],
   "importance": "Core"
 }

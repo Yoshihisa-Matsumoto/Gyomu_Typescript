@@ -1,0 +1,28 @@
+{
+  "summary": "This directory centralizes the structural definitions and type schemas for document models and translation-related data. It provides the core data contracts used to represent documents, their sections, content blocks, and the metadata required for translation processes.",
+  "responsibilities": [
+    "Define structural schemas for documents and their constituent sections",
+    "Model document content blocks such as paragraphs, lists, and code blocks",
+    "Specify the structure for translation requests and results",
+    "Provide TypeScript type definitions for all document and translation data structures"
+  ],
+  "concepts": [
+    "Document schemas",
+    "Content block models",
+    "Translation data structures",
+    "Document sections",
+    "Language code definitions"
+  ],
+  "relationships": [
+    "Documents are composed of one or more sections that hold various content blocks defined by content schemas.",
+    "Translation targets map specific document sections or fragments to required language results.",
+    "The schema definitions enable both validation of document structure and the generation of type-safe objects for processing."
+  ],
+  "designDecisions": [
+    "Co-location of Zod schema constants with their corresponding TypeScript types",
+    "Use of barrel files to facilitate centralized access to schema definitions",
+    "Decoupling of structural document definitions from specific output formats",
+    "Strict modeling of translation requirements as schema-bound data requests"
+  ],
+  "importance": "Core"
+}

@@ -8,6 +8,15 @@ import type { ConfigRequest } from '../types/ConfigRequest.js'
 import type { RawLoadedConfig } from '../types/RawLoadedConfig.js'
 import type { AppLoadedConfig } from '../types/AppConfig.js'
 
+/**
+ * Decodes an array of raw loaded configurations using the provided schema request.
+ *
+ * @param request The configuration request containing the schema and query information.
+ *
+ * @param configs The list of raw configurations to decode.
+ *
+ * @returns An Effect that resolves to the array of decoded configurations or fails with a ConfigResolutionError.
+ */
 export function decodeRawLoadedConfigs<
   ConfigSchema extends EffectSchema,
   RawConfig extends RawConfigType,

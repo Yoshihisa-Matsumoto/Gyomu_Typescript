@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=../../../../schemas/Roadmap.json
+
+planned: []
+
+inProgress: []
+
+completed: []
+
+backlog:
+  - title: エージェントルーティング設定の登録の簡略化
+    description: |
+      現状は、クライアント側でエージェントルーティング設定を、各AI機能ごとに設定させている。機能ごとにどのモデルが必要かが異なってくるためだが、この設定処理をより簡素にできるようにしたい
+    priority: medium

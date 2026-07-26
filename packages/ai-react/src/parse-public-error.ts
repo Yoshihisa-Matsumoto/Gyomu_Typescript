@@ -3,6 +3,13 @@ import { convertToSchemaObjectWithResult, flattenIssues } from '@gyomu/schema/en
 import { Result } from 'effect'
 import type { PublicError } from '@gyomu/schema'
 
+/**
+ * Parses a public error response from a fetch request into a standardized PublicError object.
+ *
+ * @param response The HTTP response object received from the server.
+ *
+ * @returns Returns a promise that resolves to a PublicError object representing the parsed server error or a fallback unexpected error.
+ */
 export const parsePublicError = async (response: Response): Promise<PublicError> => {
   try {
     const json = await response.json()

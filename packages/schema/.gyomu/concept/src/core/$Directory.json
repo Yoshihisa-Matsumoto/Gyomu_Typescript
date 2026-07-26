@@ -1,29 +1,30 @@
 {
-  "summary": "This directory provides foundational utility functions and shared schema definitions that support core application logic, including type safety helpers, JSON validation, and standardized API result structures.",
+  "summary": "This directory provides foundational utility functions and shared type definitions, including JSON schema structures and standardized result patterns, that serve as low-level infrastructure for the rest of the application.",
   "responsibilities": [
-    "Provide type-safe wrappers and assertions for control flow",
-    "Define standardized JSON and result schemas for API consistency",
-    "Expose utilities for stack trace analysis and debugging",
-    "Implement consistent error handling and result mapping for public APIs"
+    "Provide type-safe definitions for JSON structures",
+    "Implement standardized success and error result patterns",
+    "Support exhaustive type checking in conditional logic",
+    "Expose utilities for stack trace introspection and caller identification",
+    "Facilitate execution of public API operations with schema validation"
   ],
   "concepts": [
-    "Exhaustiveness checking",
-    "JSON serialization types",
-    "API result schemas",
-    "Error normalization",
+    "JSON schema",
+    "Error handling",
+    "Result patterns",
+    "Type assertion",
     "Stack trace introspection"
   ],
   "relationships": [
-    "Result schemas and error definitions provide a standardized structure for API responses.",
-    "JSON value schemas ensure type integrity for data interchange formats.",
-    "Exhaustive checks ensure that all possible result states are handled within application logic.",
-    "Public API execution helpers rely on result schemas to map internal errors into external-facing response formats."
+    "The library uses result schemas to wrap operations, ensuring consistent public-facing error formats.",
+    "The JSON schema definitions rely on recursive structures to model complex data types accurately.",
+    "Exhaustive checking utilities allow developers to enforce complete handling of union types within the codebase.",
+    "Stack trace tools support debugging by providing context about the execution origin of specific operations."
   ],
   "designDecisions": [
-    "Use of Effect Schema for runtime validation and type inference",
-    "Standardization of API success and failure responses via result schemas",
-    "Encapsulation of common logic to ensure architectural consistency across the project",
-    "Separation of public error formats from internal exception handling"
+    "Use of declarative schema definitions for runtime validation",
+    "Standardization of API responses through generic result structures",
+    "Strict type-level enforcement for exhaustive switch cases",
+    "Centralization of shared types and helpers to minimize code duplication"
   ],
   "importance": "Core"
 }

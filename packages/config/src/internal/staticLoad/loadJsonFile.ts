@@ -12,6 +12,19 @@ import type { RawLoadedConfig } from '../../types/RawLoadedConfig.js'
 import type { ConfigRawConfig, RawConfigType } from '../../types/ConfigRawConfig.js'
 import type { ExcludeOption } from '../../types/ExcludeOption.js'
 
+/**
+ * Loads a configuration from a JSON file, optionally applying nesting levels for scope and function-based configuration structures. Returns an Effect that resolves to the loaded configuration or undefined if not found.
+ *
+ * @param request The configuration resolution request details containing the raw config definition.
+ *
+ * @param layer The configuration layer identifier.
+ *
+ * @param settingFilePath The filesystem path to the JSON configuration file.
+ *
+ * @param nestingOption Optional nesting hierarchy settings to apply to the raw configuration.
+ *
+ * @returns An Effect that resolves to the raw loaded configuration or undefined. Requires ConfigService and FileSystem dependencies. May fail with ConfigResolutionError.
+ */
 export const loadJsonFile = <ConfigSchema extends EffectSchema, RawConfig extends RawConfigType>(
   request: StaticConfigResolveRequest<ConfigSchema, RawConfig>,
   layer: ConfigLayer,

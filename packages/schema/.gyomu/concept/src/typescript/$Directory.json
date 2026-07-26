@@ -1,30 +1,30 @@
 {
-  "summary": "This directory serves as the foundation for TypeScript source code analysis, providing core data structures, type definitions, and analytical models. It enables the representation of file-level metadata, schema validation, and path identification required for processing TypeScript projects.",
+  "summary": "This directory serves as the foundation for TypeScript-based analysis by providing core data structures, type definitions, and schema validation logic. It establishes the common models and identification systems used to represent and process source files, symbols, and project metadata.",
   "responsibilities": [
-    "Define core data models and interfaces for file analysis context",
-    "Establish unique identifiers and path normalization types",
-    "Identify and validate supported schema types",
-    "Manage transient state and metadata during analysis",
-    "Provide centralized access to project-wide analysis configurations"
+    "Define structural interfaces for file and symbol analysis contexts",
+    "Provide unique identification types for symbols and signatures",
+    "Standardize relative path representations across different root scopes",
+    "Validate and enforce supported schema types for analysis",
+    "Aggregate and export shared models for dependency and package metadata processing"
   ],
   "concepts": [
-    "File Analysis Context",
-    "Symbol Identifiers",
+    "Analysis Context",
+    "Symbol Identification",
+    "Schema Classification",
     "Path Normalization",
-    "Schema Analysis",
-    "Documentable Targets"
+    "Metadata Modeling"
   ],
   "relationships": [
-    "The File Analysis Context aggregates metadata and transient data to provide a complete view of a file being analyzed.",
-    "Unique identifier types like SymbolId and SignatureId are used across analysis modules to ensure consistent referencing of code elements.",
-    "Supported schema types act as a filter to determine which configurations are valid for analysis within the project.",
-    "Path types clarify the relationship between files and their location within the project, workspace, or directory hierarchy."
+    "The FileAnalysisContext aggregates documentable targets and metadata to represent the state of an analyzed source file.",
+    "SymbolId and SignatureId provide unique identity tracking across the analysis pipeline for members and code constructs.",
+    "SupportedSchemaKind restricts the allowed schema types during the analysis of package and configuration data.",
+    "Relative path types ensure consistent referencing of files across different workspace and project contexts."
   ],
   "designDecisions": [
     "Use of nominal branding for path and identifier types to ensure type safety",
-    "Centralized export of types and analytical utilities for modular access",
-    "Separation of transient state from metadata in analysis contexts",
-    "Consistent use of interface-based models for extensible data representation"
+    "Centralized type definitions to promote consistent data representation",
+    "Modular export strategy allowing for granular access to analysis sub-domains",
+    "Strict separation between analysis metadata and transient state data"
   ],
   "importance": "Core"
 }

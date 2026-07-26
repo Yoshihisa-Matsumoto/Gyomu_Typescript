@@ -11,6 +11,14 @@ type ToolRuntimeConfig = {
 
   readonly stopWhen?: ReturnType<typeof stepCountIs>
 }
+
+/**
+ * Creates a runtime configuration for AI tools, mapping tool definitions to Vercel formats and defining the tool execution loop termination policy.
+ *
+ * @param params Configuration object containing an optional list of AI tools and an optional tool loop policy.
+ *
+ * @returns Returns a ToolRuntimeConfig object containing the mapped tools and the stop criteria for tool loops.
+ */
 export const buildToolRuntimeConfig = (params: {
   readonly tools?: ReadonlyArray<AnyAiTool>
 

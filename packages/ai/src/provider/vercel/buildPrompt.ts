@@ -2,6 +2,13 @@ import { AiError, withOptional } from '@gyomu/schema'
 import type { Message } from '@gyomu/schema/conversation'
 import type { ModelMessage } from 'ai'
 
+/**
+ * Constructs a model-ready prompt object from the provided prompt string or message history.
+ *
+ * @param params The input configuration containing either a raw prompt string or an array of conversation messages.
+ *
+ * @returns A union type containing either a structured prompt object or system instructions with message history.
+ */
 export const buildPrompt = (params: {
   readonly prompt?: string
   readonly messages?: ReadonlyArray<Message>

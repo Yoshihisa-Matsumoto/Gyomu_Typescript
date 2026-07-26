@@ -1,0 +1,20 @@
+{
+  "summary": "This directory provides tools for retrieving calendar-based data, specifically focusing on Japanese holiday information to facilitate date-related business operations and calculations.",
+  "responsibilities": [
+    "Querying official holiday schedules in Japan",
+    "Filtering holiday data based on specific date ranges"
+  ],
+  "concepts": [
+    "Business Calendar",
+    "Holiday Data",
+    "Tool Integration"
+  ],
+  "relationships": [
+    "The business calendar provides holiday data to the tool interface to enable date-aware logic."
+  ],
+  "designDecisions": [
+    "Encapsulating specific calendar queries within a dedicated tool structure",
+    "Focusing on Japanese regional calendar data"
+  ],
+  "importance": "Supporting"
+}

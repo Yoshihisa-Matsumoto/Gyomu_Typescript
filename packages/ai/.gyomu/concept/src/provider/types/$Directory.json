@@ -1,0 +1,28 @@
+{
+  "summary": "This directory defines the core service interfaces, input parameters, and response structures required to interact with AI model providers, establishing a standard contract for text generation, object creation, streaming, and embedding operations.",
+  "responsibilities": [
+    "Defining standard interfaces for AI model service interactions",
+    "Standardizing parameters for generating text, objects, and embeddings",
+    "Defining the structure of AI responses and streaming events",
+    "Providing service tags for dependency injection of AI provider services"
+  ],
+  "concepts": [
+    "AI Model Service",
+    "Service Interfaces",
+    "Generation Parameters",
+    "Response Structures",
+    "Streaming Events",
+    "Tool Call Policy"
+  ],
+  "relationships": [
+    "The AI model service interface utilizes specific parameter types to request text, object, or embedding generation.",
+    "Result interfaces capture the output of generation requests alongside completion data and usage statistics.",
+    "Streaming events provide granular updates during the execution of long-running generation tasks."
+  ],
+  "designDecisions": [
+    "Usage of interface definitions to decouple provider implementation from client logic",
+    "Definition of central service tags to facilitate dependency injection",
+    "Categorization of outputs through union types for message parts and stream events"
+  ],
+  "importance": "Core"
+}

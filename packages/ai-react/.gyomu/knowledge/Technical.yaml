@@ -1,0 +1,44 @@
+# yaml-language-server: $schema=../../../../schemas/Technical.json
+
+installation:
+  - command: pnpm add @gyomu/ai-react
+    description: |
+      通常の npm パッケージと同様にインストールする。
+      他の特別なセットアップは不要。
+
+configuration: []
+
+dependencies:
+  - package: effect
+    description: |
+      Effect Runtime、Effect Schema、Context など、本パッケージの基盤となるライブラリ。
+
+  - package: "@gyomu/schema"
+    description: |
+      スキーマ、共通型の置き場として利用
+
+  - package: "@gyomu/ui-core"
+    description: |
+      Headless UI 処理に利用
+
+  - package: "@ai-sdk/react"
+    description: |
+      Vercel のReact系処理（主にエラー）に利用
+
+compatibility:
+  - name: Effect
+    supported: 4.x
+    description: |
+      Effect Ver4 を前提として設計されている。
+
+  - name: Module System
+    supported: ESM
+    description: |
+      ESM 環境での利用を前提としている。
+
+  - name: React
+    supported: 19.x
+    description: |
+      フロント処理
+
+migration: []

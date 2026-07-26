@@ -219,6 +219,17 @@ export const readYamlFromFile = <T>(path: string, encoding?: string) =>
     const text = yield* readStringFromFile(path, encoding)
     return parse(text) as T
   })
+export const readYamlFromFileAndValidate = <S extends Schema.Top>(
+  schemaName: string,
+  schema: S,
+  path: string,
+  encoding?: string,
+): Effect.Effect<Schema.Schema.Type<S>, IOError | SchemaValidationError, FileSystem.FileSystem> =>
+  Effect.gen(function* () {
+    const yamlData = yield* readYamlFromFile(path, encoding)
+    return yield* convertToSchemaObjectWithEffect(schemaName)(schema, yamlData)
+  })
+
 export const copyFile = (source: string, destination: string) =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem

@@ -1,0 +1,29 @@
+{
+  "summary": "This directory manages the internal lifecycle of application configuration, handling the retrieval, transformation, and integration of static and environment-based configuration data before it is consumed by the application.",
+  "responsibilities": [
+    "Load environment-based configuration",
+    "Resolve and load static JSON configuration files",
+    "Decode and validate raw configuration structures",
+    "Merge multiple configuration sources using specific strategies",
+    "Sort configuration layers based on precedence",
+    "Transform configuration objects by processing option values"
+  ],
+  "concepts": [
+    "Configuration Loading",
+    "Source Merging",
+    "Configuration Transformation",
+    "Layer Sorting",
+    "Path Resolution"
+  ],
+  "relationships": [
+    "Configuration loading uses path resolution to retrieve raw data from static files or environment sources.",
+    "Loaded configuration fragments are sorted by layer order before being merged into a single coherent configuration.",
+    "Data transformation processes, such as unwrapping options, are applied to configurations to ensure they meet expected schemas."
+  ],
+  "designDecisions": [
+    "Encapsulation of core loading logic within an internal scope to prevent external dependency coupling",
+    "Recursive transformation patterns for processing nested configuration objects",
+    "Separation of concerns between source retrieval, validation, and merging strategies"
+  ],
+  "importance": "Core"
+}

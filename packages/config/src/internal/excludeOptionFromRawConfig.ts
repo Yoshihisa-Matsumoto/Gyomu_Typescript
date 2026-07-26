@@ -2,6 +2,13 @@ import { Option } from 'effect'
 import type { ExcludeOption } from '../types/ExcludeOption.js'
 import type { ConfigRawConfig, RawConfigType } from '../types/ConfigRawConfig.js'
 
+/**
+ * Recursively transforms a configuration object by unwrapping all Option values into their contained values or undefined.
+ *
+ * @param record The raw configuration object containing potential Option values.
+ *
+ * @returns A new configuration object with all Options replaced by their inner values.
+ */
 export const excludeOptionFromRawConfig = <RawConfig extends ConfigRawConfig<RawConfigType>>(
   record: RawConfig,
 ): ExcludeOption<RawConfig> => {

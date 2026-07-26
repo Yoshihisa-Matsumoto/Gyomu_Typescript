@@ -1,0 +1,101 @@
+# yaml-language-server: $schema=../../../../schemas/Package.json
+
+displayName: Gyomu AI
+
+mission: |
+  GyomuプロジェクトにおけるAI実行基盤を提供する。
+  AIプロバイダーやSDKの違いを吸収し、モデル管理、ルーティング、
+  Tool実行、エラー処理を統一されたインターフェースで提供することで、
+  信頼性・拡張性・保守性に優れたAIアプリケーションの基盤となることを目的とする。
+
+policies:
+  - AIモデルへのアクセスはAiServiceおよび関連サービスを経由して行う。
+  - AIプロバイダー固有のSDKを直接利用せず、抽象化されたProviderを利用する。
+  - モデル構成はRegistryに登録し、利用側で直接管理してはならない。
+  - AIリクエストはRoutingを利用し、フォールバックを考慮した構成とする。
+  - Toolは入力スキーマと実行ポリシーを明示的に定義する。
+  - AI出力は信頼せず、必要に応じてスキーマ検証を行う。
+  - エラーは構造化し、診断情報を保持できるよう設計する。
+
+constraints:
+  - 特定のAIプロバイダーへ依存したAPIを公開してはならない。
+  - プロバイダー固有のSDKを利用側へ露出してはならない。
+  - AIモデルの構成をコード中へ直接埋め込んではならない。
+  - Toolは副作用や権限を明示的に管理すること。
+  - AI呼び出し以外のビジネスロジックを実装してはならない。
+
+nonGoals:
+  - アプリケーション固有のプロンプトを提供すること。
+  - 特定用途専用のAIワークフローを提供すること。
+  - モデルプロバイダーSDKをそのまま公開すること。
+  - AI生成結果を永続化すること。
+  - エージェントや業務ロジックを実装すること。
+
+terminology:
+  - term: AI Provider
+    definition: OpenAI、Google、Anthropicなど、AIモデルを提供するサービス。
+
+  - term: Model Registry
+    definition: 利用可能なAIモデルの定義・取得を管理する仕組み。
+
+  - term: Routing
+    definition: AIリクエストを適切なモデルへ振り分け、必要に応じてフォールバックを行う仕組み。
+
+  - term: AI Tool
+    definition: AIモデルが呼び出すことのできるスキーマ定義付きの実行可能な機能。
+
+  - term: Approval Policy
+    definition: Toolの実行可否を制御するための承認ルール。
+
+rationale:
+  - AIプロバイダーを抽象化することで、SDK変更やベンダー変更の影響を最小限にできる。
+  - モデル管理をRegistryへ集約することで、利用側の構成をシンプルに保てる。
+  - Routingによるフォールバックを標準化することで、AIサービスの可用性を向上できる。
+  - Toolをスキーマベースで定義することで、安全かつ再利用可能なAI連携を実現できる。
+  - Effectによる依存性注入とエラー管理により、複雑なAI処理を予測可能に構築できる。
+
+usage:
+  - situation: 新しいAIモデルを追加する
+    guidance: Model Registryへ登録し、利用側はRegistry経由で取得する。
+
+  - situation: フォールバックを構成する
+    guidance: Routingを利用して複数モデルの実行順序を定義する。
+
+  - situation: AI Toolを追加する
+    guidance: 入力Schema、Approval Policy、実行処理を定義して登録する。
+
+  - situation: AIリクエストを実行する
+    guidance: AiServiceを利用し、ProviderやSDKへ直接アクセスしない。
+
+examples:
+  - title: モデル追加
+    input: |
+      新しいGeminiモデルを利用したい。
+    output: |
+      Model Registryへ登録し、Routingから参照する。
+    explanation: |
+      モデル構成を一元管理することで、利用側は実装を変更せず新しいモデルを利用できる。
+
+  - title: フォールバック
+    input: |
+      優先モデルが失敗した場合に別モデルを利用したい。
+    output: |
+      Routingへ複数ノードを定義し、自動的に次のモデルへ切り替える。
+    explanation: |
+      フォールバック処理を利用側へ実装する必要がない。
+
+  - title: Tool実装
+    input: |
+      ファイル検索ToolをAIから利用したい。
+    output: |
+      Schema、Approval Policy、実行処理を定義したAI Toolとして登録する。
+    explanation: |
+      Toolは統一されたライフサイクルで管理される。
+
+  - title: Provider追加
+    input: |
+      新しいAIプロバイダーを追加したい。
+    output: |
+      Providerインターフェースを実装し、既存サービスへ登録する。
+    explanation: |
+      利用側はProviderの違いを意識せずAI機能を利用できる。

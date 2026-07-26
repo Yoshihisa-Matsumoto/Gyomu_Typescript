@@ -50,6 +50,7 @@ export const buildPackageAnalysis = (
         version: context.packageJson.version,
         description: context.packageJson.description,
         type: context.packageJson.moduleType,
+        license: context.packageJson.license,
       },
     } satisfies PackageAnalysis
   }).pipe(

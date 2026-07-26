@@ -6,6 +6,13 @@ import type { EffectSchema } from '@gyomu/schema/entity'
 import type { AiTool, ToolResult } from '../../ai-tool.js'
 import type { JsonValue } from '@gyomu/schema'
 
+/**
+ * Converts an internal `AiTool` definition into a Vercel-compatible `Tool` object, mapping the schema and execution logic.
+ *
+ * @param toolDef The AI tool definition containing description, input schema, and execution logic.
+ *
+ * @returns A Vercel-compatible Tool instance configured with the provided schema and execution handler.
+ */
 export const toVercelTool = <
   Input extends EffectSchema,
   Output extends JsonValue,

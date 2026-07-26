@@ -1,0 +1,33 @@
+{
+  "summary": "The @gyomu/agent package serves as a primary orchestrator within the Gyomu ecosystem, integrating AI-driven analysis with project-specific code intelligence. It leverages specialized dependencies for infrastructure, schema management, and TypeScript documentation to enable advanced agentic workflows.",
+  "responsibilities": [
+    "Orchestrate interactions between AI models and local project infrastructure.",
+    "Implement agentic decision-making logic for code-related tasks.",
+    "Bridge high-level analytical goals with concrete TypeScript codebase operations.",
+    "Manage the lifecycle and state of automated project analysis agents."
+  ],
+  "capabilities": [
+    {
+      "name": "Agent Orchestration",
+      "description": "Provides the structural framework to define and execute autonomous agents capable of performing complex code analysis and transformation tasks."
+    },
+    {
+      "name": "Code Intelligence Integration",
+      "description": "Exposes capabilities for deep semantic analysis of TypeScript code by utilizing underlying structural and documentation models."
+    },
+    {
+      "name": "Analytical Workflow Management",
+      "description": "Coordinates multi-step processes involving schema validation, AI inference, and infrastructure interaction."
+    }
+  ],
+  "designDecisions": [
+    "Employs a functional effect-based architecture to handle complex asynchronous operations and side effects reliably.",
+    "Decouples domain-specific analysis logic from infrastructure concerns by utilizing core Gyomu dependency packages.",
+    "Prioritizes declarative definitions for agent behaviors to ensure maintainability and testability."
+  ],
+  "usageGuidance": [
+    "Extend the base agent classes or configurations to define custom task-specific behaviors.",
+    "Utilize the provided test infrastructure to validate agent behavior against representative code snippets.",
+    "Ensure environment configurations and infrastructure dependencies are initialized before invoking primary agent orchestration APIs."
+  ]
+}

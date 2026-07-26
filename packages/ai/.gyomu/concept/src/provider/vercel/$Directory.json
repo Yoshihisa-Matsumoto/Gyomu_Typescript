@@ -1,0 +1,28 @@
+{
+  "summary": "This directory serves as the Vercel AI provider integration layer, transforming internal application data structures into Vercel-specific formats and providing concrete implementations for model service and execution interfaces.",
+  "responsibilities": [
+    "Translating internal application prompts and results to the Vercel AI format",
+    "Configuring runtime execution parameters for AI tools",
+    "Implementing live services for model execution",
+    "Standardizing error contexts for provider-specific exceptions"
+  ],
+  "concepts": [
+    "Vercel AI Provider",
+    "Model Execution Service",
+    "Data Mapping",
+    "Tool Runtime Configuration",
+    "Error Contextualization"
+  ],
+  "relationships": [
+    "The data mapping logic ensures that standardized application requests are correctly translated into the Vercel AI provider format.",
+    "The tool runtime configuration provides the necessary definitions for the execution layer to manage tool cycles.",
+    "The model service implementations utilize the mapped results and runtime configurations to facilitate live model interactions."
+  ],
+  "designDecisions": [
+    "Use of Layer-based architecture to provide concrete service implementations",
+    "Centralization of transformation and mapping logic for provider interoperability",
+    "Strict decoupling of standard interface definitions from Vercel-specific implementation details",
+    "Unified error handling strategy to normalize provider-specific exceptions"
+  ],
+  "importance": "Supporting"
+}

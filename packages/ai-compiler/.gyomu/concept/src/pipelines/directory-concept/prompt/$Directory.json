@@ -1,0 +1,20 @@
+{
+  "summary": "This directory is responsible for locating and retrieving prompt template strings required by the application. It acts as a specialized data access layer for prompt-based configurations.",
+  "responsibilities": [
+    "Load prompt template content from the filesystem",
+    "Provide access to prompt definitions for pipeline execution"
+  ],
+  "concepts": [
+    "Prompt Templates",
+    "Template Loading",
+    "Resource Retrieval"
+  ],
+  "relationships": [
+    "The directory provides prompt templates that are consumed by the pipeline to drive generation tasks."
+  ],
+  "designDecisions": [
+    "Localized template storage",
+    "Synchronous resource loading"
+  ],
+  "importance": "Supporting"
+}

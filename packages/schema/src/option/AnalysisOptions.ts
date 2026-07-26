@@ -10,6 +10,7 @@ export interface AnalysisOptions extends ExecutionOptions {
   debugInfo?: ExecutionOptions['debugInfo'] & {
     keyword?: string
     verifyIndex?: boolean
+    trace?: boolean
   }
 
   /**

@@ -63,7 +63,7 @@ export const analyzeProjectChanges = (
   }).pipe(
     Effect.mapError((e) =>
       wrapInfraError(GyomuError, e, () => {
-        console.log(e)
+        // console.log(e)
         return {
           message: 'fail to analyze project snapshot',
           domain: 'tsdoc.snapshot.analyze',

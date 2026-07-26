@@ -22,6 +22,14 @@
     "./package-concept": {
       "import": "./dist/pipelines/package-concept/index.js",
       "types": "./dist/pipelines/package-concept/index.d.ts"
+    },
+    "./readme": {
+      "import": "./dist/pipelines/readme/index.js",
+      "types": "./dist/pipelines/readme/index.d.ts"
+    },
+    "./translation": {
+      "import": "./dist/pipelines/translation/index.js",
+      "types": "./dist/pipelines/translation/index.d.ts"
     }
   },
   "scripts": {
@@ -38,7 +46,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "files": [
     "dist"
   ],

@@ -1,0 +1,22 @@
+{
+  "summary": "This directory defines the core data structures and input interfaces required to represent file-level concepts and symbol summaries within the codebase, providing a standardized schema for analyzing and documenting source code elements.",
+  "responsibilities": [
+    "Defining the input structure for file concept analysis",
+    "Modeling metadata for source code symbols",
+    "Standardizing the representation of files and their exported elements"
+  ],
+  "concepts": [
+    "File Concept Input",
+    "Symbol Summary",
+    "Code Metadata"
+  ],
+  "relationships": [
+    "A file concept input encapsulates a collection of symbol summaries associated with a specific file path.",
+    "Each symbol summary provides descriptive details about a specific code entity found within a file."
+  ],
+  "designDecisions": [
+    "Use of strictly typed interfaces for schema definition",
+    "Separation of concerns by isolating data structures for file analysis from implementation logic"
+  ],
+  "importance": "Core"
+}

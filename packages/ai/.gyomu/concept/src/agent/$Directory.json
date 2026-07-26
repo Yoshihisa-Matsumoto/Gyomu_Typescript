@@ -1,0 +1,22 @@
+{
+  "summary": "This directory centralizes the definition and configuration of specialized agents designed to interact with external tools for retrieving public holiday information within defined timeframes.",
+  "responsibilities": [
+    "Defining the logic and configuration for holiday-related agents",
+    "Integrating holiday data retrieval tools into agent workflows",
+    "Processing date-based requests for public holiday information"
+  ],
+  "concepts": [
+    "Holiday Agent",
+    "Tool Integration",
+    "Date Range Querying"
+  ],
+  "relationships": [
+    "The holiday agent utilizes the getHolidayTool to fetch external data based on specific date constraints.",
+    "The agent acts as the interface between user requests and the underlying holiday data retrieval logic."
+  ],
+  "designDecisions": [
+    "Modular agent definition",
+    "Encapsulation of holiday retrieval logic within a specialized agent instance"
+  ],
+  "importance": "Core"
+}

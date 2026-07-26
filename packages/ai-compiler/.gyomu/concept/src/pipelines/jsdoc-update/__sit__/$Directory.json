@@ -1,0 +1,22 @@
+{
+  "summary": "This directory contains integration test suites for verifying the automated update and generation of JSDoc comments within the source code, ensuring that documentation remains accurate across various function and member structures.",
+  "responsibilities": [
+    "Verify the correctness of JSDoc comment updates",
+    "Test documentation generation for diverse code constructs",
+    "Validate the persistence of existing JSDoc documentation"
+  ],
+  "concepts": [
+    "Integration tests",
+    "JSDoc updates",
+    "Documentation validation"
+  ],
+  "relationships": [
+    "Integration tests evaluate the logic used to transform and update JSDoc comments.",
+    "Documentation validation ensures that the JSDoc output correctly reflects the structure of documentable code members."
+  ],
+  "designDecisions": [
+    "Colocation of test cases within the pipeline directory",
+    "Use of descriptive test scenarios for specific code member types"
+  ],
+  "importance": "Supporting"
+}

@@ -1,0 +1,21 @@
+{
+  "summary": "This directory provides infrastructure for converting internal tool definitions into a format compatible with the Vercel AI SDK. It facilitates the interoperability between the application's domain-specific tool structures and external platform requirements.",
+  "responsibilities": [
+    "Transforming internal tool abstractions into Vercel-compatible schemas",
+    "Validating tool definitions against platform-specific constraints"
+  ],
+  "concepts": [
+    "Tool Adapter",
+    "Vercel Integration",
+    "Schema Transformation"
+  ],
+  "relationships": [
+    "The adapter maps internal tool representations to the specific data structures required by Vercel.",
+    "Transformation logic ensures that tool metadata adheres to external SDK interface specifications."
+  ],
+  "designDecisions": [
+    "Isolation of platform-specific transformation logic",
+    "Usage of test-driven development to ensure schema compliance"
+  ],
+  "importance": "Supporting"
+}

@@ -1,22 +1,22 @@
 {
-  "summary": "This directory provides utilities for calculating differences between objects, enabling comparison and tracking of modifications within the application state or data structures.",
+  "summary": "This directory provides utilities for performing deep comparisons and generating differences between objects. It focuses on identifying property changes and structural modifications to ensure data consistency or tracking state mutations within the application.",
   "responsibilities": [
-    "Identify changes between two object structures",
-    "Generate representations of modifications or deltas",
-    "Facilitate object comparison logic"
+    "Calculate differences between two objects",
+    "Identify added, removed, or changed property values",
+    "Provide diagnostic data regarding object state discrepancies"
   ],
   "concepts": [
     "Object Diffing",
     "State Comparison",
-    "Data Delta"
+    "Deep Equality"
   ],
   "relationships": [
-    "The object diffing process compares two snapshots to compute a delta.",
-    "Data delta representations are used to express the specific changes identified by the comparison logic."
+    "The diffing logic relies on deep comparison to identify changes between object states.",
+    "Object differences are represented as structured data reflecting property additions, removals, or updates."
   ],
   "designDecisions": [
-    "Isolated testing of comparison logic for reliability",
-    "Generic implementation to support various object structures"
+    "Implemented as a stateless utility for pure data processing",
+    "Focus on recursive tree traversal to handle nested objects"
   ],
   "importance": "Utility"
 }

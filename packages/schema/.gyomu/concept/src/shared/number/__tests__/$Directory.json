@@ -1,20 +1,19 @@
 {
-  "summary": "This directory provides reusable utility functions for performing mathematical operations and numerical formatting on number types, ensuring consistent arithmetic behavior and rounding logic across the application.",
+  "summary": "This directory provides shared utility functions and logic for numerical operations, specifically focusing on rounding and precision adjustments to ensure consistency across the application.",
   "responsibilities": [
-    "Implement mathematical rounding strategies",
-    "Provide consistent numerical processing logic",
-    "Encapsulate arithmetic utility operations"
+    "Implement standardized numerical rounding logic",
+    "Provide reusable mathematical operations for shared use across the codebase"
   ],
   "concepts": [
     "Numerical rounding",
-    "Arithmetic utilities"
+    "Mathematical utilities"
   ],
   "relationships": [
-    "The rounding logic defines how raw numerical values are transformed into formatted outputs for standard application use."
+    "Numerical rounding functions provide the standardized logic required by various modules to maintain consistent data precision."
   ],
   "designDecisions": [
-    "Isolated testing of mathematical edge cases",
-    "Utility-based functional implementation"
+    "Centralized shared logic to prevent duplication of mathematical implementations",
+    "Collocated unit tests to ensure reliability of numerical calculations"
   ],
   "importance": "Utility"
 }

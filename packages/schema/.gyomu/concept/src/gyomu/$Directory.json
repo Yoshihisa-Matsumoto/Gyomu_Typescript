@@ -1,27 +1,28 @@
 {
-  "summary": "The gyomu directory functions as the central domain services hub, providing standardized access to core business entities, system milestones, and operational data. It acts as an integration layer that orchestrates domain-specific logic, repository access, and cross-cutting service utilities.",
+  "summary": "This directory serves as the central domain hub for Gyomu-related business operations, consolidating data repositories, user management, milestone tracking, and calendar services to provide a unified interface for core application entities.",
   "responsibilities": [
-    "Manage CRUD operations for domain entities",
-    "Provide centralized service access for business processes",
-    "Orchestrate interactions between domain data and system utilities",
-    "Enforce domain-specific logic for task and user management"
+    "Manage CRUD operations for core domain entities",
+    "Orchestrate business-specific services for users and milestones",
+    "Provide access to market-specific calendar and holiday logic",
+    "Centralize configuration and lookup services for domain data",
+    "Expose unified interfaces for core business domain modules"
   ],
   "concepts": [
     "Domain Repository",
-    "Business Services",
-    "Domain Entities",
-    "Service Orchestration"
+    "Business Entities",
+    "Service Layer",
+    "Domain Orchestration"
   ],
   "relationships": [
-    "The repository serves as the primary data access layer for various domain entities.",
-    "Business services consume the repository to perform complex operational tasks.",
-    "Domain entity schemas define the data structures processed by the repository and services."
+    "The repository services provide the foundation for persisting and retrieving domain entities used by other modules.",
+    "Business services for users and milestones rely on repository operations to manage and validate core domain data.",
+    "Calendar and holiday services support business operations by providing temporal context for domain-specific activities."
   ],
   "designDecisions": [
-    "Service-oriented architecture for domain entity management",
-    "Centralized repository pattern for data access",
-    "Modular grouping of domain-related utilities and services",
-    "Encapsulation of business logic behind unified interfaces"
+    "Use of service-oriented architecture to encapsulate business logic",
+    "Centralized export strategy via index files for module consumption",
+    "Interface-driven design to allow for modularity and decoupling",
+    "Separation of domain entity management from operational utility services"
   ],
   "importance": "Core"
 }

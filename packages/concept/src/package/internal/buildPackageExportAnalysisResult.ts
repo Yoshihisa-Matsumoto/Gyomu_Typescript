@@ -90,7 +90,7 @@ const analyzeExportModules = (
         if (!mapModuleSymbols.has(module)) mapModuleSymbols.set(module, new Array<string>())
         const targets = mapModuleSymbols.get(module)!
         targets.push(reexport.symbol)
-        console.log(`export specific:${reexport.symbol}`)
+        // console.log(`export specific:${reexport.symbol}`)
       }
     }
 

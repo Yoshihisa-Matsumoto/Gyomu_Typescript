@@ -1,0 +1,29 @@
+{
+  "summary": "This directory centralizes the definition of types, interfaces, and configurations required for AI execution operations. It provides the structured data models for input prompts, request specifications, model routing, and the resulting outputs from text and object generation tasks.",
+  "responsibilities": [
+    "Define the configuration for AI execution contexts and model routing",
+    "Model the structure of AI request parameters and tool usage policies",
+    "Provide standardized representations for AI responses, including messages, stream events, and usage statistics",
+    "Define valid input formats for prompting AI models"
+  ],
+  "concepts": [
+    "Execution Context",
+    "AI Request",
+    "Model Selection",
+    "Tool Configuration",
+    "AI Response",
+    "Prompt Input"
+  ],
+  "relationships": [
+    "The AI request encapsulates the execution context and selection criteria to define how a generation task should be processed.",
+    "Tool configuration policies govern the execution loop behavior within the provided execution context.",
+    "The AI response models capture the structured output, finish reasons, and usage statistics resulting from a processed request."
+  ],
+  "designDecisions": [
+    "Uses union types to handle diverse prompt inputs and message components",
+    "Centralizes type definitions to ensure consistency across the execution pipeline",
+    "Decouples configuration parameters from the execution logic",
+    "Uses interfaces to define stable contracts for AI results and context objects"
+  ],
+  "importance": "Core"
+}

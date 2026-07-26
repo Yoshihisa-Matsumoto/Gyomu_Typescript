@@ -1,0 +1,23 @@
+{
+  "summary": "This directory serves as the dedicated testing suite for verifying the configuration resolution logic. It contains integration and unit tests that ensure the system correctly processes, resolves, and validates application settings under various conditions.",
+  "responsibilities": [
+    "Validating configuration resolution logic",
+    "Ensuring accurate handling of configuration settings",
+    "Verifying integration between configuration components"
+  ],
+  "concepts": [
+    "Configuration Resolution",
+    "Integration Testing",
+    "Unit Testing",
+    "Validation"
+  ],
+  "relationships": [
+    "Integration tests verify that the configuration resolution process functions correctly within the broader system context.",
+    "Unit tests validate individual components of the configuration resolver to ensure isolated logical correctness."
+  ],
+  "designDecisions": [
+    "Separation of unit and integration testing concerns",
+    "Focus on verifying resolution outcomes against expected configuration states"
+  ],
+  "importance": "Supporting"
+}

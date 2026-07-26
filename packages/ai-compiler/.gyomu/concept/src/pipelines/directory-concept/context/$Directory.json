@@ -1,0 +1,23 @@
+{
+  "summary": "This directory defines the data structures used to represent the architectural and structural metadata of source files. It provides a standardized format for exchanging information about code symbols, exports, and file paths within the pipeline processing flow.",
+  "responsibilities": [
+    "Defining schema for source file structural metadata",
+    "Providing standard interfaces for code symbol summaries",
+    "Encapsulating exported declaration and re-export information"
+  ],
+  "concepts": [
+    "Source File Structure",
+    "Code Symbol Metadata",
+    "Export Declaration"
+  ],
+  "relationships": [
+    "FileConceptInput encapsulates multiple SymbolSummary instances to represent the overall structure of a single file.",
+    "The SymbolSummary provides detailed descriptive and structural information for individual code declarations identified within a file."
+  ],
+  "designDecisions": [
+    "Strict interface-based contracts for data consistency",
+    "Decoupled representation of symbol metadata from source analysis logic",
+    "Representation of file contents as an aggregation of exported and re-exported elements"
+  ],
+  "importance": "Core"
+}

@@ -1,0 +1,26 @@
+{
+  "summary": "This directory orchestrates the architectural analysis pipeline, managing the structural metadata definitions, execution logic, prompt retrieval for generation, and validation of rendered documentation to ensure consistent analysis of file system hierarchies.",
+  "responsibilities": [
+    "Defining structural metadata for source files",
+    "Executing the directory concept extraction pipeline",
+    "Managing prompt template retrieval for generation tasks",
+    "Validating the accuracy of architectural documentation output"
+  ],
+  "concepts": [
+    "Source File Structure",
+    "Execution Pipeline",
+    "Prompt Templates",
+    "Directory Documentation"
+  ],
+  "relationships": [
+    "The directory concept extraction pipeline consumes structural metadata defined in the core schema to generate analysis models.",
+    "Prompt templates provide the necessary instructions for the pipeline to generate documentation or analysis results.",
+    "The documentation rendering process utilizes the validated analysis models to produce cohesive structural representations."
+  ],
+  "designDecisions": [
+    "Strict interface-based contracts for structural consistency",
+    "Collocation of testing infrastructure with core logic",
+    "Decoupled representation of metadata from analysis and rendering logic"
+  ],
+  "importance": "Core"
+}

@@ -1,23 +1,22 @@
 {
-  "summary": "This directory provides utilities for handling, parsing, and verifying binary data structures within the application. It serves as a centralized location for low-level data manipulation logic that requires shared access across different modules.",
+  "summary": "This directory provides utilities for binary data manipulation and verification. It serves as a centralized location for low-level operations on binary formats, ensuring consistent handling and validation of binary structures across the application.",
   "responsibilities": [
-    "Encoding and decoding binary data formats",
-    "Validating integrity of binary payloads",
-    "Providing helper functions for byte-level operations"
+    "Providing standard operations for binary data",
+    "Ensuring consistency in binary format processing",
+    "Validating binary structures through automated testing"
   ],
   "concepts": [
     "Binary data",
-    "Byte manipulation",
-    "Data encoding",
-    "Format validation"
+    "Data validation",
+    "Binary operations"
   ],
   "relationships": [
-    "Binary data utilities act as the foundation for data validation routines.",
-    "Data encoding modules rely on low-level byte operations to transform raw input into structured binary formats."
+    "Binary operations utilize validation logic to ensure data integrity.",
+    "Automated tests verify that binary operations adhere to expected structural definitions."
   ],
   "designDecisions": [
-    "Centralized shared logic to ensure consistent binary handling across the codebase",
-    "Comprehensive test coverage for binary operations to prevent data corruption"
+    "Colocation of utility logic with its corresponding validation tests",
+    "Standardized interface for binary data handling"
   ],
   "importance": "Utility"
 }

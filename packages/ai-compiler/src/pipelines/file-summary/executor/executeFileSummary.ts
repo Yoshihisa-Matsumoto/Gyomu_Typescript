@@ -8,7 +8,22 @@ import type { AiError, IOError, RetryOption } from '@gyomu/schema'
 import type { ModelRoutes, RouteNotFoundError } from '@gyomu/ai'
 import type { FileSystem } from 'effect'
 
+/**
+ * Represents the unique route identifier for the file summary generation model.
+ */
 export const FileSummaryRouteId = ModelRouteId('file-summary')
+
+/**
+ * Executes the file summary generation pipeline by processing the provided file concept input through the configured AI model.
+ *
+ * @param context The input data representing the file concept to be summarized.
+ *
+ * @param retryOption Optional retry configuration for the AI service generation request.
+ *
+ * @returns An Effect that yields the generated summary string upon success, or fails with an IOError, AiError, or RouteNotFoundError.
+ *
+ * @requirements AiModelRoute, FileSystem, and ModelRoutes services.
+ */
 export const executeFileSummary = (
   context: FileConceptInput,
   retryOption?: RetryOption,

@@ -1,22 +1,22 @@
 {
-  "summary": "This directory serves as a dedicated location for defining, organizing, and validating application use cases, specifically focusing on the business logic and orchestration required to synchronize holiday data within the system.",
+  "summary": "This directory serves as a dedicated testing suite for verifying the logic and integration of the holiday synchronization service. It ensures that business rules regarding holiday data processing are correctly implemented and maintained during updates.",
   "responsibilities": [
-    "Orchestrate application business processes",
-    "Execute holiday synchronization workflows",
-    "Encapsulate application-level logic separate from infrastructure concerns"
+    "Verify the synchronization logic of holiday data",
+    "Validate expected outcomes for service operations",
+    "Ensure consistency and accuracy of holiday-related business processes"
   ],
   "concepts": [
-    "Use Cases",
-    "Business Orchestration",
-    "Holiday Synchronization"
+    "Service testing",
+    "Holiday synchronization",
+    "Automated test suites"
   ],
   "relationships": [
-    "Use cases orchestrate the flow of data between external entities and the internal domain model.",
-    "Business logic within the use cases defines the execution flow of the synchronization process."
+    "The test suite validates the holiday synchronization service to ensure compliance with expected business requirements.",
+    "Tests serve as a quality control mechanism for the underlying holiday data processing logic."
   ],
   "designDecisions": [
-    "Separation of concerns by isolating business workflows from delivery mechanisms",
-    "Test-driven development approach for core business logic"
+    "Co-location of tests with the corresponding service logic",
+    "Focus on behavioral verification through unit and integration testing"
   ],
-  "importance": "Core"
+  "importance": "Supporting"
 }

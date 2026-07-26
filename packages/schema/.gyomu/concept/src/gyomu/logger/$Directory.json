@@ -1,25 +1,26 @@
 {
-  "summary": "This directory manages the application-wide logging infrastructure, providing a unified interface for recording events and lifecycle status. It includes mechanisms for configuring the active logger, handling debug-specific data comparisons, and specialized logging for system effects.",
+  "summary": "This directory manages the application-wide logging infrastructure, providing a unified interface for recording events and facilitating diagnostic output across different system components and operational modes.",
   "responsibilities": [
-    "Define the contract for application logging",
-    "Maintain the active global logger instance",
-    "Provide specialized logging utilities for debugging and effect tracking"
+    "Defining the standard interface for system-wide logging",
+    "Managing the lifecycle and assignment of the active logger instance",
+    "Providing utilities for diagnostic output such as object state comparison",
+    "Configuring specialized logging for specific functional domains"
   ],
   "concepts": [
-    "Logging interface",
-    "Log levels",
-    "Lifecycle management",
-    "Debug mode logging",
-    "Effect logging"
+    "Logging Interface",
+    "Log Levels",
+    "Logger Proxy",
+    "Diagnostic Utilities"
   ],
   "relationships": [
-    "The logger interface establishes a standard for event recording that specialized instances like the effect logger implement.",
-    "The logging utility uses the active logger instance to perform conditional debug operations based on current system state."
+    "The logger interface dictates the contract for all logging operations across the system.",
+    "The logger proxy delegates log requests to the currently configured logger instance.",
+    "Diagnostic utilities utilize the active logger instance to surface information during debug sessions."
   ],
   "designDecisions": [
-    "Use of a proxy instance for default logging access",
-    "Centralized setter for configuring global logger implementations",
-    "Separation of generic logging interface from specific effect-tracking implementations"
+    "Use of an interface to decouple the logging API from specific implementations",
+    "Proxy pattern for dynamic logger instance management",
+    "Centralized configuration of log behavior via global setup functions"
   ],
   "importance": "Supporting"
 }

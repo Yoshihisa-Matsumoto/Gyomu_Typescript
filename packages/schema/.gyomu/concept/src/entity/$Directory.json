@@ -1,32 +1,32 @@
 {
-  "summary": "This directory manages the core entity definition system, providing tools for schema generation, data validation, and structural management. It centralizes CRUD schema definitions, field metadata, and type-safe data conversion utilities for consistent application-wide data modeling.",
+  "summary": "This directory manages the core entity definition and validation framework, providing tools to define data structures, generate CRUD schemas, handle complex date logic, and manage schema-based data conversion and error resolution for the application's domain entities.",
   "responsibilities": [
-    "Defining and generating CRUD schemas for domain entities",
-    "Providing reusable field definitions and metadata configurations",
-    "Implementing data conversion and serialization logic for entities",
-    "Handling specialized data types such as localized dates",
-    "Validating data structures against entity schema definitions",
-    "Analyzing schema ASTs for error reporting and field mapping"
+    "Defining schema-based entity structures and their CRUD operations",
+    "Providing reusable field definitions and metadata for entities",
+    "Managing conversion logic between entities and JSON formats",
+    "Resolving and mapping schema validation errors from AST issues",
+    "Standardizing date and time handling for entity models"
   ],
   "concepts": [
-    "Entity Schemas",
-    "CRUD Operations",
+    "Entity Definitions",
+    "CRUD Schema Generation",
+    "Effect Schemas",
     "Data Conversion",
-    "Field Metadata",
-    "Schema AST",
-    "Temporal Data Types"
+    "AST Matching",
+    "UI Annotations",
+    "Date Handling"
   ],
   "relationships": [
-    "Entity definitions serve as the foundational schema models used by CRUD generators to create insert, update, and select operations.",
-    "Field definitions provide the granular constraints and metadata that constitute the structure of an entity.",
-    "The data conversion utilities rely on schema definitions to safely encode and decode data between external formats and internal types.",
-    "The AST matcher interacts with schema structures to resolve and flatten validation errors into field-specific issues."
+    "Entity definitions serve as the central configuration used to automatically generate CRUD schema suites.",
+    "Data conversion utilities leverage defined schema objects to safely transform input data into validated models.",
+    "AST matchers interact with schema structures to translate low-level validation issues into field-specific error messages.",
+    "Field definitions provide the building blocks that constitute both the domain entities and their corresponding UI annotation mappings."
   ],
   "designDecisions": [
-    "Use of schema-based definitions to derive CRUD operations and UI annotations consistently.",
-    "Type branding for specialized domain types to ensure runtime and compile-time data integrity.",
-    "Integration of Effect-based patterns for robust error handling during encoding and decoding.",
-    "Centralization of business entity definitions to maintain a single source of truth for domain models."
+    "Utilization of the Effect library for robust schema validation and error handling.",
+    "Declarative definition of entities to automate the generation of insertion, selection, and update operations.",
+    "Separation of domain-specific entities from general-purpose utility schema logic.",
+    "Recursive type transformations to manage mutable entity states and optional field requirements."
   ],
   "importance": "Core"
 }

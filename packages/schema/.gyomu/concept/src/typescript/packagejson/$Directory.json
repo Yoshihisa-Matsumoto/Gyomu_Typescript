@@ -1,27 +1,28 @@
 {
-  "summary": "This directory provides the structural representation and analysis models for package.json configuration files, enabling the parsing and definition of dependency specifications, export mappings, and import configurations used in a project environment.",
+  "summary": "This directory provides models and structures for parsing and analyzing package.json files, specifically focusing on representing dependencies, import mappings, and export configurations to enable programmatic inspection of package metadata.",
   "responsibilities": [
-    "Define schema interfaces for core package.json fields",
-    "Categorize and identify dependency types within a package",
-    "Model path mapping for export and import configurations",
-    "Analyze and aggregate package metadata into a structured object"
+    "Represent the structure and content of package.json files",
+    "Model dependency specifications and their usage contexts",
+    "Define mappings for package imports and exports",
+    "Facilitate the analysis of package configuration data"
   ],
   "concepts": [
     "Package Metadata",
     "Dependency Specification",
-    "Export Configuration",
     "Import Mapping",
-    "Dependency Kind"
+    "Export Configuration",
+    "Package Analysis"
   ],
   "relationships": [
-    "PackageJsonAnalysis aggregates various dependencies, export entries, and import entries into a single cohesive model.",
-    "PackageDependency defines the classification of dependencies based on their source and usage context within the configuration.",
-    "PackageExportEntry and PackageImportEntry describe mapping logic between source paths and target destinations."
+    "A PackageJsonAnalysis contains collections of dependencies, imports, and exports that define the package's external interface and internal requirements.",
+    "PackageDependency defines how the package relates to other software components.",
+    "PackageImportEntry and PackageExportEntry define the module resolution logic for the package within its host environment."
   ],
   "designDecisions": [
-    "Use of TypeScript interfaces to enforce schema structure for configuration data",
-    "Enumeration of dependency types to provide type-safe classification",
-    "Modular decomposition of complex configuration fields into dedicated interface types"
+    "Use of interfaces to enforce strict schemas for package.json fields",
+    "Centralized definition of dependency types to ensure consistency across the application",
+    "Separation of concern between dependency, import, and export configurations",
+    "Unified entry point for exporting data structures"
   ],
   "importance": "Core"
 }
