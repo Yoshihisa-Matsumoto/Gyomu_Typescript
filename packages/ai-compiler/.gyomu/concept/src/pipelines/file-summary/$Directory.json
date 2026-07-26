@@ -1,0 +1,26 @@
+{
+  "summary": "This directory manages the end-to-end lifecycle of file-level code analysis, providing the structural definitions, operational execution logic, prompt retrieval, and verification infrastructure required for source code summarization pipelines.",
+  "responsibilities": [
+    "Define schema for file concepts and symbol metadata",
+    "Execute logic for generating file summaries",
+    "Manage prompt templates for processing",
+    "Validate and test data transformation and rendering outputs"
+  ],
+  "concepts": [
+    "File Analysis Pipeline",
+    "Symbol Summary",
+    "Template Management",
+    "Pipeline Validation"
+  ],
+  "relationships": [
+    "The pipeline executor processes file inputs by utilizing defined metadata structures to generate summaries.",
+    "Prompt templates are retrieved to guide the generation and formatting logic within the pipeline.",
+    "Rendering and transformation layers verify that processed data correctly maps to required output formats."
+  ],
+  "designDecisions": [
+    "Strict separation between data structure definitions and execution logic",
+    "Externalized prompt storage for configuration management",
+    "Isolated testing environments for validation of transformation and rendering logic"
+  ],
+  "importance": "Core"
+}

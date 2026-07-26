@@ -1,0 +1,29 @@
+{
+  "summary": "This directory manages the core lifecycle of package conceptualization, providing the data structures for analysis, execution mechanisms for pipeline integration, template management for prompt generation, and utility infrastructure for testing the conceptualization pipeline.",
+  "responsibilities": [
+    "Define schema for package concept input data",
+    "Model package metadata and internal architecture",
+    "Execute package concept operations within pipelines",
+    "Load and manage prompt templates from the file system",
+    "Provide infrastructure for mocking and testing package analysis"
+  ],
+  "concepts": [
+    "Package Metadata",
+    "Pipeline Execution",
+    "Prompt Templates",
+    "Test Infrastructure",
+    "Analysis Input"
+  ],
+  "relationships": [
+    "The input data structures provide the necessary metadata and dependency information required for the pipeline executor to function.",
+    "Prompt templates are retrieved to guide the execution of package concept operations.",
+    "Test infrastructure and mock data generation ensure the reliability of the package analysis and rendering logic."
+  ],
+  "designDecisions": [
+    "Use of interfaces to enforce strict data contracts",
+    "Isolation of execution logic from pipeline orchestration",
+    "Decoupling of template retrieval from core pipeline logic",
+    "Centralization of test scaffolding to remove boilerplate"
+  ],
+  "importance": "Core"
+}

@@ -9,7 +9,20 @@ import type { JsDocUpdatePlan } from '../schema/JsDocUpdatePlan.js'
 import type { FileSystem } from 'effect'
 import type { TsDocFileContext } from '../context/TsDocFileContext.js'
 
+/**
+ * The model route identifier used for JSDoc update prompts.
+ */
 export const TsDocRouteId = ModelRouteId('tsdoc')
+
+/**
+ * Executes a JSDoc update plan by generating a response from the AI model route based on the provided context.
+ *
+ * @param context The file context containing the AST and JSDoc information.
+ *
+ * @param retryOption Optional configuration for retrying the generation request.
+ *
+ * @returns An effect that resolves to the generated JsDocUpdatePlan. Fails with IOError, AiError, or RouteNotFoundError, and requires AiModelRoute, FileSystem, and ModelRoutes services.
+ */
 export const executeJsDocUpdatePlan = (
   context: TsDocFileContext,
   retryOption?: RetryOption,

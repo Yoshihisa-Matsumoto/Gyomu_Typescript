@@ -1,7 +1,7 @@
 import { relative } from 'node:path'
 import { Effect } from 'effect'
 import { readDirectoryDetailed } from '@gyomu/infra/fs'
-import { loadFileAnalysisResult } from '@gyomu/ts-analysis'
+import { loadFileAnalysisResult, normalizePath } from '@gyomu/ts-analysis'
 import { DirectoryRelativePath, ProjectRelativePath } from '@gyomu/schema/typescript'
 import { logger, wrapInfraError } from '@gyomu/schema'
 import { ConceptError } from '../../error/ConceptError.js'
@@ -34,7 +34,13 @@ export const buildDirectoryConceptFromPath = (
       .filter((e) => e.isDirectory)
       .sort((a, b) => a.name.localeCompare(b.name))
 
-    const files = entries.filter((e) => e.isFile).sort((a, b) => a.name.localeCompare(b.name))
+    const files = entries
+      .filter((e) => {
+        if (!e.isFile) return false
+        const relativePath = normalizePath(relative(context.projectRoot, e.path))
+        return context.includedFiles.has(relativePath)
+      })
+      .sort((a, b) => a.name.localeCompare(b.name))
 
     let isChanged = false
 

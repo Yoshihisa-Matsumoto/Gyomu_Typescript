@@ -8,7 +8,24 @@ import type { ModelRoutes, RouteNotFoundError } from '@gyomu/ai'
 import type { FileSystem } from 'effect'
 import type { TranslationRequest, TranslationResult } from '@gyomu/schema/schemas/document'
 
+/**
+ * The identifier used for the translation model route.
+ */
 export const TranslationRouteId = ModelRouteId('translation')
+
+/**
+ * Executes a translation request by processing input text through an AI model.
+ *
+ * @param projectName The name of the package associated with the translation request.
+ *
+ * @param context The translation request configuration, including target language and source text.
+ *
+ * @param retryOption Optional retry configuration for the AI request.
+ *
+ * @returns An Effect that resolves to the TranslationResult, or fails with an IOError, AiError, or RouteNotFoundError.
+ *
+ * @requires AiModelRoute, FileSystem, and ModelRoutes services.
+ */
 export const executeTranslation = (
   projectName: string,
   context: TranslationRequest,

@@ -8,10 +8,17 @@ import type { ReadmeBuildContext, ReadmeSectionId } from '@gyomu/schema/concept'
 
 import type { IOError } from '@gyomu/schema'
 
+/**
+ * Defines the subset of supported Readme section identifiers, including 'development', 'dependencies', 'overview', and 'architecture'.
+ */
 export type SupportedSectionId = Extract<
   ReadmeSectionId,
   'development' | 'dependencies' | 'overview' | 'architecture'
 >
+
+/**
+ * A mapping of supported section identifiers to functions that generate the corresponding prompt messages. Each function requires ReadmeBuildContext and performs file system operations.
+ */
 export const SectionPromptMap: Record<
   SupportedSectionId,
   (context: ReadmeBuildContext) => Effect.Effect<Array<Message>, IOError, FileSystem.FileSystem>

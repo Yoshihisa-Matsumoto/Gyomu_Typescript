@@ -6,6 +6,13 @@ import type { IOError } from '@gyomu/schema'
 import type { ReadmeBuildContext } from '@gyomu/schema/concept'
 import type { FileSystem } from 'effect'
 
+/**
+ * Constructs the development messages prompt by populating the 'development-assemble.md' template with context-specific mission and responsibilities.
+ *
+ * @param context The build context containing the mission and concept responsibilities.
+ *
+ * @returns An Effect that resolves to an array of messages or fails with an IOError, requiring FileSystem access.
+ */
 export const buildDevelopmentMessages = (
   context: ReadmeBuildContext,
 ): Effect.Effect<Array<Message>, IOError, FileSystem.FileSystem> =>

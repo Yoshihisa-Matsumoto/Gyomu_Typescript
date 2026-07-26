@@ -1,0 +1,24 @@
+{
+  "summary": "This directory defines the input data structures required to initiate and perform analysis on package concepts, encapsulating the metadata, file structure, API surfaces, and dependency graphs necessary for conceptual evaluation.",
+  "responsibilities": [
+    "Define the schema for package concept input data",
+    "Model the structure of package metadata and internal architecture",
+    "Represent dependency information for concept analysis"
+  ],
+  "concepts": [
+    "Package Metadata",
+    "Directory Structure",
+    "Public API",
+    "Package Dependencies",
+    "Analysis Input"
+  ],
+  "relationships": [
+    "The PackageConceptInput aggregates package metadata and dependency data to define the scope of analysis.",
+    "The directory structure and public API definitions are modeled as key components of the input object used for evaluating package concepts."
+  ],
+  "designDecisions": [
+    "Usage of interfaces to enforce a strict contract for input data",
+    "Aggregation of structural and dependency data into a single input entry point"
+  ],
+  "importance": "Core"
+}

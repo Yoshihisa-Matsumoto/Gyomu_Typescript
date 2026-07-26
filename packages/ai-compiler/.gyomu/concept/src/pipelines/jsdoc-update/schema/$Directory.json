@@ -1,0 +1,27 @@
+{
+  "summary": "This directory defines the structured schemas and plans for JSDoc documentation updates. It provides a deterministic framework for representing how AI-generated content should be merged into existing codebases, including safety assessments, reasoning traces, and specific update actions.",
+  "responsibilities": [
+    "Defining schema structures for JSDoc update plans",
+    "Encapsulating update actions like replacement, preservation, and deletion",
+    "Representing safety and reasoning metadata for documentation changes",
+    "Identifying targets within JSDoc for automated updates"
+  ],
+  "concepts": [
+    "JSDoc Update Plan",
+    "Merge Action",
+    "Safety Risk Assessment",
+    "Reasoning Trace",
+    "Documentation Target"
+  ],
+  "relationships": [
+    "Update plans contain multiple entries that specify how to modify individual documentation components.",
+    "Merge actions define the specific logic for applying updates to summaries, parameters, and return values.",
+    "Safety risk assessments and reasoning traces are bundled with update plans to validate and audit automated changes."
+  ],
+  "designDecisions": [
+    "Use of deterministic schemas for automated documentation updates",
+    "Self-contained merge actions that embed all necessary context for modification",
+    "Strong typing of update plans and actions to ensure structural consistency"
+  ],
+  "importance": "Core"
+}

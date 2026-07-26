@@ -6,6 +6,13 @@ import type { IOError } from '@gyomu/schema'
 import type { ReadmeBuildContext } from '@gyomu/schema/concept'
 import type { FileSystem } from 'effect'
 
+/**
+ * Constructs the overview messages for the readme generation process, leveraging the project mission and concept summary.
+ *
+ * @param context The readme build context containing project knowledge and concept details.
+ *
+ * @returns An Effect containing an array of overview messages, requiring FileSystem access and potentially throwing an IOError.
+ */
 export const buildOverviewMessages = (
   context: ReadmeBuildContext,
 ): Effect.Effect<Array<Message>, IOError, FileSystem.FileSystem> =>

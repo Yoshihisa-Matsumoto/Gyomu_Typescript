@@ -1,19 +1,21 @@
+import { Node, SyntaxKind } from 'ts-morph'
 import { tracePlaceIdentity } from '../../../trace/traceUtil.js'
-import { analyzeType } from './analyzeType.js'
+import { analyzeType, getVoidTypeResult } from './analyzeType.js'
 import { analyzeTypeProperty } from './analyzeTypeProperty.js'
 import type {
   ArrowFunction,
   CallSignatureDeclaration,
   ConstructSignatureDeclaration,
   ConstructorDeclaration,
+  Expression,
   FunctionTypeNode,
   GetAccessorDeclaration,
   IndexSignatureDeclaration,
   JSDocableNode,
   MethodDeclaration,
   MethodSignature,
-  Node,
   PropertySignature,
+  ReturnStatement,
   SetAccessorDeclaration,
 } from 'ts-morph'
 import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../types.js'
@@ -70,25 +72,46 @@ export const analyzeTypeFunction = (
   //   options,
   //   reservedNames: [],
   // })
+  let initializer: Expression | undefined = undefined
+  if (!returnTypeNode) {
+    if (Node.isArrowFunction(node)) {
+      const body = node.getBody()
+      if (Node.isArrowFunction(body)) {
+        initializer = body
+      } else if (Node.isExpression(body)) initializer = body
+      else if (Node.isBlock(body)) {
+        const returnStatement = body
+          .getStatements()
+          .find((s) => s.getKind() == SyntaxKind.ReturnStatement)
+        if (returnStatement) {
+          initializer = (returnStatement as ReturnStatement).getExpression()
+        }
+      }
+    }
+  }
 
   const newReservedNames = [...reservedNames]
 
-  const returnType = analyzeType(
-    {
-      node: returnTypeNode,
-      memberPath,
-      metadata,
-      ownerSymbolId,
-      ownerSymbolIdentity,
-      sourceRelativePath,
-      sourceFullText,
-      declarationOrder,
-      imported,
-      options,
-      reservedNames: newReservedNames,
-    },
-    name ? [name, '$return'] : ['$return'],
-  )
+  const returnType =
+    returnTypeNode || initializer
+      ? analyzeType(
+          {
+            node: returnTypeNode ?? initializer,
+            memberPath,
+            metadata,
+            ownerSymbolId,
+            ownerSymbolIdentity,
+            sourceRelativePath,
+            sourceFullText,
+            declarationOrder,
+            imported,
+            options,
+            reservedNames: newReservedNames,
+          },
+          name ? [name, '$return'] : ['$return'],
+        )
+      : getVoidTypeResult()
+
   return analyzeTypeFunctionInternal(
     { ...args, reservedNames: newReservedNames },
     {

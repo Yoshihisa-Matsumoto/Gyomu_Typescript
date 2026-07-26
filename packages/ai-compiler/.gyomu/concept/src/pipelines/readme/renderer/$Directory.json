@@ -1,0 +1,24 @@
+{
+  "summary": "This directory manages the transformation of project context into structured documentation prompts for automated README generation. It provides logic to assemble specific content sections including architecture, dependencies, development, and overview for LLM processing.",
+  "responsibilities": [
+    "Assemble section-specific prompts for documentation generation",
+    "Map README sections to message generation functions",
+    "Transform project context into formatted documentation inputs"
+  ],
+  "concepts": [
+    "Documentation Generation",
+    "Prompt Assembly",
+    "README Sections",
+    "Build Context"
+  ],
+  "relationships": [
+    "The generator functions utilize project build context to construct localized messages for specific documentation sections.",
+    "Section prompt mapping provides a centralized registry for defining how each README part is requested from the model."
+  ],
+  "designDecisions": [
+    "Functional decomposition by documentation section",
+    "Registry pattern for associating section identifiers with generation strategies",
+    "Dependency on shared build context objects for prompt construction"
+  ],
+  "importance": "Supporting"
+}

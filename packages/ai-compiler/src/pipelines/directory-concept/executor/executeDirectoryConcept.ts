@@ -10,7 +10,22 @@ import type { AiError, IOError, RetryOption } from '@gyomu/schema'
 import type { ModelRoutes, RouteNotFoundError } from '@gyomu/ai'
 import type { FileSystem } from 'effect'
 
+/**
+ * The unique identifier for the directory concept model route.
+ */
 export const DirectoryConceptRouteId = ModelRouteId('directory-concept')
+
+/**
+ * Executes the directory concept extraction pipeline using the provided input context and optional retry configuration.
+ *
+ * @param context The input data containing file lists and subdirectories to process.
+ *
+ * @param retryOption Optional configuration for retry attempts.
+ *
+ * @returns An Effect that yields a DirectoryConcept upon success, or fails with IOError, AiError, or RouteNotFoundError.
+ *
+ * @requires AiModelRoute, FileSystem, and ModelRoutes services.
+ */
 export const executeDirectoryConcepts = (
   context: DirectoryConceptInput,
   retryOption?: RetryOption,

@@ -1,0 +1,20 @@
+{
+  "summary": "This directory provides utilities for loading and managing prompt templates. It focuses on abstracting the retrieval of prompt files to support template-based generation tasks within the application pipeline.",
+  "responsibilities": [
+    "Load prompt templates from the filesystem",
+    "Resolve prompt paths based on module location"
+  ],
+  "concepts": [
+    "Prompt Loader",
+    "Prompt Template",
+    "Module Path"
+  ],
+  "relationships": [
+    "The prompt loader uses the current module path to locate and load specific prompt template files."
+  ],
+  "designDecisions": [
+    "Encapsulation of file loading logic within a factory function",
+    "Relative path resolution to ensure portability of prompts across modules"
+  ],
+  "importance": "Supporting"
+}

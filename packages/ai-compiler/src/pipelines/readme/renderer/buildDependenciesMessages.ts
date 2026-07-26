@@ -6,6 +6,13 @@ import type { IOError } from '@gyomu/schema'
 import type { ReadmeBuildContext } from '@gyomu/schema/concept'
 import type { FileSystem } from 'effect'
 
+/**
+ * Constructs the messages required for the dependencies assembly prompt using context information.
+ *
+ * @param context The build context containing technical knowledge about dependencies and compatibility.
+ *
+ * @returns An effect yielding an array of messages to be used in the assembly process. Requires FileSystem access and may fail with an IOError.
+ */
 export const buildDependenciesMessages = (
   context: ReadmeBuildContext,
 ): Effect.Effect<Array<Message>, IOError, FileSystem.FileSystem> =>

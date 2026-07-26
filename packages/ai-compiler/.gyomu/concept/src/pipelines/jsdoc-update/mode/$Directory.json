@@ -1,0 +1,25 @@
+{
+  "summary": "This directory manages the logic for determining JSDoc update strategies. It facilitates the selection between different execution modes by evaluating symbol complexity and configuration context to ensure appropriate processing depth for code documentation tasks.",
+  "responsibilities": [
+    "Defining strategies for assessing code transformation complexity",
+    "Encapsulating execution context for documentation updates",
+    "Resolving the appropriate update mode based on provided metadata"
+  ],
+  "concepts": [
+    "Complexity Strategy",
+    "Execution Context",
+    "Update Modes",
+    "Mode Resolver"
+  ],
+  "relationships": [
+    "The mode resolver utilizes a complexity strategy to evaluate the provided execution context.",
+    "The execution context provides necessary symbol metadata to inform mode selection decisions.",
+    "Complexity strategies determine whether a task qualifies as complex based on symbol metrics."
+  ],
+  "designDecisions": [
+    "Uses strategy pattern to decouple complexity evaluation from mode resolution logic",
+    "Implements a context-based approach to encapsulate task-specific data",
+    "Centralizes mode resolution logic to ensure consistent application behavior"
+  ],
+  "importance": "Core"
+}

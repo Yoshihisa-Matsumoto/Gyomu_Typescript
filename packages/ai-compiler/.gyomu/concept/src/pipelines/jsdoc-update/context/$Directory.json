@@ -1,0 +1,27 @@
+{
+  "summary": "This directory manages the data structures and context metadata required for processing and updating JSDoc comments within a TypeScript project. It provides a standardized representation for symbols, file information, and documentation states during the pipeline execution.",
+  "responsibilities": [
+    "Define the structure of documentation context for files and symbols.",
+    "Categorize symbols based on their documentability status.",
+    "Represent existing documentation states for analysis.",
+    "Provide metadata for project-wide JSDoc updates."
+  ],
+  "concepts": [
+    "JSDoc Context",
+    "Symbol Metadata",
+    "Documentable Info",
+    "Schema Structure Nodes",
+    "Existing JSDoc"
+  ],
+  "relationships": [
+    "The TsDocFileContext aggregates multiple ContextEntry instances to provide a complete view of documentation tasks within a specific source file.",
+    "DocumentableInfo uses NonDocumentableReason to explain why specific symbols are excluded from the documentation process.",
+    "The SchemaStructureNode represents the hierarchical organization of symbols that the JSDoc update pipeline traverses."
+  ],
+  "designDecisions": [
+    "Uses interfaces and union types to enforce strict schemas for documentation metadata.",
+    "Decouples symbol identity from the documentation state to facilitate clean status tracking.",
+    "Implements a hierarchical node-based approach for representing complex symbol relationships."
+  ],
+  "importance": "Core"
+}
