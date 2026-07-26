@@ -2,6 +2,11 @@ import { logger } from '@gyomu/schema'
 import { parsePublicError } from './parse-public-error.js'
 import { PublicErrorException } from './public-error.exception.js'
 
+/**
+ * Creates a fetch-compatible wrapper that automatically handles non-OK responses by throwing a PublicErrorException and logs unexpected failures.
+ *
+ * @returns A fetch-compatible function.
+ */
 export const createGyomuFetch =
   (): typeof fetch => async (input: string | URL | Request, init?: RequestInit) => {
     try {

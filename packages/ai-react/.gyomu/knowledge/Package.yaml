@@ -1,0 +1,98 @@
+# yaml-language-server: $schema=../../../../schemas/Package.json
+
+displayName: Gyomu AI React
+
+mission: |
+  GyomuプロジェクトにおけるReact向けAI UI基盤を提供する。
+  チャットセッション管理、メッセージ変換、状態管理、エラーハンドリングを
+  React Hooksとして提供することで、
+  GyomuのAI機能をReactアプリケーションへ一貫した方法で統合できるようにすることを目的とする。
+
+policies:
+  - Reactとの統合はHooksを中心としたAPIとして提供する。
+  - UI層とGyomu内部プロトコルは明確に分離する。
+  - メッセージ形式は変換レイヤーを介して相互変換する。
+  - チャット状態は予測可能かつ一貫した状態遷移を提供する。
+  - ネットワーク通信は共通のエラー処理を利用する。
+  - UIコンポーネントへProvider固有の実装を露出してはならない。
+  - React以外のUIフレームワークへの依存を持たない。
+
+constraints:
+  - AIモデルやProviderを直接操作してはならない。
+  - ビジネスロジックを実装してはならない。
+  - React以外のUIライブラリへ依存してはならない。
+  - メッセージ形式をUIコンポーネント内で直接変換してはならない。
+  - API通信は共通ユーティリティを利用すること。
+
+nonGoals:
+  - AIモデルの実行を提供すること。
+  - チャットサーバーを実装すること。
+  - Reactコンポーネントライブラリを提供すること。
+  - AIエージェントの制御を行うこと。
+  - Provider固有SDKを公開すること。
+
+terminology:
+  - term: Chat Session
+    definition: ユーザーとAIとの対話状態を管理する単位。
+
+  - term: Message Normalization
+    definition: UIメッセージをGyomu内部で扱う標準形式へ変換する処理。
+
+  - term: Transport Protocol
+    definition: UI層とAIサービス間で利用されるメッセージ交換形式。
+
+  - term: Status
+    definition: チャット処理の進行状況を表す状態。
+
+rationale:
+  - React Hooksを利用することで、チャット状態をシンプルに管理できる。
+  - メッセージ変換を共通化することで、UI層を内部実装から独立させられる。
+  - エラー処理を統一することで、一貫したユーザー体験を提供できる。
+  - 状態管理を標準化することで、チャットUIの実装を簡潔に保てる。
+  - 通信処理を共通化することで、UIコードからインフラの詳細を排除できる。
+
+usage:
+  - situation: チャット画面を実装する
+    guidance: 提供されるReact Hookを利用してチャットセッションを管理する。
+
+  - situation: AI SDKのメッセージ形式を利用する
+    guidance: Message Normalizationを利用してGyomu形式へ変換する。
+
+  - situation: API通信を行う
+    guidance: 共通Fetchユーティリティを利用し、統一されたエラー処理を適用する。
+
+  - situation: チャット状態を表示する
+    guidance: 標準化されたStatusを利用してUIを更新する。
+
+examples:
+  - title: チャット開始
+    input: |
+      ReactでAIチャット画面を実装したい。
+    output: |
+      useChat Hookを利用してチャットセッションを開始する。
+    explanation: |
+      Hookが状態管理と通信を統合して提供する。
+
+  - title: メッセージ変換
+    input: |
+      AI SDKのメッセージをGyomuへ渡したい。
+    output: |
+      Message Normalizationを利用して内部形式へ変換する。
+    explanation: |
+      UI形式と内部形式を分離することで保守性を向上できる。
+
+  - title: エラー処理
+    input: |
+      API呼び出し時のエラーを処理したい。
+    output: |
+      共通Fetchユーティリティを利用して統一された例外として扱う。
+    explanation: |
+      UIはエラーの詳細ではなく標準化された結果を扱える。
+
+  - title: 状態表示
+    input: |
+      チャットの送信状態を表示したい。
+    output: |
+      標準化されたStatusを利用してローディングやエラーを表示する。
+    explanation: |
+      バックエンド固有の状態を意識せずUIを実装できる。

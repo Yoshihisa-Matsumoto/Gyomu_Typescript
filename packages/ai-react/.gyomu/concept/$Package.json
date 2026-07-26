@@ -1,0 +1,37 @@
+{
+  "summary": "The @gyomu/ai-react package provides React-specific abstractions and hooks for integrating Gyomu's AI chat capabilities into user interfaces. It serves as a bridge between standard UI components and the Gyomu communication protocol by handling message transformation and standardized error management.",
+  "responsibilities": [
+    "Manage the lifecycle and state of Gyomu-powered chat sessions.",
+    "Transform UI-layer messages into internal protocol-compatible formats.",
+    "Provide standardized error handling for network and API interactions.",
+    "Implement normalized status tracking for chat operations."
+  ],
+  "capabilities": [
+    {
+      "name": "Chat Session Management",
+      "description": "Provides React hooks to initiate, control, and observe chat sessions within UI components."
+    },
+    {
+      "name": "Message Normalization",
+      "description": "Utilities to transform and extract content from multi-part UI messages into consistent application-level formats."
+    },
+    {
+      "name": "Resilient API Communication",
+      "description": "Configurable fetch wrappers that automate error parsing and handle response exceptions for reliable backend interaction."
+    },
+    {
+      "name": "Status Coordination",
+      "description": "Standardizes raw backend status signals into a predictable state interface for UI rendering."
+    }
+  ],
+  "designDecisions": [
+    "Uses a hook-based architecture to encapsulate session state and side effects.",
+    "Decouples UI message structures from the internal Gyomu transport protocol via explicit mapping layers.",
+    "Implements a centralized error handling strategy using typed exceptions to differentiate public-facing errors from internal failures."
+  ],
+  "usageGuidance": [
+    "Use the provided React hook as the primary entry point for managing chat state rather than interacting with transport layers directly.",
+    "Utilize the provided mapping utilities when interfacing with standard AI SDK message formats.",
+    "Always wrap network requests with the provided fetch utilities to ensure consistent error boundary management."
+  ]
+}

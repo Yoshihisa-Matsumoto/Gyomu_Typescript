@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=../../../../schemas/Development.json
+
+faq:
+  - question: |
+      このパッケージは単独で利用できますか？
+    answer: |
+      いいえ。Vercel AI SDK (React系) ,React, および @gyomu/schema, @gyomu/ui-core に依存しています
+
+knownIssues: []
+
+tips: []
