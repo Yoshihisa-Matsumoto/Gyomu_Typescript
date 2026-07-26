@@ -86,3 +86,7 @@ pnpm build
 ## 📜 License
 
 MIT
+
+## Learn More
+
+- 📖 [Architecture Guide](Architecture.md)

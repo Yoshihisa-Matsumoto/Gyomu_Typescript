@@ -83,3 +83,7 @@ pnpm install
 # ビルド実行
 pnpm build
 ```
+
+## さらに詳しく
+
+- 📖 [アーキテクチャガイド](Architecture.ja.md)
