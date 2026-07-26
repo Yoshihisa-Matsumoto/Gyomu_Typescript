@@ -1,0 +1,22 @@
+{
+  "summary": "This directory manages the input parameter definitions for approval lifecycle operations. It centralizes the data structures required for users to interact with approval requests, ensuring consistent typing for approval and rejection actions across the system.",
+  "responsibilities": [
+    "Defining input schemas for approving approval requests",
+    "Defining input schemas for rejecting approval requests",
+    "Enforcing contract consistency for lifecycle state transitions"
+  ],
+  "concepts": [
+    "Approval Request",
+    "Input Parameters",
+    "Lifecycle Operations"
+  ],
+  "relationships": [
+    "The input interfaces define the required parameters for performing specific approval actions.",
+    "Approval and rejection inputs share common identifiers and user context fields to maintain traceability."
+  ],
+  "designDecisions": [
+    "Strict interface definition for command input validation",
+    "Centralized export strategy for command-related data structures"
+  ],
+  "importance": "Core"
+}

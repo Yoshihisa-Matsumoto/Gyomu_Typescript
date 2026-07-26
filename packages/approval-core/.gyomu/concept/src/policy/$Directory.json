@@ -1,0 +1,22 @@
+{
+  "summary": "This directory manages the definition, composition, and evaluation logic for approval policies. It provides mechanisms to combine multiple decision-making criteria into cohesive approval workflows and handles the resolution of conflicting or aggregate policy results.",
+  "responsibilities": [
+    "Define structural policy components",
+    "Aggregate and merge multiple approval decisions",
+    "Validate policy composition logic"
+  ],
+  "concepts": [
+    "Approval Policy",
+    "Decision Merging",
+    "Composite Policy"
+  ],
+  "relationships": [
+    "Composite approval policies delegate evaluation to individual policy components.",
+    "Decision merging logic interprets the outcomes of multiple policies to produce a final authorization result."
+  ],
+  "designDecisions": [
+    "Composite pattern for grouping policies",
+    "Separation of individual policy evaluation from aggregate decision resolution"
+  ],
+  "importance": "Core"
+}

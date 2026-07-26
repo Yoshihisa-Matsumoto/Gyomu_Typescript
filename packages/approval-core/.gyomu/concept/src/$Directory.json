@@ -1,0 +1,24 @@
+{
+  "summary": "This directory serves as the root entry point for the approval workflow system. It provides a unified, structured interface that aggregates domain models, input command schemas, core service logic, and system-level ports, ensuring consistent access to the entire package's functionality.",
+  "responsibilities": [
+    "Expose core approval workflow components to external consumers",
+    "Centralize access to domain models, service operations, and system interfaces",
+    "Maintain a clean and consistent package API surface"
+  ],
+  "concepts": [
+    "Approval Workflow",
+    "Package API",
+    "Domain Models",
+    "Service Operations"
+  ],
+  "relationships": [
+    "The root index aggregates domain models and service logic to provide a cohesive entry point for consumers.",
+    "Input command schemas and system ports are exposed alongside service definitions to facilitate complete integration with the approval workflow."
+  ],
+  "designDecisions": [
+    "Centralized barrel file exports for unified package access",
+    "Strict separation between commands, models, policies, ports, and services",
+    "Encapsulation of sub-module details to preserve clean external API boundaries"
+  ],
+  "importance": "Core"
+}
