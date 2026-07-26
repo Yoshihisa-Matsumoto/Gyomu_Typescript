@@ -10,6 +10,15 @@ import type { PackageConcept } from '@gyomu/schema/schemas/concept'
 import type { ProjectContext } from '@gyomu/ts-analysis'
 import type { ConceptOptions } from '../../ConceptOptions.js'
 
+/**
+ * Loads the PackageConcept from the file system, validating it against the PackageConceptSchema.
+ *
+ * @param context The project context containing root directory and project name information.
+ *
+ * @param option Optional configuration for loading the concept.
+ *
+ * @returns An Effect that yields the loaded PackageConcept or undefined if the file does not exist, requiring FileSystem access and potentially failing with a ConceptError.
+ */
 export const loadPackageConcept = (
   context: ProjectContext,
   option?: ConceptOptions,

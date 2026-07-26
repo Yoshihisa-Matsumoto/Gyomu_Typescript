@@ -1,0 +1,22 @@
+{
+  "summary": "This directory manages the translation logic for documentation content, encompassing the identification of text targets, the application of translated strings, and the overall transformation process.",
+  "responsibilities": [
+    "Identify text elements requiring translation within documentation",
+    "Apply localized content to identified targets",
+    "Coordinate the translation workflow for documentation files"
+  ],
+  "concepts": [
+    "Translation targets",
+    "Documentation translation",
+    "Localization workflow"
+  ],
+  "relationships": [
+    "The translation process begins by collecting targets from the documentation source.",
+    "Once targets are identified, the translation mechanism maps and applies the appropriate language content to these segments."
+  ],
+  "designDecisions": [
+    "Automated identification and transformation of text content",
+    "Test-driven development for translation logic validation"
+  ],
+  "importance": "Supporting"
+}

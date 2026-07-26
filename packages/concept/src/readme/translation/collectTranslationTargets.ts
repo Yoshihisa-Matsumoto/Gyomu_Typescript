@@ -1,5 +1,12 @@
 import type { Section, SectionLocation, TranslationTarget } from '@gyomu/schema/schemas/document'
 
+/**
+ * Collects translatable text segments from a set of documentation sections.
+ *
+ * @param sections The list of sections to scan for translatable content.
+ *
+ * @returns An array of translation target objects containing the source text and its location.
+ */
 export const collectTransationTargets = (
   sections: ReadonlyArray<Section>,
 ): Array<TranslationTarget> => {

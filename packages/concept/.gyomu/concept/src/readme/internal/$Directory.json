@@ -1,0 +1,22 @@
+{
+  "summary": "This directory centralizes internal helper utilities for resolving filesystem paths and naming conventions specific to documentation artifacts. It ensures consistent path generation and localization logic for readme-related files throughout the project.",
+  "responsibilities": [
+    "Determine base paths for knowledge artifacts",
+    "Identify localized filenames for documentation"
+  ],
+  "concepts": [
+    "Knowledge artifacts",
+    "File system paths",
+    "Localization",
+    "Configuration context"
+  ],
+  "relationships": [
+    "Configuration context is used to determine the appropriate file system paths for knowledge artifacts.",
+    "Localization parameters dictate the generation of specific readme filenames."
+  ],
+  "designDecisions": [
+    "Encapsulation of internal path resolution logic",
+    "Centralization of naming conventions for documentation"
+  ],
+  "importance": "Utility"
+}

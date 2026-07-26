@@ -8,6 +8,17 @@ import type { FileSystem } from 'effect'
 import type { PackageExportAnalysisResult, ResolvedSourceFile } from './types.js'
 import type { ExportedSymbolAnalysis, FileSummary } from '@gyomu/schema/concept'
 
+/**
+ * Analyzes the exports of a package based on the resolved source files, providing a comprehensive report of files and exported symbols.
+ *
+ * @param exportInfo The resolved source file information for the package export.
+ *
+ * @param context The project-wide context used for analysis.
+ *
+ * @param option Optional configuration for the analysis process.
+ *
+ * @returns An Effect that yields the `PackageExportAnalysisResult` upon success, or an `AnalysisError` if the operation fails. Requires `FileSystem.FileSystem` in the environment.
+ */
 export const buildPackageExportAnalysisResult = (
   exportInfo: ResolvedSourceFile,
   context: ProjectContext,

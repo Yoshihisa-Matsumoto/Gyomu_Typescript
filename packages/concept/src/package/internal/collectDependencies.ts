@@ -2,6 +2,15 @@ import type { DependencyKind, DependencySource, PackageDependency } from '@gyomu
 import type { DependencyAnalysis } from '@gyomu/schema/concept'
 import type { ProjectContext, WorkspaceContext } from '@gyomu/ts-analysis'
 
+/**
+ * Collects and analyzes all dependency types defined in the project's package.json file.
+ *
+ * @param context The project context containing the parsed package.json information.
+ *
+ * @param workspace The workspace context for dependency resolution.
+ *
+ * @returns An array of dependency analysis records collected from all dependency sections.
+ */
 export const collectDependencies = (
   context: ProjectContext,
   workspace: WorkspaceContext,

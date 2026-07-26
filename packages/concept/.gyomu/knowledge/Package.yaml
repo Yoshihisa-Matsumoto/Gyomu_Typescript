@@ -1,0 +1,99 @@
+displayName: Gyomu Concept
+
+mission: |
+  Gyomuにおける*Concept*とは、プロジェクトのアーキテクチャ、責務、設計意図、運用知識を表現する構造化されたプロジェクトモデルです。
+  `Concept`は、ドキュメントではなく、プロジェクト知識そのものを表現する構造化モデルです。
+  `Concept`は、ソースコードを分析して得られる知識と、人が保守する知識を統合し、人とAIが共通して利用できる知識表現として機能します。
+  `@gyomu/concept`は、このConceptの構築・維持・活用を担い、プロジェクト知識の一貫性と継続的な保守を支援します。
+
+policies:
+  - Conceptはプロジェクト知識を表現する唯一の構造化モデルとする。
+  - Conceptはソースコードから導出される知識と、人が管理する知識を統合して構築する。
+  - Conceptは言語や出力形式に依存しない中立な知識表現とする。
+  - 人が管理する知識とソースコードから導出される知識は、それぞれの出所を保持したままConcept上で統合する。
+  - ソースコード解析、Concept構築、ドキュメント生成は独立した責務として設計する。
+  - Package、Directory、Projectなど各粒度のConceptを一貫したモデルで管理する。
+  - Conceptは永続化し、差分更新および継続的な知識管理を可能とする。
+  - READMEやArchitectureなどのドキュメントはConceptから生成する。
+
+constraints:
+  - Concept生成とMarkdown描画を密結合にしてはならない。
+  - 特定のAIモデルへ依存したAPIを公開してはならない。
+  - エディタやIDE固有の機能へ依存してはならない。
+  - ドキュメント生成処理へ解析ロジックを混在させてはならない。
+
+nonGoals:
+  - ソースコード生成を行うこと。
+  - AIモデルの実装を提供すること。
+  - ドキュメント編集UIを提供すること。
+  - プロジェクト管理機能を提供すること。
+  - 実行時のコード解析を提供すること。
+
+terminology:
+  - term: Concept
+    definition: ソースコードから導出される知識と、人が保守する知識を統合し、人とAIが共通して利用できる知識表現
+
+  - term: Package Concept
+    definition: パッケージの責務、依存関係、公開APIなどを表現したConcept。
+
+  - term: Directory Concept
+    definition: ディレクトリの役割や責務を表現したConcept。
+
+  - term: Documentation Builder
+    definition: ConceptからREADMEなどのドキュメントを構築するコンポーネント。
+
+  - term: Concept Pipeline
+    definition: 解析・Concept生成・永続化・ドキュメント生成を構成する処理の流れ。
+
+rationale:
+  - Conceptを中間表現として保持することで、解析結果を複数用途で再利用できる。
+  - 解析・Concept生成・レンダリングを分離することで、それぞれを独立して改善できる。
+  - Conceptを永続化することで、差分更新やインクリメンタルな再生成を実現できる。
+  - ドキュメントをConceptから生成することで、ソースコードとの整合性を維持できる。
+  - Project、Package、Directoryを共通のConceptモデルで扱うことで、知識体系を統一できる。
+
+usage:
+  - situation: Package Conceptを生成する
+    guidance: Package Analysisを入力としてPackage Concept Builderを実行する。
+
+  - situation: READMEを生成する
+    guidance: Package Conceptを利用してREADME Builderを実行する。
+
+  - situation: ディレクトリ構造を解析する
+    guidance: Directory Analysisを実行し、Directory Conceptを生成する。
+
+  - situation: ドキュメントを更新する
+    guidance: Conceptを再生成し、Documentation BuilderによってMarkdownを生成する。
+
+examples:
+  - title: Package Concept
+    input: |
+      パッケージ構造からREADMEを生成したい。
+    output: |
+      Package Conceptを生成し、それと人が管理するKnowledgeを基にREADMEを構築する。
+    explanation: |
+      ドキュメントはConceptを中間表現として生成される。
+
+  - title: Directory Concept
+    input: |
+      ディレクトリの役割を可視化したい。
+    output: |
+      Directory Analysisを実行してDirectory Conceptを生成する。
+    explanation: |
+      ディレクトリ単位の責務を知識として保存できる。
+
+  - title: 多言語README
+    input: |
+      READMEを日本語と英語で生成したい。
+    output: |
+      共通Conceptから各言語のREADMEを生成する。
+    explanation: |
+      Conceptは言語非依存の知識モデルとして利用される。
+
+  - title: ドキュメント更新
+    input: |
+      ソースコード変更後にREADMEを更新したい。
+    output: |
+      Conceptを再生成し、Markdownを再構築する。
+    explanation: |
+      ソースコードとドキュメントの整合性を継続的に維持できる。

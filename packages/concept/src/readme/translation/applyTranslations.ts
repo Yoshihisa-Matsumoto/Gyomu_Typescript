@@ -9,6 +9,17 @@ import type {
 } from '@gyomu/schema/schemas/document'
 import type { ReadmeBuildContext } from '@gyomu/schema/concept'
 
+/**
+ * Applies a set of translation items to a documentation structure.
+ *
+ * @param context The build context containing analysis and package information.
+ *
+ * @param plan The translation plan defining the destination structure.
+ *
+ * @param result The list of translation items to apply.
+ *
+ * @returns An Effect representing the translation application operation, failing with a DocumentBuilderError if the operation cannot be completed.
+ */
 export const applyTranslations = (
   context: ReadmeBuildContext,
   plan: TranslationPlan,

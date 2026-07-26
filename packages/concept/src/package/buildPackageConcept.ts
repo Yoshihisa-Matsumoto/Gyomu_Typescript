@@ -13,6 +13,15 @@ import type { ProjectContext } from '@gyomu/ts-analysis'
 import type { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 import type { FileSearchService } from '@gyomu/schema/shared/fs'
 
+/**
+ * Builds a package concept by analyzing project files, optionally loading cached concepts if available, and saving the final result.
+ *
+ * @param context The project context containing file system access and configuration.
+ *
+ * @param option Optional configuration for the build process, including debug settings and changed file filtering.
+ *
+ * @returns An Effect that resolves to a PackageConcept on success, or a ConceptError on failure. Requires FileSystem, AiModelRoute, ModelRoutes, and FileSearchService.
+ */
 export const buildPackageConcept = (
   context: ProjectContext,
   option?: ConceptOptions,

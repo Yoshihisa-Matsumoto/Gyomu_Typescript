@@ -7,6 +7,17 @@ import type { Section } from '@gyomu/schema/schemas/document'
 import type { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 import type { FileSystem } from 'effect'
 
+/**
+ * Builds the sections of a README by executing enabled builders in sequence.
+ *
+ * @param context The context object providing data for documentation generation.
+ *
+ * @param builders A collection of section builders to execute.
+ *
+ * @returns An Effect that yields an array of generated document sections, requiring AI model routes and filesystem access.
+ *
+ * @requires AiModelRoute, ModelRoutes, and FileSystem.
+ */
 export const buildReadmeSections = (
   context: ReadmeBuildContext,
   builders = README_SECTION_BUILDERS,

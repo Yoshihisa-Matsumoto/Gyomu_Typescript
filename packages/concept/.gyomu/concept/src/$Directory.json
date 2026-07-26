@@ -1,0 +1,31 @@
+{
+  "summary": "This directory manages the core logic for architectural analysis, documentation generation, and structural metadata modeling, providing the primary infrastructure for understanding and documenting TypeScript project architectures.",
+  "responsibilities": [
+    "Analyze project source structures and package exports",
+    "Construct and validate directory and package conceptual models",
+    "Orchestrate automated documentation generation and assembly",
+    "Manage project metadata storage and path resolution",
+    "Centralize system error handling and lifecycle tracking"
+  ],
+  "concepts": [
+    "Architectural Metadata",
+    "Package Analysis",
+    "Documentation Generation",
+    "Project Structure",
+    "Dependency Tracking"
+  ],
+  "relationships": [
+    "The architectural analysis process constructs conceptual models from project file structures and package exports.",
+    "Documentation generation logic utilizes the derived conceptual models to assemble and populate structured project README files.",
+    "System-wide error handling provides contextual feedback during the execution of analysis and documentation workflows.",
+    "Metadata management ensures that generated concepts and documentation targets are correctly stored and resolved across the project lifecycle."
+  ],
+  "designDecisions": [
+    "Encapsulation of analysis logic within internal functional modules",
+    "Separation of concerns between structural resolution and content generation",
+    "Use of schema-based validation for serialized architectural concepts",
+    "Modular isolation of documentation construction and rendering processes",
+    "Centralized error tracking using specialized subclasses and context interfaces"
+  ],
+  "importance": "Core"
+}

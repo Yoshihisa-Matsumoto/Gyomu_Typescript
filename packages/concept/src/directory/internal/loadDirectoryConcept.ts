@@ -9,6 +9,17 @@ import type { ProjectRelativePath } from '@gyomu/schema/typescript'
 import type { ProjectContext } from '@gyomu/ts-analysis'
 import type { ConceptOptions } from '../../ConceptOptions.js'
 
+/**
+ * Loads and validates the DirectoryConcept definition from a directory-specific configuration file.
+ *
+ * @param context The project context providing root information and naming.
+ *
+ * @param targetDirectory The path of the directory for which to load the concept.
+ *
+ * @param option Optional configuration for loading the concept.
+ *
+ * @returns An Effect that yields the DirectoryConcept if found and valid, or undefined if the configuration file does not exist. Fails with a ConceptError if validation or I/O operations fail.
+ */
 export const loadDirectoryConcept = (
   context: ProjectContext,
   targetDirectory: ProjectRelativePath,

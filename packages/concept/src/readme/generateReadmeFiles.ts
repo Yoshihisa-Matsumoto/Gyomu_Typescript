@@ -18,6 +18,15 @@ import type { ConceptOptions } from '../ConceptOptions.js'
 import type { FileSystem } from 'effect/FileSystem'
 import type { FileSearchService } from '@gyomu/schema/shared/fs'
 
+/**
+ * Generates README files for a project across multiple supported languages.
+ *
+ * @param project The project context containing root paths and configuration.
+ *
+ * @param option Optional configuration for README generation.
+ *
+ * @returns An Effect representing the file generation process, requiring external services like FileSystem and AI models, and potentially failing with a DocumentBuilderError.
+ */
 export const generateReadmeFiles = (
   project: ProjectContext,
   option?: ConceptOptions,

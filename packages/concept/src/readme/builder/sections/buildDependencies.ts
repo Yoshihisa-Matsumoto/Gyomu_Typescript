@@ -8,6 +8,9 @@ import type { ReadmeBuildContext } from '@gyomu/schema/concept'
 import type { ReadmeSectionBuilder } from '../ReadmeSectionBuilder.js'
 import type { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 
+/**
+ * Constructs a documentation section detailing project dependencies.
+ */
 export const buildDependencies: ReadmeSectionBuilder<
   AiModelRoute | FileSystem.FileSystem | ModelRoutes
 > = {

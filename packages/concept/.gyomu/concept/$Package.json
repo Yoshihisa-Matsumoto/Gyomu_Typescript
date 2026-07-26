@@ -1,0 +1,34 @@
+{
+  "summary": "The @gyomu/concept package provides an orchestration layer for analyzing project structures and automatically generating architectural documentation. It transforms raw source code and dependency information into coherent conceptual models used for project maintenance and developer communication.",
+  "responsibilities": [
+    "Analyze project directory structures to extract architectural metadata.",
+    "Resolve internal package dependencies and source exports for structural mapping.",
+    "Orchestrate the synthesis of project information into persistent concept models.",
+    "Automate the generation, assembly, and localization of comprehensive project documentation.",
+    "Validate conceptual integrity and documentation output through automated testing flows."
+  ],
+  "capabilities": [
+    {
+      "name": "Package Conceptualization",
+      "description": "Analyzes project environments to build structured models of package dependencies, exports, and architectural intent."
+    },
+    {
+      "name": "Directory Analysis",
+      "description": "Recursively evaluates directory contents to generate metadata that describes the structural role of individual code units."
+    },
+    {
+      "name": "Automated Documentation",
+      "description": "Generates, localizes, and renders Markdown documentation directly from the derived conceptual models of the codebase."
+    }
+  ],
+  "designDecisions": [
+    "Utilizes a builders-pattern approach to separate the extraction of structural data from the assembly of final documentation.",
+    "Employs a multi-stage pipeline where analysis, conceptual modeling, and rendering are treated as distinct, composable architectural tasks.",
+    "Prioritizes persistence of generated concepts to enable efficient retrieval and incremental updates across development sessions."
+  ],
+  "usageGuidance": [
+    "Invoke the package-level builders when initiating a full repository crawl to establish the base architectural model.",
+    "Use the directory-level analysis utilities to gain visibility into specific sub-architectures or modular components.",
+    "Integrate the documentation generator into CI/CD pipelines to ensure that README files remain synchronized with the underlying source code structure."
+  ]
+}

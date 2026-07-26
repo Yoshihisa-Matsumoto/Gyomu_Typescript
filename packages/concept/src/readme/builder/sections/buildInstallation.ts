@@ -3,6 +3,9 @@ import type { Section } from '@gyomu/schema/schemas/document'
 import type { ReadmeBuildContext } from '@gyomu/schema/concept'
 import type { ReadmeSectionBuilder } from '../ReadmeSectionBuilder.js'
 
+/**
+ * Constructs the installation section for the readme.
+ */
 export const buildInstallation: ReadmeSectionBuilder = {
   id: 'installation',
 

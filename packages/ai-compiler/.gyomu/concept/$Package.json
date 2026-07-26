@@ -1,40 +1,44 @@
 {
-  "summary": "The @gyomu/ai-compiler package provides a structured framework for automating code analysis and documentation tasks using AI. It defines pipelines for generating JSDoc updates, file and directory summaries, and documentation components like README sections. By leveraging standardized schemas and execution strategies, it ensures consistent and verifiable AI-assisted code maintenance.",
+  "summary": "The @gyomu/ai-compiler package provides a structured framework for automating code analysis and documentation tasks using AI models. It defines formal schemas and execution pipelines to transform source code metadata into actionable documentation plans, file summaries, and project-level insights. By standardizing input contexts and output plans, the package ensures deterministic, auditable transformations for TypeScript codebases.",
   "responsibilities": [
-    "Define schema-based models for representing source code structure and documentation state.",
-    "Orchestrate AI model pipelines for code analysis, summarization, and documentation generation.",
-    "Implement strategy-based decision logic to determine the complexity and required depth of automated tasks.",
-    "Maintain a clear separation between content generation planning and the execution of merging changes into source code.",
-    "Provide a unified interface for defining and routing diverse code-intelligence tasks to appropriate model configurations."
+    "Define standardized schemas for representing source code structure and documentation states.",
+    "Manage the execution logic for AI-assisted documentation and summarization pipelines.",
+    "Provide deterministic mechanisms for determining complexity and update modes for code transformations.",
+    "Facilitate the integration of AI models into automated code maintenance workflows.",
+    "Ensure auditability of AI-generated content through structured merge actions and reasoning traces."
   ],
   "capabilities": [
     {
-      "name": "JSDoc Documentation Lifecycle",
-      "description": "Comprehensive tools for analyzing code symbols, planning JSDoc updates, and managing the reconciliation of generated documentation with existing comments."
+      "name": "JSDoc Automation",
+      "description": "Orchestrates the analysis and automated updating of JSDoc comments based on symbol complexity and structural metadata."
     },
     {
       "name": "Codebase Summarization",
-      "description": "Hierarchical extraction of insights ranging from individual symbol summaries to file-level concepts and directory-wide architectural overviews."
+      "description": "Generates concise conceptual summaries for files, directories, and entire packages to improve developer navigation and documentation."
     },
     {
-      "name": "Pipeline Execution Framework",
-      "description": "A robust orchestration layer that connects specific task inputs to AI model routes while handling complexity assessments and task configuration."
+      "name": "Pipeline Orchestration",
+      "description": "Provides a consistent execution framework for running various AI-driven code analysis tasks with configurable context and strategies."
     },
     {
-      "name": "Project Documentation Automation",
-      "description": "Facilities for dynamically generating and updating project-level documentation, such as README sections, based on the current codebase state."
+      "name": "Content Translation",
+      "description": "Exposes infrastructure for translating technical documentation and summaries using configured AI model routes."
+    },
+    {
+      "name": "Readme Generation",
+      "description": "Supports the programmatic construction of documentation sections within README files using structured AI-driven templates."
     }
   ],
   "designDecisions": [
-    "Separation of concerns between 'Analysis' (collecting metadata) and 'Plan' (defining actionable modifications).",
-    "Strategy-based mode resolution allows for dynamic adjustment of AI processing depth based on code complexity metrics.",
-    "Type-safe schemas serve as the primary contract for all AI model inputs and outputs, ensuring predictability across pipeline stages.",
-    "Modular route-based identification for different AI task types to maintain decoupling from the underlying model implementation."
+    "Utilizes a route-based identification system to decouple AI task definitions from specific model implementation details.",
+    "Employs a strategy-based approach for handling task complexity, allowing for configurable precision in code analysis.",
+    "Enforces a schema-first architecture where every AI operation relies on typed input and output structures to ensure reliability.",
+    "Separates execution logic from data context, enabling independent testing of the pipeline orchestrators and the underlying data models."
   ],
   "usageGuidance": [
-    "Utilize the provided schema definitions to normalize inputs before passing them into execution pipelines.",
-    "Implement or extend complexity strategies to tune the granularity and depth of AI-generated updates based on your specific codebase standards.",
-    "Ensure that all automated documentation tasks flow through the plan-and-merge cycle to facilitate safe and reversible modifications.",
-    "Leverage the defined route IDs when integrating new AI-driven analysis capabilities to remain consistent with the existing pipeline architecture."
+    "Use the provided context types to build inputs for pipelines rather than passing raw source code data.",
+    "Implement or extend the existing complexity strategy when adding new documentation tasks to ensure appropriate AI resource allocation.",
+    "Leverage the standardized merge actions to maintain existing code documentation styles when applying AI updates.",
+    "Always rely on the executor interfaces to trigger operations, ensuring that metadata and reasoning traces are correctly handled for auditability."
   ]
 }

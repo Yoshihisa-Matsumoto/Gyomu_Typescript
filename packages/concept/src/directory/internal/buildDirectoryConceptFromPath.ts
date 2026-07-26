@@ -18,6 +18,17 @@ import type { ProjectContext } from '@gyomu/ts-analysis'
 import type { BuildResult } from '../types.js'
 import type { FileSystem } from 'effect'
 
+/**
+ * Builds a directory concept by recursively analyzing files and subdirectories, generating a summary, and saving the resulting concept.
+ *
+ * @param context The current project context containing root paths and configuration.
+ *
+ * @param targetDirectory The full file system path to the directory to process.
+ *
+ * @param option Optional configuration for modifying the build process.
+ *
+ * @returns Returns an Effect that produces a BuildResult. Requires access to FileSystem, AiModelRoute, and ModelRoutes. May fail with a ConceptError.
+ */
 export const buildDirectoryConceptFromPath = (
   context: ProjectContext,
   targetDirectory: FullPath,
