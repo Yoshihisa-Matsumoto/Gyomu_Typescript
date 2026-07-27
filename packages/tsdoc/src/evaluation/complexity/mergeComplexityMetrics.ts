@@ -1,6 +1,13 @@
 import { emptyComplexityMetrics } from './emptyComplexityMetrics.js'
 import type { ComplexityMetrics } from './ComplexityMetrics.js'
 
+/**
+ * Merges an array of complexity metrics into a single cumulative ComplexityMetrics object by aggregating numerical counts and calculating maximum depths.
+ *
+ * @param metricsArray An array of complexity metrics to merge.
+ *
+ * @returns A consolidated ComplexityMetrics object representing the combined values.
+ */
 export const mergeComplexityMetrics = (
   metricsArray: Array<ComplexityMetrics>,
 ): ComplexityMetrics => {

@@ -1,0 +1,28 @@
+{
+  "summary": "This directory centralizes the application's foundational domain models, shared business rules, and complexity analysis logic, providing a unified structure for calculating system metrics and maintaining consistent data entities across the codebase.",
+  "responsibilities": [
+    "Define core domain entities and shared data structures",
+    "Calculate and aggregate structural and logical complexity metrics",
+    "Enforce consistent business logic and interface contracts",
+    "Compute complexity scores for code symbols and effect signals"
+  ],
+  "concepts": [
+    "Domain Entities",
+    "Complexity Metrics",
+    "Shared Interfaces",
+    "Structural Analysis",
+    "Business Logic"
+  ],
+  "relationships": [
+    "Domain entities provide the data structures that complexity metrics analyze.",
+    "Shared interfaces ensure that business logic and complexity calculations maintain consistent data representation.",
+    "Complexity metrics use core domain models to derive quantitative scores for code components."
+  ],
+  "designDecisions": [
+    "Strict type definitions for consistency",
+    "Centralization of shared domain models",
+    "Functional approach for metric calculation",
+    "Separation of data structures from implementation logic"
+  ],
+  "importance": "Core"
+}

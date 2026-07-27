@@ -13,7 +13,10 @@ import type { FileHashSnapshot } from './types/FileHashSnapshot.js'
  * to keep it human-readable and diff-friendly.
  *
  * @param path Output snapshot file path
+ *
  * @param snapshot Snapshot to save
+ *
+ * @returns An effect that writes the snapshot to the specified path. Requires FileSystem service and may fail with an IOError.
  */
 export const saveSnapshot = (
   path: string,

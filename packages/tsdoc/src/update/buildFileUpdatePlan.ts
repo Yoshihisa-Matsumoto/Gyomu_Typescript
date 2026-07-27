@@ -3,6 +3,15 @@ import type { FileAnalysisContext } from '@gyomu/schema/typescript'
 import type { RenderedSymbolJsDoc } from './jsDoc/RenderedSymbolJsDoc.js'
 import type { FileUpdatePlan } from './jsDoc/FileUpdatePlan.js'
 
+/**
+ * Creates a file update plan by sorting documentation edits based on their starting line position in the source file.
+ *
+ * @param sourceFile The file analysis context containing symbol metadata.
+ *
+ * @param updatedDocs A collection of rendered JSDoc documentation updates.
+ *
+ * @returns A FileUpdatePlan containing the calculated edits for the source file.
+ */
 export const buildFileUpdatePlan = (
   sourceFile: FileAnalysisContext,
   updatedDocs: ReadonlyArray<RenderedSymbolJsDoc>,

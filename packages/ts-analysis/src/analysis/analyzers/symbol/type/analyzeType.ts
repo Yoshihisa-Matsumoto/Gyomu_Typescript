@@ -1,4 +1,4 @@
-import { Node, SyntaxKind } from 'ts-morph'
+import { Node } from 'ts-morph'
 import { detectEffectSignals } from '../analyzeEffectType.js'
 import { tracePlaceIdentity } from '../../../trace/traceUtil.js'
 import { analyzeTypeStructures } from './analyzeTypeStructure.js'
@@ -113,40 +113,41 @@ export const analyzeType = (
         ],
       }
     }
-    const kind = (node as Node).getKind()
-    switch (kind) {
-      case SyntaxKind.VoidKeyword:
-        return {
-          member: {
-            text: 'void',
-            source: 'typescript',
-          },
-          dependencies: [],
-          reservedNames: [],
-        }
-      case SyntaxKind.NeverKeyword:
-        return {
-          member: {
-            text: 'never',
-            source: 'typescript',
-          },
-          dependencies: [],
-          reservedNames: [],
-        }
-      case SyntaxKind.UnknownKeyword:
-        return {
-          member: {
-            text: 'unknown',
-            source: 'typescript',
-          },
-          dependencies: [],
-          reservedNames: [],
-        }
-    }
-    console.log(`${(node as Node).getKindName()}`)
+    // const kind = (node as Node).getKind()
+    // switch (kind) {
+    //   case SyntaxKind.VoidKeyword:
+    //     return {
+    //       member: {
+    //         text: 'void',
+    //         source: 'typescript',
+    //       },
+    //       dependencies: [],
+    //       reservedNames: [],
+    //     }
+    //   case SyntaxKind.NeverKeyword:
+    //     return {
+    //       member: {
+    //         text: 'never',
+    //         source: 'typescript',
+    //       },
+    //       dependencies: [],
+    //       reservedNames: [],
+    //     }
+    //   case SyntaxKind.UnknownKeyword:
+    //     return {
+    //       member: {
+    //         text: 'unknown',
+    //         source: 'typescript',
+    //       },
+    //       dependencies: [],
+    //       reservedNames: [],
+    //     }
+    // }
+    // console.log(`${(node as Node).getKindName()}`)
     // console.dir(node, { depth: null })
   }
   console.log(`!!!!WHY???!!!!  ${rawText} `)
+  console.log(args.sourceRelativePath)
   console.trace()
   {
     return {

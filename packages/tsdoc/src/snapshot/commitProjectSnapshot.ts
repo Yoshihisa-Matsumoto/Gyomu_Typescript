@@ -12,12 +12,35 @@ import type { FileSearchService } from '@gyomu/schema/shared/fs'
 import type { FileSystem } from 'effect'
 import type { FileHashSnapshot } from './types/FileHashSnapshot.js'
 
+/**
+ * Input parameters for committing a project snapshot, specifying the repository root, project path, and the expected snapshot state.
+ */
 export interface CommitProjectSnapshotInput {
+  /**
+   * The root directory path of the repository.
+   */
   readonly repoRoot: FullPath
+
+  /**
+   * The workspace-relative path of the project.
+   */
   readonly projectPath: WorkspaceRelativePath
+
+  /**
+   * The expected file hash snapshot to validate against.
+   */
   readonly expectedSnapshot: FileHashSnapshot
 }
 
+/**
+ * Commits a project snapshot by verifying the current file state against an expected snapshot and saving it to the project workspace.
+ *
+ * @param input The configuration details for the snapshot commit operation.
+ *
+ * @returns An Effect that completes when the snapshot is successfully saved or fails with a GyomuError if concurrent modifications are detected or an infra error occurs.
+ *
+ * @requires @requires FileSearchService and FileSystem.
+ */
 export const commitProjectSnapshot = (
   input: CommitProjectSnapshotInput,
 ): Effect.Effect<void, GyomuError, FileSearchService | FileSystem.FileSystem> =>

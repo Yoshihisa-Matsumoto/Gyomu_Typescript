@@ -2,6 +2,15 @@ import { withOptional } from '@gyomu/schema'
 import type { ExistingJsDoc } from '@gyomu/ai-compiler/jsdoc-update'
 import type { JsDocAnalysis, ParsedJsDoc } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Constructs an ExistingJsDoc object from the provided JSDoc analysis and parsed JSDoc data.
+ *
+ * @param jsDocAnalysis The JSDoc analysis result.
+ *
+ * @param parsedJsDoc The parsed JSDoc structure.
+ *
+ * @returns An object representing the existing JSDoc documentation, or undefined if either input is missing.
+ */
 export const buildExistingJsDoc = (
   jsDocAnalysis: JsDocAnalysis | undefined,
   parsedJsDoc: ParsedJsDoc | undefined,

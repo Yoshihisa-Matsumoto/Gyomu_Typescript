@@ -6,6 +6,15 @@ const toMap = (snapshot: FileHashSnapshot): Map<ProjectRelativePath, any> => {
   return new Map(snapshot.files.map((f) => [f.projectRelativePath, f]))
 }
 
+/**
+ * Compares two file hash snapshots to identify added, updated, and deleted file changes.
+ *
+ * @param previous The previous snapshot to compare from.
+ *
+ * @param current The current snapshot to compare to.
+ *
+ * @returns A collection of file changes representing the differences between the two snapshots.
+ */
 export const diffSnapshot = (
   previous: FileHashSnapshot,
   current: FileHashSnapshot,

@@ -1,0 +1,27 @@
+{
+  "summary": "This directory manages the structured planning and representation of JSDoc modifications. It provides models and strategies for parsing existing documentation, calculating necessary text edits, and defining how updates should be merged into source files.",
+  "responsibilities": [
+    "Represent JSDoc blocks and their internal line structures",
+    "Define plans for updating and merging documentation",
+    "Calculate changes required for symbol parameters and documentation content",
+    "Maintain context for file and symbol-specific documentation updates"
+  ],
+  "concepts": [
+    "JSDoc Parsing",
+    "Update Planning",
+    "Merge Actions",
+    "Documentation Context",
+    "Symbol Documentation"
+  ],
+  "relationships": [
+    "Merge plans utilize documentation context to reconcile differences between existing symbols and proposed updates.",
+    "File update plans aggregate multiple merge actions to facilitate coherent changes to source files.",
+    "Rendered JSDoc blocks provide the structural input required to generate updated documentation content."
+  ],
+  "designDecisions": [
+    "Separation of concerns between parsing existing structures and planning content updates",
+    "Use of immutable types for documentation representation",
+    "Action-based strategy for handling merges and replacements"
+  ],
+  "importance": "Core"
+}

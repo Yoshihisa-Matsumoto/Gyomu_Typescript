@@ -86,8 +86,11 @@ export const analyzeTypeStructures = (
         reservedNames: typeAlias.reservedNames,
       }
     }
-    if (typeName.getText().includes('Array')) {
+    if (typeName.getText().includes('Array') && typeArguments.length == 1) {
       tracePlaceIdentity(args, args.options, 'analyzeTypeStructures:Array string')
+
+      // console.log('Array')
+      // console.log(typeName.getText())
       const typeAlias = analyzeType(
         {
           sourceRelativePath,
@@ -105,29 +108,26 @@ export const analyzeTypeStructures = (
         },
         undefined,
       )
-      // console.log('Array')
-      // console.log(typeName.getText())
-      if (typeArguments.length == 1) {
-        return {
-          member: {
-            kind: 'array',
-            elementType: typeAlias.member,
-          },
-          dependencies,
-          reservedNames: typeAlias.reservedNames,
-        }
-      }
-      const referencedNodeName = node.getTypeName().getText()
-
       return {
         member: {
-          kind: 'reference',
-          targetId: referencedNodeName,
-          typeParameters: [],
+          kind: 'array',
+          elementType: typeAlias.member,
         },
-        dependencies: [analyzeDependency(referencedNodeName, imported, memberPath)],
+        dependencies,
         reservedNames: typeAlias.reservedNames,
       }
+
+      // const referencedNodeName = node.getTypeName().getText()
+
+      // return {
+      //   member: {
+      //     kind: 'reference',
+      //     targetId: referencedNodeName,
+      //     typeParameters: [],
+      //   },
+      //   dependencies: [analyzeDependency(referencedNodeName, imported, memberPath)],
+      //   reservedNames: [],
+      // }
     } else {
       tracePlaceIdentity(args, args.options, 'analyzeTypeStructures:Other')
       const targetName = typeName.getText()

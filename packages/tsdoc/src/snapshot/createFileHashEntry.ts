@@ -21,7 +21,11 @@ import type { FileHashEntry } from '@gyomu/schema/snapshot'
  * Semantic hashing is intentionally excluded
  * at this stage.
  *
- * @param fileInfo Source file information
+ * @param args Configuration containing the repository root and project workspace path.
+ *
+ * @param fileInfo Source file information.
+ *
+ * @returns An Effect that yields a FileHashEntry, requiring FileSystem and potentially throwing an IOError.
  */
 export const createFileHashEntry =
   (args: { repoRoot: FullPath; projectPath: WorkspaceRelativePath }) =>

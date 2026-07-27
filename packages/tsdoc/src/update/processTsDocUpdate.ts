@@ -15,6 +15,17 @@ import type { FileAnalysisContext } from '@gyomu/schema/typescript'
 import type { ProjectContext } from '@gyomu/ts-analysis'
 import type { UpdateOptions } from './UpdateOptions.js'
 
+/**
+ * Processes JSDoc updates for a given file within a project context by generating merge plans, applying them to documentable symbols, and writing the updated content back to the source file.
+ *
+ * @param context The current project configuration and root environment.
+ *
+ * @param fileResult The analysis results of the target file to be updated.
+ *
+ * @param option Optional configuration for controlling the update behavior, debug logging, and write destinations.
+ *
+ * @returns An Effect representing the file update operation, which completes after writing the updated source file or aborting based on options.
+ */
 export const processTsDocUpdate = (
   context: ProjectContext,
   fileResult: FileAnalysisContext,

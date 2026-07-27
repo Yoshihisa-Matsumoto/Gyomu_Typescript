@@ -5,6 +5,17 @@ import type { MergePlan } from '../jsDoc/MergePlan.js'
 type PlanTagList = MergePlan['tags']
 type PlanTag = MergePlan['tags'][number]
 
+/**
+ * Merges a list of tag update plans with existing JSDoc tags, producing a finalized array of parsed tags based on the provided actions.
+ *
+ * @param filePath The path to the file containing the documentation.
+ *
+ * @param plans The collection of tag update operations to apply.
+ *
+ * @param existingJsDoc Optional existing parsed JSDoc structure to merge against.
+ *
+ * @returns An Effect that resolves to the array of merged and filtered JSDoc tags.
+ */
 export const mergeTags = (
   filePath: string,
   plans: PlanTagList,

@@ -16,6 +16,13 @@ import type {
 
 import type { ComplexityMetrics } from './ComplexityMetrics.js'
 
+/**
+ * Calculates complexity metrics for locally exported symbols within a file analysis result.
+ *
+ * @param fileAnalysisResult The analysis context of the file to process.
+ *
+ * @returns A map associating local symbol identifiers with their calculated complexity metrics.
+ */
 export const calculateComplexityMetrics = (
   fileAnalysisResult: FileAnalysisContext,
 ): Map<SymbolId, ComplexityMetrics> => {

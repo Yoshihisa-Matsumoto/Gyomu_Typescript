@@ -12,6 +12,17 @@ import type {
   TypeStructureAnalysis,
 } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Constructs a context entry for a given code member, analyzing its JSDoc, return type, and structure to determine if documentation needs to be generated or updated.
+ *
+ * @param fileResult The file analysis context containing parsed metadata.
+ *
+ * @param member The code member to analyze.
+ *
+ * @param parent The parent symbol or member analysis.
+ *
+ * @returns Returns a ContextEntry object containing metadata about the target member.
+ */
 export const buildContextEntry = (
   fileResult: FileAnalysisContext,
   member: DocumentableMemberAnalysis | NonDocumentableMemberAnalysis,

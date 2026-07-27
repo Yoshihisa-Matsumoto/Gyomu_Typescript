@@ -8,6 +8,17 @@ import type { FileAnalysisContext } from '@gyomu/schema/typescript'
 import type { JsDocUpdatePlan, TsDocFileContext } from '@gyomu/ai-compiler/jsdoc-update'
 import type { UpdateOptions } from '../UpdateOptions.js'
 
+/**
+ * Executes a JSDoc update plan with retries, validating the resulting plan against the provided context and attempting to resolve missing symbols or invalid configurations.
+ *
+ * @param context The file context containing metadata and AST information for the JSDoc update process.
+ *
+ * @param fileResult The file analysis context used to identify the file path and structural details.
+ *
+ * @param option Optional configuration for retry behavior and debugging.
+ *
+ * @returns An Effect yielding a valid JsDocUpdatePlan, or failing if the maximum number of retries is exceeded.
+ */
 export const buildJsDocUpdatePlanWithRetry = (
   context: TsDocFileContext,
   fileResult: FileAnalysisContext,

@@ -1,0 +1,27 @@
+{
+  "summary": "This directory manages the internal orchestration of JSDoc update logic, including context building, planning, validation, and string rendering. It coordinates the transformation of code analysis data into structured documentation updates while ensuring format consistency and adherence to protections.",
+  "responsibilities": [
+    "Construct and validate JSDoc update contexts from code analysis",
+    "Generate merge plans for documentation updates with protected sections",
+    "Render internal data structures into formatted JSDoc strings",
+    "Validate update plans against existing documentation structure"
+  ],
+  "concepts": [
+    "JSDoc Update Plan",
+    "Documentation Context",
+    "Merge Plan",
+    "JSDoc Formatting"
+  ],
+  "relationships": [
+    "The documentation context maps internal symbol analysis to the format required for planning JSDoc updates.",
+    "Merge plans apply protection rules to determine which JSDoc sections are eligible for update.",
+    "Rendering logic transforms validated update plans into final formatted JSDoc comment strings."
+  ],
+  "designDecisions": [
+    "Internal modularization of update lifecycle phases",
+    "Recursive structure building for complex types",
+    "Retry-based planning for robust symbol resolution",
+    "Strict separation between data structure construction and comment rendering"
+  ],
+  "importance": "Core"
+}

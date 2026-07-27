@@ -9,6 +9,10 @@ import type { FileHashSnapshot } from './types/FileHashSnapshot.js'
  * Loads a file hash snapshot from JSON.
  *
  * @param path Snapshot file path
+ *
+ * @returns An effect yielding a file hash snapshot if found, or null if the file does not exist.
+ *
+ * @requirements {FileSystem.FileSystem} A FileSystem service.
  */
 export const loadSnapshot = (
   path: string,

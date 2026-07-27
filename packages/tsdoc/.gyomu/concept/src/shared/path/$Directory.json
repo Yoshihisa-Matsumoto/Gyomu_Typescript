@@ -1,0 +1,27 @@
+{
+  "summary": "This directory serves as a central repository for path transformation utilities. It enables the project to consistently normalize file system paths and navigate between source files and their corresponding build outputs, ensuring reliable mapping across the development lifecycle.",
+  "responsibilities": [
+    "Normalizing file system paths for consistent processing",
+    "Mapping source file paths to build output paths",
+    "Mapping build output paths back to original source paths",
+    "Identifying test files based on project conventions"
+  ],
+  "concepts": [
+    "Path normalization",
+    "Path mapping",
+    "Source path",
+    "Output path",
+    "Test file detection"
+  ],
+  "relationships": [
+    "Path normalization provides the foundation for consistent path mapping operations.",
+    "Mapping functions transform file path representations between source and build output contexts.",
+    "Test file identification logic relies on path normalization to ensure accurate pattern matching."
+  ],
+  "designDecisions": [
+    "Centralization of path transformation logic for consistency",
+    "Functional approach to path manipulation",
+    "Encapsulation of file system mapping rules"
+  ],
+  "importance": "Utility"
+}

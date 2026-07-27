@@ -14,6 +14,17 @@ import type { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 import type { UpdateOptions } from './UpdateOptions.js'
 import type { IOError } from '@gyomu/schema'
 
+/**
+ * Builds a merge plan for JSDoc updates, orchestrating context extraction, optional debugging, and plan generation.
+ *
+ * @param projectName The name of the target project.
+ *
+ * @param fileResult The context object derived from file analysis.
+ *
+ * @param option Optional configuration for the update process.
+ *
+ * @returns An Effect containing the generated merge plans or an error, requiring a filesystem and model route environment.
+ */
 export const buildMergePlan = (
   projectName: string,
   fileResult: FileAnalysisContext,
