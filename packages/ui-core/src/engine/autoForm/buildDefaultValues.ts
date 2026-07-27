@@ -1,5 +1,14 @@
 import type { FormFieldMeta } from '../../dsl/type.js'
 
+/**
+ * Constructs an object of default form values based on the provided field configurations and optional initial values.
+ *
+ * @param fieldConfigs An array of form field metadata definitions.
+ *
+ * @param initialValues Optional pre-existing values to merge into the result.
+ *
+ * @returns An object containing the resolved default values for each form field.
+ */
 export function buildDefaultValues(
   fieldConfigs: Array<FormFieldMeta>,
   initialValues?: Record<string, any>,

@@ -1,15 +1,15 @@
-import { Node } from 'ts-morph'
+import { Node, SyntaxKind } from 'ts-morph'
 import { SignatureId, SymbolId } from '@gyomu/schema/typescript'
 import { registerSymbolSymbolAnalysis } from '../../file/registerSymbolSymbolAnalysis.js'
 import { prepareSymbolAnalysis } from './prepareSymbolAnalysis.js'
 import { detectEffectSignals } from './analyzeEffectType.js'
-import { analyzeType } from './type/analyzeType.js'
+import { analyzeType, getVoidTypeResult } from './type/analyzeType.js'
 import { computeIndent } from './computeIndent.js'
 import { analyzeFunctionBody, analyzeFunctionMember } from './struct/analyzeFunctionMember.js'
 import { analyzeParameter } from './analyzeParameter.js'
 import { analyzeGenericsParameters } from './analyzeGenericsParameters.js'
 
-import type { FunctionDeclaration } from 'ts-morph'
+import type { Expression, FunctionDeclaration, ReturnStatement } from 'ts-morph'
 import type {
   ChildAnalysisArg,
   GetSignatureIdArg,
@@ -72,23 +72,44 @@ export const analyzeFunction = (args: TagAnalysisArg<FunctionDeclaration>) => {
     reservedNames: genericsResult.parameters,
   })
 
-  const returnTypeResult = analyzeType(
-    {
-      node: declaration.getReturnTypeNode()!,
-      sourceRelativePath,
-      metadata,
-      ownerSymbolId: prepared.id,
-      ownerSymbolIdentity: identity,
-      memberPath: [],
-      sourceFullText,
-      declarationOrder: 0,
-      imported,
-      options,
-      reservedNames: genericsResult.parameters,
-    },
-    ['$return'],
-    undefined,
-  )
+  const returnTypeNode = declaration.getReturnTypeNode()
+  let initializer: Expression | undefined = undefined
+  if (!returnTypeNode) {
+    const body = declaration.getBody()
+    if (Node.isArrowFunction(body)) {
+      initializer = body
+    } else if (Node.isExpression(body)) initializer = body
+    else if (Node.isBlock(body)) {
+      const returnStatement = body
+        .getStatements()
+        .find((s) => s.getKind() == SyntaxKind.ReturnStatement)
+      if (returnStatement) {
+        initializer = (returnStatement as ReturnStatement).getExpression()
+      }
+    }
+  }
+
+  const returnTypeResult =
+    returnTypeNode || initializer
+      ? analyzeType(
+          {
+            node: returnTypeNode ?? initializer,
+            sourceRelativePath,
+            metadata,
+            ownerSymbolId: prepared.id,
+            ownerSymbolIdentity: identity,
+            memberPath: [],
+            sourceFullText,
+            declarationOrder: 0,
+            imported,
+            options,
+            reservedNames: genericsResult.parameters,
+          },
+          ['$return'],
+          undefined,
+        )
+      : getVoidTypeResult()
+
   const methodBodyResult = analyzeFunctionBody(
     {
       sourceRelativePath,
@@ -199,26 +220,48 @@ const getFunctionSignatureId = (
     options,
     reservedNames,
   })
-  const returnTypeResult = analyzeType(
-    {
-      node: declaration.getReturnTypeNode()!,
-      sourceRelativePath,
-      metadata,
-      ownerSymbolId: SymbolId(symbolId),
-      ownerSymbolIdentity: {
-        symbolId: SymbolId(nodeName),
-        signatureId: SignatureId(symbolId),
-      },
-      memberPath,
-      sourceFullText,
-      declarationOrder: 0,
-      imported,
-      options,
-      reservedNames,
-    },
-    ['$return'],
-    undefined,
-  )
+
+  const returnTypeNode = declaration.getReturnTypeNode()
+  let initializer: Expression | undefined = undefined
+  if (!returnTypeNode) {
+    const body = declaration.getBody()
+    if (Node.isArrowFunction(body)) {
+      initializer = body
+    } else if (Node.isExpression(body)) initializer = body
+    else if (Node.isBlock(body)) {
+      const returnStatement = body
+        .getStatements()
+        .find((s) => s.getKind() == SyntaxKind.ReturnStatement)
+      if (returnStatement) {
+        initializer = (returnStatement as ReturnStatement).getExpression()
+      }
+    }
+  }
+
+  const returnTypeResult =
+    returnTypeNode || initializer
+      ? analyzeType(
+          {
+            node: returnTypeNode ?? initializer,
+            sourceRelativePath,
+            metadata,
+            ownerSymbolId: SymbolId(symbolId),
+            ownerSymbolIdentity: {
+              symbolId: SymbolId(nodeName),
+              signatureId: SignatureId(symbolId),
+            },
+            memberPath,
+            sourceFullText,
+            declarationOrder: 0,
+            imported,
+            options,
+            reservedNames,
+          },
+          ['$return'],
+          undefined,
+        )
+      : getVoidTypeResult()
+
   const overloadCount = declaration.getOverloads().length
   let isOverloadImplementation = false
   if (overloadCount > 0 && !declaration.isOverload()) {

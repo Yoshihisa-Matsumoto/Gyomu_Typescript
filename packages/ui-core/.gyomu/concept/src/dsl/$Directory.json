@@ -1,0 +1,24 @@
+{
+  "summary": "This directory defines the Domain-Specific Language (DSL) structures used to transform data schemas into form metadata. It acts as the bridge between raw structural definitions and the UI-specific configuration required to render forms within the application.",
+  "responsibilities": [
+    "Define form field metadata structures",
+    "Transform structural schemas into UI-compatible configurations",
+    "Manage form field attributes and annotations"
+  ],
+  "concepts": [
+    "Form Field Metadata",
+    "Structural Schema",
+    "UI Annotations",
+    "DSL Definitions"
+  ],
+  "relationships": [
+    "Form field metadata extends base UI annotations to provide specific configuration options for form generation.",
+    "Structural schemas are processed to generate collections of field metadata based on provided context and annotations."
+  ],
+  "designDecisions": [
+    "Use of TypeScript interfaces for strongly-typed metadata definitions",
+    "Centralized export strategy for DSL utilities",
+    "Functional approach to metadata construction from schema inputs"
+  ],
+  "importance": "Core"
+}

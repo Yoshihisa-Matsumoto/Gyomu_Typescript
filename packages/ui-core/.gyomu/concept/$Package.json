@@ -1,0 +1,40 @@
+{
+  "summary": "The @gyomu/ui-core package provides a robust framework for automated form generation and UI error management. It bridges the gap between raw data schemas and interactive user interfaces by providing domain-specific language structures, schema-driven validation, and centralized error handling logic.",
+  "responsibilities": [
+    "Orchestrate the automated generation of form structures from structural schemas.",
+    "Centralize UI-related error handling, categorization, and recovery strategies.",
+    "Define domain-specific metadata for form fields and UI configurations.",
+    "Manage form state lifecycle, including initialization of default values and field validation.",
+    "Provide a unified interface for linking data schemas to interactive React-based UI components."
+  ],
+  "capabilities": [
+    {
+      "name": "Automated Form Generation",
+      "description": "Enables the dynamic creation of form structures and field metadata directly from structural schema definitions."
+    },
+    {
+      "name": "Schema-Driven Validation",
+      "description": "Provides mechanisms to validate field inputs and complete form states against CRUD-compliant schemas."
+    },
+    {
+      "name": "UI Error Orchestration",
+      "description": "Standardizes how UI errors are categorized, configured, and handled, including support for retry logic and user feedback."
+    },
+    {
+      "name": "Component Rendering Framework",
+      "description": "Maps widget configurations to specific React components, enabling consistent rendering and interaction handling."
+    }
+  ],
+  "designDecisions": [
+    "Utilizes a schema-first approach where UI structures are derived from persistent data models to ensure consistency.",
+    "Decouples error handling logic from specific components using a context-based registry and handler map pattern.",
+    "Employs a DSL-based translation layer to bridge the gap between technical data definitions and user-facing form metadata.",
+    "Leverages the Effect ecosystem for robust functional error management and operational consistency."
+  ],
+  "usageGuidance": [
+    "Define your data models using the @gyomu/schema package to ensure seamless integration with the automated form engine.",
+    "Configure custom error handlers within the application initialization phase to maintain consistent user feedback across the system.",
+    "Use the DSL transformation utilities when you need to extend base schema definitions with application-specific UI annotations.",
+    "Register your custom React components in the RendererMap to maintain control over the look and feel while leveraging the automated engine."
+  ]
+}

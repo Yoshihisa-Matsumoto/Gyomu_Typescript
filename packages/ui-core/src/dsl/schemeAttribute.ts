@@ -116,6 +116,13 @@ function getMergedAnnotations(
   // return Object.keys(result).length > 0 ? result : undefined;
 }
 
+/**
+ * Builds a collection of FormFieldMeta from a structural schema based on the provided UI context and annotations.
+ *
+ * @param args The configuration object containing the structural schema, the current UI interaction context, an optional logger for debugging, and custom UI annotations.
+ *
+ * @returns An array of FormFieldMeta representing the form field structure.
+ */
 export function buildFormMetaFromStructSchema<TFields extends Fields>(args: {
   schema: CrudSchemaType<TFields, boolean>
   uiContext: 'view' | 'create' | 'update'

@@ -1,0 +1,100 @@
+# yaml-language-server: $schema=../../../../schemas/Package.json
+
+displayName: Gyomu UI Core
+
+mission: |
+  GyomuにおけるUIの共通基盤を提供します。
+  データスキーマからフォームやUI構造を導出し、
+  入力検証、エラー処理、レンダリング構成を統一されたモデルとして管理します。
+  UI実装とデータモデルを分離し、型安全で一貫性のあるユーザーインターフェースを実現します。
+
+policies:
+  - UIはスキーマから導出可能な構造として設計する。
+  - フォーム定義とデータモデルは一貫性を維持する。
+  - UIメタデータはデータモデルとは分離し、DSLとして管理する。
+  - 入力検証はスキーマを唯一の基準として実装する。
+  - UIエラーは共通モデルとして分類・管理する。
+  - エラー処理はコンポーネントへ直接実装せず、共通ハンドラーを利用する。
+  - レンダリング処理とUI定義は疎結合に設計する。
+  - ReactコンポーネントはUIモデルを描画する責務に限定する。
+
+constraints:
+  - UIロジックを特定アプリケーションへ依存させてはならない。
+  - 業務ロジックを実装してはならない。
+  - データモデルをUI都合で変更してはならない。
+  - 特定の画面やワークフロー専用のコンポーネントを配置してはならない。
+
+nonGoals:
+  - アプリケーション固有の画面を実装すること。
+  - ビジネスロジックを提供すること。
+  - API通信を実装すること。
+  - 状態管理ライブラリの代替となること。
+  - デザインシステム全体を提供すること。
+
+terminology:
+  - term: UI DSL
+    definition: スキーマへUI固有の情報を付加するための宣言的メタデータ。
+
+  - term: Renderer
+    definition: UIモデルをReactコンポーネントへ変換する描画コンポーネント。
+
+  - term: Renderer Map
+    definition: UI要素とReactコンポーネントを関連付けるレジストリ。
+
+  - term: Form Model
+    definition: スキーマから導出されたフォーム構造と入力メタデータ。
+
+  - term: UI Error
+    definition: ユーザーインターフェース上で発生する例外や検証失敗を表す共通エラー。
+
+rationale:
+  - スキーマからUIを生成することでデータモデルとの整合性を維持できる。
+  - UI定義とレンダリングを分離することで再利用性を高められる。
+  - エラー処理を共通化することで一貫したユーザー体験を提供できる。
+  - UIメタデータをDSL化することでアプリケーションごとの拡張を容易にできる。
+
+usage:
+  - situation: スキーマからフォームを生成したい
+    guidance: Effect SchemaとUI DSLを組み合わせてフォームモデルを生成する。
+
+  - situation: 独自コンポーネントを利用したい
+    guidance: Renderer Mapへコンポーネントを登録してUIモデルと関連付ける。
+
+  - situation: UIエラーを共通処理したい
+    guidance: 共通エラーハンドラーへ登録し、コンポーネントから直接処理しない。
+
+  - situation: スキーマへUI情報を追加したい
+    guidance: データモデルは変更せず、UI DSLで追加情報を定義する。
+
+examples:
+  - title: フォーム生成
+    input: |
+      UserSchemaから入力フォームを作成したい。
+    output: |
+      UserSchemaへUI DSLを適用し、Form Modelを生成する。
+    explanation: |
+      データモデルとUI定義を統合してフォームを自動生成できる。
+
+  - title: カスタムレンダラー
+    input: |
+      DatePickerを独自コンポーネントへ置き換えたい。
+    output: |
+      Renderer Mapへ独自DatePickerを登録する。
+    explanation: |
+      UIモデルを変更せず描画方法だけ差し替えられる。
+
+  - title: バリデーション
+    input: |
+      フォーム送信時に入力検証したい。
+    output: |
+      Effect Schemaによる検証を実行する。
+    explanation: |
+      UI独自の検証ではなくスキーマを唯一の基準として利用する。
+
+  - title: エラー処理
+    input: |
+      APIエラーを共通ダイアログで表示したい。
+    output: |
+      共通UIエラーハンドラーへ処理を委譲する。
+    explanation: |
+      エラー処理をコンポーネントから分離し、一貫したUIを提供する。

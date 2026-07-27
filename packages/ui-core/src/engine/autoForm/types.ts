@@ -44,6 +44,9 @@ type WidgetValueMap = {
 
 type WidgetValue<K extends keyof WidgetValueMap> = WidgetValueMap[K]
 
+/**
+ * Defines a mapping from widget keys to their corresponding React components, specifying the meta, value, and change handling properties for each widget type.
+ */
 export type RendererMap = {
   [K in keyof UIAnnotationMap]: ComponentType<{
     meta: UIAnnotationByWidget<K>
