@@ -4,17 +4,11 @@ US English | [JP 日本語](README.ja.md)
 
 ## Overview
 
-This package provides a unified user interface for Gyomu by combining a shared design system, schema-driven forms, and specialized application components. Its mission is to establish a development environment that ensures consistent, accessible, and maintainable interfaces across the entire ecosystem.
-
-By serving as both a comprehensive component library and an abstraction layer, the package effectively decouples UI implementation details from core application logic. This architecture fosters the creation of highly reusable and extensible interface elements, facilitating a streamlined approach to building scalable applications while maintaining rigorous design standards and high-quality integration with Material UI.
+This package provides a unified user interface for Gyomu by combining a shared design system, schema-driven forms, and specialized application components. Its primary mission is to foster an environment where developers can build interfaces that prioritize long-term maintainability, visual consistency, and accessibility. By serving as a comprehensive abstraction layer, the library separates UI implementation details from core application logic. This architectural approach enables the creation of reusable, highly extensible interfaces. It integrates low-level building blocks with declarative generation systems and dedicated Material UI adapters, ensuring a cohesive development experience across the entire ecosystem.
 
 ## Architecture
 
-The architecture of `@gyomu/ui` is organized into a modular structure that separates atomic UI building blocks from high-level form orchestration and third-party framework integration. Foundational interface elements and headless layout components provide a consistent structural base, while shared provider contexts manage interaction patterns and global state across the library.
-
-The system utilizes an abstraction layer to encapsulate Material UI dependencies, ensuring consistent styling and specialized behavior for form inputs. This adapter layer standardizes field interfaces and injects project-specific configurations, such as validation strategies and layout defaults, into base framework components.
-
-Finally, a declarative form generation system automates interface construction by consuming data schemas. This component manages dynamic field rendering and provides external handles for submission control. By coordinating schema-driven orchestration with the underlying UI adapters and layout primitives, the package ensures that form generation remains decoupled from specific visual implementations while maintaining uniform interaction patterns across the application.
+The architecture is organized into a modular hierarchy that separates foundational UI primitives, layout structures, and high-level declarative form systems. Core UI components provide atomic building blocks and composite elements, ensuring consistent interaction patterns and visual themes across the application. These components are consolidated via shared context and provider wrappers to maintain unified state management. The package utilizes an abstraction layer through adapter components, specifically for Material UI integration. These adapters encapsulate third-party dependencies, injecting project-specific styling, validation logic, and standardized property interfaces into base framework elements. At the top level, a declarative form system automates interface construction. By leveraging schema definitions, it orchestrates the rendering of dynamic fields using headless layout components, which define structural arrangements without imposing opinionated styles. This separation of concerns allows the form engine to manage complex layout logic and external submission control while remaining decoupled from specific visual implementations.
 
 ## Installation
 
@@ -26,15 +20,11 @@ pnpm add @gyomu/ui
 
 ## Dependencies
 
-This package requires an ESM environment and is compatible with React 19 and Effect 4.x. It is built upon the Effect ecosystem for runtime logic and schema management, leveraging `@gyomu/schema` for shared type definitions.
-
-The UI layer relies on Material UI and shadcn/ui components to provide a consistent design system. Please ensure your project is configured to support these dependencies before installation.
+This package requires React 19 and is built upon Effect version 4.x. It is designed to work seamlessly within modern TypeScript environments that support these versions. At its core, the project leverages Effect for runtime and schema management, alongside `@gyomu/schema` for shared types. For the user interface, it integrates Material UI and shadcn/ui components to provide a consistent and responsive design system. Ensure your environment meets these version requirements before installation.
 
 ## Development
 
-This package aims to maximize maintainability, consistency, and accessibility as a unified user interface foundation for Gyomu. By centering on a design system and common components, it separates UI framework implementation details into an adapter layer, enabling a reusable and highly extensible UI library independent of specific libraries. This clearly decouples application logic from UI representation, maintaining an architecture that can flexibly adapt to future framework updates and specification changes.
-
-During development, eliminate duplication of UI descriptions in form and layout definitions by strictly following a schema-driven approach. All components must be designed as composable units and implemented with a focus on type safety and predictability. Additionally, it is mandatory to utilize shared Providers for state management and comply with accessibility standards. Maintain a design that separates layout structure from visual representation to ensure a consistent user experience throughout the entire application.
+This package aims to standardize and streamline UI development in Gyomu, centered around a shared design system and component library. During development, prioritize reusability and composability of UI components, ensuring a decoupled design that does not depend on specific screen configurations. For form development, adopt a schema-driven approach; dynamically deriving the UI from data structures eliminates definition redundancy and ensures maintainability and type safety. To maintain the architecture, isolate UI framework-specific implementations into an adapter layer, clearly separating concerns between logic and visual representation. By decoupling layout structures from visual presentation, ensure the overall extensibility of the system. All components must prioritize accessibility and predictability, maintaining a consistent user interface through a shared Provider to manage application-wide UI states.
 
 ## Public API
 

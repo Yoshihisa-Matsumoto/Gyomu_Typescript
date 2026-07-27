@@ -1,28 +1,28 @@
 {
-  "summary": "This directory serves as the root entry point and foundational utility layer for the package. It exports core schema definitions, type utilities, and shared configurations, providing a central access point for consistent data modeling and type safety across the entire application.",
+  "summary": "This directory serves as the root entry point and foundational utility layer, exposing core type definitions, normalization utilities, and shared schema-related interfaces that underpin the application's domain logic, data modeling, and analysis capabilities.",
   "responsibilities": [
-    "Expose primary domain interfaces and schema definitions",
-    "Provide type-safe utilities for object manipulation",
-    "Standardize configuration and type normalization logic",
-    "Facilitate access to foundational structural types and identifiers"
+    "Export public API surfaces for domain-specific modules",
+    "Provide foundational type transformations for objects and configurations",
+    "Supply utility functions for data normalization and object manipulation",
+    "Define core architectural types used across system sub-domains"
   ],
   "concepts": [
-    "Core Schema",
-    "Type Utilities",
-    "Project Configuration",
-    "Structural Data",
-    "Type Normalization"
+    "Core Type Definitions",
+    "Object Normalization",
+    "Configuration Extraction",
+    "Path Abstractions",
+    "Public API Index"
   ],
   "relationships": [
-    "Core type definitions provide the foundation for consistent schema modeling across the package.",
-    "Utility functions leverage exported type definitions to perform operations like object normalization and property filtering.",
-    "The directory aggregates multiple domain-specific modules, ensuring that consumers have unified access to the package's internal data structures."
+    "The directory provides foundational types that are imported by domain-specific modules to enforce consistent data structures.",
+    "Normalization utilities consume configuration interfaces to refine and standardize object properties before further processing.",
+    "The directory acts as a central aggregator, re-exporting symbols from specialized sub-directories to provide a unified interface for consumers."
   ],
   "designDecisions": [
-    "Use of barrel files for centralized module exports",
-    "Integration of nominal branding for path type safety",
-    "Colocation of type-level transformations with runtime utilities",
-    "Strict separation between domain entities and general-purpose type infrastructure"
+    "Barrel file pattern for centralized and simplified module exports",
+    "Use of TypeScript mapped types for recursive object manipulation",
+    "Nominal typing strategy for path and identifier primitives",
+    "Separation of utility logic from core domain business services"
   ],
   "importance": "Core"
 }

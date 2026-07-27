@@ -77,7 +77,7 @@ export type MappedStructureAnalysis = {
 } & StructureBase
 
 /**
- * Represents an MappedType structure.
+ * Represents a mapped type, capturing the parameter, constraint, optional key mapping, property values, and modifiers.
  */
 export const MappedStructureAnalysis = Schema.Struct({
   kind: Schema.Literal('mapped'),

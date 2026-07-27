@@ -263,7 +263,10 @@ const calculateComplexityMetricsFromTypeStructureAnalysis = (
       array.push(calculateComplexityMetricsFromTypeAnalysis(typeStructure.constraint, currentDepth))
       if (typeStructure.nameType)
         array.push(calculateComplexityMetricsFromTypeAnalysis(typeStructure.nameType, currentDepth))
-      array.push(calculateComplexityMetricsFromTypeAnalysis(typeStructure.valueType, currentDepth))
+      if (typeStructure.valueType)
+        array.push(
+          calculateComplexityMetricsFromTypeAnalysis(typeStructure.valueType, currentDepth),
+        )
       return mergeComplexityMetrics(array)
     case 'templateLiteral': {
       array.push(initial)
@@ -278,6 +281,8 @@ const calculateComplexityMetricsFromTypeStructureAnalysis = (
     case 'typeOperator':
       return calculateComplexityMetricsFromTypeAnalysis(typeStructure.target, currentDepth)
     case 'typePredicate':
-      return calculateComplexityMetricsFromTypeAnalysis(typeStructure.type, currentDepth)
+      if (typeStructure.type)
+        return calculateComplexityMetricsFromTypeAnalysis(typeStructure.type, currentDepth)
+      return mergeComplexityMetrics(array)
   }
 }

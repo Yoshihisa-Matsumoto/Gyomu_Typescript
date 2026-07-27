@@ -18,12 +18,12 @@ export interface EffectSignals {
   /**
    * The type analysis of the error, if present.
    */
-  error: TypeAnalysis | undefined
+  error?: TypeAnalysis | undefined
 
   /**
    * The type analysis of the required context or environment, if present.
    */
-  requirements: TypeAnalysis | undefined
+  requirements?: TypeAnalysis | undefined
 
   /**
    * Indicates whether the Effect definition specifies an error type.
@@ -38,7 +38,7 @@ export interface EffectSignals {
   /**
    * The estimated nesting depth of the Effect, if measurable.
    */
-  effectDepth: number | undefined
+  effectDepth?: number | undefined
 }
 
 /**
@@ -62,14 +62,18 @@ export const EffectSignals: Schema.Schema<EffectSignals> = Schema.Struct({
   /**
    * Error type.
    */
-  error: Schema.Union([Schema.suspend(() => TypeAnalysis), Schema.Undefined]).annotate({
+  error: Schema.optional(
+    Schema.Union([Schema.suspend(() => TypeAnalysis), Schema.Undefined]),
+  ).annotate({
     description: 'Error type.',
   }),
 
   /**
    * Required context/environment type.
    */
-  requirements: Schema.Union([Schema.suspend(() => TypeAnalysis), Schema.Undefined]).annotate({
+  requirements: Schema.optional(
+    Schema.Union([Schema.suspend(() => TypeAnalysis), Schema.Undefined]),
+  ).annotate({
     description: 'Required context/environment type.',
   }),
 
@@ -90,7 +94,7 @@ export const EffectSignals: Schema.Schema<EffectSignals> = Schema.Struct({
   /**
    * Estimated Effect nesting depth.
    */
-  effectDepth: Schema.Union([Schema.Number, Schema.Undefined]).annotate({
+  effectDepth: Schema.optional(Schema.Union([Schema.Number, Schema.Undefined])).annotate({
     description: 'Estimated Effect nesting depth.',
   }),
 }).annotate({

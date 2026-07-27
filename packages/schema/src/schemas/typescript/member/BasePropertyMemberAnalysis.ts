@@ -9,10 +9,14 @@ import { BindingPatternAnalysis } from './BindingPatternAnalysis.js'
  */
 export const BasePropertyMemberAnalysis = Schema.Struct({
   kind: Schema.Literal('property'),
-  type: Schema.Union([Schema.suspend(() => TypeAnalysis), Schema.Undefined]).annotate({
+  type: Schema.optional(
+    Schema.Union([Schema.suspend(() => TypeAnalysis), Schema.Undefined]),
+  ).annotate({
     description: 'The type of the property.',
   }),
-  binding: Schema.Union([Schema.suspend(() => BindingPatternAnalysis), Schema.Undefined]).annotate({
+  binding: Schema.optional(
+    Schema.Union([Schema.suspend(() => BindingPatternAnalysis), Schema.Undefined]),
+  ).annotate({
     description:
       'Describes how the parameter is bound to local variables using an object or array destructuring pattern.',
   }),
