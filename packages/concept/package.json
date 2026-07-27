@@ -38,7 +38,10 @@
   "author": "",
   "license": "MIT",
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "README.ja.md",
+    "LICENSE"
   ],
   "dependencies": {
     "@gyomu/ai": "workspace:^",

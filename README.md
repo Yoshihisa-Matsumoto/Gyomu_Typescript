@@ -7,9 +7,14 @@ US English | [JP 日本語](README.ja.md)
 [![Effect Version](https://img.shields.io/badge/Effect-v4-blue?logo=typescript)](https://effect.website)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Gyomu** is a repository-native, open AI agent harness. It automates and continuously synchronizes **TSDoc generation, multi-package & directory-level concepts, multi-language READMEs, and unit test suites**.
+**Gyomu** is a repository-centric open AI agent system that fully automates and maintains **TSDoc generation, directory/package-level design concept extraction, and multilingual README creation**.
+
+In the future, Gyomu aims to extend its capabilities to automatically update and maintain related development assets alongside code changes, including test code synchronization and correction.
 
 Instead of locking your agent's feedback loops inside black-box AI provider platforms, this project keeps your context, evaluation, and knowledge right inside your repository as human-readable artifacts (YAML, TSDoc, and Tests).
+
+This project is organized as a monorepo.
+**Documentation for packages outside the root package, including TSDoc comments and README.md files, is automatically generated and maintained by Gyomu.**
 
 ---
 
