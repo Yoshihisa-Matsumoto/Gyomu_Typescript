@@ -1,0 +1,28 @@
+{
+  "summary": "This directory serves as the UI adapter layer for the Shadcn component library, bridging generic form logic and layout requirements with specific design system implementations to ensure consistent component rendering and visual behavior.",
+  "responsibilities": [
+    "Bridge form submission and layout logic with Shadcn UI components",
+    "Manage visual representation of form fields, metadata, and submission states",
+    "Define structural containers for component groups and individual field elements",
+    "Provide visual documentation and testing environments for UI component variants"
+  ],
+  "concepts": [
+    "UI Adapters",
+    "Shadcn UI",
+    "Form Layout",
+    "Component Documentation",
+    "Visual State Management"
+  ],
+  "relationships": [
+    "UI adapters reconcile internal form requirements with the structural and visual conventions of the Shadcn library.",
+    "Form layout components organize individual fields into cohesive structures while maintaining metadata display standards.",
+    "Interactive stories provide a testing sandbox that reflects the visual specification of the implemented UI adapters."
+  ],
+  "designDecisions": [
+    "Adapter pattern used to decouple application-level logic from specific UI framework implementation",
+    "Composition-based layout strategy separating field-level structures from form-level grouping",
+    "Centralized UI overrides and enhancements for standard library components",
+    "Visual documentation strategy to verify state transitions and component rendering"
+  ],
+  "importance": "Supporting"
+}

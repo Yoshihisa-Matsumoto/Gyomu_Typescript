@@ -68,7 +68,7 @@ export const analyzeIndexSignature = (
 
   const valueTypeResult = analyzeType(
     {
-      node: valueType,
+      node: valueType!,
 
       sourceRelativePath,
       metadata,

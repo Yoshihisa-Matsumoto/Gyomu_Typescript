@@ -2,6 +2,7 @@ import { SignatureId } from '@gyomu/schema/typescript'
 import { analyzeType } from '../type/analyzeType.js'
 import { analyzeFunctionMemberInternal } from '../struct/analyzeFunctionMember.js'
 import { createMemberIdentityAndId } from '../../../shared/createMemberIdentity.js'
+import { analyzeBindingName } from '../binding/analyzeBindingName.js'
 import { getAccessor } from './analyzeClassPropertyMember.js'
 import type {
   MemberAnalysis,
@@ -78,13 +79,25 @@ const analyzeClassPropertyFromConstructorParameters = (
     ownerSymbolIdentity,
   )
   // analyzeFunctionBody({...args, node:node})
-  const typeResult = analyzeType(
-    {
-      ...args,
-      node: typeNode ?? initializer,
-    },
-    [nodeName],
-  )
+  const typeResult =
+    typeNode || initializer
+      ? analyzeType(
+          {
+            ...args,
+            node: typeNode ?? initializer!,
+          },
+          [nodeName],
+        )
+      : undefined
+
+  const bindingResult =
+    typeResult == undefined
+      ? analyzeBindingName({
+          ...args,
+          node: node.getNameNode(),
+          memberPath: [...memberPath, nodeName],
+        })
+      : undefined
 
   return {
     member: {
@@ -99,13 +112,13 @@ const analyzeClassPropertyFromConstructorParameters = (
       readonly: node.isReadonly(),
       optional: !!node.getQuestionTokenNode(),
 
-      type: typeResult.member,
-
+      type: typeResult?.member,
+      binding: bindingResult?.member,
       static: false,
       visibility: getAccessor(node),
       declarationOrder,
     },
-    dependencies: typeResult.dependencies,
-    reservedNames: typeResult.reservedNames,
+    dependencies: [...(typeResult?.dependencies ?? []), ...(bindingResult?.dependencies ?? [])],
+    reservedNames: [...(typeResult?.reservedNames ?? []), ...(bindingResult?.reservedNames ?? [])],
   }
 }

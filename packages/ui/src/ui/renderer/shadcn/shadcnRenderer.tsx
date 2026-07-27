@@ -13,6 +13,9 @@ import {
 import type { LocalDate } from '@gyomu/schema/entity'
 import type { RendererMap } from '@gyomu/ui-core/engine'
 
+/**
+ * A mapping of UI component types to their corresponding Shadcn UI renderer implementations.
+ */
 export const shadcnRenderer: RendererMap = {
   text: ({ value, onChange, meta, onBlur }) => (
     <Input

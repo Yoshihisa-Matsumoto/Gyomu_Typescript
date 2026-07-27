@@ -1,0 +1,23 @@
+{
+  "summary": "This directory provides a bridge between the application's form submission logic and the Shadcn UI library. It houses reusable form-specific UI components designed to handle state transitions, such as loading indicators, while maintaining consistency with the Shadcn design system.",
+  "responsibilities": [
+    "Bridge generic form functionality with Shadcn UI components",
+    "Manage visual feedback for form submission states",
+    "Encapsulate consistent styling and behavior for form buttons"
+  ],
+  "concepts": [
+    "UI Adapters",
+    "Form Submission",
+    "Loading State",
+    "Component Library"
+  ],
+  "relationships": [
+    "The UI adapters translate application-level form requirements into Shadcn-compatible component structures.",
+    "The loading state concept is integrated into the submission button to provide user feedback during asynchronous operations."
+  ],
+  "designDecisions": [
+    "Implementation follows an adapter pattern to decouple core form logic from specific UI framework components.",
+    "Centralizes UI overrides and enhancements for standard Shadcn components."
+  ],
+  "importance": "Supporting"
+}

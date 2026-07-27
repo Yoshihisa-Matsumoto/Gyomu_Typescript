@@ -93,7 +93,7 @@ export const analyzeFunction = (args: TagAnalysisArg<FunctionDeclaration>) => {
     returnTypeNode || initializer
       ? analyzeType(
           {
-            node: returnTypeNode ?? initializer,
+            node: returnTypeNode ?? initializer!,
             sourceRelativePath,
             metadata,
             ownerSymbolId: prepared.id,
@@ -242,7 +242,7 @@ const getFunctionSignatureId = (
     returnTypeNode || initializer
       ? analyzeType(
           {
-            node: returnTypeNode ?? initializer,
+            node: returnTypeNode ?? initializer!,
             sourceRelativePath,
             metadata,
             ownerSymbolId: SymbolId(symbolId),

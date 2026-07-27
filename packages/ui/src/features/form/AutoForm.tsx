@@ -20,10 +20,18 @@ import type { Schema } from 'effect'
 import type { Fields } from '@gyomu/schema/entity'
 import type { AutoFormProps } from './types'
 
+/**
+ * Exposes an interface for controlling the AutoForm externally, providing access to form submission actions.
+ */
 export type AutoFormHandle = {
   submit: () => void
 }
 
+/**
+ * A declarative form component that automatically generates fields based on a provided schema.
+ *
+ * @returns Returns a rendered React form component.
+ */
 export const AutoForm = React.forwardRef<AutoFormHandle, AutoFormProps<any>>(
   function AutoFormInternal<TFields extends Fields>(
     {

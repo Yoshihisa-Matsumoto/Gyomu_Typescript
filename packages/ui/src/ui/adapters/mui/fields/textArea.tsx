@@ -2,6 +2,14 @@ import MUITextarea from '@mui/material/TextareaAutosize'
 import type { TextareaAutosizeProps } from '@mui/material'
 
 // interface TextAreaProp extends TextareaAutosizeProps {}
+
+/**
+ * A customized MUI Textarea component that defaults to a range of 10 to 30 rows and spans the full width.
+ *
+ * @param props The configuration properties for the textarea component.
+ *
+ * @returns A rendered MUI Textarea component.
+ */
 export const TextArea = ({ ...props }: TextareaAutosizeProps) => {
   const minRows = props.minRows || 10
   const maxRows = props.maxRows || 30

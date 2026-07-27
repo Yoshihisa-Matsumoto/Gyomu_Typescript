@@ -120,7 +120,7 @@ export const analyzeFunctionMember = (
     returnTypeNode || initializer
       ? analyzeType(
           {
-            node: returnTypeNode,
+            node: returnTypeNode || initializer!,
             memberPath,
             metadata,
             ownerSymbolId,

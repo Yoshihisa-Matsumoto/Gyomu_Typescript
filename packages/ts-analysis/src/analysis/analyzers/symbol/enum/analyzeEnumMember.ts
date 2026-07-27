@@ -96,6 +96,7 @@ export const analyzeEnumMember = (
     optional: false,
 
     type: typeResult.member,
+    binding: undefined,
     jsDoc,
     parsedJsDoc,
 

@@ -164,7 +164,7 @@ export const getFunctionSignature = (
     node.getReturnTypeNode() || initializer
       ? analyzeType(
           {
-            node: node.getReturnTypeNode() ?? initializer,
+            node: node.getReturnTypeNode() ?? initializer!,
             memberPath,
             metadata,
             ownerSymbolId: id,

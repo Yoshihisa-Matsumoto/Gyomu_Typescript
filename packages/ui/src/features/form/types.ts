@@ -9,6 +9,23 @@ import type { FieldLayout, FormLayout, SubmitButtonProps } from '../../ui/compon
 import type { FormFieldMeta } from '@gyomu/ui-core/dsl'
 import type { RendererMap } from '@gyomu/ui-core/engine'
 
+/**
+ * Defines the properties required to render an automatic form field.
+ *
+ * @param meta Metadata for the form field.
+ *
+ * @param renderer Optional mapping of component renderers.
+ *
+ * @param layout Configuration for the field's layout.
+ *
+ * @param value The current value of the field.
+ *
+ * @param onBlur Callback triggered when the field loses focus.
+ *
+ * @param onChange Callback triggered when the field value changes.
+ *
+ * @param error Optional error message for the field.
+ */
 export type AutoFieldProps = {
   meta: FormFieldMeta
   renderer?: RendererMap
@@ -19,6 +36,11 @@ export type AutoFieldProps = {
   error?: string
 }
 
+/**
+ * Defines the configuration properties for an automatic form, including schema, UI context, and render overrides.
+ *
+ * @template TFields extends Fields
+ */
 export type AutoFormProps<TFields extends Fields> = {
   schema: CrudSchemaType<TFields, boolean>
   uiContext: 'view' | 'create' | 'update'

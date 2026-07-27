@@ -1,10 +1,15 @@
-import { loadFileAnalysisResult, mapModuleSpecifierToSourcePath } from '@gyomu/ts-analysis'
-import { Effect } from 'effect'
+import { extname } from 'node:path'
+import {
+  loadFileAnalysisResult,
+  mapModuleSpecifierCandidates,
+  mapModuleSpecifierToSourcePath,
+  toAbsolutePath,
+} from '@gyomu/ts-analysis'
+import { Effect, FileSystem } from 'effect'
 import { buildFileSummaryRecord } from '../../directory/internal/buildFileSummaryRecord.js'
 import type { AnalysisOptions } from '@gyomu/schema'
 import type { FileAnalysisContext, ProjectRelativePath } from '@gyomu/schema/typescript'
 import type { AnalysisError, ProjectContext } from '@gyomu/ts-analysis'
-import type { FileSystem } from 'effect'
 import type { PackageExportAnalysisResult, ResolvedSourceFile } from './types.js'
 import type { ExportedSymbolAnalysis, FileSummary } from '@gyomu/schema/concept'
 
@@ -80,6 +85,7 @@ const analyzeExportModules = (
 ): Effect.Effect<Array<SourceExportResult>, AnalysisError, FileSystem.FileSystem> =>
   Effect.gen(function* () {
     const result: Array<SourceExportResult> = []
+    const fileSystem = yield* FileSystem.FileSystem
 
     const sourceExportResult: SourceExportResult = {
       file: sourceSummary,
@@ -106,8 +112,30 @@ const analyzeExportModules = (
     }
 
     for (const reexport of sourceSummary.reExports) {
-      const modulePath = mapModuleSpecifierToSourcePath(reexport.module, sourceSummary.path)
-      if (!modulePath) continue
+      const convertedPath = mapModuleSpecifierToSourcePath(reexport.module, sourceSummary.path)
+      if (!convertedPath) continue
+
+      let modulePath: ProjectRelativePath | undefined = undefined
+
+      if (hasKnownSourceExtension(convertedPath)) {
+        modulePath = convertedPath
+      } else {
+        const targetPaths = mapModuleSpecifierCandidates(convertedPath)
+        for (const candidate of targetPaths) {
+          const fullPath = toAbsolutePath(candidate, context.projectRoot)
+          const fileExists = yield* fileSystem
+            .exists(fullPath)
+            .pipe(Effect.catch((e) => Effect.succeed(false)))
+          if (fileExists) {
+            modulePath = candidate
+            break
+          }
+        }
+        if (!modulePath) {
+          console.log(`Module not found: ${convertedPath} (tried: ${targetPaths.join(', ')})`)
+          continue
+        }
+      }
 
       if (!mapExportFiles.has(modulePath)) {
         // console.log(modulePath)
@@ -144,3 +172,16 @@ const analyzeExportModules = (
     }
     return result
   })
+
+const KNOWN_SOURCE_EXTENSIONS = new Set([
+  '.ts',
+  '.tsx',
+  '.mts',
+  '.cts',
+  '.js',
+  '.jsx',
+  '.mjs',
+  '.cjs',
+])
+
+const hasKnownSourceExtension = (path: string) => KNOWN_SOURCE_EXTENSIONS.has(extname(path))

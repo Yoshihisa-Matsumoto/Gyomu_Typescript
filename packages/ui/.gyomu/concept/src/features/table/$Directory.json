@@ -1,0 +1,26 @@
+{
+  "summary": "This directory manages the core business logic and state transitions for the application's primary domain entities. It encapsulates domain rules, validation logic, and the orchestration of data processing required to maintain consistency across the system's core functional areas.",
+  "responsibilities": [
+    "Enforce domain-specific business rules and constraints",
+    "Orchestrate complex state transitions for core entities",
+    "Validate input data against domain model requirements",
+    "Coordinate interactions between internal domain services"
+  ],
+  "concepts": [
+    "Domain Entities",
+    "Business Rules",
+    "State Transitions",
+    "Domain Validation"
+  ],
+  "relationships": [
+    "Domain entities act as the foundation for defining business rules.",
+    "State transitions ensure that business rules are enforced during data modifications.",
+    "Domain validation verifies the integrity of entities before state transitions occur."
+  ],
+  "designDecisions": [
+    "Centralization of business logic to ensure consistency across the application",
+    "Decoupling of domain rules from infrastructure and delivery mechanisms",
+    "Immutability patterns for entity state updates to ensure predictability"
+  ],
+  "importance": "Core"
+}

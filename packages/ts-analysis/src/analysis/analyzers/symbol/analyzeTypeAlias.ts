@@ -23,7 +23,7 @@ export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => 
   } = args
 
   const typeName = args.declaration.getName()
-  const typeOfType = args.declaration.getTypeNode()
+  const typeOfType = args.declaration.getTypeNode()!
   const prepared = prepareSymbolAnalysis(
     {
       declaration,
@@ -55,7 +55,7 @@ export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => 
     options,
     reservedNames: [],
   })
-  const typeAnalysisArg: ChildAnalysisArg<TypeNode | undefined> = {
+  const typeAnalysisArg: ChildAnalysisArg<TypeNode> = {
     ...args,
     node: typeOfType,
     ownerSymbolId: prepared.id,

@@ -15,8 +15,13 @@ export const getVoidTypeResult = (): MemberAnalysisWithReservedResult<TypeAnalys
   dependencies: [],
   reservedNames: [],
 })
+export const getUndefinedTypeResult = (): MemberAnalysisWithReservedResult<TypeAnalysis> => ({
+  member: { text: 'undefined', source: 'typescript' },
+  dependencies: [],
+  reservedNames: [],
+})
 export const analyzeType = (
-  args: ChildAnalysisArg<TypeNode | Expression | MethodSignature | undefined>,
+  args: ChildAnalysisArg<TypeNode | Expression | MethodSignature>,
   nodeName: Array<string> | undefined,
 
   rawText?: string | undefined,
@@ -34,11 +39,12 @@ export const analyzeType = (
     sourceFullText,
   } = args
   tracePlaceIdentity(args, args.options, 'analyzeType')
-  if (node != undefined) {
+  // if (node != undefined)
+  {
     if (Node.isTypeNode(node) && !Node.isExpression(node)) {
       const newMemberPath = [...memberPath, ...(nodeName ?? [])]
       const genericsParametersResult = analyzeGenericsParameters({
-        ...(args as ChildAnalysisArg<TypeNode | Expression | MethodSignature>),
+        ...args,
         memberPath: newMemberPath,
       })
       // console.log(`TypeNode: ${JSON.stringify(nodeName)}`)
@@ -84,9 +90,7 @@ export const analyzeType = (
       return analyzeExpression({ ...args, node: node, memberPath: newMemberPath }, undefined)
     } else if (Node.isMethodSignature(node)) {
       // console.log(`MethodSignature: ${JSON.stringify(nodeName)}`)
-      const genericsParametersResult = analyzeGenericsParameters(
-        args as ChildAnalysisArg<TypeNode | Expression | MethodSignature>,
-      )
+      const genericsParametersResult = analyzeGenericsParameters(args)
       const newMemberPath: MemberIdentityMemberPath = [...memberPath, ...(nodeName ?? [])]
       // console.log(node.getKindName())
       const functionStructure = analyzeTypeFunction(

@@ -54,7 +54,7 @@ export const TypePredicateAnalysis = Schema.Struct({
     description: 'Name of the parameter being narrowed.',
   }),
 
-  type: Schema.suspend(() => TypeAnalysis).annotate({
+  type: Schema.optional(Schema.suspend(() => TypeAnalysis)).annotate({
     description: 'Type after successful narrowing.',
   }),
 

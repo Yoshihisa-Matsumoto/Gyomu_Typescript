@@ -3,6 +3,11 @@ import { Label as LabelPrimitive } from 'radix-ui'
 
 import { cn } from '../../../lib/utils'
 
+/**
+ * Displays a label for a form element.
+ *
+ * @returns A rendered label component.
+ */
 function Label({ className, ...props }: React.ComponentProps<typeof LabelPrimitive.Root>) {
   return (
     <LabelPrimitive.Root

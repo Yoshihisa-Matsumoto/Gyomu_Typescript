@@ -2,6 +2,7 @@ import { Node } from 'ts-morph'
 import { SignatureId } from '@gyomu/schema/typescript'
 import { createMemberIdentityAndId } from '../../shared/createMemberIdentity.js'
 import { analyzeType } from './type/analyzeType.js'
+import { analyzeBindingName } from './binding/analyzeBindingName.js'
 import type { NonDocumentablePropertyMemberAnalysis } from '@gyomu/schema/schemas/typescript'
 import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../types.js'
 import type { ParameterDeclaration } from 'ts-morph'
@@ -34,9 +35,54 @@ export const analyzeParameter = (
     ownerSymbolIdentity,
   )
 
-  const typeResult = analyzeType(
-    {
-      node: typeNode ?? initializer,
+  if (typeNode || initializer) {
+    const typeResult = analyzeType(
+      {
+        node: typeNode ?? initializer!,
+
+        sourceRelativePath,
+        metadata,
+        ownerSymbolId,
+        ownerSymbolIdentity,
+        memberPath,
+        sourceFullText,
+        declarationOrder,
+        imported,
+        options,
+        reservedNames: [],
+      },
+      [name],
+      undefined,
+    )
+    return {
+      member: {
+        kind: 'property',
+        documentable: false,
+        readonly: node.isReadonly(),
+        source: 'parameter-declaration',
+        static: Node.isStaticable(node) ? node.isStatic() : false,
+        visibility: 'public',
+        ownerSymbolId,
+        id,
+        identity,
+        name,
+
+        optional: !!node.getQuestionTokenNode(),
+
+        rest: !!node.getDotDotDotToken(),
+
+        type: typeResult.member,
+        binding: undefined,
+        declarationOrder,
+        // structure: analyzeParameterStructure(withOptional({ node: typeNode, initializer })),
+      },
+      dependencies: typeResult.dependencies,
+      reservedNames: [...typeResult.reservedNames],
+    }
+  } else {
+    const nameNode = node.getNameNode()
+    const bindingResult = analyzeBindingName({
+      node: nameNode,
 
       sourceRelativePath,
       metadata,
@@ -48,33 +94,31 @@ export const analyzeParameter = (
       imported,
       options,
       reservedNames: [],
-    },
-    [name],
-    undefined,
-  )
-  return {
-    member: {
-      kind: 'property',
-      documentable: false,
-      readonly: node.isReadonly(),
-      source: 'parameter-declaration',
-      static: Node.isStaticable(node) ? node.isStatic() : false,
-      visibility: 'public',
-      ownerSymbolId,
-      id,
-      identity,
-      name,
+    })
+    return {
+      member: {
+        kind: 'property',
+        documentable: false,
+        readonly: node.isReadonly(),
+        source: 'parameter-declaration',
+        static: Node.isStaticable(node) ? node.isStatic() : false,
+        visibility: 'public',
+        ownerSymbolId,
+        id,
+        identity,
+        name,
 
-      optional: !!node.getQuestionTokenNode(),
+        optional: !!node.getQuestionTokenNode(),
 
-      rest: !!node.getDotDotDotToken(),
+        rest: !!node.getDotDotDotToken(),
 
-      type: typeResult.member,
-
-      declarationOrder,
-      // structure: analyzeParameterStructure(withOptional({ node: typeNode, initializer })),
-    },
-    dependencies: typeResult.dependencies,
-    reservedNames: [...typeResult.reservedNames],
+        type: undefined,
+        binding: bindingResult.member,
+        declarationOrder,
+        // structure: analyzeParameterStructure(withOptional({ node: typeNode, initializer })),
+      },
+      dependencies: bindingResult.dependencies,
+      reservedNames: [...bindingResult.reservedNames],
+    }
   }
 }

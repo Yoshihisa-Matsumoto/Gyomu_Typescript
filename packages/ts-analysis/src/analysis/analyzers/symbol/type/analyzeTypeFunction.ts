@@ -96,7 +96,7 @@ export const analyzeTypeFunction = (
     returnTypeNode || initializer
       ? analyzeType(
           {
-            node: returnTypeNode ?? initializer,
+            node: returnTypeNode ?? initializer!,
             memberPath,
             metadata,
             ownerSymbolId,

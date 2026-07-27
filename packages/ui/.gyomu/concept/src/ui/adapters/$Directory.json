@@ -1,0 +1,32 @@
+{
+  "summary": "This directory serves as the root for core application logic and presentation layers. It centralizes business rule enforcement, domain entity state management, and the adaptation of third-party UI libraries to ensure consistent component behavior and data integrity across the application.",
+  "responsibilities": [
+    "Manage core business workflows and domain state transitions",
+    "Enforce business invariants and validation rules",
+    "Abstract and adapt third-party UI component libraries",
+    "Maintain consistent layout and visual structures for forms and data displays",
+    "Decouple application domain logic from infrastructure and UI implementation"
+  ],
+  "concepts": [
+    "Domain Models",
+    "Business Logic",
+    "UI Adapter Layer",
+    "State Management",
+    "Component Composition",
+    "Invariant Rules"
+  ],
+  "relationships": [
+    "The domain models provide the state that business logic and workflows operate upon.",
+    "UI adapters translate high-level application requirements into consistent representations using third-party components.",
+    "State transitions triggered by business logic are reflected through visual states managed within the UI adapters.",
+    "Validation rules ensure that domain entities maintain consistency during state transitions regardless of the underlying UI implementation."
+  ],
+  "designDecisions": [
+    "Adoption of the adapter pattern to isolate the application from third-party framework changes",
+    "Domain-driven design to segregate business logic from UI concerns",
+    "Use of composition to build complex layouts and interactive forms from reusable primitives",
+    "Immutability in state management to ensure predictability across business and UI layers",
+    "Separation of validation logic from operational processing"
+  ],
+  "importance": "Core"
+}

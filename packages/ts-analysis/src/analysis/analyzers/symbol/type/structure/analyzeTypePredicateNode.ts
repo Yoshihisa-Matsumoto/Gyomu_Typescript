@@ -12,18 +12,20 @@ export const analyzeTypePredicateNode = (
   node: TypePredicateNode,
 ): MemberAnalysisWithReservedResult<TypeStructureAnalysis> => {
   const nodeType = node.getTypeNode()
-  const nodeTypeResult = analyzeType(
-    { ...args, node: nodeType, memberPath: [...newMemberPath], declarationOrder: 0 },
-    undefined,
-  )
+  const nodeTypeResult = nodeType
+    ? analyzeType(
+        { ...args, node: nodeType, memberPath: [...newMemberPath], declarationOrder: 0 },
+        undefined,
+      )
+    : undefined
   return {
     member: {
       kind: 'typePredicate',
       asserts: !!node.getAssertsModifier(),
       parameterName: node.getParameterNameNode().getText(),
-      type: nodeTypeResult.member,
+      type: nodeTypeResult?.member,
     },
-    dependencies: [...nodeTypeResult.dependencies],
-    reservedNames: nodeTypeResult.reservedNames,
+    dependencies: [...(nodeTypeResult?.dependencies ?? [])],
+    reservedNames: nodeTypeResult?.reservedNames ?? [],
   }
 }

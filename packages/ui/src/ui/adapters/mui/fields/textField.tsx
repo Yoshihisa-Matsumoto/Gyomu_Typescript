@@ -6,6 +6,15 @@ type TextFieldProps = MUITextFieldProps & {
   readOnly?: boolean
 }
 
+/**
+ * A wrapper around the Material UI TextField component, providing optional read-only state and tooltip support.
+ *
+ * @param readOnly If true, the underlying input component is set to read-only.
+ *
+ * @param tooltip Optional tooltip content to display when hovering over the text field.
+ *
+ * @returns A React node rendering a TextField, optionally wrapped in a Tooltip.
+ */
 export const TextField = ({ readOnly, tooltip, ...props }: TextFieldProps) => {
   const tmpProps: { [index: string]: unknown } = {}
   if (readOnly != undefined && readOnly) {

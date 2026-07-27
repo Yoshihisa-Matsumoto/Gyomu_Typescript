@@ -2,6 +2,11 @@ import * as React from 'react'
 
 import { cn } from '../../../lib/utils'
 
+/**
+ * Displays a styled textarea component that supports standard textarea attributes.
+ *
+ * @returns The rendered textarea element.
+ */
 function Textarea({ className, ...props }: React.ComponentProps<'textarea'>) {
   return (
     <textarea

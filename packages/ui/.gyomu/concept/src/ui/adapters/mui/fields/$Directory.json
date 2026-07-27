@@ -1,0 +1,25 @@
+{
+  "summary": "This directory provides a collection of standardized form input components built upon Material UI. It centralizes custom wrappers, configurations, and specialized field implementations to ensure consistent project-specific behavior, styling, and functionality across all user input elements.",
+  "responsibilities": [
+    "Provide customized versions of Material UI input components",
+    "Encapsulate consistent project-specific styling and tooltips",
+    "Standardize property interfaces for form fields",
+    "Manage read-only states and layout defaults for input elements"
+  ],
+  "concepts": [
+    "UI Input Components",
+    "Component Wrappers",
+    "Form Field Adapters",
+    "Consistent Styling"
+  ],
+  "relationships": [
+    "The directory wraps standard Material UI components to inject project-specific properties and styling requirements.",
+    "Component wrappers integrate shared helper components like tooltips and labels to maintain a uniform look and feel across all inputs."
+  ],
+  "designDecisions": [
+    "Adapter pattern used to standardize third-party Material UI components to project requirements",
+    "Centralized configuration for common UI features like labels and tooltips",
+    "Composition of base components into specialized form fields"
+  ],
+  "importance": "Core"
+}

@@ -1,0 +1,27 @@
+{
+  "summary": "This directory manages the core business logic and state transitions for the application. It acts as the central orchestrator for processing domain events, maintaining entity consistency, and enforcing business rules across the system.",
+  "responsibilities": [
+    "Execute core domain logic and business workflows",
+    "Orchestrate transitions between internal application states",
+    "Coordinate interactions between domain entities",
+    "Enforce invariant validation and business rules"
+  ],
+  "concepts": [
+    "Domain Models",
+    "Business Logic",
+    "State Transitions",
+    "Invariant Rules"
+  ],
+  "relationships": [
+    "Domain models provide the state that business logic operates upon.",
+    "Business logic enforces rules during state transitions to ensure entity consistency.",
+    "State transitions reflect the lifecycle of domain entities as governed by business requirements."
+  ],
+  "designDecisions": [
+    "Separation of domain logic from infrastructure concerns",
+    "Encapsulation of state transition logic within domain services",
+    "Use of validation layers to enforce business invariants",
+    "Immutable state updates to ensure predictability"
+  ],
+  "importance": "Core"
+}

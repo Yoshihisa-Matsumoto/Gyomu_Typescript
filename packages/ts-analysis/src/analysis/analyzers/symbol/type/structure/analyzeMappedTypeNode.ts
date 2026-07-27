@@ -22,16 +22,18 @@ export const analyzeMappedTypeNode = (
   const constraintResult = analyzeType(
     {
       ...args,
-      node: constraint,
+      node: constraint!,
       declarationOrder: 0,
       memberPath: [...newMemberPath, 'constraint'],
     },
     undefined,
   )
-  const valueTypeResult = analyzeType(
-    { ...args, node: typeNode, declarationOrder: 0, memberPath: [...newMemberPath, 'value'] },
-    undefined,
-  )
+  const valueTypeResult = typeNode
+    ? analyzeType(
+        { ...args, node: typeNode, declarationOrder: 0, memberPath: [...newMemberPath, 'value'] },
+        undefined,
+      )
+    : undefined
 
   let nameTypeResult: MemberAnalysisWithReservedResult<TypeAnalysis> | undefined = undefined
   if (nameType) {
@@ -47,18 +49,18 @@ export const analyzeMappedTypeNode = (
       readonlyModifier: !!node.getReadonlyToken(),
       parameter: typeParameter.getName(),
       constraint: constraintResult.member,
-      valueType: valueTypeResult.member,
+      valueType: valueTypeResult?.member,
       optionalModifier: !!questionToken,
       nameType: nameTypeResult?.member,
     },
     dependencies: [
       ...constraintResult.dependencies,
-      ...valueTypeResult.dependencies,
+      ...(valueTypeResult?.dependencies ?? []),
       ...(nameTypeResult?.dependencies ?? []),
     ],
     reservedNames: [
       ...constraintResult.reservedNames,
-      ...valueTypeResult.reservedNames,
+      ...(valueTypeResult?.reservedNames ?? []),
       ...(nameTypeResult?.reservedNames ?? []),
     ],
   }

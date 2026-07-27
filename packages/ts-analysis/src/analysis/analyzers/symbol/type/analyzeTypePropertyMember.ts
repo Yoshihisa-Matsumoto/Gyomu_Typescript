@@ -3,7 +3,7 @@ import { preparePropertyAnalysis } from '../prepareMemberAnalysis.js'
 import { computeIndent } from '../computeIndent.js'
 import { registerSymbolSymbolAnalysis } from '../../../file/registerSymbolSymbolAnalysis.js'
 import { tracePlaceIdentity } from '../../../trace/traceUtil.js'
-import { analyzeType } from './analyzeType.js'
+import { analyzeType, getUndefinedTypeResult } from './analyzeType.js'
 import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../types.js'
 import type {
   Expression,
@@ -107,22 +107,25 @@ const analyzeTypePropertyMemberInternal = (
   const newReservedNames = [...reservedNames]
 
   // console.dir(typeNode)
-  const typeResult = analyzeType(
-    {
-      node: args2.typeNode ?? args2.initializer,
-      memberPath,
-      metadata,
-      ownerSymbolId,
-      ownerSymbolIdentity,
-      sourceRelativePath,
-      sourceFullText: args.sourceFullText,
-      declarationOrder: args.declarationOrder,
-      imported,
-      options,
-      reservedNames: newReservedNames,
-    },
-    [name],
-  )
+  const typeResult =
+    args2.typeNode || args2.initializer
+      ? analyzeType(
+          {
+            node: args2.typeNode ?? args2.initializer!,
+            memberPath,
+            metadata,
+            ownerSymbolId,
+            ownerSymbolIdentity,
+            sourceRelativePath,
+            sourceFullText: args.sourceFullText,
+            declarationOrder: args.declarationOrder,
+            imported,
+            options,
+            reservedNames: newReservedNames,
+          },
+          [name],
+        )
+      : getUndefinedTypeResult()
 
   const property = {
     documentable: true,

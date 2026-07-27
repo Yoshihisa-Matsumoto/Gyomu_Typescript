@@ -3,6 +3,11 @@ import { Avatar as AvatarPrimitive } from 'radix-ui'
 
 import { cn } from '../../../lib/utils'
 
+/**
+ * Displays an avatar image with support for optional sizing.
+ *
+ * @returns The rendered avatar component.
+ */
 function Avatar({
   className,
   size = 'default',
@@ -23,6 +28,11 @@ function Avatar({
   )
 }
 
+/**
+ * Displays the avatar image within the Avatar container.
+ *
+ * @returns The rendered image element.
+ */
 function AvatarImage({ className, ...props }: React.ComponentProps<typeof AvatarPrimitive.Image>) {
   return (
     <AvatarPrimitive.Image
@@ -33,6 +43,11 @@ function AvatarImage({ className, ...props }: React.ComponentProps<typeof Avatar
   )
 }
 
+/**
+ * Displays a fallback element when the avatar image fails to load.
+ *
+ * @returns The rendered fallback element.
+ */
 function AvatarFallback({
   className,
   ...props
@@ -49,6 +64,11 @@ function AvatarFallback({
   )
 }
 
+/**
+ * Displays a status badge positioned over the avatar.
+ *
+ * @returns The rendered badge element.
+ */
 function AvatarBadge({ className, ...props }: React.ComponentProps<'span'>) {
   return (
     <span
@@ -65,6 +85,11 @@ function AvatarBadge({ className, ...props }: React.ComponentProps<'span'>) {
   )
 }
 
+/**
+ * Groups multiple avatars together in a stacked layout.
+ *
+ * @returns The container element for the group.
+ */
 function AvatarGroup({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -78,6 +103,11 @@ function AvatarGroup({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * Displays a count indicator within an avatar group.
+ *
+ * @returns The rendered count element.
+ */
 function AvatarGroupCount({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div

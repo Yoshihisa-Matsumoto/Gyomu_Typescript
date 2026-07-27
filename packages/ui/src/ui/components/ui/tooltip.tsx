@@ -3,6 +3,11 @@ import { Tooltip as TooltipPrimitive } from 'radix-ui'
 
 import { cn } from '../../../lib/utils'
 
+/**
+ * Provides the context required for tooltips to function, including configuration for delay duration.
+ *
+ * @returns A React provider element wrapping the application content.
+ */
 function TooltipProvider({
   delayDuration = 0,
   ...props
@@ -16,14 +21,29 @@ function TooltipProvider({
   )
 }
 
+/**
+ * A wrapper component that manages the tooltip state.
+ *
+ * @returns The root container for a tooltip instance.
+ */
 function Tooltip({ ...props }: React.ComponentProps<typeof TooltipPrimitive.Root>) {
   return <TooltipPrimitive.Root data-slot="tooltip" {...props} />
 }
 
+/**
+ * An element that toggles the visibility of a tooltip when interacted with.
+ *
+ * @returns The trigger component that users interact with to show the tooltip.
+ */
 function TooltipTrigger({ ...props }: React.ComponentProps<typeof TooltipPrimitive.Trigger>) {
   return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />
 }
 
+/**
+ * The content display area of a tooltip, including the arrow and portal management.
+ *
+ * @returns The rendered tooltip content overlay.
+ */
 function TooltipContent({
   className,
   sideOffset = 0,

@@ -13,6 +13,9 @@ export default meta
 
 type Story = StoryObj<typeof AutoField>
 
+/**
+ * Story demonstrating a text input field.
+ */
 export const Text: Story = {
   args: {
     meta: {
@@ -27,6 +30,9 @@ export const Text: Story = {
   },
 }
 
+/**
+ * Story demonstrating a number input field.
+ */
 export const Number: Story = {
   args: {
     meta: {
@@ -39,6 +45,9 @@ export const Number: Story = {
   },
 }
 
+/**
+ * Story demonstrating an email input field.
+ */
 export const Email: Story = {
   args: {
     meta: {
@@ -52,6 +61,9 @@ export const Email: Story = {
   },
 }
 
+/**
+ * Story demonstrating a textarea input field.
+ */
 export const Textarea: Story = {
   args: {
     meta: {
@@ -64,6 +76,9 @@ export const Textarea: Story = {
   },
 }
 
+/**
+ * Story demonstrating a select dropdown input field.
+ */
 export const Select: Story = {
   args: {
     meta: {
@@ -80,6 +95,9 @@ export const Select: Story = {
   },
 }
 
+/**
+ * Story demonstrating an input field with an error state.
+ */
 export const WithError: Story = {
   args: {
     meta: {
@@ -93,6 +111,9 @@ export const WithError: Story = {
   },
 }
 
+/**
+ * Story demonstrating an interactive input field with state management.
+ */
 export const Interactive: Story = {
   render: (args) => {
     const [value, setValue] = React.useState(args.value)
@@ -119,6 +140,9 @@ export const Interactive: Story = {
   },
 }
 
+/**
+ * Story displaying a collection of various input field types in a single view.
+ */
 export const AllFields: Story = {
   render: () => (
     <div style={{ display: 'grid', gap: 16 }}>

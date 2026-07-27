@@ -1,0 +1,23 @@
+{
+  "summary": "This directory provides layout components for forms and fields specifically styled to integrate with Shadcn UI. It acts as an adapter layer to ensure that UI components adhere to consistent structural and visual conventions when rendering form elements and their associated metadata.",
+  "responsibilities": [
+    "Defining structural layouts for form fields and groups",
+    "Managing the display of labels, error messages, and form metadata",
+    "Integrating form content with Shadcn UI design patterns"
+  ],
+  "concepts": [
+    "Shadcn UI",
+    "Form Layout",
+    "Field Layout",
+    "UI Adapters"
+  ],
+  "relationships": [
+    "ShadcnFieldLayout provides the structural container for individual fields and their associated errors and labels.",
+    "ShadcnFormLayout organizes multiple field components into a cohesive group based on Shadcn UI standards."
+  ],
+  "designDecisions": [
+    "Adapter pattern to reconcile internal form structures with Shadcn UI component requirements",
+    "Component composition to separate field-level layout from form-level grouping"
+  ],
+  "importance": "Supporting"
+}

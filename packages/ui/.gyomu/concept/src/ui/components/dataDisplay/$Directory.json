@@ -1,0 +1,26 @@
+{
+  "summary": "This directory serves as the centralized repository for domain-specific business logic, entities, and data structures. It defines the core rules and models that govern the application's behavior and state consistency, independent of infrastructure or presentation layers.",
+  "responsibilities": [
+    "Define domain entities and data models",
+    "Encapsulate business logic and validation rules",
+    "Manage state transitions and domain invariants",
+    "Provide interfaces for domain services"
+  ],
+  "concepts": [
+    "Domain Models",
+    "Business Rules",
+    "Domain Entities",
+    "Value Objects"
+  ],
+  "relationships": [
+    "Domain entities maintain internal state consistency by enforcing business rules.",
+    "Value objects provide immutable descriptors for entity attributes.",
+    "Business rules define the logic that orchestrates transitions between entity states."
+  ],
+  "designDecisions": [
+    "Separation of domain logic from infrastructure concerns",
+    "Use of pure functions for business calculations",
+    "Encapsulation of state modification within domain entities"
+  ],
+  "importance": "Core"
+}

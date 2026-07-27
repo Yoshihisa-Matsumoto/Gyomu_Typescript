@@ -3,6 +3,9 @@ import { NumberField, Select, TextArea, TextField } from '../../adapters/mui'
 import type { LocalDate } from '@gyomu/schema/entity'
 import type { RendererMap } from '@gyomu/ui-core/engine'
 
+/**
+ * A mapping object providing Material-UI component implementations for various UI field types.
+ */
 export const muiRenderer: RendererMap = {
   text: ({ value, onChange, meta, onBlur }) => (
     <TextField

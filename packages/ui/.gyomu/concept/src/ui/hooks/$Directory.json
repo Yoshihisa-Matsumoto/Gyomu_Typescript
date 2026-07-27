@@ -1,0 +1,26 @@
+{
+  "summary": "This directory manages the core business logic and state transitions for the domain, serving as the central orchestration layer for application-specific entities and their interactions.",
+  "responsibilities": [
+    "Manage core business entity lifecycle",
+    "Orchestrate complex domain operations",
+    "Enforce invariant business rules",
+    "Coordinate state transitions for domain models"
+  ],
+  "concepts": [
+    "Domain entities",
+    "Business rules",
+    "State transitions",
+    "Domain logic"
+  ],
+  "relationships": [
+    "Domain entities encapsulate the data and state that are governed by business rules.",
+    "Business rules define the constraints and logic applied during state transitions.",
+    "State transitions represent the evolution of domain entities as triggered by business operations."
+  ],
+  "designDecisions": [
+    "Separation of concerns between data state and business logic",
+    "Encapsulation of entity behavior",
+    "Centralized orchestration of domain operations"
+  ],
+  "importance": "Core"
+}

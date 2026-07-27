@@ -65,7 +65,8 @@ export const analyzeTypeStructures = (
           ownerSymbolId,
           ownerSymbolIdentity,
           memberPath,
-          node: typeArguments[0],
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+          node: typeArguments[0]!,
           sourceFullText,
           declarationOrder,
           imported,
@@ -94,7 +95,8 @@ export const analyzeTypeStructures = (
           ownerSymbolId,
           ownerSymbolIdentity,
           memberPath,
-          node: typeArguments[0],
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+          node: typeArguments[0]!,
           sourceFullText,
           declarationOrder,
           imported,

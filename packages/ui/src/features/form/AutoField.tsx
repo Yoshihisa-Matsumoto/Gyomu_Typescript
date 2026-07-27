@@ -3,6 +3,11 @@ import { muiRenderer } from '../../ui/renderer/mui/muiRenderer'
 import { MuiFieldLayout } from '../../ui/adapters/mui/layout/MuiFieldLayout'
 import type { AutoFieldProps } from './types'
 
+/**
+ * Renders a form field using a provided renderer and layout based on the field metadata.
+ *
+ * @returns The rendered field component within its layout.
+ */
 export function AutoField({
   meta,
   renderer = muiRenderer,

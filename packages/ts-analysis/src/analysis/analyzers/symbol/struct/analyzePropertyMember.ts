@@ -122,22 +122,25 @@ export const analyzePropertyMemberInternal = (
     genercsDependencies.push(...genericsResult.dependencies)
   }
   // console.dir(typeNode)
-  const typeResult = analyzeType(
-    {
-      node: args2.typeNode ?? args2.initializer,
-      memberPath,
-      metadata,
-      ownerSymbolId,
-      ownerSymbolIdentity,
-      sourceRelativePath,
-      sourceFullText: args.sourceFullText,
-      declarationOrder: args.declarationOrder,
-      imported,
-      options,
-      reservedNames: newReservedNames,
-    },
-    [name],
-  )
+  const typeResult =
+    args2.typeNode || args2.initializer
+      ? analyzeType(
+          {
+            node: args2.typeNode ?? args2.initializer!,
+            memberPath,
+            metadata,
+            ownerSymbolId,
+            ownerSymbolIdentity,
+            sourceRelativePath,
+            sourceFullText: args.sourceFullText,
+            declarationOrder: args.declarationOrder,
+            imported,
+            options,
+            reservedNames: newReservedNames,
+          },
+          [name],
+        )
+      : undefined
 
   const property = {
     kind: 'property',
@@ -151,7 +154,8 @@ export const analyzePropertyMemberInternal = (
     readonly,
     optional,
 
-    type: typeResult.member,
+    type: typeResult?.member,
+    binding: undefined, // TODO : No NameBinding?
     jsDoc,
     parsedJsDoc,
 
@@ -171,6 +175,6 @@ export const analyzePropertyMemberInternal = (
   registerSymbolSymbolAnalysis(metadata, property, options)
   return {
     member: property,
-    dependencies: [...typeResult.dependencies, ...genercsDependencies],
+    dependencies: [...(typeResult?.dependencies ?? []), ...genercsDependencies],
   }
 }

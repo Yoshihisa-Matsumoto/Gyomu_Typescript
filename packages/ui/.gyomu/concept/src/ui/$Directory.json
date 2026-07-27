@@ -1,0 +1,33 @@
+{
+  "summary": "This directory serves as the root architectural layer, coordinating business logic, domain state management, and a unified UI rendering infrastructure. It ensures consistent component behavior and data integrity by decoupling domain models from specific third-party UI library implementations.",
+  "responsibilities": [
+    "Manage core business workflows and state transitions",
+    "Define abstract rendering contracts for UI components",
+    "Consolidate and export the application's design system",
+    "Enforce business invariants and validation rules",
+    "Decouple domain logic from infrastructure and UI implementation"
+  ],
+  "concepts": [
+    "Domain Models",
+    "UI Layer",
+    "Renderer Contract",
+    "Design System",
+    "Business Logic",
+    "State Management"
+  ],
+  "relationships": [
+    "Domain models provide the state that business logic and workflows operate upon.",
+    "The renderer contract decouples generic UI requirements from concrete third-party component libraries.",
+    "Centralized exports allow the application to consume UI elements and layout abstractions through a unified entry point.",
+    "Business rules define the constraints and logic applied during state transitions managed by the hooks layer.",
+    "UI adapters translate application requirements into consistent representations by consuming the defined renderer contracts."
+  ],
+  "designDecisions": [
+    "Adoption of the adapter pattern to isolate application logic from UI library dependencies.",
+    "Use of barrel export patterns to simplify component discovery and consumption.",
+    "Separation of concerns between data state and business orchestration.",
+    "Interface-driven development to ensure structural consistency across rendering implementations.",
+    "Domain-driven design to segregate core business logic from visual presentation."
+  ],
+  "importance": "Core"
+}

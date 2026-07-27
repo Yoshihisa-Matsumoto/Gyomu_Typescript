@@ -10,6 +10,13 @@ import { Toaster as Sonner } from 'sonner'
 import type { CSSProperties } from 'react'
 import type { ToasterProps } from 'sonner'
 
+/**
+ * A toast notification component wrapper for sonner, pre-configured with theme-specific styles and iconography.
+ *
+ * @param props The properties to pass to the underlying Sonner toast component.
+ *
+ * @returns The rendered Toaster component.
+ */
 const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner
