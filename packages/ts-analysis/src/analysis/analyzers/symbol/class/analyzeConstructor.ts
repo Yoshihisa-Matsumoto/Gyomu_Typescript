@@ -15,6 +15,17 @@ import type {
 } from '../../types.js'
 import type { ClassDeclaration, ConstructorDeclaration, ParameterDeclaration } from 'ts-morph'
 
+/**
+ * Analyzes a constructor declaration within a class to extract its function signature and any class properties defined as constructor parameters.
+ *
+ * @param args The child analysis arguments containing the constructor node and context.
+ *
+ * @param parent The parent class declaration containing the constructor.
+ *
+ * @param name The name of the constructor member.
+ *
+ * @returns A result object containing the analyzed class members and their dependencies.
+ */
 export const analyzeConstructor = (
   args: ChildAnalysisArg<ConstructorDeclaration>,
   parent: ClassDeclaration,

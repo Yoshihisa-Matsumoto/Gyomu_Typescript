@@ -59,6 +59,15 @@ const encodeCsv =
       Stream.map((r) => r as CsvRow),
     )
 
+/**
+ * Creates a transformation function that encodes a stream of structured data into a CSV-formatted stream.
+ *
+ * @param schema The structure definition used to validate and encode data.
+ *
+ * @param options Optional configuration for the CSV output formatting.
+ *
+ * @returns A pipeable stream transformation function.
+ */
 export const writeCsv =
   <F extends Schema.Struct.Fields, R = never>(
     schema: Schema.Struct<F>,
@@ -67,6 +76,13 @@ export const writeCsv =
   (stream: Stream.Stream<StructType<F>, IOError, R>) =>
     stream.pipe(encodeCsv(schema), stringifyCsv(schema, options))
 
+/**
+ * Creates a transformation function that encodes a stream of raw record objects into a CSV-formatted stream.
+ *
+ * @param options Optional configuration for the CSV output formatting.
+ *
+ * @returns A pipeable stream transformation function.
+ */
 export const writeCsvRaw =
   <T extends Record<string, CsvValue>, R = never>(options?: CsvWriteOption<CsvRow>) =>
   (stream: Stream.Stream<T, IOError, R>) =>
@@ -74,6 +90,17 @@ export const writeCsvRaw =
 
 type CsvOutput = { type: 'string' } | { type: 'file'; path: string } | { type: 'console' }
 
+/**
+ * Converts an array of records into a CSV output, supporting string, console, or file-based destinations.
+ *
+ * @param records The array of input objects to be converted to CSV.
+ *
+ * @param options Optional configuration for the CSV formatting.
+ *
+ * @param output Configuration for where the resulting CSV should be directed.
+ *
+ * @returns An Effect representing the completion of the conversion process.
+ */
 export const jsonToCsv = <T extends Record<string, any>>(
   records: Array<T>,
   options?: CsvWriteOption<CsvRow>,
@@ -99,6 +126,18 @@ export const jsonToCsv = <T extends Record<string, any>>(
       }
     },
   )
+
+/**
+ * Asynchronously converts an array of records to CSV and executes the operation within a promise.
+ *
+ * @param records The array of input objects to be converted.
+ *
+ * @param options Optional configuration for the CSV formatting.
+ *
+ * @param output Configuration for the destination output.
+ *
+ * @returns A promise that resolves upon completion of the conversion.
+ */
 export const jusonToCsvRun = async <T extends Record<string, any>>(
   records: Array<T>,
   options?: CsvWriteOption<CsvRow>,

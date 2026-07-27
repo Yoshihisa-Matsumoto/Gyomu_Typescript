@@ -1,0 +1,26 @@
+{
+  "summary": "This directory manages comprehensive ZIP archive operations including creation, extraction, reading, and structural comparison. It serves as the primary interface for interacting with ZIP archives, encapsulating both high-level services and low-level parsing logic.",
+  "responsibilities": [
+    "Provide a unified service for ZIP archive manipulation",
+    "Enable extraction of archive content",
+    "Facilitate structural comparison between archives",
+    "Orchestrate ZIP entry reading and stream processing"
+  ],
+  "concepts": [
+    "ZIP Archive",
+    "Archive Service",
+    "Comparison Workflow",
+    "Archive Entry"
+  ],
+  "relationships": [
+    "The ZipService leverages internal utilities to execute archive operations.",
+    "Comparison workflows coordinate the interaction between multiple archive entries.",
+    "Internal parsing logic provides the data foundations for high-level archive services."
+  ],
+  "designDecisions": [
+    "Encapsulation of archive lifecycle management within a service class",
+    "Modular separation of comparison and extraction logic",
+    "Stream-oriented processing for performance efficiency"
+  ],
+  "importance": "Core"
+}

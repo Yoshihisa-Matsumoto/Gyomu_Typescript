@@ -1,0 +1,22 @@
+{
+  "summary": "This directory provides mock implementations of user services specifically intended for testing and development environments. It allows developers to substitute production services with controlled, stable alternatives during integration and unit testing.",
+  "responsibilities": [
+    "Provide dummy service implementations for testing",
+    "Enable service substitution in test environments",
+    "Facilitate isolated unit and integration testing"
+  ],
+  "concepts": [
+    "Mock Services",
+    "Test Layers",
+    "Service Substitution"
+  ],
+  "relationships": [
+    "Dummy services act as lightweight substitutes for production user services during test execution.",
+    "The test layer encapsulates the dummy service to ensure it can be injected into the application dependency graph."
+  ],
+  "designDecisions": [
+    "Use of Layer pattern for service dependency injection",
+    "Explicit separation of test-specific implementations from production code"
+  ],
+  "importance": "Supporting"
+}

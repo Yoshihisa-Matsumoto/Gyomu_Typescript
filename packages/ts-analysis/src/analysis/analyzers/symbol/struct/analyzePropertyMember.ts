@@ -23,6 +23,17 @@ import type {
   SymbolIdentity,
 } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Analyzes a property member declaration to produce structured analysis results.
+ *
+ * @param args The input context for analyzing the property member.
+ *
+ * @param isStatic Whether the property is static.
+ *
+ * @param visibility The visibility level of the property member.
+ *
+ * @returns The analysis result containing documentable property details.
+ */
 export const analyzePropertyMember = (
   args: ChildAnalysisArg<PropertySignature | PropertyDeclaration>,
   isStatic: boolean = false,
@@ -67,6 +78,15 @@ export const analyzePropertyMember = (
   })
 }
 
+/**
+ * Internal helper to perform property member analysis, handling generics, type resolution, and registration.
+ *
+ * @param args The input context for analysis.
+ *
+ * @param args2 Configuration object containing metadata, location, and structural information about the property.
+ *
+ * @returns An object containing the analyzed property member and its dependencies.
+ */
 export const analyzePropertyMemberInternal = (
   args: ChildAnalysisArg<PropertySignature | PropertyDeclaration | GetAccessorDeclaration>,
   args2: {

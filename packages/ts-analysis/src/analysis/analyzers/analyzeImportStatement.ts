@@ -1,6 +1,13 @@
 import type { ImportAnalysis } from '@gyomu/schema/schemas/typescript'
 import type { ImportDeclaration } from 'ts-morph'
 
+/**
+ * Analyzes an ImportDeclaration to extract metadata about imports, identifying default, namespace, or named import types.
+ *
+ * @param statement The import declaration node to analyze.
+ *
+ * @returns An array of ImportAnalysis objects detailing each imported identifier.
+ */
 export const analyzeImportStatement = (statement: ImportDeclaration): Array<ImportAnalysis> => {
   const defaultImport = statement.getDefaultImport()
   const namespaceImport = statement.getNamespaceImport()

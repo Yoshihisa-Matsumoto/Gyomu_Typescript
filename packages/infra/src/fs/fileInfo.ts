@@ -4,18 +4,65 @@ import { getFileStat } from './fs-utils.js'
 import type { FileSystem } from 'effect'
 import type { IOError } from '@gyomu/schema'
 
+/**
+ * Represents detailed metadata for a file or directory.
+ */
 export class FileInfo {
+  /**
+   * The name of the file.
+   */
   readonly fileName: string
+
+  /**
+   * The absolute path of the file.
+   */
   readonly fullPath: string
+
+  /**
+   * The name of the parent directory.
+   */
   readonly directoryName: string
+
+  /**
+   * The path to the parent directory.
+   */
   readonly directoryPath: string
+
+  /**
+   * The size of the file in bytes.
+   */
   readonly size: number
+
+  /**
+   * The file extension.
+   */
   readonly extension: string
+
+  /**
+   * The file creation timestamp.
+   */
   readonly createTime: Date
+
+  /**
+   * The file modification timestamp.
+   */
   readonly updateTime: Date
+
+  /**
+   * The file last access timestamp.
+   */
   readonly lastAccessTime: Date
+
+  /**
+   * Indicates if the path is a file.
+   */
   readonly isFile: boolean
 
+  /**
+   * Constructs a new FileInfo instance.
+   *
+   * @returns A new FileInfo instance.
+   */
   constructor(args: {
     fileName: string
     fullPath: string
@@ -41,6 +88,15 @@ export class FileInfo {
   }
 }
 
+/**
+ * Creates a FileInfo instance from the given file path.
+ *
+ * @param filePath The path to the file.
+ *
+ * @returns An effect that produces a FileInfo instance, requiring a FileSystem service and potentially failing with an IOError.
+ *
+ * @requires FileSystem.FileSystem
+ */
 export const createFileInfo = (
   filePath: string,
 ): Effect.Effect<FileInfo, IOError, FileSystem.FileSystem> =>

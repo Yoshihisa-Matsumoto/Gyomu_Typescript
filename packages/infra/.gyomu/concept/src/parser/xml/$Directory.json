@@ -1,0 +1,21 @@
+{
+  "summary": "This directory is responsible for transforming raw XML data into structured object formats. It provides the necessary logic to interpret XML content and map it into a representation usable by the rest of the application.",
+  "responsibilities": [
+    "Parsing XML strings",
+    "Mapping XML structures to domain objects"
+  ],
+  "concepts": [
+    "XML parser",
+    "Structured data",
+    "Data transformation"
+  ],
+  "relationships": [
+    "The XML parser consumes raw string data to produce structured objects.",
+    "Structured objects serve as the output format for the parsing process."
+  ],
+  "designDecisions": [
+    "Encapsulation of XML parsing logic within a dedicated module",
+    "Use of object-based transformation for parsed data"
+  ],
+  "importance": "Core"
+}

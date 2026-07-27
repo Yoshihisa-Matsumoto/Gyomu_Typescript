@@ -13,8 +13,13 @@ import type { FileTransportInfo } from '@gyomu/schema/gyomu/file'
 import type { ArchiveEntryItem } from '../../common.js'
 
 type TarEntryItem = Extract<ArchiveEntryItem, { _tag: 'tar' }>
+
 /**
- * 指定されたディレクトリの内容を tar (または tar.gz) アーカイブとして作成する
+ * Creates a tar (or tar.gz) archive from the contents of the specified directory.
+ *
+ * @param options Configuration options for archive creation.
+ *
+ * @returns An Effect that yields true upon successful archive creation, or fails with an IOError.
  */
 export const createTar = <R = never>(options: {
   tarFileName: string
@@ -49,6 +54,13 @@ export const createTar = <R = never>(options: {
 //   readonly stream: Stream.Stream<Uint8Array, AppError>;
 // };
 
+/**
+ * Parses a tar archive stream into a stream of individual entries.
+ *
+ * @param source The input stream containing the tar archive data.
+ *
+ * @returns A stream of TarEntryItem objects.
+ */
 export const untar = <R = never>(
   source: Stream.Stream<Uint8Array, IOError, R>,
 ): Stream.Stream<TarEntryItem, IOError, R> =>
@@ -148,6 +160,15 @@ export const untar = <R = never>(
     ),
   )
 
+/**
+ * Checks if a specific file exists within a tar archive stream.
+ *
+ * @param entryName The file path to look for.
+ *
+ * @param self The tar archive stream.
+ *
+ * @returns An Effect that returns true if the entry is found, false otherwise.
+ */
 export const existsInTar =
   (entryName: string) =>
   <R = never>(self: Stream.Stream<Uint8Array, IOError, R>): Effect.Effect<boolean, IOError, R> =>
@@ -166,15 +187,34 @@ export const existsInTar =
     )
 
 /**
- * TarEntry の content をすべて読み込み、文字列として返す Effect を生成する
+ * Reads the entire content of a TarEntryItem and returns it as a string.
+ *
+ * @param entry The tar entry to read.
+ *
+ * @returns An Effect that yields the string content of the entry, or fails with an IOError.
  */
 export const readTextEntry = <R = never>(entry: TarEntryItem): Effect.Effect<string, IOError, R> =>
   readEntry(entry).pipe(Effect.map((chunks) => Buffer.concat(chunks).toString('utf8')))
+
+/**
+ * Reads all content chunks of a tar entry into an array.
+ *
+ * @param entry The tar entry to collect.
+ *
+ * @returns An Effect containing an array of binary data chunks.
+ */
 export const readEntry = <R = never>(
   entry: TarEntryItem,
 ): Effect.Effect<Array<Uint8Array<ArrayBufferLike>>, IOError, R> =>
   Stream.runCollect(entry.openStream())
 
+/**
+ * Returns a stream representing the content of a specific tar entry.
+ *
+ * @param entry The tar entry.
+ *
+ * @returns A Stream of binary data chunks.
+ */
 export const readEntryStream = <R = never>(
   entry: TarEntryItem,
 ): Stream.Stream<Uint8Array<ArrayBufferLike>, IOError, R> => entry.openStream()
@@ -182,9 +222,13 @@ export const readEntryStream = <R = never>(
 const massageEntryPath = (fileName: string) => {
   return fileName ? fileName.replace(/\\/g, '/') : fileName
 }
+
 /**
- * ライブラリ利用者が楽をするためのヘルパー
- * 条件に合わないエントリを自動で Drain し、デッドロックを防ぐ
+ * Filters tar entries using the provided predicate and automatically drains skipped entries to prevent deadlocks.
+ *
+ * @param predicate Condition to select entries.
+ *
+ * @returns A filtered stream of tar entries.
  */
 export const filterEntries =
   <R = never>(predicate: (entry: TarEntryItem) => boolean) =>
@@ -202,8 +246,13 @@ export const filterEntries =
         }),
       ),
     )
+
 /**
- * 特定のファイルを 1 つだけ取得し、見つからなければエラーにする
+ * Retrieves a single specific tar entry, failing with an IOError if the entry is not found.
+ *
+ * @param entryName The path or name of the entry to find.
+ *
+ * @returns An Effect yielding the found entry, or failing if not present.
  */
 export const requireEntry =
   (entryName: string) =>
@@ -230,6 +279,16 @@ export const requireEntry =
         }),
       ),
     )
+
+/**
+ * Extracts the entire tar stream into the specified target directory.
+ *
+ * @param destinationDirectory The directory where contents should be extracted.
+ *
+ * @param self The input tar stream.
+ *
+ * @returns An Effect completing when extraction is finished.
+ */
 export const extractTarAll =
   (destinationDirectory: string) =>
   <R = never>(
@@ -238,9 +297,11 @@ export const extractTarAll =
     extractTarToDirectory({ targetDir: destinationDirectory })(self)
 
 /**
- * tar ストリームを指定したディレクトリに展開する。
- * @param options.targetDir 展開先のベースディレクトリ
- * @param options.stripPath このパス配下のファイルのみを対象とし、展開時にこのパスプレフィックスを削除する
+ * Extracts the contents of a tar stream into the specified target directory.
+ *
+ * @param options Configuration including the target directory and optional path stripping.
+ *
+ * @returns An Effect that completes when extraction finishes, or fails with an IOError.
  */
 export const extractTarToDirectory =
   (options: { targetDir: string; stripPath?: string }) =>
@@ -300,6 +361,15 @@ export const extractTarToDirectory =
       )
     })
 
+/**
+ * Extracts a single file from a tar stream to a specific destination.
+ *
+ * @param sourceEntryFullName The full path of the file to extract from the tar.
+ *
+ * @param destinationFolderName The target directory for the file.
+ *
+ * @returns An Effect completing upon successful file extraction.
+ */
 export const extractTarSingleFile =
   (sourceEntryFullName: string, destinationFolderName: string) =>
   <R = never>(
@@ -335,6 +405,15 @@ export const extractTarSingleFile =
       return yield* writeStreamToFile(fullPath)(entry.openStream())
     })
 
+/**
+ * Dispatches extraction based on provided file transport information.
+ *
+ * @param transferInformation Metadata about source and destination files.
+ *
+ * @param self Input stream to extract.
+ *
+ * @returns An Effect performing the specific extraction task.
+ */
 export const extractTar =
   <R = never>(transferInformation: FileTransportInfo) =>
   (

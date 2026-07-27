@@ -6,6 +6,17 @@ import type {
 import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../../types.js'
 import type { OptionalTypeNode, TypeNode } from 'ts-morph'
 
+/**
+ * Analyzes an optional type node to construct its corresponding structure representation.
+ *
+ * @param args The analysis context arguments containing the current type node reference.
+ *
+ * @param newMemberPath The path identifying the member being analyzed.
+ *
+ * @param node The optional type node to analyze.
+ *
+ * @returns The analysis result containing the optional structure and its dependencies.
+ */
 export const analyzeOptionalStructureNode = (
   args: ChildAnalysisArg<TypeNode>,
   newMemberPath: MemberIdentityMemberPath,

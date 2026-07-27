@@ -1,5 +1,12 @@
 import type { JsDocAnalysis, ParsedJsDoc } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Analyzes a collection of parsed JSDoc blocks and aggregates metrics about their content, including summaries, tags, examples, and human-edited sections.
+ *
+ * @param parsedList The list of parsed JSDoc objects to analyze.
+ *
+ * @returns A summary object containing aggregated statistics from the parsed JSDoc entries.
+ */
 export const analyzeJsDoc = (parsedList: ReadonlyArray<ParsedJsDoc>): JsDocAnalysis => {
   const exists = parsedList.length > 0
 

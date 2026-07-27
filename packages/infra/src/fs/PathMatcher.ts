@@ -24,6 +24,13 @@ type PathMatcher = PathMatcherBase & {
 const normalizePath = (path: string): string =>
   path.replaceAll('\\', '/').replaceAll(/\/+/g, '/').replace(/^\.\//, '')
 
+/**
+ * Creates a path matcher strategy based on the provided filter pattern.
+ *
+ * @param filter An optional path pattern string. If omitted, matches all paths.
+ *
+ * @returns A PathMatcher object configured to filter paths.
+ */
 export const createPathMatcher = (filter?: string | undefined): PathMatcher => {
   if (!filter) {
     return {

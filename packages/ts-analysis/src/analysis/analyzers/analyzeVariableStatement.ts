@@ -4,6 +4,15 @@ import type { StatementAnalysisArgument, StatementAnalysisResult } from './types
 import type { VariableStatement } from 'ts-morph'
 import type { ExportAnalysis, SymbolAnalysis } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Analyzes a TypeScript variable statement to identify exported members and captured symbols.
+ *
+ * @param statement The TypeScript variable statement to analyze.
+ *
+ * @param args The context and configuration required for the analysis.
+ *
+ * @returns A result object containing information about exported members and identified symbols found in the statement.
+ */
 export const analyzeVariableStatement = (
   statement: VariableStatement,
   args: StatementAnalysisArgument,

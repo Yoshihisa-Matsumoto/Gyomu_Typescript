@@ -6,6 +6,17 @@ import type {
 import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../../types.js'
 import type { ConditionalTypeNode, TypeNode } from 'ts-morph'
 
+/**
+ * Analyzes a TypeScript conditional type node (T extends U ? V : W) and decomposes it into its constituent check, extends, true, and false type structures.
+ *
+ * @param args The shared analysis context and configuration for the type node.
+ *
+ * @param newMemberPath The base path for the conditional type components.
+ *
+ * @param node The conditional type node to analyze.
+ *
+ * @returns An analysis result containing the decomposed conditional type structure, dependencies, and reserved names.
+ */
 export const analyzeConditionalTypeNode = (
   args: ChildAnalysisArg<TypeNode>,
   newMemberPath: MemberIdentityMemberPath,

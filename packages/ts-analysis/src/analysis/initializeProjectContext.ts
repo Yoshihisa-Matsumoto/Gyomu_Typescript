@@ -10,6 +10,13 @@ import type { WorkspaceRelativePath } from '@gyomu/schema/typescript'
 import type { FileSystem } from 'effect'
 import type { ProjectContext } from './project/ProjectContext.js'
 
+/**
+ * Initializes the project context by loading the package.json and TypeScript configuration for the given workspace path.
+ *
+ * @param args Configuration object containing the repository root path and the project's relative path.
+ *
+ * @returns An Effect that yields a ProjectContext on success, or an AnalysisError if initialization fails. Requires a FileSystem service.
+ */
 export const initializeProjectContext = (args: {
   repoRoot: FullPath
   projectRelativePath: WorkspaceRelativePath

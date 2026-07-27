@@ -23,6 +23,15 @@ import type { MemberIdentityMemberPath } from '@gyomu/schema/typescript'
 import type { TypeStructureAnalysis } from '@gyomu/schema/schemas/typescript'
 import type { EntityName, TypeNode } from 'ts-morph'
 
+/**
+ * Analyzes a TypeScript AST node to generate a structured representation of its type, handling various node types including references, unions, functions, and literals.
+ *
+ * @param args The contextual arguments for type analysis, including the node to analyze and configuration options.
+ *
+ * @param nodeName Optional name path for the node being analyzed.
+ *
+ * @returns Returns a structured analysis result containing the type definition, discovered dependencies, and any reserved names identified during analysis.
+ */
 export const analyzeTypeStructures = (
   args: ChildAnalysisArg<TypeNode>,
   nodeName: Array<string> | undefined,

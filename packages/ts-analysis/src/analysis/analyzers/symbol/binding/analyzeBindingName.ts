@@ -5,6 +5,13 @@ import type { ArrayBindingPattern, BindingName, ObjectBindingPattern } from 'ts-
 import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../types.js'
 import type { BindingPatternAnalysis } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Analyzes a TypeScript binding name by dispatching to the appropriate analyzer for object or array binding patterns.
+ *
+ * @param args The context object containing the binding name node and analysis state.
+ *
+ * @returns The analysis result for the binding pattern.
+ */
 export const analyzeBindingName = (
   args: ChildAnalysisArg<BindingName>,
 ): MemberAnalysisWithReservedResult<BindingPatternAnalysis> => {

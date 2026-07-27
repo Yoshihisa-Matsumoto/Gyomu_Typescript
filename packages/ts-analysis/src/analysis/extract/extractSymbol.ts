@@ -11,6 +11,17 @@ import type { FileAnalysisMetadata, MemberIdentityMemberPath } from '@gyomu/sche
 import type { AnalysisOptions } from '@gyomu/schema'
 import type { SourceFileContext } from '../file/SourceFileContext.js'
 
+/**
+ * Extracts symbols, imports, and exports from a provided source file context using analysis options.
+ *
+ * @param context The source file context containing the AST and file metadata.
+ *
+ * @param metadata Metadata related to the file analysis process.
+ *
+ * @param options Optional configuration for the analysis.
+ *
+ * @returns An object containing lists of imported symbols, exported symbols, and internal symbols.
+ */
 export const extractSymbols = (
   context: SourceFileContext,
   metadata: FileAnalysisMetadata,

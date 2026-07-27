@@ -1,0 +1,25 @@
+{
+  "summary": "This directory contains structural analysis logic for decomposing complex TypeScript type nodes into their constituent components, enabling the extraction of detailed type definitions and structure representations from source code ASTs.",
+  "responsibilities": [
+    "Decompose complex TypeScript type nodes into semantic structures",
+    "Extract internal type components such as constraints, modifiers, and members",
+    "Resolve module specifiers and source path references for imported types",
+    "Support the recursive analysis of nested type structures"
+  ],
+  "concepts": [
+    "Type Nodes",
+    "AST Analysis",
+    "Type Structure Decomposition",
+    "Module Resolution"
+  ],
+  "relationships": [
+    "Analyzers recursively decompose complex type nodes into smaller, more granular type structures.",
+    "Module specifiers are resolved and normalized to correlate imported types with their underlying project-relative source files."
+  ],
+  "designDecisions": [
+    "Functional decomposition of type node analysis into isolated handler functions",
+    "Recursive traversal approach for handling nested type definitions",
+    "Standardized extraction of properties, modifiers, and type constraints across various node types"
+  ],
+  "importance": "Core"
+}

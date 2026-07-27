@@ -1,0 +1,28 @@
+{
+  "summary": "This directory is responsible for the static analysis of TypeScript class definitions. It processes various class-level constructs including member properties, methods, accessors, and constructors to extract structured metadata, visibility modifiers, and documentation for further application use.",
+  "responsibilities": [
+    "Extract metadata from TypeScript class declarations",
+    "Analyze class members including methods, properties, and accessors",
+    "Evaluate class heritage and generic parameters",
+    "Determine visibility modifiers and static status for class elements",
+    "Parse constructor signatures and parameter-defined properties"
+  ],
+  "concepts": [
+    "Class Metadata",
+    "Class Member Analysis",
+    "TypeScript Symbol Analysis",
+    "Access Modifiers",
+    "Constructor Signatures"
+  ],
+  "relationships": [
+    "The class analyzer coordinates the analysis of individual members like methods and properties to build a complete class representation.",
+    "Member analyzers utilize visibility utility functions to determine the access control status of properties and methods.",
+    "Constructor analysis integrates with member analysis to identify properties implicitly defined through constructor parameters."
+  ],
+  "designDecisions": [
+    "Modular analysis strategy where each class component has a dedicated processing function",
+    "Functional composition of analysis logic to extract metadata incrementally",
+    "Stateless extraction of AST node properties into structured metadata formats"
+  ],
+  "importance": "Core"
+}

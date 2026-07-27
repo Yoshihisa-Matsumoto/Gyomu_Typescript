@@ -11,6 +11,13 @@ import type { TypeAliasDeclaration, TypeNode } from 'ts-morph'
 import type { ChildAnalysisArg, TagAnalysisArg } from '../types.js'
 import type { SymbolAnalysis, SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Analyzes a TypeScript type alias declaration and registers the symbol analysis.
+ *
+ * @param args The argument object containing the type alias declaration and analysis context.
+ *
+ * @returns The analysis result containing the processed symbol, exported name, and export status.
+ */
 export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => {
   const {
     declaration,

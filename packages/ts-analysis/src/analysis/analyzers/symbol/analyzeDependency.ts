@@ -5,6 +5,17 @@ import type { DependencyCandidate, ImportAnalysis } from '@gyomu/schema/schemas/
 import type { MemberIdentityMemberPath } from '@gyomu/schema/typescript'
 import type { TypeParameterDeclaration, TypeReferenceNode } from 'ts-morph'
 
+/**
+ * Analyzes a symbol's dependency, determining if it originates from an import or the local file.
+ *
+ * @param passedIdentity The symbol identifier to analyze.
+ *
+ * @param imported A list of known imports for checking binding origins.
+ *
+ * @param memberPath The path to the member within the identity structure.
+ *
+ * @returns Returns a DependencyCandidate describing the source and scope of the symbol.
+ */
 export const analyzeDependency = (
   passedIdentity: string,
   imported: Array<ImportAnalysis>,
@@ -50,6 +61,18 @@ const reservedTypeNames = [
   'null',
   'bigint',
 ]
+
+/**
+ * Analyzes dependencies recursively from a TypeScript type reference node.
+ *
+ * @param typeRef The type reference node to analyze.
+ *
+ * @param reservedNames A list of names excluded from dependency analysis.
+ *
+ * @param options Optional configuration for the analysis.
+ *
+ * @returns An array of identified dependencies.
+ */
 export const analyzeDependencyFromTypeReference = (
   typeRef: TypeReferenceNode,
   imported: Array<ImportAnalysis>,
@@ -86,6 +109,13 @@ export const analyzeDependencyFromTypeReference = (
   return dependencies
 }
 
+/**
+ * Analyzes dependencies declared within type parameters, including constraints.
+ *
+ * @param params The type parameters to analyze.
+ *
+ * @returns An array of identified dependencies.
+ */
 export const analyzeDependencyFromTypeParameters = (
   params: Array<TypeParameterDeclaration>,
   imported: Array<ImportAnalysis>,

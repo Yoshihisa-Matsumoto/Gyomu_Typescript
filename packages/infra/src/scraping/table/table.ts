@@ -1,24 +1,59 @@
 import { GenericElement } from '../dom/element.js'
 import { TableRow } from './tableRow.js'
 
+/**
+ * Defines configuration options for table parsing, specifically whether the table includes a header row.
+ */
 export type TableOption = {
   headerExist: boolean
 }
+
+/**
+ * Represents an HTML table element, providing utilities to parse and extract tabular data into dictionary arrays.
+ */
 export class Table extends GenericElement<HTMLTableElement> {
+  /**
+   * Indicates whether the table is configured to treat the first row or thead as headers.
+   */
   #headerExist: boolean
+
+  /**
+   * Initializes a new Table instance.
+   *
+   * @param node The target HTML table element.
+   *
+   * @param { headerExist } Configuration object defining if a header exists. Defaults to true.
+   *
+   * @returns A new Table instance.
+   */
   constructor(node: HTMLTableElement, { headerExist }: TableOption = { headerExist: true }) {
     super(node)
     this.#headerExist = headerExist
     this.#build()
   }
 
+  /**
+   * The collection of table header rows parsed from the HTML table.
+   */
   __headers = new Array<TableRow>()
+
+  /**
+   * The collection of table data rows parsed from the HTML table.
+   */
   __records = new Array<TableRow>()
 
+  /**
+   * Returns all data rows extracted from the table.
+   *
+   * @returns An array of TableRow instances.
+   */
   get rows() {
     return this.__records
   }
 
+  /**
+   * Parses the HTML table node to populate header and record collections.
+   */
   #build() {
     this.__headers = new Array<TableRow>()
     this.__records = new Array<TableRow>()
@@ -64,6 +99,11 @@ export class Table extends GenericElement<HTMLTableElement> {
     })
   }
 
+  /**
+   * Converts table data rows into an array of dictionaries keyed by header names.
+   *
+   * @returns An array of objects representing rows, where keys correspond to column headers.
+   */
   toDictionaryArray() {
     const columnIndex = new Map<number, string>()
     let index = 0

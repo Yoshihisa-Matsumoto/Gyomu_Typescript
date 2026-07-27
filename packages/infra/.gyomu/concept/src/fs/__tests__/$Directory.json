@@ -1,0 +1,26 @@
+{
+  "summary": "This directory manages the core business logic and state transitions required to process user requests, acting as the central coordination layer between input validation, data persistence, and external service communication.",
+  "responsibilities": [
+    "Orchestrating complex business workflows",
+    "Enforcing domain-specific rules and constraints",
+    "Managing state transitions for core entities",
+    "Coordinating interactions between data layers and service adapters"
+  ],
+  "concepts": [
+    "Business Logic",
+    "Workflow Orchestration",
+    "Domain Entities",
+    "State Transitions"
+  ],
+  "relationships": [
+    "The orchestration layer governs the state transitions of domain entities based on business rules.",
+    "Business logic interacts with data layers to persist entity state changes.",
+    "Domain entities maintain internal consistency throughout the orchestration process."
+  ],
+  "designDecisions": [
+    "Centralization of business rules to ensure consistency",
+    "Separation of concerns by isolating logic from infrastructure",
+    "Explicit state management to track process progression"
+  ],
+  "importance": "Core"
+}

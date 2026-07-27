@@ -7,6 +7,17 @@ import type { Client } from 'ssh2'
 import type { IOError } from '@gyomu/schema'
 import type { Stream } from 'effect'
 
+/**
+ * Uploads a stream to a remote SFTP path using a Node.js writable stream.
+ *
+ * @param client The SFTP client instance.
+ *
+ * @param source The source stream to upload.
+ *
+ * @param remotePath The destination path on the SFTP server.
+ *
+ * @returns An Effect that completes when the upload finishes or fails with a NetworkError.
+ */
 export const uploadFromStreamUnderNodejs =
   (client: Client) =>
   <R>(

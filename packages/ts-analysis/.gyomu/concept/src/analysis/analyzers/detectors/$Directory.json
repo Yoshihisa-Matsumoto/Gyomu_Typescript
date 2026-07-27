@@ -1,0 +1,24 @@
+{
+  "summary": "This directory houses the testing infrastructure for algorithms responsible for identifying human-authored edits and manual formatting in documentation. It validates that detection logic correctly flags complex markdown, custom formatting, and unauthorized tags.",
+  "responsibilities": [
+    "Verifying the accuracy of document pattern detection algorithms",
+    "Ensuring markdown complexity is identified according to specifications",
+    "Confirming manual formatting is flagged for review",
+    "Validating that required generation tags are present and correctly structured"
+  ],
+  "concepts": [
+    "Detection Logic",
+    "Test Suites",
+    "Markdown Analysis",
+    "Validation Rules"
+  ],
+  "relationships": [
+    "Test suites exercise detection logic to ensure specific document patterns are identified correctly.",
+    "Validation rules define the expected output for various document formatting checks."
+  ],
+  "designDecisions": [
+    "Co-location of unit tests with detection modules to simplify maintenance",
+    "Isolation of testing logic from core analysis execution"
+  ],
+  "importance": "Supporting"
+}

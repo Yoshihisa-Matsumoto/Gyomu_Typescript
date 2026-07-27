@@ -15,6 +15,15 @@ import type { FileTransportInfo } from '@gyomu/schema/gyomu/file'
 import type { FileSystem, Stream } from 'effect'
 import type { Client, ConnectConfig, FileEntryWithStats, SFTPWrapper } from 'ssh2'
 
+/**
+ * Connects to the SFTP server using the provided configuration.
+ *
+ * @param client The SSH2 client instance.
+ *
+ * @param config The connection configuration settings.
+ *
+ * @returns An effect that completes when the connection is established or fails with a NetworkError.
+ */
 export const connectEffect = (client: Client, config: ConnectConfig) =>
   Effect.callback<undefined, NetworkError>((resume) => {
     const onReady = () => {
@@ -53,6 +62,15 @@ export const connectEffect = (client: Client, config: ConnectConfig) =>
     })
   })
 
+/**
+ * Lists the entries in a remote SFTP directory.
+ *
+ * @param sftp The SFTP client wrapper.
+ *
+ * @param remoteDir The remote directory path to list.
+ *
+ * @returns An Effect containing the list of file entries.
+ */
 export const listInternal = (sftp: SFTPWrapper, remoteDir: string) =>
   Effect.callback<Array<FileEntryWithStats>, NetworkError>((resume) => {
     sftp.readdir(remoteDir, (err, list) => {
@@ -72,6 +90,16 @@ export const listInternal = (sftp: SFTPWrapper, remoteDir: string) =>
       resume(Effect.succeed(list))
     })
   })
+
+/**
+ * Retrieves a list of file names from the specified remote directory.
+ *
+ * @param client The SSH2 client instance.
+ *
+ * @param path The remote directory path to list.
+ *
+ * @returns An effect resolving to an array of file names.
+ */
 export const list =
   (client: Client) =>
   (path: string): Effect.Effect<Array<string>, NetworkError> =>
@@ -81,6 +109,15 @@ export const list =
       ),
     )
 
+/**
+ * Retrieves file metadata (type, size, and modification date) for a given remote path.
+ *
+ * @param client The SSH2 client instance.
+ *
+ * @param path The remote file path.
+ *
+ * @returns An effect resolving to file status information.
+ */
 export const getFileInfo =
   (client: Client) =>
   (
@@ -179,6 +216,15 @@ const downloadDir =
       })
     })
 
+/**
+ * Downloads a file or directory from the SFTP server based on the provided transport information.
+ *
+ * @param client The SSH/SFTP client instance.
+ *
+ * @param transportInformation Configuration containing source and destination paths.
+ *
+ * @returns An Effect that completes with true if the download is successful, or fails with IOError or NetworkError.
+ */
 export const download =
   (client: Client) =>
   (
@@ -200,6 +246,15 @@ export const download =
       }),
     )
 
+/**
+ * Downloads a remote file as a stream of byte arrays.
+ *
+ * @param client The SSH/SFTP client instance.
+ *
+ * @param path The remote file path.
+ *
+ * @returns A Stream emitting file content as Uint8Array, or failing with IOError or NetworkError.
+ */
 export const downloadToStream =
   (client: Client) =>
   (path: string): Stream.Stream<Uint8Array, IOError | NetworkError> =>
@@ -302,6 +357,15 @@ const uploadDir =
       })
     })
 
+/**
+ * Uploads a file or directory to the SFTP server based on the provided transport information.
+ *
+ * @param client The SSH/SFTP client instance.
+ *
+ * @param transportInformation Configuration containing source and destination paths.
+ *
+ * @returns An Effect that completes with true if the upload is successful, or fails with IOError or NetworkError.
+ */
 export const upload =
   (client: Client) =>
   (
@@ -321,6 +385,17 @@ export const upload =
       }),
     )
 
+/**
+ * Uploads data from a stream to a remote file path.
+ *
+ * @param client The SSH/SFTP client instance.
+ *
+ * @param source The source stream of data.
+ *
+ * @param remotePath The destination remote path.
+ *
+ * @returns An Effect that completes when the upload is finished, or fails with a NetworkError.
+ */
 export const uploadFromStream =
   (client: Client) =>
   (

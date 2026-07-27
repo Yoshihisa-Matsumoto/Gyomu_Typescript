@@ -7,6 +7,15 @@ import type { ArrowFunction, CallExpression, Expression } from 'ts-morph'
 import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../types.js'
 import type { TypeAnalysis } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Analyzes a TypeScript Expression node to determine its type structure and dependencies, including support for effect schema identification and literal values.
+ *
+ * @param args The configuration object containing the expression node and analysis context.
+ *
+ * @param nodeName Optional name path for the expression node.
+ *
+ * @returns A result object containing the analyzed type structure, dependencies, and reserved names.
+ */
 export const analyzeExpression = (
   args: ChildAnalysisArg<Expression>,
   nodeName: Array<string> | undefined,

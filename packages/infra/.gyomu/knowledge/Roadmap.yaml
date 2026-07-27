@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=../../../../schemas/Roadmap.json
+
+planned: []
+
+inProgress: []
+
+completed: []
+
+backlog:
+  - title: fs-util内のメソッドの充実および多様化
+    description: |
+      現在のメソッドが人間がわかりやすい引数になっている。LLMにToolとして提供する際のメソッドを意識して作り直したい
+    priority: medium

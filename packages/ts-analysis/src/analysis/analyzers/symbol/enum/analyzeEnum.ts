@@ -14,6 +14,13 @@ import type {
   SymbolIdentity,
 } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Analyzes a TypeScript enum declaration and produces a structured symbol analysis.
+ *
+ * @param args The enum declaration analysis context.
+ *
+ * @returns An object containing the analyzed symbol analysis and its export status.
+ */
 export const analyzeEnum = (args: TagAnalysisArg<EnumDeclaration>) => {
   const typeName = args.declaration.getName()
   const {

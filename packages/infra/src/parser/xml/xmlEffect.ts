@@ -2,6 +2,15 @@ import { ValueError } from '@gyomu/schema'
 import { fromPromise } from '@gyomu/schema/effect'
 import type { Effect } from 'effect'
 
+/**
+ * Parses an XML string into a structured object.
+ *
+ * @param text The XML content string to be parsed.
+ *
+ * @param context Optional context identifier associated with the XML parsing.
+ *
+ * @returns An Effect that resolves to the parsed response object or fails with a ValueError.
+ */
 export const xmlEffect = <ResponseType>(
   text: string,
   context?: string,

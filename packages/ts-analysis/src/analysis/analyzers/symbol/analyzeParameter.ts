@@ -7,6 +7,13 @@ import type { NonDocumentablePropertyMemberAnalysis } from '@gyomu/schema/schema
 import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../types.js'
 import type { ParameterDeclaration } from 'ts-morph'
 
+/**
+ * Analyzes a TypeScript parameter declaration to extract its type, binding pattern, and metadata.
+ *
+ * @param args The input analysis arguments containing the parameter declaration node and associated context.
+ *
+ * @returns An analysis result containing the processed property member, identified dependencies, and any reserved names.
+ */
 export const analyzeParameter = (
   args: ChildAnalysisArg<ParameterDeclaration>,
 ): MemberAnalysisWithReservedResult<NonDocumentablePropertyMemberAnalysis> => {

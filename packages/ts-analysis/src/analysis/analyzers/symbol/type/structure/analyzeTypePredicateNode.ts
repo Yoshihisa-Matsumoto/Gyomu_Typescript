@@ -6,6 +6,17 @@ import type {
 import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../../types.js'
 import type { TypeNode, TypePredicateNode } from 'ts-morph'
 
+/**
+ * Analyzes a TypeScript TypePredicateNode to extract the assertion state, parameter name, and type structure.
+ *
+ * @param args The analysis arguments containing the context for the TypeNode.
+ *
+ * @param newMemberPath The current member path for identity tracking.
+ *
+ * @param node The TypePredicateNode to be analyzed.
+ *
+ * @returns A result object containing the analyzed type predicate structure, dependencies, and reserved names.
+ */
 export const analyzeTypePredicateNode = (
   args: ChildAnalysisArg<TypeNode>,
   newMemberPath: MemberIdentityMemberPath,

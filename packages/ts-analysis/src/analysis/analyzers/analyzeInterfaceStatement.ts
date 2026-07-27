@@ -4,6 +4,15 @@ import type { StatementAnalysisArgument, StatementAnalysisResult } from './types
 import type { InterfaceDeclaration } from 'ts-morph'
 import type { ExportAnalysis, SymbolAnalysis } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Analyzes an interface declaration statement to extract its exported members and associated symbols.
+ *
+ * @param statement The interface declaration to analyze.
+ *
+ * @param args The analysis arguments providing metadata and context for the current statement.
+ *
+ * @returns Returns a StatementAnalysisResult containing the extracted exports and symbol analysis data.
+ */
 export const analyzeInterfaceStatement = (
   statement: InterfaceDeclaration,
   args: StatementAnalysisArgument,

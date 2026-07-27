@@ -1,0 +1,26 @@
+{
+  "summary": "This directory manages the acquisition and integration of Tokyo Stock Exchange (JPX) market holiday data, providing service layers to fetch and format calendar records for application use.",
+  "responsibilities": [
+    "Fetch market holiday data from external sources",
+    "Parse and normalize date strings into standard formats",
+    "Provide service layers for holiday data retrieval",
+    "Integrate holiday fetcher functionality into the application dependency graph"
+  ],
+  "concepts": [
+    "Market Holidays",
+    "Holiday Fetcher",
+    "Data Integration",
+    "Service Layer"
+  ],
+  "relationships": [
+    "The holiday fetcher processes raw market data to produce standardized holiday records.",
+    "The service layer abstracts the fetching implementation to allow for consistent dependency injection across the system."
+  ],
+  "designDecisions": [
+    "Dependency injection through ZIO layers for service availability",
+    "Encapsulation of external data source logic",
+    "Separation of parsing and fetching concerns",
+    "Use of functional transformations for date normalization"
+  ],
+  "importance": "Core"
+}

@@ -1,0 +1,26 @@
+{
+  "summary": "This directory manages the core business logic and domain entities for the application, serving as the central repository for stateful operations and data processing rules. It ensures that business requirements are enforced independently of the user interface or external data sources.",
+  "responsibilities": [
+    "Orchestrating complex business processes and workflows",
+    "Maintaining domain entity state and integrity",
+    "Defining rules for data transformation and validation",
+    "Encapsulating core application behavior"
+  ],
+  "concepts": [
+    "Domain Entities",
+    "Business Rules",
+    "State Management",
+    "Domain Services"
+  ],
+  "relationships": [
+    "Domain services operate on domain entities to execute business processes.",
+    "Business rules define the constraints for entity state transitions.",
+    "State management ensures that domain entities reflect the latest business logic outcomes."
+  ],
+  "designDecisions": [
+    "Separation of concerns by isolating business logic from infrastructure",
+    "Implementation of domain-driven design principles",
+    "Encapsulation of entity logic to prevent external corruption of state"
+  ],
+  "importance": "Core"
+}

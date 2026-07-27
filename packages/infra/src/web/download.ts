@@ -7,6 +7,15 @@ import { fetchEffect } from './client.js'
 import type { FullPath } from '@gyomu/schema'
 import type { FileSystem } from 'effect'
 
+/**
+ * Creates a stream for downloading content from the specified URL.
+ *
+ * @param url The URL to download from.
+ *
+ * @param headers Optional HTTP request headers.
+ *
+ * @returns An Effect-based stream of byte chunks or a network error.
+ */
 export const webDownloadStream = (
   url: string,
   headers?: Record<string, string>,
@@ -30,6 +39,20 @@ export const webDownloadStream = (
       return networkStream(() => response.body!, `Stream error `)
     }),
   )
+
+/**
+ * Downloads content from a URL and saves it to a specified file path.
+ *
+ * @param url The source URL.
+ *
+ * @param destinationFilename The destination file path.
+ *
+ * @param headers Optional HTTP request headers.
+ *
+ * @returns An effect that returns true upon successful download.
+ *
+ * @requires {FileSystem.FileSystem} Requires an active file system service.
+ */
 export const webDownload = (
   url: string,
   destinationFilename: FullPath,

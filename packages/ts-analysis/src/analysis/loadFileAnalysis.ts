@@ -12,6 +12,15 @@ import type { FileSystem } from 'effect'
 import type { ProjectContext } from './project/ProjectContext.js'
 import type { ProjectRelativePath } from '@gyomu/schema/typescript'
 
+/**
+ * Loads and validates a FileAnalysis record from the file system for the specified source file.
+ *
+ * @param context The project context.
+ *
+ * @param sourceFilePath Path accepted by {@link Project.getSourceFile}.
+ *
+ * @returns An Effect that resolves to the FileAnalysis record or undefined if the analysis file does not exist. Requires FileSystem access and may fail with IOError or AnalysisError.
+ */
 export const loadFileAnalysis = (
   context: ProjectContext,
   /**

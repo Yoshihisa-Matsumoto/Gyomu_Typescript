@@ -1,0 +1,23 @@
+{
+  "summary": "This directory provides a service layer for accessing business and market calendar information, incorporating caching mechanisms to improve retrieval efficiency for temporal business logic.",
+  "responsibilities": [
+    "Providing business calendar data services",
+    "Managing market calendar retrieval",
+    "Caching calendar information for performance"
+  ],
+  "concepts": [
+    "Business Calendar",
+    "Market Calendar",
+    "Effect Layer",
+    "Service Cache"
+  ],
+  "relationships": [
+    "The Business Calendar Service utilizes an internal cache to optimize the retrieval of market calendar data.",
+    "The Effect Layer acts as the interface through which consumers access business calendar services."
+  ],
+  "designDecisions": [
+    "Use of Effect Layer pattern for service abstraction",
+    "Internal caching for performance optimization"
+  ],
+  "importance": "Core"
+}

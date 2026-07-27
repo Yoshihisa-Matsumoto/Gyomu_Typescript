@@ -7,6 +7,17 @@ import type {
 import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../../types.js'
 import type { MappedTypeNode, TypeNode } from 'ts-morph'
 
+/**
+ * Analyzes a TypeScript MappedTypeNode and returns its structure, including readonly/optional modifiers, constraint, value type, and name type.
+ *
+ * @param args The shared context and configuration for analyzing the child node.
+ *
+ * @param newMemberPath The path to the current member within the identity tree.
+ *
+ * @param node The MappedTypeNode to analyze.
+ *
+ * @returns A MemberAnalysisWithReservedResult containing the structure of the mapped type.
+ */
 export const analyzeMappedTypeNode = (
   args: ChildAnalysisArg<TypeNode>,
   newMemberPath: MemberIdentityMemberPath,

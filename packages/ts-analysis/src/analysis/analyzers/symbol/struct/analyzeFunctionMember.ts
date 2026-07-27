@@ -40,6 +40,15 @@ import type {
   TypeAnalysis,
 } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Analyzes a function or method member, determining its metadata, generics, and return type.
+ *
+ * @param args The analysis arguments containing the function node and context.
+ *
+ * @param args2 Configuration object including static status, visibility, member name, and optional JSDoc node.
+ *
+ * @returns An analysis result containing either non-documentable or documentable method member details.
+ */
 export const analyzeFunctionMember = (
   args: ChildAnalysisArg<
     | MethodSignature
@@ -148,6 +157,15 @@ export const analyzeFunctionMember = (
   )
 }
 
+/**
+ * Performs internal analysis for function or method members, including parameters, generics, and body evaluation.
+ *
+ * @param args The shared analysis context.
+ *
+ * @param args2 Internal configuration for the member being analyzed.
+ *
+ * @returns The internal analysis result containing member definition and extracted dependencies.
+ */
 export const analyzeFunctionMemberInternal = (
   args: ChildAnalysisArg<
     MethodSignature | FunctionTypeNode | MethodDeclaration | ConstructorDeclaration
@@ -315,6 +333,13 @@ export const analyzeFunctionMemberInternal = (
   }
 }
 
+/**
+ * Analyzes the body statements of a function, method, or constructor declaration for dependency extraction.
+ *
+ * @param args The analysis context including the function node.
+ *
+ * @returns A result object containing the list of analyzed dependencies found within the function body.
+ */
 export const analyzeFunctionBody = (
   args: ChildAnalysisArg<
     | MethodSignature

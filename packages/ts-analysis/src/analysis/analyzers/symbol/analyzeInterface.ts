@@ -18,6 +18,13 @@ import type {
   SymbolIdentity,
 } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Analyzes a TypeScript interface declaration, generating symbol metadata, extracting generics, heritage clauses, and interface members.
+ *
+ * @param args The argument object containing the interface declaration and analysis context.
+ *
+ * @returns An object containing the analyzed symbol, and flags indicating if it is a default or named export.
+ */
 export const analyzeInterface = (args: TagAnalysisArg<InterfaceDeclaration>) => {
   const {
     declaration,

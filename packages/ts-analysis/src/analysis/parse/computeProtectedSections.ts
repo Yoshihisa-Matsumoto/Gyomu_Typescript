@@ -1,5 +1,12 @@
 import type { HumanEditSignal, ProtectedSection } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Computes a list of protected code sections based on the provided human edit signals.
+ *
+ * @param signals The collection of signals identifying human-edited code regions.
+ *
+ * @returns An array of identified protected code sections.
+ */
 export const computeProtectedSections = (
   signals: Array<HumanEditSignal>,
 ): Array<ProtectedSection> => {

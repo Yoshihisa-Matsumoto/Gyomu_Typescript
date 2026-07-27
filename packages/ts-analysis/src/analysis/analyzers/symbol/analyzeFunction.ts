@@ -23,6 +23,13 @@ import type {
   SymbolIdentity,
 } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Performs static analysis on a function declaration, extracting its signature, members, generics, return type, and body analysis.
+ *
+ * @param args The argument object containing the function declaration and associated analysis metadata.
+ *
+ * @returns An object containing the analyzed symbol, along with its export status.
+ */
 export const analyzeFunction = (args: TagAnalysisArg<FunctionDeclaration>) => {
   const { sourceRelativePath, sourceFullText, imported, options, metadata, declaration } = args
   const typeName = args.declaration.getName() ?? ''

@@ -12,6 +12,17 @@ import type {
   SignatureAnalysis,
 } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Prepares and registers JSDoc analysis for a given symbol declaration.
+ *
+ * @param args Arguments required for signature identification.
+ *
+ * @param getSignature A callback to perform signature analysis.
+ *
+ * @param jsDocableNode Optional explicit JSDocable node.
+ *
+ * @returns The prepared symbol analysis data structure.
+ */
 export const prepareSymbolAnalysis = <T extends Node>(
   args: GetSignatureIdArg<T>,
   getSignature: (args: GetSignatureIdArg<T>, jsDocableNode?: JSDocableNode) => SignatureAnalysis,
@@ -62,11 +73,38 @@ export const prepareSymbolAnalysis = <T extends Node>(
     } satisfies SymbolPreparation
   return { id, signature, snippet: declaration.getText() }
 }
+
+/**
+ * Represents the prepared analysis data for a code symbol, including its identity, signature, and extracted documentation.
+ */
 export interface SymbolPreparation {
+  /**
+   * The unique identity of the symbol.
+   */
   id: SymbolId
+
+  /**
+   * The parsed JSDoc analysis result, if available.
+   */
   jsDoc?: JsDocAnalysis
+
+  /**
+   * The collection of parsed JSDoc segments.
+   */
   parsedJsDoc?: Array<ParsedJsDoc>
+
+  /**
+   * The calculated signature analysis details.
+   */
   signature: SignatureAnalysis
+
+  /**
+   * The original source code snippet for the symbol.
+   */
   snippet: string
+
+  /**
+   * Optional collection of identified dependencies.
+   */
   dependencyCandidates?: ReadonlyArray<DependencyCandidate> | undefined
 }

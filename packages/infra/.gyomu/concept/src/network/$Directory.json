@@ -1,0 +1,21 @@
+{
+  "summary": "This directory manages network data streams, providing a robust interface for reading data from network-based sources while ensuring consistent error handling through specific exception types.",
+  "responsibilities": [
+    "Creating network-based streams from data factories",
+    "Wrapping internal stream errors into standardized exception types"
+  ],
+  "concepts": [
+    "Network stream",
+    "Stream factory",
+    "Error wrapping"
+  ],
+  "relationships": [
+    "The network stream consumes a readable stream factory to establish data communication channels.",
+    "The network stream architecture translates internal stream errors into specific network error instances for consistent handling."
+  ],
+  "designDecisions": [
+    "Encapsulating stream creation logic to normalize error reporting",
+    "Using a factory-based approach for stream initialization"
+  ],
+  "importance": "Core"
+}

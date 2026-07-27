@@ -6,6 +6,15 @@ import type { IOError } from '@gyomu/schema'
 import type { Client } from 'ssh2'
 import type { Readable } from 'node:stream'
 
+/**
+ * Downloads a file from the SFTP server as an Effect Stream.
+ *
+ * @param client The SFTP client instance.
+ *
+ * @param path The remote file path to download.
+ *
+ * @returns A stream of Uint8Array chunks representing the file content, or an error if the download fails.
+ */
 export const downloadToStreamUnderNodejs =
   (client: Client) =>
   <R = never>(path: string): Stream.Stream<Uint8Array, IOError | NetworkError, R> =>

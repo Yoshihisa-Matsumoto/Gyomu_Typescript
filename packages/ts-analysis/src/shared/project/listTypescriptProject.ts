@@ -8,6 +8,13 @@ import { analyzePackageJson } from './analyzePackageJson.js'
 import { analyzePnpmWorkspaceYaml } from './analyzePnpmWorkspaceYaml.js'
 import type { WorkspaceProject } from './WorkspaceProject.js'
 
+/**
+ * Lists all TypeScript projects within a workspace by analyzing the PNPM workspace configuration or the current repository root.
+ *
+ * @param startDirectory The root directory to begin searching for the workspace configuration.
+ *
+ * @returns An Effect containing the WorkspaceContext populated with discovered projects.
+ */
 export const listTypescriptProject = (startDirectory: FullPath = FullPath(process.cwd())) => {
   return Effect.gen(function* () {
     const repositoryRoot = yield* findWorkspaceRoot(startDirectory)
@@ -79,6 +86,9 @@ export const listTypescriptProject = (startDirectory: FullPath = FullPath(proces
   })
 }
 
+/**
+ * Defines the workspace context including the repository root path, a list of workspace projects, and a dependency catalog.
+ */
 export type WorkspaceContext = {
   repositoryRoot: FullPath
   projects: ReadonlyArray<WorkspaceProject>

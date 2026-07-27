@@ -10,6 +10,23 @@ import type {
   TypeAnalysis,
 } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Analyzes an Effect schema primitive type definition and extracts its metadata and dependencies.
+ *
+ * @param name The name of the schema member.
+ *
+ * @param supportType The specific primitive schema kind.
+ *
+ * @param callExpression The AST node representing the schema primitive definition.
+ *
+ * @param imported The list of imported symbols.
+ *
+ * @param memberPath The path identifying the member in the module.
+ *
+ * @param annotations Optional schema annotations metadata.
+ *
+ * @returns Returns a member analysis result containing the primitive structure and dependencies, or undefined if the expression is invalid.
+ */
 export const analyzeEffectSchemaPrimitive = (
   name: string,
   supportType: Extract<SupportedSchemaKind, 'Primitive'>,

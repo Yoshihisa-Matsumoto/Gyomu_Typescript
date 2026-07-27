@@ -12,6 +12,17 @@ import type { ProjectContext } from './project/ProjectContext.js'
 import type { FileAnalysisTransient, ProjectRelativePath, SymbolId } from '@gyomu/schema/typescript'
 import type { DependencyCandidate } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Loads a file analysis result from storage if available, or performs a new analysis and saves it.
+ *
+ * @param context The project context.
+ *
+ * @param sourceFilePath Path accepted by {@link Project.getSourceFile}.
+ *
+ * @param option Optional analysis configuration.
+ *
+ * @returns An Effect that resolves to the file analysis result, metadata, and creation status.
+ */
 export const loadFileAnalysisResult = (
   context: ProjectContext,
   /**

@@ -1,0 +1,27 @@
+{
+  "summary": "This directory provides utilities to bridge Node.js stream interfaces with Effect streams. It enables seamless integration between legacy Node.js streaming primitives and the Effect ecosystem by managing resource lifecycles, transformation pipes, and callback conversions.",
+  "responsibilities": [
+    "Convert Node.js Readable streams into Effect streams",
+    "Pipe Effect streams through Node.js Transform streams",
+    "Manage the lifecycle and destruction of Node.js streams within Effect scopes",
+    "Convert Node.js style callbacks into Effect operations"
+  ],
+  "concepts": [
+    "Node.js Streams",
+    "Effect Streams",
+    "Resource Management",
+    "Stream Transformation",
+    "Callback Wrapping"
+  ],
+  "relationships": [
+    "Node.js streams are integrated into the Effect ecosystem by wrapping them within scoped resources to ensure proper cleanup.",
+    "Data transformation between ecosystems is achieved by piping Effect streams through Node.js Transform streams.",
+    "The directory distinguishes between general Duplex streams and specific Transform streams to maintain type safety during transformation operations."
+  ],
+  "designDecisions": [
+    "Enforce strict usage of Transform streams for pipeline operations to guarantee predictable data flow semantics.",
+    "Implement scoped resource management to automatically destroy Node.js streams upon completion or interruption.",
+    "Provide granular control over buffer sizes for stream conversions from Readable sources."
+  ],
+  "importance": "Supporting"
+}

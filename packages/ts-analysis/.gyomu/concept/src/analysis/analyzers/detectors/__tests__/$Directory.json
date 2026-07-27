@@ -1,0 +1,24 @@
+{
+  "summary": "This directory serves as a testing suite for detection logic used to identify specific patterns within documents. It validates that automated tools can accurately flag complex markdown, manual formatting, and missing tags to ensure content adheres to required standards.",
+  "responsibilities": [
+    "Verifying the accuracy of document pattern detection algorithms",
+    "Ensuring markdown complexity is identified according to specifications",
+    "Confirming manual formatting is flagged for review",
+    "Validating that required generation tags are present and correctly structured"
+  ],
+  "concepts": [
+    "Detection Logic",
+    "Test Suites",
+    "Markdown Analysis",
+    "Validation Rules"
+  ],
+  "relationships": [
+    "Test suites exercise detection logic to ensure specific document patterns are identified correctly.",
+    "Validation rules define the expected output for various document formatting checks."
+  ],
+  "designDecisions": [
+    "Co-location of unit tests with detection modules to simplify maintenance",
+    "Isolation of testing logic from core analysis execution"
+  ],
+  "importance": "Supporting"
+}

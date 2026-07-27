@@ -1,0 +1,26 @@
+{
+  "summary": "This directory manages the static analysis and metadata extraction of Effect schema definitions. It provides logic to identify, validate, and decompose complex and primitive schema expressions into a structured format for further processing.",
+  "responsibilities": [
+    "Verify whether a given initializer expression constitutes a valid Effect schema",
+    "Analyze and extract metadata from primitive schema types",
+    "Deconstruct non-primitive schema structures like Structs, Unions, and Arrays",
+    "Identify dependencies within schema definitions"
+  ],
+  "concepts": [
+    "Effect schema",
+    "Schema metadata",
+    "Type analysis",
+    "Initializer expression"
+  ],
+  "relationships": [
+    "The analysis process begins by checking if an initializer is a supported Effect schema type before performing full metadata extraction.",
+    "Primitive and non-primitive analysis routines are invoked based on the type classification of the schema expression.",
+    "Schema analysis relies on extracting metadata and underlying structural definitions to map complex types effectively."
+  ],
+  "designDecisions": [
+    "Categorization of schema analysis logic based on primitive versus non-primitive type complexity",
+    "Validation-first approach to schema processing",
+    "Encapsulation of schema identification logic separate from deep metadata extraction"
+  ],
+  "importance": "Core"
+}

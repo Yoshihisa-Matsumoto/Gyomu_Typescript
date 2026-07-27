@@ -14,6 +14,13 @@ import type { GetSignatureIdArg, MemberAnalysisResult, TagAnalysisArg } from '..
 import type { VariableDeclaration } from 'ts-morph'
 import type { SymbolAnalysis, SymbolIdentity, TypeAnalysis } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Analyzes a variable declaration and registers its symbol analysis metadata.
+ *
+ * @param args The arguments for analyzing the variable declaration, including declaration context and metadata.
+ *
+ * @returns Returns an object containing the analyzed symbol and a boolean indicating if it is a default export.
+ */
 export const analyzeVariable = (args: TagAnalysisArg<VariableDeclaration>) => {
   const statement = args.declaration.getVariableStatement()
   const variableName = args.declaration.getName()

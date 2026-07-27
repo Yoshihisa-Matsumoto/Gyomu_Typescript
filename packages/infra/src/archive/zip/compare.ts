@@ -42,6 +42,16 @@ import type {
 // };
 
 const summaryFilename = '@summary.csv'
+
+/**
+ * Compares two zip files and generates a summary of differences.
+ *
+ * @param option The configuration options for comparing zip files.
+ *
+ * @param compareFunc Optional custom comparison function.
+ *
+ * @returns An Effect yielding an array of DiffSummary or undefined if no differences were found, requiring FileSystem and ZipService.
+ */
 export const compareZip = (
   option: ZipCompareOption,
   compareFunc?: (option: {
@@ -232,6 +242,24 @@ const writeCsvIfNeeded = (
         )
       })
     : Effect.void
+
+/**
+ * Executes the comparison workflow between two zip file entries.
+ *
+ * @param sourceFile The source zip file entry.
+ *
+ * @param destinationFile The destination zip file entry.
+ *
+ * @param resultPath The path to store comparison results.
+ *
+ * @param compareFunc The comparison function to execute.
+ *
+ * @param targetIgnoreRule Optional rules for ignoring specific differences.
+ *
+ * @param option The comparison configuration options.
+ *
+ * @returns An Effect yielding the diff results, filtered details, and original diff count.
+ */
 export const runCompareFuncFlow = (
   sourceFile: ZipFileEntryItem,
   destinationFile: ZipFileEntryItem,

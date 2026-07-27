@@ -4,6 +4,15 @@ import type { StatementAnalysisArgument, StatementAnalysisResult } from './types
 import type { TypeAliasDeclaration } from 'ts-morph'
 import type { ExportAnalysis, SymbolAnalysis } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Analyzes a TypeScript type alias declaration statement, tracking exports and symbol definitions.
+ *
+ * @param statement The type alias declaration to analyze.
+ *
+ * @param args The context and configuration for the statement analysis.
+ *
+ * @returns Returns the statement analysis result, containing discovered exports and symbols.
+ */
 export const analyzeTypeAliasStatement = (
   statement: TypeAliasDeclaration,
   args: StatementAnalysisArgument,

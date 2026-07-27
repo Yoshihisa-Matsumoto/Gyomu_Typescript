@@ -21,6 +21,13 @@ import type {
   TypeProperty,
 } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Analyzes an Effect schema expression for non-primitive types such as Literal, Struct, Union, or Array, extracting its structure and dependencies.
+ *
+ * @param args The configuration object containing the schema name, support type category, source call expression, owner symbol information, imports, member path, schema annotations, and dependency candidates.
+ *
+ * @returns The analysis result containing the structured member representation and associated dependencies, or undefined if the schema cannot be analyzed.
+ */
 export const analyzeEffectSchemaForNonPrimitive = (args: {
   name: string
   supportType: Exclude<SupportedSchemaKind, 'Primitive' | 'Reference'>

@@ -251,6 +251,9 @@ class BusinessCalendarImpl implements BusinessCalendar {
   }
 }
 
+/**
+ * An Effect Layer that provides the BusinessCalendarService, handling market calendar retrieval with an internal cache.
+ */
 export const BusinessCalendarServiceLayer = Layer.effect(
   BusinessCalendarService,
   fromSync(GyomuError, (e) => ({

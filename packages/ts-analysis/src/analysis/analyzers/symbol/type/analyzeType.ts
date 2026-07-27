@@ -1,4 +1,4 @@
-import { Node } from 'ts-morph'
+import { Node, SyntaxKind } from 'ts-morph'
 import { detectEffectSignals } from '../analyzeEffectType.js'
 import { tracePlaceIdentity } from '../../../trace/traceUtil.js'
 import { analyzeTypeStructures } from './analyzeTypeStructure.js'
@@ -10,16 +10,39 @@ import type { MemberIdentityMemberPath } from '@gyomu/schema/typescript'
 import type { TypeAnalysis } from '@gyomu/schema/schemas/typescript'
 import type { Expression, MethodSignature, TypeNode } from 'ts-morph'
 
+/**
+ * Generates a type analysis result representing the 'void' type.
+ *
+ * @returns A result object containing the member details for 'void'.
+ */
 export const getVoidTypeResult = (): MemberAnalysisWithReservedResult<TypeAnalysis> => ({
   member: { text: 'void', source: 'typescript' },
   dependencies: [],
   reservedNames: [],
 })
+
+/**
+ * Generates a type analysis result representing the 'undefined' type.
+ *
+ * @returns A result object containing the member details for 'undefined'.
+ */
 export const getUndefinedTypeResult = (): MemberAnalysisWithReservedResult<TypeAnalysis> => ({
   member: { text: 'undefined', source: 'typescript' },
   dependencies: [],
   reservedNames: [],
 })
+
+/**
+ * Analyzes a TypeScript node, expression, or method signature to produce a TypeAnalysis result.
+ *
+ * @param args The analysis context including the node to process and source information.
+ *
+ * @param nodeName Optional path segment names for the node.
+ *
+ * @param rawText Optional fallback text representation for the node.
+ *
+ * @returns A member analysis result containing dependencies, reserved names, and type structures.
+ */
 export const analyzeType = (
   args: ChildAnalysisArg<TypeNode | Expression | MethodSignature>,
   nodeName: Array<string> | undefined,
@@ -41,7 +64,11 @@ export const analyzeType = (
   tracePlaceIdentity(args, args.options, 'analyzeType')
   // if (node != undefined)
   {
-    if (Node.isTypeNode(node) && !Node.isExpression(node)) {
+    if (Node.isExpression(node)) {
+      // console.log(`Expression: ${JSON.stringify(nodeName)} ${node.getKindName()}`)
+      const newMemberPath: MemberIdentityMemberPath = [...memberPath, ...(nodeName ?? [])]
+      return analyzeExpression({ ...args, node: node, memberPath: newMemberPath }, undefined)
+    } else if (Node.isTypeNode(node)) {
       const newMemberPath = [...memberPath, ...(nodeName ?? [])]
       const genericsParametersResult = analyzeGenericsParameters({
         ...args,
@@ -84,10 +111,6 @@ export const analyzeType = (
         dependencies: [...genericsParametersResult.dependencies, ...structureResult.dependencies],
         reservedNames: [...genericsParametersResult.reservedNames],
       }
-    } else if (Node.isExpression(node)) {
-      // console.log(`Expression: ${JSON.stringify(nodeName)} ${node.getKindName()}`)
-      const newMemberPath: MemberIdentityMemberPath = [...memberPath, ...(nodeName ?? [])]
-      return analyzeExpression({ ...args, node: node, memberPath: newMemberPath }, undefined)
     } else if (Node.isMethodSignature(node)) {
       // console.log(`MethodSignature: ${JSON.stringify(nodeName)}`)
       const genericsParametersResult = analyzeGenericsParameters(args)
@@ -113,42 +136,43 @@ export const analyzeType = (
         ],
       }
     }
-    // const kind = (node as Node).getKind()
-    // switch (kind) {
-    //   case SyntaxKind.VoidKeyword:
-    //     return {
-    //       member: {
-    //         text: 'void',
-    //         source: 'typescript',
-    //       },
-    //       dependencies: [],
-    //       reservedNames: [],
-    //     }
-    //   case SyntaxKind.NeverKeyword:
-    //     return {
-    //       member: {
-    //         text: 'never',
-    //         source: 'typescript',
-    //       },
-    //       dependencies: [],
-    //       reservedNames: [],
-    //     }
-    //   case SyntaxKind.UnknownKeyword:
-    //     return {
-    //       member: {
-    //         text: 'unknown',
-    //         source: 'typescript',
-    //       },
-    //       dependencies: [],
-    //       reservedNames: [],
-    //     }
-    // }
+    const kind = (node as Node).getKind()
+    switch (kind) {
+      case SyntaxKind.VoidKeyword:
+        return {
+          member: {
+            text: 'void',
+            source: 'typescript',
+          },
+          dependencies: [],
+          reservedNames: [],
+        }
+      case SyntaxKind.NeverKeyword:
+        return {
+          member: {
+            text: 'never',
+            source: 'typescript',
+          },
+          dependencies: [],
+          reservedNames: [],
+        }
+      case SyntaxKind.UnknownKeyword:
+        return {
+          member: {
+            text: 'unknown',
+            source: 'typescript',
+          },
+          dependencies: [],
+          reservedNames: [],
+        }
+    }
     // console.log(`${(node as Node).getKindName()}`)
     // console.dir(node, { depth: null })
   }
   console.log(`!!!!WHY???!!!!  ${rawText} `)
-  console.log(args.sourceRelativePath)
+  console.log(`${(node as Node).getKindName()}`)
   console.trace()
+
   {
     return {
       member: {

@@ -1,0 +1,24 @@
+{
+  "summary": "This directory centralizes the service layer responsible for managing milestone lifecycles, including the creation, verification, polling, and retrieval of milestone definitions within the system.",
+  "responsibilities": [
+    "Verify existence of defined milestones",
+    "Handle milestone registration processes",
+    "Monitor milestone status through polling mechanisms",
+    "Retrieve and manage milestone definition data"
+  ],
+  "concepts": [
+    "Milestone definitions",
+    "Service layer",
+    "Lifecycle management",
+    "Polling"
+  ],
+  "relationships": [
+    "The service layer orchestrates interactions with milestone definitions to facilitate tracking and state management.",
+    "Polling mechanisms rely on existing milestone definitions to verify and update the current status of tracked items."
+  ],
+  "designDecisions": [
+    "Centralization of milestone operations within a dedicated service layer",
+    "Separation of concerns by isolating milestone management logic from business process execution"
+  ],
+  "importance": "Core"
+}

@@ -1,0 +1,27 @@
+{
+  "summary": "This directory manages the abstraction, parsing, and structured extraction of HTML table data. It provides the necessary components to represent table rows, columns, and overall structures, enabling the transformation of web table elements into consumable data formats.",
+  "responsibilities": [
+    "Abstracting HTML table elements into logical programmatic structures",
+    "Parsing and extracting structured data from table rows and columns",
+    "Managing complex table attributes like colspan and rowspan",
+    "Configuring parsing behavior for headers and column metadata"
+  ],
+  "concepts": [
+    "HTML Table Parsing",
+    "Table Data Extraction",
+    "Table Rows",
+    "Table Columns",
+    "Tabular Data Structure"
+  ],
+  "relationships": [
+    "The Table class acts as a container that orchestrates multiple TableRow instances to represent the complete document structure.",
+    "Each TableRow contains a collection of TableColumn instances which represent the individual data cells.",
+    "Configuration options defined for the Table and TableColumn control how the extraction logic processes specific HTML elements."
+  ],
+  "designDecisions": [
+    "Use of class-based abstractions to encapsulate row and column logic",
+    "Support for custom configuration interfaces to handle header row detection and original column identification",
+    "Encapsulation of HTML attribute handling like rowspan and colspan within the domain objects"
+  ],
+  "importance": "Core"
+}

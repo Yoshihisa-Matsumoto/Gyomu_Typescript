@@ -1,0 +1,25 @@
+{
+  "summary": "This directory is dedicated to the extraction of metadata and structural information from TypeScript source files, specifically focusing on parsing JSDoc comments, imports, exports, and symbol definitions to support downstream analysis.",
+  "responsibilities": [
+    "Parse JSDoc comments from code nodes into structured objects",
+    "Identify and extract exported symbols from source files",
+    "Locate and process import statements within a file context",
+    "Extract raw documentation blocks for further processing"
+  ],
+  "concepts": [
+    "JSDoc parsing",
+    "Symbol extraction",
+    "Source code metadata",
+    "Exported nodes"
+  ],
+  "relationships": [
+    "JSDoc parsers operate on specific documentation nodes to create structured metadata representations.",
+    "Symbol extraction utilizes source file contexts to inventory the definitions and exports defined within a module."
+  ],
+  "designDecisions": [
+    "Functional approach to parsing using dedicated extraction modules",
+    "Separation of raw documentation retrieval from structured parsing",
+    "Context-driven extraction for symbols and imports"
+  ],
+  "importance": "Core"
+}

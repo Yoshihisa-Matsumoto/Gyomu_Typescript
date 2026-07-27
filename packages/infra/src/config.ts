@@ -9,6 +9,9 @@ import type { Config } from 'effect'
 //   return ConfigProvider.orElse(dotEnv, ConfigProvider.fromEnv());
 // });
 
+/**
+ * Provides a production configuration layer that prioritizes environment variables and falls back to a .env file if available.
+ */
 export const ConfigProviderLive = Layer.unwrap(
   Effect.map(
     Effect.gen(function* () {
@@ -42,10 +45,17 @@ export const ConfigProviderLive = Layer.unwrap(
     ConfigProvider.layer,
   ),
 )
+
+/**
+ * Provides a test configuration layer with predefined mock settings.
+ */
 export const ConfigProviderTest = ConfigProvider.fromUnknown({
   LOG_LEVEL: 'debug',
 }).pipe(ConfigProvider.layer)
 
+/**
+ * A service that provides functionality to load application configurations from environment variables or local JSON files.
+ */
 export class ConfigService extends Context.Service<
   ConfigService,
   {
@@ -91,14 +101,23 @@ export class ConfigService extends Context.Service<
     }
   }),
 }) {
+  /**
+   * The production layer for the ConfigService.
+   */
   static readonly live = Layer.effect(this, this.make)
 }
 
+/**
+ * Combines the production provider and service into a complete layer for dependency injection.
+ */
 export const ConfigLayer = Layer.mergeAll(
   ConfigProviderLive,
   ConfigService.live,
 ) satisfies Layer.Layer<ConfigService, ConfigError, FileSystem.FileSystem>
 
+/**
+ * Combines the test provider and service into a layer for testing environments.
+ */
 export const ConfigMockLayer = Layer.mergeAll(ConfigProviderTest, ConfigService.live)
 
 function wrapConfigError(

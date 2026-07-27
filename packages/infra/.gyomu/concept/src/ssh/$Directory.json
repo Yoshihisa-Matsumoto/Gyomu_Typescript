@@ -1,0 +1,27 @@
+{
+  "summary": "This directory contains the SSH integration layer, managing the lifecycle of secure remote connections and command execution. It provides the core infrastructure for interacting with remote hosts through established SSH protocols.",
+  "responsibilities": [
+    "Establishing and maintaining secure SSH connections",
+    "Executing commands on remote hosts",
+    "Managing SSH session lifecycles",
+    "Validating connectivity and execution logic via testing"
+  ],
+  "concepts": [
+    "SSH Connection",
+    "Remote Command Execution",
+    "SSH Client",
+    "Execution Status",
+    "Verification Logic"
+  ],
+  "relationships": [
+    "The SSH client orchestrates connection establishment as a prerequisite for remote command execution.",
+    "Command execution relies on the state managed by the SSH client to interact with remote servers.",
+    "Test suites define the expected behaviors for core SSH operations and ensure verification logic remains effective."
+  ],
+  "designDecisions": [
+    "Encapsulation of low-level SSH protocol interactions within a high-level client",
+    "Centralized management of connection effects",
+    "Co-location of tests with implementation to facilitate maintenance"
+  ],
+  "importance": "Core"
+}

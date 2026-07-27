@@ -4,9 +4,25 @@ import { runSync } from 'effect/Effect'
 import type { Duplex, Readable, Transform } from 'node:stream'
 // import { NodeStream } from '@effect/platform-node';
 
+/**
+ * Creates a scoped resource from a Node.js Duplex stream, ensuring the stream is destroyed when the scope is closed.
+ *
+ * @param create A factory function that returns a Node.js Duplex stream.
+ *
+ * @returns An Effect representing the scoped acquisition and automatic release of the stream.
+ */
 export const acquireNodeStream = <T extends Duplex>(create: () => T) =>
   Effect.acquireRelease(Effect.sync(create), (stream) => Effect.sync(() => stream.destroy()))
 
+/**
+ * Transforms an Effect Stream by piping it through a Node.js Duplex stream.
+ *
+ * @param duplex The Node.js Duplex stream to use for transformation.
+ *
+ * @param input The source Effect stream.
+ *
+ * @returns A new Effect Stream resulting from the transformation.
+ */
 export const throughNodeStream =
   <I, O>(duplex: Duplex) =>
   <E, R>(input: Stream.Stream<I, E, R>): Stream.Stream<O, E | IOError, R> =>
@@ -131,6 +147,7 @@ export const throughNodeStream =
 //         if (!duplex.destroyed) duplex.destroy();
 //       });
 //     });
+
 /**
  * Connects a Node.js Transform stream to an Effect Stream.
  *
@@ -146,6 +163,12 @@ export const throughNodeStream =
  * Note:
  * - Readable (source) streams are NOT handled here.
  *   They must be converted separately (e.g. via Effect + Stream.async).
+ *
+ * @param create A factory function that returns a Node.js Transform stream.
+ *
+ * @param input The input Effect Stream to be piped through the transform stream.
+ *
+ * @returns An Effect Stream representing the transformed output.
  */
 export const throughNodeStreamScoped =
   <I, O>(create: () => Transform) =>
@@ -161,6 +184,14 @@ export const throughNodeStreamScoped =
 //         throughNodeStream<I, O>(t)<E, R>(input),
 //       ),
 //     );
+
+/**
+ * Converts a Node.js Readable stream into an Effect Stream, ensuring it is destroyed upon completion or interruption.
+ *
+ * @param readable The Node.js Readable stream.
+ *
+ * @returns An Effect Stream emitting data from the source.
+ */
 export const fromReadable = (readable: Readable) => {
   // readable.resume();
   return Stream.fromAsyncIterable(readable, (e) =>
@@ -187,10 +218,15 @@ export const fromReadable = (readable: Readable) => {
 //   });
 
 /**
+ * Creates an Effect Stream from a readable Node.js stream with manual buffer size control.
+ *
+ * @param readable The source Node.js Readable stream.
+ *
+ * @param options Optional configuration for read buffer size.
+ *
+ * @returns An Effect Stream emitting Uint8Array chunks.
+ *
  * @deprecated こちらは backpressure 対応のための実験的な実装。安易に使用しないこと。
- * @param readable
- * @param options
- * @returns
  */
 export const fromReadableControlled = (readable: Readable, options?: { chunkSize?: number }) => {
   const chunkSize = options?.chunkSize ?? 64 * 1024 // デフォルト64KB
@@ -244,6 +280,14 @@ export const fromReadableControlled = (readable: Readable, options?: { chunkSize
     ),
   )
 }
+
+/**
+ * Wraps a Node.js style callback function into an Effect operation.
+ *
+ * @param f A function that takes a Node.js style callback.
+ *
+ * @returns An Effect that executes the callback and handles completion or errors.
+ */
 export const fromNodeCallback = <A>(f: (cb: (err: Error | null, result?: A) => void) => void) =>
   Effect.callback<A, IOError>((resume) => {
     f((err, result) => {

@@ -4,6 +4,13 @@ import type { BindingPatternAnalysis } from '@gyomu/schema/schemas/typescript'
 import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../types.js'
 import type { ArrayBindingPattern } from 'ts-morph'
 
+/**
+ * Analyzes an ArrayBindingPattern node to extract binding elements, dependencies, and reserved names.
+ *
+ * @param args The analysis arguments containing the ArrayBindingPattern node.
+ *
+ * @returns An analysis result containing the array binding pattern structure, identified dependencies, and reserved names.
+ */
 export const analyzeArrayBindingPattern = (
   args: ChildAnalysisArg<ArrayBindingPattern>,
 ): MemberAnalysisWithReservedResult<BindingPatternAnalysis> => {

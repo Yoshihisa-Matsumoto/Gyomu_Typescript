@@ -6,6 +6,11 @@ import { parseXmlEffect, textEffect } from './xml.js'
 import { jsonEffect } from './json.js'
 import type { FetchResult } from './json.js'
 
+/**
+ * Sends a POST request with form-encoded data to the specified URL and parses the XML response.
+ *
+ * @returns An Effect that yields the parsed response value, HTTP status code, and any optional extra attributes upon success, or a NetworkError or ValueError upon failure.
+ */
 export function postAndReceiveXml<ResponseType>(
   url: string,
   input: Record<string, string>,
@@ -96,6 +101,12 @@ const validate =
           }),
       ),
     )
+
+/**
+ * Sends a JSON HTTP request using the specified method and URL, then parses the JSON response.
+ *
+ * @returns An Effect that yields the parsed FetchResult on success, or a NetworkError or ValueError upon failure.
+ */
 export function fetchJson<RequestType, ResponseType>(
   url: string,
   method: 'GET' | 'POST' | 'DELETE' | 'PATCH',

@@ -23,6 +23,17 @@ import type {
   TypeProperty,
 } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Analyzes a property signature or declaration within a type, returning the computed member analysis.
+ *
+ * @param args The analysis context including the property node and metadata.
+ *
+ * @param isStatic Whether the property is static.
+ *
+ * @param visibility The visibility level of the property.
+ *
+ * @returns The computed analysis result for the property member.
+ */
 export const analyzeTypePropertyMember = (
   args: ChildAnalysisArg<PropertySignature | PropertyDeclaration>,
   isStatic: boolean = false,

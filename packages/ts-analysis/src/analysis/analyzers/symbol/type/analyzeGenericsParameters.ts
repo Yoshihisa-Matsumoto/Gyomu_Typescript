@@ -8,6 +8,13 @@ import type {
 } from '../../types.js'
 import type { Expression, MethodSignature, TypeNode } from 'ts-morph'
 
+/**
+ * Analyzes the generic type parameters of a node and returns their properties, constraints, and dependencies.
+ *
+ * @param args The analysis arguments containing the node to inspect.
+ *
+ * @returns An analysis result containing the list of generic properties, aggregated dependencies, and reserved parameter names.
+ */
 export const analyzeGenericsParameters = (
   args: ChildAnalysisArg<TypeNode | Expression | MethodSignature>,
 ): MemberAnalysisWithReservedResult<Array<GenericsProperty>> => {

@@ -1,0 +1,24 @@
+{
+  "summary": "This directory manages the core business logic and domain model entities. It defines the state, rules, and fundamental operations that govern the application's domain, ensuring consistency across all functional modules.",
+  "responsibilities": [
+    "Defining core domain models and data structures",
+    "Encapsulating business rules and validation logic",
+    "Managing state transitions and domain behavior"
+  ],
+  "concepts": [
+    "Domain entities",
+    "Business rules",
+    "State models",
+    "Validation logic"
+  ],
+  "relationships": [
+    "Domain entities enforce business rules to maintain data integrity.",
+    "Validation logic ensures that state transitions adhere to defined business constraints."
+  ],
+  "designDecisions": [
+    "Domain-driven design to isolate business logic from infrastructure concerns",
+    "Immutability for state objects to ensure predictability",
+    "Encapsulation of logic within entities to prevent leakage"
+  ],
+  "importance": "Core"
+}

@@ -1,0 +1,26 @@
+{
+  "summary": "This directory manages the core SFTP communication logic, facilitating file operations like reading, writing, and listing files while handling the complexities of connection management and streaming data between local and remote environments.",
+  "responsibilities": [
+    "Establishing and maintaining SFTP server connections",
+    "Executing remote file operations including listing, downloading, and uploading",
+    "Managing data streaming for large file transfers",
+    "Handling session-based execution and network error management"
+  ],
+  "concepts": [
+    "SFTP Session",
+    "Remote File Operations",
+    "Data Streaming",
+    "Connection Lifecycle"
+  ],
+  "relationships": [
+    "The SFTP session provides the context required for remote file operations to interact with the server.",
+    "Data streams bridge the gap between local resources and remote file paths during upload and download processes.",
+    "Connection management logic ensures that operations are executed within a valid, error-handled session wrapper."
+  ],
+  "designDecisions": [
+    "Use of functional wrappers to encapsulate session management and error handling",
+    "Separation of high-level protocol logic from Node.js-specific stream implementations",
+    "Abstraction of remote operations into composable Effect-based functions"
+  ],
+  "importance": "Core"
+}

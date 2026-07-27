@@ -23,6 +23,11 @@ import type {
 } from 'ts-morph'
 import type { JsDocAnalysis, ParsedJsDoc, SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Prepares analysis for a property member by constructing its identity and delegating to member analysis.
+ *
+ * @returns A structure containing the symbol identification, JSDoc metadata, location, and code snippet.
+ */
 export const preparePropertyAnalysis = (
   sourcePath: ProjectRelativePath,
   metadata: FileAnalysisMetadata,
@@ -62,6 +67,11 @@ export const preparePropertyAnalysis = (
   })
 }
 
+/**
+ * Prepares analysis for a method or accessor member by initializing its identity and delegating to member analysis.
+ *
+ * @returns A structure containing the symbol identification, JSDoc metadata, location, and code snippet.
+ */
 export const prepareMethodAnalysis = (
   sourcePath: ProjectRelativePath,
   metadata: FileAnalysisMetadata,
@@ -96,6 +106,11 @@ export const prepareMethodAnalysis = (
   })
 }
 
+/**
+ * Initializes and returns the identity and unique symbol ID for a method based on its owner and signature.
+ *
+ * @returns An object containing the unique symbol ID and identity metadata.
+ */
 export const initializeMethodIdentity = (
   ownerSymbolId: SymbolId,
   ownerSymbolIdentity: SymbolIdentity,
@@ -119,6 +134,11 @@ export const initializeMethodIdentity = (
   )
 }
 
+/**
+ * Performs the core analysis of a member node, including extracting and registering its JSDoc and capturing location metadata.
+ *
+ * @returns A structure containing symbol identification, JSDoc metadata, location info, and the raw code snippet.
+ */
 export const prepareMemberAnalysis = (args: {
   sourcePath: ProjectRelativePath
   metadata: FileAnalysisMetadata

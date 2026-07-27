@@ -1,0 +1,31 @@
+{
+  "summary": "This directory manages the core business logic and state transitions for the domain, acting as the central orchestrator for processing rules, validation, and domain entities. It encapsulates the fundamental operations that define the application's primary behavioral capabilities.",
+  "responsibilities": [
+    "Orchestrating domain-specific workflows and business rules",
+    "Maintaining and managing the state of core domain entities",
+    "Validating input data against domain constraints",
+    "Providing service-level operations to external consumers",
+    "Defining the runtime environment context"
+  ],
+  "concepts": [
+    "Domain Entities",
+    "Business Rules",
+    "State Management",
+    "Workflow Orchestration",
+    "Validation Logic",
+    "Runtime Environment"
+  ],
+  "relationships": [
+    "Domain entities hold the state that business rules act upon.",
+    "Workflow orchestrators ensure that validation logic is applied before state transitions occur.",
+    "Business rules define the constraints for valid state changes within the domain.",
+    "The runtime environment provides the necessary context for domain operations to execute."
+  ],
+  "designDecisions": [
+    "Encapsulation of business logic to prevent leakage into infrastructure layers",
+    "Dependency inversion to keep domain logic independent of external storage or delivery mechanisms",
+    "Immutability for state snapshots to ensure predictable entity transitions",
+    "Provision of runtime metadata via a dedicated context layer"
+  ],
+  "importance": "Core"
+}

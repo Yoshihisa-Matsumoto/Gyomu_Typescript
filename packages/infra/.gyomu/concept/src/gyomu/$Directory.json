@@ -1,0 +1,22 @@
+{
+  "summary": "This directory centralizes the persistence and repository abstraction for gyomu-related domain entities, acting as the bridge between business logic and the underlying database layer.",
+  "responsibilities": [
+    "Encapsulating database access logic",
+    "Providing service layers for gyomu entities",
+    "Managing persistent data storage interactions"
+  ],
+  "concepts": [
+    "Repository Layer",
+    "Service Definition",
+    "Database Access"
+  ],
+  "relationships": [
+    "The repository layer provides service access to persistent gyomu data for higher-level business components.",
+    "The use of dependency layers allows the application to inject specific data access implementations into the broader system."
+  ],
+  "designDecisions": [
+    "Utilization of service layers to abstract database persistence",
+    "Implementation of dependency injection via layer containers"
+  ],
+  "importance": "Core"
+}

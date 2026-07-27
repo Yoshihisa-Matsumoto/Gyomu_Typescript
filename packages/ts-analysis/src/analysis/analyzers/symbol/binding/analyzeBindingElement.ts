@@ -5,6 +5,17 @@ import type { BindingElementAnalysis } from '@gyomu/schema/schemas/typescript'
 import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../types.js'
 import type { BindingElement, BindingName } from 'ts-morph'
 
+/**
+ * Analyzes a TypeScript binding element within a destructuring pattern, identifying its local name, default value, and any nested binding patterns.
+ *
+ * @param element The binding element node to analyze.
+ *
+ * @param index The index of the element within its parent pattern.
+ *
+ * @param args Contextual arguments for the analysis.
+ *
+ * @returns An object containing the analyzed member structure, collected dependencies, and reserved names for the scope.
+ */
 export const analyzeBindingElement = (
   element: BindingElement,
   index: number,

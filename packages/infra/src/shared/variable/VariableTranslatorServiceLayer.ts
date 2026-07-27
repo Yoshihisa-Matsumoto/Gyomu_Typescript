@@ -67,6 +67,9 @@ type ParseDateContext =
       result: LocalDate
     }
 
+/**
+ * Defines the service layer for variable translation, providing utilities to parse and translate keyword-based templates into date or string values based on market-specific calendar logic.
+ */
 export const VariableTranslatorServiceLayer = Layer.effect(
   VariableTranslatorService,
 

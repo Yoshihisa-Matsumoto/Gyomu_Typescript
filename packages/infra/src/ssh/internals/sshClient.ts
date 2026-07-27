@@ -2,6 +2,15 @@ import { NetworkError, isRetryableNetworkError, wrapInfraError } from '@gyomu/sc
 import { Effect } from 'effect'
 import type { Client, ClientChannel, ConnectConfig } from 'ssh2'
 
+/**
+ * Establishes a connection to an SSH server using the provided client and configuration.
+ *
+ * @param client The SSH client instance.
+ *
+ * @param config The connection configuration settings.
+ *
+ * @returns An Effect that resolves when the connection is ready or fails with a NetworkError.
+ */
 export const connectEffect = (client: Client, config: ConnectConfig) =>
   Effect.callback<undefined, NetworkError>((resume) => {
     const onReady = () => {
@@ -61,6 +70,17 @@ export const connectEffect = (client: Client, config: ConnectConfig) =>
 //       });
 //     });
 
+/**
+ * Executes a command on the remote SSH server and returns the output and exit status.
+ *
+ * @param client The SSH client instance.
+ *
+ * @param command The command string to execute.
+ *
+ * @param options Configuration options for execution including shell requirements, working directory, and output trimming.
+ *
+ * @returns An Effect containing the exit code, standard output, and standard error output, or a NetworkError on failure.
+ */
 export const execute =
   (client: Client) =>
   <R = never>(

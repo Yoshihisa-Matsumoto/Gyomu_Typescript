@@ -24,6 +24,17 @@ import type {
 } from '@gyomu/schema/schemas/typescript'
 import type { GetSignatureIdArg, TagAnalysisArg } from '../../types.js'
 
+/**
+ * Analyzes a variable declaration representing a function or arrow function and registers it as a symbol.
+ *
+ * @param args The context for the variable declaration being analyzed.
+ *
+ * @param prepared Pre-analysis data including signature and JSDoc.
+ *
+ * @param node The function node to analyze.
+ *
+ * @returns An object containing the analyzed symbol and a boolean indicating if it is a default export.
+ */
 export const analyzeFunction = (
   args: TagAnalysisArg<VariableDeclaration>,
   prepared: SymbolPreparation,
@@ -88,11 +99,29 @@ export const analyzeFunction = (
   }
 }
 
+/**
+ * Determines if the given expression node is a function or arrow function expression.
+ *
+ * @param node The expression node to inspect.
+ *
+ * @returns True if the node is an ArrowFunction or FunctionExpression.
+ */
 export const isFunctionLikeInitializer = (
   node: Expression | undefined,
 ): node is ArrowFunction | FunctionExpression =>
   Node.isArrowFunction(node) || Node.isFunctionExpression(node)
 
+/**
+ * Generates signature analysis for a function or arrow function declaration.
+ *
+ * @param args The arguments for signature generation.
+ *
+ * @param node The function node to generate the signature for.
+ *
+ * @param declarationOrder The order of declaration.
+ *
+ * @returns The generated SignatureAnalysis containing parameters and return type info.
+ */
 export const getFunctionSignature = (
   args: GetSignatureIdArg<VariableDeclaration>,
 

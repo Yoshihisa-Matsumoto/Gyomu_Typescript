@@ -20,6 +20,13 @@ import type {
   SymbolIdentity,
 } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Analyzes a TypeScript class declaration and extracts its metadata, members, generics, and heritage clauses.
+ *
+ * @param args The argument containing the class declaration and analysis context.
+ *
+ * @returns An object containing the analyzed class symbol, export status, and default export flag.
+ */
 export const analyzeClass = (args: TagAnalysisArg<ClassDeclaration>) => {
   const {
     declaration,

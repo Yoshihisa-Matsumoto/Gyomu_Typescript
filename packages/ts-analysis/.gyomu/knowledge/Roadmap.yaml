@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=../../../../schemas/Roadmap.json
+
+planned: []
+
+inProgress: []
+
+completed: []
+
+backlog:
+  - title: TypeScript7においてのts-morph互換
+    description: |
+      おそらくts-morphはTypeScript Go版に対応しないので、将来どうやって分析するか考慮が必要
+    priority: low

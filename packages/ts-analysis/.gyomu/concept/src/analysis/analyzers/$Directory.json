@@ -1,0 +1,30 @@
+{
+  "summary": "This directory contains a suite of specialized analysis modules that process individual TypeScript AST statement nodes. It provides the logic to extract structural metadata, identify exports, track dependencies, and evaluate documentation signals across diverse code declarations.",
+  "responsibilities": [
+    "Perform fine-grained analysis on TypeScript AST nodes including statements, declarations, and documentation.",
+    "Extract export status, symbol definitions, and metadata from source code entities.",
+    "Identify and characterize code constructs such as classes, functions, interfaces, and variables.",
+    "Parse and aggregate metrics from JSDoc blocks to detect human-authored content.",
+    "Provide a unified structure for analysis arguments and results across the codebase."
+  ],
+  "concepts": [
+    "Statement Analysis",
+    "AST Node Traversal",
+    "Symbol Metadata",
+    "Export Identification",
+    "JSDoc Metrics"
+  ],
+  "relationships": [
+    "Individual analyzers interact with specific AST statement types to produce consistent statement analysis results.",
+    "Analysis results aggregate symbol metadata, type dependencies, and documentation information into structured formats.",
+    "The core analysis framework orchestrates these modular analyzers to interpret complete source files.",
+    "Documentation analysis complements statement analysis by providing context on human-edited signals and metadata."
+  ],
+  "designDecisions": [
+    "Modular approach where each declaration type has a dedicated, stateless analysis function.",
+    "Standardized result types ensure interoperability between different analysis modules.",
+    "Consistent input argument interfaces for managing file metadata and contextual symbol information.",
+    "Separation of documentation analysis from code construct analysis while maintaining shared type definitions."
+  ],
+  "importance": "Core"
+}

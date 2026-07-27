@@ -18,6 +18,9 @@ import type { FileSystem, Stream } from 'effect'
 
 type TarEntryItem = Extract<ArchiveEntryItem, { _tag: 'tar' }>
 
+/**
+ * Service interface for handling tar archive operations, including creation, extraction, and stream reading.
+ */
 export class TarService extends Context.Service<
   TarService,
   {
@@ -76,5 +79,8 @@ export class TarService extends Context.Service<
     readEntryStream: readEntryStream,
   }),
 }) {
+  /**
+   * A layer that provides the live implementation of the TarService.
+   */
   static readonly live = Layer.effect(this, this.make)
 }

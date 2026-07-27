@@ -6,6 +6,13 @@ import type { ParameterDeclaration, TypeNode } from 'ts-morph'
 import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../types.js'
 import type { NonDocumentableTypeProperty } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Analyzes a TypeScript parameter declaration to extract property metadata.
+ *
+ * @param args The parameter declaration and analysis context.
+ *
+ * @returns An object containing the analyzed type property result and associated dependencies.
+ */
 export const analyzeTypeProperty = (
   args: ChildAnalysisArg<ParameterDeclaration>,
 ): MemberAnalysisWithReservedResult<NonDocumentableTypeProperty> => {
@@ -79,6 +86,13 @@ export const analyzeTypeProperty = (
   }
 }
 
+/**
+ * Analyzes a TypeScript type node to extract property metadata.
+ *
+ * @param args The type node and analysis context.
+ *
+ * @returns An object containing the analyzed type property result derived from the type node.
+ */
 export const analyzeTypePropertyFromTypeNode = (
   args: ChildAnalysisArg<TypeNode>,
 ): MemberAnalysisWithReservedResult<NonDocumentableTypeProperty> => {

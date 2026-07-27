@@ -20,6 +20,9 @@ import type { FileSystem } from 'effect'
 
 // type FtpConfig = Config.Success<typeof ftpConfigRaw>;
 
+/**
+ * Provides a service for interacting with FTP servers, supporting connection lifecycle management and common file operations like download, upload, and listing.
+ */
 export class FtpService extends Context.Service<
   FtpService,
   {
@@ -106,5 +109,8 @@ export class FtpService extends Context.Service<
     }
   }),
 }) {
+  /**
+   * The default live implementation layer for the FTP service.
+   */
   static readonly live = Layer.effect(this, this.make)
 }

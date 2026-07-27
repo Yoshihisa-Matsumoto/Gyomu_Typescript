@@ -14,6 +14,9 @@ import type {
 import type { Node } from 'ts-morph'
 import type { AnalysisOptions } from '@gyomu/schema'
 
+/**
+ * Arguments provided for tag analysis, containing the node declaration and contextual metadata for a project member.
+ */
 export type TagAnalysisArg<T extends Node> = {
   declaration: T
   sourceRelativePath: ProjectRelativePath
@@ -25,6 +28,9 @@ export type TagAnalysisArg<T extends Node> = {
   options: AnalysisOptions | undefined
 }
 
+/**
+ * Represents the result of a statement analysis operation.
+ */
 export type StatementAnalysisResult = StatementAnalysisBaseResult
 // NoDependency | SingleDependency | MultipleDependencies
 
@@ -47,6 +53,9 @@ type MultipleDependencies = StatementAnalysisBaseResult & {
   DependencyCandidates: ReadonlyMap<SymbolId, ReadonlyArray<DependencyCandidate>>
 }
 
+/**
+ * Arguments required to perform an analysis on a statement, including file metadata and existing import analysis.
+ */
 export type StatementAnalysisArgument = {
   metadata: FileAnalysisMetadata
   sourceRelativePath: ProjectRelativePath
@@ -57,6 +66,9 @@ export type StatementAnalysisArgument = {
   options: AnalysisOptions | undefined
 }
 
+/**
+ * Arguments for analyzing a child node within a parent symbol, including owner identity and reserved names.
+ */
 export type ChildAnalysisArg<T> = {
   node: T
   sourceRelativePath: ProjectRelativePath
@@ -71,6 +83,9 @@ export type ChildAnalysisArg<T> = {
   reservedNames: Array<string>
 }
 
+/**
+ * Arguments required to resolve a unique signature ID for a specific node declaration.
+ */
 export type GetSignatureIdArg<T extends Node> = {
   declaration: T
   sourceRelativePath: ProjectRelativePath
@@ -83,20 +98,33 @@ export type GetSignatureIdArg<T extends Node> = {
   reservedNames: Array<string>
 }
 
+/**
+ * The result of a member analysis, providing the member object and its identified dependencies.
+ */
 export type MemberAnalysisResult<T> = {
   member: T
   dependencies: Array<DependencyCandidate>
 }
+
+/**
+ * A variant of member analysis result that includes a list of reserved names.
+ */
 export type MemberAnalysisWithReservedResult<T> = {
   member: T
   dependencies: Array<DependencyCandidate>
   reservedNames: Array<string>
 }
 
+/**
+ * Represents the dependency analysis result for a class or object method.
+ */
 export type MethodAnalysisResult = {
   dependencies: Array<DependencyCandidate>
 }
 
+/**
+ * Contains the results of generic parameter analysis, including parameter names, dependencies, and optional definition name.
+ */
 export type GenericParameterAnalysisResult = {
   parameters: Array<string>
   dependencies: Array<DependencyCandidate>

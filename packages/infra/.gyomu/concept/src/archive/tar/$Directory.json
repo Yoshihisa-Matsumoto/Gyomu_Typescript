@@ -1,0 +1,25 @@
+{
+  "summary": "This directory manages TAR archive integration, providing both a high-level service interface and low-level streaming primitives to handle archive creation, content inspection, and selective data extraction.",
+  "responsibilities": [
+    "Provide a unified service for archive operations",
+    "Stream and parse TAR archive content",
+    "Enable selective entry filtering and extraction",
+    "Verify file existence within archives"
+  ],
+  "concepts": [
+    "TAR archives",
+    "Archive services",
+    "Stream processing",
+    "Entry management"
+  ],
+  "relationships": [
+    "The TarService exposes high-level operations that delegate to underlying archive stream primitives.",
+    "Archive streams are filtered and parsed to support targeted extraction and validation tasks."
+  ],
+  "designDecisions": [
+    "Streaming architecture for memory-efficient file processing",
+    "Facade pattern for exposing high-level service methods",
+    "Predicate-based filtering for selective data handling"
+  ],
+  "importance": "Core"
+}

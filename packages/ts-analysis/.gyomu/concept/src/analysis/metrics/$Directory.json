@@ -1,0 +1,22 @@
+{
+  "summary": "This directory centralizes the definition of analytical metadata and scoring parameters used to evaluate and prioritize documentation. It provides structured interfaces that quantify domain-specific relevance and signal importance for the analysis engine.",
+  "responsibilities": [
+    "Defining semantic indicators for domain analysis",
+    "Providing scoring metadata for documentation prioritization",
+    "Standardizing structures for analytical evaluation"
+  ],
+  "concepts": [
+    "Domain Signals",
+    "Score Hints",
+    "Analytical Metadata"
+  ],
+  "relationships": [
+    "Domain signals provide semantic context that informs how documentation is weighted.",
+    "Score hints define the parameters that the analysis logic uses to rank documentation priority."
+  ],
+  "designDecisions": [
+    "Use of TypeScript interfaces to enforce schema consistency for analytical data",
+    "Separation of domain indicators from prioritization scoring logic"
+  ],
+  "importance": "Supporting"
+}

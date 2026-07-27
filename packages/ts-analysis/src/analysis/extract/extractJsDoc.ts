@@ -4,6 +4,13 @@ import { extractRawJsDoc } from './extractRawJsDoc.js'
 import type { JSDocableNode } from 'ts-morph'
 import type { ExtractedJsDoc } from '../jsdoc/ExtractedJsDoc.js'
 
+/**
+ * Extracts and parses JSDoc comments from a given JSDocable node, returning the parsed structures and their analysis.
+ *
+ * @param node The AST node to extract JSDoc documentation from.
+ *
+ * @returns An object containing the parsed JSDoc structure and its analysis, or undefined if no documentation is found.
+ */
 export const extractJsDoc = (node: JSDocableNode): ExtractedJsDoc | undefined => {
   const rawDocs = extractRawJsDoc(node)
 

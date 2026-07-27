@@ -1,0 +1,26 @@
+{
+  "summary": "This directory serves as the root container for defining the core business logic and state management structures of the application, orchestrating the primary workflows and data transformations that drive the package's functionality.",
+  "responsibilities": [
+    "Manage core business domain workflows",
+    "Orchestrate state transformations",
+    "Define domain-specific data entities",
+    "Coordinate interactions between primary functional modules"
+  ],
+  "concepts": [
+    "Business Logic",
+    "Domain Entities",
+    "Application State",
+    "Workflow Orchestration"
+  ],
+  "relationships": [
+    "Domain entities provide the data structure upon which business logic operates.",
+    "Workflow orchestration ensures that state transformations occur in the correct sequence.",
+    "Business logic consumes state to execute defined domain operations."
+  ],
+  "designDecisions": [
+    "Centralized domain logic",
+    "Separation of concerns between state and operations",
+    "Modular decomposition of domain responsibilities"
+  ],
+  "importance": "Core"
+}

@@ -1,0 +1,24 @@
+{
+  "summary": "This directory serves as the foundation for the project's data persistence layer, encapsulating the logic required to interact with external storage systems, manage database connections, and handle raw data persistence operations.",
+  "responsibilities": [
+    "Manage database connection lifecycles",
+    "Execute persistence operations for application entities",
+    "Abstract underlying storage implementation details",
+    "Coordinate data retrieval and storage processes"
+  ],
+  "concepts": [
+    "Persistence layer",
+    "Database connection",
+    "Data storage",
+    "Persistence operations"
+  ],
+  "relationships": [
+    "The persistence layer manages the lifecycle of database connections to ensure stable communication with storage systems.",
+    "Persistence operations utilize defined connection handlers to perform CRUD actions on application data."
+  ],
+  "designDecisions": [
+    "Separation of concerns by isolating infrastructure storage logic from business services",
+    "Abstraction of database drivers to allow for storage engine flexibility"
+  ],
+  "importance": "Core"
+}

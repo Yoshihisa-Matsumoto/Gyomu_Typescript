@@ -4,6 +4,12 @@ import type { FullPath } from '@gyomu/schema'
 /**
  * Converts an absolute file path into a project-relative path.
  *
+ * @param filePath The file path to convert.
+ *
+ * @param basePath The project base path to remove from the file path.
+ *
+ * @returns The resulting project-relative path.
+ *
  * @remarks
  * The returned path always uses forward slashes (`/`) regardless of the
  * operating system to ensure stable identifiers and snapshots.

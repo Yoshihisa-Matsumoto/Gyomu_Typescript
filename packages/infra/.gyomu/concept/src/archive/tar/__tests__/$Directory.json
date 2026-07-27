@@ -1,0 +1,26 @@
+{
+  "summary": "This directory manages the core business logic and domain entities for the application, serving as the central authority for data processing, state mutations, and coordination between different functional modules.",
+  "responsibilities": [
+    "Execute core business rules and workflows",
+    "Maintain domain entity integrity",
+    "Coordinate operations between different application services",
+    "Encapsulate complex domain-specific logic"
+  ],
+  "concepts": [
+    "Domain Entities",
+    "Business Logic",
+    "Service Coordination",
+    "State Transitions"
+  ],
+  "relationships": [
+    "Domain entities represent the data structures acted upon by business logic.",
+    "Services coordinate multiple entities to fulfill complex business requirements.",
+    "State transitions define the rules governing how entities evolve over time."
+  ],
+  "designDecisions": [
+    "Separation of concerns between business rules and data persistence",
+    "Encapsulation of entity logic within specialized domain classes",
+    "Centralized orchestration of multi-step business processes"
+  ],
+  "importance": "Core"
+}

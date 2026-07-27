@@ -5,6 +5,17 @@ import type { ExtractedJsDoc } from '../jsdoc/ExtractedJsDoc.js'
 import type { FileAnalysisMetadata, SymbolId } from '@gyomu/schema/typescript'
 import type { ParsedJsDoc } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Registers extracted JSDoc information for a specific symbol into the analysis metadata.
+ *
+ * @param symbolId The unique identifier of the symbol.
+ *
+ * @param metadata The file analysis metadata container.
+ *
+ * @param extractedjsDoc Optional extracted JSDoc documentation.
+ *
+ * @param option Optional analysis configuration.
+ */
 export const registerSymbolJsDoc = (
   symbolId: SymbolId,
   metadata: FileAnalysisMetadata,

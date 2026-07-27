@@ -1,0 +1,26 @@
+{
+  "summary": "This directory provides a centralized collection of cryptographic primitives and file-based encryption utilities, enabling secure data transformation using AES-GCM symmetric encryption and PKI asymmetric encryption standards.",
+  "responsibilities": [
+    "Perform symmetric encryption and decryption using AES-GCM",
+    "Perform asymmetric encryption and decryption using public and private keys",
+    "Manage key derivation and loading from file systems",
+    "Support encryption and decryption of binary buffers, strings, and files"
+  ],
+  "concepts": [
+    "AES-GCM encryption",
+    "PKI asymmetric cryptography",
+    "Binary data processing",
+    "File-based key management"
+  ],
+  "relationships": [
+    "The directory separates concerns between symmetric key operations and asymmetric key operations.",
+    "File-based utilities rely on core cryptographic functions to process data streams directly from disk.",
+    "Key management tools ensure that input strings and files are properly formatted for use by encryption algorithms."
+  ],
+  "designDecisions": [
+    "Standardized support for both direct memory processing and filesystem-based operations",
+    "Integration of Base64 encoding for cross-format compatibility",
+    "Abstraction of algorithm-specific complexities through simplified wrapper functions"
+  ],
+  "importance": "Core"
+}
