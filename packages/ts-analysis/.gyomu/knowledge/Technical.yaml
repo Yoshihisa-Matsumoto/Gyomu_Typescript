@@ -17,6 +17,10 @@ dependencies:
     description: |
       スキーマ、共通型の置き場として利用
 
+  - package: "@gyomu/infra"
+    description: |
+      I/Oなどの基盤処理全般に利用
+
   - package: "ts-morph"
     description: |
       TypeScriptコードの分析に利用

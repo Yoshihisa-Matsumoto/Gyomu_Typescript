@@ -25,6 +25,7 @@ export const buildArchitectureMessages = (
     const userData = {
       conceptSummary: context.concept.summary,
       responsibilities: context.concept.responsibilities,
+      capabilities: context.concept.capabilities,
       directories: targetDirectories.map((d) => ({
         path: d.path,
         summary: d.concept.summary,

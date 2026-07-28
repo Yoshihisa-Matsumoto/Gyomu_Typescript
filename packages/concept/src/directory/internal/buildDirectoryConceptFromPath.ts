@@ -106,6 +106,8 @@ export const buildDirectoryConceptFromPath = (
       subDirectories: directoryConcepts,
     }
 
+    console.log(`Directory Concept: ${targetDirectoryRelativePath}`)
+
     const concept = yield* generateDirectoryConcept(
       context.projectName,
       targetDirectoryRelativePath,

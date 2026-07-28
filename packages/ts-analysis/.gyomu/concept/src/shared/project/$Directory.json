@@ -1,0 +1,27 @@
+{
+  "summary": "This directory centralizes the identification, discovery, and structural analysis of TypeScript projects within a workspace. It provides the necessary infrastructure to locate project configuration files and generate metadata, enabling consistent project-level access for tooling operations.",
+  "responsibilities": [
+    "Discover TypeScript projects within a repository structure",
+    "Analyze project configuration files such as package.json and workspace definitions",
+    "Provide standardized metadata and context for identified projects",
+    "List and validate active TypeScript project configurations"
+  ],
+  "concepts": [
+    "TypeScript Project",
+    "Workspace Discovery",
+    "Project Metadata",
+    "Workspace Configuration"
+  ],
+  "relationships": [
+    "The discovery process identifies valid TypeScript projects by inspecting workspace configuration files.",
+    "Project metadata is extracted during the discovery process to inform other components about available build targets.",
+    "The workspace context aggregates individual project details and version mappings to form a complete view of the environment."
+  ],
+  "designDecisions": [
+    "Centralized project discovery logic",
+    "Use of standardized interfaces for workspace and project definitions",
+    "Decoupling of project identification from project analysis",
+    "Support for multiple configuration file standards"
+  ],
+  "importance": "Core"
+}

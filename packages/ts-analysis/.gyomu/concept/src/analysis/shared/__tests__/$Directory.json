@@ -1,0 +1,22 @@
+{
+  "summary": "This directory provides a collection of shared utility functions and test suites designed to handle the creation and verification of identifiers used in the codebase's analysis layer.",
+  "responsibilities": [
+    "Generate qualified names for program symbols",
+    "Establish unique identities for analysis objects",
+    "Provide common testing infrastructure for naming and identity logic"
+  ],
+  "concepts": [
+    "Qualified Name",
+    "Symbol Identity",
+    "Analysis Utilities"
+  ],
+  "relationships": [
+    "Qualified names are used to construct the unique identity of a symbol within the analysis scope.",
+    "Testing utilities validate the correctness of identifier generation logic for both qualified names and symbol identities."
+  ],
+  "designDecisions": [
+    "Centralization of identity generation logic to ensure consistent naming conventions across the analysis package.",
+    "Collocation of test suites with shared implementation logic to facilitate validation."
+  ],
+  "importance": "Supporting"
+}

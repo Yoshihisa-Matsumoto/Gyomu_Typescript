@@ -1,0 +1,20 @@
+{
+  "summary": "This directory defines the structural representation for composite symbol identifiers within the system, specifically enabling the association of unique identifiers with qualified names for enhanced symbol tracking and referencing.",
+  "responsibilities": [
+    "Define the schema for composite symbol identifiers",
+    "Provide a unified structure for linking symbol IDs with their qualified names"
+  ],
+  "concepts": [
+    "Composite Symbol Identifier",
+    "Qualified Name",
+    "Symbol Reference"
+  ],
+  "relationships": [
+    "The composite symbol identifier combines a unique SymbolId with a qualified name to establish a complete reference for a symbol."
+  ],
+  "designDecisions": [
+    "Use of an interface to define the contract for composite identifiers",
+    "Composite pattern approach to group related symbol metadata"
+  ],
+  "importance": "Core"
+}

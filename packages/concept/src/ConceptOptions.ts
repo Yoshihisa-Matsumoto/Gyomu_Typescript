@@ -14,6 +14,7 @@ export interface ConceptOptions extends AnalysisOptions, AiOptions {
       DirectoryConcept?: boolean
       PackageConcept?: boolean
       PackageAnalysis?: boolean
+      ReadmeSections?: boolean
     }
 
   /**

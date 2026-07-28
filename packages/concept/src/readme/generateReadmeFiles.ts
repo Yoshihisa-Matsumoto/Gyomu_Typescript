@@ -40,6 +40,14 @@ export const generateReadmeFiles = (
     const context = yield* initializeReadmeBuildContext(project, option)
 
     const sections = yield* buildReadmeSections(context)
+    if (option?.debugInfo?.ReadmeSections) {
+      if (option.debugInfo.DumpToFile)
+        yield* writeStringToFile(
+          './log/ReadmeSections.txt',
+          JSON.stringify(sections, null, 2),
+        ).pipe(Effect.catch(() => Effect.succeed(undefined)))
+      else console.dir(sections, { depth: null })
+    }
 
     const translationTargets = collectTransationTargets(sections)
 

@@ -1,0 +1,27 @@
+{
+  "summary": "This directory provides a centralized set of utility functions for normalizing, resolving, and transforming file system paths within the project structure, ensuring consistent path handling across build and module resolution processes.",
+  "responsibilities": [
+    "Resolving project-relative and absolute file paths",
+    "Mapping between source files and their corresponding output files",
+    "Translating module specifiers to actual file system locations",
+    "Identifying the root directory of the workspace"
+  ],
+  "concepts": [
+    "Path resolution",
+    "Path transformation",
+    "Workspace identification",
+    "Module mapping",
+    "File system abstraction"
+  ],
+  "relationships": [
+    "Path transformation functions rely on workspace identification to define the project scope for absolute and relative paths.",
+    "Mapping functions translate between source and output paths to bridge the gap between development files and compiled artifacts.",
+    "Module specifier mappings utilize path resolution logic to translate logical imports into physical source paths."
+  ],
+  "designDecisions": [
+    "Consolidation of path logic in a shared location to prevent duplication across build tooling",
+    "Encapsulation of file system operations to simplify path manipulation logic",
+    "Consistent usage of absolute and project-relative paths to ensure environment-agnostic behavior"
+  ],
+  "importance": "Supporting"
+}

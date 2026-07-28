@@ -1,0 +1,19 @@
+{
+  "summary": "This directory provides utility functionality focused on resolving and formatting module specifiers for the application. It serves as a centralized location for logic concerning how module paths are referenced and converted within the codebase.",
+  "responsibilities": [
+    "Convert source file paths into valid module specifiers",
+    "Ensure consistent module reference formatting"
+  ],
+  "concepts": [
+    "Module Specifier",
+    "Path Resolution"
+  ],
+  "relationships": [
+    "Source paths are processed to generate standardized module specifiers for internal consistency."
+  ],
+  "designDecisions": [
+    "Centralization of path-to-module logic to ensure consistency across the project",
+    "Unit testing to validate path transformation accuracy"
+  ],
+  "importance": "Utility"
+}

@@ -48,5 +48,15 @@ export const enumerateTargetFiles = (
       recursive: true,
     })
 
+    const projectFiles = yield* fileSearch.search({
+      parentDirectory: rootDirectory,
+      includes: ['package.json', 'tsconfig.json'],
+    })
+    const conceptFiles = yield* fileSearch.search({
+      parentDirectory: rootDirectory,
+      includes: ['.gyomu/knowledge/*'],
+    })
+    files.push(...projectFiles)
+    files.push(...conceptFiles)
     return files.sort((a, b) => a.fullPath.localeCompare(b.fullPath))
   })
