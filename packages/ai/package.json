@@ -48,7 +48,7 @@
     "@gyomu/approval-core": "workspace:^",
     "@gyomu/infra": "workspace:^",
     "@gyomu/schema": "workspace:^",
-    "@mastra/core": "^1.28.0",
+    "@mastra/core": "^1.54.0",
     "@standard-schema/spec": "^1.1.0",
     "ai": "catalog:",
     "effect": "catalog:"
