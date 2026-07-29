@@ -8,22 +8,24 @@ import { AiModelRoute } from '@gyomu/ai'
 import { makeRunner } from '@gyomu/schema/effect'
 import { IOError } from '@gyomu/schema'
 import { initializeReadmeBuildContext } from '../initializeReadmeBuildContext.js'
-import { buildReadmeSections } from '../builder/buildReadmeSections.js'
-import { collectTransationTargets } from '../translation/collectTranslationTargets.js'
-import { createTranslationPlan } from '../translation/createTranslationPlan.js'
-import { translate } from '../translation/translate.js'
-import { applyTranslations } from '../translation/applyTranslations.js'
-import { renderMarkdown } from '../render/renderMarkdown.js'
+
+import { collectTransationTargets } from '../../document/translation/collectTranslationTargets.js'
+import { createTranslationPlan } from '../../document/translation/createTranslationPlan.js'
+import { translateReadme } from '../translation/translateReadme.js'
+import { applyTranslations } from '../../document/translation/applyTranslations.js'
+import { renderReadmeMarkdown } from '../render/renderReadmeMarkdown.js'
 import { generateReadmeFiles } from '../generateReadmeFiles.js'
 import { DocumentBuilderError } from '../../error/DocumentBuilderError.js'
+import { buildSections } from '../../document/builder/buildSections.js'
+import { README_SECTION_BUILDERS } from '../builder/builder.js'
 
 vi.mock('../initializeReadmeBuildContext.js')
-vi.mock('../builder/buildReadmeSections.js')
-vi.mock('../translation/collectTranslationTargets.js')
-vi.mock('../translation/createTranslationPlan.js')
-vi.mock('../translation/translate.js')
-vi.mock('../translation/applyTranslations.js')
-vi.mock('../render/renderMarkdown.js')
+vi.mock('../../document/builder/buildSections.js')
+vi.mock('../../document/translation/collectTranslationTargets.js')
+vi.mock('../../document/translation/createTranslationPlan.js')
+vi.mock('../translation/translateReadme.js')
+vi.mock('../../document/translation/applyTranslations.js')
+vi.mock('../render/renderReadmeMarkdown.js')
 // vi.mock('../internal/getReadmeFileName.js')
 
 vi.mock('@gyomu/infra/fs', async (importOriginal) => {
@@ -72,7 +74,7 @@ describe('generateReadmeFiles', () => {
 
     vi.mocked(initializeReadmeBuildContext).mockReturnValue(Effect.succeed(DummyReadmeContext))
 
-    vi.mocked(buildReadmeSections).mockReturnValue(Effect.succeed(DummySections))
+    vi.mocked(buildSections).mockReturnValue(Effect.succeed(DummySections))
 
     vi.mocked(collectTransationTargets).mockReturnValue(DummyTranslationTargets)
 
@@ -82,11 +84,11 @@ describe('generateReadmeFiles', () => {
       destination: [],
     }))
 
-    vi.mocked(translate).mockReturnValue(Effect.succeed(DummyTranslationResult))
+    vi.mocked(translateReadme).mockReturnValue(Effect.succeed(DummyTranslationResult))
 
     vi.mocked(applyTranslations).mockReturnValue(Effect.void)
 
-    vi.mocked(renderMarkdown).mockReturnValue('# README')
+    vi.mocked(renderReadmeMarkdown).mockReturnValue('# README')
 
     // vi.mocked(getReadmeFileName).mockImplementation((language) => `README.${language}.md`)
 
@@ -97,7 +99,7 @@ describe('generateReadmeFiles', () => {
     it('generate README for every language', async () => {
       vi.mocked(initializeReadmeBuildContext).mockReturnValue(Effect.succeed(DummyReadmeContext))
 
-      vi.mocked(buildReadmeSections).mockReturnValue(Effect.succeed(DummySections))
+      vi.mocked(buildSections).mockReturnValue(Effect.succeed(DummySections))
 
       vi.mocked(collectTransationTargets).mockReturnValue(DummyTranslationTargets)
 
@@ -107,11 +109,11 @@ describe('generateReadmeFiles', () => {
         destination: [],
       }))
 
-      vi.mocked(translate).mockReturnValue(Effect.succeed(DummyTranslationResult))
+      vi.mocked(translateReadme).mockReturnValue(Effect.succeed(DummyTranslationResult))
 
       vi.mocked(applyTranslations).mockReturnValue(Effect.void)
 
-      vi.mocked(renderMarkdown).mockReturnValue('# README')
+      vi.mocked(renderReadmeMarkdown).mockReturnValue('# README')
 
       // vi.mocked(getReadmeFileName).mockImplementation((lang) => `README.${lang}.md`)
 
@@ -119,9 +121,9 @@ describe('generateReadmeFiles', () => {
 
       await runQAWithEnvOrThrow(generateReadmeFiles(DummyProjectContext))
 
-      expect(buildReadmeSections).toHaveBeenCalledWith(DummyReadmeContext)
+      expect(buildSections).toHaveBeenCalledWith(DummyReadmeContext, README_SECTION_BUILDERS)
 
-      expect(translate).toHaveBeenCalledTimes(SupportedTranslationLanguages.length)
+      expect(translateReadme).toHaveBeenCalledTimes(SupportedTranslationLanguages.length)
 
       expect(writeStringToFile).toHaveBeenCalledTimes(SupportedTranslationLanguages.length)
       expect(writeStringToFile).toHaveBeenNthCalledWith(
@@ -129,7 +131,7 @@ describe('generateReadmeFiles', () => {
         join('.', 'project', 'README.md'),
         '# README',
       )
-      expect(translate).toHaveBeenCalledWith(DummyReadmeContext, expect.any(String), [])
+      expect(translateReadme).toHaveBeenCalledWith(DummyReadmeContext, expect.any(String), [])
     })
     it('creates translation plans from generated sections', async () => {
       await runQAWithEnvOrThrow(generateReadmeFiles(DummyProjectContext))
@@ -146,7 +148,7 @@ describe('generateReadmeFiles', () => {
 
   describe('failure', () => {
     it('fails when translate fails', async () => {
-      vi.mocked(translate).mockReturnValue(
+      vi.mocked(translateReadme).mockReturnValue(
         Effect.fail(
           new DocumentBuilderError({
             cause: undefined,

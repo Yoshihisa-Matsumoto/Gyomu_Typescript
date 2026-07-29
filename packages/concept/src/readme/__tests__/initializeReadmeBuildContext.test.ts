@@ -5,15 +5,10 @@ import { makeRunner } from '@gyomu/schema/effect'
 import { PlatformLayer } from '@gyomu/infra'
 import { IOError } from '@gyomu/schema'
 import { initializeReadmeBuildContext } from '../initializeReadmeBuildContext.js'
-import { buildPackageAnalysis } from '../../package/buildPackageAnalysis.js'
-import { loadPackageConcept } from '../../package/internal/loadPackageConcept.js'
+import { initializeDocumentBaseContext } from '../../document/initializeDocumentBaseContext.js'
 
-vi.mock('../../package/buildPackageAnalysis.js', () => ({
-  buildPackageAnalysis: vi.fn(),
-}))
-
-vi.mock('../../package/internal/loadPackageConcept.js', () => ({
-  loadPackageConcept: vi.fn(),
+vi.mock('../../document/initializeDocumentBaseContext.js', () => ({
+  initializeDocumentBaseContext: vi.fn(),
 }))
 
 vi.mock('@gyomu/infra/fs', async (importOriginal) => {
@@ -39,27 +34,28 @@ describe('initializeReadmeBuildContext', () => {
   })
 
   it('builds readme build context', async () => {
-    vi.mocked(buildPackageAnalysis).mockReturnValue(
+    vi.mocked(initializeDocumentBaseContext).mockReturnValue(
       Effect.succeed({
-        package: {
-          name: 'test-package',
+        context: {
+          analysis: {
+            package: {
+              name: 'test-package',
+            },
+          },
+          concept: {
+            summary: 'test concept',
+            capabilities: [],
+          },
+          knowledge: {
+            package: {
+              name: 'test',
+            },
+          },
         },
+        knowledgePath: '',
       } as any),
     )
-
-    vi.mocked(loadPackageConcept).mockReturnValue(
-      Effect.succeed({
-        summary: 'test concept',
-        capabilities: [],
-      } as any),
-    )
-
     vi.mocked(readYamlFromFileAndValidate)
-      .mockReturnValueOnce(
-        Effect.succeed({
-          name: 'test',
-        } as any),
-      )
       .mockReturnValueOnce(
         Effect.succeed({
           scripts: [],
@@ -105,23 +101,29 @@ describe('initializeReadmeBuildContext', () => {
     })
   })
 
-  it('fails when package concept does not exist', async () => {
-    vi.mocked(buildPackageAnalysis).mockReturnValue(Effect.succeed({} as any))
-
-    vi.mocked(loadPackageConcept).mockReturnValue(Effect.succeed(undefined))
-
-    await expect(runner(initializeReadmeBuildContext(projectContext))).rejects.toThrow(
-      'Package Concept not found',
-    )
-  })
-
   it('allows missing roadmap', async () => {
-    vi.mocked(buildPackageAnalysis).mockReturnValue(Effect.succeed({} as any))
-
-    vi.mocked(loadPackageConcept).mockReturnValue(Effect.succeed({} as any))
-
+    vi.mocked(initializeDocumentBaseContext).mockReturnValue(
+      Effect.succeed({
+        context: {
+          analysis: {
+            package: {
+              name: 'test-package',
+            },
+          },
+          concept: {
+            summary: 'test concept',
+            capabilities: [],
+          },
+          knowledge: {
+            package: {
+              name: 'test',
+            },
+          },
+        },
+        knowledgePath: '',
+      } as any),
+    )
     vi.mocked(readYamlFromFileAndValidate)
-      .mockReturnValueOnce(Effect.succeed({} as any))
       .mockReturnValueOnce(Effect.succeed({} as any))
       .mockReturnValueOnce(Effect.succeed({} as any))
       .mockReturnValueOnce(
@@ -141,9 +143,27 @@ describe('initializeReadmeBuildContext', () => {
   })
 
   it('fails when required yaml loading fails', async () => {
-    vi.mocked(buildPackageAnalysis).mockReturnValue(Effect.succeed({} as any))
-
-    vi.mocked(loadPackageConcept).mockReturnValue(Effect.succeed({} as any))
+    vi.mocked(initializeDocumentBaseContext).mockReturnValue(
+      Effect.succeed({
+        context: {
+          analysis: {
+            package: {
+              name: 'test-package',
+            },
+          },
+          concept: {
+            summary: 'test concept',
+            capabilities: [],
+          },
+          knowledge: {
+            package: {
+              name: 'test',
+            },
+          },
+        },
+        knowledgePath: '',
+      } as any),
+    )
 
     vi.mocked(readYamlFromFileAndValidate).mockReturnValue(
       Effect.fail(

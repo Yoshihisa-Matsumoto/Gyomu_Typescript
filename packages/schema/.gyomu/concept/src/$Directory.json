@@ -1,28 +1,27 @@
 {
-  "summary": "This directory serves as the root entry point and foundational utility layer, exposing core type definitions, normalization utilities, and shared schema-related interfaces that underpin the application's domain logic, data modeling, and analysis capabilities.",
+  "summary": "This directory acts as the root entry point for the library, providing a unified public interface that aggregates core domain schemas, type definitions, data transformation utilities, and specialized configurations for the entire application.",
   "responsibilities": [
-    "Export public API surfaces for domain-specific modules",
-    "Provide foundational type transformations for objects and configurations",
-    "Supply utility functions for data normalization and object manipulation",
-    "Define core architectural types used across system sub-domains"
+    "Expose unified access to core domain modules and utility functions",
+    "Define shared TypeScript types for application-wide data structures",
+    "Provide utility functions for object manipulation and property normalization",
+    "Aggregate and export foundational schemas and architectural contracts"
   ],
   "concepts": [
-    "Core Type Definitions",
-    "Object Normalization",
-    "Configuration Extraction",
-    "Path Abstractions",
-    "Public API Index"
+    "Public API Interface",
+    "Type Definitions",
+    "Configuration Utilities",
+    "Domain Schemas",
+    "Structural Normalization"
   ],
   "relationships": [
-    "The directory provides foundational types that are imported by domain-specific modules to enforce consistent data structures.",
-    "Normalization utilities consume configuration interfaces to refine and standardize object properties before further processing.",
-    "The directory acts as a central aggregator, re-exporting symbols from specialized sub-directories to provide a unified interface for consumers."
+    "The directory aggregates exported symbols from child modules to provide a consistent surface area for consumers.",
+    "Type definitions for entities and configurations serve as the foundation for both system-level data validation and consumer-level usage.",
+    "Utility functions for object and type manipulation are exposed to facilitate standard data transformations throughout the application."
   ],
   "designDecisions": [
-    "Barrel file pattern for centralized and simplified module exports",
-    "Use of TypeScript mapped types for recursive object manipulation",
-    "Nominal typing strategy for path and identifier primitives",
-    "Separation of utility logic from core domain business services"
+    "Use of a barrel file pattern to centralize and simplify module imports",
+    "Clear separation of exported domain logic, schema definitions, and internal utility types",
+    "Exposure of nominal branding types to ensure runtime and compile-time data integrity"
   ],
   "importance": "Core"
 }

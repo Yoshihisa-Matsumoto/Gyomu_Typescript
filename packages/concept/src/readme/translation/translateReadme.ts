@@ -1,8 +1,7 @@
 import { executeTranslation } from '@gyomu/ai-compiler/translation'
-import { Effect } from 'effect'
-import { wrapInfraError } from '@gyomu/schema'
-import { DocumentBuilderError } from '../../error/DocumentBuilderError.js'
-import type { FileSystem } from 'effect'
+import { translate } from '../../document/translation/translate.js'
+import type { Effect, FileSystem } from 'effect'
+import type { DocumentBuilderError } from '../../error/DocumentBuilderError.js'
 import type {
   LanguageCodes,
   TranslationResult,
@@ -22,7 +21,7 @@ import type { ReadmeBuildContext } from '@gyomu/schema/concept'
  *
  * @returns An Effect that resolves to the TranslationResult, or fails with a DocumentBuilderError, requiring AI models and filesystem access.
  */
-export const translate = (
+export const translateReadme = (
   context: ReadmeBuildContext,
   language: LanguageCodes,
   targets: ReadonlyArray<TranslationTarget>,
@@ -31,15 +30,9 @@ export const translate = (
   DocumentBuilderError,
   AiModelRoute | FileSystem.FileSystem | ModelRoutes
 > =>
-  executeTranslation(context.analysis.package.name, {
-    targetLanguage: language,
-    translations: targets.map((t) => ({ id: t.id, source: t.source })),
-  }).pipe(
-    Effect.mapError((e) =>
-      wrapInfraError(DocumentBuilderError, e, () => ({
-        message: 'fail to translate',
-        phase: 'translate' as const,
-        packageName: context.analysis.package.name,
-      })),
-    ),
+  translate(context, language, targets, (context, language, targets) =>
+    executeTranslation(context.analysis.package.name, {
+      targetLanguage: language,
+      translations: targets.map((t) => ({ id: t.id, source: t.source })),
+    }),
   )

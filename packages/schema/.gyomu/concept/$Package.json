@@ -1,45 +1,51 @@
 {
-  "summary": "The @gyomu/schema package provides a robust, schema-driven foundation for domain modeling, validation, and error handling. It leverages the Effect ecosystem to enforce data integrity, standardize cross-layer communication, and automate the generation of CRUD patterns for business entities.",
+  "summary": "The @gyomu/schema package provides a comprehensive, type-safe framework for modeling domain entities, infrastructure services, and application metadata. It leverages Effect schemas to facilitate robust data validation, automated CRUD generation, and consistent error handling across the system. The package also includes advanced analysis capabilities for parsing and documenting TypeScript code structures.",
   "responsibilities": [
-    "Define and maintain centralized domain entity schemas and their corresponding CRUD structures.",
-    "Standardize error handling through composable error traits, operational policies, and diagnostic context.",
-    "Provide advanced TypeScript source code analysis and structural metadata for documentation and introspection.",
-    "Implement consistent data conversion and validation utilities that bridge the gap between raw input and structured domain models.",
-    "Establish shared operational infrastructure for logging, retries, and result patterns."
+    "Provide a centralized framework for defining and validating domain-specific business entities.",
+    "Automate the generation of CRUD schema suites from entity definitions.",
+    "Establish a consistent, trait-based error handling and diagnostic context strategy.",
+    "Offer utility structures for parsing and analyzing TypeScript code, symbols, and dependencies.",
+    "Maintain high-level abstractions for I/O, network operations, and AI-driven workflows.",
+    "Ensure type-safe data conversion and operational result consistency."
   ],
   "capabilities": [
     {
       "name": "Domain Entity Modeling",
-      "description": "Enables the definition of business entities and the automatic derivation of comprehensive CRUD schemas, UI annotations, and validation logic."
+      "description": "Definition of business entities using structured schemas, supporting audit fields, UI annotations, and automatic generation of CRUD operations."
     },
     {
-      "name": "Structured Error Framework",
-      "description": "Provides a hierarchical error system with standardized contexts, behavioral traits, and retry policies for consistent failure reporting."
+      "name": "Structured Error Handling",
+      "description": "A robust system for defining domain-specific errors with consistent context, behavioral traits, and operational policies for logging and retries."
     },
     {
-      "name": "Code Analysis Engine",
-      "description": "Offers rich structural metadata extraction for TypeScript symbols, types, and dependencies, facilitating code-aware tooling and documentation generation."
+      "name": "TypeScript Analysis Framework",
+      "description": "Foundational tools for static analysis of TypeScript code, including symbol mapping, dependency tracking, and JSDoc metadata extraction."
     },
     {
-      "name": "Data Validation and Conversion",
-      "description": "Facilitates safe transformation of input data into validated models, including sophisticated error resolution and flattening of validation issues."
+      "name": "Result and Validation Patterns",
+      "description": "Standardized result schemas and utility patterns for wrapping operations, ensuring predictable communication between layers."
     },
     {
-      "name": "Operational Infrastructure",
-      "description": "Provides essential utilities for system orchestration, including polling, logging, standardized result handling, and security-aware path resolution."
+      "name": "Operational Lifecycle Services",
+      "description": "Management of system lifecycles for I/O, network, and AI requests, including retry strategies, timeouts, and state tracking."
+    },
+    {
+      "name": "Data Format Utilities",
+      "description": "Advanced conversion and normalization utilities for temporal types, JSON objects, and character encodings."
     }
   ],
   "designDecisions": [
-    "Adopts a schema-first approach where data structures act as the single source of truth for both validation and API/DB contracts.",
-    "Utilizes branded types for sensitive or structural identifiers (e.g., UserId) to enhance type safety and prevent logic errors.",
-    "Integrates heavily with the Effect framework for functional error handling, concurrency control, and service definition.",
-    "Employs a compositional pattern for error traits, allowing behavior to be injected dynamically into domain-specific error classes.",
-    "Favors automated generation of repetitive infrastructure code (like CRUD schemas) from minimal entity definitions to ensure consistency."
+    "Utilizes Effect for all schema definitions and effectful operations to ensure strong type safety and predictable error composition.",
+    "Employs branded types and nominal branding to provide semantic clarity and prevent accidental type mismatches.",
+    "Decouples domain definitions from implementation, allowing for automated generation of schema suites (CRUD) without boilerplate.",
+    "Implements a trait-based approach to error handling to allow granular control over retryability and logging behaviors.",
+    "Utilizes a recursive schema approach for modeling complex or nested structures such as JSON and document segments."
   ],
   "usageGuidance": [
-    "Use the entity definition framework to generate CRUD schemas rather than manual construction, ensuring compliance with system-wide metadata requirements.",
-    "Always wrap external integrations and I/O operations using the provided error wrapping utilities to ensure failures are automatically enriched with proper operational context.",
-    "Leverage the provided Effect-based helpers for data conversion to ensure that schema validation results are handled in a predictable, type-safe manner.",
-    "When implementing new domain entities, utilize the existing field definitions to ensure consistency in audit fields and temporal data handling."
+    "Use the `defineEntityCrudSchemas` utility when creating new business entities to ensure consistent select, insert, and update capabilities.",
+    "Always extend or wrap errors using the provided GyomuError context tools to maintain system-wide observability.",
+    "Leverage the provided Effect runners and logging wrappers when implementing business logic that interacts with external services.",
+    "Use branded types (e.g., UserId) for identifier properties to leverage TypeScript's type-checking and avoid domain-level data confusion.",
+    "Refer to the `typescript` analysis schemas if building tooling that requires programmatic introspection of source code."
   ]
 }

@@ -1,0 +1,23 @@
+{
+  "summary": "This directory centralizes the logic for determining file system locations for knowledge-based artifacts. It ensures consistent path resolution throughout the system by mapping configuration settings and context to specific storage directories.",
+  "responsibilities": [
+    "Calculate base file system paths for knowledge assets",
+    "Resolve directory structures based on configuration inputs",
+    "Standardize location mapping for system artifacts"
+  ],
+  "concepts": [
+    "Knowledge artifact",
+    "Path resolution",
+    "System configuration",
+    "File system mapping"
+  ],
+  "relationships": [
+    "The system uses configuration settings to define the base paths where knowledge artifacts are stored.",
+    "Path resolution logic transforms context data into valid file system paths for consistent artifact management."
+  ],
+  "designDecisions": [
+    "Centralization of path generation logic to avoid scattered file system dependencies",
+    "Configuration-driven path resolution to support environment-specific storage requirements"
+  ],
+  "importance": "Supporting"
+}

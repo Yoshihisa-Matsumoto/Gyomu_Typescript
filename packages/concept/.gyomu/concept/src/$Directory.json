@@ -1,31 +1,22 @@
 {
-  "summary": "This directory manages the core logic for architectural analysis, documentation generation, and structural metadata modeling, providing the primary infrastructure for understanding and documenting TypeScript project architectures.",
+  "summary": "This directory manages configuration options for architectural analysis, defining how concepts and metadata are structured, tracked, and tailored to project-specific paths during the document construction and analysis workflows.",
   "responsibilities": [
-    "Analyze project source structures and package exports",
-    "Construct and validate directory and package conceptual models",
-    "Orchestrate automated documentation generation and assembly",
-    "Manage project metadata storage and path resolution",
-    "Centralize system error handling and lifecycle tracking"
+    "Define configuration schemas for architectural analysis",
+    "Enable path tracking and change detection for generated concepts",
+    "Provide interfaces for customizing analysis parameters"
   ],
   "concepts": [
-    "Architectural Metadata",
-    "Package Analysis",
-    "Documentation Generation",
-    "Project Structure",
-    "Dependency Tracking"
+    "Concept Configuration",
+    "Change Tracking",
+    "Analysis Metadata"
   ],
   "relationships": [
-    "The architectural analysis process constructs conceptual models from project file structures and package exports.",
-    "Documentation generation logic utilizes the derived conceptual models to assemble and populate structured project README files.",
-    "System-wide error handling provides contextual feedback during the execution of analysis and documentation workflows.",
-    "Metadata management ensures that generated concepts and documentation targets are correctly stored and resolved across the project lifecycle."
+    "Configuration options extend the base analysis logic by providing path-specific directives.",
+    "Analysis metadata structures utilize these options to track changes across project lifecycle stages."
   ],
   "designDecisions": [
-    "Encapsulation of analysis logic within internal functional modules",
-    "Separation of concerns between structural resolution and content generation",
-    "Use of schema-based validation for serialized architectural concepts",
-    "Modular isolation of documentation construction and rendering processes",
-    "Centralized error tracking using specialized subclasses and context interfaces"
+    "Extension of base analysis interfaces to ensure type safety",
+    "Separation of AI-specific configuration from project structure definitions"
   ],
-  "importance": "Core"
+  "importance": "Supporting"
 }

@@ -2,16 +2,20 @@ import { Effect } from 'effect'
 import { buildSectionItem } from '@gyomu/ai-compiler/readme'
 import { wrapInfraError } from '@gyomu/schema'
 import { DocumentBuilderError } from '../../../error/DocumentBuilderError.js'
+import type { SectionBuilder } from '../../../document/builder/SectionBuilder.js'
 import type { FileSystem } from 'effect'
 import type { Section } from '@gyomu/schema/schemas/document'
-import type { ReadmeBuildContext } from '@gyomu/schema/concept'
-import type { ReadmeSectionBuilder } from '../ReadmeSectionBuilder.js'
+import type { ReadmeBuildContext, ReadmeSectionId } from '@gyomu/schema/concept'
 import type { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 
 /**
  * A readme section builder that generates the 'development' section using analysis context.
+ *
+ * @returns Returns an Effect that produces the development section content for the README.
  */
-export const buildDevelopment: ReadmeSectionBuilder<
+export const buildDevelopment: SectionBuilder<
+  ReadmeSectionId,
+  ReadmeBuildContext,
   AiModelRoute | FileSystem.FileSystem | ModelRoutes
 > = {
   id: 'development',

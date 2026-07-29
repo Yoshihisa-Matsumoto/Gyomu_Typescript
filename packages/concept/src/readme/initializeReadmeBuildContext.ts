@@ -1,13 +1,10 @@
 import { join } from 'node:path'
 import { Effect } from 'effect'
 import { readYamlFromFileAndValidate } from '@gyomu/infra/fs'
-import { Development, Package, Roadmap, Technical } from '@gyomu/schema/schemas/knowledge'
+import { Development, Roadmap, Technical } from '@gyomu/schema/schemas/knowledge'
 import { wrapInfraError } from '@gyomu/schema'
 import { DocumentBuilderError } from '../error/DocumentBuilderError.js'
-import { buildPackageAnalysis } from '../package/buildPackageAnalysis.js'
-import { loadPackageConcept } from '../package/internal/loadPackageConcept.js'
-import { getPackageConceptPath } from '../package/internal/getPackageConceptPath.js'
-import { getKnowledgePath } from './internal/getKnowledgePath.js'
+import { initializeDocumentBaseContext } from '../document/initializeDocumentBaseContext.js'
 import type { ConceptOptions } from '../ConceptOptions.js'
 import type { FileSystem } from 'effect'
 import type { ProjectContext } from '@gyomu/ts-analysis'
@@ -34,46 +31,28 @@ export const initializeReadmeBuildContext = (
   FileSystem.FileSystem | FileSearchService
 > =>
   Effect.gen(function* () {
-    const analysis = yield* buildPackageAnalysis(context, option)
-    const concept = yield* loadPackageConcept(context, option)
-    if (!concept) {
-      return yield* Effect.fail(
-        new DocumentBuilderError({
-          message: 'Package Concept not found',
-          filePath: getPackageConceptPath(context, option),
-          packageName: context.projectName,
-          phase: 'context-build' as const,
-          cause: undefined,
-        }),
-      )
-    }
-    const knowledgePath = getKnowledgePath(context, option)
-    const packageKnowledge = yield* readYamlFromFileAndValidate(
-      'Package',
-      Package,
-      join(knowledgePath, 'Package.yaml'),
-    )
+    const baseContext = yield* initializeDocumentBaseContext(context, option)
+
     const development = yield* readYamlFromFileAndValidate(
       'Development',
       Development,
-      join(knowledgePath, 'Development.yaml'),
+      join(baseContext.knowledgePath, 'Development.yaml'),
     )
     const technical = yield* readYamlFromFileAndValidate(
       'Technical',
       Technical,
-      join(knowledgePath, 'Technical.yaml'),
+      join(baseContext.knowledgePath, 'Technical.yaml'),
     )
     const roadmap = yield* readYamlFromFileAndValidate(
       'Roadmap',
       Roadmap,
-      join(knowledgePath, 'Roadmap.yaml'),
+      join(baseContext.knowledgePath, 'Roadmap.yaml'),
     ).pipe(Effect.catch(() => Effect.succeed(undefined)))
 
     const resultContext = {
-      analysis,
-      concept,
+      ...baseContext.context,
       knowledge: {
-        package: packageKnowledge,
+        package: baseContext.context.knowledge.package,
         development,
         technical,
         roadmap,

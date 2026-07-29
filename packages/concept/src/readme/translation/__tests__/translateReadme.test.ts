@@ -5,7 +5,7 @@ import { executeTranslation } from '@gyomu/ai-compiler/translation'
 import { AiModelRoute } from '@gyomu/ai'
 import { makeRunner } from '@gyomu/schema/effect'
 import { IOError } from '@gyomu/schema'
-import { translate } from '../translate.js'
+import { translateReadme } from '../translateReadme.js'
 import type { TranslationResult } from '@gyomu/schema/schemas/document'
 
 vi.mock('@gyomu/ai-compiler/translation', () => ({
@@ -17,7 +17,7 @@ const mockAiModelService = Layer.succeed(AiModelRoute, {
 } as any)
 const runQAWithEnvOrThrow = makeRunner(mockAiModelService)
 
-describe('translate', () => {
+describe('translateReadme', () => {
   const context = {
     analysis: {
       package: {
@@ -47,7 +47,7 @@ describe('translate', () => {
       },
     ]
 
-    await runQAWithEnvOrThrow(translate(context, 'ja', targets))
+    await runQAWithEnvOrThrow(translateReadme(context, 'ja', targets))
 
     expect(executeTranslation).toHaveBeenCalledWith('test-package', {
       targetLanguage: 'ja',
@@ -71,7 +71,7 @@ describe('translate', () => {
       ),
     )
 
-    await expect(runQAWithEnvOrThrow(translate(context, 'ja', []))).rejects.toMatchObject({
+    await expect(runQAWithEnvOrThrow(translateReadme(context, 'ja', []))).rejects.toMatchObject({
       phase: 'translate',
       packageName: 'test-package',
     })

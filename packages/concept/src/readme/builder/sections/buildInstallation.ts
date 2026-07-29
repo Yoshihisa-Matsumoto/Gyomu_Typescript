@@ -1,12 +1,12 @@
 import { Effect } from 'effect'
+import type { SectionBuilder } from '../../../document/builder/SectionBuilder.js'
 import type { Section } from '@gyomu/schema/schemas/document'
-import type { ReadmeBuildContext } from '@gyomu/schema/concept'
-import type { ReadmeSectionBuilder } from '../ReadmeSectionBuilder.js'
+import type { ReadmeBuildContext, ReadmeSectionId } from '@gyomu/schema/concept'
 
 /**
  * Constructs the installation section for the readme.
  */
-export const buildInstallation: ReadmeSectionBuilder = {
+export const buildInstallation: SectionBuilder<ReadmeSectionId, ReadmeBuildContext, never> = {
   id: 'installation',
 
   build: (context: ReadmeBuildContext) => {
