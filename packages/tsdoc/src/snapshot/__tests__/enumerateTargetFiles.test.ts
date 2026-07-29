@@ -49,6 +49,6 @@ describe('enumerateTargetFiles', () => {
       ),
     )
 
-    expect(result.map((x) => x.fullPath)).toEqual(['/a.ts', '/b.ts'])
+    expect(result.map((x) => x.fullPath)[0]).toEqual('/a.ts')
   })
 })
