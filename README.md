@@ -18,6 +18,12 @@ This project is organized as a monorepo.
 
 ---
 
+## Requirements
+
+During development, Gyomu is designed to run entirely within the Google AI Studio free tier.
+
+---
+
 ## ⚡ Demos
 
 ### 1. Multi-language README Generation
