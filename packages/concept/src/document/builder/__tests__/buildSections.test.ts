@@ -2,11 +2,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Effect } from 'effect'
 import { makeRunner } from '@gyomu/schema/effect'
 import { PlatformLayer } from '@gyomu/infra'
-import { buildReadmeSections } from '../buildReadmeSections.js'
+import { buildSections } from '../buildSections.js'
 
 const runQAWithEnvOrThrow = makeRunner(PlatformLayer)
 
-describe('buildReadmeSections', () => {
+describe('buildSections', () => {
   const context = {} as any
 
   beforeEach(() => {
@@ -37,7 +37,7 @@ describe('buildReadmeSections', () => {
       },
     ] as const
 
-    const result = await runQAWithEnvOrThrow(buildReadmeSections(context, builders as any))
+    const result = await runQAWithEnvOrThrow(buildSections(context, builders as any))
 
     expect(result).toEqual([
       {
@@ -72,7 +72,7 @@ describe('buildReadmeSections', () => {
       },
     ]
 
-    const result = await runQAWithEnvOrThrow(buildReadmeSections(context, builders as any))
+    const result = await runQAWithEnvOrThrow(buildSections(context, builders as any))
 
     expect(result.map((s) => s.id)).toEqual(['first', 'second'])
   })
@@ -86,8 +86,6 @@ describe('buildReadmeSections', () => {
       },
     ] as const
 
-    await expect(
-      runQAWithEnvOrThrow(buildReadmeSections(context, builders as any)),
-    ).rejects.toThrow()
+    await expect(runQAWithEnvOrThrow(buildSections(context, builders as any))).rejects.toThrow()
   })
 })

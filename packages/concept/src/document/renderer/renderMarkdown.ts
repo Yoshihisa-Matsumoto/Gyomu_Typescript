@@ -1,0 +1,62 @@
+import { SupportedTranslationLanguages } from '@gyomu/schema/schemas/document'
+import type { DocumentBaseContext } from '@gyomu/schema/concept'
+import type { DocumentContent, LanguageCodes, Section } from '@gyomu/schema/schemas/document'
+
+import type { TranslationPlan } from '../translation/TranslationPlan.js'
+
+export const renderMarkdown = <TContext extends DocumentBaseContext>(args: {
+  context: TContext
+  plan: TranslationPlan
+  getTitle: (context: TContext) => string
+  getSectionTitle: (language: LanguageCodes, section: Section) => string
+  getLanguageLink?: ((language: LanguageCodes, plan: TranslationPlan) => string) | undefined
+}) => {
+  const { context, plan, getTitle, getSectionTitle, getLanguageLink } = args
+  const title = `# ` + getTitle(context)
+  const link = getLanguageLink ? renderLink(plan, getLanguageLink) + '\n\n' : ''
+  return (
+    title +
+    '\n\n' +
+    link +
+    plan.destination
+      .map((section) => renderSection(plan.language, section, getSectionTitle))
+      .join('\n\n')
+  )
+}
+
+const renderLink = (
+  plan: TranslationPlan,
+  getLanguageLink: (language: LanguageCodes, plan: TranslationPlan) => string,
+): string => {
+  return SupportedTranslationLanguages.map((language) => getLanguageLink(language, plan)).join(
+    ' | ',
+  )
+}
+
+const renderSection = (
+  language: LanguageCodes,
+  section: Section,
+  getSectionTitle: (language: LanguageCodes, section: Section) => string,
+): string => {
+  const title = `## ` + getSectionTitle(language, section)
+
+  const body = section.contents.map((content) => renderContent(content)).join('\n\n')
+
+  return title + '\n\n' + body
+}
+
+const renderContent = (content: DocumentContent): string => {
+  switch (content.type) {
+    case 'paragraph':
+      return content.text
+    case 'code': {
+      const CODE = '```'
+      const prefix = content.title ? `### ${content.title}\n\n` : ''
+      return `${prefix}${CODE}${content.language}
+${content.code}
+${CODE}`
+    }
+    case 'bullet-list':
+      return content.items.map((item) => `- ${item}`).join('\n')
+  }
+}

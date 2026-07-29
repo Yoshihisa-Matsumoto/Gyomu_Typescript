@@ -4,14 +4,15 @@ import { SupportedTranslationLanguages } from '@gyomu/schema/schemas/document'
 import { writeStringToFile } from '@gyomu/infra/fs'
 import { wrapInfraError } from '@gyomu/schema'
 import { DocumentBuilderError } from '../error/DocumentBuilderError.js'
+import { buildSections } from '../document/builder/buildSections.js'
+import { collectTransationTargets } from '../document/translation/collectTranslationTargets.js'
+import { createTranslationPlan } from '../document/translation/createTranslationPlan.js'
+import { applyTranslations } from '../document/translation/applyTranslations.js'
+import { translateReadme } from './translation/translateReadme.js'
 import { initializeReadmeBuildContext } from './initializeReadmeBuildContext.js'
-import { buildReadmeSections } from './builder/buildReadmeSections.js'
-import { collectTransationTargets } from './translation/collectTranslationTargets.js'
-import { createTranslationPlan } from './translation/createTranslationPlan.js'
-import { translate } from './translation/translate.js'
-import { applyTranslations } from './translation/applyTranslations.js'
-import { renderMarkdown } from './render/renderMarkdown.js'
+import { renderReadmeMarkdown } from './render/renderReadmeMarkdown.js'
 import { getReadmeFileName } from './internal/getReadmeFileName.js'
+import { README_SECTION_BUILDERS } from './builder/builder.js'
 import type { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 import type { ProjectContext } from '@gyomu/ts-analysis'
 import type { ConceptOptions } from '../ConceptOptions.js'
@@ -39,7 +40,7 @@ export const generateReadmeFiles = (
     const projectRootPath = project.projectRoot
     const context = yield* initializeReadmeBuildContext(project, option)
 
-    const sections = yield* buildReadmeSections(context)
+    const sections = yield* buildSections(context, README_SECTION_BUILDERS)
     if (option?.debugInfo?.ReadmeSections) {
       if (option.debugInfo.DumpToFile)
         yield* writeStringToFile(
@@ -57,9 +58,9 @@ export const generateReadmeFiles = (
 
     yield* Effect.forEach(plans, (plan) =>
       Effect.gen(function* () {
-        const translationResult = yield* translate(context, plan.language, plan.targets)
+        const translationResult = yield* translateReadme(context, plan.language, plan.targets)
         yield* applyTranslations(context, plan, translationResult)
-        const markdown = renderMarkdown(context, plan, true)
+        const markdown = renderReadmeMarkdown(context, plan, true)
         const readmeFilename = getReadmeFileName(plan.language)
 
         const readmeFilePath = join(projectRootPath, readmeFilename)

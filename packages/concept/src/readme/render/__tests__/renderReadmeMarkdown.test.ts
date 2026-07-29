@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { renderMarkdown } from '../renderMarkdown.js'
+import { renderReadmeMarkdown } from '../renderReadmeMarkdown.js'
 import type { Section } from '@gyomu/schema/schemas/document'
 
-describe('renderMarkdown', () => {
+describe('renderReadmeMarkdown', () => {
   const context = {
     knowledge: { package: { displayName: 'TITLE' } },
   } as any
@@ -30,7 +30,11 @@ describe('renderMarkdown', () => {
       },
     ]
 
-    const markdown = renderMarkdown(context, { language: 'en', destination: sections, targets: [] })
+    const markdown = renderReadmeMarkdown(context, {
+      language: 'en',
+      destination: sections,
+      targets: [],
+    })
 
     expect(markdown).toBe(`# TITLE
 
@@ -56,7 +60,11 @@ console.log("hello")
       },
     ]
 
-    const markdown = renderMarkdown(context, { language: 'en', destination: sections, targets: [] })
+    const markdown = renderReadmeMarkdown(context, {
+      language: 'en',
+      destination: sections,
+      targets: [],
+    })
 
     expect(markdown).toContain('## Overview')
   })
@@ -85,7 +93,11 @@ console.log("hello")
       },
     ]
 
-    const markdown = renderMarkdown(context, { language: 'en', destination: sections, targets: [] })
+    const markdown = renderReadmeMarkdown(context, {
+      language: 'en',
+      destination: sections,
+      targets: [],
+    })
 
     expect(markdown).toBe(`# TITLE
 
@@ -107,7 +119,11 @@ Second section.`)
       },
     ]
 
-    const markdown = renderMarkdown(context, { language: 'en', destination: sections, targets: [] })
+    const markdown = renderReadmeMarkdown(context, {
+      language: 'en',
+      destination: sections,
+      targets: [],
+    })
 
     expect(markdown).toBe(`# TITLE
 
@@ -124,7 +140,7 @@ Second section.`)
       },
     ]
 
-    const markdown = renderMarkdown(
+    const markdown = renderReadmeMarkdown(
       context,
       { language: 'en', destination: sections, targets: [] },
       true,

@@ -7,7 +7,7 @@ import type {
   Section,
   TranslationResult,
 } from '@gyomu/schema/schemas/document'
-import type { ReadmeBuildContext } from '@gyomu/schema/concept'
+import type { DocumentBaseContext } from '@gyomu/schema/concept'
 
 /**
  * Applies a set of translation items to a documentation structure.
@@ -20,8 +20,8 @@ import type { ReadmeBuildContext } from '@gyomu/schema/concept'
  *
  * @returns An Effect representing the translation application operation, failing with a DocumentBuilderError if the operation cannot be completed.
  */
-export const applyTranslations = (
-  context: ReadmeBuildContext,
+export const applyTranslations = <TContext extends DocumentBaseContext>(
+  context: TContext,
   plan: TranslationPlan,
   result: TranslationResult,
 ): Effect.Effect<void, DocumentBuilderError> =>
@@ -74,8 +74,8 @@ export const applyTranslations = (
     }
   })
 
-const applyTranslationItemIntoContent = (
-  context: ReadmeBuildContext,
+const applyTranslationItemIntoContent = <TContext extends DocumentBaseContext>(
+  context: TContext,
   item: {
     readonly id: string
     readonly translation: string
@@ -142,8 +142,8 @@ const applyTranslationItemIntoContent = (
   }
 }
 
-const findSectionById = (
-  context: ReadmeBuildContext,
+const findSectionById = <TContext extends DocumentBaseContext>(
+  context: TContext,
   sectionId: string,
   sections: ReadonlyArray<Section>,
 ): Section => {
