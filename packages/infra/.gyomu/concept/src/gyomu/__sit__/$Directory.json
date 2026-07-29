@@ -1,0 +1,26 @@
+{
+  "summary": "This directory manages the core business logic and state transitions required to process user requests, serving as the central orchestration point for transforming input data into actionable service outcomes and coordinating between data access and presentation layers.",
+  "responsibilities": [
+    "Orchestrating business workflows",
+    "Validating input data consistency",
+    "Coordinating interactions between data services",
+    "Managing application state transitions"
+  ],
+  "concepts": [
+    "Business workflow",
+    "State machine",
+    "Request context",
+    "Service orchestration"
+  ],
+  "relationships": [
+    "The service orchestration layer coordinates the execution of business workflows to ensure consistent data state.",
+    "Request contexts are passed through the business workflow to maintain traceability and scoped data access.",
+    "State machines define the valid transitions that occur during the execution of a business workflow."
+  ],
+  "designDecisions": [
+    "Separation of orchestration logic from data persistence",
+    "Centralized validation of business rules",
+    "Stateless service execution"
+  ],
+  "importance": "Core"
+}

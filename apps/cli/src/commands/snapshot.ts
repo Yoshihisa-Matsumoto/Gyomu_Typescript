@@ -210,7 +210,7 @@ export const snapshotCommand = (
           debugInfo: {
             DumpToFile: true,
             PackageAnalysis: true,
-            PackageConcept: true,
+            ReadmeSections: true,
           },
         })
 

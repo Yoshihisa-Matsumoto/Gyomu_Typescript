@@ -58,6 +58,9 @@ type Story = StoryObj<typeof AutoForm>
 // Stories
 // --------------------------------------------------
 
+/**
+ * Displays a basic AutoForm story configuration using shadcn components.
+ */
 export const Basic: Story = {
   render: () => (
     <AutoForm
@@ -75,6 +78,9 @@ export const Basic: Story = {
   ),
 }
 
+/**
+ * Displays an AutoForm story demonstrating initial values and potential form validation scenarios.
+ */
 export const Validation: Story = {
   render: () => (
     <AutoForm
@@ -94,6 +100,9 @@ export const Validation: Story = {
   ),
 }
 
+/**
+ * Displays an AutoForm story populated with pre-filled update values.
+ */
 export const WithInitialValues: Story = {
   render: () => (
     <AutoForm

@@ -1,0 +1,27 @@
+{
+  "summary": "This directory manages the core business logic and state transitions for the system's primary domain entities. It acts as the central orchestrator for data processing, rule enforcement, and maintaining the consistency of the application's domain model.",
+  "responsibilities": [
+    "Orchestrate complex business workflows",
+    "Enforce domain-specific validation rules",
+    "Maintain state consistency for primary entities",
+    "Transform raw data into domain-compliant structures"
+  ],
+  "concepts": [
+    "Domain Entities",
+    "Business Rules",
+    "State Transitions",
+    "Workflow Orchestration"
+  ],
+  "relationships": [
+    "Domain entities maintain their integrity by strictly adhering to defined business rules.",
+    "Workflow orchestration manages the sequence of state transitions across various domain entities.",
+    "Business rules define the valid conditions under which an entity can transition from one state to another."
+  ],
+  "designDecisions": [
+    "Domain-driven design to isolate business logic from infrastructure",
+    "Encapsulation of state transitions within entity services",
+    "Immutable data structures to ensure state consistency during transformations",
+    "Separation of validation logic from business processing logic"
+  ],
+  "importance": "Core"
+}

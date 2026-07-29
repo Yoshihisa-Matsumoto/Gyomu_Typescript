@@ -7,6 +7,17 @@ import type {
 import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../../types.js'
 import type { InferTypeNode, TypeNode } from 'ts-morph'
 
+/**
+ * Analyzes an InferTypeNode by extracting its type parameter and optional constraint.
+ *
+ * @param args The shared context for analysis including current node and state.
+ *
+ * @param newMemberPath The path to the current member being analyzed.
+ *
+ * @param node The TS InferTypeNode to analyze.
+ *
+ * @returns A result containing the infer type structure, dependencies, and any reserved names found.
+ */
 export const analyzeInferTypeNode = (
   args: ChildAnalysisArg<TypeNode>,
   newMemberPath: MemberIdentityMemberPath,

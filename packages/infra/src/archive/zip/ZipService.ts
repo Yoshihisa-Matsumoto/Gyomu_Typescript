@@ -16,6 +16,9 @@ import type { FileTransportInfo } from '@gyomu/schema/gyomu/file'
 import type { ZipEntryItem, ZipFileEntryItem } from './internals/read.js'
 // import { Path } from 'effect/Path';
 
+/**
+ * A service for handling ZIP archive operations, including creation, extraction, and reading of individual entries.
+ */
 export class ZipService extends Context.Service<
   ZipService,
   {
@@ -66,5 +69,8 @@ export class ZipService extends Context.Service<
     readEntryStream: readEntryStream,
   }),
 }) {
+  /**
+   * The default live implementation of the ZipService.
+   */
   static readonly live = Layer.effect(this, this.make)
 }

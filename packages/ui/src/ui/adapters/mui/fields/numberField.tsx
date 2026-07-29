@@ -8,6 +8,9 @@ const signedDigitsRegex = /^-?\d*$/g // negative/positive digits
 const positiveFloatingDigitsRegex = /^\d*\.?\d*$/g // positive floating digits. Allows "11." scenario
 const signedFloatingDigitsRegex = /^-?\d*\.?\d*$/g // negative/positive floating digits. Allows "-11." scenario
 
+/**
+ * Properties for the NumberField component, including numeric constraints and value change handling.
+ */
 export type NumberFieldProps = TextFieldProps & {
   onValueChange?: (value: string, fieldErrors: Array<string>, fieldName: string) => void
   allowNegative?: boolean
@@ -22,14 +25,23 @@ export type NumberFieldProps = TextFieldProps & {
  * Allows signed/unsigned numeric/floating digits entry
  *
  * NOTE - Format of "props.value" should be in sync with "allowNegative" and "allowFloat" flags, else field's content couldn't be edited unless cleared.
- * @param {function} onValueChange Receives changed value of input field.
- * @param {boolean} allowNegative Enables input to take negative entry.
- * @param {boolean} allowFloat Enables input to take floating entry.
- * @param {number} maxValue Maximum allowed numeric/floating signed value.
- * @param {number} minValue Minimum allowed numeric/floating signed value.
+ *
+ * @param onValueChange Receives changed value of input field.
+ *
+ * @param allowNegative Enables input to take negative entry.
+ *
+ * @param allowFloat Enables input to take floating entry.
+ *
+ * @param maxValue Maximum allowed numeric/floating signed value.
+ *
+ * @param minValue Minimum allowed numeric/floating signed value.
  * Note - Input won't register entry if entered value is less than minValue.
- * @param {number} decimalLimit Number of allowed decimal digits.
- * @param {object} ... All parameters same as a TextField component.
+ *
+ * @param decimalLimit Number of allowed decimal digits.
+ *
+ * @param props Additional properties passed to the underlying TextField component.
+ *
+ * @returns A rendered numeric input field component.
  */
 export function NumberField({
   value,

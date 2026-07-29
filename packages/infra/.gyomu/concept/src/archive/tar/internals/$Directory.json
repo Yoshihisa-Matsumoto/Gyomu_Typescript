@@ -1,0 +1,29 @@
+{
+  "summary": "This directory provides low-level primitives for interacting with TAR archives, enabling the creation, extraction, and inspection of archive streams. It serves as the primary engine for handling archive-based data serialization and retrieval within the application.",
+  "responsibilities": [
+    "Archive creation from local directories",
+    "Parsing and streaming of archive entries",
+    "Individual file extraction and filtering",
+    "Verification of file presence in archives",
+    "Content reading and transformation from archive entries"
+  ],
+  "concepts": [
+    "TAR archives",
+    "Archive streams",
+    "Entry filtering",
+    "Data extraction",
+    "File transport"
+  ],
+  "relationships": [
+    "Archive streams are parsed to produce individual entry items that can be inspected or extracted.",
+    "Extraction operations rely on filtering and entry identification to target specific files within the archive stream.",
+    "File transport information determines the appropriate extraction strategy for a given archive."
+  ],
+  "designDecisions": [
+    "Streaming architecture for memory-efficient handling of large archive files",
+    "Predicate-based filtering to support selective entry processing",
+    "Unified dispatching for extraction operations based on transport parameters",
+    "Automatic draining of skipped entries to prevent stream deadlocks"
+  ],
+  "importance": "Core"
+}

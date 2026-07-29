@@ -8,6 +8,13 @@ import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../t
 import type { IndexSignatureAnalysis } from '@gyomu/schema/schemas/typescript'
 import type { IndexSignatureDeclaration } from 'ts-morph'
 
+/**
+ * Analyzes an index signature declaration within a TypeScript node and registers the resulting analysis.
+ *
+ * @param args The arguments required for index signature analysis.
+ *
+ * @returns Returns the analysis result for the index signature, including the member details, dependencies, and reserved names.
+ */
 export const analyzeIndexSignature = (
   args: ChildAnalysisArg<IndexSignatureDeclaration>,
 ): MemberAnalysisWithReservedResult<IndexSignatureAnalysis> => {
@@ -68,7 +75,7 @@ export const analyzeIndexSignature = (
 
   const valueTypeResult = analyzeType(
     {
-      node: valueType,
+      node: valueType!,
 
       sourceRelativePath,
       metadata,

@@ -10,6 +10,15 @@ import { ConfigLayer, ConfigService } from '../config.js'
 import { PlatformLayer } from '../layer.js'
 import type { Logger } from '@gyomu/schema'
 
+/**
+ * Recursively normalizes log values, handling Maps, Sets, Arrays, and objects to ensure they are safe for logging, with a depth limit.
+ *
+ * @param value The value to normalize.
+ *
+ * @param index The current recursion depth.
+ *
+ * @returns The normalized value.
+ */
 export const normalizeLogValue = (value: unknown, index: number = 0): unknown => {
   index++
   if (index > 5) return '(limit)'
@@ -42,6 +51,11 @@ export const normalizeLogValue = (value: unknown, index: number = 0): unknown =>
   return value
 }
 
+/**
+ * Creates a Pino-based logger wrapper with normalization for log arguments.
+ *
+ * @returns A logger interface.
+ */
 export const createPinoLogger = (): Logger => {
   const p = pino()
 
@@ -64,6 +78,10 @@ export const createPinoLogger = (): Logger => {
   }
 }
 let transport: ReturnType<typeof pino.transport> | undefined = undefined
+
+/**
+ * The current log file path, if one is configured.
+ */
 export let LogFileName: string | undefined = undefined
 
 const loggerConfigRaw = Config.all({
@@ -86,6 +104,11 @@ type NormalizeOptionObject<T> = {
 }
 type loggerConfig = NormalizeOptionObject<ExtractConfig<typeof loggerConfigRaw>>
 
+/**
+ * Initializes the logger using configuration loaded from the environment.
+ *
+ * @returns A promise that resolves when the logger has been initialized.
+ */
 export const initLoggerFromEnv = async () => {
   const program = Effect.gen(function* () {
     const configService = yield* ConfigService
@@ -107,6 +130,13 @@ export const initLoggerFromEnv = async () => {
   await runner(program)
 }
 
+/**
+ * Initializes the global logger with a configuration object, setting up transports to stdout and optionally to a log file.
+ *
+ * @param config The logger configuration including level, path, and filename settings.
+ *
+ * @returns Returns void.
+ */
 export const initLogger = (config: loggerConfig) => {
   const loggerLevel = config.logLevel
   const LogFileNameStatic = config.fixedLogFilename
@@ -171,6 +201,9 @@ export const initLogger = (config: loggerConfig) => {
   })
 }
 
+/**
+ * Resets the logger instance and transport for testing purposes.
+ */
 export const __resetLoggerForTest = () => {
   // loggerInstance = null;
   setLogger({

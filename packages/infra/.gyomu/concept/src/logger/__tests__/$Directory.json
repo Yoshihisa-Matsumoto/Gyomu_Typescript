@@ -1,0 +1,25 @@
+{
+  "summary": "This directory manages the core business entities, data structures, and validation rules that define the application's domain model. It serves as the primary source of truth for representing domain-specific data and enforcing structural consistency across the system.",
+  "responsibilities": [
+    "Defining domain-specific data models",
+    "Enforcing validation rules for business objects",
+    "Encapsulating core domain state and logic",
+    "Ensuring data integrity across service layers"
+  ],
+  "concepts": [
+    "Domain Models",
+    "Business Entities",
+    "Data Schemas",
+    "Validation Logic"
+  ],
+  "relationships": [
+    "Domain models provide the structured data format used by services and components throughout the application.",
+    "Validation logic ensures that business entities maintain integrity before being processed by application services."
+  ],
+  "designDecisions": [
+    "Centralized definition of domain types",
+    "Separation of data definition from persistence logic",
+    "Strong typing to guarantee model consistency"
+  ],
+  "importance": "Core"
+}

@@ -7,6 +7,11 @@ import { Page, convertGenericElementByTagName } from '../scraping/index.js'
 import { fetchEffect } from '../web/client.js'
 import type { MarketHolidaySchema } from '@gyomu/schema/schemas/gyomu'
 
+/**
+ * Fetches and parses market holidays from the JPX corporate calendar page, returning a list of holiday records.
+ *
+ * @returns An Effect that resolves to an array of holiday records. May fail with a NetworkError.
+ */
 export const fetchJpxHolidays = (): Effect.Effect<
   Array<typeof MarketHolidaySchema.types._insert>,
   NetworkError
@@ -62,6 +67,15 @@ export const fetchJpxHolidays = (): Effect.Effect<
     return results
   })
 
+/**
+ * Converts a date string representing a holiday into a standard 'YYYY-MM-DD' format.
+ *
+ * @param year The year as a string.
+ *
+ * @param input The date string to be parsed (e.g., 'Jan. 1 (Mon.)').
+ *
+ * @returns A date string in 'YYYY-MM-DD' format.
+ */
 export const convertToYmd = (year: string, input: string): string => {
   const cleaned = input
     .replace(/\s*\(.*?\)/, '') // (Mon.)削除

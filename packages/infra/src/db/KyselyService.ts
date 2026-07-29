@@ -7,6 +7,9 @@ import type { FileSystem, Scope } from 'effect'
 import type { Kysely } from 'kysely'
 import type { ConfigError, DBError, IOError } from '@gyomu/schema'
 
+/**
+ * A service that provides Kysely database connections configured dynamically based on a given prefix.
+ */
 export class KyselyService extends Context.Service<
   KyselyService,
   {
@@ -41,7 +44,13 @@ export class KyselyService extends Context.Service<
     }
   }),
 }) {
+  /**
+   * The default live layer implementation for the KyselyService.
+   */
   static readonly live = Layer.effect(this, this.make)
 }
 
+/**
+ * The integrated application layer merging main, configuration, and database services.
+ */
 export const DBLayer = Layer.mergeAll(MainLayer, ConfigLayer, KyselyService.live)

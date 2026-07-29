@@ -11,6 +11,15 @@ import type { FileTransportInfo } from '@gyomu/schema/gyomu/file'
 
 // ftpClient.ts
 
+/**
+ * Retrieves a list of file and folder names from the specified remote FTP path.
+ *
+ * @param client The FTP client instance.
+ *
+ * @param path The remote directory path.
+ *
+ * @returns An Effect containing an array of string filenames, failing with a NetworkError.
+ */
 export const list =
   (client: Client) =>
   (path: string): Effect.Effect<Array<string>, NetworkError> => {
@@ -28,6 +37,15 @@ export const list =
     )
   }
 
+/**
+ * Retrieves the size and last modification date for a file at the specified path.
+ *
+ * @param client The FTP client instance.
+ *
+ * @param path The remote file path.
+ *
+ * @returns An Effect containing the file size and modification date, failing with a NetworkError.
+ */
 export const getFileInfo =
   (client: Client) =>
   (
@@ -58,6 +76,17 @@ export const getFileInfo =
     )
   }
 
+/**
+ * Uploads data from a stream to a remote FTP destination.
+ *
+ * @param client The FTP client instance.
+ *
+ * @param source The source data stream.
+ *
+ * @param remotePath The remote destination path.
+ *
+ * @returns An Effect that completes when the upload finishes, failing with a NetworkError.
+ */
 export const uploadFromStream =
   (client: Client) =>
   (
@@ -77,6 +106,15 @@ export const uploadFromStream =
       }))(() => client.uploadFrom(readable, remotePath))
     })
 
+/**
+ * Downloads a remote file as an Effect stream.
+ *
+ * @param client The FTP client instance.
+ *
+ * @param path The remote file path to download.
+ *
+ * @returns A stream of Uint8Array data.
+ */
 export const downloadToStream =
   (client: Client) =>
   (path: string): Stream.Stream<Uint8Array, IOError | NetworkError> =>
@@ -98,6 +136,15 @@ export const downloadToStream =
       }),
     )
 
+/**
+ * Performs an FTP download based on provided transport information.
+ *
+ * @param client The FTP client instance.
+ *
+ * @param transportInformation Details about the source and destination paths.
+ *
+ * @returns An Effect resolving to true if successful, or failing with a NetworkError.
+ */
 export const download =
   (client: Client) =>
   (transportInformation: FileTransportInfo): Effect.Effect<boolean, NetworkError> => {
@@ -125,6 +172,16 @@ export const download =
       Effect.map(() => true),
     )
   }
+
+/**
+ * Performs an FTP upload based on provided transport information.
+ *
+ * @param client The FTP client instance.
+ *
+ * @param transportInformation Details about the source and destination paths.
+ *
+ * @returns An Effect resolving to true if successful, or failing with a NetworkError.
+ */
 export const upload =
   (client: Client) =>
   (transportInformation: FileTransportInfo): Effect.Effect<boolean, NetworkError> => {

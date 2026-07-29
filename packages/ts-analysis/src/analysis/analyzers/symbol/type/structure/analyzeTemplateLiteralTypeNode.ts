@@ -6,6 +6,17 @@ import type {
 import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../../types.js'
 import type { TemplateLiteralTypeNode, TypeNode } from 'ts-morph'
 
+/**
+ * Analyzes a TypeScript `TemplateLiteralTypeNode` and extracts the associated template spans.
+ *
+ * @param args The shared analysis context and arguments for the child node.
+ *
+ * @param newMemberPath The path identifying the current member in the structure hierarchy.
+ *
+ * @param node The template literal type node to be analyzed.
+ *
+ * @returns Returns a `MemberAnalysisWithReservedResult` containing the `templateLiteral` structure and associated dependencies or reserved names.
+ */
 export const analyzeTemplateLiteralTypeNode = (
   args: ChildAnalysisArg<TypeNode>,
   newMemberPath: MemberIdentityMemberPath,

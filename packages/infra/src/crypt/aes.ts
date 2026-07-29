@@ -10,17 +10,46 @@ import { readFromFile } from '../fs/fs-utils.js'
 import type { IOError } from '@gyomu/schema'
 import type { FileSystem } from 'effect'
 
+/**
+ * Encrypts a string using AES-GCM and returns a base64 encoded string.
+ *
+ * @param plain The plaintext string to encrypt.
+ *
+ * @param key The encryption key.
+ *
+ * @returns The encrypted data as a base64 string.
+ */
 export const aesEncrypt = (plain: string, key: string): string => {
   const originalBuffer = stringToArrayBuffer(plain)
 
   const encryptedBuffer = aesEncryptBuffer(originalBuffer, getKey(key))
   return buffer2Base64String(encryptedBuffer)
 }
+
+/**
+ * Decrypts a base64 encoded AES-GCM string.
+ *
+ * @param encrypted The base64 encoded encrypted string.
+ *
+ * @param key The decryption key.
+ *
+ * @returns The decrypted plaintext string.
+ */
 export const aesDecrypt = (encrypted: string, key: string): string => {
   const encryptedBuffer = base64String2Buffer(encrypted)
   const decryptedBuffer = aesDecryptBuffer(encryptedBuffer, getKey(key))
   return arrayBufferToString(bufferToArrayBuffer(decryptedBuffer))
 }
+
+/**
+ * Encrypts a buffer using AES-GCM (128 or 256-bit based on key length).
+ *
+ * @param plainBuffer The plaintext buffer to encrypt.
+ *
+ * @param keyBuffer The encryption key buffer (must be 16 or 32 bytes).
+ *
+ * @returns The encrypted buffer containing IV, ciphertext, and auth tag.
+ */
 export const aesEncryptBuffer = (plainBuffer: ArrayBuffer, keyBuffer: ArrayBuffer): Buffer => {
   const keyLength = keyBuffer.byteLength
   // console.log('KeyLength', keyLength);
@@ -63,6 +92,15 @@ const aesEncryptBufferWithBinaryKey = (
   return encryptedBuffer
 }
 
+/**
+ * Decrypts an AES-GCM encrypted buffer using the provided key.
+ *
+ * @param encryptedBuffer The encrypted buffer containing the IV, ciphertext, and auth tag.
+ *
+ * @param keyBuffer The decryption key buffer.
+ *
+ * @returns The decrypted plaintext buffer.
+ */
 export const aesDecryptBuffer = (encryptedBuffer: Buffer, keyBuffer: ArrayBuffer): Buffer => {
   const iv = encryptedBuffer.subarray(0, 16) // Nonce
   const tag = encryptedBuffer.subarray(encryptedBuffer.length - 16) // Tag
@@ -81,6 +119,15 @@ export const aesDecryptBuffer = (encryptedBuffer: Buffer, keyBuffer: ArrayBuffer
   return Buffer.concat(chunks)
 }
 
+/**
+ * Decrypts an AES-GCM encrypted buffer using a binary key.
+ *
+ * @param encryptedBuffer The encrypted data buffer.
+ *
+ * @param keyBinary The binary key used for decryption.
+ *
+ * @returns The decrypted buffer.
+ */
 export const aesDecryptBufferWithBinaryKey = (
   encryptedBuffer: Buffer,
   keyBinary: Uint8Array<ArrayBufferLike>,
@@ -101,6 +148,14 @@ export const aesDecryptBufferWithBinaryKey = (
   chunks.push(decipher.final())
   return Buffer.concat(chunks)
 }
+
+/**
+ * Converts a string key into an ArrayBuffer, ensuring it meets required length specifications.
+ *
+ * @param key The input key string.
+ *
+ * @returns The processed key as an ArrayBuffer.
+ */
 export const getKey = (key: string): ArrayBuffer => {
   const arrayBuffer: ArrayBuffer = stringToArrayBuffer(fixKeylength(key))
   // console.log(arrayBuffer.byteLength);
@@ -120,6 +175,18 @@ const fixKeylength = (key: string): string => {
     throw new Error('Invalid Key Length: ' + key.length)
   }
 }
+
+/**
+ * Encrypts a buffer using a key loaded from a file.
+ *
+ * @param plainBuffer The plaintext data to encrypt.
+ *
+ * @param keyFilename The path to the file containing the encryption key.
+ *
+ * @returns An effect that returns the encrypted buffer, requiring file system access and potentially throwing an IO error.
+ *
+ * @ IOError if the key file cannot be read.
+ */
 export const aesEncryptBufferByKeyFile = (
   plainBuffer: ArrayBuffer,
   keyFilename: string,
@@ -129,6 +196,17 @@ export const aesEncryptBufferByKeyFile = (
     return aesEncryptBufferWithBinaryKey(plainBuffer, keyBuffer)
   })
 
+/**
+ * Decrypts an encrypted buffer using an AES key read from a file.
+ *
+ * @param encryptedBuffer The buffer to decrypt.
+ *
+ * @param keyFilename Path to the file containing the binary key.
+ *
+ * @returns An Effect that resolves to the decrypted buffer, or fails with an IOError.
+ *
+ * @requires Requires FileSystem access.
+ */
 export const aesDecryptBufferByKeyFile = (
   encryptedBuffer: Buffer,
   keyFilename: string,

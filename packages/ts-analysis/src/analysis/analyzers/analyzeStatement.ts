@@ -8,6 +8,15 @@ import { analyzeTypeAliasStatement } from './analyzeTypeAliasStatement.js'
 import type { Statement } from 'ts-morph'
 import type { StatementAnalysisArgument, StatementAnalysisResult } from './types.js'
 
+/**
+ * Analyzes a TypeScript statement and returns its analysis result, or undefined if the statement type is not supported.
+ *
+ * @param statement The TypeScript statement node to analyze.
+ *
+ * @param args The arguments used for statement analysis.
+ *
+ * @returns The analysis result of the statement, or undefined if the statement kind is unhandled.
+ */
 export const analyzeStatement = (
   statement: Statement,
   args: StatementAnalysisArgument,

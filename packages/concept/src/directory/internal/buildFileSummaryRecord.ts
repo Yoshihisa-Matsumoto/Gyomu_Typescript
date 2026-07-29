@@ -13,6 +13,13 @@ import type {
   ReExportSummary,
 } from '@gyomu/schema/concept'
 
+/**
+ * Constructs a summary record for a file based on its analysis context, including normalized path, exports, re-exports, and dependencies.
+ *
+ * @param context The analysis context of the file to process.
+ *
+ * @returns A FileSummary object containing the file's path, exports, re-exports, and dependencies.
+ */
 export const buildFileSummaryRecord = (context: FileAnalysisContext): FileSummary => {
   // console.dir(context.analysis, { depth: null })
   return {

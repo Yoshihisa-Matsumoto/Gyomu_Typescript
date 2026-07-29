@@ -19,4 +19,7 @@ const JPXHolidayFetcherLive = {
   },
 }
 
+/**
+ * Defines a ZIO Layer that provides the JPX holiday fetching implementation for the HolidayFetcher service.
+ */
 export const JPXHolidayFetcherLayer = Layer.succeed(HolidayFetcher, JPXHolidayFetcherLive)

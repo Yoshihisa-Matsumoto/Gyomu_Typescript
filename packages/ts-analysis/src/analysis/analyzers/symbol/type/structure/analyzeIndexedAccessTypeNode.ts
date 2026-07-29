@@ -6,6 +6,17 @@ import type {
 import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../../types.js'
 import type { IndexedAccessTypeNode, TypeNode } from 'ts-morph'
 
+/**
+ * Analyzes an IndexedAccessTypeNode to resolve the structure of the object and index types.
+ *
+ * @param args The shared analysis context and arguments.
+ *
+ * @param newMemberPath The path identifier for the current member.
+ *
+ * @param typeNode The indexed access type node to analyze.
+ *
+ * @returns Returns the analyzed structure containing the object type and index type members, along with collected dependencies and reserved names.
+ */
 export const analyzeIndexedAccessTypeNode = (
   args: ChildAnalysisArg<TypeNode>,
   newMemberPath: MemberIdentityMemberPath,

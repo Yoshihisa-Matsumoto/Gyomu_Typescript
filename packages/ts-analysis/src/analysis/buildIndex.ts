@@ -13,6 +13,13 @@ import type {
 } from '@gyomu/schema/schemas/typescript'
 import type { DocumentableTarget, FileAnalysisMetadata, SymbolId } from '@gyomu/schema/typescript'
 
+/**
+ * Builds an index from the provided file analysis, returning a metadata object containing all symbols and parsed JSDoc comments.
+ *
+ * @param analysis The file analysis data structure to index.
+ *
+ * @returns The resulting metadata object containing maps of symbols and JSDoc data.
+ */
 export const buildIndex = (analysis: FileAnalysis): FileAnalysisMetadata => {
   const metadata: FileAnalysisMetadata = {
     parsedJsDocs: new Map<SymbolId, ParsedJsDoc>(),
@@ -172,6 +179,13 @@ const buildIndexFromTypeProperty = (
   }
 }
 
+/**
+ * Registers a symbol analysis in the provided metadata object.
+ *
+ * @param metadata The metadata container to update.
+ *
+ * @param symbolAnalysis The specific symbol analysis entity to register.
+ */
 export const registerSymbolSymbolAnalysisInternal = (
   metadata: FileAnalysisMetadata,
   symbolAnalysis:
@@ -182,6 +196,15 @@ export const registerSymbolSymbolAnalysisInternal = (
   if (!metadata.symbols.has(id)) metadata.symbols.set(id, { analysis: symbolAnalysis })
 }
 
+/**
+ * Registers a single ParsedJsDoc into the metadata if one is present.
+ *
+ * @param symbolId The unique identifier of the symbol.
+ *
+ * @param metadata The metadata container to update.
+ *
+ * @param parsedArray The list of parsed JSDoc entries.
+ */
 export const registerParsedJsDocInternal = (
   symbolId: SymbolId,
   metadata: FileAnalysisMetadata,

@@ -22,7 +22,9 @@ import type { FileSearchService } from '@gyomu/schema/shared/fs'
  *
  * Phase1 does not generate semantic hashes.
  *
- * @param rootDirectory Project root directory
+ * @param args Configuration containing the repository root and workspace-relative project path.
+ *
+ * @returns An Effect representing the file hash snapshot, which may fail with an IOError and requires FileSearchService and FileSystem services.
  */
 export const createSnapshot = (args: {
   repoRoot: FullPath

@@ -1,0 +1,26 @@
+{
+  "summary": "This directory serves as the root orchestration layer for the form generation library, aggregating domain-specific language structures, core engine logic, and error handling systems into a cohesive, exportable package.",
+  "responsibilities": [
+    "Provide a unified entry point for library consumers",
+    "Expose core form generation and validation capabilities",
+    "Aggregate domain-specific language definitions for form metadata",
+    "Provide centralized error handling infrastructure"
+  ],
+  "concepts": [
+    "Library Entry Point",
+    "Public API",
+    "Form Engine",
+    "DSL Definitions",
+    "Error Management"
+  ],
+  "relationships": [
+    "The entry point exports the form engine and DSL components to allow library users to initialize and configure form generation.",
+    "The error management system provides support services that the engine utilizes to handle validation and processing faults during form operations."
+  ],
+  "designDecisions": [
+    "Barrel file export strategy to provide a clean and simplified API surface",
+    "Centralized package structure to manage internal dependencies between core, dsl, and error modules",
+    "Modular encapsulation to separate functional concerns from public exports"
+  ],
+  "importance": "Core"
+}

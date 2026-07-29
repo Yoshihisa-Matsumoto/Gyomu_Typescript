@@ -1,0 +1,53 @@
+{
+  "summary": "The @gyomu/infra package serves as a foundational infrastructure layer for the Gyomu ecosystem, providing a consistent service-oriented architecture built on the Effect ecosystem. It abstracts common operational tasks including file system management, database interaction, network communication, and data serialization. By centralizing these cross-cutting concerns, it ensures reliable and type-safe integration across various application components.",
+  "responsibilities": [
+    "Abstract underlying platform-specific file system and network operations.",
+    "Provide standardized error handling for I/O and network-related operations using Effect.",
+    "Implement consistent service layers for database connectivity and repository management.",
+    "Facilitate bidirectional data transformation between structured domain models and common formats like CSV, XML, and JSON.",
+    "Standardize application configuration and logging infrastructure."
+  ],
+  "capabilities": [
+    {
+      "name": "File System Operations",
+      "description": "Comprehensive utilities for local file manipulation, streaming, searching, and metadata management with integrated error handling."
+    },
+    {
+      "name": "Database Integration",
+      "description": "Abstracted connectivity and repository patterns for Kysely and MSSQL, enabling type-safe CRUD and custom query execution."
+    },
+    {
+      "name": "Web and Network Access",
+      "description": "Capabilities for executing HTTP requests, downloading remote content, and processing streamed network responses."
+    },
+    {
+      "name": "Data Serialization",
+      "description": "Bidirectional conversion utilities for CSV, JSON, XML, and YAML, often integrating with schema validation to ensure data integrity."
+    },
+    {
+      "name": "DOM and Scraping",
+      "description": "Abstractions for parsing, navigating, and querying HTML content, specifically designed for document-based data extraction."
+    },
+    {
+      "name": "Security and Authentication",
+      "description": "Utilities for managing JSON Web Tokens and performing cryptographic operations like SHA-256 hashing."
+    },
+    {
+      "name": "Archive Management",
+      "description": "Support for creating, reading, and inspecting contents of TAR and ZIP archives through stream-based interfaces."
+    }
+  ],
+  "designDecisions": [
+    "Leverages the Effect ecosystem for all side-effecting operations to provide predictable, type-safe, and composable services.",
+    "Adopts a service-layer architecture to decouple business logic from underlying implementation details.",
+    "Utilizes streaming interfaces for large data processing to maintain memory efficiency.",
+    "Enforces strong typing for serialization and database operations via integrated schema validation.",
+    "Provides standardized wrappers around third-party libraries to ensure uniform behavior and error reporting across the system."
+  ],
+  "usageGuidance": [
+    "Prefer using the provided service layers (e.g., FileSystem, TarService) rather than native Node.js modules to ensure consistent error handling.",
+    "Always define schemas when using parsing utilities to ensure data consistency at the application boundary.",
+    "Use the repository generator for standard database operations to reduce boilerplate and improve maintainability.",
+    "Leverage the Effect runtime for composing infrastructure operations to handle failures gracefully through the typed error system."
+  ]
+}

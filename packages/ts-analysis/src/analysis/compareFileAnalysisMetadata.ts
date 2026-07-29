@@ -1,5 +1,14 @@
 import type { FileAnalysisMetadata, SymbolId } from '@gyomu/schema/typescript'
 
+/**
+ * Compares two FileAnalysisMetadata objects to verify that symbols and parsed JSDoc keys are identical.
+ *
+ * @param source The source metadata to compare.
+ *
+ * @param destination The destination metadata to compare against.
+ *
+ * @returns void
+ */
 export const compareFileAnalysisMetadata = (
   source: FileAnalysisMetadata,
   destination: FileAnalysisMetadata,

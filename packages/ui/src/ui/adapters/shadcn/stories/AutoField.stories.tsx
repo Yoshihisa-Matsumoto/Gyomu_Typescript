@@ -15,6 +15,9 @@ export default meta
 
 type Story = StoryObj<typeof AutoField>
 
+/**
+ * Displays a story for the Text field variant.
+ */
 export const Text: Story = {
   args: {
     meta: {
@@ -29,6 +32,9 @@ export const Text: Story = {
   },
 }
 
+/**
+ * Displays a story for the Number field variant.
+ */
 export const Number: Story = {
   args: {
     meta: {
@@ -43,6 +49,9 @@ export const Number: Story = {
   },
 }
 
+/**
+ * Displays a story for the Email field variant.
+ */
 export const Email: Story = {
   args: {
     meta: {
@@ -58,6 +67,9 @@ export const Email: Story = {
   },
 }
 
+/**
+ * Displays a story for the Textarea field variant.
+ */
 export const Textarea: Story = {
   args: {
     meta: {
@@ -72,6 +84,9 @@ export const Textarea: Story = {
   },
 }
 
+/**
+ * Displays a story for the Select field variant with enumerated options.
+ */
 export const Select: Story = {
   args: {
     meta: {
@@ -90,6 +105,9 @@ export const Select: Story = {
   },
 }
 
+/**
+ * Displays a story for the field in an error state.
+ */
 export const WithError: Story = {
   args: {
     meta: {
@@ -105,6 +123,9 @@ export const WithError: Story = {
   },
 }
 
+/**
+ * Displays an interactive story demonstrating state updates.
+ */
 export const Interactive: Story = {
   render: (args) => {
     const [value, setValue] = React.useState(args.value)
@@ -133,6 +154,9 @@ export const Interactive: Story = {
   },
 }
 
+/**
+ * Displays a collection of all available field types.
+ */
 export const AllFields: Story = {
   render: () => (
     <div style={{ display: 'grid', gap: 16 }}>

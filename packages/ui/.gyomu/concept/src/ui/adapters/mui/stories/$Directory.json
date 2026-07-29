@@ -1,0 +1,25 @@
+{
+  "summary": "This directory contains documentation and visual demonstrations for Material UI-based form components. It provides isolated examples of various input types and form configurations to verify component behavior, styling, and integration with validation logic within the UI adapter layer.",
+  "responsibilities": [
+    "Provide visual documentation for form components",
+    "Demonstrate integration between forms and UI input fields",
+    "Showcase component states including validation and interactivity",
+    "Test custom rendering capabilities for form fields"
+  ],
+  "concepts": [
+    "Component Stories",
+    "UI Component Examples",
+    "Form Configurations",
+    "Input Field Variations"
+  ],
+  "relationships": [
+    "Component stories serve as documentation for different input field types and form structures.",
+    "The AutoForm stories demonstrate how the form container manages various field types and validation states."
+  ],
+  "designDecisions": [
+    "Use of story-based documentation for isolated component testing",
+    "Categorization by primary UI component type",
+    "Focus on Material UI integration"
+  ],
+  "importance": "Supporting"
+}

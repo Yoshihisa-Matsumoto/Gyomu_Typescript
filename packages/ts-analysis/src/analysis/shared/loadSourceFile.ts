@@ -6,6 +6,15 @@ import type { FullPath } from '@gyomu/schema'
 import type { SourceFileContext } from '../file/SourceFileContext.js'
 import type { ProjectContext } from '../project/ProjectContext.js'
 
+/**
+ * Loads a source file into the analysis context.
+ *
+ * @param context The current project analysis context.
+ *
+ * @param sourceFullPath The absolute path to the source file to load.
+ *
+ * @returns An Effect containing the loaded SourceFileContext or an AnalysisError.
+ */
 export const loadSourceFile = (context: ProjectContext, sourceFullPath: FullPath) =>
   fromSync(AnalysisError, () => ({
     filePath: sourceFullPath,

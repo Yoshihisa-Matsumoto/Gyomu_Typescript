@@ -4,15 +4,17 @@ US English | [JP 日本語](README.ja.md)
 
 ## Overview
 
-This package serves as the foundational AI execution layer for the Gyomu project, designed to provide a unified interface for complex AI operations. By abstracting the differences between various AI providers and SDKs, it enables developers to build highly reliable, scalable, and maintainable applications.
+This package serves as the AI execution infrastructure for the Gyomu project, providing a modular and resilient framework for orchestrating AI interactions within TypeScript applications. Its mission is to standardize AI integration by abstracting differences between various providers and SDKs.
 
-The framework offers a modular approach to orchestrating AI interactions within TypeScript environments. It streamlines model management, intelligent request routing with automated fallbacks, and structured tool execution. This architecture ensures that AI integration remains consistent and testable, providing a robust infrastructure for developing sophisticated AI-driven solutions.
+By offering a unified interface for model management, intelligent request routing, and structured tool execution, the package ensures consistent and testable behavior across complex workflows. This approach promotes reliable, scalable, and maintainable AI application development by centralizing error handling and automating system fallbacks, ultimately streamlining the deployment of robust intelligence features.
 
 ## Architecture
 
-The architecture is organized into a modular framework that decouples model management, request orchestration, and tool execution. Central to the package is a registry-based system that abstracts AI model retrieval and configuration, providing a structured service layer for dependency injection. This foundation supports a robust routing engine that maps requests to specific models while managing automated fallback logic to ensure resilient execution.
+The package architecture is organized into a modular framework that separates model management, request orchestration, tool execution, and error handling. This design utilizes a dependency-injected execution environment, leveraging Effect services to ensure robust and testable integration across all AI operations.
 
-The package enforces a standardized lifecycle for AI-integrated tools, utilizing defined interfaces and approval policies to govern execution and authorization. This is complemented by a domain-specific error management system that categorizes operational failures, providing consistent diagnostic context across all service layers. Together, these components create a cohesive pipeline where the routing layer orchestrates operations across models, tools, and error-handling utilities to maintain reliable and testable AI service integration.
+The model management layer serves as the central registry, providing structured access to language and embedding models. These models are consumed by the routing layer, which manages request flow and automated fallback strategies to ensure resilience. The tool execution layer complements this by establishing standardized interfaces and lifecycle contracts for AI-integrated capabilities, including authorization and execution policies. 
+
+Underpinning these operations, a centralized error handling system categorizes failures by lifecycle phase and operational context. This provides structured diagnostics and consistent metadata across the entire stack, enabling clear traceability from model retrieval and request routing through to final tool execution.
 
 ## Installation
 
@@ -24,15 +26,15 @@ pnpm add @gyomu/ai
 
 ## Dependencies
 
-This package requires Node.js with ESM support and is built to integrate seamlessly with Effect 4.x. Please ensure your project environment is configured to support modern ECMAScript modules before installation.
+This package requires a Node.js environment supporting ESM and is built upon Effect 4.x. To ensure full compatibility, please ensure your project is configured to handle modern ECMAScript modules and the latest Effect ecosystem patterns.
 
-At its core, the package relies on the Effect ecosystem for runtime management, schema definitions, and context handling. It also builds upon the internal `@gyomu` infrastructure, leveraging shared schemas, standard I/O utilities, and the `@gyomu/approval-core` library for managing AI-driven workflows requiring approval processes.
+Core functionality relies on the Effect runtime, supplemented by `@gyomu/schema` for shared definitions and `@gyomu/infra` for baseline I/O operations. Additionally, `@gyomu/approval-core` is integrated to provide the necessary approval workflows for AI-driven processes.
 
 ## Development
 
-The Gyomu AI infrastructure is built on the principle of **radical abstraction through type-safe functional paradigms**. We treat AI providers—ranging from LLM APIs to custom tool execution environments—as volatile external side effects that must be decoupled from core application logic. By utilizing the Effect ecosystem, we enforce a strict separation between the definition of intent and the execution of operations. This architectural choice ensures that the complexity of multi-model routing, lifecycle management, and provider-specific quirks are entirely encapsulated, allowing developers to build features that are testable, predictable, and resilient to the inherent instability of external AI services.
+This package serves as the AI execution infrastructure for the Gyomu project, aiming to transparently absorb differences between various AI providers and SDKs while providing a unified interface. The core of the design is "loose coupling through abstraction"; access to AI models must be performed via `AiService` and the provided `Provider`. Developers are prohibited from using provider-specific SDKs directly. All model configurations are aggregated and managed in the `Registry`, eliminating direct management on the application side and ensuring maintainability across the system.
 
-Contributors to this project should adhere to a philosophy of **"uniformity over convenience."** Every addition—whether a new model integration or a tool definition—must conform to our standardized interfaces, ensuring that the system remains modular and swappable. We prioritize observability and structured error handling as first-class citizens; because AI operations are non-deterministic, we emphasize explicit failure states and robust fallback mechanisms over silent execution. Our goal is to create a rigid, high-integrity foundation where the underlying AI complexity is safely hidden, empowering engineers to extend the platform without risking the structural integrity of the broader Gyomu ecosystem.
+To maintain architectural reliability and scalability, all AI requests are processed through `Routing`, and a fallback configuration to prevent single points of failure is strongly recommended. Additionally, the construction of an execution environment via dependency injection using Effect services, and thorough structured error handling, maximize diagnostic capabilities during operation. When introducing Tools, contributors are required to explicitly define input schemas and execution policies, and ensure the safety and robustness of the execution environment by not trusting AI output and performing schema validation as necessary.
 
 ## Public API
 

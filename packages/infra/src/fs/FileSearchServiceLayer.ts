@@ -130,6 +130,9 @@ const isFileDateMatch = (
   }
 }
 
+/**
+ * Defines a service layer providing the file search functionality.
+ */
 export const FileSearchServiceLayer = Layer.effect(
   FileSearchService,
   Effect.succeed({

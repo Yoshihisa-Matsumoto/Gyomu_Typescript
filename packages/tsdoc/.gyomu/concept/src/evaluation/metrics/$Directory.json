@@ -1,0 +1,26 @@
+{
+  "summary": "This directory serves as the foundation for the application's core domain models and shared business logic, establishing the structural definitions and data entities required by higher-level modules to function consistently throughout the codebase.",
+  "responsibilities": [
+    "Defining core domain entities and data structures",
+    "Centralizing shared business rules and constants",
+    "Providing consistent interfaces for data representation",
+    "Ensuring type safety for cross-module communication"
+  ],
+  "concepts": [
+    "Domain entities",
+    "Shared interfaces",
+    "Business logic",
+    "Application state"
+  ],
+  "relationships": [
+    "Domain entities define the shape of data used by the business logic.",
+    "Shared interfaces enforce consistency across different application modules.",
+    "Business logic operations act upon the defined domain entities."
+  ],
+  "designDecisions": [
+    "Strict type definitions for state consistency",
+    "Centralization of shared domain models",
+    "Separation of data structure definitions from implementation logic"
+  ],
+  "importance": "Core"
+}

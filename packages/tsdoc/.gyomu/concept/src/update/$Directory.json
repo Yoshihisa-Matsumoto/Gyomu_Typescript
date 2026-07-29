@@ -1,0 +1,31 @@
+{
+  "summary": "This directory manages the end-to-end orchestration of JSDoc updates, including planning, merging, and rendering documentation changes. It provides the core workflow for transforming code analysis data into structured, formatted JSDoc comments and applying them to source files.",
+  "responsibilities": [
+    "Orchestrate the JSDoc update lifecycle from planning to execution",
+    "Generate and apply plans for documentation updates and merging",
+    "Transform code analysis data into formatted JSDoc strings",
+    "Execute file-level edits for synchronized documentation updates",
+    "Configure and control update behavior through defined options"
+  ],
+  "concepts": [
+    "JSDoc Update Plan",
+    "Merge Planning",
+    "Documentation Context",
+    "Update Process",
+    "JSDoc Rendering"
+  ],
+  "relationships": [
+    "The update process utilizes merge plans to reconcile new documentation with existing file content.",
+    "File update plans aggregate individual merge actions into a coherent series of edits to be applied to source code.",
+    "Documentation context provides the necessary data for both the planning of merge actions and the final rendering of JSDoc comments.",
+    "Rendering logic converts processed JSDoc updates into formatted strings that adhere to project configuration."
+  ],
+  "designDecisions": [
+    "Decoupling of documentation planning from file-level edit application",
+    "Use of ordered offsets to ensure accurate application of source file edits",
+    "Modular implementation of merge strategies based on JSDoc components",
+    "Centralized configuration for update behavior and debugging",
+    "Sequential workflow from symbol analysis to rendering and final file output"
+  ],
+  "importance": "Core"
+}

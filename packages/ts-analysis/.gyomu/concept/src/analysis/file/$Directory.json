@@ -1,0 +1,24 @@
+{
+  "summary": "This directory manages the analysis and metadata registration of individual source files, focusing on identifying exported symbols and maintaining file-specific context. It provides the necessary infrastructure to extract and record code information during the static analysis process.",
+  "responsibilities": [
+    "Manage file-level analysis context and aggregated metrics",
+    "Locate and identify exported symbols within a source file",
+    "Register JSDoc and symbol analysis metadata"
+  ],
+  "concepts": [
+    "Source File Context",
+    "Exported Symbol",
+    "Analysis Metadata",
+    "File Metrics"
+  ],
+  "relationships": [
+    "The SourceFileContext maintains the state required to locate specific symbols within a file.",
+    "Registration functions use the source file context to update analysis metadata with JSDoc and symbol details."
+  ],
+  "designDecisions": [
+    "Use of interfaces to define file analysis context structures",
+    "Modular registration functions for metadata extraction",
+    "Decoupling of symbol discovery from analysis registration"
+  ],
+  "importance": "Supporting"
+}

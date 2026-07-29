@@ -9,6 +9,15 @@ import type {
 import type { AnalysisOptions } from '@gyomu/schema'
 import type { FileAnalysisMetadata } from '@gyomu/schema/typescript'
 
+/**
+ * Registers a symbol analysis within the provided file analysis metadata if verification is enabled.
+ *
+ * @param metadata The metadata object containing the collection of registered symbols.
+ *
+ * @param symbolAnalysis The specific analysis data for the symbol being registered.
+ *
+ * @param option Optional configuration for the registration process, including debug settings.
+ */
 export const registerSymbolSymbolAnalysis = (
   metadata: FileAnalysisMetadata,
   symbolAnalysis:

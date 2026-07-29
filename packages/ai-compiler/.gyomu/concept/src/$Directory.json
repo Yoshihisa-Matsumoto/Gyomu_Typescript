@@ -1,11 +1,11 @@
 {
-  "summary": "This directory manages the core orchestration of automated documentation and code analysis pipelines. It provides the infrastructure to resolve prompt templates, define structural metadata, and execute modular transformation tasks required for code maintenance and documentation generation.",
+  "summary": "This directory orchestrates automated code analysis, documentation generation, and maintenance pipelines. It provides a modular framework for managing source code metadata, resolving prompt templates, and executing transformation tasks to keep documentation and code structures synchronized.",
   "responsibilities": [
-    "Orchestrate documentation and code analysis workflows",
-    "Define structural metadata schemas for source code",
-    "Resolve and manage prompt templates for automated tasks",
+    "Orchestrate documentation and code analysis pipelines",
+    "Define structural metadata and schemas for source code",
+    "Resolve and load prompt templates for automated tasks",
     "Execute and validate documentation and code transformations",
-    "Provide testing infrastructure for pipeline verification"
+    "Provide infrastructure for verifying pipeline outputs"
   ],
   "concepts": [
     "Documentation Pipeline",
@@ -15,17 +15,17 @@
     "Pipeline Validation"
   ],
   "relationships": [
-    "Pipeline execution engines utilize structural metadata and schemas to interpret source code context.",
-    "Prompt templates dictate the instructional logic used by pipelines for generation and translation tasks.",
-    "Verification components ensure that transformation outputs conform to structural requirements and quality standards.",
-    "Strategy registries determine the execution path for specific documentation or analysis tasks based on input complexity."
+    "Pipeline execution engines utilize structural metadata and schemas to interpret the context of source code files.",
+    "Prompt templates provide the specific instructional logic required for automated generation and translation tasks.",
+    "Verification components ensure that the outputs produced by pipelines adhere to defined structural requirements and quality standards.",
+    "Strategy patterns allow the system to resolve the appropriate execution logic based on the complexity of the task."
   ],
   "designDecisions": [
-    "Separation of concerns between data definitions, template management, and execution logic.",
-    "Use of interface-based contracts for consistent data modeling across pipelines.",
-    "Implementation of registry and strategy patterns to support modular extension.",
-    "Collocation of test infrastructure with core logic for reliable verification.",
-    "Decoupling of prompt template retrieval from pipeline execution tasks."
+    "Separation of concerns between data definitions, prompt management, and execution logic.",
+    "Use of interface-based contracts to maintain consistent data modeling across different pipelines.",
+    "Registry and strategy patterns to facilitate modular extension of generation logic.",
+    "Decoupling of template loading mechanisms from the core execution engine.",
+    "Collocation of test infrastructure with pipeline logic to ensure consistent verification."
   ],
   "importance": "Core"
 }

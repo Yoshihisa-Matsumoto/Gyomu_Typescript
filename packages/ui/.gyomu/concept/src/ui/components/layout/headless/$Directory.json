@@ -1,0 +1,21 @@
+{
+  "summary": "This directory provides headless layout components designed to structure the visual arrangement of forms and their constituent fields without imposing opinionated styling, allowing for flexible UI composition.",
+  "responsibilities": [
+    "Defining the structural arrangement of form elements",
+    "Providing layout wrappers for individual form fields",
+    "Encapsulating form container logic"
+  ],
+  "concepts": [
+    "Headless layout",
+    "Form structure",
+    "Field arrangement"
+  ],
+  "relationships": [
+    "The FormLayout acts as a container for organizing fields, while the FieldLayout defines the specific placement and presentation logic for individual inputs within that form."
+  ],
+  "designDecisions": [
+    "Utilization of a headless architecture to separate structural definition from visual styling",
+    "Composition-based API for nesting child elements within layout wrappers"
+  ],
+  "importance": "Core"
+}

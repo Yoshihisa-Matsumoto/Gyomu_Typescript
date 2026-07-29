@@ -1,0 +1,28 @@
+{
+  "summary": "This directory contains specialized logic for analyzing TypeScript type nodes and expressions. It is responsible for decomposing complex AST nodes into structured, semantic representations of types, including function signatures, property metadata, and generic parameters.",
+  "responsibilities": [
+    "Deconstruct TypeScript type nodes and expressions into structural representations",
+    "Extract metadata from type properties, members, and generic parameters",
+    "Handle specific structural types such as void, undefined, and index signatures",
+    "Perform recursive analysis of complex, nested type structures"
+  ],
+  "concepts": [
+    "Type Analysis",
+    "AST Node Deconstruction",
+    "Type Structure",
+    "Property Metadata",
+    "Generic Parameters"
+  ],
+  "relationships": [
+    "Type analyzers recursively decompose complex nodes into smaller components like properties and members.",
+    "Property analysis modules extract metadata from declarations to build the overall type structure result.",
+    "Generic parameters are evaluated to determine constraints and dependencies within the broader type context."
+  ],
+  "designDecisions": [
+    "Functional decomposition where specific logic is isolated for different TypeScript node types",
+    "Recursive traversal for mapping nested type relationships",
+    "Standardized output format for type analysis results",
+    "Separation of concern between expression analysis and structural type definition analysis"
+  ],
+  "importance": "Core"
+}

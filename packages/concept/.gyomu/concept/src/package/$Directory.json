@@ -1,0 +1,28 @@
+{
+  "summary": "This directory manages the core analysis and structural construction of TypeScript packages, providing mechanisms to resolve exports, identify dependencies, and generate formal conceptual models of a project's architecture.",
+  "responsibilities": [
+    "Analyze project package exports and source structures",
+    "Resolve export targets to concrete file paths",
+    "Construct and manage package conceptual models",
+    "Identify and collect project dependencies",
+    "Serialize and persist analysis results"
+  ],
+  "concepts": [
+    "Package Analysis",
+    "Package Concept",
+    "Export Resolution",
+    "Dependency Tracking"
+  ],
+  "relationships": [
+    "The package analysis process relies on export resolution to identify relevant source files for inclusion in the package concept.",
+    "Package concepts represent the processed structural data which is persisted to the file system for future retrieval.",
+    "Dependency collection provides context to the package analysis by mapping external requirements against the project configuration."
+  ],
+  "designDecisions": [
+    "Encapsulation of internal logic from public APIs",
+    "Schema-based validation for serialized concepts",
+    "Separation of concerns between resolution logic and reporting",
+    "Centralized type definitions for analysis data structures"
+  ],
+  "importance": "Core"
+}

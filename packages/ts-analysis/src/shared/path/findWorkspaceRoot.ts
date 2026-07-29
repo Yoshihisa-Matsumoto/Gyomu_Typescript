@@ -7,12 +7,30 @@ import type { FileSystem } from 'effect'
 
 let calculatedWorkspaceRoot: string | undefined = undefined
 
+/**
+ * Resets the cached workspace root to undefined.
+ */
 export const ___resetWorkspaceRoot = () => {
   calculatedWorkspaceRoot = undefined
 }
+
+/**
+ * Options for configuring the workspace root discovery process.
+ */
 export interface FindWorkspaceRootOptions {
+  /**
+   * The starting directory from which to begin searching for the workspace root.
+   */
   readonly currentDirectory?: string
 }
+
+/**
+ * Calculates and returns the workspace root path by searching for marker files or environment variables.
+ *
+ * @param startDirectory The directory from which the search starts. Defaults to current working directory.
+ *
+ * @returns An Effect that yields a FullPath upon success, or an IOError if file system operations fail.
+ */
 export const findWorkspaceRoot = (
   startDirectory: FullPath = FullPath(process.cwd()),
 ): Effect.Effect<FullPath, IOError, FileSystem.FileSystem> => {

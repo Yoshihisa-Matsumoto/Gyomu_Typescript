@@ -1,6 +1,13 @@
 import { withOptional } from '@gyomu/schema'
 import type { GeneratorMarker } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Parses a generator marker string to extract the tool name and optional version.
+ *
+ * @param text The input text containing the generator marker.
+ *
+ * @returns The parsed GeneratorMarker object if found, otherwise undefined.
+ */
 export const parseGeneratedMarker = (text: string): GeneratorMarker | undefined => {
   const marker = extractGeneratorMarker(text)
   if (!marker) return undefined
@@ -19,6 +26,13 @@ export const parseGeneratedMarker = (text: string): GeneratorMarker | undefined 
   }
 }
 
+/**
+ * Extracts the generator marker substring from the provided text.
+ *
+ * @param text The source text to search for the marker.
+ *
+ * @returns The found generator marker string, if any.
+ */
 export const extractGeneratorMarker = (text: string): string | undefined => {
   return text.match(/@GeneratedBy\([^)]+\)/)?.[0]
 }

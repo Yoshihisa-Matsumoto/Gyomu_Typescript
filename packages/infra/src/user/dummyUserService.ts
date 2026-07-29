@@ -2,6 +2,9 @@ import { Effect, Layer } from 'effect'
 import { UserService } from '@gyomu/schema/gyomu'
 import { UserId } from '@gyomu/schema'
 
+/**
+ * A constant Layer providing a dummy implementation of the UserService for testing purposes.
+ */
 export const DummyUserLayer = Layer.effect(
   UserService,
   Effect.succeed({

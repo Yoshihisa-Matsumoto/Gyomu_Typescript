@@ -1,0 +1,27 @@
+{
+  "summary": "This directory manages the core logic for analyzing source directories and generating architectural metadata, providing the necessary tools to construct, validate, and test directory concepts within the system.",
+  "responsibilities": [
+    "Analyze project file structures to derive architectural properties",
+    "Construct and validate directory concept metadata",
+    "Provide testing infrastructure for verifying architectural analysis logic",
+    "Manage paths and storage for architectural metadata records"
+  ],
+  "concepts": [
+    "Directory Concept",
+    "Architectural Metadata",
+    "File Analysis",
+    "Test Suite"
+  ],
+  "relationships": [
+    "The internal analysis logic generates directory concepts based on file summaries.",
+    "Test suites validate the accuracy of the conceptualization logic against architectural definitions.",
+    "Metadata management utilities facilitate the storage and resolution of generated concepts."
+  ],
+  "designDecisions": [
+    "Encapsulation of analysis logic within an internal namespace",
+    "Co-location of testing suites with functional modules",
+    "Automated persistence of metadata into dedicated project structures",
+    "Separation of concerns between file summarization and directory-level concept aggregation"
+  ],
+  "importance": "Supporting"
+}

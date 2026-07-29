@@ -1,0 +1,29 @@
+{
+  "summary": "This directory provides foundational network communication capabilities, enabling the application to perform HTTP requests, process data streams, and handle formatted responses such as JSON and XML for external service integration.",
+  "responsibilities": [
+    "Executing HTTP requests using various methods and configurations",
+    "Managing web data streams for network operations",
+    "Parsing and serializing JSON and XML response formats",
+    "Handling and standardizing network-related errors",
+    "Facilitating file downloads from remote resources"
+  ],
+  "concepts": [
+    "Web client",
+    "HTTP requests",
+    "Data streams",
+    "Response parsing",
+    "Network effects"
+  ],
+  "relationships": [
+    "The web client leverages network effects to perform requests and convert raw byte streams into structured data.",
+    "Data parsers transform raw text or byte streams retrieved from web requests into structured JSON or XML objects.",
+    "Download utilities utilize the web client to fetch and persist remote content to local storage."
+  ],
+  "designDecisions": [
+    "Use of Effect pattern for declarative error handling and network operations",
+    "Abstraction of fetch operations to support proxies and streaming",
+    "Consistent response container types for typed data handling",
+    "Modular decomposition of data format processing into distinct modules"
+  ],
+  "importance": "Core"
+}

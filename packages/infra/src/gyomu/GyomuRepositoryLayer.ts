@@ -37,6 +37,9 @@ import {
 import type { DB } from '../generated/db.js'
 import type { LocalDate, YearMonth } from '@gyomu/schema/entity'
 
+/**
+ * Defines a ZIO Layer that provides the GyomuRepository service, encapsulating database access for various gyomu-related entities.
+ */
 export const GyomuRepositoryLayer = Layer.effect(
   GyomuRepository,
 

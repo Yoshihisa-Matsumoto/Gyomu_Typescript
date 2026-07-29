@@ -7,6 +7,17 @@ import type {
 } from '@gyomu/schema/schemas/typescript'
 import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../../types.js'
 
+/**
+ * Analyzes a TypeScript TypeOperatorTypeNode (such as keyof, readonly, or unique) and extracts its nested target type structure.
+ *
+ * @param args The shared analysis arguments containing the type node context.
+ *
+ * @param newMemberPath The current path in the member identity hierarchy.
+ *
+ * @param node The TypeScript type operator node to analyze.
+ *
+ * @returns A result object containing the analyzed type structure, its dependencies, and reserved names.
+ */
 export const analyzeTypeOperatorTypeNode = (
   args: ChildAnalysisArg<TypeNode>,
   newMemberPath: MemberIdentityMemberPath,

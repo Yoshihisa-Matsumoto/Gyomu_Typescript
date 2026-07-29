@@ -7,6 +7,17 @@ import type {
   NonDocumentableMethodMemberAnalysis,
 } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Analyzes a class method member by extracting its metadata, including static status, visibility, and JSDoc documentation.
+ *
+ * @param args The context and node information for the analysis.
+ *
+ * @param name The name of the class method.
+ *
+ * @param jsDocableNode The JSDoc-compatible node to be analyzed.
+ *
+ * @returns The resulting analysis for the class method member, identifying if it is documentable or not.
+ */
 export const analyzeClassMethodMember = (
   args: ChildAnalysisArg<MethodDeclaration>,
   name: string,

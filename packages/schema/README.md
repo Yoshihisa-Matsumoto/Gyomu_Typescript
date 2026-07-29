@@ -4,17 +4,15 @@ US English | [JP 日本語](README.ja.md)
 
 ## Overview
 
-This package serves as a foundational layer for the Gyomu project, providing shared schemas, type definitions, and service contracts. By establishing a unified framework for domain-driven data modeling, it enables robust collaboration between independent modules while maintaining strict type safety and architectural consistency.
+This package provides a robust, schema-driven foundation for domain modeling, validation, and error handling across the Gyomu ecosystem. By centralizing shared schema, type, and service definitions, it establishes a reliable communication layer that ensures data integrity and consistent cross-layer interactions.
 
-Built on the Effect ecosystem, the toolkit facilitates automatic CRUD schema generation and manages complex domain validation. It ensures data integrity and standardized API results throughout the system by enforcing a common structural contract. This approach allows disparate packages to interact seamlessly while providing developers with reliable tools for structural analysis and consistent error diagnostics.
+The mission is to serve as a foundational contract that enables packages to remain decoupled while maintaining strict type safety. By leveraging the Effect ecosystem, the package standardizes business logic and automates CRUD patterns, creating a unified architecture that promotes reliability and modularity throughout the entire project.
 
 ## Architecture
 
-The package architecture is organized into five functional domains that leverage Effect for robust, type-safe data modeling. The **Entity** and **Gyomu** modules act as the primary domain layer, defining formal business schemas and automating the generation of CRUD operations. These layers depend on **TypeScript analysis** utilities, which model code metadata to support static analysis and documentation.
+The architecture is organized into five functional layers that enforce data integrity and standardized operational logic. The entity and domain schema layers serve as the central definition points, establishing the structural foundations and CRUD patterns for business models, while the TypeScript analysis layer provides the metadata required for introspection and documentation.
 
-Supporting these domain structures, the **Error** module provides a centralized diagnostic framework. It encapsulates error metadata and operational policies—such as retry logic and severity classification—ensuring consistent failure reporting across the system. This error strategy is integrated into the schema-based decoding process, mapping validation issues directly to the domain model.
-
-The **Core** infrastructure layer provides the foundation for the entire package. It supplies universal utilities, including standardized result patterns, JSON structure definitions, and exhaustive type checking. By unifying these components, the package maintains structural integrity and consistent data transformation logic throughout the entire application lifecycle.
+These components are supported by a centralized error handling system that applies consistent diagnostic traits and operational policies, such as retry and logging logic, across all system layers. The core infrastructure layer provides the low-level utility functions, including standardized result patterns and schema-based validation tools, that unify cross-layer communication. Together, these layers form a cohesive ecosystem where entity definitions, validation rules, and structural metadata collaborate to ensure type safety and consistent behavior across the application.
 
 ## Installation
 
@@ -26,24 +24,21 @@ pnpm add @gyomu/schema
 
 ## Dependencies
 
-This package requires Node.js and is designed for ESM environments. It is built on Effect 4.x and utilizes the Effect ecosystem—including Effect Runtime, Schema, and Context—as its primary foundation.
-
-For date and time operations, the package relies on `date-fns` for robust utility support. Ensure your project environment is configured to support ESM and has the necessary Effect dependencies installed to leverage the package's functionality effectively.
+This package is designed for ESM environments and requires Effect v4.x as its core runtime. It leverages Effect for type-safe schemas and dependency injection, alongside `date-fns` to provide robust handling for date and time utilities. Ensure your project is configured for ESM and satisfies the minimum version requirements for the Effect ecosystem before installation.
 
 ## Development
 
-The development philosophy of this package is rooted in the principle of "Contract-First Architecture," where the shared schema serves as the single source of truth for the entire Gyomu ecosystem. By centralizing core domain models and validation logic, we eliminate the fragility of manual synchronization between disparate services. This structure is designed to decouple business intent from implementation details, ensuring that TypeScript interfaces act not just as passive type definitions, but as active, verifiable blueprints that enforce consistency across the boundary of every package.
+This package serves as a central hub for a "Common Contract" to maintain consistency and type safety across the Gyomu project. By centralizing domain schemas, branded types, and service interfaces used throughout the project, it provides a foundation that allows packages to collaborate loosely without direct dependencies, communicating instead through defined schemas. Contributors are expected to focus on making data structures and service definitions standards for the entire project, maximizing reusability.
 
-Contributors should prioritize strict type safety and immutability, treating every shared definition as an immutable contract that demands rigorous backward compatibility. The philosophy favors composition over inheritance and functional purity in data transformation, ensuring that shared utilities are side-effect-free and predictable. We adhere to a "fail-fast and explicitly" mindset: diagnostic contexts and error handling must be baked into the schema layer rather than treated as an afterthought. Ultimately, contributors must strive to minimize domain leakage; the package should remain lean, providing the foundational vocabulary for the system without assuming the specific operational requirements of any single consuming service.
+For implementation, Effect Schema is required for all data definitions to ensure runtime validation and to provide detailed metadata for AI analysis and documentation generation. Error handling and operational infrastructure must be designed based on common traits and the Result pattern, and utilities should be implemented as pure functions with no dependencies on other packages. Service definitions are limited to interfaces and Context Tags; keeping them free of implementation details to maintain a declarative and immutable interface is the guiding principle for evolving this package.
 
 ## Public API
 
-- Entity Modeling - Definition of domain entities and their fields, providing the foundation for automated schema generation and UI annotations.
-- CRUD Schema Generation - Automatic creation of validated schemas for insert, update, and select operations based on central entity definitions.
-- Structured Error Handling - Consistent error classification and diagnostic metadata injection across system layers with support for retryability and observability.
-- TypeScript Analysis Framework - Structural modeling of TypeScript source code metadata, including symbols, dependencies, and type compositions for automated tooling.
-- Validation and Conversion - Tools for decoding, transforming, and validating data inputs using Effect-based schemas and custom type guards.
-- Operational Infrastructure - Foundational utilities for result handling, JSON schema structures, logging, and runtime execution environments.
+- Domain Entity Modeling - Enables the definition of business entities and the automatic derivation of comprehensive CRUD schemas, UI annotations, and validation logic.
+- Structured Error Framework - Provides a hierarchical error system with standardized contexts, behavioral traits, and retry policies for consistent failure reporting.
+- Code Analysis Engine - Offers rich structural metadata extraction for TypeScript symbols, types, and dependencies, facilitating code-aware tooling and documentation generation.
+- Data Validation and Conversion - Facilitates safe transformation of input data into validated models, including sophisticated error resolution and flattening of validation issues.
+- Operational Infrastructure - Provides essential utilities for system orchestration, including polling, logging, standardized result handling, and security-aware path resolution.
 
 ## License
 

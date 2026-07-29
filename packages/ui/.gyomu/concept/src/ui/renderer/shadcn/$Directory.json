@@ -1,0 +1,22 @@
+{
+  "summary": "This directory provides the infrastructure for rendering UI components using the Shadcn library. It acts as a bridge between abstract component requirements and specific Shadcn implementation details, ensuring consistent component display through a centralized mapping mechanism.",
+  "responsibilities": [
+    "Map abstract UI component definitions to concrete Shadcn implementations",
+    "Facilitate the rendering of standardized UI elements",
+    "Expose unified access to Shadcn-based rendering logic"
+  ],
+  "concepts": [
+    "UI Component Mapping",
+    "Shadcn Integration",
+    "Renderer Implementation"
+  ],
+  "relationships": [
+    "The component mapping links generic UI types to specific Shadcn component implementations.",
+    "The renderer interface consumes the component mapping to dynamically resolve and display UI elements."
+  ],
+  "designDecisions": [
+    "Utilizes a registry or mapping pattern to decouple UI component definitions from library-specific implementations",
+    "Centralizes renderer exports to provide a consistent interface for the application"
+  ],
+  "importance": "Core"
+}

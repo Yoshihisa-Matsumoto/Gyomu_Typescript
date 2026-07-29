@@ -4,10 +4,20 @@ import { Select as SelectPrimitive } from 'radix-ui'
 
 import { cn } from '../../../lib/utils'
 
+/**
+ * Displays a list of options for the user to pick from.
+ *
+ * @returns A React component representing the select container.
+ */
 function Select({ ...props }: React.ComponentProps<typeof SelectPrimitive.Root>) {
   return <SelectPrimitive.Root data-slot="select" {...props} />
 }
 
+/**
+ * Groups related items within a select component.
+ *
+ * @returns A React component representing a group of select items.
+ */
 function SelectGroup({ className, ...props }: React.ComponentProps<typeof SelectPrimitive.Group>) {
   return (
     <SelectPrimitive.Group
@@ -18,10 +28,20 @@ function SelectGroup({ className, ...props }: React.ComponentProps<typeof Select
   )
 }
 
+/**
+ * Displays the currently selected value within the select trigger.
+ *
+ * @returns A span element containing the selected value.
+ */
 function SelectValue({ ...props }: React.ComponentProps<typeof SelectPrimitive.Value>) {
   return <SelectPrimitive.Value data-slot="select-value" {...props} />
 }
 
+/**
+ * The trigger button that toggles the visibility of the select content.
+ *
+ * @returns A button element acting as the select trigger.
+ */
 function SelectTrigger({
   className,
   size = 'default',
@@ -48,6 +68,11 @@ function SelectTrigger({
   )
 }
 
+/**
+ * The container that displays the available options in a portal.
+ *
+ * @returns A portal-wrapped content container for select items.
+ */
 function SelectContent({
   className,
   children,
@@ -86,6 +111,11 @@ function SelectContent({
   )
 }
 
+/**
+ * A label for a group of items within the select component.
+ *
+ * @returns A label element for the select group.
+ */
 function SelectLabel({ className, ...props }: React.ComponentProps<typeof SelectPrimitive.Label>) {
   return (
     <SelectPrimitive.Label
@@ -96,6 +126,11 @@ function SelectLabel({ className, ...props }: React.ComponentProps<typeof Select
   )
 }
 
+/**
+ * An individual selectable item within the select list.
+ *
+ * @returns An item element that can be selected.
+ */
 function SelectItem({
   className,
   children,
@@ -120,6 +155,11 @@ function SelectItem({
   )
 }
 
+/**
+ * A visual separator for items within the select list.
+ *
+ * @returns A separator element.
+ */
 function SelectSeparator({
   className,
   ...props
@@ -133,6 +173,11 @@ function SelectSeparator({
   )
 }
 
+/**
+ * Displays a scroll-up button for the select dropdown.
+ *
+ * @returns A React functional component representing the scroll-up button.
+ */
 function SelectScrollUpButton({
   className,
   ...props
@@ -151,6 +196,11 @@ function SelectScrollUpButton({
   )
 }
 
+/**
+ * Displays a scroll-down button for the select dropdown.
+ *
+ * @returns A React functional component representing the scroll-down button.
+ */
 function SelectScrollDownButton({
   className,
   ...props

@@ -21,6 +21,9 @@ import { StructureBase } from './StructureBase.js'
  * Corresponds to TypeScript's `TypePredicateNode`.
  */
 export interface TypePredicateAnalysis extends StructureBase {
+  /**
+   * The literal tag indicating this is a type predicate structure.
+   */
   readonly kind: 'typePredicate'
 
   /**
@@ -47,6 +50,10 @@ export interface TypePredicateAnalysis extends StructureBase {
    */
   readonly asserts: boolean
 }
+
+/**
+ * Represents a TypeScript type predicate schema, capturing the narrowed parameter, target type, and whether it uses the `asserts` keyword.
+ */
 export const TypePredicateAnalysis = Schema.Struct({
   kind: Schema.Literal('typePredicate'),
 
@@ -54,7 +61,7 @@ export const TypePredicateAnalysis = Schema.Struct({
     description: 'Name of the parameter being narrowed.',
   }),
 
-  type: Schema.suspend(() => TypeAnalysis).annotate({
+  type: Schema.optional(Schema.suspend(() => TypeAnalysis)).annotate({
     description: 'Type after successful narrowing.',
   }),
 

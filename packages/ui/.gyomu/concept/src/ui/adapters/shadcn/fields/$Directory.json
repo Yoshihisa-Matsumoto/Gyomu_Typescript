@@ -1,0 +1,22 @@
+{
+  "summary": "This directory manages the core business logic and state management for user authentication, session persistence, and authorization across the application.",
+  "responsibilities": [
+    "Manage user authentication workflows",
+    "Maintain active session state",
+    "Enforce authorization rules for protected resources"
+  ],
+  "concepts": [
+    "User authentication",
+    "Session management",
+    "Access control"
+  ],
+  "relationships": [
+    "Authentication processes generate session tokens to establish user identity.",
+    "Access control mechanisms validate active sessions against requested resources."
+  ],
+  "designDecisions": [
+    "Centralized state management for user identity",
+    "Encapsulated authentication logic"
+  ],
+  "importance": "Core"
+}

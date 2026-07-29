@@ -23,6 +23,15 @@ import type { MemberIdentityMemberPath } from '@gyomu/schema/typescript'
 import type { TypeStructureAnalysis } from '@gyomu/schema/schemas/typescript'
 import type { EntityName, TypeNode } from 'ts-morph'
 
+/**
+ * Analyzes a TypeScript AST node to generate a structured representation of its type, handling various node types including references, unions, functions, and literals.
+ *
+ * @param args The contextual arguments for type analysis, including the node to analyze and configuration options.
+ *
+ * @param nodeName Optional name path for the node being analyzed.
+ *
+ * @returns Returns a structured analysis result containing the type definition, discovered dependencies, and any reserved names identified during analysis.
+ */
 export const analyzeTypeStructures = (
   args: ChildAnalysisArg<TypeNode>,
   nodeName: Array<string> | undefined,
@@ -65,7 +74,8 @@ export const analyzeTypeStructures = (
           ownerSymbolId,
           ownerSymbolIdentity,
           memberPath,
-          node: typeArguments[0],
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+          node: typeArguments[0]!,
           sourceFullText,
           declarationOrder,
           imported,
@@ -85,8 +95,11 @@ export const analyzeTypeStructures = (
         reservedNames: typeAlias.reservedNames,
       }
     }
-    if (typeName.getText().includes('Array')) {
+    if (typeName.getText().includes('Array') && typeArguments.length == 1) {
       tracePlaceIdentity(args, args.options, 'analyzeTypeStructures:Array string')
+
+      // console.log('Array')
+      // console.log(typeName.getText())
       const typeAlias = analyzeType(
         {
           sourceRelativePath,
@@ -94,7 +107,8 @@ export const analyzeTypeStructures = (
           ownerSymbolId,
           ownerSymbolIdentity,
           memberPath,
-          node: typeArguments[0],
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+          node: typeArguments[0]!,
           sourceFullText,
           declarationOrder,
           imported,
@@ -103,29 +117,26 @@ export const analyzeTypeStructures = (
         },
         undefined,
       )
-      // console.log('Array')
-      // console.log(typeName.getText())
-      if (typeArguments.length == 1) {
-        return {
-          member: {
-            kind: 'array',
-            elementType: typeAlias.member,
-          },
-          dependencies,
-          reservedNames: typeAlias.reservedNames,
-        }
-      }
-      const referencedNodeName = node.getTypeName().getText()
-
       return {
         member: {
-          kind: 'reference',
-          targetId: referencedNodeName,
-          typeParameters: [],
+          kind: 'array',
+          elementType: typeAlias.member,
         },
-        dependencies: [analyzeDependency(referencedNodeName, imported, memberPath)],
+        dependencies,
         reservedNames: typeAlias.reservedNames,
       }
+
+      // const referencedNodeName = node.getTypeName().getText()
+
+      // return {
+      //   member: {
+      //     kind: 'reference',
+      //     targetId: referencedNodeName,
+      //     typeParameters: [],
+      //   },
+      //   dependencies: [analyzeDependency(referencedNodeName, imported, memberPath)],
+      //   reservedNames: [],
+      // }
     } else {
       tracePlaceIdentity(args, args.options, 'analyzeTypeStructures:Other')
       const targetName = typeName.getText()

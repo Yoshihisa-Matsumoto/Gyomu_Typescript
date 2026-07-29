@@ -1,0 +1,28 @@
+{
+  "summary": "This directory provides the core implementation for FTP communication, handling data transmission and file metadata retrieval. It acts as the primary interface for performing file operations like uploading, downloading, and listing contents over the FTP protocol.",
+  "responsibilities": [
+    "Listing remote file and directory structures",
+    "Retrieving file metadata including size and modification dates",
+    "Uploading data streams to remote destinations",
+    "Downloading remote content as data streams",
+    "Managing transport operations for file transfers"
+  ],
+  "concepts": [
+    "FTP Client",
+    "File Transfers",
+    "Data Streams",
+    "Remote File Metadata",
+    "Transport Operations"
+  ],
+  "relationships": [
+    "The FTP client manages transport operations to facilitate both uploads and downloads.",
+    "Data streams act as the primary mechanism for moving file content between the local environment and the remote FTP destination.",
+    "File metadata retrieval provides necessary context for managing remote file systems."
+  ],
+  "designDecisions": [
+    "Uses streaming for memory-efficient data transmission",
+    "Encapsulates protocol-specific transport logic within the client",
+    "Separates data movement from file metadata operations"
+  ],
+  "importance": "Core"
+}

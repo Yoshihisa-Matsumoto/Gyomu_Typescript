@@ -5,6 +5,17 @@ import type { FullPath } from '@gyomu/schema'
 import type { ResolvedPackageExport } from './types.js'
 // import type { PackageExportAnalysis } from '@gyomu/schema/concept'
 
+/**
+ * Resolves package export targets to source file paths based on compiler output and root directory settings.
+ *
+ * @param packageJsonExports The list of package export entries to process.
+ *
+ * @param compilerOptions The project compiler configuration.
+ *
+ * @param projectRoot The absolute path to the project root directory.
+ *
+ * @returns An array of resolved package export information containing export paths and corresponding source files.
+ */
 export const resolvePackageExportTargets = (
   packageJsonExports: ReadonlyArray<PackageExportEntry>,
   compilerOptions: { rootDir: string | undefined; outDir: string | undefined },

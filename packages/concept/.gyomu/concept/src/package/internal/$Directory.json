@@ -1,0 +1,30 @@
+{
+  "summary": "This directory contains internal utilities for analyzing package structures, resolving export targets, and managing project-wide package concepts. It provides the core data processing layer for discovering source files and defining the exported interface of a project.",
+  "responsibilities": [
+    "Analyze project package exports and their associated source files",
+    "Resolve package export targets to concrete source file paths",
+    "Identify and collect project dependencies",
+    "Serialize and persist package conceptual models to the file system",
+    "Provide type definitions for package analysis results"
+  ],
+  "concepts": [
+    "Package export analysis",
+    "Source file resolution",
+    "Dependency collection",
+    "Package concepts",
+    "Package export targets"
+  ],
+  "relationships": [
+    "Package export analysis utilizes resolved source files to generate a comprehensive report of exported symbols.",
+    "The resolution of package export targets provides the necessary paths to identify and analyze relevant source files.",
+    "Package concepts are persisted to and loaded from the file system to provide a conceptual overview of the package structure.",
+    "Dependency collection informs the overall analysis by identifying the external requirements defined in the project configuration."
+  ],
+  "designDecisions": [
+    "Strict separation of concern between export resolution and conceptual reporting",
+    "Schema-based validation for loading and saving package concepts",
+    "Centralized type definitions for shared analysis data structures",
+    "Internal visibility to encapsulate logic from public package APIs"
+  ],
+  "importance": "Core"
+}

@@ -1,0 +1,26 @@
+{
+  "summary": "This directory serves as the parsing layer for the analysis module, responsible for transforming raw source code structures and markers into structured, analysis-friendly representations used by the broader documentation and code processing pipeline.",
+  "responsibilities": [
+    "Extract and normalize generator markers from source text",
+    "Identify and compute protected code regions",
+    "Parse and normalize JSDoc structures and tags",
+    "Convert raw AST data into structured analysis objects"
+  ],
+  "concepts": [
+    "Generator markers",
+    "Protected regions",
+    "JSDoc structure",
+    "Code analysis parser"
+  ],
+  "relationships": [
+    "The parser transforms raw AST nodes and string content into normalized structures.",
+    "Protected region identification relies on the parsing of specific markers within the source code.",
+    "Normalized JSDoc structures encapsulate both tag-specific data and analysis-friendly metadata for further processing."
+  ],
+  "designDecisions": [
+    "Normalization of raw input into consistent internal data structures",
+    "Decoupling of structural parsing from domain-specific analysis logic",
+    "Retention of raw data alongside parsed structures for future reconstruction"
+  ],
+  "importance": "Core"
+}

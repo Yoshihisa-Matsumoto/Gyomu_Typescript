@@ -17,6 +17,17 @@ import type { PackageExportAnalysisResult } from './internal/types.js'
 import type { DirectoryConcept } from '@gyomu/schema/schemas/concept'
 import type { ConceptOptions } from '../ConceptOptions.js'
 
+/**
+ * Analyzes a TypeScript package based on its project context and configuration to produce a package analysis report.
+ *
+ * @param context The project context containing configuration, project root, and package metadata.
+ *
+ * @param option Optional analysis configuration.
+ *
+ * @returns An Effect resulting in a PackageAnalysis object, or failing with a ConceptError.
+ *
+ * @requires FileSystem, FileSearchService
+ */
 export const buildPackageAnalysis = (
   context: ProjectContext,
   option?: ConceptOptions,

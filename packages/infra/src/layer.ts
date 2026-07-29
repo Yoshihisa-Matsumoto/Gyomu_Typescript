@@ -6,6 +6,10 @@ import { asLayer } from '@gyomu/schema/effect'
 import { fsConstants } from './fs/index.js'
 
 // プロジェクトで使う標準セットをマージする
+
+/**
+ * Defines a service layer representing the underlying file system platform, compatible with Node.js and Bun environments.
+ */
 export const PlatformLayer = (
   process.versions.bun
     ? NodeFileSystem.layer // そのままでもOK
@@ -13,6 +17,9 @@ export const PlatformLayer = (
 ) satisfies Layer.Layer<never, never, never>
 // export const MainLayer = Layer.mergeAll(PlatformLayer);
 
+/**
+ * Defines the main application service layer, configuring logging and default log levels.
+ */
 export const MainLayer = asLayer(
   Layer.mergeAll(
     Logger.layer([effectLogger], { mergeWithExisting: false }),
@@ -21,4 +28,8 @@ export const MainLayer = asLayer(
 )
 
 // .pipe(Layer.provide(NodeFileSystem.layer));
+
+/**
+ * Provides access to file system constants for mode and permission configuration.
+ */
 export const FileModes = fsConstants

@@ -71,4 +71,43 @@ describe('buildPackageExportAnalysis', () => {
 
     expect(result.exports.exportedSymbols.some((s) => s.name === 'createGreeting')).toBe(true)
   })
+
+  it('find Button.ts', async () => {
+    const result = await buildExportResult({
+      exportPath: '.',
+      sourceFiles: [ProjectRelativePath('src/ui/case1/index.ts')],
+    })
+
+    expect(result.exports.exportedSymbols.length).toBeGreaterThan(0)
+
+    expect(result.exports.exportedSymbols.some((s) => s.name === 'Hello')).toBe(true)
+  })
+  it('find Button.tsx', async () => {
+    const result = await buildExportResult({
+      exportPath: '.',
+      sourceFiles: [ProjectRelativePath('src/ui/case2/index.ts')],
+    })
+
+    expect(result.exports.exportedSymbols.length).toBeGreaterThan(0)
+
+    expect(result.exports.exportedSymbols.some((s) => s.name === 'Hello')).toBe(true)
+  })
+  it('find case3/index.ts', async () => {
+    const result = await buildExportResult({
+      exportPath: '.',
+      sourceFiles: [ProjectRelativePath('src/ui/case3/index.ts')],
+    })
+
+    expect(result.exports.exportedSymbols.length).toBeGreaterThan(0)
+
+    expect(result.exports.exportedSymbols.some((s) => s.name === 'HELLO')).toBe(true)
+  })
+  it('find case4', async () => {
+    const result = await buildExportResult({
+      exportPath: '.',
+      sourceFiles: [ProjectRelativePath('src/ui/case4/index.ts')],
+    })
+
+    expect(result.exports.exportedSymbols.length).toBe(0)
+  })
 })

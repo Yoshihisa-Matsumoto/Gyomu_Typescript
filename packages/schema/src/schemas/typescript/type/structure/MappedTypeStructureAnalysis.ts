@@ -57,7 +57,7 @@ export type MappedStructureAnalysis = {
    * @example
    * `T[K]`
    */
-  readonly valueType: TypeAnalysis
+  readonly valueType?: TypeAnalysis
 
   /**
    * Indicates whether generated properties are readonly.
@@ -77,7 +77,7 @@ export type MappedStructureAnalysis = {
 } & StructureBase
 
 /**
- * Represents an MappedType structure.
+ * Represents a mapped type, capturing the parameter, constraint, optional key mapping, property values, and modifiers.
  */
 export const MappedStructureAnalysis = Schema.Struct({
   kind: Schema.Literal('mapped'),
@@ -94,7 +94,7 @@ export const MappedStructureAnalysis = Schema.Struct({
     description: 'Optional key remapping expression (`as` clause).',
   }),
 
-  valueType: Schema.suspend(() => TypeAnalysis).annotate({
+  valueType: Schema.optional(Schema.suspend(() => TypeAnalysis)).annotate({
     description: 'Type assigned to each generated property.',
   }),
 

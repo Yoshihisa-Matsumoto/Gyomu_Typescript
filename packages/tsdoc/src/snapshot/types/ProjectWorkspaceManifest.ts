@@ -1,5 +1,13 @@
+/**
+ * The current version constant for the Gyomu system.
+ */
 export const GYOMU_VERSION = 1 as const
+
+/**
+ * Represents the allowed version type for Gyomu components.
+ */
 export type GyomuVersion = typeof GYOMU_VERSION
+
 /**
  * Workspace-level metadata for a project tracked by the system.
  *
@@ -15,8 +23,23 @@ export type GyomuVersion = typeof GYOMU_VERSION
  * in the `.gyomu` workspace, not the filesystem creation time.
  */
 export interface ProjectWorkspaceManifest {
+  /**
+   * The unique internal identifier for the project.
+   */
   id: string
+
+  /**
+   * The filesystem path or source locator of the project.
+   */
   source: string
+
+  /**
+   * The registration timestamp of the project in the workspace.
+   */
   createdAt: string
+
+  /**
+   * The version of the project manifest schema.
+   */
   version: GyomuVersion
 }

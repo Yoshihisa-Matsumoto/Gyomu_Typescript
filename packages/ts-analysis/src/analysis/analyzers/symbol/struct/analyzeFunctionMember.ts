@@ -1,5 +1,5 @@
-import { Node } from 'ts-morph'
-import { analyzeType } from '../type/analyzeType.js'
+import { Node, SyntaxKind } from 'ts-morph'
+import { analyzeType, getVoidTypeResult } from '../type/analyzeType.js'
 import { analyzeParameter } from '../analyzeParameter.js'
 import { initializeMethodIdentity, prepareMethodAnalysis } from '../prepareMemberAnalysis.js'
 import { registerSymbolSymbolAnalysis } from '../../../file/registerSymbolSymbolAnalysis.js'
@@ -11,6 +11,7 @@ import type {
   CallSignatureDeclaration,
   ConstructSignatureDeclaration,
   ConstructorDeclaration,
+  Expression,
   FunctionDeclaration,
   FunctionExpression,
   FunctionTypeNode,
@@ -20,6 +21,7 @@ import type {
   MethodDeclaration,
   MethodSignature,
   PropertySignature,
+  ReturnStatement,
   SetAccessorDeclaration,
   Statement,
 } from 'ts-morph'
@@ -38,6 +40,15 @@ import type {
   TypeAnalysis,
 } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Analyzes a function or method member, determining its metadata, generics, and return type.
+ *
+ * @param args The analysis arguments containing the function node and context.
+ *
+ * @param args2 Configuration object including static status, visibility, member name, and optional JSDoc node.
+ *
+ * @returns An analysis result containing either non-documentable or documentable method member details.
+ */
 export const analyzeFunctionMember = (
   args: ChildAnalysisArg<
     | MethodSignature
@@ -96,22 +107,44 @@ export const analyzeFunctionMember = (
 
   const newReservedNames = [...reservedNames, ...genericsResult.parameters]
 
-  const returnType = analyzeType(
-    {
-      node: returnTypeNode,
-      memberPath,
-      metadata,
-      ownerSymbolId,
-      ownerSymbolIdentity,
-      sourceRelativePath,
-      sourceFullText,
-      declarationOrder,
-      imported,
-      options,
-      reservedNames: newReservedNames,
-    },
-    [name, '$return'],
-  )
+  let initializer: Expression | undefined = undefined
+  if (!returnTypeNode) {
+    if (Node.isArrowFunction(node)) {
+      const body = node.getBody()
+      if (Node.isArrowFunction(body)) {
+        initializer = body
+      } else if (Node.isExpression(body)) initializer = body
+      else if (Node.isBlock(body)) {
+        const returnStatement = body
+          .getStatements()
+          .find((s) => s.getKind() == SyntaxKind.ReturnStatement)
+        if (returnStatement) {
+          initializer = (returnStatement as ReturnStatement).getExpression()
+        }
+      }
+    }
+  }
+
+  const returnType =
+    returnTypeNode || initializer
+      ? analyzeType(
+          {
+            node: returnTypeNode || initializer!,
+            memberPath,
+            metadata,
+            ownerSymbolId,
+            ownerSymbolIdentity,
+            sourceRelativePath,
+            sourceFullText,
+            declarationOrder,
+            imported,
+            options,
+            reservedNames: newReservedNames,
+          },
+          [name, '$return'],
+        )
+      : getVoidTypeResult()
+
   return analyzeFunctionMemberInternal(
     { ...args, reservedNames: newReservedNames },
     {
@@ -124,6 +157,15 @@ export const analyzeFunctionMember = (
   )
 }
 
+/**
+ * Performs internal analysis for function or method members, including parameters, generics, and body evaluation.
+ *
+ * @param args The shared analysis context.
+ *
+ * @param args2 Internal configuration for the member being analyzed.
+ *
+ * @returns The internal analysis result containing member definition and extracted dependencies.
+ */
 export const analyzeFunctionMemberInternal = (
   args: ChildAnalysisArg<
     MethodSignature | FunctionTypeNode | MethodDeclaration | ConstructorDeclaration
@@ -291,6 +333,13 @@ export const analyzeFunctionMemberInternal = (
   }
 }
 
+/**
+ * Analyzes the body statements of a function, method, or constructor declaration for dependency extraction.
+ *
+ * @param args The analysis context including the function node.
+ *
+ * @returns A result object containing the list of analyzed dependencies found within the function body.
+ */
 export const analyzeFunctionBody = (
   args: ChildAnalysisArg<
     | MethodSignature

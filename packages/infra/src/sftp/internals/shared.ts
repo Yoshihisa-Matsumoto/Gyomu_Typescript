@@ -2,6 +2,15 @@ import { NetworkError, isRetryableNetworkError, wrapInfraError } from '@gyomu/sc
 import { Effect } from 'effect'
 import type { Client, SFTPWrapper } from 'ssh2'
 
+/**
+ * Executes a function within an SFTP session, providing the necessary wrapper and handling network connectivity errors.
+ *
+ * @param client The SSH client instance.
+ *
+ * @param f A function that performs operations on the provided SFTP wrapper.
+ *
+ * @returns An Effect that yields the result of the function or a NetworkError if the connection fails.
+ */
 export const withSftp =
   (client: Client) =>
   <A, E, R = never>(

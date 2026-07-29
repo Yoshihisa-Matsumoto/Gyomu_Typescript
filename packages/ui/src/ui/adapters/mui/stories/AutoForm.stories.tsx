@@ -60,6 +60,9 @@ type Story = StoryObj<typeof AutoForm>
 // Stories
 // --------------------------------------------------
 
+/**
+ * A story demonstrating the default AutoForm configuration with Material UI components.
+ */
 export const Basic: Story = {
   render: () => (
     <AutoForm
@@ -77,6 +80,9 @@ export const Basic: Story = {
   ),
 }
 
+/**
+ * A story demonstrating AutoForm validation behavior with initial values.
+ */
 export const Validation: Story = {
   render: () => (
     <AutoForm
@@ -96,6 +102,9 @@ export const Validation: Story = {
   ),
 }
 
+/**
+ * A story demonstrating AutoForm initialization with existing user data for update contexts.
+ */
 export const WithInitialValues: Story = {
   render: () => (
     <AutoForm
@@ -115,6 +124,9 @@ export const WithInitialValues: Story = {
   ),
 }
 
+/**
+ * A story demonstrating how to provide custom field renderers to the AutoForm.
+ */
 export const CustomRenderer: Story = {
   render: () => {
     const customRenderer = {

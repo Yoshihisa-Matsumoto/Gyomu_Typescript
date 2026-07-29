@@ -61,6 +61,8 @@ Translate the given README text fragments into the target language.
     - Type-safe -> 型安全
     - Runtime -> ランタイム
     - API -> API
+    - Concept -> Concept
+    - design narrative -> 設計意図
 
 ## Input
 

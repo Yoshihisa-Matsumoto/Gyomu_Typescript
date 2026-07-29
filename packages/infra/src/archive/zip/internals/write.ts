@@ -70,6 +70,13 @@ const processTransfers = (zip: ZipFile, list: Array<FileTransportInfo>) =>
     )
   })
 
+/**
+ * Creates a readable stream containing a ZIP archive generated from the provided file transfer information.
+ *
+ * @param transferInformationList A list of file transport information objects to be included in the ZIP archive.
+ *
+ * @returns A stream emitting Uint8Array data, representing the generated ZIP file content.
+ */
 export const zipToStream = (
   transferInformationList: Array<FileTransportInfo>,
 ): Stream.Stream<Uint8Array, IOError, FileSystem.FileSystem> =>

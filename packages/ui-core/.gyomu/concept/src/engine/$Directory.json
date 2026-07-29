@@ -1,0 +1,19 @@
+{
+  "summary": "This directory serves as the entry point for the form generation engine. It centralizes the initialization and exposure of automated form handling logic, providing a unified interface for defining, validating, and managing dynamic form structures based on schema configurations.",
+  "responsibilities": [
+    "Export and expose the automated form generation system",
+    "Provide a unified access point for form management logic"
+  ],
+  "concepts": [
+    "Form Engine Entry Point",
+    "Public API Interface"
+  ],
+  "relationships": [
+    "This directory serves as the public gateway to the form engine, exposing the underlying field configuration and schema validation capabilities to the rest of the application."
+  ],
+  "designDecisions": [
+    "Re-export pattern for clean API surface",
+    "Centralized entry point for module encapsulation"
+  ],
+  "importance": "Core"
+}

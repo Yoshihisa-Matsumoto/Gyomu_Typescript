@@ -16,6 +16,9 @@ import type { SchemaValidationError, TimeoutError } from '@gyomu/schema'
 import type { MilestoneDailySchema, MilestoneSchema } from '@gyomu/schema/schemas/gyomu'
 import type { Schema } from 'effect'
 
+/**
+ * Defines the service layer for milestone operations, providing utilities for existence checks, registration, polling, retrieval, and management of milestone definitions.
+ */
 export const MilestoneServiceLayer = Layer.effect(
   MilestoneService,
   Effect.gen(function* () {

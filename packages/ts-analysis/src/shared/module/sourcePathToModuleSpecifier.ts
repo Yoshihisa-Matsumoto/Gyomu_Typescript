@@ -6,6 +6,14 @@ import type { FullPath } from '@gyomu/schema'
 
 /**
  * Creates a module specifier from a project-relative source path.
+ *
+ * @param sourcePath The project-relative path to the target module.
+ *
+ * @param sourceFilePath The absolute path of the file importing the target module.
+ *
+ * @param projectRoot The absolute path of the project root directory.
+ *
+ * @returns A ProjectRelativePath representing the module specifier for the target.
  */
 export const sourcePathToModuleSpecifier = (
   sourcePath: ProjectRelativePath,

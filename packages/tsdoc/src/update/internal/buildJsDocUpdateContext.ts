@@ -19,6 +19,17 @@ import type {
 import type { ComplexityMetrics } from '../../evaluation/complexity/ComplexityMetrics.js'
 import type { TsDocFileContext, TsDocSymbolContext } from '@gyomu/ai-compiler/jsdoc-update'
 
+/**
+ * Constructs a file-level context for JSDoc updates, mapping internal symbol analysis to the format required for documentation generation.
+ *
+ * @param projectName The name of the project.
+ *
+ * @param fileResult The analysis context for the target file.
+ *
+ * @param mapComplexity A map containing complexity metrics indexed by symbol identifier.
+ *
+ * @returns Returns a structured TsDocFileContext instance containing the project and symbol information.
+ */
 export const buildJsDocUpdateContext = (
   projectName: string,
   fileResult: FileAnalysisContext,

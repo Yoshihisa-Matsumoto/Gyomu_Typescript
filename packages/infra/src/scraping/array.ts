@@ -1,3 +1,12 @@
+/**
+ * Converts an array of objects into an HTML table string.
+ *
+ * @param records An array of objects representing table rows.
+ *
+ * @param includeHeader Whether to include a table header row generated from object keys.
+ *
+ * @returns The generated HTML table as a string.
+ */
 export const convertArray2HtmlTable = (
   records: Array<any>,
   includeHeader: boolean = true,

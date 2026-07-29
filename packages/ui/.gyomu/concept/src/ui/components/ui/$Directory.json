@@ -1,0 +1,29 @@
+{
+  "summary": "This directory contains a comprehensive library of reusable UI components. It provides foundational building blocks for application interfaces, ensuring consistent styling, behavior, and interaction patterns across the user interface.",
+  "responsibilities": [
+    "Providing atomic UI elements like buttons, inputs, and checkboxes.",
+    "Offering complex, multi-part components such as cards, fields, and selects.",
+    "Managing interface layout and structure through specialized containers and grouping components.",
+    "Ensuring consistent visual themes and state management for interactive elements.",
+    "Centralizing the export of all shared UI components for application-wide access."
+  ],
+  "concepts": [
+    "Design System",
+    "UI Components",
+    "Interaction Patterns",
+    "Component Library",
+    "Layout Elements"
+  ],
+  "relationships": [
+    "Individual UI components are consolidated into a single entry point to simplify imports across the application.",
+    "Composite components like cards and fields organize smaller, atomic building blocks into logical sections.",
+    "Interaction-driven components like tooltips and select menus rely on provider wrappers to manage application-level state and context."
+  ],
+  "designDecisions": [
+    "Use of specialized sub-components to provide granular control over the internal structure of complex UI elements.",
+    "Implementation of consistent theme and style tokens across all components to ensure visual harmony.",
+    "Provision of wrapper components for third-party libraries to inject standardized styling.",
+    "Modular component design favoring composition over monolithic structures."
+  ],
+  "importance": "Core"
+}

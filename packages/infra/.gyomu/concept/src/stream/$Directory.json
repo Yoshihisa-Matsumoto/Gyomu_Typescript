@@ -1,0 +1,28 @@
+{
+  "summary": "This directory manages data streaming interoperability by bridging Node.js stream primitives with Effect-based workflows and providing input normalization utilities to unify data sources for stream processing.",
+  "responsibilities": [
+    "Normalize diverse input sources into standardized stream formats",
+    "Integrate Node.js streams into the Effect ecosystem",
+    "Manage stream lifecycle and resource cleanup",
+    "Convert between stream-based data and buffered memory representations"
+  ],
+  "concepts": [
+    "Stream Interoperability",
+    "Input Normalization",
+    "Resource Management",
+    "Stream Transformation",
+    "Buffer Management"
+  ],
+  "relationships": [
+    "Input sources are normalized into standardized streams to enable uniform processing across the pipeline.",
+    "Node.js streams are wrapped within scoped resources to ensure they are managed correctly by the Effect ecosystem.",
+    "Streams are transformed into buffered data structures to bridge the gap between streaming data and memory-based operations."
+  ],
+  "designDecisions": [
+    "Utilize function overloading to handle polymorphic input types.",
+    "Implement scoped resource management for automatic stream destruction.",
+    "Enforce strict usage of Transform streams for predictable data pipeline semantics.",
+    "Abstract data sources through a unified input union type."
+  ],
+  "importance": "Supporting"
+}

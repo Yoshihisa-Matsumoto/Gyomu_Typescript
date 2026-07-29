@@ -9,6 +9,17 @@ import type { PackageAnalysis } from '@gyomu/schema/concept'
 import type { FileSystem } from 'effect/FileSystem'
 import type { PackageConcept } from '@gyomu/schema/schemas/concept'
 
+/**
+ * Generates a conceptual overview for a given package analysis.
+ *
+ * @param packageAnalysis The analyzed package data structure.
+ *
+ * @param option Optional configuration for the concept generation process.
+ *
+ * @returns An Effect that resolves to a PackageConcept on success, or a ConceptError if the generation fails.
+ *
+ * @requires AiModelRoute, FileSystem, and ModelRoutes services.
+ */
 export const generatePackageConcept = (
   packageAnalysis: PackageAnalysis,
   option?: ConceptOptions,

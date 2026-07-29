@@ -1,0 +1,29 @@
+{
+  "summary": "This directory serves as a foundational layer providing shared utilities and infrastructure for project identification, file system path manipulation, and module resolution, ensuring consistency across build and tooling operations.",
+  "responsibilities": [
+    "Discover and validate TypeScript projects within a workspace",
+    "Perform cross-platform file system path resolution and transformation",
+    "Standardize mapping between source files, output paths, and module specifiers",
+    "Extract and aggregate project-level metadata and configuration"
+  ],
+  "concepts": [
+    "TypeScript Project",
+    "Workspace Discovery",
+    "Path Resolution",
+    "Module Specifier",
+    "Project Metadata",
+    "File System Abstraction"
+  ],
+  "relationships": [
+    "Workspace discovery logic identifies projects, which in turn provide the scope for path resolution and module mapping operations.",
+    "Path transformation relies on workspace identification to define the project scope for absolute and relative paths.",
+    "Module specifier logic uses path resolution to translate logical imports into physical source files within the identified project structure."
+  ],
+  "designDecisions": [
+    "Centralization of core tooling logic to prevent duplication across build processes",
+    "Encapsulation of environment-specific file system operations",
+    "Use of standardized interfaces for project and workspace metadata",
+    "Decoupling of project discovery from structural analysis"
+  ],
+  "importance": "Core"
+}

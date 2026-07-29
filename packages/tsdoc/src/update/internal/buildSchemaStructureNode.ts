@@ -1,6 +1,15 @@
 import type { SchemaStructureNode } from '@gyomu/ai-compiler/jsdoc-update'
 import type { TypeProperty, TypeStructureAnalysis } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Recursively builds a structured node representation from a type structure analysis.
+ *
+ * @param member The type structure analysis object to process.
+ *
+ * @param name The name of the schema structure node.
+ *
+ * @returns A SchemaStructureNode representing the analyzed type, or undefined if the structure cannot be mapped.
+ */
 export const buildSchemaStructureNode = (
   member: TypeStructureAnalysis,
   name: string,

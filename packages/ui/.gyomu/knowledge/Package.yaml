@@ -1,0 +1,104 @@
+# yaml-language-server: $schema=../../../../schemas/Package.json
+
+displayName: Gyomu UI
+
+mission: |
+  Gyomuにおける統一されたユーザーインターフェースを提供します。
+  共通デザインシステム、スキーマ駆動フォーム、アプリケーション共通コンポーネントを組み合わせ、
+  保守性・一貫性・アクセシビリティを備えたUIを構築できる環境を提供します。
+  UIフレームワークの実装詳細とアプリケーションロジックを分離し、
+  再利用可能で拡張性の高いUIライブラリを実現します。
+
+policies:
+  - UIコンポーネントは再利用可能で合成可能な設計とする。
+  - フォームはスキーマから導出し、UI定義を重複させない。
+  - UIフレームワーク固有の実装はアダプター層へ分離する。
+  - デザインシステムによって画面全体の一貫性を維持する。
+  - レイアウト構造と視覚表現は可能な限り独立させる。
+  - アプリケーション共通UI状態は共有Providerで管理する。
+  - コンポーネントはアクセシビリティ・予測可能性・型安全性を優先する。
+
+constraints:
+  - 業務ロジックをコンポーネントへ実装してはならない。
+  - バックエンドAPIへ直接依存してはならない。
+  - アプリケーション固有の状態管理へ依存してはならない。
+  - 特定UIフレームワークを利用者へ強制してはならない。
+
+nonGoals:
+  - ビジネスロジックを提供すること。
+  - API通信を実装すること。
+  - アプリケーション固有の画面を提供すること。
+  - Material UIのみを前提としたライブラリとなること。
+  - アプリケーション全体のレイアウトや画面遷移を管理すること。
+
+terminology:
+  - term: Design System
+    definition: アプリケーション全体で利用するUIコンポーネントとデザインルールの集合。
+
+  - term: AutoForm
+    definition: スキーマからフォームを自動生成する仕組み。
+
+  - term: Headless Layout
+    definition: 見た目に依存せずレイアウト構造のみを提供するUIコンポーネント。
+
+  - term: UI Adapter
+    definition: Material UIなどのUIフレームワーク実装を抽象化するコンポーネント層。
+
+  - term: Global UI Provider
+    definition: TooltipやToastなどアプリケーション共通UI状態を提供するProvider。
+
+rationale:
+  - デザインシステムを共通化することで画面全体の一貫性を維持できる。
+  - フォームをスキーマから生成することで実装の重複を削減できる。
+  - UIフレームワーク依存を分離することで実装変更への影響を最小化できる。
+  - Headlessコンポーネントによりレイアウトと見た目を柔軟に組み合わせられる。
+  - 共通Providerによりアプリケーション全体で統一されたUI体験を提供できる。
+
+usage:
+  - situation: 一般的な画面を構築したい
+    guidance: 共通UIコンポーネントを組み合わせて画面を構成する。
+
+  - situation: スキーマからフォームを生成したい
+    guidance: AutoFormを利用してフォームを構築する。
+
+  - situation: Material UIを利用したい
+    guidance: 提供されているAdapterを利用してUIフレームワークへ接続する。
+
+  - situation: 独自レイアウトを構築したい
+    guidance: Headless Layoutコンポーネントを組み合わせて構成する。
+
+  - situation: TooltipやToastを利用したい
+    guidance: Global UI Providerを利用して共通UI状態を管理する。
+
+examples:
+  - title: AutoForm
+    input: |
+      UserSchemaから入力画面を作成したい。
+    output: |
+      AutoFormへUserSchemaを渡してフォームを生成する。
+    explanation: |
+      フォーム定義を記述することなく入力画面を構築できる。
+
+  - title: Material UI
+    input: |
+      Material UIベースの画面を作成したい。
+    output: |
+      提供されているAdapterコンポーネントを利用する。
+    explanation: |
+      デザインシステムを維持したままMaterial UIを利用できる。
+
+  - title: Headless Layout
+    input: |
+      独自のフォームレイアウトを構築したい。
+    output: |
+      Headless Layoutコンポーネントを組み合わせる。
+    explanation: |
+      レイアウトと見た目を分離した柔軟な画面構成を実現できる。
+
+  - title: Global Provider
+    input: |
+      Toast通知を画面全体で利用したい。
+    output: |
+      Global UI Providerをアプリケーションへ配置する。
+    explanation: |
+      共通UI状態を一元管理し、一貫したユーザー体験を提供できる。

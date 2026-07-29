@@ -1,0 +1,30 @@
+{
+  "summary": "This directory manages the lifecycle and persistence of project source file snapshots, enabling deterministic tracking of file changes through hashing and workspace-specific storage within monorepo environments.",
+  "responsibilities": [
+    "Initialize and manage project-specific workspaces for snapshot operations",
+    "Enumerate target source files while filtering excluded directories",
+    "Generate, load, and save file hash snapshots for versioned project state",
+    "Compare file snapshots to identify structural project changes",
+    "Maintain a persistent record of project metadata and file states"
+  ],
+  "concepts": [
+    "Project Snapshot",
+    "Project Workspace",
+    "File Hash",
+    "Change Detection",
+    "Workspace Manifest"
+  ],
+  "relationships": [
+    "The Project Workspace provides the environment and identity necessary to store and manage snapshots.",
+    "File hashes are computed from target files and aggregated into snapshots to represent the state of a project.",
+    "Change detection is performed by diffing two snapshots to identify added, updated, or removed files.",
+    "The Workspace Manifest links a specific project path to a stable identifier to ensure consistent snapshot persistence."
+  ],
+  "designDecisions": [
+    "Deterministic file enumeration and snapshot formatting for human-readable and diff-friendly output",
+    "Normalization of project paths for stable identity across environments",
+    "Separation of filesystem state from internal project identifiers",
+    "Implementation of versioned directory structures within the workspace to support schema evolution"
+  ],
+  "importance": "Core"
+}

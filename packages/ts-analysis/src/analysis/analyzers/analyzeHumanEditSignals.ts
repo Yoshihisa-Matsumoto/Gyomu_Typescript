@@ -3,6 +3,13 @@ import { detectComplexMarkdown } from './detectors/detectComplexMarkdown.js'
 import { detectManualFormatting } from './detectors/detectManualFormatting.js'
 import type { HumanEditSignal, ParsedJsDoc } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Analyzes the provided parsed JSDoc to detect potential human-edited signals, such as complex Markdown usage, manual formatting, or non-generated tags.
+ *
+ * @param parsed The parsed JSDoc object to analyze for human-edited signals.
+ *
+ * @returns An array of detected HumanEditSignal objects.
+ */
 export const analyzeHumanEditSignals = (parsed: ParsedJsDoc): Array<HumanEditSignal> => {
   const signals: Array<HumanEditSignal> = []
 

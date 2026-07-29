@@ -2,6 +2,13 @@ import type { JsDocParam, JsDocThrows, ParsedTag } from '@gyomu/schema/schemas/t
 import type { JsDocLine } from '../jsDoc/JsDocLine.js'
 import type { UpdatedSymbolJsDoc } from '../jsDoc/UpdatedSymbolJsDoc.js'
 
+/**
+ * Renders an `UpdatedSymbolJsDoc` structure into a list of `JsDocLine` objects, following a fixed order for JSDoc tags and content.
+ *
+ * @param updated The updated JSDoc content structure to render.
+ *
+ * @returns An array of `JsDocLine` objects representing the processed JSDoc documentation.
+ */
 export const renderJsDocLines = (updated: UpdatedSymbolJsDoc): Array<JsDocLine> => {
   const lines: Array<JsDocLine> = []
   const jsDoc = updated.jsDoc

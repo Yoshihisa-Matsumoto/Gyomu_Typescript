@@ -1,0 +1,31 @@
+{
+  "summary": "This directory provides low-level internal utilities for handling ZIP archives, focusing on reading entries, extracting content, comparing archive structures, and generating new ZIP streams.",
+  "responsibilities": [
+    "Reading and parsing ZIP archive structures",
+    "Extracting specific files or entire archives from ZIPs",
+    "Comparing two ZIP archives to identify differences",
+    "Filtering and ignoring file discrepancies during comparison",
+    "Creating ZIP archive streams from file definitions"
+  ],
+  "concepts": [
+    "ZIP Archive",
+    "Archive Entry",
+    "Comparison Logic",
+    "Extraction Process",
+    "Stream Processing",
+    "Ignore Rules"
+  ],
+  "relationships": [
+    "Comparison logic utilizes ignore rules to filter discrepancies between files found in archives.",
+    "The reading utilities provide the base data structures used by the comparison engine.",
+    "Extraction processes operate on zip entries to move file content to destination paths.",
+    "The generation of ZIP streams relies on transfer information to package files into an archive."
+  ],
+  "designDecisions": [
+    "Uses stream-based processing for efficient handling of large archive data.",
+    "Encapsulates archive access logic to ensure proper resource lifecycle management.",
+    "Separates comparison, reading, and writing concerns into distinct modules.",
+    "Implements rule-based filtering to make archive comparison configurable."
+  ],
+  "importance": "Core"
+}

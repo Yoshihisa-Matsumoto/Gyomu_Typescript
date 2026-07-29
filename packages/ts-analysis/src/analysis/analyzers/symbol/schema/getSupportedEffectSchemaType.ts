@@ -11,6 +11,21 @@ import type {
 } from '@gyomu/schema/schemas/typescript'
 import type { Builder } from '@gyomu/schema/entity'
 
+/**
+ * Analyzes an initializer expression to determine if it represents a supported Effect schema type, extracting schema annotations, dependencies, and the underlying schema structure.
+ *
+ * @param initializer The expression to analyze.
+ *
+ * @param parentAnnotations Annotations accumulated from parent expressions.
+ *
+ * @param parentDependencies Dependencies collected from parent scopes.
+ *
+ * @param imported Information about imported symbols.
+ *
+ * @param memberPath The current path within the member hierarchy.
+ *
+ * @returns An object containing the schema kind, the relevant expression node, merged annotations, and discovered dependencies, or undefined if the initializer is not a supported schema.
+ */
 export const getSupportedEffectSchemaType = (
   initializer: Expression | undefined,
   parentAnnotations: SchemaAnnotations | undefined,

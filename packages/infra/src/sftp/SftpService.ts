@@ -23,6 +23,9 @@ import type { FileSystem } from 'effect'
 
 // type FtpConfig = Config.Success<typeof ftpConfigRaw>;
 
+/**
+ * Provides a service for performing SFTP file operations including downloading, uploading, listing files, and retrieving file metadata.
+ */
 export class SftpService extends Context.Service<
   SftpService,
   {
@@ -108,5 +111,8 @@ export class SftpService extends Context.Service<
     }
   }),
 }) {
+  /**
+   * The default live implementation layer for the SftpService.
+   */
   static readonly live = Layer.effect(this, this.make)
 }

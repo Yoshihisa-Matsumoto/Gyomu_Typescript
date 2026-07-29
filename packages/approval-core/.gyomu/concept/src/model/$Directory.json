@@ -1,0 +1,28 @@
+{
+  "summary": "This directory defines the core domain models and data structures required to manage and track approval workflows, covering request lifecycle states, evaluation outcomes, and historical event recording.",
+  "responsibilities": [
+    "Define the structure of approval requests and their associated challenges",
+    "Model the outcomes of approval policy evaluations",
+    "Track the lifecycle states of approval requests",
+    "Represent individual events within an approval workflow"
+  ],
+  "concepts": [
+    "Approval Request",
+    "Approval Challenge",
+    "Approval Decision",
+    "Approval Status",
+    "Approval Record"
+  ],
+  "relationships": [
+    "An ApprovalRequest contains an ApprovalChallenge to define the nature of the request.",
+    "The ApprovalDecision provides the result of evaluating an ApprovalRequest against policies.",
+    "The ApprovalStatus tracks the current lifecycle phase of an ApprovalRequest.",
+    "An ApprovalRecord captures specific events that occur during the lifecycle of an ApprovalRequest."
+  ],
+  "designDecisions": [
+    "Use of union types to represent finite states like ApprovalDecision and ApprovalStatus.",
+    "Strict separation between request metadata, challenge payloads, and decision outcomes.",
+    "Centralized model definitions for domain consistency."
+  ],
+  "importance": "Core"
+}

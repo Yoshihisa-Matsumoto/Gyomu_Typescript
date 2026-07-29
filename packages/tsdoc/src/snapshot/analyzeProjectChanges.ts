@@ -13,19 +13,58 @@ import type { FileSystem } from 'effect'
 import type { FileHashEntry } from '@gyomu/schema/snapshot'
 import type { WorkspaceRelativePath } from '@gyomu/schema/typescript'
 
+/**
+ * Defines the input parameters required for analyzing project snapshot changes, including the repository root and the workspace relative path.
+ */
 export interface AnalyzeProjectChangesInput {
+  /**
+   * The absolute file system path to the root of the repository.
+   */
   readonly repoRoot: FullPath
+
+  /**
+   * The path to the project relative to the workspace root.
+   */
   readonly projectPath: WorkspaceRelativePath
 }
 
+/**
+ * Represents the result of a project snapshot analysis, containing the project identifier, snapshot paths, snapshots for comparison, and the detected differences.
+ */
 export interface AnalyzeProjectChangesResult {
+  /**
+   * The unique identifier for the project.
+   */
   readonly projectId: string
+
+  /**
+   * The file system path where the snapshot is stored.
+   */
   readonly snapshotPath: string
+
+  /**
+   * The previous file hash snapshot, or null if no snapshot exists.
+   */
   readonly previousSnapshot: FileHashSnapshot | null
+
+  /**
+   * The current file hash snapshot created during the analysis.
+   */
   readonly currentSnapshot: FileHashSnapshot
+
+  /**
+   * The calculated difference between the previous and current snapshots.
+   */
   readonly diff: ReturnType<typeof diffSnapshot>
 }
 
+/**
+ * Analyzes project changes by comparing the current file snapshot against a previously stored one.
+ *
+ * @param input The input configuration containing the repository root and project path.
+ *
+ * @returns An Effect that resolves to an AnalyzeProjectChangesResult on success, or a GyomuError if the analysis fails. Requires FileSearchService and FileSystem capabilities.
+ */
 export const analyzeProjectChanges = (
   input: AnalyzeProjectChangesInput,
 ): Effect.Effect<

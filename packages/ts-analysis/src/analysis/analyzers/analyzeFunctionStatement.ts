@@ -3,6 +3,15 @@ import type { StatementAnalysisArgument, StatementAnalysisResult } from './types
 import type { FunctionDeclaration } from 'ts-morph'
 import type { ExportAnalysis, SymbolAnalysis } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Analyzes a function declaration statement to determine its exported status and internal symbols.
+ *
+ * @param statement The function declaration statement to analyze.
+ *
+ * @param args The analysis context arguments.
+ *
+ * @returns A StatementAnalysisResult object containing exported symbols and extracted symbol data.
+ */
 export const analyzeFunctionStatement = (
   statement: FunctionDeclaration,
   args: StatementAnalysisArgument,

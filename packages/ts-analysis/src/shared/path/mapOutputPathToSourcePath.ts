@@ -3,6 +3,9 @@ import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { normalizePath } from './normalizePath.js'
 import type { FullPath } from '@gyomu/schema'
 
+/**
+ * Configuration options for mapping build output paths to source file paths.
+ */
 export interface MapOutputPathToSourcePathOptions {
   /**
    * Source directory.
@@ -28,6 +31,12 @@ export interface MapOutputPathToSourcePathOptions {
 
 /**
  * Maps a build output file path to its corresponding source file path.
+ *
+ * @param outputPath The file path in the build output directory.
+ *
+ * @param options Configuration options for resolving paths.
+ *
+ * @returns The corresponding source file path as a ProjectRelativePath.
  *
  * @remarks
  * This function preserves the relative path from the output directory and

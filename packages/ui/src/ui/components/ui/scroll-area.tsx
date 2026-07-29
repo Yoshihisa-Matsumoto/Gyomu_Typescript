@@ -3,6 +3,11 @@ import { ScrollArea as ScrollAreaPrimitive } from 'radix-ui'
 
 import { cn } from '../../../lib/utils'
 
+/**
+ * Displays a scrollable area for content with custom scrollbar support.
+ *
+ * @returns A wrapper element containing the viewport, scrollbar, and corner components.
+ */
 function ScrollArea({
   className,
   children,
@@ -26,6 +31,11 @@ function ScrollArea({
   )
 }
 
+/**
+ * Renders a scrollbar component for the ScrollArea, supporting horizontal or vertical orientation.
+ *
+ * @returns A stylized scrollbar component with a thumb.
+ */
 function ScrollBar({
   className,
   orientation = 'vertical',

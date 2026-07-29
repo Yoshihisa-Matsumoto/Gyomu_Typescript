@@ -1,0 +1,26 @@
+{
+  "summary": "This directory manages the core business logic and state transitions for the application's domain entities. It orchestrates complex operations by coordinating interactions between services, repositories, and data models to fulfill functional requirements.",
+  "responsibilities": [
+    "Enforce domain business rules",
+    "Orchestrate multi-step operational workflows",
+    "Manage state transitions for core entities",
+    "Coordinate communication between data access and service layers"
+  ],
+  "concepts": [
+    "Domain Entities",
+    "Business Rules",
+    "Orchestration Logic",
+    "State Transitions"
+  ],
+  "relationships": [
+    "Domain entities contain the business rules that govern their lifecycle.",
+    "Orchestration logic coordinates state transitions to ensure consistency across entities.",
+    "Business rules define the validation constraints required before any state transition can occur."
+  ],
+  "designDecisions": [
+    "Separation of concerns between business logic and data persistence",
+    "Centralized orchestration to avoid logic leakage into infrastructure layers",
+    "Immutable state representations where applicable"
+  ],
+  "importance": "Core"
+}

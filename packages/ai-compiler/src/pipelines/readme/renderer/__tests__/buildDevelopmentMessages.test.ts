@@ -11,6 +11,7 @@ it('buildDependenciesMessages', async () =>
         knowledge: {
           package: {
             mission: 'Mission',
+            policies: ['abc'],
           },
         },
         concept: {
@@ -23,7 +24,7 @@ it('buildDependenciesMessages', async () =>
         {
           id: '1',
           role: 'user',
-          content: expect.stringContaining('the development philosophy of this package'),
+          content: expect.stringContaining('the provided mission to explain the '),
         },
       ])
       expect(messages).toEqual([

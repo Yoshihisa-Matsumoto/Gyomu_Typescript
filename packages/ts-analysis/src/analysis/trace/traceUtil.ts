@@ -4,6 +4,15 @@ import type { ChildAnalysisArg } from '../analyzers/types.js'
 import type { SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 import type { AnalysisOptions } from '@gyomu/schema'
 
+/**
+ * Logs debug information about a target entity during analysis if a matching keyword is found.
+ *
+ * @param target The target entity to inspect.
+ *
+ * @param options Configuration options for analysis and debugging.
+ *
+ * @param functionName Optional name of the function to log if tracing is enabled.
+ */
 export function tracePlaceIdentity<T extends Node | undefined>(
   target: SymbolIdentity | TypeReferenceNode | ChildAnalysisArg<T>,
   options: AnalysisOptions | undefined,

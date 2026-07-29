@@ -24,5 +24,6 @@ export const buildDevelopmentMessages = (
         '{{RESPONSIBILITIES}}',
         context.concept.responsibilities.map((r) => `- ${r}`).join('\n'),
       )
+      .replace('{{POLICY}}', context.knowledge.package.policies.join('\n'))
     return [{ id: '1', role: MessageRole.user, content: finalPrompt }]
   })

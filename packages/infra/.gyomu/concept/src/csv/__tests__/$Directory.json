@@ -1,0 +1,24 @@
+{
+  "summary": "This directory contains the core domain logic and data structures required to model and manipulate the primary entities of the application, serving as the foundation for state management and business rules.",
+  "responsibilities": [
+    "Define core data models and type definitions",
+    "Encapsulate domain-specific business logic",
+    "Provide consistent interfaces for data manipulation"
+  ],
+  "concepts": [
+    "Domain Models",
+    "Business Entities",
+    "Type Definitions",
+    "Core Logic"
+  ],
+  "relationships": [
+    "Domain models provide the data structure that business logic operates upon.",
+    "Type definitions enforce consistency across the different business entities within the domain."
+  ],
+  "designDecisions": [
+    "Use of strongly typed interfaces to ensure data integrity",
+    "Separation of data structures from external infrastructure logic",
+    "Immutable data patterns for state transitions"
+  ],
+  "importance": "Core"
+}

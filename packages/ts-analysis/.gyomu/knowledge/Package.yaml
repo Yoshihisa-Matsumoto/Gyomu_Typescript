@@ -1,0 +1,106 @@
+# yaml-language-server: $schema=../../../../schemas/Package.json
+
+displayName: Gyomu TS Analysis
+
+mission: |
+  GyomuにおけるTypeScriptソースコード解析基盤を提供します。
+  プロジェクト全体を静的解析し、ソースコードの構造、シンボル、依存関係を
+  構造化された解析モデルとして抽出します。
+  解析結果を永続化・再利用可能な形式で管理することで、
+  AIやドキュメント生成など上位レイヤーが利用する共通解析基盤を提供します。
+
+policies:
+  - 解析結果はソースコードから決定的に導出されるものとする。
+  - プロジェクト解析とファイル解析は独立した責務として設計する。
+  - 解析結果は永続化し、差分更新および再利用を可能とする。
+  - パス解決はWorkspace全体で一貫したルールに従う。
+  - モジュール解決と解析処理は疎結合に設計する。
+  - 解析結果はソースコードを変更せず読み取り専用とする。
+  - TypeScriptプロジェクト境界を明確に管理する。
+  - 上位レイヤーは解析結果のみを利用し、ts-morph等へ直接依存しない。
+
+constraints:
+  - ソースコードを書き換えてはならない。
+  - ドキュメント生成を担当してはならない。
+  - AIによる推論や意味解析を実装してはならない。
+  - 特定プロジェクト固有の解析ロジックを実装してはならない。
+  - TypeScript Compiler APIの実装詳細を公開APIとして露出してはならない。
+
+nonGoals:
+  - READMEや設計ドキュメントを生成すること。
+  - TSDocコメントを生成・更新すること。
+  - プロジェクト知識を統合・管理すること。
+  - コード変換やリファクタリングを実行すること。
+  - LLMによるコード推論を提供すること。
+
+terminology:
+  - term: Project Context
+    definition: TypeScriptプロジェクト全体の解析設定およびWorkspace情報。
+
+  - term: File Analysis
+    definition: 単一ソースファイルから抽出された構造解析結果。
+
+  - term: Analysis Cache
+    definition: 永続化された解析結果を保持するキャッシュ。
+
+  - term: Module Resolution
+    definition: モジュール指定子・ソースファイル・出力ファイル間の対応関係を解決する仕組み。
+
+  - term: Workspace
+    definition: 解析対象となるTypeScriptプロジェクト集合。
+
+rationale:
+  - 静的解析を共通基盤化することで、上位レイヤーは解析方法を意識せず利用できる。
+  - 解析結果を永続化することで、大規模プロジェクトでも差分解析を実現できる。
+  - Project Contextを導入することでWorkspace全体で一貫した解析を行える。
+  - パス解決を共通化することで、ソース・ビルド成果物・モジュール指定子の対応を安定して管理できる。
+  - TypeScript固有の解析処理を集約することで、他パッケージとの責務分離を維持できる。
+
+usage:
+  - situation: TypeScriptプロジェクトを解析したい
+    guidance: Project Contextを初期化して解析を開始する。
+
+  - situation: 単一ファイルを解析したい
+    guidance: File Analysis APIを利用して解析結果を取得する。
+
+  - situation: モジュール指定子からソースファイルを取得したい
+    guidance: Module Resolution Utilityを利用する。
+
+  - situation: 差分解析を実行したい
+    guidance: 永続化されたAnalysis Cacheを利用して必要なファイルのみ再解析する。
+
+  - situation: テストで解析結果を利用したい
+    guidance: testingパッケージのFixtureを利用して独立した解析環境を構築する。
+
+examples:
+  - title: プロジェクト解析
+    input: |
+      TypeScriptプロジェクト全体を解析したい。
+    output: |
+      Project Contextを生成して解析パイプラインを実行する。
+    explanation: |
+      Workspace全体を対象とした一貫性のある解析を実行できる。
+
+  - title: ファイル解析
+    input: |
+      単一ファイルのシンボル情報を取得したい。
+    output: |
+      File Analysisを実行して構造情報を取得する。
+    explanation: |
+      ソースコード構造を変更せず解析結果のみ取得できる。
+
+  - title: モジュール解決
+    input: |
+      import指定から元ソースを特定したい。
+    output: |
+      Module Resolution Utilityで対応するソースファイルを取得する。
+    explanation: |
+      ソース・ビルド成果物・モジュール指定子を統一的に扱える。
+
+  - title: 差分解析
+    input: |
+      更新されたファイルだけ解析したい。
+    output: |
+      Analysis Cacheを読み込み、変更されたファイルのみ再解析する。
+    explanation: |
+      全体解析を避け、高速なインクリメンタル解析を実現できる。

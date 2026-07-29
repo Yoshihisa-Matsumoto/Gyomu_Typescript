@@ -12,8 +12,11 @@ import type { Schema } from 'effect'
 import type { PlatformError } from 'effect/PlatformError'
 
 /**
- * パスからファイルストリームを生成する。
- * 内部で FileSystem サービスを解決し、エラーを IOError にラップする。
+ * Creates a file stream from the specified path. Resolves the FileSystem service and wraps errors in an IOError.
+ *
+ * @param path The file path to stream from.
+ *
+ * @returns An Effect containing a Stream of Uint8Array data.
  */
 export const fileStream = (
   path: string,
@@ -29,8 +32,15 @@ export const fileStream = (
 //     evaluate: () => fs.createReadStream(path),
 //     onError: (e) => unknownError(IOError, e, 'file read error'),
 //   });
+
 /**
- * ストリームをファイルに書き出す汎用オペレーター
+ * A generic operator that writes a stream to a file.
+ *
+ * @param path The destination file path.
+ *
+ * @param options Optional file writing flags and mode.
+ *
+ * @returns An Effect that completes when writing is finished.
  */
 export const writeStreamToFile =
   (
@@ -60,7 +70,11 @@ export const writeStreamToFile =
     })
 
 /**
- * 文字列ストリームを UTF-8 でエンコードしてファイルに書き出すオペレーター
+ * An operator that encodes a string stream to UTF-8 and writes it to a file.
+ *
+ * @param path The destination file path.
+ *
+ * @returns An Effect that completes when writing the encoded stream is finished.
  */
 export const writeTextStreamToFile =
   (path: string) =>
@@ -72,6 +86,15 @@ export const writeTextStreamToFile =
       writeStreamToFile(path),
     )
 
+/**
+ * Opens a file using the FileSystem service and wraps errors in an IOError.
+ *
+ * @param path The path to the file to open.
+ *
+ * @param options Optional configuration for opening the file, including flags and mode.
+ *
+ * @returns An Effect containing the opened file handle.
+ */
 export const openFile = (
   path: string,
   options?: {
@@ -92,6 +115,18 @@ export const openFile = (
       ),
     )
   })
+
+/**
+ * Writes data to a file, ensuring the parent directory exists, and wraps errors in an IOError.
+ *
+ * @param path The destination file path.
+ *
+ * @param data The binary data to write.
+ *
+ * @param options Optional file system write configuration.
+ *
+ * @returns An Effect that completes when writing is successful.
+ */
 export const writeToFile = (
   path: string,
   data: Uint8Array<ArrayBufferLike>,
@@ -129,6 +164,18 @@ export const writeToFile = (
       ),
     )
   })
+
+/**
+ * Writes a string to a file, ensuring the parent directory exists, and wraps errors in an IOError.
+ *
+ * @param path The destination file path.
+ *
+ * @param data The string content to write.
+ *
+ * @param options Optional file system write configuration.
+ *
+ * @returns An Effect that completes when writing is successful.
+ */
 export const writeStringToFile = (
   path: string,
   data: string,
@@ -166,6 +213,14 @@ export const writeStringToFile = (
       ),
     )
   })
+
+/**
+ * Reads data from a file and wraps errors in an IOError.
+ *
+ * @param path The path of the file to read.
+ *
+ * @returns An Effect yielding the file content.
+ */
 export const readFromFile = (path: string) =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem
@@ -180,6 +235,16 @@ export const readFromFile = (path: string) =>
       ),
     )
   })
+
+/**
+ * Reads string content from a file and wraps errors in an IOError.
+ *
+ * @param path The path of the file to read.
+ *
+ * @param encoding Optional file encoding.
+ *
+ * @returns An Effect yielding the file content as a string.
+ */
 export const readStringFromFile = (path: string, encoding?: string) =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem
@@ -194,6 +259,16 @@ export const readStringFromFile = (path: string, encoding?: string) =>
       ),
     )
   })
+
+/**
+ * Reads a JSON file, parses the content, and wraps errors in an IOError.
+ *
+ * @param path The path of the JSON file.
+ *
+ * @param encoding Optional file encoding.
+ *
+ * @returns An Effect yielding the parsed JSON object.
+ */
 export const readJsonFromFile = <T>(path: string, encoding?: string) =>
   Effect.gen(function* () {
     const text = yield* readStringFromFile(path, encoding)
@@ -203,6 +278,20 @@ export const readJsonFromFile = <T>(path: string, encoding?: string) =>
       operation: 'transform' as const,
     }))(() => JSON.parse(text) as T)
   })
+
+/**
+ * Reads, parses, and validates a JSON file against the provided schema.
+ *
+ * @param schemaName A identifier for the schema used in error messages.
+ *
+ * @param schema The Effect Schema used for validation.
+ *
+ * @param path The file path to the JSON.
+ *
+ * @param encoding Optional file encoding.
+ *
+ * @returns An Effect yielding the validated object based on the provided schema.
+ */
 export const readJsonFromFileAndValidate = <S extends Schema.Top>(
   schemaName: string,
   schema: S,
@@ -214,11 +303,34 @@ export const readJsonFromFileAndValidate = <S extends Schema.Top>(
     return yield* convertToSchemaObjectWithEffect(schemaName)(schema, jsonData)
   })
 
+/**
+ * Reads a YAML file and parses the content.
+ *
+ * @param path The path of the YAML file.
+ *
+ * @param encoding Optional file encoding.
+ *
+ * @returns An Effect yielding the parsed YAML object.
+ */
 export const readYamlFromFile = <T>(path: string, encoding?: string) =>
   Effect.gen(function* () {
     const text = yield* readStringFromFile(path, encoding)
     return parse(text) as T
   })
+
+/**
+ * Reads, parses, and validates a YAML file against the provided schema.
+ *
+ * @param schemaName A identifier for the schema used in error messages.
+ *
+ * @param schema The Effect Schema used for validation.
+ *
+ * @param path The file path to the YAML.
+ *
+ * @param encoding Optional file encoding.
+ *
+ * @returns An Effect yielding the validated object based on the provided schema.
+ */
 export const readYamlFromFileAndValidate = <S extends Schema.Top>(
   schemaName: string,
   schema: S,
@@ -230,6 +342,15 @@ export const readYamlFromFileAndValidate = <S extends Schema.Top>(
     return yield* convertToSchemaObjectWithEffect(schemaName)(schema, yamlData)
   })
 
+/**
+ * Copies a file from the source path to the destination path.
+ *
+ * @param source The source file path.
+ *
+ * @param destination The destination file path.
+ *
+ * @returns An Effect that completes when copying is successful.
+ */
 export const copyFile = (source: string, destination: string) =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem
@@ -244,6 +365,18 @@ export const copyFile = (source: string, destination: string) =>
       ),
     )
   })
+
+/**
+ * Copies a directory from the source to the destination path.
+ *
+ * @param source The source directory path.
+ *
+ * @param destination The destination directory path.
+ *
+ * @param options Optional copy behavior settings.
+ *
+ * @returns An Effect that completes when copying is successful.
+ */
 export const copyFolder = (
   source: string,
   destination: string,
@@ -265,6 +398,14 @@ export const copyFolder = (
       ),
     )
   })
+
+/**
+ * Retrieves file metadata stats for a given path.
+ *
+ * @param path The path to check stats for.
+ *
+ * @returns An Effect yielding the file stat object.
+ */
 export const getFileStat = (path: string) =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem
@@ -279,6 +420,14 @@ export const getFileStat = (path: string) =>
       ),
     )
   })
+
+/**
+ * Checks if a path exists in the file system.
+ *
+ * @param path The path to check.
+ *
+ * @returns An Effect yielding a boolean indicating existence.
+ */
 export const pathExists = (path: FullPath) =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem
@@ -293,6 +442,14 @@ export const pathExists = (path: FullPath) =>
       ),
     )
   })
+
+/**
+ * Reads a directory and returns detailed information for each entry.
+ *
+ * @param dir The directory path to read.
+ *
+ * @returns An Effect yielding an array of entry information details.
+ */
 export const readDirectoryDetailed = (dir: FullPath) =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem
@@ -335,6 +492,15 @@ export const readDirectoryDetailed = (dir: FullPath) =>
     )
   })
 
+/**
+ * Expands a basic directory glob pattern into a list of existing directory paths.
+ *
+ * @param repositoryRoot The root path of the repository.
+ *
+ * @param pattern The glob pattern to expand.
+ *
+ * @returns An Effect yielding an array of matching directory paths.
+ */
 export const expandDirectoryGlob = (repositoryRoot: string, pattern: string) =>
   Effect.gen(function* () {
     if (!pattern.endsWith('/*')) {
@@ -376,6 +542,16 @@ export const expandDirectoryGlob = (repositoryRoot: string, pattern: string) =>
       })),
     ),
   )
+
+/**
+ * Removes a file or directory at the specified path.
+ *
+ * @param path The path to remove.
+ *
+ * @param options Optional removal settings, such as recursive or force.
+ *
+ * @returns An Effect that completes when removal is done.
+ */
 export const removePath = (
   path: string,
   options?: {
@@ -400,6 +576,14 @@ export const removePath = (
       })),
     ),
   )
+
+/**
+ * Clears the contents of a directory, recreating it if necessary.
+ *
+ * @param dir The directory path to empty.
+ *
+ * @returns An Effect that completes when the directory is empty.
+ */
 export const emptyDir = (dir: string) =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem
@@ -421,6 +605,16 @@ export const emptyDir = (dir: string) =>
       })),
     ),
   )
+
+/**
+ * Ensures that a directory exists, optionally resolving the parent directory if fromFile is true.
+ *
+ * @param dir The directory path to create.
+ *
+ * @param fromFile If true, treats the path as a file and creates its parent directory.
+ *
+ * @returns An Effect that completes when directory creation is successful.
+ */
 export const makeDirectory = (dir: string, fromFile: boolean = false) =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem
@@ -439,6 +633,13 @@ export const makeDirectory = (dir: string, fromFile: boolean = false) =>
     )
   })
 
+/**
+ * Ensures that a file exists at the given path, creating it and parent directories if necessary.
+ *
+ * @param filePath The path of the file to ensure.
+ *
+ * @returns An Effect indicating completion, or an IOError if the operation fails.
+ */
 export const ensureFile = (filePath: string): Effect.Effect<void, IOError, FileSystem.FileSystem> =>
   Effect.gen(function* () {
     const fs = yield* FileSystem.FileSystem
@@ -466,6 +667,13 @@ export const ensureFile = (filePath: string): Effect.Effect<void, IOError, FileS
     ),
   )
 
+/**
+ * Ensures that no file exists at the given path, removing it if necessary.
+ *
+ * @param filePath The path to ensure is empty.
+ *
+ * @returns An Effect indicating completion, or an IOError if the removal fails.
+ */
 export const ensureFileNotExist = (
   filePath: string,
 ): Effect.Effect<void, IOError, FileSystem.FileSystem> =>
@@ -495,6 +703,13 @@ export const ensureFileNotExist = (
     ),
   )
 
+/**
+ * Extracts the file extension from a filename, excluding the leading dot.
+ *
+ * @param fileName The filename to process.
+ *
+ * @returns The file extension as a string, or an empty string if none exists.
+ */
 export const getFileExtension = (fileName: string) => {
   const extName = extname(fileName)
   if (extName.length > 0) {
@@ -503,6 +718,11 @@ export const getFileExtension = (fileName: string) => {
   return extName
 }
 
+/**
+ * Generates a unique temporary filename in the system's temporary directory.
+ *
+ * @returns A unique absolute file path string.
+ */
 export const getTempFilename = () => {
   const tmpFile = join(tmpdir(), randomUUID())
   return tmpFile

@@ -1,0 +1,28 @@
+{
+  "summary": "This directory manages the core orchestration of the TypeScript static analysis pipeline, handling project initialization, file-level processing, and the persistence of analysis results through reading and writing metadata to the filesystem.",
+  "responsibilities": [
+    "Initialize and maintain project-wide analysis context.",
+    "Orchestrate the analysis of individual TypeScript source files.",
+    "Persist and retrieve structured analysis metadata from storage.",
+    "Verify the integrity and consistency of analysis results across project runs."
+  ],
+  "concepts": [
+    "Project Context",
+    "File Analysis",
+    "Analysis Metadata",
+    "Storage Persistence",
+    "Source Index"
+  ],
+  "relationships": [
+    "The project context serves as the anchor for all analysis operations by providing necessary configuration and environment metadata.",
+    "File analysis results are built into a centralized index to allow for efficient lookup of symbols and documentation.",
+    "Persistence logic links raw source files to their corresponding metadata stored on the filesystem to facilitate caching and incremental analysis."
+  ],
+  "designDecisions": [
+    "Centralized orchestration of the analysis lifecycle from initialization to disk persistence.",
+    "Use of standard JSON serialization for storing analysis results to ensure cross-platform compatibility.",
+    "Strict separation between project configuration loading and file-level analysis execution.",
+    "Integration of validation steps during result loading to ensure metadata integrity."
+  ],
+  "importance": "Core"
+}

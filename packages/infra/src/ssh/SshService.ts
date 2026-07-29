@@ -13,6 +13,9 @@ import type { FileSystem } from 'effect'
 
 // type FtpConfig = Config.Success<typeof ftpConfigRaw>;
 
+/**
+ * Provides a service for managing SSH connections and executing commands on remote hosts.
+ */
 export class SshService extends Context.Service<
   SshService,
   {
@@ -95,5 +98,8 @@ export class SshService extends Context.Service<
     }
   }),
 }) {
+  /**
+   * The default live implementation layer for the SshService.
+   */
   static readonly live = Layer.effect(this, this.make)
 }

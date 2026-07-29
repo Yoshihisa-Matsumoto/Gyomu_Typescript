@@ -42,16 +42,34 @@ const toProjectId = (projectPath: string): string => {
  * ```
  *
  * @property projectId - Stable hashed identifier for the project (derived from normalized project path)
- * @property projectRoot - Root directory of the Gyomu workspace for this project
- * @property manifestPath - Path to the workspace manifest file containing metadata such as source path and version
- * @property snapshotPath - Path to the latest file hash snapshot used for change detection
  *
- * @see ensureProjectWorkspace
+ * @property projectId - Stable hashed identifier for the project (derived from normalized project path)
+ *
+ * @property projectId - Stable hashed identifier for the project (derived from normalized project path)
+ *
+ * @property projectId - Stable hashed identifier for the project (derived from normalized project path)
+ *
+ * @property projectId - Stable hashed identifier for the project (derived from normalized project path)
  */
 export interface ProjectWorkspace {
+  /**
+   * Stable hashed identifier for the project.
+   */
   readonly projectId: string
+
+  /**
+   * Root directory of the Gyomu workspace for this project.
+   */
   readonly projectRoot: string
+
+  /**
+   * Path to the workspace manifest file containing metadata.
+   */
   readonly manifestPath: string
+
+  /**
+   * Path to the latest file hash snapshot used for change detection.
+   */
   readonly snapshotPath: string
 }
 
@@ -92,8 +110,10 @@ export interface ProjectWorkspace {
  * - `version`: Gyomu schema version
  *
  * @param repoRoot - Root directory of the monorepo (workspace boundary)
+ *
  * @param projectPath - Project path within the repository to initialize
- * @returns A `ProjectWorkspace` object containing resolved paths for further operations
+ *
+ * @returns An Effect that resolves to the `ProjectWorkspace`.
  *
  * @remarks
  * This function enforces repository boundary safety via `resolvePathWithinBase`.

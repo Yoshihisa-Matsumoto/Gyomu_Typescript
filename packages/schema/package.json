@@ -101,7 +101,10 @@
   "author": "",
   "license": "MIT",
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "README.ja.md",
+    "LICENSE"
   ],
   "devDependencies": {
     "dotenv-cli": "^11.0.0",

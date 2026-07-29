@@ -5,6 +5,17 @@ import type { DocumentContent, LanguageCodes, Section } from '@gyomu/schema/sche
 import type { TranslationPlan } from '../translation/TranslationPlan.js'
 import type { ReadmeBuildContext, ReadmeSectionId } from '@gyomu/schema/concept'
 
+/**
+ * Renders a README file content from the given build context and translation plan.
+ *
+ * @param context The build context containing metadata about the package.
+ *
+ * @param plan The translation plan defining the structure and language of the documentation.
+ *
+ * @param needLink Whether to include a link in the generated markdown. Defaults to false.
+ *
+ * @returns The rendered markdown content as a string.
+ */
 export const renderMarkdown = (
   context: ReadmeBuildContext,
   plan: TranslationPlan,

@@ -15,6 +15,13 @@ import type {
   TypeStructureAnalysis,
 } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Analyzes a TypeScript type literal node to extract its properties and index signatures.
+ *
+ * @param args The analysis context for the type literal node.
+ *
+ * @returns The analysis result containing the object structure, dependencies, and reserved names found within the type literal.
+ */
 export const analyzeTypeLiteralNode = (
   args: ChildAnalysisArg<TypeLiteralNode>,
 ): MemberAnalysisWithReservedResult<TypeStructureAnalysis> => {

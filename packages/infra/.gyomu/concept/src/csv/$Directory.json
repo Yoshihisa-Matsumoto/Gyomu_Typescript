@@ -1,0 +1,28 @@
+{
+  "summary": "This directory provides a comprehensive toolkit for processing CSV data. It facilitates the bidirectional transformation between structured records and CSV-formatted streams, including support for schema-based reading, raw data parsing, and flexible encoding options for structured data output.",
+  "responsibilities": [
+    "Parse CSV input streams into structured records",
+    "Encode structured data streams into CSV format",
+    "Define schema and configuration types for CSV operations",
+    "Handle raw and schema-validated CSV data transformations"
+  ],
+  "concepts": [
+    "CSV Parsing",
+    "CSV Encoding",
+    "Data Streams",
+    "Schema Definition",
+    "Record Mapping"
+  ],
+  "relationships": [
+    "CSV parsing functions transform raw streams into structured records based on defined schemas.",
+    "CSV encoding functions convert structured records into formatted CSV streams using provided write options.",
+    "Type definitions for columns and records ensure consistency between the structured domain models and the serialized CSV output."
+  ],
+  "designDecisions": [
+    "Streaming-first approach for data processing",
+    "Configuration-based options for reading and writing",
+    "Separation between raw and schema-aware processing functions",
+    "Type-safe interfaces for CSV cell and row definitions"
+  ],
+  "importance": "Core"
+}

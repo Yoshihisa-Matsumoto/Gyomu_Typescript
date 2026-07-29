@@ -3,6 +3,11 @@ import { Separator as SeparatorPrimitive } from 'radix-ui'
 
 import { cn } from '../../../lib/utils'
 
+/**
+ * Displays a line that separates content either horizontally or vertically.
+ *
+ * @returns A React functional component representing the separator.
+ */
 function Separator({
   className,
   orientation = 'horizontal',

@@ -2,6 +2,7 @@ import { SignatureId } from '@gyomu/schema/typescript'
 import { analyzeType } from '../type/analyzeType.js'
 import { analyzeFunctionMemberInternal } from '../struct/analyzeFunctionMember.js'
 import { createMemberIdentityAndId } from '../../../shared/createMemberIdentity.js'
+import { analyzeBindingName } from '../binding/analyzeBindingName.js'
 import { getAccessor } from './analyzeClassPropertyMember.js'
 import type {
   MemberAnalysis,
@@ -14,6 +15,17 @@ import type {
 } from '../../types.js'
 import type { ClassDeclaration, ConstructorDeclaration, ParameterDeclaration } from 'ts-morph'
 
+/**
+ * Analyzes a constructor declaration within a class to extract its function signature and any class properties defined as constructor parameters.
+ *
+ * @param args The child analysis arguments containing the constructor node and context.
+ *
+ * @param parent The parent class declaration containing the constructor.
+ *
+ * @param name The name of the constructor member.
+ *
+ * @returns A result object containing the analyzed class members and their dependencies.
+ */
 export const analyzeConstructor = (
   args: ChildAnalysisArg<ConstructorDeclaration>,
   parent: ClassDeclaration,
@@ -78,13 +90,25 @@ const analyzeClassPropertyFromConstructorParameters = (
     ownerSymbolIdentity,
   )
   // analyzeFunctionBody({...args, node:node})
-  const typeResult = analyzeType(
-    {
-      ...args,
-      node: typeNode ?? initializer,
-    },
-    [nodeName],
-  )
+  const typeResult =
+    typeNode || initializer
+      ? analyzeType(
+          {
+            ...args,
+            node: typeNode ?? initializer!,
+          },
+          [nodeName],
+        )
+      : undefined
+
+  const bindingResult =
+    typeResult == undefined
+      ? analyzeBindingName({
+          ...args,
+          node: node.getNameNode(),
+          memberPath: [...memberPath, nodeName],
+        })
+      : undefined
 
   return {
     member: {
@@ -99,13 +123,13 @@ const analyzeClassPropertyFromConstructorParameters = (
       readonly: node.isReadonly(),
       optional: !!node.getQuestionTokenNode(),
 
-      type: typeResult.member,
-
+      type: typeResult?.member,
+      binding: bindingResult?.member,
       static: false,
       visibility: getAccessor(node),
       declarationOrder,
     },
-    dependencies: typeResult.dependencies,
-    reservedNames: typeResult.reservedNames,
+    dependencies: [...(typeResult?.dependencies ?? []), ...(bindingResult?.dependencies ?? [])],
+    reservedNames: [...(typeResult?.reservedNames ?? []), ...(bindingResult?.reservedNames ?? [])],
   }
 }

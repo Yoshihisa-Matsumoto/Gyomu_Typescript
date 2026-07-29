@@ -7,6 +7,9 @@ import type { User } from '@gyomu/schema/schemas'
 
 type ParameterType = string | number | boolean
 
+/**
+ * A service layer providing functionality for managing and retrieving application parameters, supporting user-scoped keys and temporal value lookups.
+ */
 export const ParameterServiceLayer = Layer.effect(
   ParameterService,
 

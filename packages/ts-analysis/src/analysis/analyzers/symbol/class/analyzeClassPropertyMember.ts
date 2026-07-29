@@ -16,12 +16,28 @@ import type {
   MemberAccessor,
 } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Analyzes a class property member by extracting its static status and visibility.
+ *
+ * @param args The analysis context for the property declaration.
+ *
+ * @returns The analysis result for the property member.
+ */
 export const analyzeClassPropertyMember = (
   args: ChildAnalysisArg<PropertyDeclaration>,
 ): MemberAnalysisResult<DocumentablePropertyMemberAnalysis> => {
   return analyzePropertyMember(args, args.node.isStatic(), getAccessor(args.node))
 }
 
+/**
+ * Analyzes a getter and optional setter accessor pair within a class.
+ *
+ * @param args The analysis context for the getter declaration.
+ *
+ * @param setter The optional setter declaration paired with the getter.
+ *
+ * @returns The analysis result for the property member defined by the accessors.
+ */
 export const analyzeGetSetAccessor = (
   args: ChildAnalysisArg<GetAccessorDeclaration>,
   setter?: SetAccessorDeclaration,
@@ -80,6 +96,13 @@ export const analyzeGetSetAccessor = (
   // }
 }
 
+/**
+ * Determines the visibility modifier (public, protected, or private) for a given class node.
+ *
+ * @param node The node to analyze for visibility modifiers.
+ *
+ * @returns The detected MemberAccessor, defaulting to 'public'.
+ */
 export const getAccessor = (node: ModifierableNode): MemberAccessor => {
   const modifiers = node.getModifiers()
   for (const modifier of modifiers) {

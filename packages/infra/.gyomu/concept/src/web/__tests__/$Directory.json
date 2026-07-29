@@ -1,0 +1,25 @@
+{
+  "summary": "This directory serves as the foundation for the application's core functionality, managing essential data structures, internal logic, and primary services that define the package's behavior and utility.",
+  "responsibilities": [
+    "Orchestrating primary system services",
+    "Defining core data models",
+    "Managing high-level application state",
+    "Coordinating interactions between system components"
+  ],
+  "concepts": [
+    "Core services",
+    "Domain models",
+    "System state",
+    "Business logic"
+  ],
+  "relationships": [
+    "Core services operate on domain models to maintain and update the application state.",
+    "The business logic layer orchestrates the interaction between various services to fulfill system requirements."
+  ],
+  "designDecisions": [
+    "Layered architecture to separate data from logic",
+    "Centralized state management",
+    "Dependency injection for service decoupling"
+  ],
+  "importance": "Core"
+}

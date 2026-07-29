@@ -1,0 +1,26 @@
+{
+  "summary": "This directory centralizes the integration and adaptation of Material UI components. It acts as an abstraction layer that standardizes styling, behavioral patterns, and layout structures for form inputs and interactive elements across the application's user interface.",
+  "responsibilities": [
+    "Provide project-specific adaptations of Material UI components",
+    "Standardize input and form layout structures",
+    "Encapsulate third-party library dependencies",
+    "Ensure consistent styling and visual feedback across form components"
+  ],
+  "concepts": [
+    "UI Adapter Layer",
+    "Component Wrappers",
+    "Form Field Standards",
+    "Layout Composition"
+  ],
+  "relationships": [
+    "The adapter layer translates high-level application requirements into specific Material UI implementations.",
+    "Form layouts organize individual field adapters into consistent grid structures.",
+    "Component wrappers inject shared styling and validation logic into base Material UI elements."
+  ],
+  "designDecisions": [
+    "Use of the adapter pattern to decouple the application from third-party library specifics",
+    "Centralized configuration for common component properties like labels and tooltips",
+    "Composition of base components into specialized, reusable form primitives"
+  ],
+  "importance": "Core"
+}

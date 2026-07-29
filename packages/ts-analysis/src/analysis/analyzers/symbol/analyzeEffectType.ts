@@ -1,6 +1,13 @@
 import { withOptional } from '@gyomu/schema'
 import type { EffectSignals, TypeAnalysis } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Parses a type string to extract Effect-related metadata including success, error, and requirement types.
+ *
+ * @param typeRawText The raw type string to be analyzed.
+ *
+ * @returns The extracted effect signals as an object, or undefined if the input does not represent an Effect type.
+ */
 export const detectEffectSignals = (typeRawText: string): EffectSignals | undefined => {
   const genericText = extractEffectGenericText(typeRawText)
 

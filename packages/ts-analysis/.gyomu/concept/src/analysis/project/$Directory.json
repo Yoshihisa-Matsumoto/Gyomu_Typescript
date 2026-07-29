@@ -1,0 +1,23 @@
+{
+  "summary": "This directory manages the core context and configuration data required for project analysis. It serves as the primary repository for project-wide information, encompassing directory structures, settings, and package metadata necessary to establish an analysis environment.",
+  "responsibilities": [
+    "Defining the scope and boundaries of a project for analysis",
+    "Aggregating project configuration and package details",
+    "Providing a unified state object representing the project environment"
+  ],
+  "concepts": [
+    "Project Context",
+    "Project Configuration",
+    "Package Metadata",
+    "Root Directory"
+  ],
+  "relationships": [
+    "The Project Context integrates project configuration and package information to define the analysis domain.",
+    "The root directory acts as the anchor point for the Project Context, determining the scope of the analyzed project."
+  ],
+  "designDecisions": [
+    "Use of an interface to enforce a consistent structure for project-wide analysis data",
+    "Centralized state representation to simplify dependency injection across analysis modules"
+  ],
+  "importance": "Core"
+}

@@ -11,6 +11,17 @@ import type { StatementAnalysisResult } from './types.js'
 import type { ExportDeclaration } from 'ts-morph'
 import type { AnalysisOptions } from '@gyomu/schema'
 
+/**
+ * Analyzes an export statement to identify local exports and re-exports, returning a structured result containing the exported entities.
+ *
+ * @param statement The export declaration node to analyze.
+ *
+ * @param fileSymbols Contextual symbols available within the current file scope.
+ *
+ * @param args Additional analysis metadata and configuration arguments.
+ *
+ * @returns A result object containing categorized export analyses and identified symbols.
+ */
 export const analyzeExportStatement = (
   statement: ExportDeclaration,
   fileSymbols: {

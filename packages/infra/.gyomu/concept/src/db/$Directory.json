@@ -1,0 +1,27 @@
+{
+  "summary": "This directory provides the infrastructure layer for database connectivity, custom SQL execution, and repository pattern abstraction, enabling consistent interaction with Kysely and MSSQL database services across the application.",
+  "responsibilities": [
+    "Manage database connection lifecycle and configuration",
+    "Provide standardized repository abstractions for CRUD operations",
+    "Execute and validate custom SQL queries",
+    "Abstract underlying database technology services"
+  ],
+  "concepts": [
+    "Database services",
+    "Repository patterns",
+    "SQL execution",
+    "Schema validation"
+  ],
+  "relationships": [
+    "The Kysely and MSSQL services manage the underlying database connections utilized by the repository layer.",
+    "The repository generator consumes schema definitions to enforce consistency when performing custom SQL operations.",
+    "Common utilities provide data transformation and validation logic required by the database services during query execution."
+  ],
+  "designDecisions": [
+    "Abstracting specific SQL drivers behind a uniform service interface",
+    "Use of Effect for handling database operation results",
+    "Repository pattern for standardizing database access",
+    "Dynamic configuration of database services based on environment or prefixes"
+  ],
+  "importance": "Core"
+}

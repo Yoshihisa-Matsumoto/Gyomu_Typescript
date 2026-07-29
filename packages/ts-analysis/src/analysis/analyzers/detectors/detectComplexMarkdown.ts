@@ -2,6 +2,15 @@ import { createHumanEditSignal } from './createHumanEditSignal.js'
 import type { HumanEditContext, HumanEditSignal } from '@gyomu/schema/schemas/typescript'
 import type { TextHumanEditDetector } from './types.js'
 
+/**
+ * Detects complex Markdown patterns such as headers or code blocks within the provided text.
+ *
+ * @param text The text content to analyze for Markdown patterns.
+ *
+ * @param context The context in which the text is being edited.
+ *
+ * @returns An array of detected human edit signals related to complex Markdown.
+ */
 export const detectComplexMarkdown: TextHumanEditDetector = (
   text: string,
   context: HumanEditContext,

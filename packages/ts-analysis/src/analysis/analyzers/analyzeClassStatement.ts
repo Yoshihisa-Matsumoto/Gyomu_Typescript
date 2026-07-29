@@ -3,6 +3,15 @@ import type { ExportAnalysis, SymbolAnalysis } from '@gyomu/schema/schemas/types
 import type { StatementAnalysisArgument, StatementAnalysisResult } from './types.js'
 import type { ClassDeclaration } from 'ts-morph'
 
+/**
+ * Analyzes a TypeScript class declaration statement and extracts export and symbol information.
+ *
+ * @param statement The class declaration to analyze.
+ *
+ * @param args The configuration and context arguments for the analysis.
+ *
+ * @returns Returns a StatementAnalysisResult containing the extracted exports and class symbols.
+ */
 export const analyzeClassStatement = (
   statement: ClassDeclaration,
   args: StatementAnalysisArgument,

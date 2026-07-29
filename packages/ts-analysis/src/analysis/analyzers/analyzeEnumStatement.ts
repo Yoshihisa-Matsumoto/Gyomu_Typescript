@@ -3,6 +3,15 @@ import type { ExportAnalysis, SymbolAnalysis } from '@gyomu/schema/schemas/types
 import type { StatementAnalysisArgument, StatementAnalysisResult } from './types.js'
 import type { EnumDeclaration } from 'ts-morph'
 
+/**
+ * Analyzes a TypeScript enum declaration and produces a statement analysis result containing exported symbols and internal symbol definitions.
+ *
+ * @param statement The enum declaration to be analyzed.
+ *
+ * @param args The arguments containing context and options for the analysis.
+ *
+ * @returns Returns a StatementAnalysisResult containing the findings of the enum analysis.
+ */
 export const analyzeEnumStatement = (
   statement: EnumDeclaration,
   args: StatementAnalysisArgument,

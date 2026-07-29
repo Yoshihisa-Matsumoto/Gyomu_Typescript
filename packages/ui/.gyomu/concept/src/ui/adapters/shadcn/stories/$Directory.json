@@ -1,0 +1,27 @@
+{
+  "summary": "This directory provides a collection of interactive component stories for the form generation system. It serves as a visual documentation and testing suite to demonstrate various field types, validation scenarios, and state configurations within the shadcn-based UI implementation.",
+  "responsibilities": [
+    "Define visual documentation for form components",
+    "Showcase diverse field variants and configurations",
+    "Simulate user interaction and validation states",
+    "Provide sandbox environments for testing component rendering"
+  ],
+  "concepts": [
+    "Component Stories",
+    "Form Field Variants",
+    "Visual Documentation",
+    "Validation States",
+    "UI Component Sandbox"
+  ],
+  "relationships": [
+    "Component stories demonstrate the various field types supported by the form generator.",
+    "The AutoForm stories aggregate multiple field variants to illustrate full form layouts and validation behaviors.",
+    "Interactive stories provide a mechanism to test component state updates and user feedback loops."
+  ],
+  "designDecisions": [
+    "Component-based documentation strategy",
+    "Separation of visual specification from component implementation",
+    "Exhaustive coverage of component variations for visual regression"
+  ],
+  "importance": "Supporting"
+}

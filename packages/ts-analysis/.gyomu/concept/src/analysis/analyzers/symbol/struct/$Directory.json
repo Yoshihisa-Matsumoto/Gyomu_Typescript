@@ -1,0 +1,25 @@
+{
+  "summary": "This directory is responsible for the syntactic and semantic analysis of class and interface members. It processes individual struct members such as properties, methods, and functions to extract metadata, resolve types, and evaluate body statements for dependency tracking.",
+  "responsibilities": [
+    "Extract metadata from class and interface members",
+    "Resolve generics and type information for members",
+    "Analyze function and method bodies for dependency extraction",
+    "Perform structured analysis of property declarations"
+  ],
+  "concepts": [
+    "Member analysis",
+    "Function body evaluation",
+    "Property resolution",
+    "Structural metadata"
+  ],
+  "relationships": [
+    "The analysis of function members involves evaluating both the signature metadata and the internal body statements.",
+    "Property analysis relies on internal resolution helpers to determine type information and structural registration."
+  ],
+  "designDecisions": [
+    "Separation of public analysis functions from internal helper implementations",
+    "Decomposition of member analysis by type of member",
+    "Focus on AST-based extraction for dependency and structural metadata"
+  ],
+  "importance": "Core"
+}

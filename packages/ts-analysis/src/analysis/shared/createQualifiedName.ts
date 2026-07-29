@@ -1,5 +1,12 @@
 import { Node } from 'ts-morph'
 
+/**
+ * Creates a qualified name string by traversing up the AST to collect naming identifiers from parent declarations.
+ *
+ * @param node The starting node to traverse from.
+ *
+ * @returns A dot-separated string representation of the qualified name.
+ */
 export const createQualifiedName = (node: Node): string => {
   const names: Array<string> = []
 

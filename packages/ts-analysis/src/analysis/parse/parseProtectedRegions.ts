@@ -4,6 +4,13 @@ import type { ProtectedRegion } from '@gyomu/schema/schemas/typescript'
 const START_MARKER = '<!-- tsdoc-preserve-start -->'
 const END_MARKER = '<!-- tsdoc-preserve-end -->'
 
+/**
+ * Parses a string for protected code regions delimited by predefined start and end markers, returning an array of identified regions.
+ *
+ * @param text The input text to parse.
+ *
+ * @returns An array of identified ProtectedRegion objects.
+ */
 export const parseProtectedRegions = (text: string): Array<ProtectedRegion> => {
   const regions: Array<ProtectedRegion> = []
 

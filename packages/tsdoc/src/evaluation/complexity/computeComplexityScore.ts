@@ -1,5 +1,12 @@
 import type { ComplexityMetrics } from './ComplexityMetrics.js'
 
+/**
+ * Calculates a complexity score based on provided complexity metrics.
+ *
+ * @param metrics The complexity metrics to evaluate.
+ *
+ * @returns A numeric complexity score.
+ */
 export const computeComplexityScore = (metrics: ComplexityMetrics): number => {
   let score = 0
 

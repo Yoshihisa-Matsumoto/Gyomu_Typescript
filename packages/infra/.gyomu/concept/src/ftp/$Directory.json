@@ -1,0 +1,28 @@
+{
+  "summary": "This directory contains the core logic for FTP protocol interactions, providing the necessary abstractions to perform file system operations, manage data streams, and retrieve metadata from remote FTP servers.",
+  "responsibilities": [
+    "Listing remote files and directories",
+    "Retrieving remote file metadata",
+    "Uploading data streams to remote destinations",
+    "Downloading remote content as data streams",
+    "Managing FTP transport operations"
+  ],
+  "concepts": [
+    "FTP Client",
+    "File Transfers",
+    "Data Streams",
+    "Remote File Metadata",
+    "Transport Operations"
+  ],
+  "relationships": [
+    "The FTP client utilizes transport operations to execute file transfers.",
+    "Data streams serve as the primary medium for transferring file content.",
+    "Metadata retrieval provides contextual information regarding remote file system structures."
+  ],
+  "designDecisions": [
+    "Utilizes streaming for memory-efficient data handling",
+    "Encapsulates protocol-specific transport logic",
+    "Separates data movement operations from metadata retrieval"
+  ],
+  "importance": "Core"
+}

@@ -1,5 +1,8 @@
 import { relative, resolve, sep } from 'node:path'
 
+/**
+ * Configuration options for mapping a source file path to its corresponding build output path.
+ */
 export interface MapSourcePathToOutputPathOptions {
   /**
    * Source directory.
@@ -27,6 +30,12 @@ export interface MapSourcePathToOutputPathOptions {
 
 /**
  * Maps a source file path to its corresponding build output path.
+ *
+ * @param sourcePath The file path to be mapped.
+ *
+ * @param options Mapping configuration.
+ *
+ * @returns The computed output path.
  *
  * @remarks
  * This function preserves the relative path from the source directory and

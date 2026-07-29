@@ -1,0 +1,28 @@
+{
+  "summary": "This directory defines the core data models and configuration schemas for tracking project identity, file states, and workspace-level metadata within the system. It establishes the stable structures necessary for change detection and managing cached analysis artifacts across monorepo projects.",
+  "responsibilities": [
+    "Define schemas for project workspace configuration",
+    "Model file state snapshots for change detection",
+    "Provide stable identities for projects within the workspace",
+    "Manage metadata and versioning for system components"
+  ],
+  "concepts": [
+    "File Hash Snapshot",
+    "Project Workspace",
+    "Workspace Manifest",
+    "System Versioning",
+    "Change Detection State"
+  ],
+  "relationships": [
+    "The Project Workspace Manifest links specific project paths to unique internal IDs to support tracking in monorepo environments.",
+    "File Hash Snapshots capture the state of source files to facilitate system change detection.",
+    "The Workspace Manifest acts as the central reference for both project configuration and associated analysis artifacts."
+  ],
+  "designDecisions": [
+    "Use of strict interfaces for defining system-wide data structures",
+    "Centralization of system version constants",
+    "Decoupling of filesystem state from internal project identity",
+    "Immutable structure representation for snapshot persistence"
+  ],
+  "importance": "Core"
+}

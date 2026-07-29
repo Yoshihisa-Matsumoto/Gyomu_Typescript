@@ -1,0 +1,27 @@
+{
+  "summary": "This directory serves as the root container for the project's source code, organizing the fundamental domain logic, service layers, and infrastructure components required to execute the application's core business processes.",
+  "responsibilities": [
+    "Orchestrate business domain logic",
+    "Manage external data persistence and communication",
+    "Provide public interfaces for application services",
+    "Maintain system state and configuration"
+  ],
+  "concepts": [
+    "Domain models",
+    "Application services",
+    "Infrastructure layers",
+    "Business logic"
+  ],
+  "relationships": [
+    "Application services consume domain models to execute business rules.",
+    "Infrastructure components provide the necessary data access for application services.",
+    "Domain models remain isolated from infrastructure details to ensure portability."
+  ],
+  "designDecisions": [
+    "Separation of concerns between business logic and infrastructure",
+    "Layered architecture approach",
+    "Dependency inversion for external services",
+    "Modular grouping by functional domain"
+  ],
+  "importance": "Core"
+}

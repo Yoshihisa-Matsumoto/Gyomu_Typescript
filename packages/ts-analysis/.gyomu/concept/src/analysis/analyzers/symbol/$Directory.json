@@ -1,0 +1,31 @@
+{
+  "summary": "This directory provides a comprehensive framework for static analysis of TypeScript source code. It decomposes complex language constructs into structured metadata, enabling dependency tracking, signature extraction, and semantic evaluation of code symbols for broader application use.",
+  "responsibilities": [
+    "Perform structural and semantic analysis of various TypeScript code constructs.",
+    "Extract metadata, signatures, and dependencies from symbols, types, and variables.",
+    "Decompose complex AST nodes into structured representations for programmatic consumption.",
+    "Identify and validate specific code patterns such as schema definitions and binding structures.",
+    "Register and manage symbol metadata during the analysis process."
+  ],
+  "concepts": [
+    "TypeScript AST Analysis",
+    "Symbol Metadata",
+    "Dependency Tracking",
+    "Type Deconstruction",
+    "Structural Analysis"
+  ],
+  "relationships": [
+    "The analysis framework orchestrates specialized modules to process different syntactic categories such as classes, types, and variables.",
+    "Structural analyzers depend on core type analysis logic to resolve and deconstruct complex TypeScript nodes.",
+    "Metadata extracted from member and parameter analysis is aggregated to build complete representations of functions, classes, and interfaces.",
+    "Dependency tracking is integrated across different analysis domains to ensure that symbol relationships are captured accurately."
+  ],
+  "designDecisions": [
+    "Modular strategy where analysis logic is partitioned by specific AST node types.",
+    "Functional decomposition to isolate handlers for declarations, members, and expressions.",
+    "Recursive traversal for mapping nested structural relationships within types and schemas.",
+    "Separation of concerns between identification logic and metadata extraction.",
+    "Stateless extraction of AST node properties into standardized output formats."
+  ],
+  "importance": "Core"
+}

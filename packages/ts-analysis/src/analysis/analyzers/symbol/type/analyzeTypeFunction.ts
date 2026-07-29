@@ -22,6 +22,15 @@ import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../t
 
 import type { FunctionStructureAnalysis, TypeAnalysis } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Analyzes a function-like TypeScript node to extract its structure, including return type information.
+ *
+ * @param args The analysis context including the function-like node and metadata.
+ *
+ * @param args2 Additional naming and documentation node context.
+ *
+ * @returns A result object containing the analyzed function structure.
+ */
 export const analyzeTypeFunction = (
   args: ChildAnalysisArg<
     | MethodSignature
@@ -96,7 +105,7 @@ export const analyzeTypeFunction = (
     returnTypeNode || initializer
       ? analyzeType(
           {
-            node: returnTypeNode ?? initializer,
+            node: returnTypeNode ?? initializer!,
             memberPath,
             metadata,
             ownerSymbolId,

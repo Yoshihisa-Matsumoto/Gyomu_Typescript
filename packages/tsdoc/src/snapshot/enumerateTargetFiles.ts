@@ -27,6 +27,10 @@ const EXCLUDE_PATTERNS = ['**/node_modules/**', '**/dist/**', '**/coverage/**', 
  * to ensure deterministic snapshots.
  *
  * @param rootDirectory Root directory to search
+ *
+ * @returns An Effect containing a sorted array of identified source file information. Requires FileSearchService and FileSystem dependencies. May fail with an IOError.
+ *
+ * @@requires FileSearchService, FileSystem
  */
 export const enumerateTargetFiles = (
   rootDirectory: FullPath,
@@ -44,5 +48,15 @@ export const enumerateTargetFiles = (
       recursive: true,
     })
 
+    const projectFiles = yield* fileSearch.search({
+      parentDirectory: rootDirectory,
+      includes: ['package.json', 'tsconfig.json'],
+    })
+    const conceptFiles = yield* fileSearch.search({
+      parentDirectory: rootDirectory,
+      includes: ['.gyomu/knowledge/*'],
+    })
+    files.push(...projectFiles)
+    files.push(...conceptFiles)
     return files.sort((a, b) => a.fullPath.localeCompare(b.fullPath))
   })

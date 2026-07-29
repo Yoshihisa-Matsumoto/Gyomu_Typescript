@@ -11,6 +11,17 @@ import type {
 import type { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 import type { ReadmeBuildContext } from '@gyomu/schema/concept'
 
+/**
+ * Translates the provided documentation targets into the specified language.
+ *
+ * @param context The readme build context containing the package information.
+ *
+ * @param language The target language code for translation.
+ *
+ * @param targets The list of translation targets to process.
+ *
+ * @returns An Effect that resolves to the TranslationResult, or fails with a DocumentBuilderError, requiring AI models and filesystem access.
+ */
 export const translate = (
   context: ReadmeBuildContext,
   language: LanguageCodes,

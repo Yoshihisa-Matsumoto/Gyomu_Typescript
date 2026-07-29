@@ -1,5 +1,14 @@
 import type { FileUpdatePlan } from './jsDoc/FileUpdatePlan.js'
 
+/**
+ * Applies a file update plan to the provided source content, performing edits in reverse order of their offsets.
+ *
+ * @param sourceContent The original source code string.
+ *
+ * @param plan The plan detailing the edits to be applied to the source content.
+ *
+ * @returns The updated source code string.
+ */
 export const applyFileUpdatePlan = (sourceContent: string, plan: FileUpdatePlan) => {
   // const lines = sourceContent.split('\n')
   const edits = [...plan.edits].sort((a, b) => b.startOffset - a.startOffset)

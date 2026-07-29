@@ -7,6 +7,17 @@ import type {
 import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../../types.js'
 import type { MappedTypeNode, TypeNode } from 'ts-morph'
 
+/**
+ * Analyzes a TypeScript MappedTypeNode and returns its structure, including readonly/optional modifiers, constraint, value type, and name type.
+ *
+ * @param args The shared context and configuration for analyzing the child node.
+ *
+ * @param newMemberPath The path to the current member within the identity tree.
+ *
+ * @param node The MappedTypeNode to analyze.
+ *
+ * @returns A MemberAnalysisWithReservedResult containing the structure of the mapped type.
+ */
 export const analyzeMappedTypeNode = (
   args: ChildAnalysisArg<TypeNode>,
   newMemberPath: MemberIdentityMemberPath,
@@ -22,16 +33,18 @@ export const analyzeMappedTypeNode = (
   const constraintResult = analyzeType(
     {
       ...args,
-      node: constraint,
+      node: constraint!,
       declarationOrder: 0,
       memberPath: [...newMemberPath, 'constraint'],
     },
     undefined,
   )
-  const valueTypeResult = analyzeType(
-    { ...args, node: typeNode, declarationOrder: 0, memberPath: [...newMemberPath, 'value'] },
-    undefined,
-  )
+  const valueTypeResult = typeNode
+    ? analyzeType(
+        { ...args, node: typeNode, declarationOrder: 0, memberPath: [...newMemberPath, 'value'] },
+        undefined,
+      )
+    : undefined
 
   let nameTypeResult: MemberAnalysisWithReservedResult<TypeAnalysis> | undefined = undefined
   if (nameType) {
@@ -47,18 +60,18 @@ export const analyzeMappedTypeNode = (
       readonlyModifier: !!node.getReadonlyToken(),
       parameter: typeParameter.getName(),
       constraint: constraintResult.member,
-      valueType: valueTypeResult.member,
+      valueType: valueTypeResult?.member,
       optionalModifier: !!questionToken,
       nameType: nameTypeResult?.member,
     },
     dependencies: [
       ...constraintResult.dependencies,
-      ...valueTypeResult.dependencies,
+      ...(valueTypeResult?.dependencies ?? []),
       ...(nameTypeResult?.dependencies ?? []),
     ],
     reservedNames: [
       ...constraintResult.reservedNames,
-      ...valueTypeResult.reservedNames,
+      ...(valueTypeResult?.reservedNames ?? []),
       ...(nameTypeResult?.reservedNames ?? []),
     ],
   }

@@ -23,6 +23,17 @@ import type {
   SymbolIdentity,
 } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Analyzes a property member declaration to produce structured analysis results.
+ *
+ * @param args The input context for analyzing the property member.
+ *
+ * @param isStatic Whether the property is static.
+ *
+ * @param visibility The visibility level of the property member.
+ *
+ * @returns The analysis result containing documentable property details.
+ */
 export const analyzePropertyMember = (
   args: ChildAnalysisArg<PropertySignature | PropertyDeclaration>,
   isStatic: boolean = false,
@@ -67,6 +78,15 @@ export const analyzePropertyMember = (
   })
 }
 
+/**
+ * Internal helper to perform property member analysis, handling generics, type resolution, and registration.
+ *
+ * @param args The input context for analysis.
+ *
+ * @param args2 Configuration object containing metadata, location, and structural information about the property.
+ *
+ * @returns An object containing the analyzed property member and its dependencies.
+ */
 export const analyzePropertyMemberInternal = (
   args: ChildAnalysisArg<PropertySignature | PropertyDeclaration | GetAccessorDeclaration>,
   args2: {
@@ -122,22 +142,25 @@ export const analyzePropertyMemberInternal = (
     genercsDependencies.push(...genericsResult.dependencies)
   }
   // console.dir(typeNode)
-  const typeResult = analyzeType(
-    {
-      node: args2.typeNode ?? args2.initializer,
-      memberPath,
-      metadata,
-      ownerSymbolId,
-      ownerSymbolIdentity,
-      sourceRelativePath,
-      sourceFullText: args.sourceFullText,
-      declarationOrder: args.declarationOrder,
-      imported,
-      options,
-      reservedNames: newReservedNames,
-    },
-    [name],
-  )
+  const typeResult =
+    args2.typeNode || args2.initializer
+      ? analyzeType(
+          {
+            node: args2.typeNode ?? args2.initializer!,
+            memberPath,
+            metadata,
+            ownerSymbolId,
+            ownerSymbolIdentity,
+            sourceRelativePath,
+            sourceFullText: args.sourceFullText,
+            declarationOrder: args.declarationOrder,
+            imported,
+            options,
+            reservedNames: newReservedNames,
+          },
+          [name],
+        )
+      : undefined
 
   const property = {
     kind: 'property',
@@ -151,7 +174,8 @@ export const analyzePropertyMemberInternal = (
     readonly,
     optional,
 
-    type: typeResult.member,
+    type: typeResult?.member,
+    binding: undefined, // TODO : No NameBinding?
     jsDoc,
     parsedJsDoc,
 
@@ -171,6 +195,6 @@ export const analyzePropertyMemberInternal = (
   registerSymbolSymbolAnalysis(metadata, property, options)
   return {
     member: property,
-    dependencies: [...typeResult.dependencies, ...genercsDependencies],
+    dependencies: [...(typeResult?.dependencies ?? []), ...genercsDependencies],
   }
 }

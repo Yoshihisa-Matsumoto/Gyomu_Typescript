@@ -9,6 +9,15 @@ import type {
 import type { ChildAnalysisArg, MemberAnalysisResult } from '../../types.js'
 import type { EnumMember } from 'ts-morph'
 
+/**
+ * Analyzes an enum member to determine its value and metadata, registering the analysis result in the symbol metadata.
+ *
+ * @param args The enum member analysis arguments including the node and context.
+ *
+ * @param args2 Contextual information containing the previous enum member's numeric value, if available.
+ *
+ * @returns An analysis result containing the documented property member analysis and associated dependencies.
+ */
 export const analyzeEnumMember = (
   args: ChildAnalysisArg<EnumMember>,
   args2: {
@@ -96,6 +105,7 @@ export const analyzeEnumMember = (
     optional: false,
 
     type: typeResult.member,
+    binding: undefined,
     jsDoc,
     parsedJsDoc,
 

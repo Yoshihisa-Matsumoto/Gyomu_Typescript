@@ -60,6 +60,10 @@ const makeMssql = (config: {
     }),
   })
 }
+
+/**
+ * Provides a context-based service for managing Microsoft SQL Server database connections.
+ */
 export class MssqlService extends Context.Service<
   MssqlService,
   {
@@ -96,5 +100,8 @@ export class MssqlService extends Context.Service<
       ),
   }),
 }) {
+  /**
+   * A layer that provides the live instance of the MSSQL service.
+   */
   static readonly live = Layer.effect(this, this.make)
 }

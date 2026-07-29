@@ -10,6 +10,19 @@ import type { ConceptOptions } from '../../ConceptOptions.js'
 import type { ProjectContext } from '@gyomu/ts-analysis'
 import type { ProjectRelativePath } from '@gyomu/schema/typescript'
 
+/**
+ * Saves a directory concept to a JSON file within the project's .gyomu directory.
+ *
+ * @param context The current project context containing root paths and project metadata.
+ *
+ * @param targetDirectory The relative path to the directory where the concept is saved.
+ *
+ * @param concept The directory concept data to persist.
+ *
+ * @param option Optional configuration for saving the concept.
+ *
+ * @returns An Effect that completes when the file is successfully written, or fails with a ConceptError.
+ */
 export const saveDirectoryConcept = (
   context: ProjectContext,
   targetDirectory: ProjectRelativePath,

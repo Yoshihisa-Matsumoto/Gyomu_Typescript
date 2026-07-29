@@ -6,6 +6,18 @@ import type { MergePlan } from '../jsDoc/MergePlan.js'
 
 type PlanParamList = MergePlan['params']
 type PlanParam = MergePlan['params'][number]
+
+/**
+ * Merges new parameter update plans into existing JSDoc parameter documentation.
+ *
+ * @param filePath The path to the file containing the JSDoc being updated.
+ *
+ * @param plans The list of parameter update plans to apply.
+ *
+ * @param existingJsDoc The optional existing parsed JSDoc structure.
+ *
+ * @returns An Effect that yields an array of updated JsDocParam objects or fails with an UpdateError if a parameter update is invalid.
+ */
 export const mergeParams = (
   filePath: string,
   plans: PlanParamList,

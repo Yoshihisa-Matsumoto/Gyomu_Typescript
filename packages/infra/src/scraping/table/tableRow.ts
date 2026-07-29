@@ -1,16 +1,37 @@
 import { GenericElement } from '../dom/element.js'
 import { TableColumn } from './tableColumn.js'
 
+/**
+ * Represents a single row in an HTML table, managing column data and handling rowspan/colspan attributes.
+ */
 export class TableRow extends GenericElement<HTMLTableRowElement> {
+  /**
+   * The preceding row in the table, used for inheriting layout and rowspan state.
+   */
   previousRow?: TableRow = undefined
+
+  /**
+   * The list of table columns associated with this row.
+   */
   columns: Array<TableColumn> = new Array<TableColumn>()
+
+  /**
+   * Creates a new TableRow instance from an HTML row element.
+   */
   constructor(node: HTMLTableRowElement, previousRow: TableRow | undefined = undefined) {
     super(node)
     if (previousRow) this.previousRow = previousRow
     this.__build()
   }
 
+  /**
+   * Maps column indices to remaining rowspan counts, tracking cells that span vertically.
+   */
   overrideColumnRange: Map<number, number> = new Map<number, number>()
+
+  /**
+   * Populates the columns array by processing cell nodes and applying rowspan/colspan logic.
+   */
   __build() {
     this.overrideColumnRange.clear()
     this.columns = new Array<TableColumn>()
@@ -38,6 +59,11 @@ export class TableRow extends GenericElement<HTMLTableRowElement> {
     }
   }
 
+  /**
+   * Processes a table cell and updates the column list, accounting for colspan and rowspan attributes.
+   *
+   * @returns The updated column index after processing.
+   */
   #buildHeader(
     copyingIndexList: Array<number>,
     column: GenericElement<HTMLTableCellElement>,

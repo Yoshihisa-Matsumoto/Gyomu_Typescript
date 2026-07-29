@@ -14,6 +14,15 @@ import type { MergeActionContext, MergePlan } from '../jsDoc/MergePlan.js'
 import type { Effect } from 'effect'
 import type { ProtectedSection } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Creates a list of merge plans for JSDoc updates, applying protections for designated code sections.
+ *
+ * @param fileResult The file analysis context containing metadata about the file being processed.
+ *
+ * @param plans The collection of proposed JSDoc updates to be merged.
+ *
+ * @returns An Effect that resolves to an array of MergePlan objects, or an UpdateError if the creation fails.
+ */
 export const createMergePlan = (
   fileResult: FileAnalysisContext,
   plans: JsDocUpdatePlan,

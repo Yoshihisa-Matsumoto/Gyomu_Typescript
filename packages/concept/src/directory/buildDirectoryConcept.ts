@@ -5,6 +5,15 @@ import { buildDirectoryConceptFromPath } from './internal/buildDirectoryConceptF
 import type { ConceptOptions } from '../ConceptOptions.js'
 import type { ProjectContext } from '@gyomu/ts-analysis'
 
+/**
+ * Builds a directory concept based on the project context and optional configuration.
+ *
+ * @param context The project context containing root information.
+ *
+ * @param option Optional settings for the directory concept, including the target folder.
+ *
+ * @returns An Effect containing the constructed directory concept.
+ */
 export const buildDirectoryConcept = (context: ProjectContext, option?: ConceptOptions) =>
   Effect.gen(function* () {
     const rootPath = option?.targetFolder

@@ -1,5 +1,12 @@
 import type { EffectSignals } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Computes the cyclomatic complexity score of an effect signal based on its depth, return type, error structure, and requirements.
+ *
+ * @param effectSignal The effect signal to evaluate for complexity.
+ *
+ * @returns A numeric complexity score representing the nested structure of the effect.
+ */
 export const computeEffectComplexity = (effectSignal: EffectSignals): number => {
   let complexity = 1
   if (effectSignal.effectDepth) complexity += effectSignal.effectDepth - 1

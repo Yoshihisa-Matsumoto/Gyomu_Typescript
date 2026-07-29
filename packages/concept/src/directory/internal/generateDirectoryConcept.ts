@@ -9,6 +9,21 @@ import type { ProjectRelativePath } from '@gyomu/schema/typescript'
 import type { FileSystem } from 'effect/FileSystem'
 import type { DirectoryConcept } from '@gyomu/schema/schemas/concept'
 
+/**
+ * Generates a directory concept for a specific package, requiring access to AI models, file system operations, and model routes.
+ *
+ * @param packageName The name of the package.
+ *
+ * @param targetDirectory The target directory path within the project.
+ *
+ * @param context Input data required to generate the directory concept.
+ *
+ * @param option Optional configuration for the concept generation.
+ *
+ * @returns An Effect that resolves to the generated DirectoryConcept, potentially failing with a ConceptError.
+ *
+ * @requires AiModelRoute, FileSystem, ModelRoutes
+ */
 export const generateDirectoryConcept = (
   packageName: string,
   targetDirectory: ProjectRelativePath,

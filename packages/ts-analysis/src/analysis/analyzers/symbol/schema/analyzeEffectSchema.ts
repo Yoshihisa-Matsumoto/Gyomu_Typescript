@@ -19,6 +19,15 @@ import type {
   TypeAnalysis,
 } from '@gyomu/schema/schemas/typescript'
 
+/**
+ * Analyzes an Effect schema initializer by first verifying if it is supported and then performing a full schema analysis.
+ *
+ * @param initializer The expression to evaluate as an Effect schema.
+ *
+ * @param arg2 The context object containing metadata for the symbol being analyzed.
+ *
+ * @returns The analysis result of the Effect schema if supported; otherwise, undefined.
+ */
 export const checkAndAnalyzeEffectSchema = (
   initializer: Expression | undefined,
   arg2: {
@@ -40,6 +49,16 @@ export const checkAndAnalyzeEffectSchema = (
   if (!result) return undefined
   return analyzeEffectSchema(result, arg2)
 }
+
+/**
+ * Performs an analysis on a validated Effect schema to extract metadata and member definitions.
+ *
+ * @param arg1 The validated schema structure to analyze, including its kind, expression, and annotations.
+ *
+ * @param arg2 The analysis context object.
+ *
+ * @returns The member analysis result containing type structure and dependencies, or undefined if the input schema is invalid.
+ */
 export const analyzeEffectSchema = (
   arg1:
     | {

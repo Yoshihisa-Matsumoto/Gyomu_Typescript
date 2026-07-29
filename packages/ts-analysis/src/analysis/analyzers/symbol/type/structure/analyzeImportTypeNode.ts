@@ -9,6 +9,17 @@ import type {
 } from '@gyomu/schema/schemas/typescript'
 import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../../types.js'
 
+/**
+ * Analyzes an ImportTypeNode to resolve the module path and type arguments.
+ *
+ * @param args The analysis context for the TypeNode.
+ *
+ * @param newMemberPath The path of the member currently being analyzed.
+ *
+ * @param node The ImportTypeNode to analyze.
+ *
+ * @returns A result object containing the analyzed import structure, dependencies, and reserved names.
+ */
 export const analyzeImportTypeNode = (
   args: ChildAnalysisArg<TypeNode>,
   newMemberPath: MemberIdentityMemberPath,
@@ -43,6 +54,12 @@ export const analyzeImportTypeNode = (
 
 /**
  * Resolves a module specifier into a project-relative source path.
+ *
+ * @param moduleSpecifier The module specifier to resolve.
+ *
+ * @param sourceFilePath The path of the source file initiating the resolution.
+ *
+ * @returns The project-relative source path.
  */
 export const moduleSpecifierToSourcePath = (
   moduleSpecifier: string,
@@ -61,6 +78,10 @@ export const moduleSpecifierToSourcePath = (
  * './User.js'  -> './User.ts'
  * './User.mjs' -> './User.ts'
  * './User.cjs' -> './User.ts'
+ *
+ * @param moduleSpecifier The module specifier to normalize.
+ *
+ * @returns The normalized TypeScript source file path.
  */
 export const normalizeModuleSpecifier = (moduleSpecifier: string): string => {
   return moduleSpecifier.replace(/\.(c|m)?js$/, '.ts')

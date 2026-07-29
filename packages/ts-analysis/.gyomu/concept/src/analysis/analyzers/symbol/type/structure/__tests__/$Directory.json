@@ -1,0 +1,23 @@
+{
+  "summary": "This directory provides unit testing utilities and validation logic for resolving and normalizing module specifiers and source paths within the codebase analysis pipeline.",
+  "responsibilities": [
+    "Verify the correctness of module specifier resolution",
+    "Ensure source paths are consistently normalized",
+    "Provide testing suites for file path and import module mappings"
+  ],
+  "concepts": [
+    "Module Specifiers",
+    "Source Paths",
+    "Test Suites",
+    "Path Normalization"
+  ],
+  "relationships": [
+    "Module specifiers are mapped to source paths to track dependency relationships.",
+    "Normalization routines ensure that various module specifier formats map correctly to a single canonical source path."
+  ],
+  "designDecisions": [
+    "Centralized testing of path resolution logic",
+    "Isolation of dependency analysis utilities from core business logic"
+  ],
+  "importance": "Supporting"
+}

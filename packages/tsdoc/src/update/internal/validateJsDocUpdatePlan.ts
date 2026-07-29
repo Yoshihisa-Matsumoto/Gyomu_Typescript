@@ -7,6 +7,15 @@ import type {
   TsDocFileContext,
 } from '@gyomu/ai-compiler/jsdoc-update'
 
+/**
+ * Validates that a collection of JSDoc update plans aligns with the provided TsDoc file context, identifying any missing or mismatched symbol identities.
+ *
+ * @param context The TsDoc context representing the source file structure.
+ *
+ * @param plans The collection of update plans to validate.
+ *
+ * @returns A result object indicating whether the plans are valid, including a list of symbol identity differences if they are not.
+ */
 export const validateJsDocUpdatePlan = (
   context: TsDocFileContext,
   plans: JsDocUpdatePlan,
@@ -45,6 +54,14 @@ const getTsDocSingatureFromJsDocUpdateEntryPlan = (plans: JsDocUpdatePlan) => {
   }
   return keySet
 }
+
+/**
+ * Extracts a set of unique symbol identity keys from the provided TsDoc file context, including recursive processing of child members.
+ *
+ * @param context The TsDoc context to traverse.
+ *
+ * @returns A set containing all identified symbols and their children within the context.
+ */
 export const getTsDocSignatureFromContext = (context: TsDocFileContext) => {
   const keySet = new Set<SymbolId>()
   for (const symbol of context.symbols) {

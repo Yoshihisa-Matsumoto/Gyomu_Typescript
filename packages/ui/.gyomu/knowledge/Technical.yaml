@@ -1,0 +1,39 @@
+# yaml-language-server: $schema=../../../../schemas/Technical.json
+
+installation:
+  - command: pnpm add @gyomu/ui
+    description: |
+      通常の npm パッケージと同様にインストールする。
+      他の特別なセットアップは不要。
+
+configuration: []
+
+dependencies:
+  - package: effect
+    description: |
+      Effect Runtime、Effect Schema、Context など、本パッケージの基盤となるライブラリ。
+
+  - package: "@gyomu/schema"
+    description: |
+      スキーマ、共通型の置き場として利用
+
+  - package: "@mui/material"
+    description: |
+      Material UI for React コンポーネント
+
+  - package: "shadcn"
+    description: |
+      Shadcn/UI コンポーネント
+
+compatibility:
+  - name: Effect
+    supported: 4.x
+    description: |
+      Effect Ver4 を前提として設計されている。
+
+  - name: React
+    supported: 19.x
+    description: |
+      フロント処理
+
+migration: []

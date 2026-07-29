@@ -6,6 +6,13 @@ interface ButtonProps extends MUIButtonProps {
   label: string
 }
 
+/**
+ * Adapts a standard button component using MUI's Button implementation.
+ *
+ * @param props The button configuration properties and label.
+ *
+ * @returns The rendered MUI button component.
+ */
 export const MuiButtonAdapter = ({ label, ...props }: ButtonProps) => {
   return (
     <MUIButton variant="contained" {...props}>
@@ -26,6 +33,13 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 })
 
+/**
+ * Adapts a file input button using MUI's Button component with a visually hidden file selector.
+ *
+ * @param props The button configuration properties, label, and file input handlers.
+ *
+ * @returns The rendered file input button component.
+ */
 export const MuiFileButtonAdapter = ({ label, ...props }: ButtonProps) => {
   return (
     <MUIButton component="label" role={undefined} variant="contained" {...props}>

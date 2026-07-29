@@ -1,0 +1,26 @@
+{
+  "summary": "This directory acts as the root entry point for the entire application, serving as the primary bridge between internal core business features and external UI-facing exports. It aggregates and exposes the design system, business workflows, and domain-driven components for consumption.",
+  "responsibilities": [
+    "Expose core application functionality and UI components via a unified API",
+    "Aggregate feature-level business logic and state management",
+    "Provide a centralized access point for the design system",
+    "Maintain the architectural boundary between domain models and UI implementation"
+  ],
+  "concepts": [
+    "Application Entry Point",
+    "Core Feature Set",
+    "Design System Exports",
+    "Architectural Boundary"
+  ],
+  "relationships": [
+    "The directory serves as the public interface for the underlying features and UI layers.",
+    "Internal domain entities and business rules are exposed to external consumers through these centralized exports.",
+    "The root structure orchestrates the relationship between the UI component library and the business logic defined in core features."
+  ],
+  "designDecisions": [
+    "Use of barrel files to simplify imports and provide a clean public API",
+    "Centralization of application entry points to enforce decoupling",
+    "Facade pattern to hide internal implementation details of core features from external consumers"
+  ],
+  "importance": "Core"
+}

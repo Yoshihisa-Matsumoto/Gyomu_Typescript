@@ -30,19 +30,11 @@ import type {
  *
  * @param context project containing the target source file.
  *
- * @param sourceFilePath Path used to locate the source file via
- * { @link Project.getSourceFile}.
- *
- * This value may be either:
- *
- * - a project-relative source path
- * - an absolute source file path
- *
- * depending on how the ts-morph project was configured.
+ * @param sourceFilePath Path accepted by {@link Project.getSourceFile}.
  *
  * @param option Analysis options.
  *
- * @returns File analysis result including imports and exports.
+ * @returns An Effect that resolves to a {@link FileAnalysisContext} or fails with an {@link AnalysisError}.
  */
 export const analyzeFile = (
   context: ProjectContext,

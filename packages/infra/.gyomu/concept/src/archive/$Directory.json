@@ -1,0 +1,24 @@
+{
+  "summary": "This directory provides a centralized infrastructure for archive operations, defining common data types for various archive formats and providing utility functions for path normalization and stream-based compression.",
+  "responsibilities": [
+    "Define common interfaces for archive entries across different formats",
+    "Provide standardized stream-based compression and decompression utilities",
+    "Normalize file paths for cross-platform archive consistency"
+  ],
+  "concepts": [
+    "Archive Entries",
+    "Compression Utilities",
+    "Stream Processing",
+    "Path Normalization"
+  ],
+  "relationships": [
+    "Common archive entry types provide a standardized structure for data processed by specific archive format implementations.",
+    "Compression utilities facilitate the transformation of byte streams into compressed formats used by higher-level archive services."
+  ],
+  "designDecisions": [
+    "Use of union types for polymorphic archive entry handling",
+    "Stream-oriented API design for efficient data handling",
+    "Shared utility layer to ensure consistency in archive metadata processing"
+  ],
+  "importance": "Utility"
+}

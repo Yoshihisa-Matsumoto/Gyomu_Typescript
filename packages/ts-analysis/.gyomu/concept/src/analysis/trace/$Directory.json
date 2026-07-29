@@ -1,0 +1,21 @@
+{
+  "summary": "This directory provides utility functions to support the internal analysis process. Its primary purpose is to facilitate debugging and diagnostic logging by tracking specific entity states during execution flow.",
+  "responsibilities": [
+    "Log diagnostic information during entity analysis",
+    "Monitor specific targets based on predefined criteria"
+  ],
+  "concepts": [
+    "Analysis diagnostics",
+    "Entity tracking",
+    "Debug logging"
+  ],
+  "relationships": [
+    "The analysis process triggers diagnostic logging to capture state transitions of target entities.",
+    "Keyword matching controls the verbosity of diagnostic information captured during execution."
+  ],
+  "designDecisions": [
+    "Implementation as a standalone utility module",
+    "Conditional logging based on keyword filters"
+  ],
+  "importance": "Utility"
+}

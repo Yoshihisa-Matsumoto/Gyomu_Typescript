@@ -8,6 +8,9 @@ import type { ReadmeBuildContext } from '@gyomu/schema/concept'
 import type { ReadmeSectionBuilder } from '../ReadmeSectionBuilder.js'
 import type { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 
+/**
+ * A README section builder that generates the overview content based on the project's analysis context.
+ */
 export const buildOverview: ReadmeSectionBuilder<
   AiModelRoute | FileSystem.FileSystem | ModelRoutes
 > = {

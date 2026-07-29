@@ -11,6 +11,15 @@ import type { UpdatedJsDoc } from './jsDoc/UpdatedJsDoc.js'
 import type { MergePlan } from './jsDoc/MergePlan.js'
 import type { UpdatedSymbolJsDoc } from './jsDoc/UpdatedSymbolJsDoc.js'
 
+/**
+ * Applies a single JSDoc merge plan to a symbol within a file analysis context, returning the updated JSDoc and its indentation.
+ *
+ * @param fileResult The file analysis context containing metadata for the symbol.
+ *
+ * @param plan The merge plan detailing the desired JSDoc updates.
+ *
+ * @returns An Effect that yields an object containing the updated JSDoc and the original doc indentation, or an UpdateError if the symbol is not found.
+ */
 export const applyMergePlan = (
   fileResult: FileAnalysisContext,
   plan: MergePlan,
@@ -66,6 +75,15 @@ export const applyMergePlan = (
   })
 }
 
+/**
+ * Applies a collection of JSDoc merge plans to symbols in the file analysis context.
+ *
+ * @param fileResult The file analysis context.
+ *
+ * @param plans The list of merge plans to apply.
+ *
+ * @returns An Effect yielding a collection of updated JSDoc results for the target symbols, or an UpdateError.
+ */
 export const applyMergePlans = (
   fileResult: FileAnalysisContext,
   plans: ReadonlyArray<MergePlan>,

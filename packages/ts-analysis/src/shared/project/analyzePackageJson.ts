@@ -14,6 +14,13 @@ import type {
 import type { FileSystem } from 'effect'
 import type { FullPath } from '@gyomu/schema'
 
+/**
+ * Analyzes the package.json file located at the specified project root and returns a structured analysis result.
+ *
+ * @param projectRootAbsolutePath The absolute file path to the project root directory.
+ *
+ * @returns An Effect that yields a PackageJsonAnalysis object on success, or an AnalysisError if the file cannot be read or parsed. This operation requires a FileSystem service.
+ */
 export const analyzePackageJson = (
   projectRootAbsolutePath: FullPath,
 ): Effect.Effect<PackageJsonAnalysis, AnalysisError, FileSystem.FileSystem> => {

@@ -2,6 +2,15 @@ import { createHumanEditSignal } from './createHumanEditSignal.js'
 import type { HumanEditContext, HumanEditSignal } from '@gyomu/schema/schemas/typescript'
 import type { TextHumanEditDetector } from './types.js'
 
+/**
+ * Analyzes text content to detect manual formatting signals such as aligned spacing, ASCII art, non-standard indentation, and decorative separators.
+ *
+ * @param text The raw text string to analyze.
+ *
+ * @param context The context object used for creating edit signals.
+ *
+ * @returns An array of detected human edit signals related to manual formatting.
+ */
 export const detectManualFormatting: TextHumanEditDetector = (
   text: string,
   context: HumanEditContext,

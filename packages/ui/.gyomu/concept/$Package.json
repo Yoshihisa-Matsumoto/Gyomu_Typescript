@@ -1,0 +1,44 @@
+{
+  "summary": "@gyomu/ui is a comprehensive component library and abstraction layer that provides a consistent design system for the application. It offers a mix of low-level UI building blocks, declarative form generation systems, and specialized adapters for integrating with Material UI.",
+  "responsibilities": [
+    "Define a unified design system and component library for consistent UI development.",
+    "Provide declarative abstractions for dynamic form generation based on data schemas.",
+    "Abstract third-party UI framework implementation details via adapter patterns.",
+    "Manage reusable form layout and validation strategies.",
+    "Standardize interaction patterns through shared provider contexts and component wrappers."
+  ],
+  "capabilities": [
+    {
+      "name": "Design System Components",
+      "description": "Provides a library of atomic and composite UI elements such as avatars, cards, buttons, and inputs."
+    },
+    {
+      "name": "Declarative Form Automation",
+      "description": "Enables automatic construction of forms from data schemas with built-in layout orchestration and submission handling."
+    },
+    {
+      "name": "Material UI Integration",
+      "description": "Offers standardized wrappers and layout adapters for Material UI, ensuring consistent styling and functional behavior."
+    },
+    {
+      "name": "Headless Form Layouts",
+      "description": "Delivers structural components for defining form and field layouts without imposing rigid visual styling."
+    },
+    {
+      "name": "Global Interaction Management",
+      "description": "Centralizes management of application-wide UI states such as tooltips and toast notifications."
+    }
+  ],
+  "designDecisions": [
+    "Uses a layered architecture to separate raw UI components from framework-specific adapters.",
+    "Employs a declarative approach for form generation to reduce boilerplate code and ensure schema-driven consistency.",
+    "Leverages Tailwind CSS with utility-merging utilities to maintain a highly customizable yet consistent aesthetic.",
+    "Uses headless layouts to decouple the structural organization of forms from their visual representation."
+  ],
+  "usageGuidance": [
+    "Use components from the primary UI directory for standard application-wide interface building.",
+    "Leverage the AutoForm system for complex or repetitive data entry forms to ensure schema-driven consistency.",
+    "Prefer the provided MUI adapters when integrating with Material UI to benefit from enforced styling and helper functionality.",
+    "Extend or compose headless layout components when building custom UI structures that require specific form field arrangement."
+  ]
+}

@@ -6,6 +6,11 @@ import { Label } from './label'
 import { Separator } from './separator'
 import type { VariantProps } from 'class-variance-authority'
 
+/**
+ * Wraps form field controls in a fieldset element.
+ *
+ * @returns A React functional component representing the fieldset.
+ */
 function FieldSet({ className, ...props }: React.ComponentProps<'fieldset'>) {
   return (
     <fieldset
@@ -19,6 +24,11 @@ function FieldSet({ className, ...props }: React.ComponentProps<'fieldset'>) {
   )
 }
 
+/**
+ * Displays a label or legend for a field grouping.
+ *
+ * @returns A React functional component for the legend.
+ */
 function FieldLegend({
   className,
   variant = 'legend',
@@ -37,6 +47,11 @@ function FieldLegend({
   )
 }
 
+/**
+ * Groups multiple form fields together with shared layout context.
+ *
+ * @returns A React functional component for grouping fields.
+ */
 function FieldGroup({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -65,6 +80,11 @@ const fieldVariants = cva('group/field data-[invalid=true]:text-destructive flex
   },
 })
 
+/**
+ * A container component for individual form fields with configurable orientation.
+ *
+ * @returns A React functional component for the field container.
+ */
 function Field({
   className,
   orientation = 'vertical',
@@ -81,6 +101,11 @@ function Field({
   )
 }
 
+/**
+ * Wraps the internal content of a form field.
+ *
+ * @returns A React functional component for field content.
+ */
 function FieldContent({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -91,6 +116,11 @@ function FieldContent({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * Renders a labeled element for a form field.
+ *
+ * @returns A React functional component for the label.
+ */
 function FieldLabel({ className, ...props }: React.ComponentProps<typeof Label>) {
   return (
     <Label
@@ -105,6 +135,11 @@ function FieldLabel({ className, ...props }: React.ComponentProps<typeof Label>)
   )
 }
 
+/**
+ * Displays a title for a form field.
+ *
+ * @returns A React functional component for the title.
+ */
 function FieldTitle({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -118,6 +153,11 @@ function FieldTitle({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * Provides descriptive text for a form field.
+ *
+ * @returns A React functional component for field description.
+ */
 function FieldDescription({ className, ...props }: React.ComponentProps<'p'>) {
   return (
     <p
@@ -133,6 +173,11 @@ function FieldDescription({ className, ...props }: React.ComponentProps<'p'>) {
   )
 }
 
+/**
+ * Renders a visual separator within a field group.
+ *
+ * @returns A React functional component for the separator.
+ */
 function FieldSeparator({
   children,
   className,
@@ -163,6 +208,11 @@ function FieldSeparator({
   )
 }
 
+/**
+ * Displays error messages for a form field.
+ *
+ * @returns A JSX element if errors are present, otherwise null.
+ */
 function FieldError({
   className,
   children,

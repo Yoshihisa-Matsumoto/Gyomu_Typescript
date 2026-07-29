@@ -16,7 +16,14 @@ import type { ArchiveEntryItem } from '../../common.js'
 import type { RandomAccessReader } from 'yauzl'
 import type { FileSystem } from 'effect'
 
+/**
+ * Represents an entry item within a zip archive.
+ */
 export type ZipEntryItem = Extract<ArchiveEntryItem, { _tag: 'zip' }>
+
+/**
+ * Represents a file entry item within a zip archive (excluding directories).
+ */
 export type ZipFileEntryItem = Extract<ZipEntryItem, { isDirectory: false }>
 const unicode_flag = 0x800
 
@@ -50,11 +57,27 @@ const openZip = (source: ZipSource) =>
     }
   })
 
+/**
+ * Opens a zip file and automatically closes it after execution.
+ *
+ * @param filePath The file path of the zip archive.
+ *
+ * @returns An effect that manages the zip file lifecycle.
+ */
 export const withZipFile = (filePath: string) =>
   Effect.acquireRelease(openZip({ type: 'file', path: filePath }), (zip) =>
     Effect.sync(() => zip.close()),
   )
 
+/**
+ * Builds a stream of zip entries from a Yauzl ZipFile.
+ *
+ * @param zip The zip file instance.
+ *
+ * @param encoding Optional character encoding.
+ *
+ * @returns A stream of zip entries.
+ */
 export const buildCentralDirectory = <R = never>(
   zip: yauzl.ZipFile,
   encoding?: string,
@@ -131,12 +154,28 @@ export const buildCentralDirectory = <R = never>(
     }),
   )
 
+/**
+ * Opens the entries of a zip file as a stream.
+ *
+ * @param filePath The path to the zip file.
+ *
+ * @param encoding Optional character encoding.
+ *
+ * @returns A stream of zip entry items.
+ */
 export const openZipEntries = (
   filePath: string,
   encoding?: string,
 ): Stream.Stream<ZipEntryItem, IOError, FileSystem.FileSystem> =>
   Stream.unwrap(Effect.map(withZipFile(filePath), (zip) => buildCentralDirectory(zip, encoding)))
 
+/**
+ * Checks if a specific file exists within the list of zip entries.
+ *
+ * @param entryName The name of the entry to search for.
+ *
+ * @returns An effect that resolves to true if the file exists, otherwise false.
+ */
 export const existsInZip =
   (entryName: string) =>
   <R = never>(entries: Array<ZipEntryItem>): Effect.Effect<boolean, never, R> => {
@@ -150,19 +189,41 @@ export const existsInZip =
 
     return Effect.succeed(true)
   }
+
 /**
  * ZipEntry の content をすべて読み込み、文字列として返す Effect を生成する
+ *
+ * @param entry The ZIP file entry to read.
+ *
+ * @param encoding The character encoding (defaults to 'utf-8').
+ *
+ * @returns An Effect that yields the file contents as a string, failing with an IOError if an error occurs.
  */
 export const readTextEntry = <R = never>(
   entry: ZipFileEntryItem,
   encoding: string = 'utf-8',
 ): Effect.Effect<string, IOError, R> =>
   readEntry(entry).pipe(Effect.map((chunks) => decode(Buffer.concat(chunks), encoding)))
+
+/**
+ * Reads the entire content of a zip file entry as an array of byte buffers.
+ *
+ * @param entry The zip entry to read.
+ *
+ * @returns An effect that results in an array of byte chunks.
+ */
 export const readEntry = <R = never>(
   entry: ZipFileEntryItem,
 ): Effect.Effect<Array<Uint8Array<ArrayBufferLike>>, IOError, R> =>
   Stream.runCollect(entry.openStream())
 
+/**
+ * Provides a stream for reading the content of a zip file entry.
+ *
+ * @param entry The zip entry to read.
+ *
+ * @returns A stream of byte chunks from the entry.
+ */
 export const readEntryStream = <R = never>(
   entry: ZipFileEntryItem,
 ): Stream.Stream<Uint8Array<ArrayBufferLike>, IOError, R> => entry.openStream()
@@ -255,6 +316,15 @@ const extractEntry = (entry: ZipEntryItem, transferInformation: FileTransportInf
   })
 }
 
+/**
+ * Extracts a single zip file entry to a specified destination.
+ *
+ * @param targetFile The file entry to extract.
+ *
+ * @param destinationFullName The destination path.
+ *
+ * @returns An effect performing the extraction operation.
+ */
 export const extractSingleFileEntry = (
   targetFile: ZipFileEntryItem,
   destinationFullName: string,
@@ -268,6 +338,14 @@ export const extractSingleFileEntry = (
     yield* extractEntry(targetFile, new FileTransportInfo(arg))
   })
 }
+
+/**
+ * Extracts selected zip entries from a stream based on transfer information.
+ *
+ * @param transferInformation Details about how and where to extract files.
+ *
+ * @returns A stream transformation effect.
+ */
 export const extractZip =
   <R = never>(
     // zipFilename: string,
@@ -283,6 +361,13 @@ export const extractZip =
     )
   }
 
+/**
+ * Extracts all entries from a zip stream into the target directory.
+ *
+ * @param destinationDirectory The directory to extract all files into.
+ *
+ * @returns A stream processing effect.
+ */
 export const extractZipAll =
   <R = never>(destinationDirectory: string) =>
   (stream: Stream.Stream<ZipEntryItem, IOError, R>) => {
@@ -293,6 +378,9 @@ export const extractZipAll =
     return extractZip<R>(transferInformation)(stream)
   }
 
+/**
+ * An object containing internal functions exported for testing purposes.
+ */
 export const exportedForTesting = {
   resolvePath,
 }

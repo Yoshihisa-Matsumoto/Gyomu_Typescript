@@ -1,0 +1,26 @@
+{
+  "summary": "This directory manages the automated generation and validation of form structures. It provides the logic for initializing default values based on field configurations and verifying user input against defined CRUD schemas, facilitating a consistent approach to form handling across the application.",
+  "responsibilities": [
+    "Construct default values for forms from field configurations",
+    "Define supported field types and widget mappings",
+    "Validate input values against schema requirements",
+    "Manage the interface for rendering custom form widgets"
+  ],
+  "concepts": [
+    "Form Engine",
+    "Field Type Definitions",
+    "Schema Validation",
+    "Renderer Mapping"
+  ],
+  "relationships": [
+    "The form engine utilizes field type definitions to determine the appropriate renderer for each widget.",
+    "Schema validation functions verify field data against constraints defined in the CRUD schema.",
+    "The default value builder uses field configurations to establish initial data states for forms."
+  ],
+  "designDecisions": [
+    "Decoupling of field rendering logic via RendererMap",
+    "Centralization of validation logic for individual fields and full form schemas",
+    "Type-driven definition of supported field variants"
+  ],
+  "importance": "Core"
+}

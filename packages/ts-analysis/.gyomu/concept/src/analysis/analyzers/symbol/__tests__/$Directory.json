@@ -1,0 +1,23 @@
+{
+  "summary": "This directory contains unit tests for the analysis components responsible for evaluating symbol dependencies and detecting effect signals within the source code, ensuring the accuracy of the static analysis logic.",
+  "responsibilities": [
+    "Verify the accuracy of dependency analysis between symbols",
+    "Validate the detection logic for effect-based signals",
+    "Ensure regression testing for analysis modules"
+  ],
+  "concepts": [
+    "Symbol Dependencies",
+    "Effect Signals",
+    "Analysis Logic",
+    "Unit Tests"
+  ],
+  "relationships": [
+    "The unit tests validate the core analysis logic by exercising individual components responsible for tracking symbol dependencies.",
+    "Detection of effect signals relies on the underlying analysis framework to identify specific patterns within the code."
+  ],
+  "designDecisions": [
+    "Colocation of test suites with their corresponding analysis implementation logic",
+    "Isolation of testing logic from the primary source code execution path"
+  ],
+  "importance": "Supporting"
+}

@@ -16,6 +16,13 @@ import type {
 
 import type { ComplexityMetrics } from './ComplexityMetrics.js'
 
+/**
+ * Calculates complexity metrics for locally exported symbols within a file analysis result.
+ *
+ * @param fileAnalysisResult The analysis context of the file to process.
+ *
+ * @returns A map associating local symbol identifiers with their calculated complexity metrics.
+ */
 export const calculateComplexityMetrics = (
   fileAnalysisResult: FileAnalysisContext,
 ): Map<SymbolId, ComplexityMetrics> => {
@@ -263,7 +270,10 @@ const calculateComplexityMetricsFromTypeStructureAnalysis = (
       array.push(calculateComplexityMetricsFromTypeAnalysis(typeStructure.constraint, currentDepth))
       if (typeStructure.nameType)
         array.push(calculateComplexityMetricsFromTypeAnalysis(typeStructure.nameType, currentDepth))
-      array.push(calculateComplexityMetricsFromTypeAnalysis(typeStructure.valueType, currentDepth))
+      if (typeStructure.valueType)
+        array.push(
+          calculateComplexityMetricsFromTypeAnalysis(typeStructure.valueType, currentDepth),
+        )
       return mergeComplexityMetrics(array)
     case 'templateLiteral': {
       array.push(initial)
@@ -278,6 +288,8 @@ const calculateComplexityMetricsFromTypeStructureAnalysis = (
     case 'typeOperator':
       return calculateComplexityMetricsFromTypeAnalysis(typeStructure.target, currentDepth)
     case 'typePredicate':
-      return calculateComplexityMetricsFromTypeAnalysis(typeStructure.type, currentDepth)
+      if (typeStructure.type)
+        return calculateComplexityMetricsFromTypeAnalysis(typeStructure.type, currentDepth)
+      return mergeComplexityMetrics(array)
   }
 }

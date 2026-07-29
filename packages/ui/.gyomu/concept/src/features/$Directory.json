@@ -1,0 +1,28 @@
+{
+  "summary": "This directory serves as the root container for the application's core feature set, encompassing both declarative automated form generation and the underlying business logic, state management, and validation rules for primary domain entities.",
+  "responsibilities": [
+    "Orchestrate dynamic form generation and field rendering based on schemas",
+    "Enforce domain-specific business rules and data validation",
+    "Manage state transitions for core application entities",
+    "Provide external control interfaces for form and data interactions"
+  ],
+  "concepts": [
+    "Automated Form Generation",
+    "Domain Entities",
+    "Business Rules",
+    "State Transitions",
+    "Form Schema"
+  ],
+  "relationships": [
+    "Schema definitions drive the rendering of form components.",
+    "Business rules and domain validation govern the lifecycle and state transitions of core entities.",
+    "External controllers interface with form logic to trigger submission or data processing."
+  ],
+  "designDecisions": [
+    "Declarative API for UI generation",
+    "Centralization of business logic to ensure system consistency",
+    "Decoupling of domain rules from infrastructure",
+    "Immutability patterns for entity state management"
+  ],
+  "importance": "Core"
+}

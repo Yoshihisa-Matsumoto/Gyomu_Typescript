@@ -1,0 +1,23 @@
+{
+  "summary": "This directory manages the core SSH connectivity and command execution lifecycle. It serves as the bridge between the local application and remote servers, encapsulating the logic for establishing secure connections and running remote operations to provide a unified interface for SSH tasks.",
+  "responsibilities": [
+    "Establishing connections to remote SSH servers",
+    "Executing commands on remote hosts",
+    "Managing the lifecycle of SSH sessions"
+  ],
+  "concepts": [
+    "SSH Connection",
+    "Remote Command Execution",
+    "SSH Client",
+    "Execution Status"
+  ],
+  "relationships": [
+    "The SSH client acts as the primary orchestrator for establishing the initial connection before remote commands can be executed.",
+    "Command execution relies on the active connection state managed by the SSH client to successfully return output and exit status."
+  ],
+  "designDecisions": [
+    "Encapsulation of low-level SSH protocol interactions within a high-level client interface",
+    "Centralized management of connection effects and command execution logic"
+  ],
+  "importance": "Core"
+}

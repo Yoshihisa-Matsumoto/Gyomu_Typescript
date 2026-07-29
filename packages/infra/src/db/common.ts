@@ -12,6 +12,9 @@ import type { DeleteResult, Insertable, Kysely, Selectable, UpdateResult } from 
 import type { SchemaValidationError } from '@gyomu/schema'
 import type { DB } from '../generated/db.js'
 
+/**
+ * Defines a type that extracts table names from the database schema that contain an 'id' field.
+ */
 export type TablesWithId = {
   [K in keyof DB]: DB[K] extends { id: any } ? K : never
 }[keyof DB]
@@ -20,6 +23,13 @@ export type TablesWithId = {
 
 // }
 
+/**
+ * Converts a LocalDate to a Date object with a fixed JST time offset.
+ *
+ * @param localDate The local date string to convert.
+ *
+ * @returns The Date object representing the start of the day in JST.
+ */
 export function toSqlDate(localDate: LocalDate): Date {
   return new Date(`${localDate}T00:00:00+09:00`)
 }
@@ -99,6 +109,11 @@ type RepositoryContext<
   schemas: CrudSchemas<Insert, Select, Update>
 }
 
+/**
+ * Executes a custom SQL query and validates the result against the provided schema, returning an Effect.
+ *
+ * @returns An Effect containing an array of validated records or a database/validation error.
+ */
 export const customSQLAndReturnRecords =
   <
     T extends TablesWithId,
@@ -330,6 +345,12 @@ const updateRecords =
         records,
       )
     })
+
+/**
+ * Creates a custom update function that returns the total number of updated rows as an Effect.
+ *
+ * @returns An Effect containing the count of modified rows or a database error.
+ */
 export const makeCustomUpdate =
   <
     T extends TablesWithId,
@@ -355,6 +376,12 @@ export const makeCustomUpdate =
         .map((r) => r.numUpdatedRows)
         .reduce((prev, current) => prev + Number(current), 0)
     })
+
+/**
+ * Creates a custom delete function that returns the total number of deleted rows as an Effect.
+ *
+ * @returns An Effect containing the count of deleted rows or a database error.
+ */
 export const makeCustomDelete =
   <
     T extends TablesWithId,
@@ -537,6 +564,11 @@ type RepositoryExtensions<
   (...args: Array<any>) => Effect.Effect<any, DBError | SchemaValidationError, TEnv>
 >
 
+/**
+ * Generates a repository object from a Kysely database instance and configuration options, providing standard CRUD and optional custom extensions.
+ *
+ * @returns A repository object typed according to the schema and provided options.
+ */
 export const makeRepositoryFromDb = <
   const T extends TablesWithId,
   Insert extends Schema.Top,

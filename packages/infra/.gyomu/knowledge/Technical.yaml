@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=../../../../schemas/Technical.json
+
+installation:
+  - command: pnpm add @gyomu/infra
+    description: |
+      通常の npm パッケージと同様にインストールする。
+      他の特別なセットアップは不要。
+
+configuration: []
+
+dependencies:
+  - package: effect
+    description: |
+      Effect Runtime、Effect Schema、Context など、本パッケージの基盤となるライブラリ。
+
+  - package: "@gyomu/schema"
+    description: |
+      スキーマ、共通型の置き場として利用
+
+  - package: SSH / FTP / Zip 系などなど
+    description: |
+      Exportパスを切っているため、使わない場合はロードされない
+
+compatibility:
+  - name: Effect
+    supported: 4.x
+    description: |
+      Effect Ver4 を前提として設計されている。
+
+  - name: Module System
+    supported: ESM
+    description: |
+      ESM 環境での利用を前提としている。
+
+migration: []

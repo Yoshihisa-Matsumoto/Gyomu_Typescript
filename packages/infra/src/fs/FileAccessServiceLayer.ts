@@ -59,6 +59,9 @@ const canAccessFunc = (
   })
 }
 
+/**
+ * A service layer providing functional access to file system checking capabilities, including an exclusive access polling mechanism.
+ */
 export const FileAccessServiceLayer = Layer.effect(
   FileAccessService,
   Effect.succeed({

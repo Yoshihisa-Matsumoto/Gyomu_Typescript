@@ -1,0 +1,26 @@
+{
+  "summary": "This directory manages the internal logic for analyzing file structures and generating architectural metadata, facilitating the automated creation, validation, and storage of directory-level concepts and file summaries.",
+  "responsibilities": [
+    "Analyze project file structures to generate architectural summaries",
+    "Construct and store directory concept metadata in JSON format",
+    "Load and validate directory-specific configuration files",
+    "Calculate and resolve file system paths for metadata storage"
+  ],
+  "concepts": [
+    "Directory Concept",
+    "File Summary Record",
+    "Metadata Management",
+    "System Path Resolution"
+  ],
+  "relationships": [
+    "File summary records provide the foundational data used to aggregate and build broader directory concepts.",
+    "The directory concept generation process utilizes validated metadata loaded from existing configuration files.",
+    "Path resolution utilities determine the storage location for generated architectural metadata files."
+  ],
+  "designDecisions": [
+    "Use of an internal namespace to encapsulate file analysis and metadata generation logic",
+    "Automated persistence of architectural records into dedicated project subdirectories",
+    "Separation of file-level summarization from directory-level concept aggregation"
+  ],
+  "importance": "Supporting"
+}

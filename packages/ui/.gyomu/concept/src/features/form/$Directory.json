@@ -1,0 +1,28 @@
+{
+  "summary": "This directory manages a declarative automated form system that dynamically generates and renders form fields based on defined schemas. It centralizes components and types necessary for automatic form construction, field configuration, and external form control.",
+  "responsibilities": [
+    "Dynamically generate form fields from provided schemas",
+    "Provide a declarative interface for form construction",
+    "Expose handles for external form submission control",
+    "Define configuration schemas for field rendering and layout"
+  ],
+  "concepts": [
+    "Automated Form Generation",
+    "Declarative Form Components",
+    "Field Metadata",
+    "Form Schema",
+    "UI Context"
+  ],
+  "relationships": [
+    "The AutoForm component uses schema definitions to orchestrate the rendering of multiple AutoField instances.",
+    "Form configuration properties define the layout and render overrides used by the AutoField components.",
+    "The AutoFormHandle provides external controllers access to the submission logic defined within the form's internal state."
+  ],
+  "designDecisions": [
+    "Declarative API for schema-driven form generation",
+    "Separation of form container logic from individual field rendering",
+    "Strong typing for field properties and form configuration to ensure schema consistency",
+    "Provision of an external interface for imperative form control"
+  ],
+  "importance": "Core"
+}

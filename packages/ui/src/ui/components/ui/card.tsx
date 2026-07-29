@@ -2,6 +2,11 @@ import * as React from 'react'
 
 import { cn } from '../../../lib/utils'
 
+/**
+ * Displays a card component with optional sizing.
+ *
+ * @returns A React component representing a card.
+ */
 function Card({
   className,
   size = 'default',
@@ -20,6 +25,11 @@ function Card({
   )
 }
 
+/**
+ * Displays the header section of a card.
+ *
+ * @returns A React component representing the card header.
+ */
 function CardHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -33,6 +43,11 @@ function CardHeader({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * Displays the title within a card header.
+ *
+ * @returns A React component representing the card title.
+ */
 function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -46,6 +61,11 @@ function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * Displays descriptive text within a card.
+ *
+ * @returns A React component representing the card description.
+ */
 function CardDescription({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -56,6 +76,11 @@ function CardDescription({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * Displays an action area, typically for buttons or icons within the header.
+ *
+ * @returns A React component representing the card action area.
+ */
 function CardAction({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -66,6 +91,11 @@ function CardAction({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * Displays the primary content area of a card.
+ *
+ * @returns A React component representing the card body content.
+ */
 function CardContent({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -76,6 +106,11 @@ function CardContent({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * Displays the footer section of a card, typically for actions or metadata.
+ *
+ * @returns A React component representing the card footer.
+ */
 function CardFooter({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div

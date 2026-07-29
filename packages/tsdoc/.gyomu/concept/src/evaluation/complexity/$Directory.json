@@ -1,0 +1,26 @@
+{
+  "summary": "This directory contains the logic for quantifying the structural and logical complexity of code components, providing tools to calculate, merge, and score complexity metrics for exported symbols and effects within the system.",
+  "responsibilities": [
+    "Calculate complexity metrics for source code symbols",
+    "Compute aggregate complexity scores based on structural indicators",
+    "Determine cyclomatic complexity for effect signals",
+    "Aggregate multiple complexity metric sets into a single cumulative value"
+  ],
+  "concepts": [
+    "Complexity Metrics",
+    "Effect Complexity",
+    "Complexity Score",
+    "Structural Analysis"
+  ],
+  "relationships": [
+    "Complexity metrics provide the quantitative data necessary for calculating an overall complexity score.",
+    "Effect complexity is computed based on specific structural attributes that contribute to the broader complexity metrics.",
+    "Merging logic aggregates discrete complexity metrics to provide a unified assessment of components."
+  ],
+  "designDecisions": [
+    "Use of interfaces to define standardized complexity structures",
+    "Functional approach for calculating and merging metric data",
+    "Provision of an initialized baseline object for complexity metrics"
+  ],
+  "importance": "Supporting"
+}

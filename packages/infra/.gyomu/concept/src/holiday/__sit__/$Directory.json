@@ -1,0 +1,27 @@
+{
+  "summary": "This directory serves as the centralized repository for the core domain models and data structures of the application. It establishes the foundational representations of business entities, ensuring consistent data shape and type safety across the entire codebase.",
+  "responsibilities": [
+    "Define schema for core business entities",
+    "Maintain type definitions for shared data structures",
+    "Ensure consistency of object shapes across services",
+    "Provide centralized interfaces for data entities"
+  ],
+  "concepts": [
+    "Domain Models",
+    "Data Schemas",
+    "Entity Definitions",
+    "Type Contracts"
+  ],
+  "relationships": [
+    "Domain models act as the foundation for data validation rules across the system.",
+    "Data schemas provide the structural blueprints that all services must adhere to when interacting with entities.",
+    "Type contracts ensure that disparate modules share a common understanding of entity properties."
+  ],
+  "designDecisions": [
+    "Strict type safety using TypeScript interfaces",
+    "Centralized definition to prevent structural duplication",
+    "Immutability patterns for data entity instances",
+    "Layered separation from implementation logic"
+  ],
+  "importance": "Core"
+}

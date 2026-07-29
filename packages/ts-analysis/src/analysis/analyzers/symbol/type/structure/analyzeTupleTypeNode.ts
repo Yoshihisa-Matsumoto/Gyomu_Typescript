@@ -6,6 +6,17 @@ import type {
 import type { ChildAnalysisArg, MemberAnalysisWithReservedResult } from '../../../types.js'
 import type { TupleTypeNode, TypeNode } from 'ts-morph'
 
+/**
+ * Analyzes a TypeScript TupleTypeNode, extracting member information for its constituent elements.
+ *
+ * @param args The shared analysis context and arguments for the child node.
+ *
+ * @param newMemberPath The path identifying the current tuple structure within the member hierarchy.
+ *
+ * @param node The TypeScript AST node representing the tuple type.
+ *
+ * @returns The analyzed tuple structure, including member definitions, collected dependencies, and reserved names.
+ */
 export const analyzeTupleTypeNode = (
   args: ChildAnalysisArg<TypeNode>,
   newMemberPath: MemberIdentityMemberPath,

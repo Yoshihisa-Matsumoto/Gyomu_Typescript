@@ -1,0 +1,32 @@
+{
+  "summary": "This directory orchestrates the automated generation, assembly, and localization of project README files. It provides the necessary infrastructure to transform raw project data into structured documentation, manage translation workflows, and validate output through testing.",
+  "responsibilities": [
+    "Assemble and generate documentation files from project data",
+    "Initialize build context for documentation creation",
+    "Transform markdown content into final output formats",
+    "Manage translation and localization of documentation segments",
+    "Validate the structural integrity and correctness of generated content"
+  ],
+  "concepts": [
+    "Documentation Generation",
+    "Build Context",
+    "README Assembly",
+    "Translation Workflow",
+    "Markdown Rendering"
+  ],
+  "relationships": [
+    "The build context provides the necessary data to drive the automated generation of documentation.",
+    "Assembly logic uses builders to construct and structure README sections.",
+    "The translation process maps localized content to specific documentation targets identified during generation.",
+    "Rendering logic transforms markdown content into the final formatted documentation output.",
+    "Integrated testing validates that the assembly and rendering processes produce correct documentation."
+  ],
+  "designDecisions": [
+    "Use of interface-based builders for extensible section generation",
+    "Modular isolation of construction and rendering logic",
+    "Centralization of path resolution and naming conventions",
+    "Automated validation of generated outputs through integrated testing",
+    "Sequential execution of builders for predictable documentation assembly"
+  ],
+  "importance": "Core"
+}

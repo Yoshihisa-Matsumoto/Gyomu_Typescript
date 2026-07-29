@@ -47,6 +47,7 @@ import type { Builder } from '@gyomu/schema/entity'
  * to support reconstruction, linting, formatting, and future analysis steps.
  *
  * @param raw Raw extracted JSDoc source information.
+ *
  * @param doc ts-morph JSDoc AST node.
  *
  * @returns Normalized structured JSDoc representation.

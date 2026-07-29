@@ -1,0 +1,22 @@
+{
+  "summary": "This directory serves as the dedicated analysis layer for TypeScript enum declarations and their individual members. It extracts structural information and metadata from enum definitions to support broader static analysis of the source code.",
+  "responsibilities": [
+    "Perform structural analysis of TypeScript enum declarations",
+    "Resolve and extract values for individual enum members",
+    "Register metadata for discovered enum symbols"
+  ],
+  "concepts": [
+    "Enum Declaration",
+    "Enum Member",
+    "Symbol Analysis"
+  ],
+  "relationships": [
+    "The analysis of an enum declaration coordinates the evaluation of its individual enum members.",
+    "Enum member analysis provides the metadata and calculated values necessary for the complete symbol analysis of an enum."
+  ],
+  "designDecisions": [
+    "Functional decomposition of analysis logic into specific handlers for declarations and members",
+    "Unified registration of symbol metadata during the analysis process"
+  ],
+  "importance": "Supporting"
+}

@@ -1,0 +1,21 @@
+{
+  "summary": "This directory defines the primary interfaces for the approval system, establishing contracts for both the submission of approval requests and the management of their statuses. It acts as the abstraction layer for external interactions within the system.",
+  "responsibilities": [
+    "Define contracts for submitting new approval requests",
+    "Define contracts for storing and retrieving the state of approval requests"
+  ],
+  "concepts": [
+    "Approval request",
+    "Submission port",
+    "Persistence port"
+  ],
+  "relationships": [
+    "The approval requester provides the mechanism to initiate a request, while the approval store manages the lifecycle and status tracking of that request.",
+    "Both ports work together to decouple the business logic of approvals from specific implementation details of external systems."
+  ],
+  "designDecisions": [
+    "Use of interface-based design to define ports for dependency inversion",
+    "Centralized export point to manage the public API surface area of the ports"
+  ],
+  "importance": "Core"
+}

@@ -1,0 +1,25 @@
+{
+  "summary": "This directory centralizes the application's logging infrastructure by providing a configurable, standardized interface for recording system events, ensuring that all log outputs are consistently normalized and formatted across the system.",
+  "responsibilities": [
+    "Initializing the global application logger",
+    "Normalizing log arguments for safe output",
+    "Configuring log transports for stdout and file systems",
+    "Managing logging state via environment variables"
+  ],
+  "concepts": [
+    "Logger Instance",
+    "Log Normalization",
+    "Logging Transports",
+    "Environment Configuration"
+  ],
+  "relationships": [
+    "The logger instance utilizes normalization functions to ensure complex data structures are safe for logging.",
+    "Log configuration is derived from environment variables to standardize logger behavior across different execution environments."
+  ],
+  "designDecisions": [
+    "Wrapper pattern for underlying logging library",
+    "Recursive data normalization with depth limits",
+    "Global singleton-style logger initialization"
+  ],
+  "importance": "Utility"
+}
