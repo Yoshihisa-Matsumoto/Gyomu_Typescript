@@ -6,6 +6,15 @@ import type { Section } from '@gyomu/schema/schemas/document'
 import type { SectionBuilder } from './SectionBuilder.js'
 import type { DocumentBaseContext } from '@gyomu/schema/concept'
 
+/**
+ * Executes a collection of section builders in sequence to generate document sections, filtering out any builders that are disabled for the given context.
+ *
+ * @param context The document generation context used to determine builder enablement and build parameters.
+ *
+ * @param builders The sequence of section builders to execute.
+ *
+ * @returns An Effect that evaluates to a read-only array of successfully generated sections. Requires AiModelRoute, ModelRoutes, and FileSystem capabilities, and may fail with a DocumentBuilderError.
+ */
 export const buildSections = <TSectionId extends string, TContext extends DocumentBaseContext>(
   context: TContext,
   builders: ReadonlyArray<SectionBuilder<TSectionId, TContext, any>>,

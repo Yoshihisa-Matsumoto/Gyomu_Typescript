@@ -26,7 +26,7 @@ import type { FileSearchService } from '@gyomu/schema/shared/fs'
  *
  * @param option Optional configuration for README generation.
  *
- * @returns An Effect representing the file generation process, requiring external services like FileSystem and AI models, and potentially failing with a DocumentBuilderError.
+ * @returns An effect that generates localized README files. Requires AiModelRoute, FileSystem, ModelRoutes, and FileSearchService to execute. Fails with DocumentBuilderError.
  */
 export const generateReadmeFiles = (
   project: ProjectContext,

@@ -4,6 +4,13 @@ import type { DocumentContent, LanguageCodes, Section } from '@gyomu/schema/sche
 
 import type { TranslationPlan } from '../translation/TranslationPlan.js'
 
+/**
+ * Renders a translation plan into a Markdown-formatted document string using the provided context and callback functions for titles and language links.
+ *
+ * @param args Configuration object containing the document context, translation plan, and functions for generating section titles and navigation links.
+ *
+ * @returns A Markdown string representing the rendered document.
+ */
 export const renderMarkdown = <TContext extends DocumentBaseContext>(args: {
   context: TContext
   plan: TranslationPlan

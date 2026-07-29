@@ -22,7 +22,7 @@ import type { FileSearchService } from '@gyomu/schema/shared/fs'
  *
  * @param option Optional configuration for the concept build process.
  *
- * @returns An Effect that resolves to the initialized ReadmeBuildContext or fails with a DocumentBuilderError.
+ * @returns An Effect that resolves to an object containing the DocumentBaseContext and knowledge path, or fails with a DocumentBuilderError.
  *
  * @requires FileSystem.FileSystem | FileSearchService
  */

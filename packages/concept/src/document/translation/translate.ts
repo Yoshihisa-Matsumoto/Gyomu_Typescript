@@ -8,12 +8,36 @@ import type {
 } from '@gyomu/schema/schemas/document'
 import type { DocumentBaseContext } from '@gyomu/schema/concept'
 
+/**
+ * Defines a function type for executing document translations using the provided context, language, and targets.
+ *
+ * @param context The document context used during translation.
+ *
+ * @param language The target language code.
+ *
+ * @param targets The list of translation targets.
+ *
+ * @returns An Effect resulting in the translation output, or an error if the operation fails.
+ */
 export type ExecuteTranslation<TContext, R = never> = (
   context: TContext,
   language: LanguageCodes,
   targets: ReadonlyArray<TranslationTarget>,
 ) => Effect.Effect<TranslationResult, unknown, R>
 
+/**
+ * Executes a document translation using a provided executor and wraps potential errors into a DocumentBuilderError.
+ *
+ * @param context The document context.
+ *
+ * @param language The target language code.
+ *
+ * @param targets The translation targets.
+ *
+ * @param executor The translation execution function.
+ *
+ * @returns An Effect that resolves to the translation result or fails with a DocumentBuilderError.
+ */
 export const translate = <TContext extends DocumentBaseContext, R>(
   context: TContext,
   language: LanguageCodes,

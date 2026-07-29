@@ -27,7 +27,7 @@ import type { FileSystem } from 'effect'
  *
  * @param option Optional configuration for modifying the build process.
  *
- * @returns Returns an Effect that produces a BuildResult. Requires access to FileSystem, AiModelRoute, and ModelRoutes. May fail with a ConceptError.
+ * @returns Returns an Effect that, when run, produces a BuildResult. Requires an environment with FileSystem, AiModelRoute, and ModelRoutes. Fails with a ConceptError if the generation fails.
  */
 export const buildDirectoryConceptFromPath = (
   context: ProjectContext,

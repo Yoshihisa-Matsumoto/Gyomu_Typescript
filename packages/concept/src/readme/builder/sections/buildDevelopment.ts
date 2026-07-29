@@ -10,6 +10,8 @@ import type { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 
 /**
  * A readme section builder that generates the 'development' section using analysis context.
+ *
+ * @returns Returns an Effect that produces the development section content for the README.
  */
 export const buildDevelopment: SectionBuilder<
   ReadmeSectionId,

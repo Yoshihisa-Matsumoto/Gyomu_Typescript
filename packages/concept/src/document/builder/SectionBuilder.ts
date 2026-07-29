@@ -3,6 +3,9 @@ import type { Section } from '@gyomu/schema/schemas/document'
 import type { Effect } from 'effect'
 import type { DocumentBuilderError } from '../../error/DocumentBuilderError.js'
 
+/**
+ * Defines a builder for a documentation section, capable of constructing section content using a given context and requirement R.
+ */
 export interface SectionBuilder<
   TSectionId extends string,
   TContext extends DocumentBaseContext,
