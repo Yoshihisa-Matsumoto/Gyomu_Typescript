@@ -1,0 +1,64 @@
+{
+  "type": "object",
+  "properties": {
+    "displayName": {
+      "type": "string"
+    },
+    "principles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Fundamental coding principles."
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "description": "Category of the coding guideline."
+          },
+          "rule": {
+            "type": "string",
+            "description": "The coding rule to follow."
+          },
+          "rationale": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "Reason why the rule exists."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "category",
+          "rule"
+        ],
+        "additionalProperties": false,
+        "description": "A coding guideline rule."
+      },
+      "description": "Actionable coding rules."
+    },
+    "forbidden": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Forbidden coding practices."
+    }
+  },
+  "required": [
+    "displayName",
+    "principles",
+    "rules",
+    "forbidden"
+  ],
+  "additionalProperties": false,
+  "description": "Coding guidelines and rules for AI-assisted development."
+}

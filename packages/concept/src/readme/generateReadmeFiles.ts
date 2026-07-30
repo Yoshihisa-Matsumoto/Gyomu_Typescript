@@ -40,7 +40,7 @@ export const generateReadmeFiles = (
     const projectRootPath = project.projectRoot
     const context = yield* initializeReadmeBuildContext(project, option)
 
-    const sections = yield* buildSections(context, README_SECTION_BUILDERS)
+    const sections = yield* buildSections(context, README_SECTION_BUILDERS, option)
     if (option?.debugInfo?.ReadmeSections) {
       if (option.debugInfo.DumpToFile)
         yield* writeStringToFile(

@@ -1,7 +1,7 @@
 import { join } from 'node:path'
 import { Effect } from 'effect'
 import { readYamlFromFileAndValidate } from '@gyomu/infra/fs'
-import { Package } from '@gyomu/schema/schemas/knowledge'
+import { Development, Package, Roadmap, Technical } from '@gyomu/schema/schemas/knowledge'
 import { wrapInfraError } from '@gyomu/schema'
 import { DocumentBuilderError } from '../error/DocumentBuilderError.js'
 import { buildPackageAnalysis } from '../package/buildPackageAnalysis.js'
@@ -12,7 +12,7 @@ import type { FullPath } from '@gyomu/schema'
 import type { ConceptOptions } from '../ConceptOptions.js'
 import type { FileSystem } from 'effect'
 import type { ProjectContext } from '@gyomu/ts-analysis'
-import type { DocumentBaseContext, ReadmeBuildContext } from '@gyomu/schema/concept'
+import type { DocumentBaseContext } from '@gyomu/schema/concept'
 import type { FileSearchService } from '@gyomu/schema/shared/fs'
 
 /**
@@ -55,11 +55,30 @@ export const initializeDocumentBaseContext = (
       join(knowledgePath, 'Package.yaml'),
     )
 
+    const development = yield* readYamlFromFileAndValidate(
+      'Development',
+      Development,
+      join(knowledgePath, 'Development.yaml'),
+    )
+    const technical = yield* readYamlFromFileAndValidate(
+      'Technical',
+      Technical,
+      join(knowledgePath, 'Technical.yaml'),
+    )
+    const roadmap = yield* readYamlFromFileAndValidate(
+      'Roadmap',
+      Roadmap,
+      join(knowledgePath, 'Roadmap.yaml'),
+    ).pipe(Effect.catch(() => Effect.succeed(undefined)))
+
     const resultContext = {
       analysis,
       concept,
       knowledge: {
         package: packageKnowledge,
+        development,
+        technical,
+        roadmap,
       },
     } satisfies DocumentBaseContext
     return { context: resultContext, knowledgePath }

@@ -7,6 +7,10 @@
     "access": "public"
   },
   "exports": {
+    "./domain": {
+      "import": "./dist/domain/index.js",
+      "types": "./dist/domain/index.d.ts"
+    },
     "./jsdoc-update": {
       "import": "./dist/pipelines/jsdoc-update/index.js",
       "types": "./dist/pipelines/jsdoc-update/index.d.ts"
@@ -22,6 +26,14 @@
     "./package-concept": {
       "import": "./dist/pipelines/package-concept/index.js",
       "types": "./dist/pipelines/package-concept/index.d.ts"
+    },
+    "./document": {
+      "import": "./dist/pipelines/document/index.js",
+      "types": "./dist/pipelines/document/index.d.ts"
+    },
+    "./llm-context": {
+      "import": "./dist/pipelines/llm-context/index.js",
+      "types": "./dist/pipelines/llm-context/index.d.ts"
     },
     "./readme": {
       "import": "./dist/pipelines/readme/index.js",

@@ -1,7 +1,9 @@
 import { Effect } from 'effect'
-import { buildSectionItem } from '@gyomu/ai-compiler/readme'
+import { buildSectionItem } from '@gyomu/ai-compiler/document'
 import { wrapInfraError } from '@gyomu/schema'
+import { ReadmePromptProvider } from '@gyomu/ai-compiler/readme'
 import { DocumentBuilderError } from '../../../error/DocumentBuilderError.js'
+import type { ConceptOptions } from '../../../ConceptOptions.js'
 import type { SectionBuilder } from '../../../document/builder/SectionBuilder.js'
 import type { FileSystem } from 'effect'
 import type { Section } from '@gyomu/schema/schemas/document'
@@ -20,9 +22,14 @@ export const buildDevelopment: SectionBuilder<
 > = {
   id: 'development',
 
-  build: (context: ReadmeBuildContext) =>
+  build: (context: ReadmeBuildContext, option?: ConceptOptions) =>
     Effect.gen(function* () {
-      const developmentResult = yield* buildSectionItem('development', context)
+      const developmentResult = yield* buildSectionItem(
+        'development',
+        context,
+        ReadmePromptProvider,
+        option?.retryOption,
+      )
       return {
         id: 'development',
         title: undefined,

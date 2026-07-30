@@ -121,7 +121,11 @@ describe('generateReadmeFiles', () => {
 
       await runQAWithEnvOrThrow(generateReadmeFiles(DummyProjectContext))
 
-      expect(buildSections).toHaveBeenCalledWith(DummyReadmeContext, README_SECTION_BUILDERS)
+      expect(buildSections).toHaveBeenCalledWith(
+        DummyReadmeContext,
+        README_SECTION_BUILDERS,
+        undefined,
+      )
 
       expect(translateReadme).toHaveBeenCalledTimes(SupportedTranslationLanguages.length)
 

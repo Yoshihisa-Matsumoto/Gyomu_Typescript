@@ -1,4 +1,5 @@
 import { Effect } from 'effect'
+import type { ConceptOptions } from '../../ConceptOptions.js'
 import type { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 import type { DocumentBuilderError } from '../../error/DocumentBuilderError.js'
 import type { FileSystem } from 'effect'
@@ -18,6 +19,7 @@ import type { DocumentBaseContext } from '@gyomu/schema/concept'
 export const buildSections = <TSectionId extends string, TContext extends DocumentBaseContext>(
   context: TContext,
   builders: ReadonlyArray<SectionBuilder<TSectionId, TContext, any>>,
+  option?: ConceptOptions,
 ): Effect.Effect<
   ReadonlyArray<Section>,
   DocumentBuilderError,
@@ -33,7 +35,7 @@ export const buildSections = <TSectionId extends string, TContext extends Docume
           return undefined
         }
 
-        return yield* builder.build(context)
+        return yield* builder.build(context, option)
       }),
     { concurrency: 1 },
   ).pipe(

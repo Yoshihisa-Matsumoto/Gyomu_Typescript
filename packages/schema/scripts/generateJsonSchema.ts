@@ -2,7 +2,13 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { Schema } from 'effect'
 
-import { Development, Package, Roadmap, Technical } from '../src/schemas/knowledge/index.js'
+import {
+  CodingGuideline,
+  Development,
+  Package,
+  Roadmap,
+  Technical,
+} from '../src/schemas/knowledge/index.js'
 
 const outputDir = join(import.meta.dirname, '../../..', 'schemas')
 
@@ -13,6 +19,7 @@ const schemas = {
   Technical: Technical,
   Development: Development,
   Roadmap: Roadmap,
+  Coding: CodingGuideline,
 }
 
 for (const [name, schema] of Object.entries(schemas)) {

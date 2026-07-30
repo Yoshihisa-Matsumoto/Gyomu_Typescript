@@ -1,0 +1,27 @@
+import { Effect } from 'effect'
+import type { SectionBuilder } from '../../../document/builder/SectionBuilder.js'
+import type { ConceptOptions } from '../../../ConceptOptions.js'
+import type { LlmContextBuildContext, LlmContextSectionId } from '@gyomu/schema/concept'
+import type { Section } from '@gyomu/schema/schemas/document'
+
+export const buildPackageResponsibilities: SectionBuilder<
+  LlmContextSectionId,
+  LlmContextBuildContext,
+  never
+> = {
+  id: 'package-responsibilities',
+
+  build: (context: LlmContextBuildContext, option?: ConceptOptions) => {
+    return Effect.succeed({
+      id: 'package-responsibilities',
+      title: undefined,
+      contents: [
+        {
+          type: 'bullet-list',
+          items: context.concept.responsibilities,
+        },
+      ],
+    } satisfies Section)
+  },
+  enabled: () => true,
+}

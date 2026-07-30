@@ -6,7 +6,7 @@ describe('renderMarkdown', () => {
   const context = {
     knowledge: { package: { displayName: 'TITLE' } },
   } as any
-  it('renders paragraph, bullet list and code block', () => {
+  it('renders paragraph, bullet list and code blockm table', () => {
     const sections: Array<Section> = [
       {
         id: 'overview',
@@ -25,6 +25,11 @@ describe('renderMarkdown', () => {
             language: 'ts',
             title: 'Example',
             code: 'console.log("hello")',
+          },
+          {
+            type: 'table',
+            header: { cells: ['Header1', 'Header2'] },
+            rows: [{ cells: ['R1C1', 'R1C2'] }, { cells: ['R2C1', 'R2C2'] }],
           },
         ],
       },
@@ -52,7 +57,12 @@ This package provides shared utilities.
 
 \`\`\`ts
 console.log("hello")
-\`\`\``)
+\`\`\`
+
+| Header1 | Header2 |
+| ------- | ------- |
+| R1C1 | R1C2 |
+| R2C1 | R2C2 |`)
   })
 
   it('uses default section title when title is undefined', () => {

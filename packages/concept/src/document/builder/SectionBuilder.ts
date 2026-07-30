@@ -1,3 +1,4 @@
+import type { ConceptOptions } from '../../ConceptOptions.js'
 import type { DocumentBaseContext } from '@gyomu/schema/concept'
 import type { Section } from '@gyomu/schema/schemas/document'
 import type { Effect } from 'effect'
@@ -21,7 +22,10 @@ export interface SectionBuilder<
    *
    * @returns An effect that resolves to the generated Section, requiring context R and potentially failing with DocumentBuilderError.
    */
-  build: (context: TContext) => Effect.Effect<Section, DocumentBuilderError, R>
+  build: (
+    context: TContext,
+    option?: ConceptOptions,
+  ) => Effect.Effect<Section, DocumentBuilderError, R>
 
   /**
    * Checks whether the section is enabled for the current build context.
