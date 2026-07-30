@@ -42,6 +42,9 @@ catalogs:
     effect:
       specifier: 4.0.0-beta.92
       version: 4.0.0-beta.92
+    jsdom:
+      specifier: ^29.1.1
+      version: 29.1.1
     shadcn:
       specifier: ^4.16.0
       version: 4.16.0
@@ -483,7 +486,7 @@ importers:
         specifier: ^6.2.3
         version: 6.2.5
       jsdom:
-        specifier: ^29.1.1
+        specifier: 'catalog:'
         version: 29.1.1
       pino:
         specifier: ^10.3.1
@@ -541,8 +544,8 @@ importers:
         specifier: ^0.4.14
         version: 0.4.14
       '@types/yauzl':
-        specifier: ^2.10.3
-        version: 2.10.3
+        specifier: ^3.4.0
+        version: 3.4.0
       '@types/yazl':
         specifier: ^3.3.1
         version: 3.3.1
@@ -4306,8 +4309,8 @@ packages:
   '@types/xml2js@0.4.14':
     resolution: {integrity: sha512-4YnrRemBShWRO2QjvUin8ESA41rH+9nQGLUGZV/1IDhi3SL9OhdpNC/MrulTWuptXKwhx/aDxE7toV0f/ypIXQ==}
 
-  '@types/yauzl@2.10.3':
-    resolution: {integrity: sha512-oJoftv0LSuaDZE3Le4DbKX+KS9G36NzOeSap90UIK0yMA/NhKJhqlSGtNDORNRaIbQfzjXDrQa0ytJ6mNRGz/Q==}
+  '@types/yauzl@3.4.0':
+    resolution: {integrity: sha512-NRPn5w6h8dhcnmx3YIRQcqMywY/+nND/uOkJessedcrowO3C0AssHp3tMJpxKAwOhFOo0OV1y9VtsC5hbKKBAw==}
 
   '@types/yazl@3.3.1':
     resolution: {integrity: sha512-DIWfCKpsTp6hE5BDBHV3+fIL/bLUF9Bv13iDrWnMlmhQpH67buNvI291ZauQ1xcccxK3FqQ9honnXpq4R8NMuQ==}
@@ -12857,7 +12860,7 @@ snapshots:
     dependencies:
       '@types/node': 24.12.4
 
-  '@types/yauzl@2.10.3':
+  '@types/yauzl@3.4.0':
     dependencies:
       '@types/node': 24.12.4
 
