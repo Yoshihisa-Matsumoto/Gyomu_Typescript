@@ -1,5 +1,11 @@
 # @gyomu/schema
 
+## 0.2.4-beta.12
+
+### Patch Changes
+
+- 3cacc01: Readme generation
+
 ## 0.2.4-beta.11
 
 ### Patch Changes
