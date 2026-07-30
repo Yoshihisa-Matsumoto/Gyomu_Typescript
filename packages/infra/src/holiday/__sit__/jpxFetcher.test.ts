@@ -1,8 +1,8 @@
 import { Layer } from 'effect'
 import { NodeFileSystem } from '@effect/platform-node'
 import { afterAll, expect, test } from 'vitest'
+import { makeRunner } from '@gyomu/schema/effect'
 import { MainLayer } from '../../layer.js'
-import { makeRunner } from '../../runtime.js'
 import { fetchJpxHolidays } from '../jpxFetcher.js'
 
 afterAll(() => {
