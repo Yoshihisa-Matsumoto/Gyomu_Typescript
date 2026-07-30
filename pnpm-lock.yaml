@@ -465,8 +465,8 @@ importers:
         specifier: ^6.5.1
         version: 6.6.1
       csv-parse:
-        specifier: ^6.2.1
-        version: 6.2.1
+        specifier: ^7.0.1
+        version: 7.0.1
       csv-stringify:
         specifier: ^6.7.0
         version: 6.8.1
@@ -5126,9 +5126,6 @@ packages:
 
   csv-generate@4.6.1:
     resolution: {integrity: sha512-eELl9K716LSSeP2/YcCjch525JztnnERe3jEARWw2v1FN9ukUYfZTNYZ4Rq2Jj/MFKMauffOy9VCaqQTpFThDQ==}
-
-  csv-parse@6.2.1:
-    resolution: {integrity: sha512-LRLMV+UCyfMokp8Wb411duBf1gaBKJfOfBWU9eHMJ+b+cJYZsNu3AFmjJf3+yPGd59Exz1TsMjaSFyxnYB9+IQ==}
 
   csv-parse@7.0.1:
     resolution: {integrity: sha512-+2z7Ar0APQ7Uu6fX4cn+pitRmxjZ1WPBcGmZFKmA74FCyi7Et/XZx8cjNQ5CjbZ4HCOxXCOpRBYvYH08Qa003A==}
@@ -13687,8 +13684,6 @@ snapshots:
   csstype@3.2.3: {}
 
   csv-generate@4.6.1: {}
-
-  csv-parse@6.2.1: {}
 
   csv-parse@7.0.1: {}
 
