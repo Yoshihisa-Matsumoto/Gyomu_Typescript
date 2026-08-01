@@ -1,15 +1,17 @@
-import { Layer, Schema } from 'effect'
+import { Layer } from 'effect'
 import { Output, embed, generateText, streamText } from 'ai'
 import { AiError, withOptional } from '@gyomu/schema'
 
 import { fromPromise, fromSync } from '@gyomu/schema/effect'
+import { toJsonSchema } from '@gyomu/schema/entity'
 import { AiModelService } from '../types/AiModelService.js'
 import { withRetry } from '../withRetry.js'
 import { buildToolRuntimeConfig } from './buildToolRuntimeConfig.js'
 import { mapGenerateTextResultToAiGenerateTextResult } from './mapResult.js'
 import { buildPrompt } from './buildPrompt.js'
 import { createAiErrorContext } from './mapAiSdkError.js'
-import type { Effect } from 'effect'
+import type { EffectArrayableSchema } from '@gyomu/schema/entity'
+import type { Effect, Schema } from 'effect'
 import type {
   AiGenerateTextResult,
   EmbedParams,
@@ -17,7 +19,6 @@ import type {
   GenerateTextParams,
   StreamTextParams,
 } from '../types/AiModelService.js'
-import type { EffectArrayableSchema } from '@gyomu/schema/entity'
 
 /**
  * Creates an implementation of the AiModelService using Vercel AI SDK.
@@ -86,7 +87,7 @@ export const makeAiService = (): AiModelService => ({
           model: params.model,
 
           output: Output.object({
-            schema: Schema.toStandardSchemaV1(Schema.toStandardJSONSchemaV1(params.schema)),
+            schema: toJsonSchema(params.schema),
           }),
 
           ...buildPrompt(params),

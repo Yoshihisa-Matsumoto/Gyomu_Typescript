@@ -18,7 +18,10 @@ describe('renderReadmeMarkdown', () => {
           },
           {
             type: 'bullet-list',
-            items: ['Item1', 'Item2'],
+            items: [
+              { translationId: 1, text: 'Item1' },
+              { translationId: 2, text: 'Item2' },
+            ],
           },
           {
             type: 'code',

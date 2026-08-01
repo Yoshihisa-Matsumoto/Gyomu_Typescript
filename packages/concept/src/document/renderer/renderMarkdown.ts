@@ -1,6 +1,13 @@
 import { SupportedTranslationLanguages } from '@gyomu/schema/schemas/document'
 import type { DocumentBaseContext } from '@gyomu/schema/concept'
-import type { DocumentContent, LanguageCodes, Section, Table } from '@gyomu/schema/schemas/document'
+import type {
+  BulletList,
+  BulletListItem,
+  DocumentContent,
+  LanguageCodes,
+  Section,
+  Table,
+} from '@gyomu/schema/schemas/document'
 
 import type { TranslationPlan } from '../translation/TranslationPlan.js'
 
@@ -64,10 +71,21 @@ ${content.code}
 ${CODE}`
     }
     case 'bullet-list':
-      return content.items.map((item) => `- ${item}`).join('\n')
+      return renderBulletList(content)
     case 'table':
       return renderTable(content)
   }
+}
+
+const renderBulletList = (bulletList: BulletList): string => {
+  return bulletList.items.map((item) => renderBulletListItem(item, 0)).join('\n')
+}
+const renderBulletListItem = (item: BulletListItem, level: number): string => {
+  const prefix = '  '.repeat(level) + '- '
+  const text = item.text
+  const children =
+    item.children?.map((child) => renderBulletListItem(child, level + 1)).join('\n') ?? ''
+  return prefix + text + (children ? '\n' + children : '')
 }
 
 const renderTable = (table: Table): string => {

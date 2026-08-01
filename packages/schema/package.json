@@ -23,6 +23,10 @@
       "import": "./dist/data/index.js",
       "types": "./dist/data/index.d.ts"
     },
+    "./document": {
+      "import": "./dist/document/index.js",
+      "types": "./dist/document/index.d.ts"
+    },
     "./effect": {
       "import": "./dist/effect/index.js",
       "types": "./dist/effect/index.d.ts"

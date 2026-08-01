@@ -1,8 +1,9 @@
-import { Layer, Schema } from 'effect'
+import { Layer } from 'effect'
 import { Output, embed, generateText, streamText } from 'ai'
 import { AiError, withOptional } from '@gyomu/schema'
 
 import { fromPromise, fromSync } from '@gyomu/schema/effect'
+import { toJsonSchema } from '@gyomu/schema/entity'
 import { withRetry } from '../withRetry.js'
 import { getEmbeddingModel, getLanguageModel } from '../../model/AiModels.js'
 import { AiModelExecution } from '../types/AiModelExecuion.js'
@@ -10,6 +11,7 @@ import { buildToolRuntimeConfig } from './buildToolRuntimeConfig.js'
 import { mapGenerateTextResultToAiGenerateTextResult } from './mapResult.js'
 import { buildPrompt } from './buildPrompt.js'
 import { createAiErrorContext } from './mapAiSdkError.js'
+import type { EffectArrayableSchema } from '@gyomu/schema/entity'
 import type { AiGenerateTextResult } from '../../execution/AiGenerateTextResult.js'
 import type {
   EmbedParams,
@@ -17,8 +19,7 @@ import type {
   GenerateTextParams,
   StreamTextParams,
 } from '../types/AiModelExecuion.js'
-import type { Effect } from 'effect'
-import type { EffectArrayableSchema } from '@gyomu/schema/entity'
+import type { Effect, Schema } from 'effect'
 import type { AiModelRegistry } from '../../model/AiModels.js'
 
 /**
@@ -94,7 +95,7 @@ export const makeAiModelExecution = (): AiModelExecution => ({
           model: model,
 
           output: Output.object({
-            schema: Schema.toStandardSchemaV1(Schema.toStandardJSONSchemaV1(params.schema)),
+            schema: toJsonSchema(params.schema),
           }),
 
           ...buildPrompt(params),

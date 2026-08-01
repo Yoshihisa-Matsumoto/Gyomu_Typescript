@@ -129,14 +129,15 @@ export const convertFromSchemaObjectWithEffect =
 /**
  * Represents a schema compatible with standard schema V1 and structurally required as a Struct.
  */
-export type EffectSchema = Parameters<typeof Schema.toStandardSchemaV1>[0] & Schema.Struct<any>
+export type EffectSchema = Schema.Schema<any> & Schema.Struct<any> // Parameters<typeof Schema.toStandardSchemaV1>[0] & Schema.Struct<any>
 
 /**
  * A union type defining schemas that are either arrays of structures or individual structures compatible with the system.
  */
-export type EffectArrayableSchema =
-  | (Parameters<typeof Schema.toStandardSchemaV1>[0] & Schema.$Array<Schema.Struct<any>>)
-  | EffectSchema
+export type EffectArrayableSchema = Schema.Schema<any>
+// | (Parameters<typeof Schema.toStandardSchemaV1>[0] & Schema.$Array<Schema.Struct<any>>)
+// | EffectSchema
+
 // export type StandardizedSchema<S extends EffectSchema> = ReturnType<
 //   typeof Schema.toStandardSchemaV1<S>
 // >
@@ -152,3 +153,17 @@ export type EffectArrayableSchema =
 //     jsonSchema as any as Parameters<typeof Schema.toStandardSchemaV1>[0],
 //   )
 // }
+
+export function toJsonSchema<T extends Schema.Schema<any>>(schema: T) {
+  return Schema.toStandardSchemaV1(
+    Schema.toStandardJSONSchemaV1(schema as any as Parameters<typeof Schema.toStandardSchemaV1>[0]),
+  )
+}
+
+export function toJsonSchemaString<T extends Schema.Schema<any>>(schema: T) {
+  return JSON.stringify(
+    toJsonSchema(schema)['~standard'].jsonSchema.output({ target: 'draft-2020-12' }),
+    null,
+    2,
+  )
+}
