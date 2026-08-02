@@ -58,6 +58,7 @@ describe('BulletListTranslationStrategy', () => {
     }
 
     const result = await updateBulletListContext({
+      sectionId: 'test-section',
       sectionDefinition: {} as any,
       currentValidation: {
         issues: [
@@ -75,10 +76,10 @@ describe('BulletListTranslationStrategy', () => {
       translatedContext,
     }).pipe(Effect.runPromise)
 
-    expect(result.items[0]!.text).toBe('Translated 1')
-    expect(result.items[1]!.text).toBe('Original 2')
-    expect(result.items[2]!.text).toBe('Translated 3')
-    expect(result.items[2]!.children?.[0]!.text).toBe('Translated 4')
+    expect(result.context.items[0]!.text).toBe('Translated 1')
+    expect(result.context.items[1]!.text).toBe('Original 2')
+    expect(result.context.items[2]!.text).toBe('Translated 3')
+    expect(result.context.items[2]!.children?.[0]!.text).toBe('Translated 4')
   })
 
   it('keeps previous successful items when previous validation exists', async () => {
@@ -109,6 +110,7 @@ describe('BulletListTranslationStrategy', () => {
     }
 
     const result = await updateBulletListContext({
+      sectionId: 'test-section',
       sectionDefinition: {} as any,
       currentValidation: {
         issues: [
@@ -145,9 +147,9 @@ describe('BulletListTranslationStrategy', () => {
     if (Result.isSuccess(result)) {
       const context = result.success
       // console.dir(context)
-      expect(context.items[2]!.text).toBe('Original 3')
-      expect(context.items[2]!.children![0]!.text).toBe('Original 4')
-      expect(context.items[0]!.text).toBe('Translated 1')
+      expect(context.context.items[2]!.text).toBe('Original 3')
+      expect(context.context.items[2]!.children![0]!.text).toBe('Original 4')
+      expect(context.context.items[0]!.text).toBe('Translated 1')
     } else {
       const error = result.failure
       console.dir(error)
@@ -161,6 +163,7 @@ describe('BulletListTranslationStrategy', () => {
 
     await expect(
       updateBulletListContext({
+        sectionId: 'test-section',
         sectionDefinition: { id: 'test' } as any,
         currentValidation: {
           issues: [],
@@ -198,6 +201,7 @@ describe('BulletListTranslationStrategy', () => {
     }
 
     const result = await updateBulletListContext({
+      sectionId: 'test-section',
       sectionDefinition: {} as any,
       currentValidation: {
         issues: [
@@ -240,8 +244,8 @@ describe('BulletListTranslationStrategy', () => {
     expect(Result.isSuccess(result)).toBe(true)
 
     if (Result.isSuccess(result)) {
-      expect(result.success.items[0]!.text).toBe('Original 1')
-      expect(result.success.items[1]!.text).toBe('Original 2')
+      expect(result.success.context.items[0]!.text).toBe('Original 1')
+      expect(result.success.context.items[1]!.text).toBe('Original 2')
     }
   })
   it('updates only valid nested child item', async () => {
@@ -264,6 +268,7 @@ describe('BulletListTranslationStrategy', () => {
     }
 
     const result = await updateBulletListContext({
+      sectionId: 'test-section',
       sectionDefinition: {} as any,
       currentValidation: {
         issues: [],
@@ -287,9 +292,9 @@ describe('BulletListTranslationStrategy', () => {
     expect(Result.isSuccess(result)).toBe(true)
 
     if (Result.isSuccess(result)) {
-      expect(result.success.items[2]!.children![0]!.text).toBe('Translated 4')
+      expect(result.success.context.items[2]!.children![0]!.text).toBe('Translated 4')
 
-      expect(result.success.items[2]!.text).toBe('Original 3')
+      expect(result.success.context.items[2]!.text).toBe('Original 3')
     }
   })
   it('does not update items when previous validation has global invalid issue', async () => {
@@ -320,6 +325,7 @@ describe('BulletListTranslationStrategy', () => {
     }
 
     const result = await updateBulletListContext({
+      sectionId: 'test-section',
       sectionDefinition: {} as any,
       currentValidation: {
         issues: [
@@ -352,10 +358,10 @@ describe('BulletListTranslationStrategy', () => {
     if (Result.isSuccess(result)) {
       const context = result.success
 
-      expect(context.items[0]!.text).toBe('Original 1')
-      expect(context.items[1]!.text).toBe('Original 2')
-      expect(context.items[2]!.text).toBe('Original 3')
-      expect(context.items[2]!.children![0]!.text).toBe('Original 4')
+      expect(context.context.items[0]!.text).toBe('Original 1')
+      expect(context.context.items[1]!.text).toBe('Original 2')
+      expect(context.context.items[2]!.text).toBe('Original 3')
+      expect(context.context.items[2]!.children![0]!.text).toBe('Original 4')
     }
   })
   it('throws TranslationError when translated context does not contain valid translationId', async () => {
@@ -372,6 +378,7 @@ describe('BulletListTranslationStrategy', () => {
     }
 
     const result = await updateBulletListContext({
+      sectionId: 'test-section',
       sectionDefinition: {} as any,
       currentValidation: {
         issues: [],

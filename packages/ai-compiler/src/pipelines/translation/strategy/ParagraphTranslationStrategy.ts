@@ -5,5 +5,6 @@ import type { Paragraph } from '@gyomu/schema/schemas/document'
 
 export const ParagraphTranslationStrategy: DocumentContentTranslationStrategy<typeof Paragraph> = {
   definition: ParagraphDefinition,
-  retryContextUpdater: (args) => Effect.succeed(args.originalContext),
+  retryContextUpdater: (args) =>
+    Effect.succeed({ context: args.originalContext, validation: args.currentValidation }),
 }

@@ -38,13 +38,13 @@ describe('retryDocumentContentTranslation', () => {
   } as any
 
   const args = {
+    sectionId: 'test-section',
     language: 'ja',
     context: {
       type: 'paragraph',
       text: 'Original',
     },
     sectionDefinition: {
-      id: 'overview',
       translations: [{}],
     },
 
@@ -53,7 +53,7 @@ describe('retryDocumentContentTranslation', () => {
   } as const
 
   beforeEach(() => {
-    vi.clearAllMocks()
+    vi.resetAllMocks()
   })
 
   it('returns translated result when first validation succeeds', async () => {
@@ -115,7 +115,13 @@ describe('retryDocumentContentTranslation', () => {
 
     validate.mockReturnValueOnce(validation1).mockReturnValueOnce(validation2)
 
-    vi.mocked(mergeRetryContext).mockReturnValue(Effect.succeed(updatedContext))
+    vi.mocked(mergeRetryContext)
+      .mockReturnValueOnce(
+        Effect.succeed({ context: updatedContext, validation: validation1 as any }),
+      )
+      .mockReturnValueOnce(
+        Effect.succeed({ context: updatedContext, validation: validation2 as any }),
+      )
 
     const result = await Effect.runPromise(
       retryDocumentContentTranslation(args as any, 3).pipe(
@@ -132,6 +138,7 @@ describe('retryDocumentContentTranslation', () => {
     expect(mergeRetryContext).toHaveBeenCalledTimes(1)
 
     expect(mergeRetryContext).toHaveBeenCalledWith({
+      sectionId: 'test-section',
       sectionDefinition: args.sectionDefinition,
       contentStrategy,
       currentValidation: validation1,
@@ -175,8 +182,8 @@ describe('retryDocumentContentTranslation', () => {
       .mockReturnValueOnce(validation3)
 
     vi.mocked(mergeRetryContext)
-      .mockReturnValueOnce(Effect.succeed(updated1))
-      .mockReturnValueOnce(Effect.succeed(updated2))
+      .mockReturnValueOnce(Effect.succeed({ context: updated1, validation: validation1 as any }))
+      .mockReturnValueOnce(Effect.succeed({ context: updated2, validation: validation2 as any }))
 
     await Effect.runPromise(
       retryDocumentContentTranslation(args as any, 5).pipe(
@@ -210,7 +217,12 @@ describe('retryDocumentContentTranslation', () => {
       issues: [{ code: 'INVALID' }],
     })
 
-    vi.mocked(mergeRetryContext).mockReturnValue(Effect.succeed(args.context))
+    vi.mocked(mergeRetryContext).mockReturnValue(
+      Effect.succeed({
+        context: args.context,
+        validation: { isValid: false, issues: [{ code: 'INVALID' }] } as any,
+      }),
+    )
 
     const result = await Effect.runPromise(
       retryDocumentContentTranslation(args as any, 3).pipe(
@@ -231,7 +243,7 @@ describe('retryDocumentContentTranslation', () => {
       expect(result.failure).toBeInstanceOf(TranslationError)
       expect(result.failure).toMatchObject({
         phase: 'retry',
-        sectionId: 'overview',
+        sectionId: 'test-section',
         contentType: 'paragraph',
       })
     }

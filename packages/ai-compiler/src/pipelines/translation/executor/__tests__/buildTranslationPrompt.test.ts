@@ -19,7 +19,8 @@ const TestStrategy: DocumentContentTranslationStrategy<typeof TestSchema> = {
     type: 'paragraph',
   },
 
-  retryContextUpdater: (args) => Effect.succeed(args.originalContext),
+  retryContextUpdater: (args) =>
+    Effect.succeed({ context: args.originalContext, validation: args.currentValidation }),
 }
 
 describe('buildTranslationPrompt', () => {
@@ -27,12 +28,12 @@ describe('buildTranslationPrompt', () => {
     const result = await Effect.runPromise(
       buildTranslationPrompt({
         language: 'ja',
+        sectionId: 'test-section',
         context: {
           type: 'paragraph',
           text: 'Hello',
         },
         sectionDefinition: {
-          id: 'overview',
           translationInstruction: 'Translate for README readers.',
           translations: [TestStrategy],
         },
@@ -54,8 +55,8 @@ describe('buildTranslationPrompt', () => {
           type: 'paragraph',
           text: 'Hello',
         },
+        sectionId: 'test-section',
         sectionDefinition: {
-          id: 'overview',
           translations: [TestStrategy],
         },
         contentStrategy: TestStrategy,
@@ -73,8 +74,8 @@ describe('buildTranslationPrompt', () => {
           type: 'paragraph',
           text: 'Hello',
         },
+        sectionId: 'test-section',
         sectionDefinition: {
-          id: 'overview',
           translations: [TestStrategy],
         },
         contentStrategy: TestStrategy,
@@ -104,8 +105,8 @@ describe('buildTranslationPrompt', () => {
           type: 'paragraph',
           text: 'Hello',
         },
+        sectionId: 'test-section',
         sectionDefinition: {
-          id: 'overview',
           translations: [TestStrategy],
         },
         contentStrategy: TestStrategy,
@@ -147,9 +148,8 @@ describe('buildTranslationPrompt', () => {
       context: {
         type: 'paragraph' as const,
       },
-      sectionDefinition: {
-        id: 'overview',
-      } as any,
+      sectionId: 'test-section',
+      sectionDefinition: {} as any,
       contentStrategy: strategy,
       validationResult: undefined,
     })
@@ -166,7 +166,7 @@ describe('buildTranslationPrompt', () => {
 
     expect(cause).toBeInstanceOf(TranslationError)
     expect(cause.phase).toBe('prompt')
-    expect(cause.sectionId).toBe('overview')
+    expect(cause.sectionId).toBe('test-section')
     expect(cause.contentType).toBe('paragraph')
     expect(cause.message).toBe('fail to build prompt message')
   })

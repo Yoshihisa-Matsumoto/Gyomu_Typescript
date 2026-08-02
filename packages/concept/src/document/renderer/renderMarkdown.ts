@@ -9,7 +9,7 @@ import type {
   Table,
 } from '@gyomu/schema/schemas/document'
 
-import type { TranslationPlan } from '../translation/TranslationPlan.js'
+import type { TranslatedDocument } from '../translation/TranslatedDocument.js'
 
 /**
  * Renders a translation plan into a Markdown-formatted document string using the provided context and callback functions for titles and language links.
@@ -20,10 +20,10 @@ import type { TranslationPlan } from '../translation/TranslationPlan.js'
  */
 export const renderMarkdown = <TContext extends DocumentBaseContext>(args: {
   context: TContext
-  plan: TranslationPlan
+  plan: TranslatedDocument
   getTitle: (context: TContext) => string
   getSectionTitle: (language: LanguageCodes, section: Section) => string
-  getLanguageLink?: ((language: LanguageCodes, plan: TranslationPlan) => string) | undefined
+  getLanguageLink?: ((language: LanguageCodes, plan: TranslatedDocument) => string) | undefined
 }) => {
   const { context, plan, getTitle, getSectionTitle, getLanguageLink } = args
   const title = `# ` + getTitle(context)
@@ -32,15 +32,15 @@ export const renderMarkdown = <TContext extends DocumentBaseContext>(args: {
     title +
     '\n\n' +
     link +
-    plan.destination
+    plan.sections
       .map((section) => renderSection(plan.language, section, getSectionTitle))
       .join('\n\n')
   )
 }
 
 const renderLink = (
-  plan: TranslationPlan,
-  getLanguageLink: (language: LanguageCodes, plan: TranslationPlan) => string,
+  plan: TranslatedDocument,
+  getLanguageLink: (language: LanguageCodes, plan: TranslatedDocument) => string,
 ): string => {
   return SupportedTranslationLanguages.map((language) => getLanguageLink(language, plan)).join(
     ' | ',

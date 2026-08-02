@@ -1,9 +1,10 @@
 import { Effect } from 'effect'
+import { createBuiltSection } from './createBuiltSection.js'
+import type { BuiltSection } from '@gyomu/schema/document'
 import type { ConceptOptions } from '../../ConceptOptions.js'
 import type { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 import type { DocumentBuilderError } from '../../error/DocumentBuilderError.js'
 import type { FileSystem } from 'effect'
-import type { Section } from '@gyomu/schema/schemas/document'
 import type { SectionBuilder } from './SectionBuilder.js'
 import type { DocumentBaseContext } from '@gyomu/schema/concept'
 
@@ -21,7 +22,7 @@ export const buildSections = <TSectionId extends string, TContext extends Docume
   builders: ReadonlyArray<SectionBuilder<TSectionId, TContext, any>>,
   option?: ConceptOptions,
 ): Effect.Effect<
-  ReadonlyArray<Section>,
+  ReadonlyArray<BuiltSection>,
   DocumentBuilderError,
   AiModelRoute | ModelRoutes | FileSystem.FileSystem
 > =>
@@ -35,11 +36,12 @@ export const buildSections = <TSectionId extends string, TContext extends Docume
           return undefined
         }
 
-        return yield* builder.build(context, option)
+        const sectionWithInstruction = yield* builder.build(context, option)
+        return createBuiltSection(sectionWithInstruction)
       }),
     { concurrency: 1 },
   ).pipe(
     Effect.map((sections) =>
-      sections.filter((section): section is Section => section !== undefined),
+      sections.filter((section): section is BuiltSection => section !== undefined),
     ),
   )

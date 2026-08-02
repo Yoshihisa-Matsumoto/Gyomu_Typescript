@@ -16,19 +16,21 @@ describe('buildInstallation', () => {
     const result = await Effect.runPromise(buildInstallation.build(context))
 
     expect(result).toEqual({
-      id: 'installation',
-      title: undefined,
-      contents: [
-        {
-          type: 'paragraph',
-          text: 'Install using pnpm.',
-        },
-        {
-          type: 'code',
-          language: 'bash',
-          code: 'pnpm add @gyomu/core',
-        },
-      ],
+      section: {
+        id: 'installation',
+        title: undefined,
+        contents: [
+          {
+            type: 'paragraph',
+            text: 'Install using pnpm.',
+          },
+          {
+            type: 'code',
+            language: 'bash',
+            code: 'pnpm add @gyomu/core',
+          },
+        ],
+      },
     })
   })
 
@@ -43,7 +45,7 @@ describe('buildInstallation', () => {
 
     const result = await Effect.runPromise(buildInstallation.build(context))
 
-    const codeBlock = result.contents.find((content) => content.type === 'code')
+    const codeBlock = result.section.contents.find((content) => content.type === 'code')
 
     expect(codeBlock).toEqual({
       type: 'code',

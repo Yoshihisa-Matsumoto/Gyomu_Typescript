@@ -29,15 +29,17 @@ export const buildDependencies: SectionBuilder<
         option?.retryOption,
       )
       return {
-        id: 'dependencies',
-        title: undefined,
-        contents: [
-          {
-            type: 'paragraph',
-            text: dependencyResult,
-          },
-        ],
-      } satisfies Section
+        section: {
+          id: 'dependencies',
+          title: undefined,
+          contents: [
+            {
+              type: 'paragraph',
+              text: dependencyResult,
+            },
+          ],
+        } satisfies Section,
+      }
     }).pipe(
       Effect.mapError((e) =>
         wrapInfraError(DocumentBuilderError, e, (e) => ({

@@ -17,11 +17,12 @@ export const buildTranslationPrompt = <
   }>,
 >(args: {
   language: LanguageCodes
+  sectionId: string
   context: Schema.Schema.Type<TSchema>
   sectionDefinition: SectionTranslationDefinition
   contentStrategy: DocumentContentTranslationStrategy<TSchema>
   validationResult: ValidationResult | undefined
-  retryOption?: RetryOption
+  retryOption?: RetryOption | undefined
 }) =>
   Effect.gen(function* () {
     const { sectionDefinition, contentStrategy, language, context, validationResult } = args
@@ -50,7 +51,7 @@ export const buildTranslationPrompt = <
         contentType: args.context.type,
         phase: 'prompt' as const,
         message: 'fail to build prompt message',
-        sectionId: args.sectionDefinition.id,
+        sectionId: args.sectionId,
       })),
     ),
   )

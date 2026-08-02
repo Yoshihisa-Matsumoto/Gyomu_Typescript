@@ -20,11 +20,12 @@ export const translateDocumentContent = <
   }>,
 >(args: {
   language: LanguageCodes
+  sectionId: string
   context: Schema.Schema.Type<TSchema>
   sectionDefinition: SectionTranslationDefinition
   contentStrategy: DocumentContentTranslationStrategy<TSchema>
   validationResult: ValidationResult | undefined
-  retryOption?: RetryOption
+  retryOption?: RetryOption | undefined
 }) =>
   Effect.gen(function* () {
     const service = yield* AiModelRoute
@@ -47,7 +48,7 @@ export const translateDocumentContent = <
         contentType: args.context.type,
         phase: 'translate' as const,
         message: 'fail to translate',
-        sectionId: args.sectionDefinition.id,
+        sectionId: args.sectionId,
       })),
     ),
   )

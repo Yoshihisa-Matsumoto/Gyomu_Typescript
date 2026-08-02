@@ -3,7 +3,8 @@ import { Effect } from 'effect'
 import type { DocumentContentTranslationStrategy } from '@gyomu/schema/document'
 import type { Table } from '@gyomu/schema/schemas/document'
 
-export const ParagraphTranslationStrategy: DocumentContentTranslationStrategy<typeof Table> = {
+export const TableTranslationStrategy: DocumentContentTranslationStrategy<typeof Table> = {
   definition: TableDefinition,
-  retryContextUpdater: (args) => Effect.succeed(args.originalContext),
+  retryContextUpdater: (args) =>
+    Effect.succeed({ context: args.originalContext, validation: args.currentValidation }),
 }

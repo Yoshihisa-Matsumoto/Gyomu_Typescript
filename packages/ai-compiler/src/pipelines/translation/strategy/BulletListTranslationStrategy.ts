@@ -10,6 +10,7 @@ import type {
 } from '@gyomu/schema/document'
 
 export const updateBulletListContext = (args: {
+  sectionId: string
   sectionDefinition: SectionTranslationDefinition
   currentValidation: ValidationResult
   previousValidation: ValidationResult | undefined
@@ -27,7 +28,7 @@ export const updateBulletListContext = (args: {
     contentType: 'bullet-list' as const,
     message: 'fail on building update context',
     phase: 'retry-context' as const,
-    sectionId: sectionDefinition.id,
+    sectionId: args.sectionId,
   }))(() => {
     const activeValidationList = mergeValidationResultForBulletList(
       currentValidation,
@@ -51,13 +52,13 @@ export const updateBulletListContext = (args: {
           contentType: 'bullet-list',
           message: 'TranslationId Not Found on BulletList',
           phase: 'retry-context',
-          sectionId: sectionDefinition.id,
+          sectionId: args.sectionId,
           translationId,
         })
       }
       validItem.text = validItemFromResult.text
     }
-    return originalContext
+    return { context: originalContext, validation: activeValidationList }
   })
 }
 

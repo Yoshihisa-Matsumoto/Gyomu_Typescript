@@ -18,16 +18,18 @@ export const buildRepositoryStructure: SectionBuilder<
       10,
     )
     return Effect.succeed({
-      id: 'repository-structure',
-      title: undefined,
-      contents: [
-        {
-          type: 'table',
-          header: { cells: ['Directory', 'Summary'] },
-          rows: directoryStructure.map((d) => ({ cells: [d.path, d.concept.summary] })),
-        },
-      ],
-    } satisfies Section)
+      section: {
+        id: 'repository-structure',
+        title: undefined,
+        contents: [
+          {
+            type: 'table',
+            header: { cells: ['Directory', 'Summary'] },
+            rows: directoryStructure.map((d) => ({ cells: [d.path, d.concept.summary] })),
+          },
+        ],
+      } satisfies Section,
+    })
   },
   enabled: () => true,
 }

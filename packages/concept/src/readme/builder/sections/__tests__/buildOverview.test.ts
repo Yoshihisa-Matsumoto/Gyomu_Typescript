@@ -43,14 +43,16 @@ describe('buildArchitecture', () => {
     )
 
     expect(result).toEqual({
-      id: 'overview',
-      title: undefined,
-      contents: [
-        {
-          type: 'paragraph',
-          text: 'Overview description',
-        },
-      ],
+      section: {
+        id: 'overview',
+        title: undefined,
+        contents: [
+          {
+            type: 'paragraph',
+            text: 'Overview description',
+          },
+        ],
+      },
     })
   })
 

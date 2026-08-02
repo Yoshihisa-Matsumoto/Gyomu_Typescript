@@ -13,9 +13,8 @@ describe('mergeRetryContext', () => {
 
     const result = await Effect.runPromise(
       mergeRetryContext({
-        sectionDefinition: {
-          id: 'overview',
-        } as any,
+        sectionId: 'test-section',
+        sectionDefinition: {} as any,
         contentStrategy: {
           retryContextUpdater,
         } as any,
@@ -43,9 +42,8 @@ describe('mergeRetryContext', () => {
     expect(retryContextUpdater).toHaveBeenCalledTimes(1)
 
     expect(retryContextUpdater).toHaveBeenCalledWith({
-      sectionDefinition: {
-        id: 'overview',
-      },
+      sectionId: 'test-section',
+      sectionDefinition: {} as any,
       currentValidation: {
         isValid: false,
         issues: [{}],
@@ -69,9 +67,8 @@ describe('mergeRetryContext', () => {
 
     const result = await Effect.runPromise(
       mergeRetryContext({
-        sectionDefinition: {
-          id: 'overview',
-        } as any,
+        sectionId: 'test-section',
+        sectionDefinition: {} as any,
         contentStrategy: {
           retryContextUpdater,
         } as any,
@@ -96,7 +93,7 @@ describe('mergeRetryContext', () => {
     if (Result.isFailure(result)) {
       expect(result.failure).toMatchObject({
         phase: 'retry-context',
-        sectionId: 'overview',
+        sectionId: 'test-section',
         contentType: 'paragraph',
       })
     }
@@ -106,9 +103,8 @@ describe('mergeRetryContext', () => {
 
     const result = await Effect.runPromise(
       mergeRetryContext({
-        sectionDefinition: {
-          id: 'overview',
-        } as any,
+        sectionId: 'test-section',
+        sectionDefinition: {} as any,
         contentStrategy: {
           retryContextUpdater,
         } as any,

@@ -4,6 +4,7 @@ import type { DocumentContent } from '@gyomu/schema/schemas/document'
 import type {
   DocumentContentTranslationStrategy,
   SectionTranslationDefinition,
+  TranslationState,
   ValidationResult,
 } from '@gyomu/schema/document'
 import type { Schema } from 'effect'
@@ -13,13 +14,14 @@ export const mergeRetryContext = <
     readonly type: DocumentContent['type']
   }>,
 >(args: {
+  sectionId: string
   sectionDefinition: SectionTranslationDefinition
   contentStrategy: DocumentContentTranslationStrategy<TSchema>
   currentValidation: ValidationResult
   previousValidation: ValidationResult | undefined
   originalContext: Schema.Schema.Type<TSchema>
   translatedContext: Schema.Schema.Type<TSchema>
-}): Effect.Effect<Schema.Schema.Type<TSchema>, TranslationError> => {
+}): Effect.Effect<TranslationState<TSchema>, TranslationError> => {
   const {
     originalContext,
     sectionDefinition,
@@ -35,11 +37,12 @@ export const mergeRetryContext = <
         cause: undefined,
         message: 'Invalid call. Should be called only when validation result fails',
         phase: 'retry-context',
-        sectionId: sectionDefinition.id,
+        sectionId: args.sectionId,
       }),
     )
   }
   return args.contentStrategy.retryContextUpdater({
+    sectionId: args.sectionId,
     sectionDefinition,
     currentValidation,
     previousValidation,

@@ -12,22 +12,24 @@ export const buildInstallation: SectionBuilder<ReadmeSectionId, ReadmeBuildConte
 
   build: (context: ReadmeBuildContext, option?: ConceptOptions) => {
     return Effect.succeed({
-      id: 'installation',
-      title: undefined,
-      contents: [
-        {
-          type: 'paragraph',
-          text: 'Install using pnpm.',
-        },
+      section: {
+        id: 'installation',
+        title: undefined,
+        contents: [
+          {
+            type: 'paragraph',
+            text: 'Install using pnpm.',
+          },
 
-        {
-          type: 'code',
-          language: 'bash',
+          {
+            type: 'code',
+            language: 'bash',
 
-          code: `pnpm add ${context.analysis.package.name}`,
-        },
-      ],
-    } satisfies Section)
+            code: `pnpm add ${context.analysis.package.name}`,
+          },
+        ],
+      } satisfies Section,
+    })
   },
   enabled: () => true,
 }

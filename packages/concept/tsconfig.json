@@ -5,6 +5,12 @@
     "outDir": "./dist",
     "tsBuildInfoFile": ".tsbuildinfo"
   },
-  "include": ["src/**/*"],
+  "include": [
+    "src/**/*",
+    "test-fixtures/document/createTranslatedParagraph.ts",
+    "test-fixtures/document/createTranslatedTable.ts",
+    "test-fixtures/document/createTranslatedCodeBlock.ts",
+    "test-fixtures/document/createTranslatedBulletList.ts"
+  ],
   "exclude": ["node_modules", "dist/**/*"]
 }

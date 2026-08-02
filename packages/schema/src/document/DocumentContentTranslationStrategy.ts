@@ -9,16 +9,26 @@ import type { Effect, Schema } from 'effect'
 
 export interface DocumentContentTranslationStrategy<
   TSchema extends Schema.Schema<{
-    readonly type: DocumentContent['type']
+    type: DocumentContent['type']
   }>,
 > {
   readonly definition: DocumentContentDefinitionBase<TSchema>
 
   readonly retryContextUpdater: (args: {
+    sectionId: string
     sectionDefinition: SectionTranslationDefinition
     currentValidation: ValidationResult
     previousValidation: ValidationResult | undefined
     originalContext: Schema.Schema.Type<TSchema>
     translatedContext: Schema.Schema.Type<TSchema>
-  }) => Effect.Effect<Schema.Schema.Type<TSchema>, TranslationError>
+  }) => Effect.Effect<TranslationState<TSchema>, TranslationError>
+}
+
+export interface TranslationState<
+  TSchema extends Schema.Schema<{
+    readonly type: DocumentContent['type']
+  }>,
+> {
+  context: Schema.Schema.Type<TSchema>
+  validation: ValidationResult
 }

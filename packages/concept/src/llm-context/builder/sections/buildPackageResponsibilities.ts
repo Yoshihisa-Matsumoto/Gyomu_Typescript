@@ -13,15 +13,21 @@ export const buildPackageResponsibilities: SectionBuilder<
 
   build: (context: LlmContextBuildContext, option?: ConceptOptions) => {
     return Effect.succeed({
-      id: 'package-responsibilities',
-      title: undefined,
-      contents: [
-        {
-          type: 'bullet-list',
-          items: context.concept.responsibilities,
-        },
-      ],
-    } satisfies Section)
+      section: {
+        id: 'package-responsibilities',
+        title: undefined,
+        contents: [
+          {
+            type: 'bullet-list',
+            items: context.concept.responsibilities.map((responsibility, index) => ({
+              type: 'text',
+              text: responsibility,
+              translationId: index,
+            })),
+          },
+        ],
+      } satisfies Section,
+    })
   },
   enabled: () => true,
 }

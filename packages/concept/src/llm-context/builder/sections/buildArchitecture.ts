@@ -29,15 +29,17 @@ export const buildArchitecture: SectionBuilder<
         option?.retryOption,
       )
       return {
-        id: 'architecture',
-        title: undefined,
-        contents: [
-          {
-            type: 'paragraph',
-            text: overviewResult,
-          },
-        ],
-      } satisfies Section
+        section: {
+          id: 'architecture',
+          title: undefined,
+          contents: [
+            {
+              type: 'paragraph',
+              text: overviewResult,
+            },
+          ],
+        } satisfies Section,
+      }
     }).pipe(
       Effect.mapError((e) =>
         wrapInfraError(DocumentBuilderError, e, (e) => ({

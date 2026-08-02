@@ -1,7 +1,7 @@
 import { Effect } from 'effect'
 import type { ConceptOptions } from '../../../ConceptOptions.js'
 import type { SectionBuilder } from '../../../document/builder/SectionBuilder.js'
-import type { Section } from '@gyomu/schema/schemas/document'
+import type { BulletListItem, Section } from '@gyomu/schema/schemas/document'
 import type { ReadmeBuildContext, ReadmeSectionId } from '@gyomu/schema/concept'
 
 /**
@@ -12,15 +12,23 @@ export const buildPublicApi: SectionBuilder<ReadmeSectionId, ReadmeBuildContext,
 
   build: (context: ReadmeBuildContext, option?: ConceptOptions) => {
     return Effect.succeed({
-      id: 'public-api',
-      title: undefined,
-      contents: [
-        {
-          type: 'bullet-list',
-          items: context.concept.capabilities.map((c) => `${c.name} - ${c.description}`),
-        },
-      ],
-    } satisfies Section)
+      section: {
+        id: 'public-api',
+        title: undefined,
+        contents: [
+          {
+            type: 'bullet-list',
+            items: context.concept.capabilities.map(
+              (c, index) =>
+                ({
+                  text: `${c.name} - ${c.description}`,
+                  translationId: index,
+                }) satisfies BulletListItem,
+            ),
+          },
+        ],
+      } satisfies Section,
+    })
   },
   enabled: () => true,
 }

@@ -18,12 +18,27 @@ export const executeDocumentContentTranslation = <
   }>,
 >(args: {
   language: LanguageCodes
+  sectionId: string
   context: Schema.Schema.Type<TSchema>
   sectionDefinition: SectionTranslationDefinition
   contentStrategy: DocumentContentTranslationStrategy<TSchema>
-  validationResult: ValidationResult | undefined
-  retryOption?: RetryOption
-}) => retryDocumentContentTranslation(args, MAX_TRANSLATION_ATTEMPTS)
+  retryOption?: RetryOption | undefined
+}) =>
+  Effect.gen(function* () {
+    return (yield* retryDocumentContentTranslation(
+      args,
+      MAX_TRANSLATION_ATTEMPTS,
+    )) as DocumentContent
+  })
+
+interface TemporallyTranslationState<
+  TSchema extends Schema.Schema<{
+    readonly type: DocumentContent['type']
+  }>,
+> {
+  context: Schema.Schema.Type<TSchema>
+  validation: ValidationResult | undefined
+}
 
 export const retryDocumentContentTranslation = <
   TSchema extends Schema.Schema<{
@@ -32,27 +47,34 @@ export const retryDocumentContentTranslation = <
 >(
   args: {
     language: LanguageCodes
+    sectionId: string
     context: Schema.Schema.Type<TSchema>
     sectionDefinition: SectionTranslationDefinition
     contentStrategy: DocumentContentTranslationStrategy<TSchema>
-    validationResult: ValidationResult | undefined
-    retryOption?: RetryOption
+    retryOption?: RetryOption | undefined
   },
   maxAttempt: number,
 ) =>
   Effect.gen(function* () {
     let attempt = 0
     let currentValidation: ValidationResult | undefined = undefined
-    let updateContext = args.context
+    let updateTrasnlationState: TemporallyTranslationState<TSchema> = {
+      context: args.context,
+      validation: currentValidation,
+    }
     let previousValidation: ValidationResult | undefined
 
     while (attempt < maxAttempt) {
-      const result = yield* translateDocumentContent({ ...args, context: updateContext })
+      const result = yield* translateDocumentContent({
+        ...args,
+        context: updateTrasnlationState.context,
+        validationResult: updateTrasnlationState.validation,
+      })
 
       previousValidation = currentValidation
 
       currentValidation = args.contentStrategy.definition.reconciliation.validate(
-        updateContext,
+        updateTrasnlationState.context,
         result,
       )
 
@@ -60,12 +82,13 @@ export const retryDocumentContentTranslation = <
         return result
       }
 
-      updateContext = yield* mergeRetryContext({
+      updateTrasnlationState = yield* mergeRetryContext({
+        sectionId: args.sectionId,
         sectionDefinition: args.sectionDefinition,
         contentStrategy: args.contentStrategy,
         currentValidation,
         previousValidation,
-        originalContext: updateContext,
+        originalContext: updateTrasnlationState.context,
         translatedContext: result,
       })
 
@@ -78,7 +101,7 @@ export const retryDocumentContentTranslation = <
         contentType: args.context.type,
         message: 'translation failed with maximum retry',
         phase: 'retry',
-        sectionId: args.sectionDefinition.id,
+        sectionId: args.sectionId,
       }),
     )
   })

@@ -63,6 +63,7 @@ describe('translateDocumentContent', () => {
     const result = await Effect.runPromise(
       translateDocumentContent({
         language: 'ja',
+        sectionId: 'test-section',
         context,
         sectionDefinition,
         contentStrategy,
@@ -102,12 +103,11 @@ describe('translateDocumentContent', () => {
     const result = await Effect.runPromise(
       translateDocumentContent({
         language: 'ja',
+        sectionId: 'overview',
         context: {
           type: 'paragraph',
         },
-        sectionDefinition: {
-          id: 'overview',
-        } as any,
+        sectionDefinition: {} as any,
         contentStrategy: {
           definition: {
             schema: Paragraph,

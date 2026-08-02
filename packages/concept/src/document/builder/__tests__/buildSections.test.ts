@@ -20,9 +20,11 @@ describe('buildSections', () => {
         enabled: () => true,
         build: () =>
           Effect.succeed({
-            id: 'overview',
-            title: undefined,
-            contents: [],
+            section: {
+              id: 'overview',
+              title: undefined,
+              contents: [],
+            },
           }),
       },
       {
@@ -30,16 +32,18 @@ describe('buildSections', () => {
         enabled: () => false,
         build: () =>
           Effect.succeed({
-            id: 'installation',
-            title: undefined,
-            contents: [],
+            section: {
+              id: 'installation',
+              title: undefined,
+              contents: [],
+            },
           }),
       },
     ] as const
 
     const result = await runQAWithEnvOrThrow(buildSections(context, builders as any))
 
-    expect(result).toEqual([
+    expect(result.map((s) => s.section)).toEqual([
       {
         id: 'overview',
         title: undefined,
@@ -55,9 +59,11 @@ describe('buildSections', () => {
         enabled: () => true,
         build: () =>
           Effect.succeed({
-            id: 'first',
-            title: undefined,
-            contents: [],
+            section: {
+              id: 'first',
+              title: undefined,
+              contents: [],
+            },
           }),
       },
       {
@@ -65,16 +71,18 @@ describe('buildSections', () => {
         enabled: () => true,
         build: () =>
           Effect.succeed({
-            id: 'second',
-            title: undefined,
-            contents: [],
+            section: {
+              id: 'second',
+              title: undefined,
+              contents: [],
+            },
           }),
       },
     ]
 
     const result = await runQAWithEnvOrThrow(buildSections(context, builders as any))
 
-    expect(result.map((s) => s.id)).toEqual(['first', 'second'])
+    expect(result.map((s) => s.section.id)).toEqual(['first', 'second'])
   })
 
   it('fails when builder fails', async () => {

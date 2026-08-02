@@ -16,14 +16,16 @@ describe('buildLicense', () => {
     const result = await Effect.runPromise(buildLicense.build(context))
 
     expect(result).toEqual({
-      id: 'license',
-      title: undefined,
-      contents: [
-        {
-          type: 'paragraph',
-          text: 'MIT',
-        },
-      ],
+      section: {
+        id: 'license',
+        title: undefined,
+        contents: [
+          {
+            type: 'paragraph',
+            text: 'MIT',
+          },
+        ],
+      },
     })
   })
 
@@ -38,7 +40,7 @@ describe('buildLicense', () => {
 
     const result = await Effect.runPromise(buildLicense.build(context))
 
-    expect(result.contents[0]).toEqual({
+    expect(result.section.contents[0]).toEqual({
       type: 'paragraph',
       text: 'Apache-2.0',
     })

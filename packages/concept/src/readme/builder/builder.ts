@@ -14,11 +14,11 @@ import type { ReadmeBuildContext, ReadmeSectionId } from '@gyomu/schema/concept'
 export const README_SECTION_BUILDERS: ReadonlyArray<
   SectionBuilder<ReadmeSectionId, ReadmeBuildContext, any>
 > = [
-  buildOverview,
-  buildArchitecture,
-  buildInstallation,
-  buildDependencies,
-  buildDevelopment,
-  buildPublicApi,
-  buildLicense,
+  buildOverview, // paragraph + AI
+  buildArchitecture, // paragraph + AI
+  buildInstallation, // paragraph + code
+  buildDependencies, // paragraph + AI
+  buildDevelopment, // paragraph + AI
+  buildPublicApi, // bullet-list
+  buildLicense, // paragraph
 ] as const

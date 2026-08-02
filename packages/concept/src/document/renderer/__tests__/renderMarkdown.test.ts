@@ -40,7 +40,7 @@ describe('renderMarkdown', () => {
 
     const markdown = renderMarkdown({
       context,
-      plan: { language: 'en', destination: sections, targets: [] },
+      plan: { language: 'en', sections },
       getTitle: () => 'TITLE',
       getSectionTitle: (language, section) => {
         return 'Overview'
@@ -78,7 +78,7 @@ console.log("hello")
 
     const markdown = renderMarkdown({
       context,
-      plan: { language: 'en', destination: sections, targets: [] },
+      plan: { language: 'en', sections },
       getTitle: () => 'TITLE',
       getSectionTitle: (language, section) => {
         return 'Overview'
@@ -114,7 +114,7 @@ console.log("hello")
 
     const markdown = renderMarkdown({
       context,
-      plan: { language: 'en', destination: sections, targets: [] },
+      plan: { language: 'en', sections },
       getTitle: () => 'TITLE',
       getSectionTitle: (language, section) => {
         return section.title ?? ''
@@ -143,7 +143,7 @@ Second section.`)
 
     const markdown = renderMarkdown({
       context,
-      plan: { language: 'en', destination: sections, targets: [] },
+      plan: { language: 'en', sections },
       getTitle: () => 'TITLE',
       getSectionTitle: (language, section) => {
         return 'Overview'
@@ -167,7 +167,7 @@ Second section.`)
 
     const markdown = renderMarkdown({
       context,
-      plan: { language: 'en', destination: sections, targets: [] },
+      plan: { language: 'en', sections },
       getTitle: () => 'TITLE',
       getSectionTitle: (language, section) => {
         return 'Overview'
@@ -216,7 +216,7 @@ US English | [JP 日本語](README.ja.md)
 
     const markdown = renderMarkdown({
       context,
-      plan: { language: 'en', destination: sections, targets: [] },
+      plan: { language: 'en', sections },
       getTitle: () => 'TITLE',
       getSectionTitle: (language, section) => {
         return 'Overview'

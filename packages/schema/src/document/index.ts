@@ -4,9 +4,16 @@ export {
   ValidationIssue,
   ValidationResult,
 } from './DocumentContentDefinitionBase.js'
-export { DocumentContentTranslationStrategy } from './DocumentContentTranslationStrategy.js'
+export {
+  DocumentContentTranslationStrategy,
+  TranslationState,
+} from './DocumentContentTranslationStrategy.js'
 export { BulletListDefinition } from './BulletListDefinition.js'
 export { CodeBlockDefinition } from './CodeBlockDefinition.js'
 export { ParagraphDefinition } from './ParagraphDefinition.js'
-export { SectionTranslationDefinition } from './SectionTranslationDefinition.js'
+export {
+  SectionTranslationDefinition,
+  SectionWithInstruction,
+  BuiltSection,
+} from './SectionTranslationDefinition.js'
 export { TableDefinition } from './TableDefinition.js'
