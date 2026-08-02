@@ -11,6 +11,7 @@ export const LLM_CONTEXT_SECTION_IDS = [
   'common-workflows',
   'important-constraints',
   'editing-rules',
+  'navigation',
 ] as const
 
 export type LlmContextSectionId = (typeof LLM_CONTEXT_SECTION_IDS)[number]
@@ -34,5 +35,6 @@ export const LLM_CONTEXT_SECTION_TITLES: Record<
     'common-workflows': 'Common Workflows',
     'important-constraints': 'Important Constraints',
     'editing-rules': 'Editing Rules',
+    navigation: 'Navigation',
   },
 }

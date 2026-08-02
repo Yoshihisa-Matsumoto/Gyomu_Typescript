@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { createDirectory } from '../../pipelines/package-concept/renderer/__tests__/helpers/createDirectory.js'
-import { calculateScore, rankDirectoriesByImportance } from '../rankDirectoriesByImportance.js'
+
+import { calculateScore, rankDirectoriesByScore } from '../rankDirectoriesByScore.js'
+import { createDirectory } from '../../__tests__/helpers/createDirectory.js'
 
 describe('rankDirectoriesByImportance', () => {
   describe('rankDirectoriesByImportance', () => {
@@ -24,7 +25,7 @@ describe('rankDirectoriesByImportance', () => {
         }),
       ]
 
-      const result = rankDirectoriesByImportance(directories)
+      const result = rankDirectoriesByScore(directories)
 
       expect(result.map((d) => d.path)).toEqual(['large', 'small'])
     })
@@ -49,13 +50,13 @@ describe('rankDirectoriesByImportance', () => {
         }),
       ]
 
-      const result = rankDirectoriesByImportance(directories)
+      const result = rankDirectoriesByScore(directories)
 
       expect(result.map((d) => d.path)).toEqual(['large', 'small'])
     })
 
     it('空配列なら空配列を返す', () => {
-      expect(rankDirectoriesByImportance([])).toEqual([])
+      expect(rankDirectoriesByScore([])).toEqual([])
     })
 
     it('API数がすべて0でもNaNにならず並び替えできる', () => {
@@ -74,7 +75,7 @@ describe('rankDirectoriesByImportance', () => {
         }),
       ]
 
-      const result = rankDirectoriesByImportance(directories)
+      const result = rankDirectoriesByScore(directories)
 
       expect(result.map((d) => d.path)).toEqual(['core', 'support', 'utility'])
     })

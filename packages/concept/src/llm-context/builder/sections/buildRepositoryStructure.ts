@@ -1,5 +1,5 @@
 import { Effect } from 'effect'
-import { rankDirectoriesByImportance } from '@gyomu/ai-compiler/domain'
+import { analyzePackageAnalysis } from '@gyomu/facts'
 import type { SectionBuilder } from '../../../document/builder/SectionBuilder.js'
 import type { ConceptOptions } from '../../../ConceptOptions.js'
 import type { LlmContextBuildContext, LlmContextSectionId } from '@gyomu/schema/concept'
@@ -13,10 +13,11 @@ export const buildRepositoryStructure: SectionBuilder<
   id: 'repository-structure',
 
   build: (context: LlmContextBuildContext, option?: ConceptOptions) => {
-    const directoryStructure = rankDirectoriesByImportance(context.analysis.directories).slice(
-      0,
-      10,
-    )
+    const packageFact = analyzePackageAnalysis(context.analysis)
+    const directoryStructure = packageFact.getRankedDirectories({
+      strategy: 'top-score',
+      limit: 10,
+    })
     return Effect.succeed({
       section: {
         id: 'repository-structure',

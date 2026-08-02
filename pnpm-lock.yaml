@@ -366,6 +366,9 @@ importers:
       '@gyomu/ai':
         specifier: workspace:^
         version: link:../ai
+      '@gyomu/facts':
+        specifier: workspace:^
+        version: link:../facts
       '@gyomu/infra':
         specifier: workspace:^
         version: link:../infra
@@ -422,6 +425,9 @@ importers:
       '@gyomu/ai-compiler':
         specifier: workspace:^
         version: link:../ai-compiler
+      '@gyomu/facts':
+        specifier: workspace:^
+        version: link:../facts
       '@gyomu/infra':
         specifier: workspace:^
         version: link:../infra
@@ -443,6 +449,21 @@ importers:
       '@gyomu/schema':
         specifier: workspace:^
         version: link:../schema
+      effect:
+        specifier: 'catalog:'
+        version: 4.0.0-beta.92
+
+  packages/facts:
+    dependencies:
+      '@gyomu/infra':
+        specifier: workspace:^
+        version: link:../infra
+      '@gyomu/schema':
+        specifier: workspace:^
+        version: link:../schema
+      '@gyomu/ts-analysis':
+        specifier: workspace:^
+        version: link:../ts-analysis
       effect:
         specifier: 'catalog:'
         version: 4.0.0-beta.92

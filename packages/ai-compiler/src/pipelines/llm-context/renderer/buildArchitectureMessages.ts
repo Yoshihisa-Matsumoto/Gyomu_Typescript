@@ -1,7 +1,7 @@
 import { Effect } from 'effect'
 import { MessageRole } from '@gyomu/schema/conversation'
+import { analyzePackageAnalysis } from '@gyomu/facts'
 import { loadPrompt } from '../prompt/index.js'
-import { rankDirectoriesByImportance } from '../../../domain/rankDirectoriesByImportance.js'
 import type { Message } from '@gyomu/schema/conversation'
 import type { IOError } from '@gyomu/schema'
 import type { LlmContextBuildContext } from '@gyomu/schema/concept'
@@ -21,7 +21,10 @@ export const buildArchitectureMessages = (
 ): Effect.Effect<Array<Message>, IOError, FileSystem.FileSystem> =>
   Effect.gen(function* () {
     const prompt = yield* loadPrompt('architecture-generate.md')
-    const targetDirectories = rankDirectoriesByImportance(context.analysis.directories).slice(0, 5)
+    const targetDirectories = analyzePackageAnalysis(context.analysis).getRankedDirectories({
+      strategy: 'top-score',
+      limit: 5,
+    })
     const userData = {
       conceptSummary: context.concept.summary,
       responsibilities: context.concept.responsibilities,

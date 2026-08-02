@@ -5,7 +5,7 @@ type ScoredDirectory = {
   directory: DirectoryAnalysis
 }
 
-export const rankDirectoriesByImportance = (directories: ReadonlyArray<DirectoryAnalysis>) => {
+export const rankDirectoriesByScore = (directories: ReadonlyArray<DirectoryAnalysis>) => {
   if (directories.length === 0) return []
 
   const maxPublicApiCount = Math.max(...directories.map((d) => d.facts.publicApiSymbolCount))

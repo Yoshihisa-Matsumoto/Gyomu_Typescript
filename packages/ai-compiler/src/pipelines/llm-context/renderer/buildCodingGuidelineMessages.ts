@@ -7,17 +7,13 @@ import type { IOError } from '@gyomu/schema'
 import type { LlmContextBuildContext } from '@gyomu/schema/concept'
 import type { FileSystem } from 'effect'
 
-export const buildDesignPrinciplesMessages = (
+export const buildCodingGuidelineMessages = (
   context: LlmContextBuildContext,
 ): Effect.Effect<Array<Message>, IOError, FileSystem.FileSystem> =>
   Effect.gen(function* () {
-    const prompt = yield* loadPrompt('design-principles.md')
+    const prompt = yield* loadPrompt('coding-guidelines.md')
     // const targetDirectories = rankDirectoriesByImportance(context.analysis.directories).slice(0, 5)
-    const userData = {
-      policies: context.knowledge.package.policies,
-      constraints: context.knowledge.package.constraints,
-      rationale: context.knowledge.package.rationale,
-    }
+    const userData = context.knowledge.codingGuideline
     return [
       { id: '1', role: MessageRole.system, content: prompt },
       { id: '2', role: MessageRole.user, content: JSON.stringify(userData, null, 2) },

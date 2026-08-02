@@ -1,5 +1,5 @@
 {
-  "name": "@gyomu/concept",
+  "name": "@gyomu/facts",
   "version": "0.2.4-beta.12",
   "description": "",
   "type": "module",
@@ -10,18 +10,6 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
-    },
-    "./directory": {
-      "import": "./dist/directory/index.js",
-      "types": "./dist/directory/index.d.ts"
-    },
-    "./package": {
-      "import": "./dist/package/index.js",
-      "types": "./dist/package/index.d.ts"
-    },
-    "./readme": {
-      "import": "./dist/readme/index.js",
-      "types": "./dist/readme/index.d.ts"
     }
   },
   "scripts": {
@@ -44,9 +32,6 @@
     "LICENSE"
   ],
   "dependencies": {
-    "@gyomu/ai": "workspace:^",
-    "@gyomu/ai-compiler": "workspace:^",
-    "@gyomu/facts": "workspace:^",
     "@gyomu/infra": "workspace:^",
     "@gyomu/schema": "workspace:^",
     "@gyomu/ts-analysis": "workspace:^",

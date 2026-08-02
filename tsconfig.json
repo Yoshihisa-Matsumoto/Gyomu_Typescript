@@ -11,6 +11,7 @@
     { "path": "packages/ai" },
     { "path": "packages/ai-compiler" },
     { "path": "packages/ai-react" },
+    { "path": "packages/analyze" },
     { "path": "packages/approval-core" },
     { "path": "packages/concept" },
     { "path": "packages/infra" },

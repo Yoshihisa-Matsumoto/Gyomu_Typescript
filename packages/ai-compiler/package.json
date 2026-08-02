@@ -7,10 +7,6 @@
     "access": "public"
   },
   "exports": {
-    "./domain": {
-      "import": "./dist/domain/index.js",
-      "types": "./dist/domain/index.d.ts"
-    },
     "./jsdoc-update": {
       "import": "./dist/pipelines/jsdoc-update/index.js",
       "types": "./dist/pipelines/jsdoc-update/index.d.ts"
@@ -67,6 +63,7 @@
   ],
   "dependencies": {
     "@gyomu/ai": "workspace:^",
+    "@gyomu/facts": "workspace:^",
     "@gyomu/infra": "workspace:^",
     "@gyomu/schema": "workspace:^",
     "effect": "catalog:"
