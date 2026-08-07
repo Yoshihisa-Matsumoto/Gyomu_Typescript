@@ -15,6 +15,10 @@
       "import": "./dist/directory/index.js",
       "types": "./dist/directory/index.d.ts"
     },
+    "./llm-context": {
+      "import": "./dist/llm-context/index.js",
+      "types": "./dist/llm-context/index.d.ts"
+    },
     "./package": {
       "import": "./dist/package/index.js",
       "types": "./dist/package/index.d.ts"

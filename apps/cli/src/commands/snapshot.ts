@@ -12,11 +12,8 @@ import {
 } from '@gyomu/tsdoc'
 import { DirectoryConceptRouteId, buildDirectoryConcept } from '@gyomu/concept/directory'
 import { PackageConceptRouteId, buildPackageConcept } from '@gyomu/concept/package'
-import {
-  ReadmeSectionRouteId,
-  TranslationRouteId,
-  generateReadmeFiles,
-} from '@gyomu/concept/readme'
+import { DocumentSectionRouteId, generateReadmeFiles } from '@gyomu/concept/readme'
+import { generateLlmContextFile } from '@gyomu/concept/llm-context'
 import { Effect, Layer } from 'effect'
 
 import {
@@ -45,8 +42,7 @@ const runQAWithEnvOrThrow = makeRunner(
       [TsDocRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
       [DirectoryConceptRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
       [PackageConceptRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
-      [ReadmeSectionRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
-      [TranslationRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
+      [DocumentSectionRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
     ]),
   ),
 )
@@ -213,6 +209,8 @@ export const snapshotCommand = (
             ReadmeSections: true,
           },
         })
+
+        yield* generateLlmContextFile(projectContext, { retryOption: {} })
 
         yield* commitProjectSnapshot({
           expectedSnapshot: changeResult.currentSnapshot,
