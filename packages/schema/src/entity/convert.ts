@@ -127,12 +127,12 @@ export const convertFromSchemaObjectWithEffect =
 // export type ValidationEffectSchema = Schema.Struct<any> | Schema.$Array<Schema.Struct<any>>
 
 /**
- * Represents a schema compatible with standard schema V1 and structurally required as a Struct.
+ * Represents a schema compatible with standard schema V1, required to be an object structure.
  */
 export type EffectSchema = Schema.Schema<any> & Schema.Struct<any> // Parameters<typeof Schema.toStandardSchemaV1>[0] & Schema.Struct<any>
 
 /**
- * A union type defining schemas that are either arrays of structures or individual structures compatible with the system.
+ * Represents a schema definition compatible with the system, potentially supporting arrays or structures.
  */
 export type EffectArrayableSchema = Schema.Schema<any>
 // | (Parameters<typeof Schema.toStandardSchemaV1>[0] & Schema.$Array<Schema.Struct<any>>)
@@ -154,12 +154,22 @@ export type EffectArrayableSchema = Schema.Schema<any>
 //   )
 // }
 
+/**
+ * Converts a schema to a standard-compatible JSON schema definition.
+ *
+ * @returns A standard schema conforming to V1 and JSON schema standards.
+ */
 export function toJsonSchema<T extends Schema.Schema<any>>(schema: T) {
   return Schema.toStandardSchemaV1(
     Schema.toStandardJSONSchemaV1(schema as any as Parameters<typeof Schema.toStandardSchemaV1>[0]),
   )
 }
 
+/**
+ * Serializes a schema into a JSON string conforming to the 2020-12 draft.
+ *
+ * @returns A formatted JSON string representation of the schema.
+ */
 export function toJsonSchemaString<T extends Schema.Schema<any>>(schema: T) {
   return JSON.stringify(
     toJsonSchema(schema)['~standard'].jsonSchema.output({ target: 'draft-2020-12' }),

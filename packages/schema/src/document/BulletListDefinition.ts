@@ -5,6 +5,15 @@ import type {
   ValidationIssue,
 } from './DocumentContentDefinitionBase.js'
 
+/**
+ * Validates that a translated bullet list structurally matches the source list, ensuring item counts and item identifiers are preserved.
+ *
+ * @param source The source bullet list.
+ *
+ * @param destination The translated bullet list to validate.
+ *
+ * @returns An object containing the validation results, including a list of issues and a boolean indicating overall validity.
+ */
 export const validateBulletList = (source: BulletList, destination: BulletList) => {
   const issues: Array<ValidationIssue> = []
   if (source.items.length != destination.items.length) {
@@ -49,6 +58,9 @@ export const validateBulletList = (source: BulletList, destination: BulletList) 
   return { issues: issues, isValid: issues.length == 0 }
 }
 
+/**
+ * Defines the document structure, translation instructions, and reconciliation logic for a bullet list.
+ */
 export const BulletListDefinition: DocumentContentDefinitionBase<typeof BulletList> = {
   type: 'bullet-list',
   schema: BulletList,

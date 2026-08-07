@@ -1,5 +1,8 @@
 import type { LanguageCodes } from '../../schemas/document/TranslationTarget.js'
 
+/**
+ * An array containing the valid section identifiers for the LLM context, used for structuring repository documentation.
+ */
 export const LLM_CONTEXT_SECTION_IDS = [
   'overview',
   'architecture',
@@ -14,12 +17,18 @@ export const LLM_CONTEXT_SECTION_IDS = [
   'navigation',
 ] as const
 
+/**
+ * Represents a valid identifier for an LLM context documentation section, derived from LLM_CONTEXT_SECTION_IDS.
+ */
 export type LlmContextSectionId = (typeof LLM_CONTEXT_SECTION_IDS)[number]
 
 type SectionDictionaryItem = {
   [section in LlmContextSectionId]: string
 }
 
+/**
+ * A dictionary mapping LLM context section identifiers to their human-readable titles, currently defined for English.
+ */
 export const LLM_CONTEXT_SECTION_TITLES: Record<
   Extract<LanguageCodes, 'en'>,
   SectionDictionaryItem

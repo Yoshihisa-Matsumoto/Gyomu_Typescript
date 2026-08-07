@@ -4,6 +4,15 @@ import type {
   ValidationIssue,
 } from './DocumentContentDefinitionBase.js'
 
+/**
+ * Validates that a code block's title, code content, and language are correctly preserved during translation, ensuring no unauthorized modifications.
+ *
+ * @param source The original code block object.
+ *
+ * @param destination The translated or target code block object.
+ *
+ * @returns A validation result object containing any identified issues and an `isValid` flag.
+ */
 export const validateCodeBlock = (source: CodeBlock, destination: CodeBlock) => {
   const issues: Array<ValidationIssue> = []
   if (source.title && !destination.title) {
@@ -36,6 +45,9 @@ export const validateCodeBlock = (source: CodeBlock, destination: CodeBlock) => 
   return { issues: issues, isValid: issues.length == 0 }
 }
 
+/**
+ * Defines the content type, schema, translation instructions, and reconciliation logic for code blocks.
+ */
 export const CodeBlockDefinition: DocumentContentDefinitionBase<typeof CodeBlock> = {
   type: 'code',
   schema: CodeBlock,

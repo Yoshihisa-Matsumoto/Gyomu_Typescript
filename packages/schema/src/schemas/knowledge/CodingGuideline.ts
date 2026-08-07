@@ -1,5 +1,8 @@
 import { Schema } from 'effect'
 
+/**
+ * Defines a coding guideline rule containing a category, the rule description, and an optional rationale.
+ */
 export const CodingRule = Schema.Struct({
   category: Schema.String.annotate({
     description: 'Category of the coding guideline.',
@@ -18,6 +21,9 @@ export const CodingRule = Schema.Struct({
   description: 'A coding guideline rule.',
 })
 
+/**
+ * Defines a schema for coding guidelines and rules for AI-assisted development, including display name, principles, rules, and forbidden practices.
+ */
 export const CodingGuideline = Schema.Struct({
   displayName: Schema.String,
 
@@ -36,4 +42,7 @@ export const CodingGuideline = Schema.Struct({
   description: 'Coding guidelines and rules for AI-assisted development.',
 })
 
+/**
+ * Represents the inferred type of a coding guideline.
+ */
 export type CodingGuideline = Schema.Schema.Type<typeof CodingGuideline>

@@ -4,6 +4,15 @@ import type {
   ValidationIssue,
 } from './DocumentContentDefinitionBase.js'
 
+/**
+ * Validates that the structure of the destination table matches the source table, ensuring that the number of header cells and row cells remains consistent.
+ *
+ * @param source The original table structure.
+ *
+ * @param destination The translated or modified table to validate.
+ *
+ * @returns An object containing a list of validation issues and a boolean indicating if the table is valid.
+ */
 export const validateTable = (source: Table, destination: Table) => {
   const issues: Array<ValidationIssue> = []
   if (source.header.cells.length != destination.header.cells.length) {
@@ -58,6 +67,10 @@ export const validateTable = (source: Table, destination: Table) => {
   }
   return { issues: issues, isValid: issues.length == 0 }
 }
+
+/**
+ * Defines the document structure for tables, including the schema, translation instructions, and reconciliation validation logic.
+ */
 export const TableDefinition: DocumentContentDefinitionBase<typeof Table> = {
   type: 'table',
   schema: Table,
