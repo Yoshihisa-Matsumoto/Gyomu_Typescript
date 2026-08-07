@@ -51,5 +51,6 @@ export const buildOverview: SectionBuilder<
         })),
       ),
     ),
+  translation: { strategy: 'translate', translations: [] },
   enabled: () => true,
 }

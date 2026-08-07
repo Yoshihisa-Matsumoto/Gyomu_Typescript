@@ -9,6 +9,7 @@ import { translateSection } from '../translateSection.js'
 import type { BuiltSection } from '@gyomu/schema/document'
 
 const mockAiLayer = createMockAiLayer(DocumentSectionRouteId)
+
 vi.mock('@gyomu/ai-compiler/translation', () => ({
   executeDocumentContentTranslation: vi.fn(),
 }))
@@ -36,6 +37,7 @@ describe('translateSection', () => {
       ],
     },
     translation: {
+      strategy: 'translate' as const,
       translations: [
         {
           type: 'translate',
@@ -85,17 +87,23 @@ describe('translateSection', () => {
 
     expect(mockedExecuteDocumentContentTranslation).toHaveBeenCalledTimes(2)
 
-    expect(mockedExecuteDocumentContentTranslation).toHaveBeenNthCalledWith(
-      1,
-      expect.objectContaining({
-        language: 'ja',
-        sectionId: 'overview',
-        context: section.section.contents[0],
-        sectionDefinition: section.translation,
-        contentStrategy: section.translation.translations[0],
-        retryOption: undefined,
-      }),
-    )
+    expect(mockedExecuteDocumentContentTranslation).toHaveBeenNthCalledWith(1, {
+      language: 'ja',
+      sectionId: 'overview',
+      context: section.section.contents[0],
+      sectionDefinition: section.translation,
+      contentStrategy: (section.translation as any).translations[0],
+      retryOption: undefined,
+    })
+
+    expect(mockedExecuteDocumentContentTranslation).toHaveBeenNthCalledWith(2, {
+      language: 'ja',
+      sectionId: 'overview',
+      context: section.section.contents[1],
+      sectionDefinition: section.translation,
+      contentStrategy: (section.translation as any).translations[1],
+      retryOption: undefined,
+    })
   })
 
   it('passes retry option', async () => {
@@ -121,6 +129,35 @@ describe('translateSection', () => {
         retryOption,
       }),
     )
+  })
+
+  it('returns original contents without translation when strategy is none', async () => {
+    const nonTranslatedSection = {
+      section: {
+        id: 'editing-rules',
+        title: undefined,
+        contents: [
+          {
+            type: 'bullet-list',
+            items: ['Do not modify generated files.'],
+          },
+        ],
+      },
+      translation: {
+        strategy: 'none' as const,
+      },
+    } as unknown as BuiltSection
+
+    const result = await Effect.runPromise(
+      translateSection(nonTranslatedSection, 'ja').pipe(
+        Effect.provide(PlatformLayer),
+        Effect.provide(mockAiLayer),
+      ),
+    )
+
+    expect(result).toEqual(nonTranslatedSection.section)
+
+    expect(mockedExecuteDocumentContentTranslation).not.toHaveBeenCalled()
   })
 
   it('fails when translation fails', async () => {

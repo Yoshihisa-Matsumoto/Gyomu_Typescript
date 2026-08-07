@@ -6,113 +6,146 @@ import {
   TableTranslationStrategy,
 } from '@gyomu/ai-compiler/translation'
 import { createBuiltSection } from '../createBuiltSection.js'
-import type { Section } from '@gyomu/schema/schemas/document'
+import type { SectionWithInstruction } from '@gyomu/schema/document'
 
 describe('createBuiltSection', () => {
-  it('should create BuiltSection with all translation strategies', () => {
-    const section: Section = {
-      id: 'overview',
-      contents: [
-        {
-          type: 'paragraph',
-          text: 'paragraph',
-        },
-        {
-          type: 'bullet-list',
-          items: [],
-        },
-        {
-          type: 'code',
-          language: 'ts',
-          code: 'const a = 1',
-        },
-        {
-          type: 'table',
-          header: { cells: [] },
-          rows: [],
-        },
-      ],
+  it('creates a non-translated BuiltSection when translation is not specified', () => {
+    const input: SectionWithInstruction = {
+      section: {
+        id: 'overview',
+        title: 'Overview',
+        contents: [
+          {
+            type: 'paragraph',
+            text: 'Hello',
+          },
+        ],
+      },
+      translationInstruction: 'Translate naturally.',
     }
 
-    const result = createBuiltSection({
-      section,
-      translationInstruction: 'translate naturally',
-    })
+    const result = createBuiltSection(input)
 
     expect(result).toEqual({
-      section,
+      section: input.section,
       translation: {
-        translationInstruction: 'translate naturally',
-        translations: [
-          ParagraphTranslationStrategy,
-          BulletListTranslationStrategy,
-          CodeBlockTranslationStrategy,
-          TableTranslationStrategy,
-        ],
+        strategy: 'none',
       },
     })
   })
 
-  it('should preserve section reference', () => {
-    const section: Section = {
-      id: 'overview',
-      contents: [],
+  it('creates a translated BuiltSection when translation is specified', () => {
+    const input: SectionWithInstruction = {
+      section: {
+        id: 'overview',
+        title: 'Overview',
+        contents: [
+          {
+            type: 'paragraph',
+            text: 'Hello',
+          },
+        ],
+      },
+      translationInstruction: 'Translate naturally.',
     }
 
-    const result = createBuiltSection({ section })
+    const result = createBuiltSection(input, {} as never)
 
-    expect(result.section).toBe(section)
+    expect(result).toEqual({
+      section: input.section,
+      translation: {
+        strategy: 'translate',
+        translationInstruction: 'Translate naturally.',
+        translations: [ParagraphTranslationStrategy],
+      },
+    })
   })
 
-  it('should allow undefined translationInstruction', () => {
-    const section: Section = {
-      id: 'overview',
-      contents: [
-        {
-          type: 'paragraph',
-          text: 'Hello',
-        },
-      ],
+  it('creates translation strategies corresponding to each content type', () => {
+    const input: SectionWithInstruction = {
+      section: {
+        id: 'mixed-content',
+        title: 'Mixed Content',
+        contents: [
+          {
+            type: 'paragraph',
+            text: 'Paragraph',
+          },
+          {
+            type: 'bullet-list',
+            items: [
+              { translationId: 1, text: 'Item 1' },
+              { translationId: 2, text: 'Item 2' },
+            ],
+          },
+          {
+            type: 'code',
+            language: 'typescript',
+            code: 'const value = 1',
+          },
+          {
+            type: 'table',
+            header: { cells: ['Name', 'Value'] },
+            rows: [{ cells: ['foo', 'bar'] }],
+          },
+        ],
+      },
     }
 
-    const result = createBuiltSection({ section })
+    const result = createBuiltSection(input, {} as never)
 
-    expect(result.translation.translationInstruction).toBeUndefined()
-    expect(result.translation.translations).toEqual([ParagraphTranslationStrategy])
+    expect(result.translation).toEqual({
+      strategy: 'translate',
+      translationInstruction: undefined,
+      translations: [
+        ParagraphTranslationStrategy,
+        BulletListTranslationStrategy,
+        CodeBlockTranslationStrategy,
+        TableTranslationStrategy,
+      ],
+    })
   })
 
-  it('should preserve content order when creating translation strategies', () => {
-    const section: Section = {
-      id: 'overview',
-      contents: [
-        {
-          type: 'code',
-          language: 'ts',
-          code: '',
-        },
-        {
-          type: 'paragraph',
-          text: '',
-        },
-        {
-          type: 'table',
-          header: { cells: [] },
-          rows: [],
-        },
-        {
-          type: 'bullet-list',
-          items: [],
-        },
-      ],
+  it('preserves the original section', () => {
+    const input: SectionWithInstruction = {
+      section: {
+        id: 'overview',
+        title: 'Overview',
+        contents: [
+          {
+            type: 'paragraph',
+            text: 'Hello',
+          },
+        ],
+      },
     }
 
-    const result = createBuiltSection({ section })
+    const result = createBuiltSection(input)
 
-    expect(result.translation.translations).toEqual([
-      CodeBlockTranslationStrategy,
-      ParagraphTranslationStrategy,
-      TableTranslationStrategy,
-      BulletListTranslationStrategy,
-    ])
+    expect(result.section).toBe(input.section)
+  })
+
+  it('preserves translation instruction', () => {
+    const input: SectionWithInstruction = {
+      section: {
+        id: 'overview',
+        title: 'Overview',
+        contents: [
+          {
+            type: 'paragraph',
+            text: 'Hello',
+          },
+        ],
+      },
+      translationInstruction: 'Preserve technical terms.',
+    }
+
+    const result = createBuiltSection(input, {} as never)
+
+    expect(result.translation).toEqual({
+      strategy: 'translate',
+      translationInstruction: 'Preserve technical terms.',
+      translations: [ParagraphTranslationStrategy],
+    })
   })
 })

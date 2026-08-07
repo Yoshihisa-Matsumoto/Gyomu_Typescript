@@ -3,11 +3,15 @@ import type { DocumentContent } from '../schemas/document/DocumentContent.js'
 import type { DocumentContentTranslationStrategy } from './DocumentContentTranslationStrategy.js'
 import type { Section } from '../schemas/document/Section.js'
 
-export interface SectionTranslationDefinition {
-  translationInstruction?: string | undefined
-
-  translations: ReadonlyArray<AnyDocumentContentTranslationStrategy>
-}
+export type SectionTranslationDefinition =
+  | {
+      strategy: 'none'
+    }
+  | {
+      strategy: 'translate'
+      translationInstruction?: string | undefined
+      translations: ReadonlyArray<AnyDocumentContentTranslationStrategy>
+    }
 
 export interface SectionWithInstruction {
   section: Section

@@ -31,5 +31,6 @@ export const buildInstallation: SectionBuilder<ReadmeSectionId, ReadmeBuildConte
       } satisfies Section,
     })
   },
+  translation: { strategy: 'translate', translations: [] },
   enabled: () => true,
 }

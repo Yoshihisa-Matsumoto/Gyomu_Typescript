@@ -32,5 +32,6 @@ export const buildRepositoryStructure: SectionBuilder<
       } satisfies Section,
     })
   },
+  translation: { strategy: 'none' },
   enabled: () => true,
 }

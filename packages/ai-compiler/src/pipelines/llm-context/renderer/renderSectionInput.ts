@@ -2,6 +2,7 @@ import { buildOverviewMessages } from './buildOverviewMessages.js'
 import { buildArchitectureMessages } from './buildArchitectureMessages.js'
 import { buildDesignPrinciplesMessages } from './buildDesignPrinciplesMessages.js'
 import { buildImportantConstraintsMessages } from './buildImportantConstraintsMessages.js'
+import { buildEditingRuleMessages } from './buildEditingRuleMessages.js'
 import type { Effect, FileSystem } from 'effect'
 import type { Message } from '@gyomu/schema/conversation'
 import type { LlmContextBuildContext, LlmContextSectionId } from '@gyomu/schema/concept'
@@ -13,7 +14,7 @@ import type { IOError } from '@gyomu/schema'
  */
 export type SupportedSectionId = Extract<
   LlmContextSectionId,
-  'overview' | 'architecture' | 'design-principles' | 'important-constraints'
+  'overview' | 'architecture' | 'design-principles' | 'important-constraints' | 'editing-rules'
 >
 
 /**
@@ -27,4 +28,5 @@ export const SectionPromptMap: Record<
   architecture: buildArchitectureMessages,
   'design-principles': buildDesignPrinciplesMessages,
   'important-constraints': buildImportantConstraintsMessages,
+  'editing-rules': buildEditingRuleMessages,
 }

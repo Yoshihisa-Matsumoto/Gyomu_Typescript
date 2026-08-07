@@ -12,6 +12,9 @@ export const translateSection = (
   Effect.gen(function* () {
     const contents = yield* Effect.forEach(section.section.contents, (content, index) =>
       Effect.gen(function* () {
+        if (section.translation.strategy !== 'translate') {
+          return content
+        }
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
         const contentStrategy = section.translation.translations[index]!
         return yield* executeDocumentContentTranslation({

@@ -1,4 +1,4 @@
-import type { SectionWithInstruction } from '@gyomu/schema/document'
+import type { SectionTranslationDefinition, SectionWithInstruction } from '@gyomu/schema/document'
 import type { ConceptOptions } from '../../ConceptOptions.js'
 import type { DocumentBaseContext } from '@gyomu/schema/concept'
 import type { Section } from '@gyomu/schema/schemas/document'
@@ -17,6 +17,8 @@ export interface SectionBuilder<
    * The unique identifier for the section.
    */
   readonly id: TSectionId
+
+  readonly translation: SectionTranslationDefinition
 
   /**
    * Constructs the documentation section based on the provided build context.

@@ -41,5 +41,6 @@ When modifying this package, review the relevant documentation before making cha
       } satisfies Section,
     })
   },
+  translation: { strategy: 'none' },
   enabled: () => true,
 }

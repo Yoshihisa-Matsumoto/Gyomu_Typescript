@@ -1,0 +1,13 @@
+faq:
+  - question: |
+      このパッケージは単独で利用できますか？
+    answer: |
+      はい。ただし、多くの場合は Gyomu プロジェクト内で共通契約を提供するために利用します。
+
+knownIssues: []
+
+tips:
+  - title: Effect Schema の Annotation
+    description: |
+      公開する Effect Schema には Annotation を付与してください。
+      AI による README・Concept・Knowledge 生成にも利用されます。

@@ -30,5 +30,6 @@ export const buildPublicApi: SectionBuilder<ReadmeSectionId, ReadmeBuildContext,
       } satisfies Section,
     })
   },
+  translation: { strategy: 'translate', translations: [] },
   enabled: () => true,
 }

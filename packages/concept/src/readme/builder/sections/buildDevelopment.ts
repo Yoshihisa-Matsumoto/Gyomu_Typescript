@@ -53,6 +53,6 @@ export const buildDevelopment: SectionBuilder<
         })),
       ),
     ),
-
+  translation: { strategy: 'translate', translations: [] },
   enabled: () => true,
 }

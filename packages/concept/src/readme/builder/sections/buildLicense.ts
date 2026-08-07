@@ -24,6 +24,6 @@ export const buildLicense: SectionBuilder<ReadmeSectionId, ReadmeBuildContext, n
       } satisfies Section,
     })
   },
-
+  translation: { strategy: 'none' },
   enabled: () => true,
 }

@@ -35,9 +35,9 @@ export const buildSections = <TSectionId extends string, TContext extends Docume
         if (!enabled) {
           return undefined
         }
-
         const sectionWithInstruction = yield* builder.build(context, option)
-        return createBuiltSection(sectionWithInstruction)
+
+        return createBuiltSection(sectionWithInstruction, builder.translation)
       }),
     { concurrency: 1 },
   ).pipe(

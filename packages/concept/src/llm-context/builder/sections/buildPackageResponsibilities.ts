@@ -29,5 +29,6 @@ export const buildPackageResponsibilities: SectionBuilder<
       } satisfies Section,
     })
   },
+  translation: { strategy: 'none' },
   enabled: () => true,
 }

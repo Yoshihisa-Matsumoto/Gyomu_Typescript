@@ -13,7 +13,7 @@ import type { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 /**
  * A readme section builder that generates the 'coding-guideline' section for the package documentation.
  */
-export const buildCodingGuidelines: SectionBuilder<
+export const buildImportantConstraints: SectionBuilder<
   LlmContextSectionId,
   LlmContextBuildContext,
   AiModelRoute | FileSystem.FileSystem | ModelRoutes
@@ -51,5 +51,6 @@ export const buildCodingGuidelines: SectionBuilder<
         })),
       ),
     ),
+  translation: { strategy: 'none' },
   enabled: () => true,
 }
