@@ -4,15 +4,17 @@ US English | [JP 日本語](README.ja.md)
 
 ## Overview
 
-This package serves as a primary orchestrator within the Gyomu ecosystem, providing a robust execution platform for intelligent agents. By integrating advanced AI models with project-specific code intelligence, it enables the creation and management of sophisticated development workflows.
+The `@gyomu/agent` package serves as an AI-driven agent module within the Gyomu project ecosystem, acting as the foundational execution platform for agents. Its primary purpose is to combine AI models with project analysis features to build and execute declarative, extensible agent workflows. 
 
-The core mission is to facilitate declarative and extensible agent operations, supporting tasks such as deep code analysis, automated generation, and system updates. By leveraging specialized infrastructure for schema management and documentation, this framework empowers developers to build high-performance automation tools that streamline complex software engineering processes.
+By integrating core AI capabilities, infrastructure, schema validation, and TypeScript documentation parsing, the package enables the execution of intelligent analysis tasks. This provides a robust foundation for advanced development support functions such as code analysis, automated generation, and automated updates.
 
 ## Architecture
 
-The @gyomu/agent package is structured as a central orchestrator that bridges high-level AI analysis with local TypeScript project operations. It manages the lifecycle and state of automated agents, implementing the decision-making logic required to translate analytical goals into concrete code-related tasks.
+The package is organized around two primary functional domains: core agent execution and automated testing infrastructure. Responsibilities are divided between orchestrating intelligent analysis tasks and providing a robust quality assurance layer. 
 
-The architecture centers on a core execution layer supported by a robust verification infrastructure. Within the `src` directory, the package maintains specialized validation tools and testing logic that serve as a quality assurance layer. These components interact by subjecting analytical operations to rigorous verification, ensuring that the agents maintain stability and correctness when processing project inputs. By separating the agentic logic from the testing framework, the package ensures that its core analysis routines remain reliable throughout the automated execution process.
+The source directory (`src`) serves as the central hub for the testing infrastructure. It houses validation logic and verification tools designed to ensure the reliability, stability, and correctness of the project's analytical components. Through automated test suites, this component acts as a verification layer that validates expected outputs against project inputs.
+
+Together, these collaborating components integrate schema definitions, infrastructure components, and foundational AI capabilities to execute intelligent analysis tasks while maintaining operational stability.
 
 ## Installation
 
@@ -24,21 +26,18 @@ pnpm add @gyomu/agent
 
 ## Dependencies
 
-This package requires a Node.js environment supporting ESM and is built specifically for Effect 4.x. It is designed to work seamlessly within modern TypeScript projects.
-
-The library relies on `effect` as its primary runtime foundation, while leveraging `@gyomu/schema` for shared types and schemas. Additionally, it integrates with `@gyomu/infra` to handle core I/O and infrastructure operations. Ensure these base dependencies are installed in your project to utilize the package's full functionality.
+This package requires an ESM environment and is built for Effect version 4.x, utilizing the Effect runtime, schema, and context as its core foundation. It integrates with `@gyomu/schema` for shared types and schemas, and `@gyomu/infra` for foundational I/O and infrastructure operations.
 
 ## Development
 
-The architecture of this package is built upon the principle of "Reflective Autonomy," where the agent acts not merely as a text generator, but as a state-aware participant in the software development lifecycle. By adopting a declarative approach to task definition, we decouple high-level intent from low-level execution, allowing developers to define *what* needs to be achieved in the codebase while delegating the *how* to modular, chainable execution strategies. This structure ensures that the system remains maintainable as project complexity scales, treating code analysis as a persistent, iterative loop rather than a series of disconnected prompts.
+This package aims to serve as the Agent execution foundation in the Gyomu project by combining AI models and project analysis features to build and execute declarative and extensible Agent workflows, providing the basis for advanced development support features such as code analysis and automatic generation. To achieve this, developers must design each Agent as an independent component based on its responsibilities, separating implementation from configuration and declaring its behavior. In addition, AI inference results must undergo schema validation as needed to ensure they are always handled as safe data, and state transitions must be managed clearly for long-running processes.
 
-Contributors should prioritize "Composable Observability" and "Infrastructure-as-Code-Logic" when extending the platform. Every agentic action must be traceable, reproducible, and treat the local filesystem as a source of truth that the AI must respect and synchronize with. We advocate for a "Safety-First-by-Design" philosophy, where heuristic constraints and validation layers wrap all AI-generated operations. Our goal is to foster an ecosystem where granular capabilities—ranging from static analysis to complex refactoring—can be composed into sophisticated workflows without sacrificing the stability or integrity of the underlying TypeScript project.
+Contributors must follow strict policies regarding coupling with infrastructure. Agents must be built using Dependency Injection via Effect and must not depend directly on infrastructure. Furthermore, it is essential that Agents remain loosely coupled and be configured as reusable workflows. To maintain robustness during operation and when errors occur, errors must be structured and designed to reliably retain execution status and diagnostic information.
 
 ## Public API
 
-- Agent Orchestration - Provides the structural framework to define and execute autonomous agents capable of performing complex code analysis and transformation tasks.
-- Code Intelligence Integration - Exposes capabilities for deep semantic analysis of TypeScript code by utilizing underlying structural and documentation models.
-- Analytical Workflow Management - Coordinates multi-step processes involving schema validation, AI inference, and infrastructure interaction.
+- Agent Execution - Enables the orchestration and execution of AI-driven tasks leveraging core gyomu packages.
+- Testing Infrastructure - Provides automated verification tools and test suites to ensure the correctness of agent operations.
 
 ## License
 

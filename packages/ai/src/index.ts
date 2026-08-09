@@ -11,6 +11,13 @@ export * from './provider/index.js'
 export * from './routing/index.js'
 export * from './error/index.js'
 
+/**
+ * Creates a mock AI layer configured for a specific model route.
+ *
+ * @param routeId The model route identifier to associate with the mock route.
+ *
+ * @returns An Effect Layer containing the mocked AI services.
+ */
 export const createMockAiLayer = (routeId: ModelRouteId) => {
   const mockAiModelService = Layer.succeed(AiModelRoute, {
     generateObject: () => Effect.succeed({ object: {} }),

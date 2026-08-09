@@ -1,35 +1,22 @@
 {
-  "summary": "This package establishes a modular framework for AI-driven application development, providing core abstractions for model registry management, request routing, provider integration, tool execution, and prompt versioning to ensure consistent AI service orchestration.",
+  "summary": "This package root directory serves as the primary entry point and integration hub for the AI layer, consolidating core sub-modules that handle agents, models, execution, routing, tools, prompts, providers, and error handling.",
   "responsibilities": [
-    "Manage AI model registry and configuration",
-    "Orchestrate model request routing and fallback logic",
-    "Define standardized provider service interfaces",
-    "Implement AI-integrated tool execution lifecycle",
-    "Maintain versioned prompt template repositories",
-    "Provide structured error handling and diagnostics"
+    "Export public APIs and modules for the entire AI layer",
+    "Aggregate core sub-components including agents, models, execution contexts, routing, tools, prompts, and providers",
+    "Provide centralized error handling and domain-specific failure diagnostics"
   ],
   "concepts": [
-    "AI Model Registry",
-    "Model Execution Pipeline",
-    "Provider Abstraction Layer",
-    "Prompt Repository",
-    "AI-Integrated Tooling",
-    "Request Routing"
+    "AI Layer Entry Point",
+    "Module Aggregation",
+    "Core Package API"
   ],
   "relationships": [
-    "The routing service maps requests to specific models defined within the AI model registry.",
-    "Provider implementations adhere to service interfaces to execute tasks initiated by the routing layer.",
-    "AI tools provide supplemental capabilities that are executed within a managed context defined by the execution pipeline.",
-    "Prompt repositories provide the templates used by models during request generation.",
-    "Error handling mechanisms provide consistent diagnostic context across all layers of the model execution process."
+    "The root index exports all public modules, models, providers, routing logic, and tools to external consumers.",
+    "Sub-modules such as routing, models, and execution coordinate through the exported package surface to handle AI requests."
   ],
   "designDecisions": [
-    "Interface-based design for decoupling provider and repository logic",
-    "Use of Effect context for dependency injection and service management",
-    "Layered architecture separating execution orchestration from concrete service implementation",
-    "Centralized registry pattern for service and model discovery",
-    "Schema-driven validation for data structures and prompt definitions",
-    "Decorator pattern for injecting cross-cutting concerns like retries and approval policies"
+    "Re-exporting all sub-module indexes from a single entry point to simplify consumer imports",
+    "Modularizing functionality into distinct directories like models, routing, tools, and execution to separate concerns"
   ],
   "importance": "Core"
 }
