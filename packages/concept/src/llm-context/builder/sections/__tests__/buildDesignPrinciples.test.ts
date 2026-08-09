@@ -8,6 +8,7 @@ import { buildDesignPrinciples } from '../buildDesignPrinciples.js'
 import type { BulletList } from '@gyomu/schema/schemas/document'
 import type { LlmContextBuildContext } from '@gyomu/schema/concept'
 import type { ConceptOptions } from '../../../../ConceptOptions.js'
+import { RetryOption } from '@gyomu/schema'
 
 vi.mock('../../../../document/builder/buildBulletList.js', () => ({
   buildBulletList: vi.fn(),
@@ -69,9 +70,9 @@ describe('buildDesignPrinciples', () => {
   it('retryOptionをbuildBulletListに渡す', async () => {
     mockedBuildBulletList.mockReturnValue(Effect.succeed(bulletList))
 
-    const retryOption = {
-      maxRetries: 3,
-    } as ConceptOptions['retryOption']
+    const retryOption: RetryOption = {
+      maxAttempts: 3,
+    }
 
     const option: ConceptOptions = {
       retryOption,

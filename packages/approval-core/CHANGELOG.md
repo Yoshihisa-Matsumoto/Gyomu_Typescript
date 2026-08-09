@@ -1,5 +1,12 @@
 # @gyomu/approval-core
 
+## 0.2.4-beta.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @gyomu/schema@0.2.4-beta.13
+
 ## 0.2.4-beta.12
 
 ### Patch Changes
