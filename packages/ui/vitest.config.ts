@@ -7,6 +7,7 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     dedupe: ['react', 'react-dom'],
   },
+
   test: {
     environment: 'jsdom',
     globals: true,
@@ -40,5 +41,14 @@ export default defineConfig(({ mode }) => ({
       ],
     },
     restoreMocks: mode === 'sit' ? false : true,
+    deps: {
+      moduleDirectories: ['node_modules', '../../packages'],
+    },
+
+    server: {
+      deps: {
+        external: ['schema'],
+      },
+    },
   },
 }))
