@@ -17,3 +17,6 @@ Guidelines:
 - Keep the overall length under 200 words.
 - Use precise and unambiguous technical English.
 - Output only the design principles section.
+- Each bullet point must be represented as an object with a "text" field.
+- Use the "children" field only when a bullet contains nested bullet points.
+- Do not represent bullet points as plain strings.

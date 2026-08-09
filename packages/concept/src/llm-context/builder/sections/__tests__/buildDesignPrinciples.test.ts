@@ -1,56 +1,51 @@
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Effect } from 'effect'
-import { BulletList } from '@gyomu/schema/schemas/document'
-import { DocumentSectionRouteId, buildSectionObject } from '@gyomu/ai-compiler/document'
-import { createMockAiLayer } from '@gyomu/ai'
 import { makeRunner, makeRunnerAsReturn } from '@gyomu/schema/effect'
-import { AiError } from '@gyomu/schema'
-import { LlmContextPromptProvider } from '@gyomu/ai-compiler/llm-context'
+import { createMockAiLayer } from '@gyomu/ai'
+import { DocumentSectionRouteId } from '@gyomu/ai-compiler/document'
+import { buildBulletList } from '../../../../document/builder/buildBulletList.js'
 import { buildDesignPrinciples } from '../buildDesignPrinciples.js'
+import type { BulletList } from '@gyomu/schema/schemas/document'
 import type { LlmContextBuildContext } from '@gyomu/schema/concept'
 import type { ConceptOptions } from '../../../../ConceptOptions.js'
 
-vi.mock('@gyomu/ai-compiler/document', async (importOriginal) => {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-  const actual = await importOriginal<typeof import('@gyomu/ai-compiler/document')>()
-  return {
-    ...actual,
-    buildSectionObject: vi.fn(),
-  }
-})
+vi.mock('../../../../document/builder/buildBulletList.js', () => ({
+  buildBulletList: vi.fn(),
+}))
 
-const mockedBuildSectionObject = vi.mocked(buildSectionObject)
-
+const mockedBuildBulletList = vi.mocked(buildBulletList)
 const runQAWithEnvOrThrow = makeRunner(createMockAiLayer(DocumentSectionRouteId))
 const runQAWithEnvOrThrowExit = makeRunnerAsReturn(createMockAiLayer(DocumentSectionRouteId))
 
 describe('buildDesignPrinciples', () => {
-  const createContext = (): LlmContextBuildContext =>
-    ({
-      analysis: {
-        package: {
-          name: '@gyomu/concept',
-        },
-      },
-    }) as LlmContextBuildContext
-
-  it('has the expected section builder configuration', () => {
-    expect(buildDesignPrinciples.id).toBe('design-principles')
-    expect(buildDesignPrinciples.enabled(createContext as any)).toBe(true)
+  beforeEach(() => {
+    vi.clearAllMocks()
   })
 
-  it('builds a design-principles section', async () => {
-    const sectionObject = {
-      type: 'bullet-list',
-      items: [
-        'Keep Concept independent of rendering.',
-        'Use Concept as the canonical knowledge model.',
-      ],
-    }
+  const context = {
+    analysis: {
+      package: {
+        name: '@gyomu/schema',
+      },
+    },
+  } as LlmContextBuildContext
 
-    mockedBuildSectionObject.mockReturnValue(Effect.succeed(sectionObject))
+  const bulletList: BulletList = {
+    type: 'bullet-list',
+    items: [
+      {
+        translationId: 1,
+        text: 'Use Effect Schema for shared data.',
+      },
+      {
+        translationId: 2,
+        text: 'Keep dependencies isolated.',
+      },
+    ],
+  }
 
-    const context = createContext()
+  it('design-principles sectionを生成する', async () => {
+    mockedBuildBulletList.mockReturnValue(Effect.succeed(bulletList))
 
     const result = await runQAWithEnvOrThrow(buildDesignPrinciples.build(context))
 
@@ -58,83 +53,71 @@ describe('buildDesignPrinciples', () => {
       section: {
         id: 'design-principles',
         title: undefined,
-        contents: [sectionObject],
+        contents: [bulletList],
       },
     })
-  })
 
-  it('calls buildSectionObject with the expected arguments', async () => {
-    const sectionObject = {
-      type: 'bullet-list',
-      items: ['Design principle'],
-    }
-
-    mockedBuildSectionObject.mockReturnValue(Effect.succeed(sectionObject))
-
-    const context = createContext()
-
-    await runQAWithEnvOrThrow(buildDesignPrinciples.build(context))
-
-    expect(mockedBuildSectionObject).toHaveBeenCalledWith(
+    expect(mockedBuildBulletList).toHaveBeenCalledOnce()
+    expect(mockedBuildBulletList).toHaveBeenCalledWith(
       'design-principles',
       context,
-      LlmContextPromptProvider,
-      BulletList,
+      expect.anything(),
       undefined,
     )
   })
 
-  it('passes retry option to buildSectionObject', async () => {
-    const sectionObject = {
-      type: 'bullet-list',
-      items: ['Design principle'],
-    }
-
-    mockedBuildSectionObject.mockReturnValue(Effect.succeed(sectionObject))
+  it('retryOptionをbuildBulletListに渡す', async () => {
+    mockedBuildBulletList.mockReturnValue(Effect.succeed(bulletList))
 
     const retryOption = {
       maxRetries: 3,
     } as ConceptOptions['retryOption']
 
-    const option = {
+    const option: ConceptOptions = {
       retryOption,
-    } as ConceptOptions
-
-    const context = createContext()
+    }
 
     await runQAWithEnvOrThrow(buildDesignPrinciples.build(context, option))
 
-    expect(mockedBuildSectionObject).toHaveBeenCalledWith(
+    expect(mockedBuildBulletList).toHaveBeenCalledWith(
       'design-principles',
       context,
       expect.anything(),
-      BulletList,
       retryOption,
     )
   })
 
-  it('wraps buildSectionObject errors as DocumentBuilderError', async () => {
-    const cause = new AiError({
-      message: 'LLM generation failed',
-      cause: undefined,
-      model: 'fast',
-      operation: 'generate',
-      phase: 'request' as const,
-      resolution: { _tag: 'fail' },
-    })
+  it('buildBulletListのエラーをDocumentBuilderErrorにラップする', async () => {
+    const cause = new Error('build bullet list failed')
 
-    mockedBuildSectionObject.mockReturnValue(Effect.fail(cause))
-
-    const context = createContext()
+    mockedBuildBulletList.mockReturnValue(Effect.fail(cause as never))
 
     const result = await runQAWithEnvOrThrowExit(buildDesignPrinciples.build(context))
 
     expect(result._tag).toBe('Failure')
 
-    if (result._tag !== 'Failure') return
+    if (result._tag === 'Failure') {
+      const error = result.failure
 
-    const error = result.failure
+      {
+        expect(error).toMatchObject({
+          filePath: 'Concept.md',
+          packageName: '@gyomu/schema',
+          phase: 'section-build',
+          sectionId: 'design-principles',
+          cause,
+        })
+      }
+    }
+  })
 
-    expect(error).toBeDefined()
+  it('translation strategyはnoneである', () => {
+    expect(buildDesignPrinciples.translation).toEqual({
+      strategy: 'none',
+    })
+  })
+
+  it('enabledはtrueを返す', () => {
+    expect(buildDesignPrinciples.enabled(context)).toBe(true)
   })
 })

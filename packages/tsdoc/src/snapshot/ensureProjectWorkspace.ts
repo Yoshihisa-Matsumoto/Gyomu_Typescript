@@ -5,10 +5,10 @@ import { FullPath, IOError, wrapInfraError } from '@gyomu/schema'
 import { shortSha256 } from '@gyomu/infra/hash'
 import { writeStringToFile } from '@gyomu/infra/fs'
 import { resolvePathWithinBase } from '@gyomu/schema/gyomu'
+import { WorkspaceRelativePath } from '@gyomu/schema/typescript'
 import { GYOMU_VERSION } from './types/ProjectWorkspaceManifest.js'
-import type { WorkspaceRelativePath } from '@gyomu/schema/typescript'
 
-const toProjectId = (projectPath: string): string => {
+export const toProjectId = (projectPath: WorkspaceRelativePath): string => {
   return shortSha256(projectPath)
 }
 
@@ -133,7 +133,7 @@ export const ensureProjectWorkspace = (
 
     const normalizedProjectPath = yield* resolvePathWithinBase(repoRoot, projectPath)
 
-    const projectId = toProjectId(normalizedProjectPath)
+    const projectId = toProjectId(WorkspaceRelativePath(normalizedProjectPath))
 
     const projectRoot = FullPath(`${repoRoot}/.gyomu/snapshot/${projectId}`)
 

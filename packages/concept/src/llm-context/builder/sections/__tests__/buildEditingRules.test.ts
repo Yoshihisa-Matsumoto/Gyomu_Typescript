@@ -1,27 +1,21 @@
 import { describe, expect, it, vi } from 'vitest'
 import { Effect } from 'effect'
-import { BulletList } from '@gyomu/schema/schemas/document'
-import { DocumentSectionRouteId, buildSectionObject } from '@gyomu/ai-compiler/document'
+import { DocumentSectionRouteId } from '@gyomu/ai-compiler/document'
 import { createMockAiLayer } from '@gyomu/ai'
 import { makeRunner, makeRunnerAsReturn } from '@gyomu/schema/effect'
 import { AiError } from '@gyomu/schema'
 import { LlmContextPromptProvider } from '@gyomu/ai-compiler/llm-context'
 import { buildEditingRules } from '../buildEditingRules.js'
+import { buildBulletList } from '../../../../document/builder/buildBulletList.js'
+import type { BulletList } from '@gyomu/schema/schemas/document'
 import type { LlmContextBuildContext } from '@gyomu/schema/concept'
 import type { ConceptOptions } from '../../../../ConceptOptions.js'
 
-vi.mock('@gyomu/ai-compiler/document', async (importOriginal) => {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-  const actual = await importOriginal<typeof import('@gyomu/ai-compiler/document')>()
+vi.mock('../../../../document/builder/buildBulletList.js', () => ({
+  buildBulletList: vi.fn(),
+}))
 
-  return {
-    ...actual,
-    buildSectionObject: vi.fn(),
-  }
-})
-
-const mockedBuildSectionObject = vi.mocked(buildSectionObject)
-
+const mockedBuildBulletList = vi.mocked(buildBulletList)
 const runQAWithEnvOrThrow = makeRunner(createMockAiLayer(DocumentSectionRouteId))
 const runQAWithEnvOrThrowExit = makeRunnerAsReturn(createMockAiLayer(DocumentSectionRouteId))
 
@@ -44,12 +38,12 @@ describe('buildEditingRules', () => {
     const sectionObject = {
       type: 'bullet-list',
       items: [
-        'Follow the repository coding guidelines.',
-        'Do not introduce circular dependencies.',
+        { text: 'Follow the repository coding guidelines.', translationId: 1 },
+        { text: 'Do not introduce circular dependencies.', translationId: 2 },
       ],
-    }
+    } satisfies BulletList
 
-    mockedBuildSectionObject.mockReturnValue(Effect.succeed(sectionObject))
+    mockedBuildBulletList.mockReturnValue(Effect.succeed(sectionObject))
 
     const context = createContext()
 
@@ -67,20 +61,19 @@ describe('buildEditingRules', () => {
   it('calls buildSectionObject with the expected arguments', async () => {
     const sectionObject = {
       type: 'bullet-list',
-      items: ['Editing rule'],
-    }
+      items: [{ text: 'Editing rule', translationId: 1 }],
+    } satisfies BulletList
 
-    mockedBuildSectionObject.mockReturnValue(Effect.succeed(sectionObject))
+    mockedBuildBulletList.mockReturnValue(Effect.succeed(sectionObject))
 
     const context = createContext()
 
     await runQAWithEnvOrThrow(buildEditingRules.build(context))
 
-    expect(mockedBuildSectionObject).toHaveBeenCalledWith(
+    expect(mockedBuildBulletList).toHaveBeenCalledWith(
       'editing-rules',
       context,
       LlmContextPromptProvider,
-      BulletList,
       undefined,
     )
   })
@@ -88,10 +81,10 @@ describe('buildEditingRules', () => {
   it('passes retry option to buildSectionObject', async () => {
     const sectionObject = {
       type: 'bullet-list',
-      items: ['Editing rule'],
-    }
+      items: [{ text: 'Editing rule', translationId: 1 }],
+    } satisfies BulletList
 
-    mockedBuildSectionObject.mockReturnValue(Effect.succeed(sectionObject))
+    mockedBuildBulletList.mockReturnValue(Effect.succeed(sectionObject))
 
     const retryOption = {
       maxRetries: 3,
@@ -105,11 +98,10 @@ describe('buildEditingRules', () => {
 
     await runQAWithEnvOrThrow(buildEditingRules.build(context, option))
 
-    expect(mockedBuildSectionObject).toHaveBeenCalledWith(
+    expect(mockedBuildBulletList).toHaveBeenCalledWith(
       'editing-rules',
       context,
       expect.anything(),
-      BulletList,
       retryOption,
     )
   })
@@ -124,7 +116,7 @@ describe('buildEditingRules', () => {
       resolution: { _tag: 'fail' },
     })
 
-    mockedBuildSectionObject.mockReturnValue(Effect.fail(cause))
+    mockedBuildBulletList.mockReturnValue(Effect.fail(cause))
 
     const context = createContext()
 

@@ -27,12 +27,12 @@ export const buildTranslationPrompt = <
   Effect.gen(function* () {
     const { sectionDefinition, contentStrategy, language, context, validationResult } = args
     const basePrompt = yield* loadPrompt('document-translation.md')
-    // const deepPrompt = yield* loadPrompt(deepPromptFilename)
 
+    // const deepPrompt = yield* loadPrompt(deepPromptFilename)
     return basePrompt
       .replace(
         '{{SECTION_INSTRUCTION}}',
-        (sectionDefinition.translationInstruction
+        (sectionDefinition.strategy == 'translate' && sectionDefinition.translationInstruction
           ? sectionDefinition.translationInstruction + '\n\n'
           : '') + contentStrategy.definition.translationInstruction,
       )

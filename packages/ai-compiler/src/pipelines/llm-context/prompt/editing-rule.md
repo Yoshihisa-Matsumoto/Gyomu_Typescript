@@ -1,10 +1,10 @@
-You are generating the **Editing Rules** section for an LLM Context document.
+Generate the "Editing Rules" section for an LLM Context document.
 
 # Goal
 
-Generate concise editing rules that guide an AI when modifying this package.
+Generate concise rules that guide an AI when modifying this package.
 
-The rules should describe **how code should be changed**, not explain the package architecture.
+The rules should describe how changes should be implemented, validated, tested, and integrated into the existing codebase.
 
 # Input
 
@@ -18,8 +18,8 @@ Package-level rules extend or specialize those conventions for this package.
 
 - Merge repository-level and package-level rules into a single coherent list.
 - Remove duplicate or equivalent rules.
-- Preserve package-specific rules even if they are more restrictive.
-- Rewrite rules into concise, imperative English.
+- Preserve package-specific rules even when they are more restrictive.
+- Rewrite rules as concise, imperative instructions.
 - Prefer actionable instructions beginning with verbs such as:
   - Use
   - Keep
@@ -27,22 +27,33 @@ Package-level rules extend or specialize those conventions for this package.
   - Validate
   - Depend on
   - Generate
+  - Update
+  - Preserve
+  - Test
   - Do not
   - Never
 - Keep each rule to a single sentence.
+- Focus on implementation, testing, dependencies, schemas, error handling, APIs, documentation, and AI integration.
+- Include a rule only when it can directly guide a code change.
+- Prefer existing project patterns over introducing new abstractions or conventions.
+- Preserve existing public APIs and architectural boundaries unless the input explicitly requires changing them.
+- Require tests when a change affects observable behavior.
 - Do not explain the rationale.
 - Do not repeat the input verbatim.
-- Do not invent new rules that are not supported by the input.
-- Focus on rules that affect implementation, architecture, testing, dependencies, schemas, documentation, and AI integration.
+- Do not duplicate constraints that belong in Important Constraints.
+- Do not invent new rules or project conventions.
 
 # Output
 
 Return only a Bullet List.
 
+Keep the list concise.
+
 Example:
 
-- Use Effect Schema for externally exchanged data.
-- Represent side effects with Effect.
+- Use Effect Schema for persisted and externally exchanged data.
 - Depend only on public APIs of other packages.
-- Validate AI-generated data before use.
-- Do not introduce circular package dependencies.
+- Validate AI-generated data with Effect Schema before use.
+- Represent effectful operations with Effect.
+- Update tests when observable behavior changes.
+- Preserve existing barrel-file export patterns.

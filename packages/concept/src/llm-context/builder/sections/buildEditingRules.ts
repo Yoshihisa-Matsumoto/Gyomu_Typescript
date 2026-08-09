@@ -1,9 +1,8 @@
 import { Effect } from 'effect'
-import { buildSectionObject } from '@gyomu/ai-compiler/document'
 import { wrapInfraError } from '@gyomu/schema'
 import { LlmContextPromptProvider } from '@gyomu/ai-compiler/llm-context'
-import { BulletList } from '@gyomu/schema/schemas/document'
 import { DocumentBuilderError } from '../../../error/DocumentBuilderError.js'
+import { buildBulletList } from '../../../document/builder/buildBulletList.js'
 import type { Section } from '@gyomu/schema/schemas/document'
 import type { ConceptOptions } from '../../../ConceptOptions.js'
 import type { SectionBuilder } from '../../../document/builder/SectionBuilder.js'
@@ -23,11 +22,10 @@ export const buildEditingRules: SectionBuilder<
 
   build: (context: LlmContextBuildContext, option?: ConceptOptions) =>
     Effect.gen(function* () {
-      const editingRuleResult = yield* buildSectionObject(
+      const editingRuleResult = yield* buildBulletList(
         'editing-rules',
         context,
         LlmContextPromptProvider,
-        BulletList,
         option?.retryOption,
       )
       return {

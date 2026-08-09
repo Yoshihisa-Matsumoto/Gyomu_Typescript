@@ -34,6 +34,7 @@ describe('buildTranslationPrompt', () => {
           text: 'Hello',
         },
         sectionDefinition: {
+          strategy: 'translate',
           translationInstruction: 'Translate for README readers.',
           translations: [TestStrategy],
         },
@@ -57,6 +58,7 @@ describe('buildTranslationPrompt', () => {
         },
         sectionId: 'test-section',
         sectionDefinition: {
+          strategy: 'translate',
           translations: [TestStrategy],
         },
         contentStrategy: TestStrategy,
@@ -76,6 +78,7 @@ describe('buildTranslationPrompt', () => {
         },
         sectionId: 'test-section',
         sectionDefinition: {
+          strategy: 'translate',
           translations: [TestStrategy],
         },
         contentStrategy: TestStrategy,
@@ -107,6 +110,7 @@ describe('buildTranslationPrompt', () => {
         },
         sectionId: 'test-section',
         sectionDefinition: {
+          strategy: 'translate',
           translations: [TestStrategy],
         },
         contentStrategy: TestStrategy,

@@ -19,22 +19,45 @@ export const buildNavigation: SectionBuilder<LlmContextSectionId, LlmContextBuil
 
 For more detailed information, refer to the following documents:
 
-* **Architecture Documentation**
-  Describes the internal architecture, major components, dependencies, and design decisions of this package.
-
-* **API Reference**
+`,
+          },
+          {
+            type: 'bullet-list',
+            items: [
+              {
+                translationId: 1,
+                text: `**Architecture Documentation**
+  Describes the internal architecture, major components, dependencies, and design decisions of this package.`,
+              },
+              {
+                translationId: 2,
+                text: `**API Reference**
   Describes public APIs, exported modules, and usage patterns.
-
-* **Development Guide**
-  Describes development workflows, coding conventions, testing strategies, and contribution guidelines.
-
-* **Technical Documentation**
+`,
+              },
+              {
+                translationId: 3,
+                text: `**Technical Documentation**
   Describes technical details, configuration, dependencies, and implementation-specific information.
-
-* **Project Knowledge**
+`,
+              },
+              {
+                translationId: 4,
+                text: `**Development Guide**
+  Describes development workflows, coding conventions, testing strategies, and contribution guidelines.
+`,
+              },
+              {
+                translationId: 5,
+                text: `**Project Knowledge**
   Contains additional knowledge maintained by developers, including constraints, rationale, terminology, and operational guidelines.
-
-When modifying this package, review the relevant documentation before making changes to preserve the intended responsibilities and architectural boundaries.
+`,
+              },
+            ],
+          },
+          {
+            type: 'paragraph',
+            text: `When modifying this package, review the relevant documentation before making changes to preserve the intended responsibilities and architectural boundaries.
 `,
           },
         ],

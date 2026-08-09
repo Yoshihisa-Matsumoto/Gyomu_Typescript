@@ -26,15 +26,11 @@ export const buildArchitectureMessages = (
       limit: 5,
     })
     const userData = {
-      conceptSummary: context.concept.summary,
-      responsibilities: context.concept.responsibilities,
-      capabilities: context.concept.capabilities,
       directories: targetDirectories.map((d) => ({
         path: d.path,
         summary: d.concept.summary,
         responsibilities: d.concept.responsibilities,
         relationships: d.concept.relationships,
-        designDecisions: d.concept.designDecisions,
       })),
     }
     return [
