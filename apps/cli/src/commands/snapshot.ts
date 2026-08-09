@@ -10,8 +10,8 @@ import {
   isTestFile,
   processTsDocUpdate,
 } from '@gyomu/tsdoc'
-import { DirectoryConceptRouteId, buildDirectoryConcept } from '@gyomu/concept/directory'
-import { PackageConceptRouteId, buildPackageConcept } from '@gyomu/concept/package'
+import { buildDirectoryConcept } from '@gyomu/concept/directory'
+import { buildPackageConcept } from '@gyomu/concept/package'
 import { DocumentSectionRouteId, generateReadmeFiles } from '@gyomu/concept/readme'
 import { generateLlmContextFile } from '@gyomu/concept/llm-context'
 import { Effect, Layer } from 'effect'
@@ -43,8 +43,6 @@ const runQAWithEnvOrThrow = makeRunner(
   createVercelAiLayer(
     new Map([
       [TsDocRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
-      [DirectoryConceptRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
-      [PackageConceptRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
       [DocumentSectionRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
     ]),
   ),

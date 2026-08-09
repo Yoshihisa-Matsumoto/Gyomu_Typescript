@@ -1,19 +1,15 @@
 import { Effect } from 'effect'
-import { AiModelRoute, ModelRouteId } from '@gyomu/ai'
+import { AiModelRoute } from '@gyomu/ai'
 import { MessageRole } from '@gyomu/schema/conversation'
 import { DirectoryConcept } from '@gyomu/schema/schemas/concept'
 import { loadPrompt } from '../prompt/loadPrompt.js'
 import { renderFileSummary } from '../renderer/renderFileSummary.js'
 import { renderSubDirectory } from '../renderer/renderSubDirectory.js'
+import { DocumentSectionRouteId } from '../../document/SectionPromptProvider.js'
 import type { DirectoryConceptInput } from '@gyomu/schema/concept'
 import type { AiError, IOError, RetryOption } from '@gyomu/schema'
 import type { ModelRoutes, RouteNotFoundError } from '@gyomu/ai'
 import type { FileSystem } from 'effect'
-
-/**
- * The unique identifier for the directory concept model route.
- */
-export const DirectoryConceptRouteId = ModelRouteId('directory-concept')
 
 /**
  * Executes the directory concept extraction pipeline using the provided input context and optional retry configuration.
@@ -48,7 +44,7 @@ export const executeDirectoryConcepts = (
         context.subDirectories.map((directory) => renderSubDirectory(directory)).join('\n\n'),
       )
     const result = yield* service.generateObject({
-      routeId: DirectoryConceptRouteId,
+      routeId: DocumentSectionRouteId,
       key: 'fast',
       messages: [{ id: '1', role: MessageRole.user, content: userPrompt }],
       schema: DirectoryConcept,

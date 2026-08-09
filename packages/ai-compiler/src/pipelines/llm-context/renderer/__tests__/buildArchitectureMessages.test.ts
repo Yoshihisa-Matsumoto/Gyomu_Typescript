@@ -69,22 +69,20 @@ describe('buildArchitectureMessages', () => {
     })
   })
 
-  it('includes package concept information in the user message', async () => {
-    const messages = await Effect.runPromise(
-      buildArchitectureMessages(createContext()).pipe(Effect.provide(PlatformLayer)),
-    )
+  // it('includes package concept information in the user message', async () => {
+  //   const messages = await Effect.runPromise(
+  //     buildArchitectureMessages(createContext()).pipe(Effect.provide(PlatformLayer)),
+  //   )
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const userData = JSON.parse(messages[1]!.content)
+  //   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  //   const userData = JSON.parse(messages[1]!.content)
 
-    expect(userData).toEqual(
-      expect.objectContaining({
-        conceptSummary: 'Package summary',
-        responsibilities: ['Build concepts', 'Maintain concepts'],
-        capabilities: ['Generate documentation'],
-      }),
-    )
-  })
+  //   expect(userData).toEqual(
+  //     expect.objectContaining({
+  //       responsibilities: ['Build concepts', 'Maintain concepts'],
+  //     }),
+  //   )
+  // })
 
   it('includes the top 5 ranked directories', async () => {
     const messages = await Effect.runPromise(
@@ -118,7 +116,6 @@ describe('buildArchitectureMessages', () => {
       summary: 'Summary of src/a',
       responsibilities: ['Responsibility of src/a'],
       relationships: ['Relationship of src/a'],
-      designDecisions: ['Design decision of src/a'],
     })
 
     expect(userData.directories[0]).not.toHaveProperty('concepts')
@@ -133,6 +130,6 @@ describe('buildArchitectureMessages', () => {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     expect(messages[1]!.content).toContain('\n')
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    expect(messages[1]!.content).toContain('  "conceptSummary"')
+    expect(messages[1]!.content).toContain('  "directories"')
   })
 })

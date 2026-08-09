@@ -1,19 +1,15 @@
 import { Effect } from 'effect'
-import { AiModelRoute, ModelRouteId } from '@gyomu/ai'
+import { AiModelRoute } from '@gyomu/ai'
 import { MessageRole } from '@gyomu/schema/conversation'
 import { PackageConceptSchema } from '@gyomu/schema/schemas/concept'
 import { loadPrompt } from '../prompt/loadPrompt.js'
 import { renderPackageAnalysis } from '../renderer/renderPackageAnalysis.js'
+import { DocumentSectionRouteId } from '../../document/SectionPromptProvider.js'
 import type { PackageConcept } from '@gyomu/schema/schemas/concept'
 import type { PackageAnalysis } from '@gyomu/schema/concept'
 import type { AiError, IOError, RetryOption } from '@gyomu/schema'
 import type { ModelRoutes, RouteNotFoundError } from '@gyomu/ai'
 import type { FileSystem } from 'effect'
-
-/**
- * The identifier for the package concept model route.
- */
-export const PackageConceptRouteId = ModelRouteId('package-concept')
 
 /**
  * Executes the package concept pipeline to generate a PackageConcept object based on the provided analysis.
@@ -44,7 +40,7 @@ export const executePackageConcept = (
     const userPrompt = basePrompt.replace('<##PACKAGE##>', renderPackageAnalysis(context))
 
     const result = yield* service.generateObject({
-      routeId: PackageConceptRouteId,
+      routeId: DocumentSectionRouteId,
       key: 'fast',
       messages: [{ id: '1', role: MessageRole.user, content: userPrompt }],
       schema: PackageConceptSchema,

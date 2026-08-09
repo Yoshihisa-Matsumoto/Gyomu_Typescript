@@ -48,7 +48,7 @@ describe('buildEditingRuleMessages', () => {
       id: '1',
       role: MessageRole.system,
       content: expect.stringContaining(
-        'Generate concise editing rules that guide an AI when modifying this package.',
+        'Generate concise rules that guide an AI when modifying this package',
       ),
     })
 

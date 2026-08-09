@@ -5,7 +5,8 @@ import { MessageRole } from '@gyomu/schema/conversation'
 import { PackageConceptSchema } from '@gyomu/schema/schemas/concept'
 import { PlatformLayer } from '@gyomu/infra'
 import { loadPrompt } from '../../prompt/loadPrompt.js'
-import { PackageConceptRouteId, executePackageConcept } from '../executePackageConcept.js'
+import { executePackageConcept } from '../executePackageConcept.js'
+import { DocumentSectionRouteId } from '../../../document/SectionPromptProvider.js'
 import type { ModelRoute, ModelRouteId, RouteNode } from '@gyomu/ai'
 import type { PackageConcept } from '@gyomu/schema/schemas/concept'
 
@@ -24,7 +25,7 @@ const modelRoute = {
 } as ModelRoute
 const mockModelRoutes = Layer.succeed(
   ModelRoutes,
-  new Map<ModelRouteId, ModelRoute>([[PackageConceptRouteId, modelRoute]]),
+  new Map<ModelRouteId, ModelRoute>([[DocumentSectionRouteId, modelRoute]]),
 )
 
 describe('executePackageConcept', () => {
@@ -77,7 +78,7 @@ describe('executePackageConcept', () => {
     expect(generateObject).toHaveBeenCalledTimes(1)
 
     expect(generateObject).toHaveBeenCalledWith({
-      routeId: PackageConceptRouteId,
+      routeId: DocumentSectionRouteId,
       key: 'fast',
       messages: [
         {

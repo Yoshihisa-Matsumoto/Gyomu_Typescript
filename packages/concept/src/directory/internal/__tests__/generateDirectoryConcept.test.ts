@@ -1,13 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Effect, Exit, Layer } from 'effect'
-import {
-  DirectoryConceptRouteId,
-  executeDirectoryConcepts,
-} from '@gyomu/ai-compiler/directory-concept'
+import { executeDirectoryConcepts } from '@gyomu/ai-compiler/directory-concept'
 import { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 import { PlatformLayer } from '@gyomu/infra'
 import { ProjectRelativePath } from '@gyomu/schema/typescript'
 import { IOError, getFailureFromExit } from '@gyomu/schema'
+import { DocumentSectionRouteId } from '@gyomu/ai-compiler/document'
 import { generateDirectoryConcept } from '../generateDirectoryConcept.js'
 import { ConceptError } from '../../../error/ConceptError.js'
 
@@ -32,7 +30,7 @@ const mockAiModelService = Layer.succeed(AiModelRoute, {
 const modelRoute = {
   nodes: [{ retry: 1, registry: { fast: {} } } as any],
 } as any
-const mockModelRoutes = Layer.succeed(ModelRoutes, new Map([[DirectoryConceptRouteId, modelRoute]]))
+const mockModelRoutes = Layer.succeed(ModelRoutes, new Map([[DocumentSectionRouteId, modelRoute]]))
 
 describe('generateDirectoryConcept', () => {
   const targetDirectory = ProjectRelativePath('src')

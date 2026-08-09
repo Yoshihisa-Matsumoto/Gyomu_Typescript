@@ -10,9 +10,8 @@ import { FullPath } from '@gyomu/schema'
 import { WorkspaceRelativePath } from '@gyomu/schema/typescript'
 import { makeRunner } from '@gyomu/schema/effect'
 import { createVercelAiLayer } from '@gyomu/ai/provider/vercel'
-import { PackageConceptRouteId } from '@gyomu/ai-compiler/package-concept'
 import { AI_MODELS } from '@gyomu/ai'
-import { DirectoryConceptRouteId } from '@gyomu/ai-compiler/directory-concept'
+import { DocumentSectionRouteId } from '@gyomu/ai-compiler/document'
 import { buildPackageConcept } from '../buildPackageConcept.js'
 import type { FileChange } from '@gyomu/schema/snapshot'
 
@@ -22,10 +21,7 @@ const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(
 )
 const runQAWithEnvOrThrow = makeRunner(
   createVercelAiLayer(
-    new Map([
-      [PackageConceptRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
-      [DirectoryConceptRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
-    ]),
+    new Map([[DocumentSectionRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }]]),
   ),
 )
 

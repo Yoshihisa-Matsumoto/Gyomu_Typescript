@@ -5,9 +5,9 @@ import { Effect, Layer } from 'effect'
 import { makeRunner } from '@gyomu/schema/effect'
 import { AI_MODELS } from '@gyomu/ai'
 import { beforeAll, describe, expect, test } from 'vitest'
-import { DirectoryConceptRouteId } from '@gyomu/ai-compiler/directory-concept'
 import { createVercelAiLayer } from '@gyomu/ai/provider/vercel'
 import { createFixtureProject } from '@gyomu/ts-analysis/testing'
+import { DocumentSectionRouteId } from '@gyomu/ai-compiler/document'
 import { buildDirectoryConcept } from '../buildDirectoryConcept.js'
 import type { ProjectRelativePath } from '@gyomu/schema/typescript'
 import type { FileChange } from '@gyomu/schema/snapshot'
@@ -15,7 +15,7 @@ import type { FileChange } from '@gyomu/schema/snapshot'
 const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(Layer.provideMerge(PlatformLayer))
 const runQAWithEnvOrThrow = makeRunner(
   createVercelAiLayer(
-    new Map([[DirectoryConceptRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }]]),
+    new Map([[DocumentSectionRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }]]),
   ),
 )
 
