@@ -11,6 +11,8 @@ import type { LlmContextBuildContext, LlmContextSectionId } from '@gyomu/schema/
  *
  * @param plan The translation plan defining the structure and language of the documentation.
  *
+ * @param option Optional configuration for rendering the markdown content.
+ *
  * @param needLink Whether to include a link in the generated markdown. Defaults to false.
  *
  * @returns The rendered markdown content as a string.

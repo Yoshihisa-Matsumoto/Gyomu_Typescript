@@ -6,6 +6,8 @@ import type { ReadmeBuildContext, ReadmeSectionId } from '@gyomu/schema/concept'
 
 /**
  * Constructs the installation section for the readme.
+ *
+ * @returns Returns an Effect that constructs an installation section containing the package installation command.
  */
 export const buildInstallation: SectionBuilder<ReadmeSectionId, ReadmeBuildContext, never> = {
   id: 'installation',

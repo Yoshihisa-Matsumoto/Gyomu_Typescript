@@ -12,6 +12,8 @@ import type { ConceptOptions } from '../../../ConceptOptions.js'
 
 /**
  * A README section builder that generates the overview content based on the project's analysis context.
+ *
+ * @returns Returns an Effect that produces an overview section containing a paragraph of context-based information, or fails with a DocumentBuilderError.
  */
 export const buildOverview: SectionBuilder<
   LlmContextSectionId,

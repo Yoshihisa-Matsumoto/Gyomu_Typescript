@@ -1,36 +1,35 @@
 {
-  "summary": "The @gyomu/concept package serves as the architectural foundation for analyzing and documenting TypeScript project structures. It provides high-level abstractions to convert raw codebase data into formal project concepts and automated documentation.",
+  "summary": "The @gyomu/concept package serves as the primary engine for modeling the architectural structure of TypeScript projects. It automates the transformation of raw file system information into high-level conceptual models and generates developer-facing documentation.",
   "responsibilities": [
-    "Orchestrate project analysis by resolving module exports and mapping external dependencies.",
-    "Define structural models that represent directories and packages as architectural entities.",
-    "Automate the generation and lifecycle management of documentation assets.",
-    "Support internationalization and localization workflows within generated project documentation.",
-    "Validate generated architectural metadata against codebase reality."
+    "Analyze project source code to resolve package boundaries and dependency graphs.",
+    "Synthesize raw directory and file data into persistent architectural concepts.",
+    "Orchestrate the automated generation and localization of technical documentation.",
+    "Validate structural conceptualizations against project metadata and defined schemas.",
+    "Provide infrastructure for caching and retrieving project-wide conceptual models."
   ],
   "capabilities": [
     {
-      "name": "Project Structural Modeling",
-      "description": "Translates raw TypeScript directory and package structures into formal, persistent conceptual metadata."
+      "name": "Package Conceptualization",
+      "description": "Translates TypeScript project structures into comprehensive architectural models, identifying key components and external dependencies."
     },
     {
-      "name": "Automated Documentation Generation",
-      "description": "Transforms codebase structural data into standardized, localized documentation artifacts such as README files."
+      "name": "Documentation Generation",
+      "description": "Automates the assembly, localization, and rendering of project README files based on analyzed project data."
     },
     {
-      "name": "Architectural Insight Synthesis",
-      "description": "Analyzes project dependency graphs and source exports to generate insights into package boundaries and architectural composition."
+      "name": "Directory Analysis",
+      "description": "Examines file system structures to produce metadata-rich representations of directory contents and internal hierarchies."
     }
   ],
   "designDecisions": [
-    "Utilizes a composable builder pattern to separate the extraction of structural data from the rendering of documentation.",
-    "Employs a persistence-first approach for conceptual data, allowing cached architectures to be loaded for incremental analysis.",
-    "Integrates closely with @gyomu/ts-analysis to ensure architectural definitions remain aligned with the physical source code.",
-    "Leverages the Effect ecosystem for robust handling of side-effect-heavy operations like file I/O and process orchestration."
+    "Uses a layered approach to separate the concerns of architectural discovery from document synthesis.",
+    "Employs a model-based strategy where file system state is converted into persistent, versionable concepts before consumption.",
+    "Leverages external schema and analysis packages to maintain consistency across the @gyomu ecosystem.",
+    "Favors automated generation processes that rely on source-of-truth project analysis to ensure documentation remains synchronized with code."
   ],
   "usageGuidance": [
-    "Use buildPackageConcept as the entry point when initiating a full architectural sweep of a project.",
-    "Invoke generateReadmeFiles when the build context is finalized to ensure documentation reflects the latest structural changes.",
-    "Configure project context consistently to allow for accurate dependency resolution across different sub-packages.",
-    "Treat the generated concept models as the single source of truth for downstream tools in the Gyomu ecosystem."
+    "Use the package-level builders to initialize architectural models from existing local project roots.",
+    "Integrate the documentation generator into your project's CI/CD pipeline to ensure README files reflect the latest architectural state.",
+    "Prioritize defining clear directory boundaries to help the analysis engine produce more granular and accurate conceptual models."
   ]
 }

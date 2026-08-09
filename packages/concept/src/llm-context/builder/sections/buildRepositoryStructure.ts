@@ -5,6 +5,9 @@ import type { ConceptOptions } from '../../../ConceptOptions.js'
 import type { LlmContextBuildContext, LlmContextSectionId } from '@gyomu/schema/concept'
 import type { Section } from '@gyomu/schema/schemas/document'
 
+/**
+ * Builds the repository structure section of the LLM context, listing ranked directories with their associated summaries.
+ */
 export const buildRepositoryStructure: SectionBuilder<
   LlmContextSectionId,
   LlmContextBuildContext,

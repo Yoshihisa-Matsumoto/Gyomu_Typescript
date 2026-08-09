@@ -12,6 +12,8 @@ import type { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 
 /**
  * Constructs a documentation section detailing project dependencies.
+ *
+ * @returns Returns an Effect that constructs the dependencies section of the README.
  */
 export const buildDependencies: SectionBuilder<
   ReadmeSectionId,

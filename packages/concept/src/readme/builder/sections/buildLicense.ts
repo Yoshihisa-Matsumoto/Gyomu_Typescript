@@ -6,6 +6,8 @@ import type { ReadmeBuildContext, ReadmeSectionId } from '@gyomu/schema/concept'
 
 /**
  * A Readme section builder that generates the project's license information.
+ *
+ * @returns Returns an Effect that resolves to the license section content.
  */
 export const buildLicense: SectionBuilder<ReadmeSectionId, ReadmeBuildContext, never> = {
   id: 'license',

@@ -10,6 +10,15 @@ import type {
   SectionWithInstruction,
 } from '@gyomu/schema/document'
 
+/**
+ * Creates a BuiltSection from a section with translation instructions.
+ *
+ * @param input The section containing content and translation instructions.
+ *
+ * @param translation Optional translation definitions to apply.
+ *
+ * @returns A constructed BuiltSection object.
+ */
 export const createBuiltSection = (
   input: SectionWithInstruction,
   translation?: SectionTranslationDefinition,

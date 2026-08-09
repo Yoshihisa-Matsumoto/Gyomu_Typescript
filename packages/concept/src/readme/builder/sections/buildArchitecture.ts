@@ -12,6 +12,8 @@ import type { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 
 /**
  * A readme section builder that generates the 'architecture' section for the package documentation.
+ *
+ * @returns An effect that produces a structured readme section containing the project architecture overview.
  */
 export const buildArchitecture: SectionBuilder<
   ReadmeSectionId,

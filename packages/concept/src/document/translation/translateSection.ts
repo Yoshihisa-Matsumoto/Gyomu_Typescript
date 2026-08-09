@@ -4,6 +4,17 @@ import type { ConceptOptions } from '../../ConceptOptions.js'
 import type { BuiltSection } from '@gyomu/schema/document'
 import type { LanguageCodes, Section } from '@gyomu/schema/schemas/document'
 
+/**
+ * Translates the contents of a section based on the specified translation strategy and target language.
+ *
+ * @param section The section to be translated, including its definition and current content.
+ *
+ * @param language The target language code for translation.
+ *
+ * @param option Optional configuration for the translation process, including retry logic.
+ *
+ * @returns Returns an Effect that resolves to the translated Section.
+ */
 export const translateSection = (
   section: BuiltSection,
   language: LanguageCodes,

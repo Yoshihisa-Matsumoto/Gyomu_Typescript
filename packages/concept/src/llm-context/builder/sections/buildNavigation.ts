@@ -4,6 +4,11 @@ import type { ConceptOptions } from '../../../ConceptOptions.js'
 import type { LlmContextBuildContext, LlmContextSectionId } from '@gyomu/schema/concept'
 import type { Section } from '@gyomu/schema/schemas/document'
 
+/**
+ * Constructs the navigation section for the LLM context, which provides links to key project documentation including architecture, API reference, technical details, development guides, and project knowledge.
+ *
+ * @returns An Effect that yields the constructed navigation section.
+ */
 export const buildNavigation: SectionBuilder<LlmContextSectionId, LlmContextBuildContext, never> = {
   id: 'navigation',
 

@@ -12,6 +12,8 @@ import type { ReadmeBuildContext, ReadmeSectionId } from '@gyomu/schema/concept'
  *
  * @param plan The translation plan defining the structure and language of the documentation.
  *
+ * @param option Optional configuration for the documentation rendering.
+ *
  * @param needLink Whether to include a link in the generated markdown. Defaults to false.
  *
  * @returns The rendered markdown content as a string.

@@ -30,6 +30,19 @@ const toBulletListItem = (
   children: item.children?.map((child) => toBulletListItem(child, createTranslationId)),
 })
 
+/**
+ * Constructs a bullet list for the specified section by utilizing the provided section prompt provider.
+ *
+ * @param sectionId The unique identifier for the section.
+ *
+ * @param context The context object required by the provider.
+ *
+ * @param provider The provider used to generate the section content.
+ *
+ * @param retryOption Optional retry settings.
+ *
+ * @returns An Effect that resolves to a BulletList, potentially failing with an IOError, AiError, or RouteNotFoundError, and requiring R, AiModelRoute, and ModelRoutes services.
+ */
 export const buildBulletList = <TSectionId extends string, TContext, R = never>(
   sectionId: TSectionId,
   context: TContext,

@@ -13,6 +13,19 @@ import type { DocumentDefinition } from './DocumentDefinition.js'
 import type { DocumentBaseContext } from '@gyomu/schema/concept'
 import type { TranslatedDocument } from './translation/TranslatedDocument.js'
 
+/**
+ * Generates a multi-language documentation project based on the provided definition and project context.
+ *
+ * @param definition The document definition containing section builders, renderers, and language settings.
+ *
+ * @param project The project-specific context required for documentation generation.
+ *
+ * @param option Optional configuration settings for the documentation generation process.
+ *
+ * @returns An Effect that completes when the document generation process finishes, or fails with a DocumentBuilderError.
+ *
+ * @requires AiModelRoute, FileSystem, ModelRoutes, and FileSearchService.
+ */
 export const generateDocument = <
   TSectionId extends string,
   TContext extends DocumentBaseContext,

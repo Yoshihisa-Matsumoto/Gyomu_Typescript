@@ -8,6 +8,9 @@ import type { ConceptOptions } from '../ConceptOptions.js'
 import type { DocumentDefinition, DocumentRenderer } from '../document/DocumentDefinition.js'
 import type { ReadmeBuildContext, ReadmeSectionId } from '@gyomu/schema/concept'
 
+/**
+ * A document renderer that produces Markdown content for README files, utilizing context and specific concept options.
+ */
 export const ReadmeMarkdownRenderer: DocumentRenderer<
   ReadmeBuildContext,
   ConceptOptions,
@@ -25,6 +28,9 @@ interface ReadmeMarkdownRendererOptions {
   needLink?: boolean
 }
 
+/**
+ * The formal definition for a README document, specifying the build context initialization, supported languages, section construction, and output rendering strategy.
+ */
 export const README_DOCUMENT_DEFINITION: DocumentDefinition<
   ReadmeSectionId,
   ReadmeBuildContext,

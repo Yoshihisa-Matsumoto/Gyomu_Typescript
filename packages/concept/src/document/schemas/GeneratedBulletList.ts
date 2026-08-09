@@ -1,5 +1,8 @@
 import { Schema } from 'effect'
 
+/**
+ * Represents an individual item in a bullet list, which may contain text and optional nested list items.
+ */
 export type GeneratedBulletListItem = {
   text: string
   /**
@@ -20,6 +23,9 @@ const GeneratedBulletListItem: Schema.Schema<GeneratedBulletListItem> = Schema.S
     'A bullet point represented as an object. Each item must contain a text field and may optionally contain nested bullet points.',
 })
 
+/**
+ * A schema defining a bullet list structure containing an array of bullet point objects. Each point must explicitly include a text field and supports nesting.
+ */
 export const GeneratedBulletList = Schema.Struct({
   type: Schema.Literal('bullet-list'),
   items: Schema.Array(GeneratedBulletListItem).annotate({
@@ -31,4 +37,7 @@ export const GeneratedBulletList = Schema.Struct({
     'A bullet list containing structured bullet point objects. Do not represent bullet points as plain strings.',
 })
 
+/**
+ * The TypeScript type definition for a bullet list object.
+ */
 export type GeneratedBulletList = Schema.Schema.Type<typeof GeneratedBulletList>

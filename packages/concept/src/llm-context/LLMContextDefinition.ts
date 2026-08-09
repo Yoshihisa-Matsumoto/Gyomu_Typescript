@@ -7,6 +7,9 @@ import type { ConceptOptions } from '../ConceptOptions.js'
 import type { DocumentDefinition, DocumentRenderer } from '../document/DocumentDefinition.js'
 import type { LlmContextBuildContext, LlmContextSectionId } from '@gyomu/schema/concept'
 
+/**
+ * A document renderer that converts LLM context build results into Markdown format.
+ */
 export const LlmContextMarkdownRenderer: DocumentRenderer<
   LlmContextBuildContext,
   ConceptOptions,
@@ -20,6 +23,9 @@ export const LlmContextMarkdownRenderer: DocumentRenderer<
   },
 }
 
+/**
+ * Defines the document structure for LLM context, specifying the context initialization, supported languages, section builders, and output rendering configuration.
+ */
 export const LLMCONTEXT_DOCUMENT_DEFINITION: DocumentDefinition<
   LlmContextSectionId,
   LlmContextBuildContext,

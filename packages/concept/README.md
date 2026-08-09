@@ -4,17 +4,11 @@ US English | [JP 日本語](README.ja.md)
 
 ## Overview
 
-This package provides an architectural foundation for managing project knowledge by bridging the gap between raw codebase data and high-level structural models. By synthesizing automated code analysis with human-maintained insights, it creates a unified representation of project architecture, responsibilities, and design intent.
-
-The mission is to transition from static documentation to a living, structured model that serves as a shared knowledge base for both humans and AI. This approach ensures that technical context remains consistent and maintainable throughout the project lifecycle, allowing teams to formalize complex design concepts into a reliable, evolving project model.
+This package acts as the primary engine for modeling the architectural structure of TypeScript projects. It functions by transforming raw file system data into structured, high-level project models that represent design intent, operational knowledge, and core responsibilities. By integrating insights derived from source code analysis with human-maintained expertise, the package creates a unified knowledge base accessible to both developers and AI. Its mission is to standardize project models as living assets rather than static documentation, ensuring architectural consistency and facilitating the continuous maintenance of complex technical knowledge throughout the project lifecycle.
 
 ## Architecture
 
-The package is structured around three primary functional domains: structural analysis, metadata management, and documentation synthesis. By decoupling these responsibilities, the architecture facilitates the transformation of raw TypeScript codebases into formal conceptual models while maintaining strict synchronization between architectural intent and physical file structure.
-
-The analysis engine resides in the package and directory modules, which collaborate to resolve module exports, map dependencies, and define structural entities. These components extract architectural properties from the file system, validating them to ensure the resulting metadata accurately reflects the project’s composition.
-
-Finally, the documentation module consumes these structural models to automate the generation of project assets. It orchestrates the assembly, localization, and rendering of markdown content, transforming verified architectural metadata into standardized documentation. This pipeline ensures that documentation remains consistent with the underlying codebase, supported by integrated testing that validates both content assembly and structural integrity.
+The package is organized into specialized functional domains that collectively transform file system data into architectural models and documentation. The architecture separates the concerns of structural analysis, conceptual modeling, and automated output generation to ensure a decoupled and modular system. The core analysis layer consists of directory and package modules. The directory component identifies file-level properties and hierarchies, while the package module resolves source exports and dependencies to build comprehensive, persistent architectural models. These components collaborate by synthesizing raw metadata into formal conceptual representations that define the project’s structure. The documentation layer orchestrates the transformation of these conceptual models into developer-facing content. It utilizes a dedicated assembly pipeline to integrate project data, manage localization, and perform structural validation. By separating data acquisition from rendering, the architecture ensures that documentation remains synchronized with the evolving project structure, providing a reliable bridge between underlying source code and conceptual documentation.
 
 ## Installation
 
@@ -26,21 +20,17 @@ pnpm add @gyomu/concept
 
 ## Dependencies
 
-This project requires a Node.js environment supporting ESM and is built upon Effect v4. It is designed to work seamlessly with TypeScript to ensure type safety throughout the development lifecycle.
-
-The package relies on the Effect ecosystem for its core runtime, schema management, and context handling. Additionally, it integrates with internal `@gyomu` packages—specifically `@gyomu/schema`, `@gyomu/infra`, and `@gyomu/ai-compiler`—to provide standardized infrastructure, shared data types, and LLM-driven development utilities.
+This package requires an ESM environment and is built specifically for Effect 4.x. Please ensure your project is configured to support modern JavaScript modules and the Effect runtime. The library relies on `effect` as its primary foundation for schema and context management. It integrates closely with internal infrastructure components, specifically `@gyomu/schema` for shared types, `@gyomu/infra` for I/O operations, and `@gyomu/ai-compiler` to support automated documentation and LLM-based compilation processes.
 
 ## Development
 
-@gyomu/concept is designed to define project architecture, design intent, and operational knowledge not as static "documentation," but as a "structured knowledge model" interpretable by both humans and AI. Developers manage mechanical facts extracted from source code separately from human-provided design context, integrating them within Concept to centrally manage the "truth" of project knowledge. This neutral knowledge representation serves as a foundation for transformation into any output format or language, acting as the single source of truth to maintain consistency throughout the project lifecycle.
-
-Contributors are expected to treat source code analysis, Concept construction, and documentation generation as independent responsibilities. When constructing Concepts, treat structures at all granularities—such as packages and directories—using the same model, and maintain a design that assumes data persistence and incremental updates. By strictly maintaining and integrating the origins of both human-managed knowledge and code-derived knowledge, ensure the architecture prevents divergence between code changes and documentation, keeping project knowledge accurate and up to date.
+`@gyomu/concept` is designed to transform project knowledge into a structured, persistent model that serves as the source of truth for both developers and AI agents. By decoupling knowledge acquisition—via source code analysis—from documentation delivery, the package ensures that architectural insights, responsibility boundaries, and design intentions remain consistent regardless of output format. Contributors must maintain this structural integrity by ensuring the model remains neutral, allowing it to integrate machine-derived insights with human-provided metadata without losing the provenance of either. To evolve this package, contributors must enforce a strict separation of concerns between code analysis, concept construction, and documentation generation. New features should prioritize the ability to perform differential updates on persistent models, ensuring that as a project evolves, the underlying `Concept` is refined rather than recreated. All structural conceptualizations must be validated against defined schemas to preserve consistency across various granularities, from individual packages to the entire project scope. By upholding these principles, the architecture remains a robust, evolving representation of the project rather than a static document.
 
 ## Public API
 
-- Project Structural Modeling - Translates raw TypeScript directory and package structures into formal, persistent conceptual metadata.
-- Automated Documentation Generation - Transforms codebase structural data into standardized, localized documentation artifacts such as README files.
-- Architectural Insight Synthesis - Analyzes project dependency graphs and source exports to generate insights into package boundaries and architectural composition.
+- Package Conceptualization - Translates TypeScript project structures into comprehensive architectural models, identifying key components and external dependencies.
+- Documentation Generation - Automates the assembly, localization, and rendering of project README files based on analyzed project data.
+- Directory Analysis - Examines file system structures to produce metadata-rich representations of directory contents and internal hierarchies.
 
 ## License
 

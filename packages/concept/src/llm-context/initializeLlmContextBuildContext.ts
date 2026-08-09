@@ -14,6 +14,17 @@ import type { ProjectContext } from '@gyomu/ts-analysis'
 import type { LlmContextBuildContext } from '@gyomu/schema/concept'
 import type { FileSearchService } from '@gyomu/schema/shared/fs'
 
+/**
+ * Initializes the build context for the LLM by merging project-level and knowledge-level coding guidelines.
+ *
+ * @param context The project context object.
+ *
+ * @param option Optional configuration for the concept.
+ *
+ * @returns An Effect that resolves to the initialized LlmContextBuildContext, or fails with a DocumentBuilderError.
+ *
+ * @requires {FileSystem.FileSystem | FileSearchService} Requires file system access and file search capabilities.
+ */
 export const initializeLlmContextBuildContext = (
   context: ProjectContext,
   option?: ConceptOptions,

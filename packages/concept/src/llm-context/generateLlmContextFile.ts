@@ -9,6 +9,17 @@ import type { ConceptOptions } from '../ConceptOptions.js'
 import type { FileSystem } from 'effect/FileSystem'
 import type { FileSearchService } from '@gyomu/schema/shared/fs'
 
+/**
+ * Generates an LLM context file based on the provided project context and options.
+ *
+ * @param project The project context data used to generate the document.
+ *
+ * @param option Optional configuration for the generation process.
+ *
+ * @returns Returns an Effect that performs the document generation, which may result in a DocumentBuilderError.
+ *
+ * @requires AiModelRoute, FileSystem, ModelRoutes, and FileSearchService.
+ */
 export const generateLlmContextFile = (
   project: ProjectContext,
   option?: ConceptOptions,

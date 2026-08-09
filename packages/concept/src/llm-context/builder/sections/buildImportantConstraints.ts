@@ -11,7 +11,7 @@ import type { LlmContextBuildContext, LlmContextSectionId } from '@gyomu/schema/
 import type { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 
 /**
- * A readme section builder that generates the 'coding-guideline' section for the package documentation.
+ * A section builder that generates the 'important-constraints' documentation section for the package.
  */
 export const buildImportantConstraints: SectionBuilder<
   LlmContextSectionId,

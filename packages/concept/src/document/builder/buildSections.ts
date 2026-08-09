@@ -15,6 +15,8 @@ import type { DocumentBaseContext } from '@gyomu/schema/concept'
  *
  * @param builders The sequence of section builders to execute.
  *
+ * @param option Optional configuration for the concept generation.
+ *
  * @returns An Effect that evaluates to a read-only array of successfully generated sections. Requires AiModelRoute, ModelRoutes, and FileSystem capabilities, and may fail with a DocumentBuilderError.
  */
 export const buildSections = <TSectionId extends string, TContext extends DocumentBaseContext>(

@@ -4,6 +4,9 @@ import type { ConceptOptions } from '../../../ConceptOptions.js'
 import type { LlmContextBuildContext, LlmContextSectionId } from '@gyomu/schema/concept'
 import type { Section } from '@gyomu/schema/schemas/document'
 
+/**
+ * Defines a section builder for package responsibilities, converting concept responsibilities into a bulleted list for the LLM context.
+ */
 export const buildPackageResponsibilities: SectionBuilder<
   LlmContextSectionId,
   LlmContextBuildContext,
