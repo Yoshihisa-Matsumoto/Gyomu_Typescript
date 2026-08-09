@@ -4,11 +4,13 @@ US English | [JP 日本語](README.ja.md)
 
 ## Overview
 
-This package provides a unified user interface for Gyomu by combining a shared design system, schema-driven forms, and specialized application components. Its primary mission is to foster an environment where developers can build interfaces that prioritize long-term maintainability, visual consistency, and accessibility. By serving as a comprehensive abstraction layer, the library separates UI implementation details from core application logic. This architectural approach enables the creation of reusable, highly extensible interfaces. It integrates low-level building blocks with declarative generation systems and dedicated Material UI adapters, ensuring a cohesive development experience across the entire ecosystem.
+This package provides a unified user interface environment for Gyomu, acting as the primary design system and component library. It consolidates foundational building blocks, declarative form generation, and architectural adapters to ensure visual and functional consistency across the entire application.
+
+By separating UI implementation details from application logic, the library promotes a modular architecture that prioritizes maintainability and scalability. This approach enables developers to construct accessible and reusable interfaces while enforcing standardized component behaviors and layouts, ultimately streamlining the creation of high-quality, professional user experiences throughout the project ecosystem.
 
 ## Architecture
 
-The architecture is organized into a modular hierarchy that separates foundational UI primitives, layout structures, and high-level declarative form systems. Core UI components provide atomic building blocks and composite elements, ensuring consistent interaction patterns and visual themes across the application. These components are consolidated via shared context and provider wrappers to maintain unified state management. The package utilizes an abstraction layer through adapter components, specifically for Material UI integration. These adapters encapsulate third-party dependencies, injecting project-specific styling, validation logic, and standardized property interfaces into base framework elements. At the top level, a declarative form system automates interface construction. By leveraging schema definitions, it orchestrates the rendering of dynamic fields using headless layout components, which define structural arrangements without imposing opinionated styles. This separation of concerns allows the form engine to manage complex layout logic and external submission control while remaining decoupled from specific visual implementations.
+The package architecture is organized into three primary layers: a foundational UI library, an abstraction layer for third-party integrations, and a declarative form generation engine. The UI library provides atomic and composite building blocks, while the abstraction layer serves as a bridge, wrapping Material UI components to enforce project-specific themes, styling, and behavioral constraints. A declarative form system orchestrates these components, utilizing schema definitions to automate field rendering and layout. By separating concerns, the architecture ensures that structural layout logic remains decoupled from specific component styles. Headless layout components manage the arrangement of form fields and containers, allowing for flexible composition. Finally, the package functions through a collaborative hierarchy where high-level forms consume schema-driven logic to instantiate adapted field components. This design centralizes configuration for typography and styling, ensuring consistency across the entire application interface while isolating third-party dependencies within the adapter layer.
 
 ## Installation
 
@@ -20,19 +22,19 @@ pnpm add @gyomu/ui
 
 ## Dependencies
 
-This package requires React 19 and is built upon Effect version 4.x. It is designed to work seamlessly within modern TypeScript environments that support these versions. At its core, the project leverages Effect for runtime and schema management, alongside `@gyomu/schema` for shared types. For the user interface, it integrates Material UI and shadcn/ui components to provide a consistent and responsive design system. Ensure your environment meets these version requirements before installation.
+This package requires Node.js and is designed for compatibility with React 19 and Effect 4.x. It relies on the Effect ecosystem—including Effect Runtime, Schema, and Context—to provide a robust foundation for application logic. For the user interface, the package integrates components from Material UI and shadcn/ui. Additionally, it utilizes `@gyomu/schema` as a centralized source for shared types and schemas, ensuring consistency across your project's data structures.
 
 ## Development
 
-This package aims to standardize and streamline UI development in Gyomu, centered around a shared design system and component library. During development, prioritize reusability and composability of UI components, ensuring a decoupled design that does not depend on specific screen configurations. For form development, adopt a schema-driven approach; dynamically deriving the UI from data structures eliminates definition redundancy and ensures maintainability and type safety. To maintain the architecture, isolate UI framework-specific implementations into an adapter layer, clearly separating concerns between logic and visual representation. By decoupling layout structures from visual presentation, ensure the overall extensibility of the system. All components must prioritize accessibility and predictability, maintaining a consistent user interface through a shared Provider to manage application-wide UI states.
+The Gyomu UI library is designed as a foundation to maximize the maintainability, consistency, and accessibility of applications. At its core is a design principle that isolates UI framework-specific implementations into an adapter layer, fully decoupling logic from visual representation. This structure prevents over-reliance on specific external libraries and ensures that UI components maintain high independence and reusability when facing future changes in technology choices or functional extensions. Developers should prioritize composability and type safety in component design. Regarding form implementation, avoid hardcoding and instead use declarative interfaces derived from schemas to eliminate duplication and ensure consistent layout patterns. Centralize common settings such as UI behavior and styles to maintain an environment where application-specific logic and design systems do not conflict. Providing standardized interfaces with predictability and accessibility is key to the sustainable evolution of this library.
 
 ## Public API
 
-- Design System Components - Provides a library of atomic and composite UI elements such as avatars, cards, buttons, and inputs.
-- Declarative Form Automation - Enables automatic construction of forms from data schemas with built-in layout orchestration and submission handling.
-- Material UI Integration - Offers standardized wrappers and layout adapters for Material UI, ensuring consistent styling and functional behavior.
-- Headless Form Layouts - Delivers structural components for defining form and field layouts without imposing rigid visual styling.
-- Global Interaction Management - Centralizes management of application-wide UI states such as tooltips and toast notifications.
+- Design System Components - A comprehensive suite of primitive and composite UI elements that enforce project-wide styling and interaction patterns.
+- Declarative Form Generation - An automated system that renders complete forms based on provided schemas, reducing manual boilerplate for complex data entry.
+- Component Adaptation - Standardized wrappers that integrate third-party libraries like Material UI, ensuring they conform to project-specific requirements and theme constraints.
+- Form Layout Management - Headless and styled layout components designed to structure the arrangement of form fields, labels, and error states consistently.
+- UI Utility Integration - Shared utility functions for class name composition and conditional styling that ensure consistent Tailwind CSS class merging.
 
 ## License
 
