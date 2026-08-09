@@ -1,37 +1,39 @@
 {
-  "summary": "The @gyomu/ai-react package provides React-specific abstractions and hooks for integrating Gyomu's AI chat capabilities into user interfaces. It serves as a bridge between standard UI components and the Gyomu communication protocol by handling message transformation and standardized error management.",
+  "summary": "The @gyomu/ai-react package provides React-specific hooks and utilities for integrating Gyomu chat sessions into front-end applications. It acts as a bridge between the AI SDK and Gyomu-specific transport protocols, ensuring seamless message management and error handling.",
   "responsibilities": [
-    "Manage the lifecycle and state of Gyomu-powered chat sessions.",
-    "Transform UI-layer messages into internal protocol-compatible formats.",
-    "Provide standardized error handling for network and API interactions.",
-    "Implement normalized status tracking for chat operations."
+    "Bridge the AI SDK chat interfaces with Gyomu communication protocols.",
+    "Manage the lifecycle and state of active chat sessions within React components.",
+    "Normalize disparate message formats between AI models and internal Gyomu structures.",
+    "Implement standardized error handling and status reporting for network and application-level exceptions.",
+    "Provide robust data extraction utilities for parsing complex UI message objects."
   ],
   "capabilities": [
     {
       "name": "Chat Session Management",
-      "description": "Provides React hooks to initiate, control, and observe chat sessions within UI components."
+      "description": "Provides React hooks to initiate, control, and observe the state of a Gyomu-powered chat session."
     },
     {
-      "name": "Message Normalization",
-      "description": "Utilities to transform and extract content from multi-part UI messages into consistent application-level formats."
+      "name": "Message Transformation",
+      "description": "Standardizes message formats by mapping AI SDK primitives to application-specific schema requirements."
     },
     {
-      "name": "Resilient API Communication",
-      "description": "Configurable fetch wrappers that automate error parsing and handle response exceptions for reliable backend interaction."
+      "name": "Transport Error Handling",
+      "description": "Standardizes the parsing and reporting of network and service errors to ensure a consistent user experience during API failures."
     },
     {
-      "name": "Status Coordination",
-      "description": "Standardizes raw backend status signals into a predictable state interface for UI rendering."
+      "name": "Message Content Utilities",
+      "description": "Offers helper functions to extract readable content from complex, multi-part chat message structures."
     }
   ],
   "designDecisions": [
-    "Uses a hook-based architecture to encapsulate session state and side effects.",
-    "Decouples UI message structures from the internal Gyomu transport protocol via explicit mapping layers.",
-    "Implements a centralized error handling strategy using typed exceptions to differentiate public-facing errors from internal failures."
+    "Adopts a hook-based architecture to provide idiomatic React integration for complex stateful chat logic.",
+    "Decouples transport logic from UI components by utilizing specialized mapping functions for message translation.",
+    "Standardizes communication through a centralized error schema to prevent fragmented error handling across the client application."
   ],
   "usageGuidance": [
-    "Use the provided React hook as the primary entry point for managing chat state rather than interacting with transport layers directly.",
-    "Utilize the provided mapping utilities when interfacing with standard AI SDK message formats.",
-    "Always wrap network requests with the provided fetch utilities to ensure consistent error boundary management."
+    "Use the 'useGyomuChat' hook as the primary entry point for implementing chat features within React components.",
+    "Leverage the provided mapping utilities when interfacing with raw AI SDK messages to ensure compatibility with Gyomu backends.",
+    "Always wrap network-sensitive fetch operations in the provided fetch wrappers to ensure consistent error parsing and exception handling.",
+    "Rely on the defined status types when building custom UI components to ensure accurate reflection of chat connection and message processing states."
   ]
 }

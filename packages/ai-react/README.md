@@ -4,15 +4,11 @@ US English | [JP 日本語](README.ja.md)
 
 ## Overview
 
-This package provides a robust foundation for integrating AI-driven features into React applications within the Gyomu ecosystem. It acts as a bridge between standard user interfaces and the Gyomu communication protocol, ensuring a seamless connection for complex AI interactions.
-
-By offering React-specific abstractions for session management, message transformation, and state handling, the package enables developers to incorporate AI capabilities with consistency and precision. It simplifies the implementation of sophisticated chat interfaces while providing standardized error management to maintain reliable application performance.
+This package provides a robust foundation for integrating AI capabilities into React applications within the Gyomu ecosystem. It serves as a bridge between the AI SDK and project-specific transport protocols, ensuring a standardized approach to front-end integration. By delivering essential functionality through specialized React Hooks, the package streamlines chat session management, message transformation, and state handling. This architecture simplifies the development process by providing consistent mechanisms for error management and data flow, allowing developers to implement AI-driven features reliably and maintainably across their interfaces.
 
 ## Architecture
 
-The architecture of `@gyomu/ai-react` is designed to bridge UI components with the Gyomu communication protocol. It functions as a stateful layer that abstracts complex chat interactions, ensuring that message transformations and status tracking remain consistent across the application. By centralizing the logic for lifecycle management and normalized error handling, the package decouples UI components from the underlying API complexities.
-
-The package is organized to maintain strict behavioral contracts for its core operations. Internal logic is validated through a dedicated suite of integration and unit tests that ensure request creation, message mapping, and error parsing align with protocol requirements. This verification structure ensures that all data flowing between the user interface and the Gyomu backend maintains structural integrity and provides predictable results during network or API interactions.
+The architecture of `@gyomu/ai-react` is organized as a modular bridge that connects the AI SDK to Gyomu-specific transport protocols. The package is structured to decouple session lifecycle management from underlying data transformation, ensuring that React components remain agnostic of complex communication schemas. Responsibilities are divided into discrete functional layers: hooks manage the chat session state and synchronization, while transformation utilities normalize message formats and extract content from multi-part objects. A dedicated error-handling layer standardizes network and service exceptions, ensuring consistent status reporting throughout the application. Internal integrity is maintained through a robust testing infrastructure within the `src` directory. These tests serve as a verification layer that validates the library’s behavioral contracts, ensuring that fetch creation, message mapping, and error parsing logic remain consistent as the package evolves.
 
 ## Installation
 
@@ -24,22 +20,18 @@ pnpm add @gyomu/ai-react
 
 ## Dependencies
 
-This package requires a modern ESM environment and is compatible with React 19 and Effect 4.x. It is built upon the Effect ecosystem, leveraging Effect Schema and Context for its core architecture.
-
-Runtime functionality relies on `@gyomu/schema` for type definitions and `@gyomu/ui-core` for headless UI components. Additionally, the package integrates with `@ai-sdk/react` to handle AI-driven interactions and stream management within the React lifecycle.
+This package requires an ESM-based environment with Node.js, React 19, and Effect 4.x as its core foundation. It is built to leverage TypeScript for robust type safety across all integrated modules. Runtime functionality relies on Effect for system architecture, while `@gyomu/schema` and `@gyomu/ui-core` provide essential data structures and headless UI components. Additionally, `@ai-sdk/react` is integrated to handle specific Vercel-related patterns and error management within your application.
 
 ## Development
 
-The development philosophy of this package centers on the principle of "predictable abstraction," where complex AI-protocol orchestration is encapsulated within intuitive React Hooks. We believe that integrating AI into Gyomu-powered applications should not require developers to manage the intricacies of state synchronization or message normalization manually. By providing a declarative API that mirrors standard React patterns, we ensure that the underlying complexity of asynchronous streaming, session persistence, and error recovery remains decoupled from the UI implementation. This structure allows developers to focus on crafting high-quality user experiences while delegating the burden of robust communication protocols to our standardized infrastructure.
-
-Contributors are expected to adhere to the principle of "composition over configuration," prioritizing modular hooks that can be easily composed to build sophisticated AI interfaces. Code quality must be defined by maintainability and type-safety; every transformation and state transition should be strictly typed to prevent runtime failures in mission-critical Gyomu workflows. We emphasize defensive programming in error handling—ensuring that every network interaction is resilient and that status tracking provides meaningful, actionable feedback. By keeping the core architecture lean and strictly focused on lifecycle management, we maintain a codebase that is both resilient to API evolution and accessible for future extensibility.
+This package serves as the AI UI foundation for the Gyomu project, aiming to bridge React applications with the Gyomu communication protocol to enable consistent AI feature integration. Development must strictly adhere to an API design centered on React Hooks, maintaining a clear separation between the UI layer and the internal Gyomu protocol. Contributors are required to design UI components to be independent of specific Provider implementations and exclude dependencies on frameworks other than React, ensuring the library remains independent and maintainable. The core architecture emphasizes the standardization of data flow through a layer that handles message format conversion. Chat session lifecycle management and state transitions must follow a consistent state model to maintain predictability, with standardized mechanisms applied for complex data extraction and error handling. The system ensures overall stability by adhering to a standardized error reporting scheme for both network and application-level exceptions. Future development should continue to prioritize the abstraction of the UI layer and the robust separation of internal protocols based on these principles.
 
 ## Public API
 
-- Chat Session Management - Provides React hooks to initiate, control, and observe chat sessions within UI components.
-- Message Normalization - Utilities to transform and extract content from multi-part UI messages into consistent application-level formats.
-- Resilient API Communication - Configurable fetch wrappers that automate error parsing and handle response exceptions for reliable backend interaction.
-- Status Coordination - Standardizes raw backend status signals into a predictable state interface for UI rendering.
+- Chat Session Management - Provides React hooks to initiate, control, and observe the state of a Gyomu-powered chat session.
+- Message Transformation - Standardizes message formats by mapping AI SDK primitives to application-specific schema requirements.
+- Transport Error Handling - Standardizes the parsing and reporting of network and service errors to ensure a consistent user experience during API failures.
+- Message Content Utilities - Offers helper functions to extract readable content from complex, multi-part chat message structures.
 
 ## License
 
