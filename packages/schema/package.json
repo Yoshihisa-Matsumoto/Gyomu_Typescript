@@ -115,6 +115,7 @@
     "knip": "^6.4.1"
   },
   "dependencies": {
+    "@standard-schema/spec": "^1.1.0",
     "date-fns": "catalog:",
     "dotenv": "catalog:",
     "effect": "catalog:",

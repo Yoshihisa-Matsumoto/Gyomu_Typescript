@@ -1,6 +1,7 @@
 import { Effect, Schema } from 'effect'
 import { SchemaValidationError } from '../error/SchemaValidationError.js'
 import type { Constraint, ConstraintDecoder, SchemaError } from 'effect/Schema'
+import type { StandardJSONSchemaV1, StandardSchemaV1 } from '@standard-schema/spec'
 
 /**
  * Parses a JSON string and decodes it into a schema object synchronously.
@@ -159,7 +160,11 @@ export type EffectArrayableSchema = Schema.Schema<any>
  *
  * @returns A standard schema conforming to V1 and JSON schema standards.
  */
-export function toJsonSchema<T extends Schema.Schema<any>>(schema: T) {
+export function toJsonSchema<T extends Schema.Schema<any>>(
+  schema: T,
+): StandardSchemaV1<unknown, unknown> &
+  StandardJSONSchemaV1<unknown, unknown> &
+  Schema.ConstraintDecoder<unknown, never> {
   return Schema.toStandardSchemaV1(
     Schema.toStandardJSONSchemaV1(schema as any as Parameters<typeof Schema.toStandardSchemaV1>[0]),
   )
