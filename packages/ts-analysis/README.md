@@ -4,15 +4,15 @@ US English | [JP 日本語](README.ja.md)
 
 ## Overview
 
-This package serves as a foundational infrastructure for static analysis within TypeScript projects. By performing a comprehensive analysis of source code structures, symbols, and dependencies, it translates raw files into a structured, indexable model that captures the internal architecture of a codebase.
-
-Designed to act as a robust orchestration layer, the tool bridges the gap between source code and actionable data. It manages the lifecycle of project contexts and persists analysis metadata for future use. This structured output provides a reliable common baseline for secondary applications, such as AI-driven workflows and automated documentation generation, enabling seamless integration across higher-level development tools.
+This package provides a robust framework for performing static analysis on TypeScript projects within the Gyomu ecosystem. It enables developers to orchestrate the exploration of workspace projects, process source files into structured metadata, and manage the persistence of analysis results. By extracting code structures, symbols, and dependencies into a unified model, the tool facilitates consistent access to project architecture. This persistent and reusable data serves as a foundational layer, allowing AI-driven services and documentation generators to reliably interpret and leverage complex codebase information.
 
 ## Architecture
 
-The package architecture is organized into distinct layers that decouple project discovery from static analysis orchestration. At its core, the system utilizes a project management layer to identify workspace boundaries, validate configurations, and aggregate metadata. This foundational infrastructure establishes a unified project context that defines the scope for all subsequent operations.
+The architecture is organized into a modular framework that separates project discovery, analysis orchestration, and utility support. The system uses a centralized entry point to expose core interfaces, allowing components to collaborate effectively while maintaining clear boundaries between workspace management and static analysis tasks.
 
-The analysis pipeline builds upon this foundation to process TypeScript source files and extract structured metadata. This orchestration layer manages the entire lifecycle, from initializing the environment to persisting analysis results for incremental processing. To ensure consistency across diverse file structures, the system relies on a shared path resolution framework. This utility layer handles path normalization, module specifier mapping, and translation between source files and build artifacts, bridging the gap between raw code and indexable project data. By separating environment discovery, path management, and analysis orchestration, the architecture provides a robust interface for reliable, workspace-aware static analysis.
+Project infrastructure is handled by specialized components that discover and define the workspace scope, validating project configurations and aggregating metadata. This context is then utilized by the analysis engine, which performs source file processing and manages the persistence of metadata to the filesystem. This approach ensures that analysis operations are anchored in a consistent environment, supporting incremental processing and efficient data retrieval.
+
+Supporting these core engines are path resolution utilities that translate between logical module specifiers, source files, and output artifacts. These shared components provide the foundational logic for mapping filesystem locations, enabling the analysis pipeline to maintain integrity across complex repository structures. By decoupling path translation and project discovery from the analysis logic, the package ensures a stable, scalable foundation for static analysis.
 
 ## Installation
 
@@ -24,22 +24,18 @@ pnpm add @gyomu/ts-analysis
 
 ## Dependencies
 
-This package requires Node.js and is designed for an ESM environment. It relies on Effect 4.x for its core runtime, schema, and dependency injection capabilities.
-
-The project utilizes `ts-morph` for static code analysis, alongside internal `@gyomu/schema` and `@gyomu/infra` libraries to manage shared types and infrastructure logic. Please ensure your project environment is configured to support these ESM dependencies before installation.
+This package requires Node.js and is designed for an ESM environment, utilizing Effect 4.x as its core runtime. It relies on internal infrastructure packages, including `@gyomu/schema` for shared definitions and `@gyomu/infra` for foundational I/O operations. Additionally, the package integrates `ts-morph` for robust TypeScript code analysis. Please ensure your project environment is compatible with these requirements before installation.
 
 ## Development
 
-This package serves as the foundational analysis layer for Gyomu, tasked with transforming complex TypeScript project structures into a deterministic, structured model of symbols and dependencies. By decoupling project discovery, file-level processing, and path resolution, the architecture ensures that the analysis process remains modular and resilient to the complexities of monorepo environments. Contributors should ensure that all internal transformations adhere to a strictly read-only approach toward source code, treating the codebase as an immutable input to generate persistent, structured artifacts that serve as the single source of truth for upstream AI and documentation services.
-
-To maintain the integrity of the analysis pipeline, all development must strictly follow the principle that analysis results are derived deterministically from the source code. The architecture mandates a clear separation between project-level discovery and file-level processing, ensuring that the system can perform incremental updates and maximize reusability through persistence. When implementing new features, prioritize the decoupling of module resolution logic from core analysis routines, and ensure that all path resolution adheres to consistent workspace-wide rules. By strictly limiting upstream dependencies to the output of this model and preventing direct reliance on internal tooling like `ts-morph`, contributors preserve the stability of the abstraction layer and ensure the platform remains maintainable as the codebase evolves.
+This package serves as a TypeScript source code analysis foundation for Gyomu, aimed at comprehensively extracting the project's overall structure, symbols, and dependencies, and converting them into reusable structured data. This analysis foundation is designed to act as the single source of truth referenced directly by higher-level layers such as AI features and documentation generation. Developers should avoid direct dependencies on analysis tools like ts-morph and maintain an architecture that accesses information through the abstracted analysis result model provided by this package. In terms of design, the highest priority is the principle that analysis results must always be deterministically derived from the source code. Strictly separate the responsibilities of project analysis and file analysis, and ensure the efficiency of incremental processing by persisting analysis data to the file system, thereby enabling differential updates. While maintaining consistency in path and module resolution logic across the entire Workspace, keep these processes loosely coupled with the main analysis logic to ensure future extensibility and maintainability. Contributors must uphold the policy that analysis results are read-only with respect to the source code and must consistently manage the boundaries of TypeScript projects.
 
 ## Public API
 
-- Project Context Management - Initializes and maintains the environment settings, package metadata, and workspace configuration required for reliable project-wide analysis.
-- Static Analysis Pipeline - Provides high-level orchestration to process TypeScript source files, extract symbol information, and store analysis results for later retrieval.
-- Path Resolution Framework - Offers robust utilities for normalizing paths, resolving module specifiers, and mapping between source paths and build output locations.
-- Workspace Discovery - Locates and structures TypeScript projects across a repository, allowing tooling to operate on defined workspace boundaries.
+- Project Discovery - Enables the identification and structural mapping of TypeScript projects and workspace environments.
+- Static Analysis Engine - Provides core facilities to analyze TypeScript source files and extract symbols and dependency information.
+- Persistence Management - Handles caching and storage of analysis results to disk for improved performance in subsequent operations.
+- Path Resolution Framework - Offers utilities for normalizing, mapping, and translating paths between source files, output artifacts, and module specifiers.
 
 ## License
 

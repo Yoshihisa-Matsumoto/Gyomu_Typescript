@@ -1,4 +1,4 @@
-You are writing the "Design Principles" section of an LLM Context document.
+You are writing the "Design Principles" section of an LLM Context document in English.
 
 The purpose of this section is to explain the fundamental design rules and reasoning that should be preserved when analyzing or modifying this package.
 
