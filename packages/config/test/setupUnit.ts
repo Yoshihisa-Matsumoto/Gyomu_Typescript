@@ -5,5 +5,4 @@ await initLogger({
   fixedLogFilename: false,
   logLevel: 'debug',
   logPath: tmpdir(),
-  logFilename: undefined,
 })
