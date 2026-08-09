@@ -1,0 +1,138 @@
+# yaml-language-server: $schema=../../../../schemas/Package.json
+
+displayName: Gyomu Facts
+
+mission: |
+  Gyomu プロジェクトおよびリポジトリに関する事実（Facts）を構造化し、
+  型安全かつ一貫した方法で取得・参照できる基盤を提供する。
+  プロジェクトを定義する比較的永続的な情報と、ブランチやワーキングツリーなど
+  リポジトリの現在状態を分離して管理し、FactProvider を通じて統一的に提供することで、
+  アプリケーションが開発コンテキストを一貫して理解できるようにする。
+
+policies:
+  - プロジェクトを定義する比較的永続的な事実と、リポジトリの動的な状態を概念的に分離する。
+  - すべての事実は Fact を基本構造として扱い、共通した型安全なモデルで表現する。
+  - 関連する事実は FactSet により型安全な集合としてまとめる。
+  - 事実の取得は FactProvider を経由して行い、利用側から個別の取得実装へ直接依存させない。
+  - Project Facts と Repository Facts は、それぞれの性質に応じたライフサイクルを維持する。
+  - 事実の取得結果は構造化されたデータとして提供し、利用側が一貫した方法で問い合わせられるようにする。
+  - 新しい種類の Fact を追加しても、既存の FactProvider 利用者に不要な変更を要求しない設計を維持する。
+  - Fact のモデルは宣言的かつ型安全に定義し、利用側で暗黙的な型変換を行わない。
+
+constraints:
+  - FactProvider の利用側に、個別の Fact 取得実装を直接持たせてはならない。
+  - Project Fact と Repository Fact の性質を混同してはならない。
+  - リポジトリの状態そのものを変更する責務を持たせてはならない。
+  - プロジェクトやリポジトリに対するビジネスロジックを実装してはならない。
+  - Fact を利用するアプリケーション固有の判断ロジックを実装してはならない。
+  - Fact の永続化方法やストレージ実装へ利用側を直接依存させてはならない。
+
+nonGoals:
+  - リポジトリのファイルや Git ワーキングツリーを変更すること。
+  - Git 操作そのものをアプリケーションへ提供すること。
+  - プロジェクト固有のビジネスルールを定義すること。
+  - Fact を利用した分析・評価・スコアリングを実行すること。
+  - AI によるプロジェクト分析や推論を実行すること。
+  - Fact の表示やドキュメント生成を担当すること。
+  - 特定の永続化方式を Fact の標準実装として強制すること。
+
+terminology:
+  - term: Fact
+    definition: |
+      プロジェクトまたはリポジトリについて、構造化された形式で表現された事実。
+      すべての Fact の共通基盤となるモデル。
+
+  - term: FactSet
+    definition: |
+      関連する Fact を型安全にまとめて扱うためのコンテナ。
+      Fact の集合を一貫した構造で提供する。
+
+  - term: FactProvider
+    definition: |
+      Project Facts および Repository Facts を取得するためのサービス。
+      Fact の具体的な取得方法を抽象化し、利用側へ統一されたアクセス手段を提供する。
+
+  - term: Project Fact
+    definition: |
+      プロジェクトそのものを定義する比較的永続的な事実。
+      リポジトリの一時的な状態とは独立して扱われる。
+
+  - term: Repository Fact
+    definition: |
+      現在のリポジトリや開発環境の状態を表す動的な事実。
+      例として現在のブランチやワーキングツリーの状態などがある。
+
+  - term: Project Context
+    definition: |
+      Project Facts と Repository Facts を組み合わせて表現される、
+      アプリケーションがプロジェクトを理解するための開発コンテキスト。
+
+rationale:
+  - Project Facts と Repository Facts を分離することで、永続的なプロジェクトの性質と一時的なリポジトリ状態を混同せずに扱える。
+  - Fact を共通モデルとして定義することで、プロジェクトやリポジトリに関する情報を一貫した形式で扱える。
+  - FactSet により関連する Fact を型安全にまとめられるため、Fact の種類が増えても利用側の構造を維持しやすい。
+  - FactProvider に取得処理を集約することで、Fact の具体的な取得方法を変更しても利用側への影響を抑えられる。
+  - Project Facts と Repository Facts を統一されたサービスから取得できることで、アプリケーションが開発コンテキストを一貫して参照できる。
+  - 動的な Repository Facts を独立して扱うことで、現在のブランチやワーキングツリー状態のような一時的な情報を、プロジェクトそのものの定義から切り離して扱える。
+
+usage:
+  - situation: プロジェクトに関する事実を取得する
+    guidance: FactProvider を Effect の依存性注入経由で取得し、Project Fact を問い合わせる。
+
+  - situation: リポジトリの現在状態を取得する
+    guidance: FactProvider を利用して Repository Fact を取得し、現在のブランチやワーキングツリーなどの状態を参照する。
+
+  - situation: 関連する複数の Fact をまとめて扱う
+    guidance: FactSet を利用して関連する Fact を型安全な集合として扱う。
+
+  - situation: 新しい種類の Fact を追加する
+    guidance: Fact の型を定義し、FactProvider から統一された方法で取得できるようにする。
+
+  - situation: プロジェクトの定義と現在のリポジトリ状態を利用する
+    guidance: Project Facts と Repository Facts をそれぞれの性質に応じて取得し、必要な開発コンテキストを構築する。
+
+  - situation: Fact の取得実装を変更する
+    guidance: FactProvider の契約を維持したまま内部の取得方法を変更し、利用側に実装詳細を露出させない。
+
+examples:
+  - title: プロジェクト情報の取得
+    input: |
+      アプリケーションからプロジェクトを識別するための事実を取得したい。
+    output: |
+      FactProvider から Project Fact を取得する。
+    explanation: |
+      プロジェクトそのものを定義する情報は Repository Fact と分離して扱われるため、
+      一時的なリポジトリ状態に依存せずプロジェクトのコンテキストを参照できる。
+
+  - title: 現在のブランチの取得
+    input: |
+      現在チェックアウトされている Git ブランチを取得したい。
+    output: |
+      FactProvider から Repository Fact として現在のブランチ情報を取得する。
+    explanation: |
+      ブランチはリポジトリの現在状態に属するため、Project Fact とは異なるライフサイクルで扱われる。
+
+  - title: Fact のグループ化
+    input: |
+      プロジェクトに関連する複数の Fact をまとめて扱いたい。
+    output: |
+      関連する Fact を FactSet にまとめて利用する。
+    explanation: |
+      FactSet により Fact の集合を型安全に扱うことができ、利用側で個別のデータ構造を組み立てる必要がない。
+
+  - title: Repository State の参照
+    input: |
+      現在のワーキングツリーが変更されているか確認したい。
+    output: |
+      FactProvider から Repository Fact を取得して状態を参照する。
+    explanation: |
+      ワーキングツリーの状態は動的な Repository Fact として扱われるため、
+      プロジェクトそのものを定義する Fact とは分離して扱える。
+
+  - title: Fact 取得方法の変更
+    input: |
+      Fact の取得元や取得方法を変更したい。
+    output: |
+      FactProvider の内部実装を変更し、利用側のコードは FactProvider の契約を通じて Fact を取得する。
+    explanation: |
+      取得処理を FactProvider に抽象化することで、Fact の具体的な取得方法と利用側を疎結合に保てる。

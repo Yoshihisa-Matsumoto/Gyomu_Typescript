@@ -5,6 +5,13 @@ type ScoredDirectory = {
   directory: DirectoryAnalysis
 }
 
+/**
+ * Sorts a collection of directory analysis records based on their calculated priority scores.
+ *
+ * @param directories The directory analysis records to be ranked.
+ *
+ * @returns A sorted array of directory analysis records.
+ */
 export const rankDirectoriesByScore = (directories: ReadonlyArray<DirectoryAnalysis>) => {
   if (directories.length === 0) return []
 

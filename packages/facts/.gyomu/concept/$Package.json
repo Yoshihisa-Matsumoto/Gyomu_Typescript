@@ -1,0 +1,33 @@
+{
+  "summary": "The @gyomu/facts package acts as the analytical engine for the Gyomu ecosystem, transforming raw project metadata into structured insights. It provides the logic necessary to evaluate, score, and rank directory structures to determine architectural importance across a codebase.",
+  "responsibilities": [
+    "Define the structural metadata schemas for project files and directories.",
+    "Implement analytical algorithms to score and prioritize directory components.",
+    "Orchestrate data transformation from raw filesystem information into high-level analytical facts.",
+    "Provide a unified interface for querying project-wide structural metrics."
+  ],
+  "capabilities": [
+    {
+      "name": "Project Structural Analysis",
+      "description": "Calculates metrics and metadata about project organization to enable deeper structural understanding."
+    },
+    {
+      "name": "Importance Scoring",
+      "description": "Assigns quantitative values to directory structures to determine their relative significance and priority within the project hierarchy."
+    },
+    {
+      "name": "Fact Modeling",
+      "description": "Represents the state of a package as a queryable collection of facts for use by downstream architectural tools."
+    }
+  ],
+  "designDecisions": [
+    "Separation of analytical logic from raw data acquisition to allow for flexible scoring strategies.",
+    "Reliance on core domain schemas defined in sibling packages to ensure consistency across the Gyomu toolchain.",
+    "Usage of a centralized re-export strategy to maintain a stable, simplified public API surface."
+  ],
+  "usageGuidance": [
+    "Utilize this package when you need to programmatically determine the significance or role of specific directories in a project.",
+    "Integrate with @gyomu/ts-analysis when package-level facts need to be correlated with source code definitions.",
+    "Always rely on the public entry point for access to analysis utilities to ensure future compatibility."
+  ]
+}

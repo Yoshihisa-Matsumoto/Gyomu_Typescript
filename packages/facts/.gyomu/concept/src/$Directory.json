@@ -1,0 +1,23 @@
+{
+  "summary": "This directory serves as the root orchestration point for the project, providing a unified public interface for analyzing, scoring, and modeling project directory and package structures to generate actionable metadata.",
+  "responsibilities": [
+    "Expose core analytical functionality to external consumers",
+    "Aggregate package and directory analysis capabilities",
+    "Provide entry points for project structural evaluation"
+  ],
+  "concepts": [
+    "Package Analysis",
+    "Directory Metadata",
+    "Project Structural Evaluation"
+  ],
+  "relationships": [
+    "The directory serves as a central hub that re-exports functionality from specialized internal modules for package and directory analysis.",
+    "Internal modules work together to convert raw filesystem data into structured metadata and analytical scores."
+  ],
+  "designDecisions": [
+    "Use of central export patterns to simplify consumption",
+    "Modular separation of analytical logic from data structures",
+    "Public API surface defined by aggregate exports"
+  ],
+  "importance": "Core"
+}

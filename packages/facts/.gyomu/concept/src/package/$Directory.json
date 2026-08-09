@@ -1,0 +1,24 @@
+{
+  "summary": "This directory manages the core analytical logic for evaluating and scoring directory structures within a package, providing tools to interpret package facts and rank directory components based on calculated metrics.",
+  "responsibilities": [
+    "Analyze package structures to extract meaningful facts",
+    "Calculate importance scores for directories",
+    "Rank directory hierarchies based on analytical scoring"
+  ],
+  "concepts": [
+    "Package Analysis",
+    "Directory Ranking",
+    "Package Facts",
+    "Scoring Metrics"
+  ],
+  "relationships": [
+    "Package facts provide the raw data required by the analysis tools to calculate directory importance scores.",
+    "Ranking algorithms rely on the scoring logic to determine the relative priority of different directory structures."
+  ],
+  "designDecisions": [
+    "Centralized export of analytical utilities and data structures",
+    "Decoupled scoring logic from data collection",
+    "Use of interfaces to define consistent package metadata structures"
+  ],
+  "importance": "Core"
+}

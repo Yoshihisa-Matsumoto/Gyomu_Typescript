@@ -3,6 +3,13 @@ import { rankDirectoriesByScore } from './rankDirectoriesByScore.js'
 import type { PackageAnalysis } from '@gyomu/schema/concept'
 import type { DirectorySelectionOption, PackageFacts } from './PackageFacts.js'
 
+/**
+ * Analyzes the provided package analysis data to produce a set of ranked directory selection utilities.
+ *
+ * @param packageAnalysis The raw analysis data of the package to be processed.
+ *
+ * @returns A collection of facts and utilities for retrieving ranked directories based on different strategies.
+ */
 export const analyzePackageAnalysis = (packageAnalysis: PackageAnalysis): PackageFacts => {
   return {
     // rankedDirectories: rankDirectoriesByScore(packageAnalysis.directories),
