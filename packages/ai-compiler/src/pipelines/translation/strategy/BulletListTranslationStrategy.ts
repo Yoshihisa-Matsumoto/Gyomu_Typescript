@@ -9,6 +9,13 @@ import type {
   ValidationResult,
 } from '@gyomu/schema/document'
 
+/**
+ * Updates the bullet list translation context by merging validation results and updating valid items.
+ *
+ * @param args The arguments containing section ID, definitions, validation results, and contexts.
+ *
+ * @returns Returns an Effect containing the updated bullet list context and validation result.
+ */
 export const updateBulletListContext = (args: {
   sectionId: string
   sectionDefinition: SectionTranslationDefinition
@@ -108,6 +115,9 @@ const retrieveValidIdFromBulletListItem = (invalidIdList: Array<number>, item: B
   return validIdList
 }
 
+/**
+ * Translation strategy implementation for bullet list documents.
+ */
 export const BulletListTranslationStrategy: DocumentContentTranslationStrategy<typeof BulletList> =
   {
     definition: BulletListDefinition,

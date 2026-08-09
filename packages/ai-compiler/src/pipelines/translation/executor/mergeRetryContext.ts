@@ -9,6 +9,13 @@ import type {
 } from '@gyomu/schema/document'
 import type { Schema } from 'effect'
 
+/**
+ * Merges retry context for a failed section translation using the provided content strategy.
+ *
+ * @param args The arguments required to merge the retry context.
+ *
+ * @returns An Effect containing the updated TranslationState on success, or a TranslationError on failure.
+ */
 export const mergeRetryContext = <
   TSchema extends Schema.Schema<{
     readonly type: DocumentContent['type']

@@ -11,6 +11,13 @@ import type {
 } from '@gyomu/schema/document'
 import type { Schema } from 'effect'
 
+/**
+ * Builds the translation prompt for a document section by combining templates, translation instructions, context, and validation results.
+ *
+ * @param args The arguments required to build the translation prompt, including language, section identifier, context, section definition, content strategy, validation results, and optional retry configuration.
+ *
+ * @returns An Effect containing the populated translation prompt string, or a TranslationError if the prompt building process fails.
+ */
 export const buildTranslationPrompt = <
   TSchema extends Schema.Schema<{
     readonly type: DocumentContent['type']

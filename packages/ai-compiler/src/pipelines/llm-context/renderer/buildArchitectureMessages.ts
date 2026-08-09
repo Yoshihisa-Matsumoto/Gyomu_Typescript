@@ -14,7 +14,7 @@ import type { FileSystem } from 'effect'
  *
  * @returns An Effect that yields an array of messages or an IOError, requiring a FileSystem implementation.
  *
- * @@requires @requires FileSystem
+ * @@requires FileSystem.FileSystem
  */
 export const buildArchitectureMessages = (
   context: LlmContextBuildContext,

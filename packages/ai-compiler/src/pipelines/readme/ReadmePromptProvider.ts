@@ -4,6 +4,9 @@ import type { SupportedSectionId } from './renderer/renderSectionInput.js'
 import type { ReadmeBuildContext } from '@gyomu/schema/concept'
 import type { FileSystem } from 'effect'
 
+/**
+ * Section prompt provider for generating README documentation sections.
+ */
 export const ReadmePromptProvider: SectionPromptProvider<
   SupportedSectionId,
   ReadmeBuildContext,

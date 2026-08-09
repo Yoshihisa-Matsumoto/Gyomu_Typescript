@@ -7,6 +7,13 @@ import type { IOError } from '@gyomu/schema'
 import type { LlmContextBuildContext } from '@gyomu/schema/concept'
 import type { FileSystem } from 'effect'
 
+/**
+ * Builds LLM messages for editing rules based on the provided LLM context.
+ *
+ * @param context The LLM context build context containing coding guidelines.
+ *
+ * @returns An Effect yielding an array of messages, requiring FileSystem and potentially failing with an IOError.
+ */
 export const buildEditingRuleMessages = (
   context: LlmContextBuildContext,
 ): Effect.Effect<Array<Message>, IOError, FileSystem.FileSystem> =>

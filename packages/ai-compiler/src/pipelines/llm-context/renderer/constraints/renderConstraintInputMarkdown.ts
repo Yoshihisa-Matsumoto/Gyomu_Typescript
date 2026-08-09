@@ -2,6 +2,13 @@ import { Effect } from 'effect'
 import { loadPrompt } from '../../prompt/index.js'
 import type { ConstraintsInput } from './ConstraintsInput.js'
 
+/**
+ * Renders constraint input data into a markdown representation using the important-constraints-input template.
+ *
+ * @param input The constraints input data containing human constraints, package facts, dependencies, export paths, and architecture facts.
+ *
+ * @returns An Effect containing the rendered markdown string.
+ */
 export const renderConstraintInputMarkdown = (input: ConstraintsInput) =>
   Effect.gen(function* () {
     const prompt = yield* loadPrompt('important-constraints-input.md')

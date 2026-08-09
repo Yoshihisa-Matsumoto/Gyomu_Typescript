@@ -12,6 +12,14 @@ import type {
 import type { Schema } from 'effect'
 
 const MAX_TRANSLATION_ATTEMPTS = 5
+
+/**
+ * Executes document content translation with the specified strategy and options.
+ *
+ * @param args Translation arguments including language, section identifier, context, definition, strategy, and retry options.
+ *
+ * @returns Returns an Effect containing the translated document content.
+ */
 export const executeDocumentContentTranslation = <
   TSchema extends Schema.Schema<{
     readonly type: DocumentContent['type']
@@ -40,6 +48,15 @@ interface TemporallyTranslationState<
   validation: ValidationResult | undefined
 }
 
+/**
+ * Retries document content translation up to the maximum specified attempts, validating and merging retry context on failure.
+ *
+ * @param args Translation arguments including language, section identifier, context, definition, strategy, and retry options.
+ *
+ * @param maxAttempt The maximum number of translation attempts allowed.
+ *
+ * @returns Returns an Effect containing the translated document content or failing with a TranslationError if maximum attempts are reached.
+ */
 export const retryDocumentContentTranslation = <
   TSchema extends Schema.Schema<{
     readonly type: DocumentContent['type']

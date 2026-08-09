@@ -10,7 +10,7 @@ import type { LlmContextBuildContext, LlmContextSectionId } from '@gyomu/schema/
 import type { IOError } from '@gyomu/schema'
 
 /**
- * Defines the subset of supported Readme section identifiers, including 'development', 'dependencies', 'overview', and 'architecture'.
+ * Defines the subset of supported Readme section identifiers, including 'overview', 'architecture', 'design-principles', 'important-constraints', and 'editing-rules'.
  */
 export type SupportedSectionId = Extract<
   LlmContextSectionId,

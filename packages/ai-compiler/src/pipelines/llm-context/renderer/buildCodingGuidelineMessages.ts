@@ -7,6 +7,13 @@ import type { IOError } from '@gyomu/schema'
 import type { LlmContextBuildContext } from '@gyomu/schema/concept'
 import type { FileSystem } from 'effect'
 
+/**
+ * Builds coding guideline messages for the LLM context using the provided build context.
+ *
+ * @param context The LLM context build information.
+ *
+ * @returns Returns an Effect containing an array of messages representing the coding guidelines, requiring FileSystem and potentially failing with an IOError.
+ */
 export const buildCodingGuidelineMessages = (
   context: LlmContextBuildContext,
 ): Effect.Effect<Array<Message>, IOError, FileSystem.FileSystem> =>

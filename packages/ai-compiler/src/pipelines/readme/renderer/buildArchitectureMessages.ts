@@ -12,9 +12,9 @@ import type { FileSystem } from 'effect'
  *
  * @param context The current README build context containing project analysis and concept details.
  *
- * @returns An Effect that yields an array of messages or an IOError, requiring a FileSystem implementation.
+ * @returns An Effect that yields an array of messages or an IOError, requiring a FileSystem service.
  *
- * @@requires @requires FileSystem
+ * @requires FileSystem.FileSystem
  */
 export const buildArchitectureMessages = (
   context: ReadmeBuildContext,

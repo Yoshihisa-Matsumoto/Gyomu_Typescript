@@ -5,6 +5,19 @@ import type { SectionPromptProvider } from '../SectionPromptProvider.js'
 import type { AiError, IOError, RetryOption } from '@gyomu/schema'
 import type { ModelRoutes, RouteNotFoundError } from '@gyomu/ai'
 
+/**
+ * Builds a section item by rendering prompts using the provided section prompt provider and generating text via the AI model route.
+ *
+ * @param sectionId The identifier of the section to build.
+ *
+ * @param context The context object used for rendering prompts.
+ *
+ * @param provider The provider used to render prompts for the section.
+ *
+ * @param retryOption Optional retry configuration for text generation.
+ *
+ * @returns An effect yielding the generated text string, requiring services R, AiModelRoute, and ModelRoutes, and potentially failing with IOError, AiError, or RouteNotFoundError.
+ */
 export const buildSectionItem = <TSectionId extends string, TContext, R = never>(
   sectionId: TSectionId,
   context: TContext,

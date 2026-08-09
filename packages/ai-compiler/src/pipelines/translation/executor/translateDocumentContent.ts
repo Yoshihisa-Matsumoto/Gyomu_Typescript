@@ -14,6 +14,13 @@ import type {
 } from '@gyomu/schema/document'
 import type { Schema } from 'effect'
 
+/**
+ * Translates document content for a specific section using an AI model route and content strategy.
+ *
+ * @param args The translation arguments including language, section ID, context, section definition, content strategy, validation result, and retry options.
+ *
+ * @returns An Effect containing the translated document content object, or failing with a TranslationError.
+ */
 export const translateDocumentContent = <
   TSchema extends Schema.Schema<{
     readonly type: DocumentContent['type']

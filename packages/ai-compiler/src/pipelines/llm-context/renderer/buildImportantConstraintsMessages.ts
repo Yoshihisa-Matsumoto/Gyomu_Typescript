@@ -10,6 +10,13 @@ import type { IOError } from '@gyomu/schema'
 import type { LlmContextBuildContext } from '@gyomu/schema/concept'
 import type { FileSystem } from 'effect'
 
+/**
+ * Builds important constraint messages for the LLM context using package analysis, constraints, and architecture facts, requiring FileSystem access.
+ *
+ * @param context The LLM context build context containing analysis, concept, and knowledge.
+ *
+ * @returns An Effect containing an array of messages, with possible IOError failure and requiring FileSystem.
+ */
 export const buildImportantConstraintsMessages = (
   context: LlmContextBuildContext,
 ): Effect.Effect<Array<Message>, IOError, FileSystem.FileSystem> =>

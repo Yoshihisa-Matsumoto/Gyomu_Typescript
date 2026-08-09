@@ -7,6 +7,13 @@ import type { IOError } from '@gyomu/schema'
 import type { LlmContextBuildContext } from '@gyomu/schema/concept'
 import type { FileSystem } from 'effect'
 
+/**
+ * Builds design principles messages from the LLM context, incorporating policies, constraints, and rationale.
+ *
+ * @param context The LLM context build context containing knowledge policies, constraints, and rationale.
+ *
+ * @returns An Effect containing an array of messages, which may fail with an IOError and requires FileSystem.
+ */
 export const buildDesignPrinciplesMessages = (
   context: LlmContextBuildContext,
 ): Effect.Effect<Array<Message>, IOError, FileSystem.FileSystem> =>

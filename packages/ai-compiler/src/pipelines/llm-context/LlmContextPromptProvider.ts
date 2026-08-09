@@ -5,7 +5,7 @@ import type { LlmContextBuildContext } from '@gyomu/schema/concept'
 import type { FileSystem } from 'effect'
 
 /**
- * Defines the identifier for readme section routes used in the AI model routing system.
+ * Provides section prompt rendering for LLM context build operations.
  */
 
 export const LlmContextPromptProvider: SectionPromptProvider<
