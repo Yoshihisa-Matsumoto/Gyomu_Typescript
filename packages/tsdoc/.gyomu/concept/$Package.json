@@ -1,35 +1,36 @@
 {
-  "summary": "The @gyomu/tsdoc package provides a robust automation framework for managing and synchronizing JSDoc documentation within TypeScript projects. It orchestrates the lifecycle of source code documentation by tracking project state through persistent snapshots and applying calculated updates to maintain code and comment consistency.",
+  "summary": "@gyomu/tsdoc is an automated system designed to maintain and update JSDoc documentation within TypeScript projects. It leverages project state snapshots and file change detection to orchestrate precise updates to source code documentation.",
   "responsibilities": [
-    "Manage persistent project snapshots to track the evolution of source code state.",
-    "Perform change detection between project states to trigger necessary documentation updates.",
-    "Orchestrate the reconciliation of new documentation content with existing source code files.",
-    "Ensure reliable file path resolution and mapping between source and build artifacts.",
-    "Provide a programmatic interface for rendering and injecting formatted JSDoc comments."
+    "Manage the lifecycle and persistence of project source file snapshots for consistent state tracking.",
+    "Perform change detection between file snapshots to identify modified project segments.",
+    "Orchestrate the end-to-end workflow of generating, merging, and applying documentation updates.",
+    "Provide reliable path mapping utilities between source files and build outputs to ensure documentation coherence.",
+    "Define stable data models for project identity and workspace metadata in monorepo environments."
   ],
   "capabilities": [
     {
       "name": "Project State Tracking",
-      "description": "Enables the capture, commitment, and comparison of project file snapshots to detect structural changes over time."
+      "description": "Enables the capturing, committing, and diffing of file system snapshots to detect changes across project iterations."
     },
     {
-      "name": "Documentation Update Orchestration",
-      "description": "Automates the planning, merging, and application of JSDoc updates, ensuring documentation remains synchronized with code changes."
+      "name": "JSDoc Automation",
+      "description": "Automates the generation and reconciliation of JSDoc comments by applying structured merge plans to existing source files."
     },
     {
-      "name": "Path Management Utilities",
-      "description": "Provides tools for normalizing file paths and mapping between source and build output locations to support consistent file-based operations."
+      "name": "Path Resolution Utilities",
+      "description": "Provides tools for normalizing paths and mapping relationships between source files and their corresponding build artifacts."
     }
   ],
   "designDecisions": [
-    "Utilizes snapshot-based change detection to ensure that documentation updates are deterministic and incremental.",
-    "Separates the planning of documentation edits from the application process to allow for safe review and reconciliation.",
-    "Adopts a workspace-centric architecture to handle the complexities of path resolution within monorepo environments.",
-    "Leverages rigorous path normalization as a foundation for all file-system-related operations."
+    "Uses snapshot-based state management to facilitate deterministic change detection in dynamic monorepo environments.",
+    "Employs a merge-plan abstraction to decouple documentation generation from the physical application of file edits.",
+    "Utilizes a workspace-based architecture to anchor documentation updates to specific project identifiers and repository contexts.",
+    "Modularizes path transformation logic to ensure consistency across build output mapping and documentation target identification."
   ],
   "usageGuidance": [
-    "Integrate the snapshotting workflow into the project build or CI pipeline to ensure documentation updates are based on the latest codebase state.",
-    "Use the provided path utility functions when performing file-system operations to ensure compatibility across different build environments.",
-    "Invoke the update processor as the final stage of documentation generation to reconcile computed JSDoc changes with actual source files."
+    "Initialize project workspaces using the provided snapshotting tools before running documentation updates to ensure state accuracy.",
+    "Use the path mapping utilities whenever logic involves moving between source and build file systems to maintain compatibility.",
+    "Integrate the update workflow as part of a post-analysis phase to ensure JSDoc modifications reflect the latest project state.",
+    "Rely on the provided identity structures (Project IDs) to manage documentation artifacts consistently within monorepo monorepo setups."
   ]
 }

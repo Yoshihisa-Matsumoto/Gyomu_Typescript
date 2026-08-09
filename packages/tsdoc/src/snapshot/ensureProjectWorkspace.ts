@@ -8,6 +8,13 @@ import { resolvePathWithinBase } from '@gyomu/schema/gyomu'
 import { WorkspaceRelativePath } from '@gyomu/schema/typescript'
 import { GYOMU_VERSION } from './types/ProjectWorkspaceManifest.js'
 
+/**
+ * Derives a stable, hashed project identifier from a given workspace-relative path.
+ *
+ * @param projectPath The relative path to the project within the workspace.
+ *
+ * @returns A stable string identifier representing the project.
+ */
 export const toProjectId = (projectPath: WorkspaceRelativePath): string => {
   return shortSha256(projectPath)
 }
@@ -40,6 +47,8 @@ export const toProjectId = (projectPath: WorkspaceRelativePath): string => {
  *       v1/
  *         file-hashes.json
  * ```
+ *
+ * @property projectId - Stable hashed identifier for the project (derived from normalized project path)
  *
  * @property projectId - Stable hashed identifier for the project (derived from normalized project path)
  *
@@ -113,7 +122,7 @@ export interface ProjectWorkspace {
  *
  * @param projectPath - Project path within the repository to initialize
  *
- * @returns An Effect that resolves to the `ProjectWorkspace`.
+ * @returns An Effect that resolves to the initialized `ProjectWorkspace`, or an `IOError` if filesystem operations fail.
  *
  * @remarks
  * This function enforces repository boundary safety via `resolvePathWithinBase`.

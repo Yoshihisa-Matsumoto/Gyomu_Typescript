@@ -24,13 +24,11 @@ const EXCLUDE_PATTERNS = ['**/node_modules/**', '**/dist/**', '**/coverage/**', 
  * - .next
  *
  * Results are sorted by full path
- * to ensure deterministic snapshots.
+ * to ensure deterministic snapshots. @requires FileSearchService, FileSystem
  *
  * @param rootDirectory Root directory to search
  *
  * @returns An Effect containing a sorted array of identified source file information. Requires FileSearchService and FileSystem dependencies. May fail with an IOError.
- *
- * @@requires FileSearchService, FileSystem
  */
 export const enumerateTargetFiles = (
   rootDirectory: FullPath,
