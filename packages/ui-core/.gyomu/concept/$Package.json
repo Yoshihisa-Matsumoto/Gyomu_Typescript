@@ -1,40 +1,40 @@
 {
-  "summary": "The @gyomu/ui-core package provides a robust framework for automated form generation and UI error management. It bridges the gap between raw data schemas and interactive user interfaces by providing domain-specific language structures, schema-driven validation, and centralized error handling logic.",
+  "summary": "The @gyomu/ui-core package provides a structured framework for automated form generation and robust UI error management. It leverages domain schemas to derive form metadata and validation logic, ensuring a consistent approach to data entry and user feedback across the application.",
   "responsibilities": [
-    "Orchestrate the automated generation of form structures from structural schemas.",
-    "Centralize UI-related error handling, categorization, and recovery strategies.",
-    "Define domain-specific metadata for form fields and UI configurations.",
-    "Manage form state lifecycle, including initialization of default values and field validation.",
-    "Provide a unified interface for linking data schemas to interactive React-based UI components."
+    "Bridge raw data schemas with UI rendering requirements through domain-specific metadata.",
+    "Orchestrate the automated generation and state initialization of dynamic forms.",
+    "Enforce schema-based validation for individual form fields and aggregate structures.",
+    "Standardize UI-level error reporting, categorization, and recovery workflows.",
+    "Provide extensible mappings between widget types and their corresponding reactive components."
   ],
   "capabilities": [
     {
       "name": "Automated Form Generation",
-      "description": "Enables the dynamic creation of form structures and field metadata directly from structural schema definitions."
+      "description": "Constructs UI form configurations and initial data states directly from structural data schemas."
     },
     {
       "name": "Schema-Driven Validation",
-      "description": "Provides mechanisms to validate field inputs and complete form states against CRUD-compliant schemas."
+      "description": "Validates user inputs against predefined CRUD schema constraints to maintain data integrity within forms."
     },
     {
       "name": "UI Error Orchestration",
-      "description": "Standardizes how UI errors are categorized, configured, and handled, including support for retry logic and user feedback."
+      "description": "Provides a consistent mechanism to categorize, display, and handle UI-related errors with support for custom retry behaviors."
     },
     {
-      "name": "Component Rendering Framework",
-      "description": "Maps widget configurations to specific React components, enabling consistent rendering and interaction handling."
+      "name": "Component Rendering Infrastructure",
+      "description": "Enables the registration and association of custom React components with form field types via a centralized renderer registry."
     }
   ],
   "designDecisions": [
-    "Utilizes a schema-first approach where UI structures are derived from persistent data models to ensure consistency.",
-    "Decouples error handling logic from specific components using a context-based registry and handler map pattern.",
-    "Employs a DSL-based translation layer to bridge the gap between technical data definitions and user-facing form metadata.",
-    "Leverages the Effect ecosystem for robust functional error management and operational consistency."
+    "Schema-First: Decouples UI representation from raw data models by treating schemas as the primary source of truth for form generation.",
+    "Compositional DSL: Uses specific metadata structures to transform domain schemas into actionable form field definitions.",
+    "Strategy-Based Error Handling: Utilizes a registry map to decouple the triggering of errors from the execution of specific recovery or feedback strategies.",
+    "Functional Core: Employs functional validation and state building to ensure predictability in form logic."
   ],
   "usageGuidance": [
-    "Define your data models using the @gyomu/schema package to ensure seamless integration with the automated form engine.",
-    "Configure custom error handlers within the application initialization phase to maintain consistent user feedback across the system.",
-    "Use the DSL transformation utilities when you need to extend base schema definitions with application-specific UI annotations.",
-    "Register your custom React components in the RendererMap to maintain control over the look and feel while leveraging the automated engine."
+    "Use the DSL module to define metadata for complex forms, ensuring that your data schemas are correctly annotated for UI generation.",
+    "Register custom components in the RendererMap to extend the form engine's capability for rendering specialized input types.",
+    "Implement consistent error handling by utilizing the UiErrorHandlerMap, ensuring all UI exceptions are caught and processed through the central error engine.",
+    "Leverage the provided validation helpers to ensure data integrity before submission, keeping validation logic synchronized with the underlying CRUD schema."
   ]
 }
