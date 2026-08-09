@@ -1,26 +1,27 @@
 {
-  "summary": "This directory acts as the system initialization and configuration hub, establishing essential service layers for logging, filesystem interaction, and environment-based configuration management to ensure a stable application runtime across different environments.",
+  "summary": "This directory manages configuration providers and application layers for dependency injection. It acts as a central hub for defining environment-specific settings and service layers, ensuring consistent system initialization and operational context for the application.",
   "responsibilities": [
-    "Load and manage application configuration from environment variables or local files",
-    "Provide platform-agnostic service layers for filesystem access",
-    "Initialize and standardize global application logging",
-    "Define service layers for dependency injection across production and test environments"
+    "Manage environment-specific configuration providers",
+    "Define service layers for dependency injection",
+    "Initialize logging and platform-level infrastructure",
+    "Provide consistent configuration access across different execution environments"
   ],
   "concepts": [
-    "Configuration Management",
-    "Dependency Injection Layers",
-    "Logging Infrastructure",
-    "Platform Abstraction"
+    "Configuration Provider",
+    "Dependency Injection",
+    "Service Layer",
+    "Environment Variables",
+    "Application Initialization"
   ],
   "relationships": [
-    "Config layers aggregate providers and services to supply dependency injection containers to the application.",
-    "Platform layers standardize filesystem access while integrating with logging and configuration services.",
-    "The initialization process binds environment-specific providers to the application service graph."
+    "Configuration providers supply the necessary settings for the service layers to initialize properly.",
+    "The application layers aggregate specific service providers to create a unified context for dependency injection.",
+    "Platform-specific service layers rely on environment configurations to establish the correct runtime behavior."
   ],
   "designDecisions": [
-    "Layer pattern for managing service dependencies and environment-specific implementations",
-    "Centralized configuration provider strategy with support for local and environment-based settings",
-    "Decoupled logging service with configurable transports for consistent output formatting"
+    "Use of the Layer pattern for dependency injection to support modular environment configuration.",
+    "Separation between production and test providers to ensure consistent testability.",
+    "Centralized management of application infrastructure through composition of service layers."
   ],
-  "importance": "Utility"
+  "importance": "Core"
 }
