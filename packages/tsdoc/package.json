@@ -1,6 +1,6 @@
 {
   "name": "@gyomu/tsdoc",
-  "version": "0.2.4-beta.13",
+  "version": "1.0.0",
   "description": "",
   "type": "module",
   "publishConfig": {

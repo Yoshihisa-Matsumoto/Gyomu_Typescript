@@ -1,6 +1,6 @@
 {
-  "name": "cli",
-  "version": "0.2.4-beta.5",
+  "name": "@gyomu/cli",
+  "version": "1.0.0",
   "description": "",
   "type": "module",
   "private": true,
@@ -10,6 +10,9 @@
       "require": "./dist/index.js",
       "import": "./dist/index.js"
     }
+  },
+  "bin": {
+    "gyomu": "./dist/gyomu.js"
   },
   "scripts": {
     "clean": "rimraf ./dist .tsbuildinfo",
