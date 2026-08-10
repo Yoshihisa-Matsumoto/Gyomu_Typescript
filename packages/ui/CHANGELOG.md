@@ -1,5 +1,11 @@
 # @gyomu/ui
 
+## 1.0.0
+
+### Major Changes
+
+- Ver1
+
 ## 0.2.4-beta.13
 
 ## 0.2.4-beta.12

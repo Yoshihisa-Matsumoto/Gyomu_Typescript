@@ -1,15 +1,27 @@
 {
-  "name": "cli",
-  "version": "0.2.4-beta.5",
+  "name": "@gyomu/cli",
+  "version": "1.0.0",
   "description": "",
   "type": "module",
   "private": true,
+  "homepage": "https://github.com/Yoshihisa-Matsumoto/Gyomu_Typescript",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Yoshihisa-Matsumoto/Gyomu_Typescript.git",
+    "directory": "apps/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/Yoshihisa-Matsumoto/Gyomu_Typescript/issues"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "require": "./dist/index.js",
       "import": "./dist/index.js"
     }
+  },
+  "bin": {
+    "gyomu": "./dist/gyomu.js"
   },
   "scripts": {
     "clean": "rimraf ./dist .tsbuildinfo",

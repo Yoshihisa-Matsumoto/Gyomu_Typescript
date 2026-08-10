@@ -1,10 +1,19 @@
 {
   "name": "@gyomu/ai",
-  "version": "0.2.4-beta.13",
+  "version": "1.0.0",
   "description": "",
   "type": "module",
   "publishConfig": {
     "access": "public"
+  },
+  "homepage": "https://github.com/Yoshihisa-Matsumoto/Gyomu_Typescript",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Yoshihisa-Matsumoto/Gyomu_Typescript.git",
+    "directory": "packages/ai"
+  },
+  "bugs": {
+    "url": "https://github.com/Yoshihisa-Matsumoto/Gyomu_Typescript/issues"
   },
   "exports": {
     ".": {

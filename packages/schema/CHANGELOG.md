@@ -1,5 +1,29 @@
 # @gyomu/schema
 
+## 1.0.0
+
+### Major Changes
+
+- Ver1
+
+### Patch Changes
+
+- 93ccf0c: @gyomu/config setup
+- ea89073: beta test
+- 35df06f: build bug fix
+- c132d1a: tsdoc generation for @gyomu/schema
+- 3e0f2d0: @gyomu/approval-core initialization
+- f0627e7: build @gyomu/tsdoc
+- 514b814: add several method to public on @gyomu/infra
+- 45a4255: llm context generation
+- 3cacc01: Readme generation
+- 5ee478f: project concept
+- 0de91a9: @gyomu/config completes
+- 35df06f: PackageAnalysis completes
+- 75e87b9: @gyomu/agent initialization
+- 1243a0c: tsdoc generation
+- 9bbbed4: Ai Model Route support
+
 ## 0.2.4-beta.13
 
 ### Patch Changes
