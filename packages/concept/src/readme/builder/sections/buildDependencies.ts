@@ -1,7 +1,9 @@
 import { Effect } from 'effect'
-import { buildSectionItem } from '@gyomu/ai-compiler/readme'
+import { buildSectionItem } from '@gyomu/ai-compiler/document'
 import { wrapInfraError } from '@gyomu/schema'
+import { ReadmePromptProvider } from '@gyomu/ai-compiler/readme'
 import { DocumentBuilderError } from '../../../error/DocumentBuilderError.js'
+import type { ConceptOptions } from '../../../ConceptOptions.js'
 import type { SectionBuilder } from '../../../document/builder/SectionBuilder.js'
 import type { FileSystem } from 'effect'
 import type { Section } from '@gyomu/schema/schemas/document'
@@ -10,6 +12,8 @@ import type { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 
 /**
  * Constructs a documentation section detailing project dependencies.
+ *
+ * @returns Returns an Effect that constructs the dependencies section of the README.
  */
 export const buildDependencies: SectionBuilder<
   ReadmeSectionId,
@@ -18,19 +22,26 @@ export const buildDependencies: SectionBuilder<
 > = {
   id: 'dependencies',
 
-  build: (context: ReadmeBuildContext) =>
+  build: (context: ReadmeBuildContext, option?: ConceptOptions) =>
     Effect.gen(function* () {
-      const dependencyResult = yield* buildSectionItem('dependencies', context)
+      const dependencyResult = yield* buildSectionItem(
+        'dependencies',
+        context,
+        ReadmePromptProvider,
+        option?.retryOption,
+      )
       return {
-        id: 'dependencies',
-        title: undefined,
-        contents: [
-          {
-            type: 'paragraph',
-            text: dependencyResult,
-          },
-        ],
-      } satisfies Section
+        section: {
+          id: 'dependencies',
+          title: undefined,
+          contents: [
+            {
+              type: 'paragraph',
+              text: dependencyResult,
+            },
+          ],
+        } satisfies Section,
+      }
     }).pipe(
       Effect.mapError((e) =>
         wrapInfraError(DocumentBuilderError, e, (e) => ({
@@ -42,5 +53,6 @@ export const buildDependencies: SectionBuilder<
         })),
       ),
     ),
+  translation: { strategy: 'translate', translations: [] },
   enabled: () => true,
 }

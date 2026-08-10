@@ -1,4 +1,4 @@
-import { selectTopDirectories } from './selectTopDirectories.js'
+import { analyzePackageAnalysis } from '@gyomu/facts'
 import type { PackageAnalysis } from '@gyomu/schema/concept'
 import type { PackageConceptInput } from '../context/PackageConceptInput.js'
 
@@ -22,11 +22,16 @@ export const buildPackageConceptInput = (packageAnalysis: PackageAnalysis): Pack
       exportPath: exp.exportPath,
       symbols: exp.exportedSymbols.map((sym) => ({ name: sym.name, summary: sym.summary.summary })),
     })),
-    topDirectories: selectTopDirectories(packageAnalysis.directories).map((directory) => ({
-      importance: directory.concept.importance,
-      path: directory.path,
-      responsibilities: directory.concept.relationships,
-      summary: directory.concept.summary,
-    })),
+    topDirectories: analyzePackageAnalysis(packageAnalysis)
+      .getRankedDirectories({
+        strategy: 'top-score',
+        limit: 5,
+      })
+      .map((directory) => ({
+        importance: directory.concept.importance,
+        path: directory.path,
+        responsibilities: directory.concept.relationships,
+        summary: directory.concept.summary,
+      })),
   }
 }

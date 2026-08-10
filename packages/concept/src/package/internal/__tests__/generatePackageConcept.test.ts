@@ -1,9 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Effect, Exit, Layer } from 'effect'
-import { PackageConceptRouteId, executePackageConcept } from '@gyomu/ai-compiler/package-concept'
+import { executePackageConcept } from '@gyomu/ai-compiler/package-concept'
 import { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 import { PlatformLayer } from '@gyomu/infra'
 import { IOError, getFailureFromExit } from '@gyomu/schema'
+import { DocumentSectionRouteId } from '@gyomu/ai-compiler/document'
 import { generatePackageConcept } from '../generatePackageConcept.js'
 import { ConceptError } from '../../../error/ConceptError.js'
 
@@ -28,7 +29,7 @@ const mockAiModelService = Layer.succeed(AiModelRoute, {
 const modelRoute = {
   nodes: [{ retry: 1, registry: { fast: {} } } as any],
 } as any
-const mockModelRoutes = Layer.succeed(ModelRoutes, new Map([[PackageConceptRouteId, modelRoute]]))
+const mockModelRoutes = Layer.succeed(ModelRoutes, new Map([[DocumentSectionRouteId, modelRoute]]))
 
 describe('generatePackageConcept', () => {
   const context = { package: { name: 'test' } } as PackageAnalysis

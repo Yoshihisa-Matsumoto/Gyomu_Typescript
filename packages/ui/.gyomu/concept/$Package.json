@@ -1,44 +1,44 @@
 {
-  "summary": "@gyomu/ui is a comprehensive component library and abstraction layer that provides a consistent design system for the application. It offers a mix of low-level UI building blocks, declarative form generation systems, and specialized adapters for integrating with Material UI.",
+  "summary": "The @gyomu/ui package serves as the primary component library and design system interface for the project. It consolidates foundational UI building blocks, declarative form generation systems, and architectural adapters for third-party libraries like Material UI. By standardizing component behaviors and layouts, it ensures visual and functional consistency across the application.",
   "responsibilities": [
-    "Define a unified design system and component library for consistent UI development.",
-    "Provide declarative abstractions for dynamic form generation based on data schemas.",
-    "Abstract third-party UI framework implementation details via adapter patterns.",
-    "Manage reusable form layout and validation strategies.",
-    "Standardize interaction patterns through shared provider contexts and component wrappers."
+    "Provide a unified library of reusable, atomic, and composite UI components.",
+    "Define declarative interfaces for dynamic form generation based on schemas.",
+    "Implement an abstraction layer to adapt third-party libraries to project-specific design standards.",
+    "Maintain consistent layout patterns for forms and form-related fields.",
+    "Centralize configuration for styling, typography, and utility-based interface interactions."
   ],
   "capabilities": [
     {
       "name": "Design System Components",
-      "description": "Provides a library of atomic and composite UI elements such as avatars, cards, buttons, and inputs."
+      "description": "A comprehensive suite of primitive and composite UI elements that enforce project-wide styling and interaction patterns."
     },
     {
-      "name": "Declarative Form Automation",
-      "description": "Enables automatic construction of forms from data schemas with built-in layout orchestration and submission handling."
+      "name": "Declarative Form Generation",
+      "description": "An automated system that renders complete forms based on provided schemas, reducing manual boilerplate for complex data entry."
     },
     {
-      "name": "Material UI Integration",
-      "description": "Offers standardized wrappers and layout adapters for Material UI, ensuring consistent styling and functional behavior."
+      "name": "Component Adaptation",
+      "description": "Standardized wrappers that integrate third-party libraries like Material UI, ensuring they conform to project-specific requirements and theme constraints."
     },
     {
-      "name": "Headless Form Layouts",
-      "description": "Delivers structural components for defining form and field layouts without imposing rigid visual styling."
+      "name": "Form Layout Management",
+      "description": "Headless and styled layout components designed to structure the arrangement of form fields, labels, and error states consistently."
     },
     {
-      "name": "Global Interaction Management",
-      "description": "Centralizes management of application-wide UI states such as tooltips and toast notifications."
+      "name": "UI Utility Integration",
+      "description": "Shared utility functions for class name composition and conditional styling that ensure consistent Tailwind CSS class merging."
     }
   ],
   "designDecisions": [
-    "Uses a layered architecture to separate raw UI components from framework-specific adapters.",
-    "Employs a declarative approach for form generation to reduce boilerplate code and ensure schema-driven consistency.",
-    "Leverages Tailwind CSS with utility-merging utilities to maintain a highly customizable yet consistent aesthetic.",
-    "Uses headless layouts to decouple the structural organization of forms from their visual representation."
+    "Abstraction through adapters to maintain a stable API while supporting different underlying component frameworks (e.g., Shadcn UI and Material UI).",
+    "Headless layout design for core structure, separating semantic arrangement from specific visual presentation.",
+    "Centralized state and context providers for interactive components like tooltips and forms to simplify consumption.",
+    "Composition-first approach using atomic building blocks to construct complex user interfaces."
   ],
   "usageGuidance": [
-    "Use components from the primary UI directory for standard application-wide interface building.",
-    "Leverage the AutoForm system for complex or repetitive data entry forms to ensure schema-driven consistency.",
-    "Prefer the provided MUI adapters when integrating with Material UI to benefit from enforced styling and helper functionality.",
-    "Extend or compose headless layout components when building custom UI structures that require specific form field arrangement."
+    "Use the standard components from the top-level entry point for general UI needs to ensure consistency.",
+    "Prefer the AutoForm feature for complex forms where UI should be driven by data schemas rather than manual JSX construction.",
+    "Utilize the provided Mui adapters when working within existing Material UI contexts to maintain visual alignment with the design system.",
+    "Leverage the exported 'cn' utility for safe and efficient Tailwind CSS class merging when customizing component styles."
   ]
 }

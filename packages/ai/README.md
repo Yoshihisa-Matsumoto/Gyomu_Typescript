@@ -4,17 +4,15 @@ US English | [JP 日本語](README.ja.md)
 
 ## Overview
 
-This package serves as the AI execution infrastructure for the Gyomu project, providing a modular and resilient framework for orchestrating AI interactions within TypeScript applications. Its mission is to standardize AI integration by abstracting differences between various providers and SDKs.
-
-By offering a unified interface for model management, intelligent request routing, and structured tool execution, the package ensures consistent and testable behavior across complex workflows. This approach promotes reliable, scalable, and maintainable AI application development by centralizing error handling and automating system fallbacks, ultimately streamlining the deployment of robust intelligence features.
+The `@gyomu/ai` package serves as the core AI integration layer for Gyomu projects, providing a robust execution foundation for intelligent applications. Its primary purpose is to absorb differences across various AI providers and SDKs through a unified interface. By abstracting model management, request routing, and tool execution, the package ensures high reliability, extensibility, and maintainability. It leverages Effect-based dependency injection and integrates seamlessly with standard providers to facilitate resilient text generation, structured object mapping, and embeddings.
 
 ## Architecture
 
-The package architecture is organized into a modular framework that separates model management, request orchestration, tool execution, and error handling. This design utilizes a dependency-injected execution environment, leveraging Effect services to ensure robust and testable integration across all AI operations.
+The package is organized into a modular architecture that cleanly separates AI model management, request routing, tool execution, and error diagnostics. At its root, the package acts as an integration hub and public entry point, coordinating specialized sub-modules to handle operations across the AI layer.
 
-The model management layer serves as the central registry, providing structured access to language and embedding models. These models are consumed by the routing layer, which manages request flow and automated fallback strategies to ensure resilience. The tool execution layer complements this by establishing standardized interfaces and lifecycle contracts for AI-integrated capabilities, including authorization and execution policies. 
+Model management and request routing are handled by collaborating components that oversee model registries and execution paths. The model component maintains centralized definitions and dependency injection layers for language and embedding models. These models map directly into the routing component, which orchestrates request hierarchies through structured route nodes and enforces automated fallback strategies.
 
-Underpinning these operations, a centralized error handling system categorizes failures by lifecycle phase and operational context. This provides structured diagnostics and consistent metadata across the entire stack, enabling clear traceability from model retrieval and request routing through to final tool execution.
+Tool execution and error handling are managed through dedicated components. The tool subsystem establishes standard interfaces, execution contexts, and approval policies for AI-integrated tools. Simultaneously, the error module provides structured domain errors, capturing lifecycle phases and retry states to ensure consistent diagnostics and failure recovery across all service operations.
 
 ## Installation
 
@@ -26,22 +24,23 @@ pnpm add @gyomu/ai
 
 ## Dependencies
 
-This package requires a Node.js environment supporting ESM and is built upon Effect 4.x. To ensure full compatibility, please ensure your project is configured to handle modern ECMAScript modules and the latest Effect ecosystem patterns.
+This package requires an ESM environment and is built on Effect 4.x, utilizing the Effect runtime, schema, and context for its core architecture. 
 
-Core functionality relies on the Effect runtime, supplemented by `@gyomu/schema` for shared definitions and `@gyomu/infra` for baseline I/O operations. Additionally, `@gyomu/approval-core` is integrated to provide the necessary approval workflows for AI-driven processes.
+It integrates closely with internal infrastructure and domain packages—specifically `@gyomu/infra` for foundational I/O operations, `@gyomu/schema` for shared types, and `@gyomu/approval-core` for handling AI-driven approval workflows.
 
 ## Development
 
-This package serves as the AI execution infrastructure for the Gyomu project, aiming to transparently absorb differences between various AI providers and SDKs while providing a unified interface. The core of the design is "loose coupling through abstraction"; access to AI models must be performed via `AiService` and the provided `Provider`. Developers are prohibited from using provider-specific SDKs directly. All model configurations are aggregated and managed in the `Registry`, eliminating direct management on the application side and ensuring maintainability across the system.
+As the AI execution infrastructure for the Gyomu project, this package abstracts differences across AI providers and SDKs, providing model management, routing, tool execution, and error handling through a unified interface to serve as a reliable, scalable, and maintainable foundation for AI applications. To achieve this goal, contributors must restrict access to AI models through `AiService` and related services, avoiding direct use of provider-specific SDKs in favor of the abstracted providers. Furthermore, model configurations must be registered and centrally managed within the Registry, and direct management by consumers is strictly prohibited.
 
-To maintain architectural reliability and scalability, all AI requests are processed through `Routing`, and a fallback configuration to prevent single points of failure is strongly recommended. Additionally, the construction of an execution environment via dependency injection using Effect services, and thorough structured error handling, maximize diagnostic capabilities during operation. When introducing Tools, contributors are required to explicitly define input schemas and execution policies, and ensure the safety and robustness of the execution environment by not trusting AI output and performing schema validation as necessary.
+To ensure scalability and reliability, the architecture requires AI requests to be configured with failover considerations using Routing. When adding or implementing tools, explicit definition of input schemas and execution policies is required. Additionally, output from AI must never be trusted blindly, and designs must enforce schema validation where necessary. To maintain operational maintainability, contributors are required to avoid custom error implementations and instead design errors to be structured and retain diagnostic information.
 
 ## Public API
 
-- Model Registry Management - Centralized registration and retrieval of language and embedding models, allowing for consistent model configuration and injection.
-- Resilient Request Routing - Advanced routing logic that enables defining chains of model nodes, allowing systems to automatically fail over to alternative configurations during execution.
-- AI Tooling Framework - Standardized architecture for defining tools, including schema-based input validation, execution context management, and security via approval policies.
-- Provider Abstraction - Pluggable provider architecture that wraps lower-level SDKs to maintain consistent behavior across different model backends and vendors.
+- AI Model Registry - Centralized definitions, lookup services, and Effect layers for managing available language and embedding models.
+- Model Request Routing - Configurable routing hierarchies that map request identifiers to execution nodes and support automated fallback behaviors.
+- Tool Execution and Governance - Standardized abstractions for defining AI-integrated tools, tracking active execution tasks, and evaluating approval policies.
+- AI Service Integration - Provider-agnostic parameter definitions and Vercel AI SDK integrations supporting text generation, streaming, object generation, and embeddings.
+- Error Diagnostics - Structured domain errors and contextual metadata capturing lifecycle phases and retry states for operational failure handling.
 
 ## License
 

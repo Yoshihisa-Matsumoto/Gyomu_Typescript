@@ -1,34 +1,34 @@
 {
-  "summary": "The @gyomu/config package serves as the centralized configuration management system for the application. It orchestrates the retrieval, validation, and hierarchical merging of configuration settings from multiple sources into a strongly typed, environment-aware result.",
+  "summary": "The @gyomu/config package provides a centralized mechanism for managing, merging, and resolving hierarchical application settings. It leverages functional programming principles to coordinate configuration retrieval across global, user, and scoped sources, ensuring that consumers receive validated and strongly-typed data.",
   "responsibilities": [
-    "Define a hierarchical resolution strategy that merges global, user, and scope-based configurations.",
-    "Enforce schema-based validation on resolved configuration objects.",
-    "Provide a unified service-based API for accessing configuration values within the application.",
-    "Manage the lifecycle of the configuration resolution process, including state and phase tracking.",
-    "Centralize error handling for configuration retrieval failures with metadata for diagnostic and recovery purposes."
+    "Orchestrate the multi-stage resolution of configuration values from diverse sources.",
+    "Enforce precedence and merging logic to generate a coherent application state.",
+    "Validate resolved configuration against defined schemas before providing it to the application.",
+    "Provide structured error reporting and contextual metadata to support fault-tolerant configuration lookups.",
+    "Maintain lifecycle awareness of the configuration resolution process."
   ],
   "capabilities": [
     {
-      "name": "Configuration Resolution",
-      "description": "Orchestrates the multi-layered retrieval of settings by applying precedence rules across global, user, and scope definitions."
+      "name": "Configuration Resolution Service",
+      "description": "Provides a primary interface for querying and obtaining application settings based on specific resolution criteria."
     },
     {
-      "name": "Typed Configuration Access",
-      "description": "Exposes a service interface that delivers validated and type-safe configuration data to application components."
+      "name": "Hierarchical Merging",
+      "description": "Automates the aggregation of configuration data across different scopes, ensuring consistent precedence between global, user, and functional contexts."
     },
     {
-      "name": "Resolution Diagnostics",
-      "description": "Provides structured error context to help developers troubleshoot and identify failure points during the configuration lookup process."
+      "name": "Fault-Tolerant Resolution",
+      "description": "Offers rich error context and lifecycle tracking to allow consumers to handle resolution failures and determine retriability."
     }
   ],
   "designDecisions": [
-    "Utilizes the Effect ecosystem to represent the configuration resolution as a modular and injectable service.",
-    "Adopts a query-based approach to configuration lookup, allowing consumers to specify filtering criteria like scope and function context.",
-    "Implements a clear distinction between resolution phases and error contexts to support reliable observability and retry logic."
+    "Utilizes the Effect ecosystem to represent configuration retrieval as a manageable effect, supporting composability and dependency injection.",
+    "Employs a query-based resolution pattern to separate configuration retrieval criteria from the underlying data sources.",
+    "Standardizes configuration errors by grouping them within a lifecycle-aware context to improve debuggability and system reliability."
   ],
   "usageGuidance": [
-    "Inject the ConfigResolver service via the Effect dependency injection system to access configuration within your modules.",
-    "Define your resolution requirements using the ConfigQuery object to target specific scopes or functions as needed.",
-    "Handle configuration resolution errors by inspecting the provided error context to determine if a operation should be retried or if the failure is terminal."
+    "Inject the ConfigResolver service into application layers to safely access validated configurations.",
+    "Define resolution queries precisely to avoid unnecessary overhead and ensure correct scope application.",
+    "Handle potential configuration resolution errors using the provided context, specifically checking for retryable status when appropriate."
   ]
 }

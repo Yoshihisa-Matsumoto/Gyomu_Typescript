@@ -1,32 +1,38 @@
 import { Effect } from 'effect'
+import type { ConceptOptions } from '../../../ConceptOptions.js'
 import type { SectionBuilder } from '../../../document/builder/SectionBuilder.js'
 import type { Section } from '@gyomu/schema/schemas/document'
 import type { ReadmeBuildContext, ReadmeSectionId } from '@gyomu/schema/concept'
 
 /**
  * Constructs the installation section for the readme.
+ *
+ * @returns Returns an Effect that constructs an installation section containing the package installation command.
  */
 export const buildInstallation: SectionBuilder<ReadmeSectionId, ReadmeBuildContext, never> = {
   id: 'installation',
 
-  build: (context: ReadmeBuildContext) => {
+  build: (context: ReadmeBuildContext, option?: ConceptOptions) => {
     return Effect.succeed({
-      id: 'installation',
-      title: undefined,
-      contents: [
-        {
-          type: 'paragraph',
-          text: 'Install using pnpm.',
-        },
+      section: {
+        id: 'installation',
+        title: undefined,
+        contents: [
+          {
+            type: 'paragraph',
+            text: 'Install using pnpm.',
+          },
 
-        {
-          type: 'code',
-          language: 'bash',
+          {
+            type: 'code',
+            language: 'bash',
 
-          code: `pnpm add ${context.analysis.package.name}`,
-        },
-      ],
-    } satisfies Section)
+            code: `pnpm add ${context.analysis.package.name}`,
+          },
+        ],
+      } satisfies Section,
+    })
   },
+  translation: { strategy: 'translate', translations: [] },
   enabled: () => true,
 }

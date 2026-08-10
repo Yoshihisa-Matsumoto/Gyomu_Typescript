@@ -1,40 +1,44 @@
 {
-  "summary": "The @gyomu/approval-core package provides the foundational domain models, interfaces, and service definitions for managing complex approval workflows. It establishes a standardized architecture for tracking request lifecycles, evaluating policy-based decisions, and maintaining immutable audit histories for both automated and manual interventions.",
+  "summary": "The @gyomu/approval-core package provides the foundational domain models, interfaces, and service definitions for managing approval workflows. It enables systems to track, evaluate, and audit requests that require manual or automated intervention. By decoupling business logic from persistence, it offers a standardized contract for lifecycle management and historical auditing.",
   "responsibilities": [
-    "Define domain-driven data structures for approval requests, statuses, and evaluation decisions.",
-    "Establish architectural contracts (ports) for initiating approval requests and managing request state persistence.",
-    "Standardize input schemas for lifecycle operations such as approving or rejecting requests.",
-    "Provide service interfaces for querying historical approval records across users and tools.",
-    "Ensure consistent traceability and data integrity throughout the approval workflow lifecycle."
+    "Define the domain models for approval requests, decisions, and lifecycle states.",
+    "Specify the command interfaces for initiating, approving, and rejecting requests.",
+    "Establish architectural ports to decouple approval logic from infrastructure implementations.",
+    "Provide service abstractions for auditing and retrieving historical approval records.",
+    "Ensure consistent identity and context tracking across approval interactions."
   ],
   "capabilities": [
     {
-      "name": "Approval Workflow Modeling",
-      "description": "Defines the core lifecycle, statuses, and challenge structures necessary to represent complex approval requests within the system."
+      "name": "Approval Lifecycle Management",
+      "description": "Models and tracks the end-to-end status of approval requests from initiation through to final resolution."
     },
     {
-      "name": "Policy Evaluation Results",
-      "description": "Standardizes the outcome of approval policy checks, allowing for clear distinction between approved, denied, or pending decisions."
+      "name": "Decision Evaluation Framework",
+      "description": "Defines structured outcomes for approval policy checks, including requirements for further authorization or denial."
     },
     {
-      "name": "Lifecycle Management Ports",
-      "description": "Provides abstract interfaces for submitting new requests and managing their state, enabling decoupling from infrastructure implementations."
+      "name": "Interaction Ports",
+      "description": "Provides standardized interface contracts for request submission and state persistence, enabling integration with various backends."
     },
     {
-      "name": "Audit and History Tracking",
-      "description": "Enables retrieval of historical approval events, facilitating auditability and data analysis for users and integrated tools."
+      "name": "Auditing and History",
+      "description": "Enables retrieval and management of historical events and approval records associated with users and tools."
+    },
+    {
+      "name": "Command Input Schemas",
+      "description": "Standardizes the parameter structures required for consistent user and system interactions with approval workflows."
     }
   ],
   "designDecisions": [
-    "Utilizes a port-and-adapter architectural pattern to decouple domain logic from specific persistence or submission mechanisms.",
-    "Implements strong typing for lifecycle commands to ensure consistency and prevent invalid state transitions.",
-    "Aggregates core domain logic into a unified surface area to simplify integration for consuming modules.",
-    "Focuses on functional definitions to allow for integration with both manual user interactions and automated policy engines."
+    "Uses a port-based architecture to separate domain business rules from external system interactions.",
+    "Employs union types and structured data models to represent distinct lifecycle phases and decision outcomes.",
+    "Centralizes command schemas to ensure traceability and consistency in request processing.",
+    "Maintains clear separation between historical record-keeping and current state management."
   ],
   "usageGuidance": [
-    "Implement the provided port interfaces when integrating with your specific storage or transport layers.",
-    "Use the defined command input types to ensure consistency when building UI or API controllers that trigger approval workflows.",
-    "Reference the domain models when extending policy evaluation logic to ensure alignment with existing status and decision types.",
-    "Leverage the history service interface to build reporting or audit logging capabilities for your application."
+    "Implement the provided port interfaces when integrating custom storage or notification backends.",
+    "Use the defined model types to build user interfaces that display request states and allow for approval or rejection actions.",
+    "Leverage the history service to provide users with audit logs of their past approval activity.",
+    "Extend the workflow by utilizing the existing request and decision schemas as the source of truth for all approval-related logic."
   ]
 }

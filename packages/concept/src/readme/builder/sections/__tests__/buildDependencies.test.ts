@@ -1,14 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Effect, Layer } from 'effect'
-import { buildSectionItem } from '@gyomu/ai-compiler/readme'
+import { buildSectionItem } from '@gyomu/ai-compiler/document'
 import { PlatformLayer } from '@gyomu/infra'
 import { AiModelRoute } from '@gyomu/ai'
 import { makeRunner } from '@gyomu/schema/effect'
 import { AiError } from '@gyomu/schema'
+import { ReadmePromptProvider } from '@gyomu/ai-compiler/readme'
 import { DocumentBuilderError } from '../../../../error/DocumentBuilderError.js'
 import { buildDependencies } from '../buildDependencies.js'
 
-vi.mock('@gyomu/ai-compiler/readme', () => ({
+vi.mock('@gyomu/ai-compiler/document', () => ({
   buildSectionItem: vi.fn(),
 }))
 
@@ -34,17 +35,24 @@ describe('buildDependencies', () => {
 
     const result = await runQAWithEnvOrThrow(buildDependencies.build(context), PlatformLayer)
 
-    expect(buildSectionItem).toHaveBeenCalledWith('dependencies', context)
+    expect(buildSectionItem).toHaveBeenCalledWith(
+      'dependencies',
+      context,
+      ReadmePromptProvider,
+      undefined,
+    )
 
     expect(result).toEqual({
-      id: 'dependencies',
-      title: undefined,
-      contents: [
-        {
-          type: 'paragraph',
-          text: 'Dependencies description',
-        },
-      ],
+      section: {
+        id: 'dependencies',
+        title: undefined,
+        contents: [
+          {
+            type: 'paragraph',
+            text: 'Dependencies description',
+          },
+        ],
+      },
     })
   })
 

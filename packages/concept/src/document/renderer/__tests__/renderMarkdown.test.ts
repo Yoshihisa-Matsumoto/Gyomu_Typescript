@@ -6,7 +6,7 @@ describe('renderMarkdown', () => {
   const context = {
     knowledge: { package: { displayName: 'TITLE' } },
   } as any
-  it('renders paragraph, bullet list and code block', () => {
+  it('renders paragraph, bullet list and code block, table', () => {
     const sections: Array<Section> = [
       {
         id: 'overview',
@@ -18,7 +18,10 @@ describe('renderMarkdown', () => {
           },
           {
             type: 'bullet-list',
-            items: ['Item1', 'Item2'],
+            items: [
+              { translationId: 1, text: 'Item1' },
+              { translationId: 2, text: 'Item2' },
+            ],
           },
           {
             type: 'code',
@@ -26,13 +29,18 @@ describe('renderMarkdown', () => {
             title: 'Example',
             code: 'console.log("hello")',
           },
+          {
+            type: 'table',
+            header: { cells: ['Header1', 'Header2'] },
+            rows: [{ cells: ['R1C1', 'R1C2'] }, { cells: ['R2C1', 'R2C2'] }],
+          },
         ],
       },
     ]
 
     const markdown = renderMarkdown({
       context,
-      plan: { language: 'en', destination: sections, targets: [] },
+      plan: { language: 'en', sections },
       getTitle: () => 'TITLE',
       getSectionTitle: (language, section) => {
         return 'Overview'
@@ -52,7 +60,12 @@ This package provides shared utilities.
 
 \`\`\`ts
 console.log("hello")
-\`\`\``)
+\`\`\`
+
+| Header1 | Header2 |
+| ------- | ------- |
+| R1C1 | R1C2 |
+| R2C1 | R2C2 |`)
   })
 
   it('uses default section title when title is undefined', () => {
@@ -65,7 +78,7 @@ console.log("hello")
 
     const markdown = renderMarkdown({
       context,
-      plan: { language: 'en', destination: sections, targets: [] },
+      plan: { language: 'en', sections },
       getTitle: () => 'TITLE',
       getSectionTitle: (language, section) => {
         return 'Overview'
@@ -101,7 +114,7 @@ console.log("hello")
 
     const markdown = renderMarkdown({
       context,
-      plan: { language: 'en', destination: sections, targets: [] },
+      plan: { language: 'en', sections },
       getTitle: () => 'TITLE',
       getSectionTitle: (language, section) => {
         return section.title ?? ''
@@ -130,7 +143,7 @@ Second section.`)
 
     const markdown = renderMarkdown({
       context,
-      plan: { language: 'en', destination: sections, targets: [] },
+      plan: { language: 'en', sections },
       getTitle: () => 'TITLE',
       getSectionTitle: (language, section) => {
         return 'Overview'
@@ -154,7 +167,7 @@ Second section.`)
 
     const markdown = renderMarkdown({
       context,
-      plan: { language: 'en', destination: sections, targets: [] },
+      plan: { language: 'en', sections },
       getTitle: () => 'TITLE',
       getSectionTitle: (language, section) => {
         return 'Overview'
@@ -172,5 +185,52 @@ US English | [JP 日本語](README.ja.md)
 ## Overview
 
 `)
+  })
+  it('renders nested bullet lists', () => {
+    const sections: Array<Section> = [
+      {
+        id: 'overview',
+        title: 'Overview',
+        contents: [
+          {
+            type: 'bullet-list',
+            items: [
+              { translationId: 1, text: 'Item1' },
+              {
+                translationId: 2,
+                text: 'Item2',
+                children: [
+                  {
+                    translationId: 3,
+                    text: 'SubItem1',
+                    children: [{ translationId: 5, text: 'SubSubItem1' }],
+                  },
+                  { translationId: 4, text: 'SubItem2' },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ]
+
+    const markdown = renderMarkdown({
+      context,
+      plan: { language: 'en', sections },
+      getTitle: () => 'TITLE',
+      getSectionTitle: (language, section) => {
+        return 'Overview'
+      },
+    })
+
+    expect(markdown).toBe(`# TITLE
+
+## Overview
+
+- Item1
+- Item2
+  - SubItem1
+    - SubSubItem1
+  - SubItem2`)
   })
 })

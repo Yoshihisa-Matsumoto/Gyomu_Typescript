@@ -10,13 +10,10 @@ import {
   isTestFile,
   processTsDocUpdate,
 } from '@gyomu/tsdoc'
-import { DirectoryConceptRouteId, buildDirectoryConcept } from '@gyomu/concept/directory'
-import { PackageConceptRouteId, buildPackageConcept } from '@gyomu/concept/package'
-import {
-  ReadmeSectionRouteId,
-  TranslationRouteId,
-  generateReadmeFiles,
-} from '@gyomu/concept/readme'
+import { buildDirectoryConcept } from '@gyomu/concept/directory'
+import { buildPackageConcept } from '@gyomu/concept/package'
+import { DocumentSectionRouteId, generateReadmeFiles } from '@gyomu/concept/readme'
+import { generateLlmContextFile } from '@gyomu/concept/llm-context'
 import { Effect, Layer } from 'effect'
 
 import {
@@ -33,7 +30,10 @@ import {
   saveFileAnalysis,
 } from '@gyomu/ts-analysis'
 import { AI_MODELS } from '@gyomu/ai'
-import type { AnalysisOptions } from '@gyomu/schema'
+import { loadCheckpoint, updateCheckpoint } from './internals/checkpoint.js'
+import type { AnalysisOptions, FullPath } from '@gyomu/schema'
+import type { WorkspaceRelativePath } from '@gyomu/schema/typescript'
+import type { Checkpoint, PipelineStep } from '../schemas/Checkpoint.js'
 
 const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(
   Layer.provideMerge(PlatformLayer),
@@ -43,10 +43,7 @@ const runQAWithEnvOrThrow = makeRunner(
   createVercelAiLayer(
     new Map([
       [TsDocRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
-      [DirectoryConceptRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
-      [PackageConceptRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
-      [ReadmeSectionRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
-      [TranslationRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
+      [DocumentSectionRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
     ]),
   ),
 )
@@ -186,41 +183,123 @@ export const snapshotCommand = (
             projectPath: targetProject.rootPath,
           })
         }
-        yield* buildDirectoryConcept(projectContext, {
-          changedFiles: changeResult.diff,
-          retryOption: {},
-          debugInfo: {
-            DumpToFile: true,
-            DirectoryConcept: true,
-          },
-        })
 
-        yield* buildPackageConcept(projectContext, {
-          changedFiles: changeResult.diff,
-          retryOption: {},
-          debugInfo: {
-            DumpToFile: true,
-            PackageAnalysis: true,
-            PackageConcept: true,
-          },
-        })
-
-        yield* generateReadmeFiles(projectContext, {
-          retryOption: {},
-          debugInfo: {
-            DumpToFile: true,
-            PackageAnalysis: true,
-            ReadmeSections: true,
-          },
-        })
+        let currentCheckpoint = yield* loadCheckpoint(
+          changeResult,
+          projectName,
+          projects.repositoryRoot,
+          targetProject.rootPath,
+        )
 
         yield* commitProjectSnapshot({
           expectedSnapshot: changeResult.currentSnapshot,
           projectPath: targetProject.rootPath,
           repoRoot: projects.repositoryRoot,
         })
+
+        if (!currentCheckpoint.completedSteps.includes('directoryConcept')) {
+          yield* buildDirectoryConcept(projectContext, {
+            changedFiles: changeResult.diff,
+            retryOption: {},
+            debugInfo: {
+              DumpToFile: true,
+              DirectoryConcept: true,
+            },
+          })
+          currentCheckpoint = yield* updateSnapshot(
+            projects.repositoryRoot,
+            targetProject.rootPath,
+            currentCheckpoint,
+            'directoryConcept',
+          )
+          // changeResult = yield* analyzeProjectChanges({
+          //   repoRoot: projects.repositoryRoot,
+          //   projectPath: targetProject.rootPath,
+          // })
+          // yield* commitProjectSnapshot({
+          //   expectedSnapshot: changeResult.currentSnapshot,
+          //   projectPath: targetProject.rootPath,
+          //   repoRoot: projects.repositoryRoot,
+          // })
+          // currentCheckpoint = yield* updateCheckpoint(
+          //   currentCheckpoint,
+          //   projects.repositoryRoot,
+          //   targetProject.rootPath,
+          //   'directoryConcept',
+          // )
+        }
+
+        if (!currentCheckpoint.completedSteps.includes('packageConcept')) {
+          yield* buildPackageConcept(projectContext, {
+            changedFiles: changeResult.diff,
+            retryOption: {},
+            debugInfo: {
+              DumpToFile: true,
+              PackageAnalysis: true,
+              PackageConcept: true,
+            },
+          })
+          currentCheckpoint = yield* updateSnapshot(
+            projects.repositoryRoot,
+            targetProject.rootPath,
+            currentCheckpoint,
+            'packageConcept',
+          )
+        }
+
+        if (!currentCheckpoint.completedSteps.includes('README')) {
+          yield* generateReadmeFiles(projectContext, {
+            retryOption: {},
+            debugInfo: {
+              DumpToFile: true,
+              PackageAnalysis: true,
+              ReadmeSections: true,
+            },
+          })
+          currentCheckpoint = yield* updateSnapshot(
+            projects.repositoryRoot,
+            targetProject.rootPath,
+            currentCheckpoint,
+            'README',
+          )
+        }
+
+        if (!currentCheckpoint.completedSteps.includes('LLMContext')) {
+          yield* generateLlmContextFile(projectContext, { retryOption: {} })
+          currentCheckpoint = yield* updateSnapshot(
+            projects.repositoryRoot,
+            targetProject.rootPath,
+            currentCheckpoint,
+            'LLMContext',
+          )
+        }
+        // yield* commitProjectSnapshot({
+        //   expectedSnapshot: changeResult.currentSnapshot,
+        //   projectPath: targetProject.rootPath,
+        //   repoRoot: projects.repositoryRoot,
+        // })
+        console.log(`Completed: ${JSON.stringify(currentCheckpoint.completedSteps)}`)
       }
     }),
     layer,
   )
 }
+
+const updateSnapshot = (
+  repositoryRoot: FullPath,
+  projectPath: WorkspaceRelativePath,
+  currentCheckpoint: Checkpoint,
+  statusToAdd: PipelineStep,
+) =>
+  Effect.gen(function* () {
+    const changeResult = yield* analyzeProjectChanges({
+      repoRoot: repositoryRoot,
+      projectPath,
+    })
+    yield* commitProjectSnapshot({
+      expectedSnapshot: changeResult.currentSnapshot,
+      projectPath,
+      repoRoot: repositoryRoot,
+    })
+    return yield* updateCheckpoint(currentCheckpoint, repositoryRoot, projectPath, statusToAdd)
+  })

@@ -1,6 +1,6 @@
 {
   "name": "@gyomu/concept",
-  "version": "0.2.4-beta.11",
+  "version": "0.2.4-beta.13",
   "description": "",
   "type": "module",
   "publishConfig": {
@@ -14,6 +14,10 @@
     "./directory": {
       "import": "./dist/directory/index.js",
       "types": "./dist/directory/index.d.ts"
+    },
+    "./llm-context": {
+      "import": "./dist/llm-context/index.js",
+      "types": "./dist/llm-context/index.d.ts"
     },
     "./package": {
       "import": "./dist/package/index.js",
@@ -46,6 +50,7 @@
   "dependencies": {
     "@gyomu/ai": "workspace:^",
     "@gyomu/ai-compiler": "workspace:^",
+    "@gyomu/facts": "workspace:^",
     "@gyomu/infra": "workspace:^",
     "@gyomu/schema": "workspace:^",
     "@gyomu/ts-analysis": "workspace:^",

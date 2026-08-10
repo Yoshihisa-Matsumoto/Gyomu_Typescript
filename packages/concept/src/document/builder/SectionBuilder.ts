@@ -1,3 +1,5 @@
+import type { SectionTranslationDefinition, SectionWithInstruction } from '@gyomu/schema/document'
+import type { ConceptOptions } from '../../ConceptOptions.js'
 import type { DocumentBaseContext } from '@gyomu/schema/concept'
 import type { Section } from '@gyomu/schema/schemas/document'
 import type { Effect } from 'effect'
@@ -17,14 +19,28 @@ export interface SectionBuilder<
   readonly id: TSectionId
 
   /**
+   * The translation definition associated with this section.
+   */
+  readonly translation: SectionTranslationDefinition
+
+  /**
    * Constructs the documentation section based on the provided build context.
+   *
+   * @param context The build context containing state and requirements.
+   *
+   * @param option Optional configuration for the section construction.
    *
    * @returns An effect that resolves to the generated Section, requiring context R and potentially failing with DocumentBuilderError.
    */
-  build: (context: TContext) => Effect.Effect<Section, DocumentBuilderError, R>
+  build: (
+    context: TContext,
+    option?: ConceptOptions,
+  ) => Effect.Effect<SectionWithInstruction, DocumentBuilderError, R>
 
   /**
    * Checks whether the section is enabled for the current build context.
+   *
+   * @param context The current build context.
    *
    * @returns True if the section should be included in the document, false otherwise.
    */

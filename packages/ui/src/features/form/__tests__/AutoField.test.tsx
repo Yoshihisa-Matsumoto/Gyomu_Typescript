@@ -2,7 +2,6 @@ import { expect, it, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { AutoField } from '../AutoField'
 import '@testing-library/jest-dom'
-import {} from '../types'
 // import { FieldRendererMap } from '@core/engine/autoForm/types';
 
 it('rendererとlayoutが正しく呼ばれる', () => {

@@ -16,7 +16,8 @@
       "@gyomu/agent",
       "@gyomu/ts-analysis",
       "@gyomu/tsdoc",
-      "@gyomu/ai-compiler"
+      "@gyomu/ai-compiler",
+      "@gyomu/facts"
     ]
   ],
   "linked": [],

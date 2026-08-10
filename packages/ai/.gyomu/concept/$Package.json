@@ -1,40 +1,41 @@
 {
-  "summary": "The @gyomu/ai package provides a modular, resilient framework for orchestrating AI interactions within a TypeScript application. It abstracts model management, request routing with automated fallbacks, and structured tool execution to ensure consistent and testable AI integration.",
+  "summary": "The @gyomu/ai package serves as the core AI integration layer, providing abstractions for model management, request routing, and tool execution. It leverages Effect-based dependency injection and integrates with standard AI providers to facilitate robust, resilient text generation, structured object mapping, and embeddings.",
   "responsibilities": [
-    "Define a unified interface for AI model registries and model retrieval.",
-    "Orchestrate intelligent request routing with support for multi-model fallback strategies.",
-    "Standardize the lifecycle, validation, and authorization of AI-executable tools.",
-    "Provide a robust, dependency-injected execution environment using Effect services.",
-    "Manage structured error reporting and diagnostics across AI service operations."
+    "Manage AI model registries and dependency injection layers for language and embedding models.",
+    "Orchestrate AI request routing and failover strategies using structured route nodes.",
+    "Define tool execution standards, context models, and integration policies.",
+    "Provide domain-specific error handling and structured diagnostics for AI operations."
   ],
   "capabilities": [
     {
-      "name": "Model Registry Management",
-      "description": "Centralized registration and retrieval of language and embedding models, allowing for consistent model configuration and injection."
+      "name": "AI Model Registry",
+      "description": "Centralized definitions, lookup services, and Effect layers for managing available language and embedding models."
     },
     {
-      "name": "Resilient Request Routing",
-      "description": "Advanced routing logic that enables defining chains of model nodes, allowing systems to automatically fail over to alternative configurations during execution."
+      "name": "Model Request Routing",
+      "description": "Configurable routing hierarchies that map request identifiers to execution nodes and support automated fallback behaviors."
     },
     {
-      "name": "AI Tooling Framework",
-      "description": "Standardized architecture for defining tools, including schema-based input validation, execution context management, and security via approval policies."
+      "name": "Tool Execution and Governance",
+      "description": "Standardized abstractions for defining AI-integrated tools, tracking active execution tasks, and evaluating approval policies."
     },
     {
-      "name": "Provider Abstraction",
-      "description": "Pluggable provider architecture that wraps lower-level SDKs to maintain consistent behavior across different model backends and vendors."
+      "name": "AI Service Integration",
+      "description": "Provider-agnostic parameter definitions and Vercel AI SDK integrations supporting text generation, streaming, object generation, and embeddings."
+    },
+    {
+      "name": "Error Diagnostics",
+      "description": "Structured domain errors and contextual metadata capturing lifecycle phases and retry states for operational failure handling."
     }
   ],
   "designDecisions": [
-    "Utilizes the Effect library for dependency injection, service management, and functional error handling.",
-    "Implements a 'Registry' pattern to decouple model configuration from service consumption.",
-    "Adopts a 'Routing Node' architecture to support complex fallback logic without coupling execution handlers to specific model providers.",
-    "Encapsulates tool execution within a formal Context object to ensure all required state and identity information is explicitly passed."
+    "Utilizes Effect services and layers for dependency injection to manage model registries and routing configurations cleanly.",
+    "Implements a multi-node routing architecture to ensure resilient request execution through automated fallback mechanisms.",
+    "Enforces strict typing on tool definitions, execution contexts, and approval policies to safely bridge AI interactions with application logic."
   ],
   "usageGuidance": [
-    "Register model configurations via the AiModelRegistry to ensure they are available for dependency injection.",
-    "Define complex request flows using the routing service to leverage built-in fallback capabilities.",
-    "Implement tools using the AiTool interface, ensuring that input schemas and approval policies are correctly configured.",
-    "Always use the provided error context types to wrap failures, facilitating better debugging and observability in production."
+    "Inject the appropriate model registry layer (such as the Google model layer or Vercel AI layer) into your Effect runtime context to enable AI capabilities.",
+    "Define custom tools by implementing the tool structure and associating them with required configuration schemas and approval policies.",
+    "Use model route identifiers to direct AI operations through configured fallback paths for enhanced fault tolerance."
   ]
 }

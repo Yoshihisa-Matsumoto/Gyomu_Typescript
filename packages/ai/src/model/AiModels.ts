@@ -91,7 +91,7 @@ export const AI_MODELS: AiModelRegistry = {
   /**
    * Fast / Cheap
    */
-  fast: google('gemini-3.1-flash-lite'),
+  fast: google('gemini-3.5-flash-lite'),
 
   /**
    * High quality general model

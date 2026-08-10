@@ -94,4 +94,4 @@ describe('processTsDocUpdate integration', () => {
 
     await processTsDocUpdateProgram(target_file + '.ts', planObject)
   })
-})
+}, 30_000)

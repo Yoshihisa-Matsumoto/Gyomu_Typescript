@@ -1,0 +1,22 @@
+{
+  "summary": "This directory manages the structural analysis and fact extraction of project directories. It provides the necessary interfaces and functional logic to inspect, represent, and analyze directory contents to generate meaningful metadata for further processing.",
+  "responsibilities": [
+    "Defining the structure of directory metadata",
+    "Extracting facts from filesystem directories",
+    "Analyzing directory contents for programmatic evaluation"
+  ],
+  "concepts": [
+    "Directory metadata",
+    "Structural analysis",
+    "Fact extraction"
+  ],
+  "relationships": [
+    "Directory metadata is structured using formal interface definitions.",
+    "Fact extraction logic operates on project directories to populate the metadata structure."
+  ],
+  "designDecisions": [
+    "Interface-based modeling for data consistency",
+    "Functional decomposition of analysis logic"
+  ],
+  "importance": "Core"
+}

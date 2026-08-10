@@ -88,19 +88,6 @@ export const buildSchemaStructureNode = (
   return undefined
 }
 
-// const buildSchemaStructureNodeFromMemberAnalysis = (
-//   member: MemberAnalysis,
-// ): SchemaStructureNode | undefined => {
-//   if (member.documentable) {
-//     return undefined
-//   }
-//   if (member.kind == 'method') return undefined
-//   if (!member.type || member.type.source != 'effect-schema' || !member.type.structure)
-//     return undefined
-
-//   return buildSchemaStructureNode(member.type.structure, member.name)
-// }
-
 const buildSchemaStructureNodeFromTypeProperty = (
   member: TypeProperty,
 ): SchemaStructureNode | undefined => {
@@ -109,20 +96,3 @@ const buildSchemaStructureNodeFromTypeProperty = (
 
   return buildSchemaStructureNode(member.type.structure, member.name)
 }
-
-// const buildSchemaStructureNodeFromIndexSignature = (
-//   member: IndexSignatureAnalysis,
-// ): Array<SchemaStructureNode> => {
-//   const result:Array<SchemaStructureNode>=[]
-//   if (!member.parameterType || member.parameterType.source != 'effect-schema' || !member.parameterType.structure)
-//   {
-//     // Do nothing
-//   }else {
-//     const structure = member.parameterType.structure
-//     if(structure)
-//       result.push( buildSchemaStructureNode(structure, member.parameterName))
-//   }
-
-//   if(member.type && member.type.structure && member.type.)
-//   return result
-// }

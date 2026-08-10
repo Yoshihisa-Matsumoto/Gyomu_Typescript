@@ -18,7 +18,10 @@ describe('renderReadmeMarkdown', () => {
           },
           {
             type: 'bullet-list',
-            items: ['Item1', 'Item2'],
+            items: [
+              { translationId: 1, text: 'Item1' },
+              { translationId: 2, text: 'Item2' },
+            ],
           },
           {
             type: 'code',
@@ -30,11 +33,14 @@ describe('renderReadmeMarkdown', () => {
       },
     ]
 
-    const markdown = renderReadmeMarkdown(context, {
-      language: 'en',
-      destination: sections,
-      targets: [],
-    })
+    const markdown = renderReadmeMarkdown(
+      context,
+      {
+        language: 'en',
+        sections,
+      },
+      undefined,
+    )
 
     expect(markdown).toBe(`# TITLE
 
@@ -60,11 +66,14 @@ console.log("hello")
       },
     ]
 
-    const markdown = renderReadmeMarkdown(context, {
-      language: 'en',
-      destination: sections,
-      targets: [],
-    })
+    const markdown = renderReadmeMarkdown(
+      context,
+      {
+        language: 'en',
+        sections,
+      },
+      undefined,
+    )
 
     expect(markdown).toContain('## Overview')
   })
@@ -93,11 +102,14 @@ console.log("hello")
       },
     ]
 
-    const markdown = renderReadmeMarkdown(context, {
-      language: 'en',
-      destination: sections,
-      targets: [],
-    })
+    const markdown = renderReadmeMarkdown(
+      context,
+      {
+        language: 'en',
+        sections,
+      },
+      undefined,
+    )
 
     expect(markdown).toBe(`# TITLE
 
@@ -119,11 +131,14 @@ Second section.`)
       },
     ]
 
-    const markdown = renderReadmeMarkdown(context, {
-      language: 'en',
-      destination: sections,
-      targets: [],
-    })
+    const markdown = renderReadmeMarkdown(
+      context,
+      {
+        language: 'en',
+        sections,
+      },
+      undefined,
+    )
 
     expect(markdown).toBe(`# TITLE
 
@@ -140,11 +155,7 @@ Second section.`)
       },
     ]
 
-    const markdown = renderReadmeMarkdown(
-      context,
-      { language: 'en', destination: sections, targets: [] },
-      true,
-    )
+    const markdown = renderReadmeMarkdown(context, { language: 'en', sections }, undefined, true)
 
     expect(markdown).toBe(`# TITLE
 

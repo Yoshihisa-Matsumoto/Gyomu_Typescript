@@ -2,12 +2,13 @@ import { Schema } from 'effect'
 import { Paragraph } from './content/Paragraph.js'
 import { BulletList } from './content/BulletList.js'
 import { CodeBlock } from './content/CodeBlock.js'
+import { Table } from './content/Table.js'
 import type { Builder } from '../../entity/type.js'
 
 /**
  * A union schema for content blocks that can appear inside a document section, supporting paragraphs, bullet lists, or code blocks.
  */
-export const DocumentContent = Schema.Union([Paragraph, BulletList, CodeBlock]).annotate({
+export const DocumentContent = Schema.Union([Paragraph, BulletList, CodeBlock, Table]).annotate({
   description: 'A content block that can appear inside a document section.',
 })
 

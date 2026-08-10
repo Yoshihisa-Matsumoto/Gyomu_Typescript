@@ -1,26 +1,29 @@
 {
-  "summary": "This directory acts as the root entry point for the entire application, serving as the primary bridge between internal core business features and external UI-facing exports. It aggregates and exposes the design system, business workflows, and domain-driven components for consumption.",
+  "summary": "This directory acts as the root architectural layer for a TypeScript-based application, unifying core feature logic, design system components, and cross-cutting utility functions. It ensures modularity by isolating business rules from UI implementation and infrastructure concerns.",
   "responsibilities": [
-    "Expose core application functionality and UI components via a unified API",
-    "Aggregate feature-level business logic and state management",
-    "Provide a centralized access point for the design system",
-    "Maintain the architectural boundary between domain models and UI implementation"
+    "Coordinate core business workflows and domain state management",
+    "Provide a unified entry point for the design system and UI components",
+    "Encapsulate cross-cutting utility logic for CSS and styling",
+    "Decouple domain-specific logic from infrastructure dependencies",
+    "Expose application-wide interfaces for feature consumption"
   ],
   "concepts": [
-    "Application Entry Point",
-    "Core Feature Set",
-    "Design System Exports",
-    "Architectural Boundary"
+    "Domain Models",
+    "Design System",
+    "Business Logic",
+    "Utility Functions",
+    "Rendering Infrastructure"
   ],
   "relationships": [
-    "The directory serves as the public interface for the underlying features and UI layers.",
-    "Internal domain entities and business rules are exposed to external consumers through these centralized exports.",
-    "The root structure orchestrates the relationship between the UI component library and the business logic defined in core features."
+    "The application core delegates domain-specific logic to the features directory while utilizing the ui directory for consistent component rendering.",
+    "Utility functions in the lib directory support component development by resolving stylistic conflicts.",
+    "The root index facilitates access to the design system, allowing consistent consumption of UI components and orchestration logic."
   ],
   "designDecisions": [
-    "Use of barrel files to simplify imports and provide a clean public API",
-    "Centralization of application entry points to enforce decoupling",
-    "Facade pattern to hide internal implementation details of core features from external consumers"
+    "Barrel file patterns for simplified module consumption",
+    "Separation of concerns between business logic and UI presentation",
+    "Adapter-based approach to insulate the application from specific third-party library dependencies",
+    "Centralization of stylistic and structural utilities"
   ],
   "importance": "Core"
 }

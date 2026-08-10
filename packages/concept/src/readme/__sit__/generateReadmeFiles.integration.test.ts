@@ -10,9 +10,9 @@ import { FullPath } from '@gyomu/schema'
 import { WorkspaceRelativePath } from '@gyomu/schema/typescript'
 import { makeRunner } from '@gyomu/schema/effect'
 import { AI_MODELS } from '@gyomu/ai'
-import { ReadmeSectionRouteId } from '@gyomu/ai-compiler/readme'
 import { TranslationRouteId } from '@gyomu/ai-compiler/translation'
 import { createVercelAiLayer } from '@gyomu/ai/provider/vercel'
+import { DocumentSectionRouteId } from '@gyomu/ai-compiler/document'
 import { generateReadmeFiles } from '../generateReadmeFiles.js'
 
 const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(
@@ -22,7 +22,7 @@ const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(
 const runQAWithEnvOrThrow = makeRunner(
   createVercelAiLayer(
     new Map([
-      [ReadmeSectionRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
+      [DocumentSectionRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
       [TranslationRouteId, { nodes: [{ retry: 3, registry: AI_MODELS }] }],
     ]),
   ),

@@ -1,33 +1,26 @@
 {
-  "summary": "The @gyomu/agent package serves as a primary orchestrator within the Gyomu ecosystem, integrating AI-driven analysis with project-specific code intelligence. It leverages specialized dependencies for infrastructure, schema management, and TypeScript documentation to enable advanced agentic workflows.",
+  "summary": "The @gyomu/agent package serves as an AI-driven agent module within the gyomu project ecosystem. It integrates core AI capabilities, infrastructure, schema validation, and TypeScript documentation parsing to execute intelligent analysis tasks.",
   "responsibilities": [
-    "Orchestrate interactions between AI models and local project infrastructure.",
-    "Implement agentic decision-making logic for code-related tasks.",
-    "Bridge high-level analytical goals with concrete TypeScript codebase operations.",
-    "Manage the lifecycle and state of automated project analysis agents."
+    "Orchestrate AI interactions using underlying foundational packages.",
+    "Integrate schema definitions and infrastructure components for agent operations.",
+    "Provide automated test validation and quality assurance for analytical components."
   ],
   "capabilities": [
     {
-      "name": "Agent Orchestration",
-      "description": "Provides the structural framework to define and execute autonomous agents capable of performing complex code analysis and transformation tasks."
+      "name": "Agent Execution",
+      "description": "Enables the orchestration and execution of AI-driven tasks leveraging core gyomu packages."
     },
     {
-      "name": "Code Intelligence Integration",
-      "description": "Exposes capabilities for deep semantic analysis of TypeScript code by utilizing underlying structural and documentation models."
-    },
-    {
-      "name": "Analytical Workflow Management",
-      "description": "Coordinates multi-step processes involving schema validation, AI inference, and infrastructure interaction."
+      "name": "Testing Infrastructure",
+      "description": "Provides automated verification tools and test suites to ensure the correctness of agent operations."
     }
   ],
   "designDecisions": [
-    "Employs a functional effect-based architecture to handle complex asynchronous operations and side effects reliably.",
-    "Decouples domain-specific analysis logic from infrastructure concerns by utilizing core Gyomu dependency packages.",
-    "Prioritizes declarative definitions for agent behaviors to ensure maintainability and testability."
+    "Built as an ES module utilizing modern TypeScript tooling and the Effect framework.",
+    "Depends on modular gyomu ecosystem packages to separate AI, infrastructure, schema, and documentation parsing concerns."
   ],
   "usageGuidance": [
-    "Extend the base agent classes or configurations to define custom task-specific behaviors.",
-    "Utilize the provided test infrastructure to validate agent behavior against representative code snippets.",
-    "Ensure environment configurations and infrastructure dependencies are initialized before invoking primary agent orchestration APIs."
+    "Import package features through the established public API entries.",
+    "Ensure compatible dependent packages from the @gyomu namespace are configured in the consuming environment."
   ]
 }

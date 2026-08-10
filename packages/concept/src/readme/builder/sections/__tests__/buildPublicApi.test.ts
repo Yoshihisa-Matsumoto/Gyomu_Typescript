@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { Effect } from 'effect'
 import { buildPublicApi } from '../buildPublicApi.js'
+import type { BulletListItem } from '@gyomu/schema/schemas/document'
 import type { ReadmeBuildContext } from '@gyomu/schema/concept'
 
 describe('buildPublicApi', () => {
@@ -23,17 +24,22 @@ describe('buildPublicApi', () => {
     const result = await Effect.runPromise(buildPublicApi.build(context))
 
     expect(result).toEqual({
-      id: 'public-api',
-      title: undefined,
-      contents: [
-        {
-          type: 'bullet-list',
-          items: [
-            'UserService - Provides user management operations.',
-            'AuthService - Handles authentication.',
-          ],
-        },
-      ],
+      section: {
+        id: 'public-api',
+        title: undefined,
+        contents: [
+          {
+            type: 'bullet-list',
+            items: [
+              {
+                text: 'UserService - Provides user management operations.',
+                translationId: 0,
+              } satisfies BulletListItem,
+              { text: 'AuthService - Handles authentication.', translationId: 1 },
+            ],
+          },
+        ],
+      },
     })
   })
 
@@ -47,14 +53,16 @@ describe('buildPublicApi', () => {
     const result = await Effect.runPromise(buildPublicApi.build(context))
 
     expect(result).toEqual({
-      id: 'public-api',
-      title: undefined,
-      contents: [
-        {
-          type: 'bullet-list',
-          items: [],
-        },
-      ],
+      section: {
+        id: 'public-api',
+        title: undefined,
+        contents: [
+          {
+            type: 'bullet-list',
+            items: [],
+          },
+        ],
+      },
     })
   })
 

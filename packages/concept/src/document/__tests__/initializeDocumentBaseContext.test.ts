@@ -55,11 +55,27 @@ describe('initializeDocumentBaseContext', () => {
       } as any),
     )
 
-    vi.mocked(readYamlFromFileAndValidate).mockReturnValueOnce(
-      Effect.succeed({
-        name: 'test',
-      } as any),
-    )
+    vi.mocked(readYamlFromFileAndValidate)
+      .mockReturnValueOnce(
+        Effect.succeed({
+          name: 'test',
+        } as any),
+      )
+      .mockReturnValueOnce(
+        Effect.succeed({
+          scripts: [],
+        } as any),
+      )
+      .mockReturnValueOnce(
+        Effect.succeed({
+          dependencies: [],
+        } as any),
+      )
+      .mockReturnValueOnce(
+        Effect.succeed({
+          items: [],
+        } as any),
+      )
 
     const result = await runner(initializeDocumentBaseContext(projectContext))
 
@@ -77,6 +93,15 @@ describe('initializeDocumentBaseContext', () => {
         knowledge: {
           package: {
             name: 'test',
+          },
+          development: {
+            scripts: [],
+          },
+          technical: {
+            dependencies: [],
+          },
+          roadmap: {
+            items: [],
           },
         },
       },
@@ -111,5 +136,30 @@ describe('initializeDocumentBaseContext', () => {
     )
 
     await expect(runner(initializeDocumentBaseContext(projectContext))).rejects.toThrow()
+  })
+
+  it('allows missing roadmap', async () => {
+    vi.mocked(buildPackageAnalysis).mockReturnValue(Effect.succeed({} as any))
+
+    vi.mocked(loadPackageConcept).mockReturnValue(Effect.succeed({} as any))
+
+    vi.mocked(readYamlFromFileAndValidate)
+      .mockReturnValueOnce(Effect.succeed({} as any))
+      .mockReturnValueOnce(Effect.succeed({} as any))
+      .mockReturnValueOnce(Effect.succeed({} as any))
+      .mockReturnValueOnce(
+        Effect.fail(
+          new IOError({
+            cause: undefined,
+            message: 'fail',
+            layer: 'filesystem',
+            operation: 'read',
+          }),
+        ),
+      )
+
+    const result = await runner(initializeDocumentBaseContext(projectContext))
+
+    expect(result.context.knowledge.roadmap).toBeUndefined()
   })
 })

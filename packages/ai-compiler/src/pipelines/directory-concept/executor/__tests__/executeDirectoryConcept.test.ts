@@ -4,10 +4,11 @@ import { AiModelRoute, ModelRoutes } from '@gyomu/ai'
 import { MessageRole } from '@gyomu/schema/conversation'
 import { DirectoryConcept } from '@gyomu/schema/schemas/concept'
 import { PlatformLayer } from '@gyomu/infra'
-import { DirectoryConceptRouteId, executeDirectoryConcepts } from '../executeDirectoryConcept.js'
+import { executeDirectoryConcepts } from '../executeDirectoryConcept.js'
 import { loadPrompt } from '../../prompt/loadPrompt.js'
 import { renderFileSummary } from '../../renderer/renderFileSummary.js'
 import { renderSubDirectory } from '../../renderer/renderSubDirectory.js'
+import { DocumentSectionRouteId } from '../../../document/SectionPromptProvider.js'
 import type { ModelRoute, ModelRouteId, RouteNode } from '@gyomu/ai'
 
 vi.mock('../../prompt/loadPrompt.js', () => ({
@@ -33,7 +34,7 @@ const modelRoute = {
 } as ModelRoute
 const mockModelRoutes = Layer.succeed(
   ModelRoutes,
-  new Map<ModelRouteId, ModelRoute>([[DirectoryConceptRouteId, modelRoute]]),
+  new Map<ModelRouteId, ModelRoute>([[DocumentSectionRouteId, modelRoute]]),
 )
 
 describe('executeDirectoryConcepts', () => {
@@ -94,7 +95,7 @@ DIRS
     expect(generateObject).toHaveBeenCalledTimes(1)
 
     expect(generateObject).toHaveBeenCalledWith({
-      routeId: DirectoryConceptRouteId,
+      routeId: DocumentSectionRouteId,
       key: 'fast',
       messages: [
         {

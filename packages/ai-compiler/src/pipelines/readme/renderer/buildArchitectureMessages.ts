@@ -1,7 +1,7 @@
 import { Effect } from 'effect'
 import { MessageRole } from '@gyomu/schema/conversation'
+import { analyzePackageAnalysis } from '@gyomu/facts'
 import { loadPrompt } from '../prompt/index.js'
-import { selectTopDirectories } from '../../package-concept/renderer/selectTopDirectories.js'
 import type { Message } from '@gyomu/schema/conversation'
 import type { IOError } from '@gyomu/schema'
 import type { ReadmeBuildContext } from '@gyomu/schema/concept'
@@ -12,16 +12,19 @@ import type { FileSystem } from 'effect'
  *
  * @param context The current README build context containing project analysis and concept details.
  *
- * @returns An Effect that yields an array of messages or an IOError, requiring a FileSystem implementation.
+ * @returns An Effect that yields an array of messages or an IOError, requiring a FileSystem service.
  *
- * @@requires @requires FileSystem
+ * @requires FileSystem.FileSystem
  */
 export const buildArchitectureMessages = (
   context: ReadmeBuildContext,
 ): Effect.Effect<Array<Message>, IOError, FileSystem.FileSystem> =>
   Effect.gen(function* () {
     const prompt = yield* loadPrompt('architecture-generate.md')
-    const targetDirectories = selectTopDirectories(context.analysis.directories)
+    const targetDirectories = analyzePackageAnalysis(context.analysis).getRankedDirectories({
+      strategy: 'top-score',
+      limit: 5,
+    })
     const userData = {
       conceptSummary: context.concept.summary,
       responsibilities: context.concept.responsibilities,

@@ -1,8 +1,9 @@
 import { tool } from 'ai'
-import { Schema } from 'effect'
+import { toJsonSchema } from '@gyomu/schema/entity'
+import type { EffectSchema } from '@gyomu/schema/entity'
+import type { Schema } from 'effect'
 import type { Tool } from 'ai'
 import type { StandardJSONSchemaV1 } from '@standard-schema/spec'
-import type { EffectSchema } from '@gyomu/schema/entity'
 import type { AiTool, ToolResult } from '../../ai-tool.js'
 import type { JsonValue } from '@gyomu/schema'
 
@@ -26,7 +27,7 @@ export const toVercelTool = <
   const result = tool({
     description: toolDef.description,
 
-    inputSchema: Schema.toStandardSchemaV1(Schema.toStandardJSONSchemaV1(toolDef.inputSchema)),
+    inputSchema: toJsonSchema(toolDef.inputSchema),
 
     execute: (input) =>
       toolDef.execute(

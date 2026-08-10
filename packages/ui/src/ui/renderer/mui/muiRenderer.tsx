@@ -38,7 +38,7 @@ export const muiRenderer: RendererMap = {
 
   textarea: ({ value, onChange, onBlur }) => (
     <TextArea
-      value={value ?? ''}
+      value={value}
       onChange={(e) => onChange?.(e.target.value)}
       onBlur={(e) => onBlur?.(e.target.value)}
     />
@@ -46,14 +46,14 @@ export const muiRenderer: RendererMap = {
 
   number: ({ value, onChange }) => (
     <NumberField
-      value={value ?? ''}
-      onChange={(e) => onChange?.(e.target.value === '' ? undefined : Number(e.target.value))}
+      value={value}
+      onValueChange={(e) => onChange?.(e == null ? undefined : Number(e))}
     />
   ),
 
   select: ({ value, onChange, onBlur, meta }) => (
     <Select
-      value={(value ?? '') as string}
+      value={value}
       onChange={(v) => onChange?.(v)}
       {...withOptional({ onBlur })}
       items={Object.entries(meta.enumAttribute).map(([v, attr]) => ({
@@ -66,12 +66,12 @@ export const muiRenderer: RendererMap = {
   date: ({ value, onChange, onBlur }) => (
     <TextField
       type="date"
-      value={value ?? ''}
+      value={value}
       onChange={(e) => onChange?.(e.target.value as LocalDate)}
       onBlur={(e) => onBlur?.(e.target.value as LocalDate)}
     />
   ),
-  hidden: ({ value }) => <input type="hidden" value={value ?? ''} />,
+  hidden: ({ value }) => <input type="hidden" value={value} />,
 }
 
 const getLabel = (

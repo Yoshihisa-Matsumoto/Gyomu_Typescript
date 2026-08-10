@@ -1,22 +1,25 @@
 {
-  "summary": "This directory manages configuration options for architectural analysis, defining how concepts and metadata are structured, tracked, and tailored to project-specific paths during the document construction and analysis workflows.",
+  "summary": "This directory contains the core configuration interfaces for concept analysis, enabling the systematic definition and tracking of architectural targets during project analysis and documentation generation workflows.",
   "responsibilities": [
-    "Define configuration schemas for architectural analysis",
-    "Enable path tracking and change detection for generated concepts",
-    "Provide interfaces for customizing analysis parameters"
+    "Configure parameters for architectural concept analysis",
+    "Define settings for target-specific path resolution",
+    "Enable change tracking configuration for analysis processes",
+    "Extend base analysis capabilities with custom target options"
   ],
   "concepts": [
-    "Concept Configuration",
-    "Change Tracking",
-    "Analysis Metadata"
+    "Concept Analysis",
+    "Configuration Interface",
+    "Target Tracking",
+    "Analysis Options"
   ],
   "relationships": [
-    "Configuration options extend the base analysis logic by providing path-specific directives.",
-    "Analysis metadata structures utilize these options to track changes across project lifecycle stages."
+    "The analysis options interface defines the required configuration parameters for the system's core analysis engine.",
+    "Target path configurations established here inform the file system resolution logic used by the analysis and documentation generators."
   ],
   "designDecisions": [
-    "Extension of base analysis interfaces to ensure type safety",
-    "Separation of AI-specific configuration from project structure definitions"
+    "Use of interface-based configuration to allow extensibility across different analysis targets",
+    "Strict separation between configuration definitions and operational logic",
+    "Centralization of analysis settings to ensure consistent behavior across project scanning phases"
   ],
   "importance": "Supporting"
 }

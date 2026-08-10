@@ -1,3 +1,3 @@
 export * from './generateReadmeFiles.js'
-export { ReadmeSectionRouteId } from '@gyomu/ai-compiler/readme'
+export { DocumentSectionRouteId } from '@gyomu/ai-compiler/document'
 export { TranslationRouteId } from '@gyomu/ai-compiler/translation'

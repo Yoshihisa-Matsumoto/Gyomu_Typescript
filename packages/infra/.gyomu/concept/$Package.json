@@ -1,53 +1,48 @@
 {
-  "summary": "The @gyomu/infra package serves as a foundational infrastructure layer for the Gyomu ecosystem, providing a consistent service-oriented architecture built on the Effect ecosystem. It abstracts common operational tasks including file system management, database interaction, network communication, and data serialization. By centralizing these cross-cutting concerns, it ensures reliable and type-safe integration across various application components.",
+  "summary": "The @gyomu/infra package provides a robust collection of infrastructure services and utility layers designed for Effect-based applications. It abstracts low-level system interactions such as file system management, database connectivity, network communication, and data serialization. This package serves as a foundational building block for complex business logic by enforcing consistent error handling and dependency injection patterns.",
   "responsibilities": [
-    "Abstract underlying platform-specific file system and network operations.",
-    "Provide standardized error handling for I/O and network-related operations using Effect.",
-    "Implement consistent service layers for database connectivity and repository management.",
-    "Facilitate bidirectional data transformation between structured domain models and common formats like CSV, XML, and JSON.",
-    "Standardize application configuration and logging infrastructure."
+    "Provide uniform wrappers and error handling for platform-specific I/O operations.",
+    "Manage centralized application configuration via environment-driven providers.",
+    "Define service layers that facilitate dependency injection for databases and external APIs.",
+    "Enable streaming-based data transformation between structured models and external formats.",
+    "Encapsulate infrastructure concerns to decouple business logic from runtime environments."
   ],
   "capabilities": [
     {
-      "name": "File System Operations",
-      "description": "Comprehensive utilities for local file manipulation, streaming, searching, and metadata management with integrated error handling."
+      "name": "File System Orchestration",
+      "description": "Comprehensive suite of operations for file and directory management, including metadata retrieval, searching, and stream-based I/O."
     },
     {
-      "name": "Database Integration",
-      "description": "Abstracted connectivity and repository patterns for Kysely and MSSQL, enabling type-safe CRUD and custom query execution."
+      "name": "Database Abstraction",
+      "description": "Integrated services for SQL database interactions, featuring connection management, repository patterns, and custom query execution."
     },
     {
-      "name": "Web and Network Access",
-      "description": "Capabilities for executing HTTP requests, downloading remote content, and processing streamed network responses."
+      "name": "Network and Web Integration",
+      "description": "Tools for performing HTTP requests, web scraping, document parsing, and processing remote data streams."
     },
     {
-      "name": "Data Serialization",
-      "description": "Bidirectional conversion utilities for CSV, JSON, XML, and YAML, often integrating with schema validation to ensure data integrity."
-    },
-    {
-      "name": "DOM and Scraping",
-      "description": "Abstractions for parsing, navigating, and querying HTML content, specifically designed for document-based data extraction."
+      "name": "Data Serialization and Parsing",
+      "description": "Bidirectional conversion capabilities between structured data models and common formats like CSV, XML, YAML, and JSON."
     },
     {
       "name": "Security and Authentication",
-      "description": "Utilities for managing JSON Web Tokens and performing cryptographic operations like SHA-256 hashing."
+      "description": "Utility layer for JWT-based identity management and cryptographic operations like SHA-256 hashing."
     },
     {
-      "name": "Archive Management",
-      "description": "Support for creating, reading, and inspecting contents of TAR and ZIP archives through stream-based interfaces."
+      "name": "Archive Handling",
+      "description": "Support for inspecting, reading, and extracting contents from ZIP and TAR archives within stream pipelines."
     }
   ],
   "designDecisions": [
-    "Leverages the Effect ecosystem for all side-effecting operations to provide predictable, type-safe, and composable services.",
-    "Adopts a service-layer architecture to decouple business logic from underlying implementation details.",
-    "Utilizes streaming interfaces for large data processing to maintain memory efficiency.",
-    "Enforces strong typing for serialization and database operations via integrated schema validation.",
-    "Provides standardized wrappers around third-party libraries to ensure uniform behavior and error reporting across the system."
+    "Heavy reliance on the Effect ecosystem to handle side effects, resource management, and error propagation.",
+    "Implementation of a service-layer architecture that treats external interactions as injectable dependencies.",
+    "Preference for stream-based processing to maintain high performance and memory efficiency when handling large datasets.",
+    "Strict type-safety through schema-based validation for all data input and output operations."
   ],
   "usageGuidance": [
-    "Prefer using the provided service layers (e.g., FileSystem, TarService) rather than native Node.js modules to ensure consistent error handling.",
-    "Always define schemas when using parsing utilities to ensure data consistency at the application boundary.",
-    "Use the repository generator for standard database operations to reduce boilerplate and improve maintainability.",
-    "Leverage the Effect runtime for composing infrastructure operations to handle failures gracefully through the typed error system."
+    "Utilize the defined Layer objects to compose application environments and manage dependency initialization at startup.",
+    "Always wrap file and network operations in the provided error-handling utilities to ensure consistent failure types.",
+    "Prefer the provided repository generators when interacting with databases to benefit from built-in consistency checks.",
+    "Leverage the streaming API for CSV and file operations to avoid memory exhaustion with large inputs."
   ]
 }

@@ -1,5 +1,8 @@
+import type { Development } from '../schemas/knowledge/Development.js'
 import type { PackageConcept } from '../schemas/concept/PackageConcept.js'
 import type { Package } from '../schemas/knowledge/Package.js'
+import type { Roadmap } from '../schemas/knowledge/Roadmap.js'
+import type { Technical } from '../schemas/knowledge/Technical.js'
 import type { PackageAnalysis } from './package/PackageAnalysis.js'
 
 /**
@@ -24,5 +27,20 @@ export interface DocumentBaseContext {
      * General information about the package.
      */
     package: Package
+
+    /**
+     * Technical specifications and details of the package.
+     */
+    technical: Technical
+
+    /**
+     * Development-related information for the package.
+     */
+    development: Development
+
+    /**
+     * The optional development roadmap for the package.
+     */
+    roadmap: Roadmap | undefined
   }
 }

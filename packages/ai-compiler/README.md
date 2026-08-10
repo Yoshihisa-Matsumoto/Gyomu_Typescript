@@ -4,15 +4,15 @@ US English | [JP 日本語](README.ja.md)
 
 ## Overview
 
-This package serves as the AI code intelligence foundation for the Gyomu project. It provides a structured framework for automating complex tasks such as source code analysis, documentation generation, and code summarization. By formalizing these processes into declarative pipelines, the system ensures that AI-driven development remains consistent, reproducible, and highly maintainable.
-
-The platform utilizes defined schemas and execution pipelines to transform source code metadata into actionable insights, including project-level summaries and documentation plans. By standardizing input contexts and output configurations, it enables deterministic and auditable transformations for TypeScript codebases. This approach streamlines AI-assisted workflows while maintaining high standards for technical accuracy and project governance.
+The package provides an AI-driven compilation and code intelligence infrastructure for the Gyomu project. Its primary purpose is to build and execute AI processing tasks, such as source code analysis, documentation generation, and code summarization, as declarative pipelines. By standardizing these automated workflows, the system enables consistent, reproducible, and maintainable AI-assisted software development. It efficiently manages complex tasks ranging from JSDoc updates and file summarization to package concept generation, document section building, and content translation.
 
 ## Architecture
 
-The architecture is organized around specialized pipelines that automate code analysis and documentation. These pipelines are functionally divided into layers responsible for data context, schema definition, and execution logic. By decoupling the representation of source code metadata from the operational logic, the package ensures that documentation tasks, such as JSDoc updates or file summarization, remain deterministic and auditable.
+The package is organized around specialized processing pipelines that divide responsibilities into distinct functional areas: context modeling, schema definition, strategy resolution, and task execution. Collaborating components coordinate to drive compilation and code intelligence tasks like JSDoc updates, file and directory summarization, concept generation, document building, and content translation.
 
-The context layer standardizes how source code symbols and file-level concepts are represented, providing a uniform foundation for downstream analysis. The schema layer defines the structure of transformation plans, encapsulating not only the intended changes—such as additions or deletions—but also the reasoning and safety assessments required for auditability. Finally, the execution and mode layers govern the pipeline flow, using complexity strategies to resolve the appropriate update modes and orchestrating the actual application of transformations. This modular approach allows the package to maintain consistent documentation standards across TypeScript projects through structured, data-driven collaboration between components.
+Context management components define the foundational data structures, symbol metadata, and input schemas required to represent source code elements and documentation states. Strategy and mode resolvers evaluate code complexity and configuration context to determine processing depth, while schema definitions establish deterministic frameworks and update plans for safe content merging. 
+
+Finally, execution components handle the operational layer, running tasks to compute file summaries, execute code transformations, and route operations to specific AI model providers.
 
 ## Installation
 
@@ -24,23 +24,20 @@ pnpm add @gyomu/ai-compiler
 
 ## Dependencies
 
-This package requires a Node.js environment supporting ESM and is built upon Effect v4. It utilizes TypeScript to ensure type safety across all integrated modules.
-
-The project relies on the core Effect ecosystem for runtime and schema management. Additionally, it integrates with `@gyomu/schema`, `@gyomu/infra`, and `@gyomu/ai` to provide unified data structures, infrastructure utilities, and LLM processing capabilities, respectively. Ensure these dependencies are correctly configured within your workspace before implementation.
+This package requires an ESM environment and is built specifically for Effect 4.x, relying on the Effect runtime, schema, and context as its core foundation. It integrates with `@gyomu/schema` for shared types and schemas, `@gyomu/infra` for foundational I/O operations, and `@gyomu/ai` to handle LLM processing.
 
 ## Development
 
-This package serves as the core AI code intelligence engine for the Gyomu project, designed to facilitate consistent, reproducible, and maintainable AI-assisted development. To achieve this, the architecture enforces a strict decoupling of concerns: every AI task is structured as an independent Pipeline where inputs and outputs are governed by standardized Schemas. By treating these schemas as formal contracts, we ensure type safety across all automated operations, allowing contributors to build modular components that can be reliably integrated into broader maintenance workflows without risking system instability.
+This package, which provides the AI code intelligence infrastructure for the Gyomu project, aims to build and execute AI processes such as source code analysis, documentation generation, and code summarization as declarative pipelines, realizing AI-assisted development with excellent consistency, reproducibility, and maintainability. Contributors must configure AI processes as independent pipelines for each use case, and handle all AI inputs and outputs in a type-safe manner using schemas as contracts. In addition, the architecture is designed to switch execution strategies according to complexity and scale, and by assembling pipelines as reusable components, extensibility and maintainability are ensured.
 
-The evolution of this codebase relies on a rigorous separation between Analysis and Plan phases, ensuring that AI-generated insights remain distinct from proposed code modifications. All transformations must be validated through a Plan before execution, providing a deterministic mechanism for auditability and safety. Contributors are expected to route all AI tasks through defined Routes, which maintain a clear boundary between model configurations and specific processing logic. By ensuring that complexity and update modes are handled via these structured pipelines, the architecture remains adaptable to varying code scales while preserving the integrity and traceability of every automated change.
+To ensure safety and predictability, the architecture strictly requires a clear separation between Analysis and Plan, ensuring that generated content and modification changes are not mixed. AI modifications must be structured so that they are always applied safely via a Plan. Furthermore, AI tasks are identified by Route, keeping the model configuration and processing content loosely coupled. Contributors are expected to adhere to these policies, implement and evolve complexity and depth control in code transformation and document generation, and translation strategies for diverse document formats.
 
 ## Public API
 
-- JSDoc Automation - Orchestrates the analysis and automated updating of JSDoc comments based on symbol complexity and structural metadata.
-- Codebase Summarization - Generates concise conceptual summaries for files, directories, and entire packages to improve developer navigation and documentation.
-- Pipeline Orchestration - Provides a consistent execution framework for running various AI-driven code analysis tasks with configurable context and strategies.
-- Content Translation - Exposes infrastructure for translating technical documentation and summaries using configured AI model routes.
-- Readme Generation - Supports the programmatic construction of documentation sections within README files using structured AI-driven templates.
+- JSDoc Updates - Analyzes source code symbols and generates structural update plans to automatically add or modify JSDoc documentation.
+- File and Directory Summarization - Processes source files and directories to produce cohesive summaries and concept extractions for codebases.
+- AI Model Routing - Defines route identifiers and execution hooks for connecting pipeline tasks to specific AI model providers.
+- Document Translation - Provides strategies for translating structured document content including bullet lists, tables, code blocks, and paragraphs.
 
 ## License
 

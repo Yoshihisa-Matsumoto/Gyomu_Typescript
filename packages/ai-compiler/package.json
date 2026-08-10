@@ -1,6 +1,6 @@
 {
   "name": "@gyomu/ai-compiler",
-  "version": "0.2.4-beta.11",
+  "version": "0.2.4-beta.13",
   "description": "",
   "type": "module",
   "publishConfig": {
@@ -22,6 +22,14 @@
     "./package-concept": {
       "import": "./dist/pipelines/package-concept/index.js",
       "types": "./dist/pipelines/package-concept/index.d.ts"
+    },
+    "./document": {
+      "import": "./dist/pipelines/document/index.js",
+      "types": "./dist/pipelines/document/index.d.ts"
+    },
+    "./llm-context": {
+      "import": "./dist/pipelines/llm-context/index.js",
+      "types": "./dist/pipelines/llm-context/index.d.ts"
     },
     "./readme": {
       "import": "./dist/pipelines/readme/index.js",
@@ -55,6 +63,7 @@
   ],
   "dependencies": {
     "@gyomu/ai": "workspace:^",
+    "@gyomu/facts": "workspace:^",
     "@gyomu/infra": "workspace:^",
     "@gyomu/schema": "workspace:^",
     "effect": "catalog:"

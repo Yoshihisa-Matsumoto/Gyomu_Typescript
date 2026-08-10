@@ -46,7 +46,7 @@ describe('AiModels', () => {
 
     expect(mod.AI_MODELS.fast).toEqual({
       kind: 'language-model',
-      model: 'gemini-3.1-flash-lite',
+      model: 'gemini-3.5-flash-lite',
     })
 
     expect(mod.AI_MODELS.smart).toEqual({
@@ -85,7 +85,7 @@ describe('AiModels', () => {
   it('creates expected google models', async () => {
     await import('../AiModels.js')
 
-    expect(mocks.googleMock).toHaveBeenCalledWith('gemini-3.1-flash-lite')
+    expect(mocks.googleMock).toHaveBeenCalledWith('gemini-3.5-flash-lite')
 
     expect(mocks.googleMock).toHaveBeenCalledWith('gemini-2.5-pro')
 

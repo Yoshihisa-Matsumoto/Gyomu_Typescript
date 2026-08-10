@@ -1,27 +1,28 @@
 {
-  "summary": "This directory acts as the root entry point for the library, providing a unified public interface that aggregates core domain schemas, type definitions, data transformation utilities, and specialized configurations for the entire application.",
+  "summary": "This directory serves as the root entry point for the package, aggregating foundational utilities, type definitions, and core domain schemas that facilitate standardized data modeling, type-safe configuration, and system-wide structural operations.",
   "responsibilities": [
-    "Expose unified access to core domain modules and utility functions",
-    "Define shared TypeScript types for application-wide data structures",
-    "Provide utility functions for object manipulation and property normalization",
-    "Aggregate and export foundational schemas and architectural contracts"
+    "Export public APIs for core domain functionality",
+    "Provide recursive type manipulation utilities",
+    "Define standardized object normalization and configuration tools",
+    "Expose core schemas and type definitions for system-wide consumption"
   ],
   "concepts": [
-    "Public API Interface",
     "Type Definitions",
-    "Configuration Utilities",
-    "Domain Schemas",
-    "Structural Normalization"
+    "Configuration Normalization",
+    "Object Transformation",
+    "Public API",
+    "Schema Definitions"
   ],
   "relationships": [
-    "The directory aggregates exported symbols from child modules to provide a consistent surface area for consumers.",
-    "Type definitions for entities and configurations serve as the foundation for both system-level data validation and consumer-level usage.",
-    "Utility functions for object and type manipulation are exposed to facilitate standard data transformations throughout the application."
+    "Public type utilities operate on core domain entities to provide flexible data handling.",
+    "Configuration helpers integrate with schema definitions to ensure type-safe project modeling.",
+    "The central export layer reconciles internal module structures into a cohesive interface for external consumers."
   ],
   "designDecisions": [
-    "Use of a barrel file pattern to centralize and simplify module imports",
-    "Clear separation of exported domain logic, schema definitions, and internal utility types",
-    "Exposure of nominal branding types to ensure runtime and compile-time data integrity"
+    "Use of barrel files for centralized API exposure",
+    "Implementation of recursive type transformations for object flexibility",
+    "Nominal branding for type safety in system path representations",
+    "Decoupling of structural utility logic from domain-specific implementations"
   ],
   "importance": "Core"
 }

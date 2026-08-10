@@ -1,40 +1,40 @@
 {
-  "summary": "The @gyomu/ts-analysis package provides a robust orchestration layer for performing static analysis on TypeScript projects. It enables developers to initialize project contexts, analyze source files, and persist analysis metadata, bridging the gap between raw source code and structured, indexable project data.",
+  "summary": "The @gyomu/ts-analysis package provides a robust framework for performing static analysis on TypeScript projects. It enables developers to orchestrate the exploration of workspace projects, process source files into structured metadata, and manage the persistence of analysis results.",
   "responsibilities": [
-    "Orchestrate the static analysis lifecycle from project discovery to file-level processing.",
-    "Maintain centralized project and workspace contexts to scope and inform analysis tasks.",
-    "Bridge development source files and compiled build artifacts through path mapping and path resolution utilities.",
-    "Manage the persistence and retrieval of analysis results to support caching and incremental processing.",
-    "Identify and validate TypeScript project configurations within complex monorepo or workspace structures."
+    "Orchestrate the static analysis pipeline from project initialization to file-level processing.",
+    "Manage the discovery and structural definition of TypeScript projects within a workspace.",
+    "Provide a consistent interface for resolving and transforming file system paths relative to project and workspace roots.",
+    "Persist analysis metadata to the filesystem to support incremental processing and efficient lookups.",
+    "Bridge the gap between logical module specifiers and physical source code locations."
   ],
   "capabilities": [
     {
-      "name": "Project Context Management",
-      "description": "Initializes and maintains the environment settings, package metadata, and workspace configuration required for reliable project-wide analysis."
+      "name": "Project Discovery",
+      "description": "Enables the identification and structural mapping of TypeScript projects and workspace environments."
     },
     {
-      "name": "Static Analysis Pipeline",
-      "description": "Provides high-level orchestration to process TypeScript source files, extract symbol information, and store analysis results for later retrieval."
+      "name": "Static Analysis Engine",
+      "description": "Provides core facilities to analyze TypeScript source files and extract symbols and dependency information."
+    },
+    {
+      "name": "Persistence Management",
+      "description": "Handles caching and storage of analysis results to disk for improved performance in subsequent operations."
     },
     {
       "name": "Path Resolution Framework",
-      "description": "Offers robust utilities for normalizing paths, resolving module specifiers, and mapping between source paths and build output locations."
-    },
-    {
-      "name": "Workspace Discovery",
-      "description": "Locates and structures TypeScript projects across a repository, allowing tooling to operate on defined workspace boundaries."
+      "description": "Offers utilities for normalizing, mapping, and translating paths between source files, output artifacts, and module specifiers."
     }
   ],
   "designDecisions": [
-    "Employs a context-based architecture where global workspace state and local project state are strictly separated to maintain boundary integrity.",
-    "Utilizes a file-based persistence strategy to allow long-running or incremental analysis processes to recover state.",
-    "Decouples path transformation logic from the analysis engine to ensure consistent file system interaction across different project configurations.",
-    "Leverages external infrastructure libraries (e.g., ts-morph, Effect) to provide a stable, type-safe foundation for complex AST and file system operations."
+    "Adopts a context-driven architecture, using 'ProjectContext' and 'WorkspaceContext' to anchor all operations in a defined environment.",
+    "Separates core analysis logic from infrastructural concerns like path normalization and workspace discovery.",
+    "Utilizes a persistent-first approach for analysis results to ensure scalability and reusability of processed data.",
+    "Leverages external static analysis tools, abstracting them into a unified project-wide orchestration layer."
   ],
   "usageGuidance": [
-    "Always initialize a ProjectContext or WorkspaceContext before invoking file-level analysis functions to ensure proper configuration settings are loaded.",
-    "Use the provided path utilities instead of manual string manipulation to ensure cross-platform compatibility and correct module specifier resolution.",
-    "Leverage the load/save functionality for file analysis results when building performance-sensitive tooling to avoid redundant processing.",
-    "Use the testing fixtures provided in the ./testing subpath when developing tools that depend on this package to simulate realistic workspace scenarios."
+    "Always initialize a project or workspace context before executing file-level analysis to ensure correct scope resolution.",
+    "Use the provided path utility functions when dealing with file paths to maintain consistency across OS and build environments.",
+    "Utilize the built-in persistence methods to cache file analysis results rather than re-analyzing files unnecessarily.",
+    "Leverage the testing fixtures provided in the './testing' export path for verifying custom analysis logic."
   ]
 }

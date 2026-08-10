@@ -1,0 +1,27 @@
+{
+  "summary": "This directory defines the structural specifications, translation strategies, and validation rules for various document content types. It establishes a standardized framework for defining how different document elements, such as tables and lists, are represented, validated, and translated.",
+  "responsibilities": [
+    "Define structural schemas for document content types",
+    "Specify rules and logic for document content translation",
+    "Implement validation logic to ensure integrity during reconciliation",
+    "Provide a unified interface for handling diverse document components"
+  ],
+  "concepts": [
+    "Document content definitions",
+    "Translation strategy",
+    "Reconciliation validation",
+    "Translation state"
+  ],
+  "relationships": [
+    "Document content definitions rely on a base structure to provide consistent validation and translation instructions.",
+    "Translation strategies utilize validation results to determine the current state of a document translation.",
+    "Individual element definitions implement the core schema and validation logic required by the document content framework."
+  ],
+  "designDecisions": [
+    "Use of a base definition type to enforce a consistent contract for all content types",
+    "Separation of concerns between structure definition, translation strategy, and validation logic",
+    "Use of union types to encapsulate all supported document content structures",
+    "Interface-driven design for defining translation strategies and validation outcomes"
+  ],
+  "importance": "Core"
+}
