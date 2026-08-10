@@ -62,7 +62,7 @@
     "globals": "^17.6.0",
     "kysely": "^0.29.4",
     "kysely-codegen": "^0.20.0",
-    "undici": "^8.2.0"
+    "undici": "^8.10.0"
   },
   "dependencies": {
     "@effect/platform-node": "catalog:",
