@@ -6,7 +6,7 @@ import { calculateComplexityMetrics } from '../evaluation/complexity/calculateCo
 import { buildJsDocUpdateContext } from './internal/buildJsDocUpdateContext.js'
 import { UpdateError } from './error/UpdateError.js'
 import { buildJsDocUpdatePlanWithRetry } from './internal/buildJsDocUpdatePlanWithRetry.js'
-import { createMergePlan } from './internal/createMargePlan.js'
+import { createMergePlan } from './internal/createMergePlan.js'
 import type { FileAnalysisContext } from '@gyomu/schema/typescript'
 import type { FileSystem } from 'effect'
 import type { MergePlan } from './jsDoc/MergePlan.js'
