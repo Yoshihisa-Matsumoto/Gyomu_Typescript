@@ -26,28 +26,30 @@ const fileResult = {
 } as any as FileAnalysisContext
 
 const createPlan = (overrides: Partial<JsDocUpdatePlan> = []): JsDocUpdatePlan =>
-  ({
-    identity: symbolIdentity,
-    summary: {
-      confidence: 0.9,
-      action: {
-        type: 'replace',
-        value: 'User summary',
+  [
+    {
+      identity: symbolIdentity,
+      summary: {
+        confidence: 0.9,
+        action: {
+          type: 'replace',
+          value: 'User summary',
+        },
       },
-    },
-    returns: {
-      confidence: 0.8,
-      action: {
-        type: 'replace',
-        value: 'User result',
+      returns: {
+        confidence: 0.8,
+        action: {
+          type: 'replace',
+          value: 'User result',
+        },
       },
+      params: [],
+      tags: [],
+      ...overrides,
     },
-    params: [],
-    tags: [],
-    ...overrides,
-  }) as any
+  ] as any
 
-const run = async (plan: JsDocUpdatePlan) => Effect.runPromise(createMergePlan(fileResult, [plan]))
+const run = async (plan: JsDocUpdatePlan) => Effect.runPromise(createMergePlan(fileResult, plan))
 
 describe('createMergePlan', () => {
   beforeEach(() => {
@@ -514,7 +516,7 @@ describe('createMergePlan', () => {
       throw new Error('analysis failed')
     })
 
-    const effect = createMergePlan(fileResult, [createPlan()])
+    const effect = createMergePlan(fileResult, createPlan())
 
     const result = await Effect.runPromiseExit(effect)
 
