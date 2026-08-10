@@ -6,6 +6,15 @@
   "publishConfig": {
     "access": "public"
   },
+  "homepage": "https://github.com/Yoshihisa-Matsumoto/Gyomu_Typescript",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Yoshihisa-Matsumoto/Gyomu_Typescript.git",
+    "directory": "packages/agent"
+  },
+  "bugs": {
+    "url": "https://github.com/Yoshihisa-Matsumoto/Gyomu_Typescript/issues"
+  },
   "exports": {
     ".": {
       "import": "./dist/index.js",
