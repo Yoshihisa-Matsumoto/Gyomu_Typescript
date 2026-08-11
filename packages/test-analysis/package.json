@@ -1,0 +1,54 @@
+{
+  "name": "@gyomu/test-analysis",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://github.com/Yoshihisa-Matsumoto/Gyomu_Typescript",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Yoshihisa-Matsumoto/Gyomu_Typescript.git",
+    "directory": "packages/test-analysis"
+  },
+  "bugs": {
+    "url": "https://github.com/Yoshihisa-Matsumoto/Gyomu_Typescript/issues"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "clean": "rimraf ./dist ./coverage ./.turbo ./.tsbuildinfo",
+    "test": "bunx vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json ",
+    "@test:coverage": "vitest --config vitest.coverage.config.ts --typecheck.tsconfig ./tsconfig.vitest.json --coverage",
+    "@test:ci:coverage": "vitest --config vitest.config.ts --typecheck.tsconfig ./tsconfig.vitest.json --coverage",
+    "start": "pnpm run build:live",
+    "watch": "tsc -w",
+    "build": "tsc",
+    "build:ci": "pnpm run clean && pnpm run build",
+    "sit": "dotenv -e .env -- vitest --config=./vitest.sit.config.ts --typecheck.tsconfig=./tsconfig.vitest.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@gyomu/ai": "workspace:^",
+    "@gyomu/ai-compiler": "workspace:^",
+    "@gyomu/infra": "workspace:^",
+    "@gyomu/schema": "workspace:^",
+    "@gyomu/ts-analysis": "workspace:^",
+    "effect": "catalog:",
+    "ts-morph": "^28.0.0"
+  },
+  "devDependencies": {
+    "dotenv": "catalog:"
+  }
+}
