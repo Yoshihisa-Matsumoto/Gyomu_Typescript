@@ -50,20 +50,22 @@ export const analyzeGetSetAccessor = (
     ownerSymbolIdentity,
     memberPath,
     options,
+    registerSymbol,
   } = args
   const name = node.getName()
 
-  const { id, identity, jsDoc, location, startOffset, parsedJsDoc } = prepareMethodAnalysis(
-    sourceRelativePath,
+  const { id, identity, jsDoc, location, startOffset, parsedJsDoc } = prepareMethodAnalysis({
+    sourcePath: sourceRelativePath,
     metadata,
     ownerSymbolId,
     ownerSymbolIdentity,
     memberPath,
-    name,
+    methodName: name,
     node,
-    node,
+    jsDocableNode: node,
     options,
-  )
+    registerSymbol,
+  })
 
   return analyzePropertyMemberInternal(args, {
     id,

@@ -31,6 +31,7 @@ export const analyzeEnum = (args: TagAnalysisArg<EnumDeclaration>) => {
     sourceFullText,
     imported,
     options,
+    registerSymbol,
   } = args
   const prepared = prepareSymbolAnalysis(
     {
@@ -43,6 +44,7 @@ export const analyzeEnum = (args: TagAnalysisArg<EnumDeclaration>) => {
       imported,
       options,
       reservedNames: [],
+      registerSymbol,
     },
     getSignatureId,
   )
@@ -62,6 +64,7 @@ export const analyzeEnum = (args: TagAnalysisArg<EnumDeclaration>) => {
     options,
     declarationOrder: 0,
     reservedNames: [],
+    registerSymbol,
   })
   const symbol = {
     id: prepared.id,
@@ -91,7 +94,7 @@ export const analyzeEnum = (args: TagAnalysisArg<EnumDeclaration>) => {
     ),
   } satisfies SymbolAnalysis
 
-  registerSymbolSymbolAnalysis(args.metadata, symbol, options)
+  registerSymbolSymbolAnalysis(args.metadata, symbol, options, registerSymbol)
 
   return {
     symbol,
@@ -118,6 +121,7 @@ const analyzeEnumMembers = (
     imported,
     options,
     reservedNames,
+    registerSymbol,
   } = args
   const nodeMembers = node.getMembers()
 
@@ -138,6 +142,7 @@ const analyzeEnumMembers = (
             reservedNames,
             sourceFullText,
             sourceRelativePath,
+            registerSymbol,
           },
           { previousNumber },
         )

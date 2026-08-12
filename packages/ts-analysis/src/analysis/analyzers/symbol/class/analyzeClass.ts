@@ -36,6 +36,7 @@ export const analyzeClass = (args: TagAnalysisArg<ClassDeclaration>) => {
     imported,
     options,
     sourceFullText,
+    registerSymbol,
   } = args
 
   const typeName = args.declaration.getName() ?? ''
@@ -50,6 +51,7 @@ export const analyzeClass = (args: TagAnalysisArg<ClassDeclaration>) => {
       imported,
       options,
       reservedNames: [],
+      registerSymbol,
     },
     getSignatureId,
   )
@@ -69,6 +71,7 @@ export const analyzeClass = (args: TagAnalysisArg<ClassDeclaration>) => {
     imported,
     options,
     reservedNames: [],
+    registerSymbol,
   })
 
   let heritageIndex = 0
@@ -109,6 +112,7 @@ export const analyzeClass = (args: TagAnalysisArg<ClassDeclaration>) => {
     options,
     declarationOrder: 0,
     reservedNames: genericsResult.parameters,
+    registerSymbol,
   })
   const symbol = {
     id: prepared.id,
@@ -142,7 +146,7 @@ export const analyzeClass = (args: TagAnalysisArg<ClassDeclaration>) => {
     ),
   } satisfies SymbolAnalysis
 
-  registerSymbolSymbolAnalysis(args.metadata, symbol, options)
+  registerSymbolSymbolAnalysis(args.metadata, symbol, options, registerSymbol)
 
   return {
     symbol,
@@ -165,6 +169,7 @@ const analyzeClassMembers = (
     imported,
     options,
     reservedNames,
+    registerSymbol,
   } = args
   const nodeMembers = node.getMembers()
 
@@ -186,6 +191,7 @@ const analyzeClassMembers = (
           imported,
           options,
           reservedNames,
+          registerSymbol,
         })
         return {
           member: [propertyResult.member] as Array<MemberAnalysis>,
@@ -207,6 +213,7 @@ const analyzeClassMembers = (
             imported,
             options,
             reservedNames,
+            registerSymbol,
           },
           member.getName(),
           member,
@@ -232,6 +239,7 @@ const analyzeClassMembers = (
             imported,
             options,
             reservedNames,
+            registerSymbol,
           },
           node,
           name,
@@ -255,6 +263,7 @@ const analyzeClassMembers = (
             imported,
             options,
             reservedNames,
+            registerSymbol,
           },
           setter,
         )

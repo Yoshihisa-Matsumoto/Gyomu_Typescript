@@ -1,5 +1,7 @@
 export * from './DependencyCandidate.js'
 export * from './EportAnalysis.js'
+export * from './FunctionBodyAnalysis.js'
+export * from './FunctionBodyElement.js'
 export * from './ImportAnalysis.js'
 export * from './jsdoc/index.js'
 export * from './MemberAccessor.js'
@@ -16,3 +18,6 @@ export * from './type/index.js'
 export * from './member/index.js'
 
 export * from './FileAnalysis.js'
+
+export * from './statement/index.js'
+export * from './expression/index.js'

@@ -1,0 +1,16 @@
+class BaseClass {
+  baseMethod(value: string): void {
+    console.log(value)
+  }
+}
+
+export class ChildClass extends BaseClass {
+  childMethod(value: string): void {
+    console.log(value)
+  }
+
+  execute(value: string): void {
+    // this property access
+    this.childMethod(value)
+  }
+}

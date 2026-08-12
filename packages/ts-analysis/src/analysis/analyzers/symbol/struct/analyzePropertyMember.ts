@@ -47,21 +47,23 @@ export const analyzePropertyMember = (
     ownerSymbolIdentity,
     memberPath,
     options,
+    registerSymbol,
   } = args
   const typeNode = args.node.getTypeNode()
   const name = node.getName()
   const initializer = args.node.getInitializer()
-  const { id, identity, jsDoc, location, startOffset, parsedJsDoc } = preparePropertyAnalysis(
-    sourceRelativePath,
+  const { id, identity, jsDoc, location, startOffset, parsedJsDoc } = preparePropertyAnalysis({
+    sourcePath: sourceRelativePath,
     metadata,
     ownerSymbolId,
     ownerSymbolIdentity,
     memberPath,
-    name,
+    propertyName: name,
     node,
-    node,
+    jsDocableNode: node,
     options,
-  )
+    registerSymbol,
+  })
   return analyzePropertyMemberInternal(args, {
     initializer,
     typeNode,
@@ -118,6 +120,7 @@ export const analyzePropertyMemberInternal = (
     options,
     sourceFullText,
     reservedNames,
+    registerSymbol,
   } = args
   const { id, identity, jsDoc, location, startOffset, readonly, optional, parsedJsDoc } = args2
   const name = node.getName()
@@ -137,6 +140,7 @@ export const analyzePropertyMemberInternal = (
       imported,
       options,
       reservedNames,
+      registerSymbol,
     })
     newReservedNames.push(...genericsResult.parameters)
     genercsDependencies.push(...genericsResult.dependencies)
@@ -157,6 +161,7 @@ export const analyzePropertyMemberInternal = (
             imported,
             options,
             reservedNames: newReservedNames,
+            registerSymbol,
           },
           [name],
         )
@@ -192,7 +197,7 @@ export const analyzePropertyMemberInternal = (
       args.node.getStartLinePos(),
     ),
   } satisfies DocumentablePropertyMemberAnalysis
-  registerSymbolSymbolAnalysis(metadata, property, options)
+  registerSymbolSymbolAnalysis(metadata, property, options, registerSymbol)
   return {
     member: property,
     dependencies: [...(typeResult?.dependencies ?? []), ...genercsDependencies],

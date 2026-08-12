@@ -40,6 +40,7 @@ export const analyzeTypeAliasStatement = (
     imported,
     declarationOrder,
     options,
+    registerSymbol: true,
   })
   if (typeAliasResult.isExported) {
     result.exported.push({

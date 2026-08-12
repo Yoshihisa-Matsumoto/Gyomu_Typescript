@@ -28,6 +28,7 @@ export const analyzeParameter = (
     declarationOrder,
     imported,
     options,
+    registerSymbol,
   } = args
   const typeNode = node.getTypeNode()
   const name = node.getName()
@@ -57,6 +58,7 @@ export const analyzeParameter = (
         imported,
         options,
         reservedNames: [],
+        registerSymbol,
       },
       [name],
       undefined,
@@ -101,6 +103,7 @@ export const analyzeParameter = (
       imported,
       options,
       reservedNames: [],
+      registerSymbol,
     })
     return {
       member: {

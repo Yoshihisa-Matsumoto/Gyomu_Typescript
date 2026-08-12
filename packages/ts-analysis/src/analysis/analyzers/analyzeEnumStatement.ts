@@ -39,6 +39,7 @@ export const analyzeEnumStatement = (
     sourceFullText,
     imported,
     declarationOrder,
+    registerSymbol: true,
   })
   if (enumResult.isExported) {
     result.exported.push({

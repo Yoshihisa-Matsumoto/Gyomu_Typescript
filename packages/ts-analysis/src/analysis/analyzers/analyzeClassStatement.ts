@@ -41,6 +41,7 @@ export const analyzeClassStatement = (
     imported,
     declarationOrder,
     options,
+    registerSymbol: true,
   })
   if (classResult.isExported) {
     result.exported.push({

@@ -64,6 +64,7 @@ export const analyzeTypeFunction = (
     sourceFullText,
     declarationOrder,
     reservedNames,
+    registerSymbol,
   } = args
   const { name, jsDocableNode } = args2
   const returnTypeNode = node.getReturnTypeNode()
@@ -116,6 +117,7 @@ export const analyzeTypeFunction = (
             imported,
             options,
             reservedNames: newReservedNames,
+            registerSymbol,
           },
           name ? [name, '$return'] : ['$return'],
         )
@@ -153,6 +155,7 @@ const analyzeTypeFunctionInternal = (
     imported,
     options,
     reservedNames,
+    registerSymbol,
   } = args
   const { returnType, name } = args2
 
@@ -173,6 +176,7 @@ const analyzeTypeFunctionInternal = (
       imported,
       options,
       reservedNames: newReservedNames,
+      registerSymbol,
     }),
   )
 

@@ -23,14 +23,16 @@ export const registerSymbolSymbolAnalysis = (
   symbolAnalysis:
     DocumentableMemberAnalysis | SymbolAnalysis | DocumentableTypeProperty | IndexSignatureAnalysis,
   option: AnalysisOptions | undefined,
+  registerSymbol: boolean,
 ) => {
+  if (!registerSymbol) return
   if (option?.debugInfo?.verifyIndex) {
     const id = toIdentityKey(symbolAnalysis.identity)
-    if (
-      id ==
-      'CrudRepository::type::$member.synchronizeRecords.$return.$member.insertedRows::property:%%:property'
-    )
-      throw new Error('HERE!!')
+    // if (
+    //   id ==
+    //   'CrudRepository::type::$member.synchronizeRecords.$return.$member.insertedRows::property:%%:property'
+    // )
+    //   throw new Error('HERE!!')
     if (!metadata.symbols.has(id)) metadata.symbols.set(id, { analysis: symbolAnalysis })
     registerSymbolSymbolAnalysisInternal(metadata, symbolAnalysis)
   }

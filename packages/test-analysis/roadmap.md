@@ -196,38 +196,21 @@ Test Generatorはテストケースを考えない。
 
 現在のFunction AnalysisがFunctionの種類ごとに分散している問題を整理し、共通のFunction Analysis Modelへ統合する。
 
-## Tasks
+これはほぼ完了。
 
-- ▢ 現在のFunction Analysis実装を棚卸し
-- ▢ Function種類ごとの差異を整理
-- ▢ 共通化できる処理を抽出
-- ▢ FunctionAnalysisの責務を定義
-- ▢ Function Analysisの入口を統一
-- ▢ Function Body Analysisの共通Traversalを設計
-- ▢ 既存テストを新しい構造へ移行
-- ▢ 不要なFunction Type固有処理を整理
+## 確認できたこと
 
-## Target Model
+Function Member → analyzeFunctionBody
+Class Constructor → analyzeFunctionBody
+Variable Function → analyzeFunctionBody
+Function Statement → analyzeFunctionBody
+Function Type / Method Signature / Arrow Function → analyzeTypeFunction
 
-```
-FunctionAnalysis
-├── identity
-├── declaration
-├── parameters
-├── returnType
-├── body
-├── calls
-├── branches
-├── returns
-├── errors
-├── async
-├── effects
-└── dependencies
-```
+## 結論
 
-## Completion Criteria
+Function Body Analysisは既に共通化されている。
 
-Functionの種類によらず、可能な限り共通のFunctionAnalysisとして結果を取得できること。
+したがって、大規模なFunction Analysis再設計は不要。
 
 ---
 

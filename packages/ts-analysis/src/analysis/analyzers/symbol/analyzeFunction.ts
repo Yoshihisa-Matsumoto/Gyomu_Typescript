@@ -5,7 +5,8 @@ import { prepareSymbolAnalysis } from './prepareSymbolAnalysis.js'
 import { detectEffectSignals } from './analyzeEffectType.js'
 import { analyzeType, getVoidTypeResult } from './type/analyzeType.js'
 import { computeIndent } from './computeIndent.js'
-import { analyzeFunctionBody, analyzeFunctionMember } from './struct/analyzeFunctionMember.js'
+import { analyzeFunctionMember } from './struct/analyzeFunctionMember.js'
+import { analyzeFunctionBody } from './struct/analyzeFunctionBody.js'
 import { analyzeParameter } from './analyzeParameter.js'
 import { analyzeGenericsParameters } from './analyzeGenericsParameters.js'
 
@@ -30,8 +31,22 @@ import type {
  *
  * @returns An object containing the analyzed symbol, along with its export status.
  */
-export const analyzeFunction = (args: TagAnalysisArg<FunctionDeclaration>) => {
-  const { sourceRelativePath, sourceFullText, imported, options, metadata, declaration } = args
+export const analyzeFunction = (
+  args: TagAnalysisArg<FunctionDeclaration>,
+): {
+  symbol: SymbolAnalysis
+  isDefault: boolean
+  isExported: boolean
+} => {
+  const {
+    sourceRelativePath,
+    sourceFullText,
+    imported,
+    options,
+    metadata,
+    declaration,
+    registerSymbol,
+  } = args
   const typeName = args.declaration.getName() ?? ''
   const prepared = prepareSymbolAnalysis(
     {
@@ -44,6 +59,7 @@ export const analyzeFunction = (args: TagAnalysisArg<FunctionDeclaration>) => {
       options,
       sourceFullText,
       reservedNames: [],
+      registerSymbol,
     },
     getFunctionSignatureId,
   )
@@ -63,6 +79,7 @@ export const analyzeFunction = (args: TagAnalysisArg<FunctionDeclaration>) => {
     imported,
     options,
     reservedNames: [],
+    registerSymbol,
   })
 
   const membersResult = analyzeFunctionMembers({
@@ -77,6 +94,7 @@ export const analyzeFunction = (args: TagAnalysisArg<FunctionDeclaration>) => {
     imported,
     options,
     reservedNames: genericsResult.parameters,
+    registerSymbol,
   })
 
   const returnTypeNode = declaration.getReturnTypeNode()
@@ -111,6 +129,7 @@ export const analyzeFunction = (args: TagAnalysisArg<FunctionDeclaration>) => {
             imported,
             options,
             reservedNames: genericsResult.parameters,
+            registerSymbol,
           },
           ['$return'],
           undefined,
@@ -130,6 +149,7 @@ export const analyzeFunction = (args: TagAnalysisArg<FunctionDeclaration>) => {
       imported,
       options,
       reservedNames: genericsResult.parameters,
+      registerSymbol: false,
     },
     // {
     //   isStatic: false,
@@ -171,8 +191,9 @@ export const analyzeFunction = (args: TagAnalysisArg<FunctionDeclaration>) => {
       args.declaration.getStart(),
       args.declaration.getStartLinePos(),
     ),
+    functionBody: methodBodyResult.functionBody,
   } satisfies SymbolAnalysis
-  registerSymbolSymbolAnalysis(args.metadata, symbol, options)
+  registerSymbolSymbolAnalysis(args.metadata, symbol, options, registerSymbol)
   return {
     symbol,
     isDefault: args.declaration.isDefaultExport(),
@@ -194,6 +215,7 @@ const getFunctionSignatureId = (
     imported,
     options,
     reservedNames,
+    registerSymbol,
   } = args
   const typeParams = declaration
     .getTypeParameters()
@@ -226,6 +248,7 @@ const getFunctionSignatureId = (
     imported,
     options,
     reservedNames,
+    registerSymbol,
   })
 
   const returnTypeNode = declaration.getReturnTypeNode()
@@ -263,6 +286,7 @@ const getFunctionSignatureId = (
             imported,
             options,
             reservedNames,
+            registerSymbol,
           },
           ['$return'],
           undefined,
@@ -298,6 +322,7 @@ const analyzeFunctionMembers = (
     ownerSymbolId,
     ownerSymbolIdentity,
     reservedNames,
+    registerSymbol,
   } = args
   const parameters = node.getParameters().flatMap((member, index) => {
     const typeNode = member.getTypeNode()
@@ -315,6 +340,7 @@ const analyzeFunctionMembers = (
           imported,
           options,
           reservedNames,
+          registerSymbol,
         },
         {
           isStatic: undefined,
@@ -337,6 +363,7 @@ const analyzeFunctionMembers = (
       imported,
       options,
       reservedNames,
+      registerSymbol,
     })
   })
 

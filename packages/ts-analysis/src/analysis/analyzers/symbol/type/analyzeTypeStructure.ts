@@ -48,6 +48,7 @@ export const analyzeTypeStructures = (
     options,
     node,
     reservedNames,
+    registerSymbol,
   } = args
   const memberPath: MemberIdentityMemberPath = nodeName
     ? [...args.memberPath, ...nodeName]
@@ -81,6 +82,7 @@ export const analyzeTypeStructures = (
           imported,
           options,
           reservedNames,
+          registerSymbol,
         },
         undefined,
       )
@@ -114,6 +116,7 @@ export const analyzeTypeStructures = (
           imported,
           options,
           reservedNames,
+          registerSymbol,
         },
         undefined,
       )
@@ -180,6 +183,7 @@ export const analyzeTypeStructures = (
           imported,
           options,
           reservedNames,
+          registerSymbol,
         },
         undefined,
       ),
@@ -218,6 +222,7 @@ export const analyzeTypeStructures = (
         imported,
         options,
         reservedNames,
+        registerSymbol,
       },
       {
         name: nodeName ? (nodeName[0] ?? '') : '',
@@ -251,6 +256,7 @@ export const analyzeTypeStructures = (
         imported,
         options,
         reservedNames,
+        registerSymbol,
       },
       {
         name: nodeName ? (nodeName[0] ?? '') : node.getText(),
@@ -280,6 +286,7 @@ export const analyzeTypeStructures = (
       imported,
       options,
       reservedNames,
+      registerSymbol,
     })
   }
   if (Node.isTypeQuery(node)) {
@@ -324,6 +331,7 @@ export const analyzeTypeStructures = (
         imported,
         options,
         reservedNames,
+        registerSymbol,
       },
       undefined,
     )

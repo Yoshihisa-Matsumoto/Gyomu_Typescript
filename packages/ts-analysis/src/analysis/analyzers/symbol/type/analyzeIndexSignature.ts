@@ -30,6 +30,7 @@ export const analyzeIndexSignature = (
     imported,
     options,
     reservedNames,
+    registerSymbol,
   } = args
 
   const parameterName = node.getKeyName()
@@ -51,6 +52,7 @@ export const analyzeIndexSignature = (
     node,
     jsDocableNode: node,
     options,
+    registerSymbol,
   })
 
   const parameterTypeResult = analyzeType(
@@ -67,6 +69,7 @@ export const analyzeIndexSignature = (
       imported,
       options,
       reservedNames,
+      registerSymbol,
     },
     [parameterName],
     undefined,
@@ -87,6 +90,7 @@ export const analyzeIndexSignature = (
       imported,
       options,
       reservedNames,
+      registerSymbol,
     },
     ['$return'],
     undefined,
@@ -109,7 +113,7 @@ export const analyzeIndexSignature = (
     docIndent: computeIndent(sourceFullText, node.getStart(), node.getStartLinePos()),
     // structure: analyzeParameterStructure(withOptional({ node: typeNode, initializer })),
   } satisfies IndexSignatureAnalysis
-  registerSymbolSymbolAnalysis(metadata, signature, options)
+  registerSymbolSymbolAnalysis(metadata, signature, options, registerSymbol)
   return {
     member: signature,
     dependencies: [...parameterTypeResult.dependencies, ...valueTypeResult.dependencies],

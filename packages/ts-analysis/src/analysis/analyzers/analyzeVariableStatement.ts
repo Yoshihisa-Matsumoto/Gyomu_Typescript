@@ -45,6 +45,7 @@ export const analyzeVariableStatement = (
       sourceFullText,
       imported,
       options,
+      registerSymbol: true,
     })
     if (isExported) {
       result.exported.push({

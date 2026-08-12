@@ -38,6 +38,7 @@ export const prepareSymbolAnalysis = <T extends Node>(
     imported,
     options,
     reservedNames,
+    registerSymbol,
   } = args
   const signature = getSignature(
     {
@@ -50,6 +51,7 @@ export const prepareSymbolAnalysis = <T extends Node>(
       imported,
       options,
       reservedNames,
+      registerSymbol,
     },
     jsDocableNode,
   )
@@ -60,7 +62,7 @@ export const prepareSymbolAnalysis = <T extends Node>(
   const checkJsDockableNode = jsDocableNode ?? (declaration as unknown as JSDocableNode)
 
   const extractedJsDoc = extractJsDoc(checkJsDockableNode)
-  registerSymbolJsDoc(id, metadata, extractedJsDoc, options)
+  registerSymbolJsDoc(id, metadata, extractedJsDoc, options, registerSymbol)
 
   if (extractedJsDoc?.analysis)
     return {

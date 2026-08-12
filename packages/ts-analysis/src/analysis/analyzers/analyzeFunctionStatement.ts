@@ -40,6 +40,7 @@ export const analyzeFunctionStatement = (
     imported,
 
     declarationOrder,
+    registerSymbol: true,
   })
   if (functionResult.isExported) {
     result.exported.push({

@@ -28,17 +28,18 @@ import type { JsDocAnalysis, ParsedJsDoc, SymbolIdentity } from '@gyomu/schema/s
  *
  * @returns A structure containing the symbol identification, JSDoc metadata, location, and code snippet.
  */
-export const preparePropertyAnalysis = (
-  sourcePath: ProjectRelativePath,
-  metadata: FileAnalysisMetadata,
-  ownerSymbolId: SymbolId,
-  ownerSymbolIdentity: SymbolIdentity,
-  memberPath: MemberIdentityMemberPath,
-  propertyName: string,
-  node: PropertySignature | PropertyDeclaration | EnumMember,
-  jsDocableNode: JSDocableNode & Node,
-  options: AnalysisOptions | undefined,
-): {
+export const preparePropertyAnalysis = (args: {
+  sourcePath: ProjectRelativePath
+  metadata: FileAnalysisMetadata
+  ownerSymbolId: SymbolId
+  ownerSymbolIdentity: SymbolIdentity
+  memberPath: MemberIdentityMemberPath
+  propertyName: string
+  node: PropertySignature | PropertyDeclaration | EnumMember
+  jsDocableNode: JSDocableNode & Node
+  options: AnalysisOptions | undefined
+  registerSymbol: boolean
+}): {
   id: SymbolId
   identity: SymbolIdentity
   jsDoc: JsDocAnalysis | undefined
@@ -47,6 +48,18 @@ export const preparePropertyAnalysis = (
   startOffset: number
   snippet: string
 } => {
+  const {
+    memberPath,
+    propertyName,
+    ownerSymbolId,
+    ownerSymbolIdentity,
+    options,
+    registerSymbol,
+    sourcePath,
+    metadata,
+    node,
+    jsDocableNode,
+  } = args
   const newMemberPath = [...memberPath, propertyName]
   const { id, identity } = createMemberIdentityAndId(
     {
@@ -64,6 +77,7 @@ export const preparePropertyAnalysis = (
     node,
     jsDocableNode,
     options,
+    registerSymbol,
   })
 }
 
@@ -72,22 +86,23 @@ export const preparePropertyAnalysis = (
  *
  * @returns A structure containing the symbol identification, JSDoc metadata, location, and code snippet.
  */
-export const prepareMethodAnalysis = (
-  sourcePath: ProjectRelativePath,
-  metadata: FileAnalysisMetadata,
-  ownerSymbolId: SymbolId,
-  ownerSymbolIdentity: SymbolIdentity,
-  memberPath: MemberIdentityMemberPath,
-  methodName: string,
+export const prepareMethodAnalysis = (args: {
+  sourcePath: ProjectRelativePath
+  metadata: FileAnalysisMetadata
+  ownerSymbolId: SymbolId
+  ownerSymbolIdentity: SymbolIdentity
+  memberPath: MemberIdentityMemberPath
+  methodName: string
   node:
     | MethodSignature
     | FunctionTypeNode
     | MethodDeclaration
     | ConstructorDeclaration
-    | GetAccessorDeclaration,
-  jsDocableNode: JSDocableNode & Node,
-  options: AnalysisOptions | undefined,
-): {
+    | GetAccessorDeclaration
+  jsDocableNode: JSDocableNode & Node
+  options: AnalysisOptions | undefined
+  registerSymbol: boolean
+}): {
   id: SymbolId
   identity: SymbolIdentity
   jsDoc: JsDocAnalysis | undefined
@@ -96,6 +111,18 @@ export const prepareMethodAnalysis = (
   startOffset: number
   snippet: string
 } => {
+  const {
+    sourcePath,
+    metadata,
+    ownerSymbolId,
+    ownerSymbolIdentity,
+    memberPath,
+    methodName,
+    node,
+    jsDocableNode,
+    options,
+    registerSymbol,
+  } = args
   return prepareMemberAnalysis({
     sourcePath,
     metadata,
@@ -103,6 +130,7 @@ export const prepareMethodAnalysis = (
     node,
     jsDocableNode,
     options,
+    registerSymbol,
   })
 }
 
@@ -147,6 +175,7 @@ export const prepareMemberAnalysis = (args: {
   node: Node
   jsDocableNode: JSDocableNode & Node
   options: AnalysisOptions | undefined
+  registerSymbol: boolean
 }): {
   id: SymbolId
   identity: SymbolIdentity
@@ -156,11 +185,11 @@ export const prepareMemberAnalysis = (args: {
   startOffset: number
   snippet: string
 } => {
-  const { id, identity, node, jsDocableNode, metadata, options } = args
+  const { id, identity, node, jsDocableNode, metadata, options, registerSymbol } = args
 
   const extractedJsDoc = extractJsDoc(jsDocableNode)
 
-  registerSymbolJsDoc(id, metadata, extractedJsDoc, options)
+  registerSymbolJsDoc(id, metadata, extractedJsDoc, options, registerSymbol)
 
   return {
     id,

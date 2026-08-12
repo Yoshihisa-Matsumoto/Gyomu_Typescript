@@ -32,6 +32,7 @@ export const analyzeVariable = (args: TagAnalysisArg<VariableDeclaration>) => {
     sourceFullText,
     imported,
     options,
+    registerSymbol,
   } = args
 
   const prepared = prepareSymbolAnalysis(
@@ -45,6 +46,7 @@ export const analyzeVariable = (args: TagAnalysisArg<VariableDeclaration>) => {
       options,
       nodeName: variableName,
       reservedNames: [],
+      registerSymbol,
     },
     getSignatureId,
     statement,
@@ -115,7 +117,7 @@ export const analyzeVariable = (args: TagAnalysisArg<VariableDeclaration>) => {
       args.declaration.getStartLinePos(),
     ),
   } satisfies Builder<SymbolAnalysis>
-  registerSymbolSymbolAnalysis(args.metadata, symbol, options)
+  registerSymbolSymbolAnalysis(args.metadata, symbol, options, registerSymbol)
 
   return {
     symbol,

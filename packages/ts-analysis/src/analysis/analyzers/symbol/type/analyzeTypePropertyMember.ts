@@ -48,21 +48,23 @@ export const analyzeTypePropertyMember = (
     ownerSymbolIdentity,
     memberPath,
     options,
+    registerSymbol,
   } = args
   const typeNode = args.node.getTypeNode()
   const name = node.getName()
   const initializer = args.node.getInitializer()
-  const { id, identity, jsDoc, location, startOffset, parsedJsDoc } = preparePropertyAnalysis(
-    sourceRelativePath,
+  const { id, identity, jsDoc, location, startOffset, parsedJsDoc } = preparePropertyAnalysis({
+    sourcePath: sourceRelativePath,
     metadata,
     ownerSymbolId,
     ownerSymbolIdentity,
     memberPath,
-    name,
+    propertyName: name,
     node,
-    node,
+    jsDocableNode: node,
     options,
-  )
+    registerSymbol,
+  })
   return analyzeTypePropertyMemberInternal(args, {
     initializer,
     typeNode,
@@ -111,6 +113,7 @@ const analyzeTypePropertyMemberInternal = (
     sourceFullText,
     reservedNames,
     declarationOrder,
+    registerSymbol,
   } = args
   const { id, identity, jsDoc, location, startOffset, readonly, optional, parsedJsDoc } = args2
   const name = node.getName()
@@ -133,6 +136,7 @@ const analyzeTypePropertyMemberInternal = (
             imported,
             options,
             reservedNames: newReservedNames,
+            registerSymbol,
           },
           [name],
         )
@@ -163,7 +167,7 @@ const analyzeTypePropertyMemberInternal = (
       args.node.getStartLinePos(),
     ),
   } satisfies DocumentableTypeProperty
-  registerSymbolSymbolAnalysis(metadata, property, options)
+  registerSymbolSymbolAnalysis(metadata, property, options, registerSymbol)
   return {
     member: property,
     dependencies: [...typeResult.dependencies],

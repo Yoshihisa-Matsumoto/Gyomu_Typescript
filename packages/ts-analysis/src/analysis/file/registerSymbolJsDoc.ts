@@ -21,7 +21,9 @@ export const registerSymbolJsDoc = (
   metadata: FileAnalysisMetadata,
   extractedjsDoc: ExtractedJsDoc | undefined,
   option: AnalysisOptions | undefined,
+  registerSymbol: boolean,
 ) => {
+  if (!registerSymbol) return
   if (option?.debugInfo?.verifyIndex) {
     if (extractedjsDoc) {
       const parsed: ParsedJsDoc | undefined = extractedjsDoc.parsed[0]
