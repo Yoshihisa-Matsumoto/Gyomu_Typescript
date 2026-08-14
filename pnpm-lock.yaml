@@ -614,6 +614,31 @@ importers:
         specifier: ^6.4.1
         version: 6.32.1
 
+  packages/test-analysis:
+    dependencies:
+      '@gyomu/ai':
+        specifier: workspace:^
+        version: link:../ai
+      '@gyomu/ai-compiler':
+        specifier: workspace:^
+        version: link:../ai-compiler
+      '@gyomu/infra':
+        specifier: workspace:^
+        version: link:../infra
+      '@gyomu/schema':
+        specifier: workspace:^
+        version: link:../schema
+      '@gyomu/ts-analysis':
+        specifier: workspace:^
+        version: link:../ts-analysis
+      effect:
+        specifier: 'catalog:'
+        version: 4.0.0-beta.92
+    devDependencies:
+      dotenv:
+        specifier: 'catalog:'
+        version: 17.4.2
+
   packages/ts-analysis:
     dependencies:
       '@gyomu/infra':
