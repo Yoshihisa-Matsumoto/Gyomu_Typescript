@@ -1,6 +1,7 @@
 import { Schema } from 'effect'
 import { TypeAnalysis } from '../type/TypeAnalysis.js'
 import { PropertySource } from '../PropertySource.js'
+import { IdentifierExpressionAnalysis } from '../expression/Identifier.js'
 import { BaseMemberAnalysis } from './BaseMemberAnalysis.js'
 import { BindingPatternAnalysis } from './BindingPatternAnalysis.js'
 
@@ -15,7 +16,11 @@ export const BasePropertyMemberAnalysis = Schema.Struct({
     description: 'The type of the property.',
   }),
   binding: Schema.optional(
-    Schema.Union([Schema.suspend(() => BindingPatternAnalysis), Schema.Undefined]),
+    Schema.Union([
+      Schema.suspend(() => BindingPatternAnalysis),
+      Schema.suspend(() => IdentifierExpressionAnalysis),
+      Schema.Undefined,
+    ]),
   ).annotate({
     description:
       'Describes how the parameter is bound to local variables using an object or array destructuring pattern.',

@@ -6,7 +6,7 @@ import type {
   ExpressionAnalysisResult,
   FunctionLikeNodeType,
 } from '../../types.js'
-import type { AssignmentOperator } from '@gyomu/schema/schemas/typescript'
+import type { AssignmentOperator, BinaryOperator } from '@gyomu/schema/schemas/typescript'
 
 export const analyzeBinaryExpression = (
   args: ChildAnalysisArg<FunctionLikeNodeType | Expression>,
@@ -31,10 +31,23 @@ export const analyzeBinaryExpression = (
       reservedNames: [...left.reservedNames, ...right.reservedNames],
     }
   }
+  const binaryOperator = getBinaryOperator(operator.getKind())
+  if (binaryOperator) {
+    return {
+      element: {
+        kind: 'binary',
+        left: left.element,
+        right: right.element,
+        operator: binaryOperator,
+      },
+      dependencies: [...left.dependencies, ...right.dependencies],
+      reservedNames: [...left.reservedNames, ...right.reservedNames],
+    }
+  }
   throw new Error(`Unsupport Non Assignment Yet`)
 }
 
-function getAssignmentOperator(operator: SyntaxKind): AssignmentOperator | undefined {
+export function getAssignmentOperator(operator: SyntaxKind): AssignmentOperator | undefined {
   switch (operator) {
     case SyntaxKind.EqualsToken:
       return '='
@@ -68,6 +81,62 @@ function getAssignmentOperator(operator: SyntaxKind): AssignmentOperator | undef
       return '||='
     case SyntaxKind.QuestionQuestionEqualsToken:
       return '??='
+    default:
+      return undefined
+  }
+}
+export function getBinaryOperator(operator: SyntaxKind): BinaryOperator | undefined {
+  switch (operator) {
+    case SyntaxKind.EqualsEqualsToken:
+      return '=='
+    case SyntaxKind.ExclamationEqualsToken:
+      return '!='
+    case SyntaxKind.EqualsEqualsEqualsToken:
+      return '==='
+    case SyntaxKind.ExclamationEqualsEqualsToken:
+      return '!=='
+    case SyntaxKind.LessThanToken:
+      return '<'
+    case SyntaxKind.LessThanEqualsToken:
+      return '<='
+    case SyntaxKind.GreaterThanToken:
+      return '>'
+    case SyntaxKind.GreaterThanEqualsToken:
+      return '>='
+    case SyntaxKind.InKeyword:
+      return 'in'
+    case SyntaxKind.InstanceOfKeyword:
+      return 'instanceof'
+    case SyntaxKind.PlusToken:
+      return '+'
+    case SyntaxKind.MinusToken:
+      return '-'
+    case SyntaxKind.AsteriskToken:
+      return '*'
+    case SyntaxKind.SlashToken:
+      return '/'
+    case SyntaxKind.PercentToken:
+      return '%'
+    case SyntaxKind.AsteriskAsteriskToken:
+      return '**'
+    case SyntaxKind.LessThanLessThanToken:
+      return '<<'
+    case SyntaxKind.GreaterThanGreaterThanToken:
+      return '>>'
+    case SyntaxKind.GreaterThanGreaterThanGreaterThanToken:
+      return '>>>'
+    case SyntaxKind.AmpersandToken:
+      return '&'
+    case SyntaxKind.CaretToken:
+      return '^'
+    case SyntaxKind.BarToken:
+      return '|'
+    case SyntaxKind.AmpersandAmpersandToken:
+      return '&&'
+    case SyntaxKind.BarBarToken:
+      return '||'
+    case SyntaxKind.QuestionQuestionToken:
+      return '??'
     default:
       return undefined
   }

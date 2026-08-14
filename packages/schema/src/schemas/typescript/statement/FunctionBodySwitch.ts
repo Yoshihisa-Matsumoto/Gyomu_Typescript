@@ -1,14 +1,23 @@
 import { Schema } from 'effect'
-import { FunctionBodyElement } from '../FunctionBodyElement.js'
+import { ExpressionAnalysis } from '../expression/ExpressionAnalysis.js'
 import { FunctionBodyElementBase } from './FunctionBodyElementBase.js'
+import { FunctionBodySwitchCase, FunctionBodySwitchDefault } from './FunctionBodySwitchCase.js'
+import type { FunctionBodySwitchClause } from './FunctionBodySwitchCase.js'
 
 export interface FunctionBodySwitch extends FunctionBodyElementBase {
   readonly kind: 'switch'
-  readonly children: ReadonlyArray<FunctionBodyElement>
+  readonly expression: ExpressionAnalysis
+  readonly children: ReadonlyArray<FunctionBodySwitchClause>
 }
 export const FunctionBodySwitch: Schema.Schema<FunctionBodySwitch> = Schema.Struct({
   kind: Schema.Literal('switch'),
-  children: Schema.Array(Schema.suspend(() => FunctionBodyElement)),
+  expression: Schema.suspend(() => ExpressionAnalysis),
+  children: Schema.Array(
+    Schema.Union([
+      Schema.suspend(() => FunctionBodySwitchCase),
+      Schema.suspend(() => FunctionBodySwitchDefault),
+    ]),
+  ),
 }).pipe(
   Schema.fieldsAssign(FunctionBodyElementBase.fields),
   Schema.annotate({

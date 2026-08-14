@@ -1,11 +1,22 @@
 import { Node } from 'ts-morph'
 import { analyzeCallExpression } from './analyzeCall.js'
 import { analyzeNewExpression } from './analyzeNew.js'
-import { analyzeReturnExpression } from './analyzeReturn.js'
+import { analyzeReturnStatement } from './analyzeReturn.js'
 import { analyzeBinaryExpression } from './analyzeBinary.js'
+import { analyzeVariableStatement } from './analyzeVariable.js'
+import { analyzeThrowStatement } from './analyzeThrow.js'
+import { analyzeAwaitExpression } from './analyzeAwait.js'
+import { analyzeIfStatement } from './analyzeIf.js'
+import { analyzeBlockStatement } from './analyzeBlock.js'
+import { analyzeSwitchStatement } from './analyzeSwitch.js'
+import { analyzeForStatement, analyzeNormalForStatement } from './analyzeFor.js'
+import { analyzeExpression } from './analyzeExpression.js'
+import { analyzeWhileStatement } from './analyzeWhile.js'
+import { analyzeTryStatement } from './analyzeTry.js'
 import type { Statement } from 'ts-morph'
 import type {
   ChildAnalysisArg,
+  ExpressionAnalysisResult,
   FunctionBodyStatementAnalysisResult,
   FunctionLikeNodeType,
 } from '../../types.js'
@@ -16,16 +27,23 @@ export const analyzeStatement = (
 ): FunctionBodyStatementAnalysisResult => {
   // console.log(bodyStatement.getKindName())
 
+  if (Node.isVariableStatement(bodyStatement)) {
+    return analyzeVariableStatement(args, bodyStatement)
+  }
   if (Node.isExpressionStatement(bodyStatement)) {
     const expression = bodyStatement.getExpression()
     // console.log('ExpressionStatement', expression.getKindName(), expression.getText())
     if (Node.isCallExpression(expression)) {
-      return analyzeCallExpression(args, expression)
+      return toFunctionBodyStatementAnalysisResult(analyzeCallExpression(args, expression))
     }
     if (Node.isNewExpression(expression)) {
-      return analyzeNewExpression(args, expression)
+      return toFunctionBodyStatementAnalysisResult(analyzeNewExpression(args, expression))
+    }
+    if (Node.isAwaitExpression(expression)) {
+      return toFunctionBodyStatementAnalysisResult(analyzeAwaitExpression(args, expression))
     }
     if (Node.isBinaryExpression(expression)) {
+      return toFunctionBodyStatementAnalysisResult(analyzeBinaryExpression(args, expression))
       // const left = expression.getLeft()
       // const right = expression.getRight()
       // const leftDependencies = new Array<DependencyCandidate>()
@@ -51,30 +69,64 @@ export const analyzeStatement = (
       //   reservedNames: [],
       //   element: { kind: 'binary' },
       // }
-      return analyzeBinaryExpression(args, expression)
+    }
+  }
+
+  if (Node.isBreakStatement(bodyStatement)) {
+    return {
+      elements: [{ kind: 'break' }],
+      dependencies: [],
+      reservedNames: [],
+    }
+  }
+  if (Node.isContinueStatement(bodyStatement)) {
+    return {
+      elements: [{ kind: 'continue' }],
+      dependencies: [],
+      reservedNames: [],
+    }
+  }
+
+  if (Node.isExpressionStatement(bodyStatement)) {
+    const expressionResult = analyzeExpression({ ...args, node: bodyStatement.getExpression() })
+    return {
+      elements: [{ kind: 'expression-statement', expression: expressionResult.element }],
+      dependencies: expressionResult.dependencies,
+      reservedNames: expressionResult.reservedNames,
     }
   }
   if (Node.isReturnStatement(bodyStatement)) {
-    return analyzeReturnExpression(args, bodyStatement)
-    // const dependencies = new Array<DependencyCandidate>()
-    // const funcExpression = bodyStatement.getExpression()
-    // if (Node.isCallExpression(funcExpression)) {
-    //   funcExpression.getArguments().forEach((arg) => {
-    //     if (Node.isIdentifier(arg))
-    //       dependencies.push(analyzeDependency(arg.getText(), args.imported, args.memberPath))
-    //   })
-    //   const identifier = funcExpression.getExpression()
-    //   if (Node.isIdentifier(identifier))
-    //     dependencies.push(analyzeDependency(identifier.getText(), args.imported, args.memberPath))
-    // }
-    // return {
-    //   dependencies,
-    //   element: { kind: 'return' },
-    // }
+    return analyzeReturnStatement(args, bodyStatement)
   }
+  if (Node.isThrowStatement(bodyStatement)) {
+    return analyzeThrowStatement(args, bodyStatement)
+  }
+  if (Node.isIfStatement(bodyStatement)) {
+    return analyzeIfStatement(args, bodyStatement)
+  }
+  if (Node.isBlock(bodyStatement)) {
+    return analyzeBlockStatement(args, bodyStatement)
+  }
+  if (Node.isSwitchStatement(bodyStatement)) return analyzeSwitchStatement(args, bodyStatement)
+
+  if (Node.isForOfStatement(bodyStatement) || Node.isForInStatement(bodyStatement))
+    return analyzeForStatement(args, bodyStatement)
+  if (Node.isForStatement(bodyStatement)) return analyzeNormalForStatement(args, bodyStatement)
+  if (Node.isWhileStatement(bodyStatement)) return analyzeWhileStatement(args, bodyStatement)
+  if (Node.isTryStatement(bodyStatement)) return analyzeTryStatement(args, bodyStatement)
+
+  console.log(`!!!Unsupported Statement: ${bodyStatement.getKindName()}`)
   return {
     dependencies: [],
-    element: { kind: 'throw' }, // とりあえず適当に
+    elements: [{ kind: 'string-literal', value: '!!!DUMMY!!!' }], // とりあえず適当に
     reservedNames: [],
   }
 }
+
+export const toFunctionBodyStatementAnalysisResult = (
+  expression: ExpressionAnalysisResult,
+): FunctionBodyStatementAnalysisResult => ({
+  elements: [expression.element],
+  dependencies: expression.dependencies,
+  reservedNames: expression.reservedNames,
+})

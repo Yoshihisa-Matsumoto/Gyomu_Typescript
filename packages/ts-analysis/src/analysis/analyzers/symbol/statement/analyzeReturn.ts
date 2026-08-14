@@ -6,7 +6,7 @@ import type {
   FunctionLikeNodeType,
 } from '../../types.js'
 
-export const analyzeReturnExpression = (
+export const analyzeReturnStatement = (
   args: ChildAnalysisArg<FunctionLikeNodeType>,
   statement: ReturnStatement,
 ): FunctionBodyStatementAnalysisResult => {
@@ -16,9 +16,11 @@ export const analyzeReturnExpression = (
   return {
     dependencies: expressionResult?.dependencies ?? [],
     reservedNames: expressionResult?.reservedNames ?? [],
-    element: {
-      kind: 'return',
-      expression: expressionResult?.element,
-    },
+    elements: [
+      {
+        kind: 'return',
+        expression: expressionResult?.element,
+      },
+    ],
   }
 }

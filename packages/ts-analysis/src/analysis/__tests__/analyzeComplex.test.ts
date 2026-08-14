@@ -244,7 +244,7 @@ describe('analyzeFile-complex pattern', () => {
     'analyzes 02-interface-members.ts',
     async () => {
       const result = await tempJsdocProgram('02-interface-members.ts')
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       expect(result.metadata.parsedJsDocs.size).toBe(4)
 
       const exported = result.analysis.exports.filter((e) => e.kind == 'local')[0]
@@ -329,8 +329,8 @@ describe('analyzeFile-complex pattern', () => {
       ])
 
       const getUserDoc = getParsedJsDoc(result, getUser)
-      console.dir(getUser, { depth: null })
-      console.dir(getUserDoc, { depth: null })
+      // console.dir(getUser, { depth: null })
+      // console.dir(getUserDoc, { depth: null })
       expect(getUserDoc.summary).toBe('Gets user.')
 
       expect(getUserDoc.params).toEqual([
@@ -356,7 +356,7 @@ describe('analyzeFile-complex pattern', () => {
       expect(exported?.exportedName).toBe('User')
 
       const symbol = result.analysis.symbols[0]
-      console.dir(symbol, { depth: null })
+      // console.dir(symbol, { depth: null })
       expect(symbol?.kind).toBe('type')
       expect(symbol?.identity).toEqual({
         symbolId: 'User',
@@ -440,7 +440,7 @@ describe('analyzeFile-complex pattern', () => {
     'analyzes 04-function-property.ts',
     async () => {
       const result = await tempJsdocProgram('04-function-property.ts')
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       expect(result.metadata.parsedJsDocs.size).toBe(2)
 
       const exported = result.analysis.exports[0]
@@ -520,7 +520,7 @@ describe('analyzeFile-complex pattern', () => {
     async () => {
       const result = await tempJsdocProgram('05-nested-type.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       expect(result.metadata.parsedJsDocs.size).toBe(3)
 
       const exported = result.analysis.exports[0]
@@ -989,7 +989,7 @@ describe('analyzeFile-complex pattern', () => {
       console.log('findUser')
       const findUser = getTypeProperty('findUser', actionsType.properties!)
 
-      console.dir(findUser, { depth: null })
+      // console.dir(findUser, { depth: null })
       expect(findUser.identity).toEqual({
         symbolId:
           'ApiResponse::interface::$member.data.$member.actions.$member.findUser::(id:string):{ id: string; name: string; }',
@@ -1004,7 +1004,7 @@ describe('analyzeFile-complex pattern', () => {
       // notify
       console.log('notify')
       const notify = getTypeProperty('notify', actionsType.properties!)
-      console.dir(notify, { depth: null })
+      // console.dir(notify, { depth: null })
       expect(notify.identity).toEqual({
         symbolId:
           'ApiResponse::interface::$member.data.$member.actions.$member.notify::(message:string,callback:(success: boolean) => void):void',
@@ -1019,7 +1019,7 @@ describe('analyzeFile-complex pattern', () => {
       // 深い階層のJSDocが取れていること
       console.log('深い階層のJSDoc')
       const userName = getTypeProperty('name', usersArrayType.properties!)
-      console.dir(userName, { depth: null })
+      // console.dir(userName, { depth: null })
       expect(userName.documentable).toBeTruthy()
       if (userName.documentable) {
         expect(getParsedJsDocFromTypeProperty(result, userName).summary).toBe('User name.')
@@ -1203,7 +1203,7 @@ describe('analyzeFile-complex pattern', () => {
 
       const objectStructure = symbolType.structure
       if (objectStructure?.kind == 'object') {
-        console.dir(objectStructure, { depth: null })
+        // console.dir(objectStructure, { depth: null })
         expect(objectStructure.properties?.map((m) => m.name)).toEqual(
           expect.arrayContaining(['startLine', 'endLine']),
         )
@@ -1242,7 +1242,7 @@ describe('analyzeFile-complex pattern', () => {
         signatureId: 'variable',
       })
 
-      console.dir(symbol.dependencyCandidates, { depth: null })
+      // console.dir(symbol.dependencyCandidates, { depth: null })
 
       const symbolType = symbol.type!
       expect(symbolType.source).toBe('effect-schema')
@@ -1380,6 +1380,66 @@ describe('analyzeFile-complex pattern', () => {
         symbolId: 'User',
         signatureId: 'class',
       })
+
+      // console.dir(symbol.dependencyCandidates, { depth: null })
+
+      // const symbolType = symbol.type!
+      // expect(symbolType.source).toBe('effect-schema')
+
+      // expect(symbolType.structure?.kind).toBe('object')
+
+      // const objectStructure = symbolType.structure
+
+      // if (objectStructure?.kind == 'object') {
+      //   expect(objectStructure.properties?.map((m) => m.name)).toEqual(
+      //     expect.arrayContaining(['kind', 'targetId']),
+      //   )
+      //   expect(objectStructure.annotations).toBeDefined()
+      //   const annotation = objectStructure.annotations
+      //   if (annotation) {
+      //     expect(annotation.description).toBe('Represents a reference to another type identifier.')
+      //   }
+
+      //   const kindAttr = objectStructure.properties?.find((m) => m.name == 'kind')
+      //   expect(kindAttr).toBeDefined()
+      //   expect(kindAttr?.type?.structure?.kind).toBe('literal')
+      //   if (kindAttr?.type?.structure?.kind == 'literal') {
+      //     expect(kindAttr.type.structure.annotations?.description).toBe(
+      //       'The classification of this structure.',
+      //     )
+      //   }
+
+      //   const targetId = objectStructure.properties?.find((m) => m.name == 'targetId')
+      //   expect(targetId).toBeDefined()
+      //   expect(targetId?.type?.structure?.kind).toBe('primitive')
+      //   if (targetId?.type?.structure?.kind == 'primitive') {
+      //     expect(targetId.type.structure.annotations?.description).toBe(
+      //       'The identifier of the referenced type.',
+      //     )
+      //   }
+      // }
+    },
+    timeout,
+  )
+  it(
+    '16-binding-name.ts',
+    async () => {
+      const result = await tempJsdocProgram('16-binding-name.ts')
+
+      // console.dir(result, { depth: null })
+
+      // const exported = result.analysis.exports[0]
+
+      // expect(exported?.exportedName).toBe('TypeReferenceStructureAnalysis')
+
+      // const symbol = result.analysis.symbols[0]!
+
+      // // expect(symbol.kind).toBe('const')
+
+      // expect(symbol?.identity).toEqual({
+      //   symbolId: 'User',
+      //   signatureId: 'class',
+      // })
 
       // console.dir(symbol.dependencyCandidates, { depth: null })
 

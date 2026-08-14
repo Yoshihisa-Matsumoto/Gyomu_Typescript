@@ -20,6 +20,7 @@ export const analyzeObjectBindingPattern = (
     .map((element, index) => analyzeBindingElement(element, index, args))
   return {
     member: {
+      kind: 'binding',
       pattern: 'object',
       elements: elementsResult.map((e) => e.member),
     },

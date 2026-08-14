@@ -1,4 +1,4 @@
-export function declaration() {
+export function declarationFunc() {
   foo()
 }
 

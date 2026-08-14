@@ -3,7 +3,9 @@ import type {
   ExportAnalysis,
   ExpressionAnalysis,
   FunctionBodyAnalysis,
+  FunctionBodyCatch,
   FunctionBodyElement,
+  FunctionBodySwitchClause,
   ImportAnalysis,
   ObjectLiteralPropertyAnalysis,
   SymbolAnalysis,
@@ -147,9 +149,18 @@ export type MethodAnalysisResult = {
   dependencies: Array<DependencyCandidate>
   functionBody: FunctionBodyAnalysis
 }
-
+export type FunctionBodySwitchClauseAnalysisResult = {
+  element: FunctionBodySwitchClause
+  dependencies: Array<DependencyCandidate>
+  reservedNames: Array<string>
+}
+export type FunctionBodyCatchClauseAnalysisResult = {
+  element: FunctionBodyCatch
+  dependencies: Array<DependencyCandidate>
+  reservedNames: Array<string>
+}
 export type FunctionBodyStatementAnalysisResult = {
-  element: FunctionBodyElement
+  elements: Array<FunctionBodyElement>
   dependencies: Array<DependencyCandidate>
   reservedNames: Array<string>
 }

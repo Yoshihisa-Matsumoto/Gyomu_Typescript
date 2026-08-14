@@ -68,9 +68,13 @@ export const SymbolAnalysis = Schema.Struct({
     description: 'Dependency candidates referenced by this symbol.',
   }),
 
-  functionBody: Schema.optional(FunctionBodyAnalysis).annotate({
+  functionBody: Schema.optional(Schema.suspend(() => FunctionBodyAnalysis)).annotate({
     description:
       'Analysis results for the implementation of the function body, when the symbol represents a function.',
+  }),
+  isAsync: Schema.Boolean.annotate({
+    description:
+      'Whether the symbol represents an asynchronous function or a value that resolves asynchronously.',
   }),
   /**
    * Leading whitespace of the declaration line, used when generating or updating JSDoc/TSDoc comments.

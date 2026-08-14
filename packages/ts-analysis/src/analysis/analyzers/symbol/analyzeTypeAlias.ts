@@ -29,7 +29,6 @@ export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => 
     options,
     registerSymbol,
   } = args
-
   const typeName = args.declaration.getName()
   const typeOfType = args.declaration.getTypeNode()!
   const prepared = prepareSymbolAnalysis(
@@ -96,6 +95,7 @@ export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => 
       args.declaration.getStart(),
       args.declaration.getStartLinePos(),
     ),
+    isAsync: false,
   } satisfies SymbolAnalysis
   // if (Node.isTypeLiteral(typeOfType)) {
   //   const membersResult = analyzeObjectMembers({

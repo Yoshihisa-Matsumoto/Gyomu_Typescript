@@ -121,9 +121,9 @@ describe('analyzeFile', () => {
             }
           })
 
-        console.dir(localExport, { depth: null })
+        // console.dir(localExport, { depth: null })
         const reExport = result.analysis.exports.filter((e) => e.kind == 're-export')
-        console.dir(reExport, { depth: null })
+        // console.dir(reExport, { depth: null })
         expect(localExport).toEqual(
           expect.arrayContaining([
             {
@@ -478,7 +478,7 @@ describe('analyzeFile', () => {
         async () => {
           const result = await tempJsdocProgram('overload-function.ts')
 
-          console.dir(result, { depth: null })
+          // console.dir(result, { depth: null })
 
           expect(result.analysis.exports).toHaveLength(3)
           expect(result.metadata.parsedJsDocs.size).toBe(2)

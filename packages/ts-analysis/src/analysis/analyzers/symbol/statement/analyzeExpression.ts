@@ -1,19 +1,35 @@
 import { SyntaxKind } from 'ts-morph'
 import { analyzeGenericsParameters } from '../type/analyzeGenericsParameters.js'
+import { analyzeDependency } from '../analyzeDependency.js'
 import { analyzeProperty } from './analyzeProperty.js'
 import { analyzeCallExpression } from './analyzeCall.js'
 import { analyzeNewExpression } from './analyzeNew.js'
+import { analyzeAwaitExpression } from './analyzeAwait.js'
+import { analyzeBinaryExpression } from './analyzeBinary.js'
+import { analyzeFunctionExpression } from './analyzeFunction.js'
+import { analyzeAsExpression } from './analyzeAs.js'
 import type {
+  ArrayLiteralExpression,
+  ArrowFunction,
+  AsExpression,
+  AwaitExpression,
+  BinaryExpression,
   CallExpression,
   ElementAccessExpression,
   Expression,
   NewExpression,
   NumericLiteral,
   ObjectLiteralExpression,
+  PostfixUnaryExpression,
+  PrefixUnaryExpression,
   PropertyAccessExpression,
   StringLiteral,
+  TypeOfExpression,
+  YieldExpression,
 } from 'ts-morph'
 import type { ChildAnalysisArg, ExpressionAnalysisResult } from '../../types.js'
+import type { DependencyCandidate } from '@gyomu/schema/schemas/typescript'
+import { analyzeTypeOfExpression } from './analyzeTypeOf.js'
 
 /**
  * Analyzes a TypeScript Expression node to determine its type structure and dependencies, including support for effect schema identification and literal values.
@@ -53,6 +69,53 @@ export const analyzeExpression = (args: ChildAnalysisArg<Expression>): Expressio
         dependencies: [],
         reservedNames: [],
       }
+    case SyntaxKind.ArrayLiteralExpression: {
+      const children = (node as ArrayLiteralExpression)
+        .getElements()
+        .map((e) => analyzeExpression({ ...args, node: e }))
+
+      return {
+        element: { kind: 'array-literal', value: children.map((c) => c.element) },
+        dependencies: children.map((c) => c.dependencies).flat(),
+        reservedNames: children.map((c) => c.reservedNames).flat(),
+      }
+    }
+
+    case SyntaxKind.PrefixUnaryExpression: {
+      const unary = node as PrefixUnaryExpression
+      const operand = analyzeExpression({ ...args, node: unary.getOperand() })
+      return {
+        element: { kind: 'unary', prefix: true, operand: operand.element, operator: '++' },
+        dependencies: operand.dependencies,
+        reservedNames: operand.reservedNames,
+      }
+    }
+    case SyntaxKind.PostfixUnaryExpression: {
+      const unary = node as PostfixUnaryExpression
+      const operand = analyzeExpression({ ...args, node: unary.getOperand() })
+      return {
+        element: { kind: 'unary', prefix: false, operand: operand.element, operator: '++' },
+        dependencies: operand.dependencies,
+        reservedNames: operand.reservedNames,
+      }
+    }
+    case SyntaxKind.YieldExpression: {
+      const expression = (node as YieldExpression).getExpression()
+      const expressionResult = expression
+        ? analyzeExpression({ ...args, node: expression })
+        : undefined
+      return {
+        element: { kind: 'yield', expression: expressionResult?.element },
+        dependencies: expressionResult?.dependencies ?? [],
+        reservedNames: expressionResult?.reservedNames ?? [],
+      }
+    }
+    case SyntaxKind.NullKeyword:
+      return {
+        element: { kind: 'null' },
+        dependencies: [],
+        reservedNames: [],
+      }
     case SyntaxKind.ThisKeyword:
       return {
         element: {
@@ -75,13 +138,17 @@ export const analyzeExpression = (args: ChildAnalysisArg<Expression>): Expressio
           kind: 'identifier',
           name: node.getText(),
         },
-        dependencies: [],
+        dependencies: [analyzeDependency(node.getText(), args.imported, args.memberPath)],
         reservedNames: [],
       }
     case SyntaxKind.PropertyAccessExpression: {
       const prop: PropertyAccessExpression = node as PropertyAccessExpression
       const objKey = analyzeExpression({ ...args, node: prop.getExpression() })
 
+      const dependencies: Array<DependencyCandidate> = [...objKey.dependencies]
+      if (objKey.element.kind == 'this') {
+        dependencies.push(analyzeDependency(prop.getName(), args.imported, args.memberPath))
+      }
       return {
         element: {
           kind: 'property-access',
@@ -89,7 +156,7 @@ export const analyzeExpression = (args: ChildAnalysisArg<Expression>): Expressio
           optional: prop.getQuestionDotTokenNode() ? true : false,
           property: prop.getName(),
         },
-        dependencies: [...objKey.dependencies],
+        dependencies,
         reservedNames: [...objKey.reservedNames],
       }
     }
@@ -143,38 +210,21 @@ export const analyzeExpression = (args: ChildAnalysisArg<Expression>): Expressio
       return analyzeNewExpression(args, node as NewExpression)
     case SyntaxKind.CallExpression: {
       return analyzeCallExpression(args, node as CallExpression)
-      // const callExpression = node as CallExpression
-      // const expression = analyzeExpression({ ...args, node: callExpression.getExpression() })
-      // const callArguments: Array<ExpressionAnalysisResult> = callExpression
-      //   .getArguments()
-      //   .map((arg) => {
-      //     if (Node.isExpression(arg)) return analyzeExpression({ ...args, node: arg })
-      //     return undefined
-      //   })
-      //   .filter((e) => !!e)
-
-      // return {
-      //   expression: {
-      //     kind: 'call',
-      //     callee: expression.expression,
-      //     arguments: callArguments.map((a) => a.expression),
-      //     optional: callExpression.getQuestionDotTokenNode() ? true : false,
-      //   },
-      //   dependencies: [
-      //     ...expression.dependencies,
-      //     ...callArguments.map((a) => a.dependencies).flat(),
-      //   ],
-      //   reservedNames: [
-      //     ...expression.reservedNames,
-      //     ...callArguments.map((a) => a.reservedNames).flat(),
-      //   ],
-      // }
-      // console.log('CallExpression Not handled')
-      // console.dir(node, { depth: null })
-      break
     }
+    case SyntaxKind.AwaitExpression: {
+      return analyzeAwaitExpression(args, node as AwaitExpression)
+    }
+    case SyntaxKind.BinaryExpression:
+      return analyzeBinaryExpression(args, node as BinaryExpression)
+    case SyntaxKind.ArrowFunction:
+      return analyzeFunctionExpression(args, node as ArrowFunction)
+    case SyntaxKind.AsExpression:
+      return analyzeAsExpression(args, node as AsExpression)
+    case SyntaxKind.TypeOfExpression:
+      return analyzeTypeOfExpression(args, node as TypeOfExpression)
     default:
       console.log(`!!!!!Unsupported : ${node.getKindName()}`)
+      // throw new Error('Place To Check')
       return {
         element: {
           kind: 'identifier',

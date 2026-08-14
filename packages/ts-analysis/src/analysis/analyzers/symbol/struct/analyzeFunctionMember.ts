@@ -7,6 +7,7 @@ import { computeIndent } from '../computeIndent.js'
 import { analyzeGenericsParameters } from '../analyzeGenericsParameters.js'
 import { analyzeFunctionBody } from './analyzeFunctionBody.js'
 import type {
+  ArrowFunction,
   CallSignatureDeclaration,
   ConstructSignatureDeclaration,
   ConstructorDeclaration,
@@ -48,6 +49,7 @@ export const analyzeFunctionMember = (
     | MethodSignature
     | FunctionTypeNode
     | MethodDeclaration
+    | ArrowFunction
     | ((
         | PropertySignature
         | ConstructSignatureDeclaration
@@ -165,7 +167,7 @@ export const analyzeFunctionMember = (
  */
 export const analyzeFunctionMemberInternal = (
   args: ChildAnalysisArg<
-    MethodSignature | FunctionTypeNode | MethodDeclaration | ConstructorDeclaration
+    MethodSignature | FunctionTypeNode | MethodDeclaration | ConstructorDeclaration | ArrowFunction
   >,
   args2: {
     name: string
@@ -217,6 +219,25 @@ export const analyzeFunctionMemberInternal = (
     memberPath: methodPath,
     registerSymbol: false,
   })
+
+  let isAsync: boolean | undefined = undefined
+  if (Node.isMethodDeclaration(node)) {
+    isAsync = node.isAsync()
+  } else if (Node.isConstructorDeclaration(node)) {
+    isAsync = false
+  } else {
+    if (!returnType) isAsync = false
+    else {
+      if (returnType.member.structure?.kind == 'function') {
+        const functionStructure = returnType.member.structure
+
+        if (functionStructure.returnType.structure?.kind == 'reference') {
+          if (functionStructure.returnType.structure.targetId.includes('Promise')) isAsync = true
+        }
+      }
+    }
+  }
+
   if (jsDocableNode) {
     const { id, identity, jsDoc, location, snippet, startOffset, parsedJsDoc } =
       prepareMethodAnalysis({
@@ -274,6 +295,7 @@ export const analyzeFunctionMemberInternal = (
         (args2.jsDocableNode ?? args.node).getStartLinePos(),
       ),
       functionBody: methodBodyResult.functionBody,
+      isAsync,
     } satisfies DocumentableMethodMemberAnalysis
     registerSymbolSymbolAnalysis(metadata, method, options, registerSymbol)
     return {
@@ -328,6 +350,8 @@ export const analyzeFunctionMemberInternal = (
 
         visibility,
         declarationOrder: args.declarationOrder,
+        functionBody: methodBodyResult.functionBody,
+        isAsync,
       } satisfies NonDocumentableMethodMemberAnalysis,
       dependencies: [
         ...parametersResult.map((p) => p.dependencies).flat(),

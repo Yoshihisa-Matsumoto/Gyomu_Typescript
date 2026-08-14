@@ -192,6 +192,7 @@ export const analyzeFunction = (
       args.declaration.getStartLinePos(),
     ),
     functionBody: methodBodyResult.functionBody,
+    isAsync: declaration.isAsync(),
   } satisfies SymbolAnalysis
   registerSymbolSymbolAnalysis(args.metadata, symbol, options, registerSymbol)
   return {

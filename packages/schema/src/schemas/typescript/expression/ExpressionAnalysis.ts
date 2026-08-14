@@ -5,6 +5,8 @@ import { PropertyAccessExpressionAnalysis } from './PropertyAccess.js'
 import { ComputedAccessExpressionAnalysis } from './ComputedAccess.js'
 import { CallExpressionAnalysis } from './Call.js'
 import {
+  ArrayLiteralExpressionAnalysis,
+  NullKeyword,
   NumericLiteralExpressionAnalysis,
   ObjectLiteralExpressionAnalysis,
   StringLiteralExpressionAnalysis,
@@ -15,11 +17,18 @@ import {
   BinaryExpressionAnalysis,
   ConditionalExpressionAnalysis,
 } from './Binary.js'
+import { AwaitExpressionAnalysis } from './Await.js'
+import { UnaryExpressionAnalysis } from './Unary.js'
+import { YieldExpressionAnalysis } from './Yield.js'
+import { FunctionExpressionAnalysis } from './Function.js'
+import { AsExpressionAnalysis } from './As.js'
+import { TypeOfExpressionAnalysis } from './TypeOf.js'
 
 export type ExpressionAnalysis =
   | IdentifierExpressionAnalysis
   | StringLiteralExpressionAnalysis
   | NumericLiteralExpressionAnalysis
+  | ArrayLiteralExpressionAnalysis
   | ObjectLiteralExpressionAnalysis
   | ThisExpressionAnalysis
   | SuperExpressionAnalysis
@@ -30,11 +39,19 @@ export type ExpressionAnalysis =
   | BinaryExpressionAnalysis
   | AssignmentExpressionAnalysis
   | ConditionalExpressionAnalysis
+  | AwaitExpressionAnalysis
+  | UnaryExpressionAnalysis
+  | YieldExpressionAnalysis
+  | FunctionExpressionAnalysis
+  | AsExpressionAnalysis
+  | NullKeyword
+  | TypeOfExpressionAnalysis
 
 export const ExpressionAnalysis: Schema.Schema<ExpressionAnalysis> = Schema.Union([
   IdentifierExpressionAnalysis,
   StringLiteralExpressionAnalysis,
   NumericLiteralExpressionAnalysis,
+  ArrayLiteralExpressionAnalysis,
   ObjectLiteralExpressionAnalysis,
   ThisExpressionAnalysis,
   SuperExpressionAnalysis,
@@ -45,6 +62,13 @@ export const ExpressionAnalysis: Schema.Schema<ExpressionAnalysis> = Schema.Unio
   BinaryExpressionAnalysis,
   AssignmentExpressionAnalysis,
   ConditionalExpressionAnalysis,
+  AwaitExpressionAnalysis,
+  UnaryExpressionAnalysis,
+  YieldExpressionAnalysis,
+  FunctionExpressionAnalysis,
+  AsExpressionAnalysis,
+  NullKeyword,
+  TypeOfExpressionAnalysis,
 ]).pipe(
   Schema.annotate({
     description:

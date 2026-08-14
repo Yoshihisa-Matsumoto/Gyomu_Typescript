@@ -30,6 +30,7 @@ export const analyzeParameter = (
     options,
     registerSymbol,
   } = args
+
   const typeNode = node.getTypeNode()
   const name = node.getName()
   const initializer = node.getInitializer()

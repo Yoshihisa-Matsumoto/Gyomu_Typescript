@@ -34,6 +34,10 @@ export interface NonDocumentableMethodMemberAnalysis
    * Analysis results for the implementation of the function body, when the symbol represents a function.
    */
   functionBody?: FunctionBodyAnalysis | undefined
+  /**
+   * Whether the symbol represents an asynchronous function or a value that resolves asynchronously.
+   */
+  isAsync?: boolean | undefined
 }
 
 /**
@@ -45,9 +49,13 @@ export const NonDocumentableMethodMemberAnalysis: Schema.Schema<NonDocumentableM
     parameters: Schema.Array(Schema.suspend(() => MemberAnalysis)),
     returnType: Schema.Union([Schema.suspend(() => TypeAnalysis), Schema.Undefined]),
     snippet: Schema.String,
-    functionBody: Schema.optional(FunctionBodyAnalysis).annotate({
+    functionBody: Schema.optional(Schema.suspend(() => FunctionBodyAnalysis)).annotate({
       description:
         'Analysis results for the implementation of the function body, when the symbol represents a function.',
+    }),
+    isAsync: Schema.optional(Schema.Boolean).annotate({
+      description:
+        'Whether the symbol represents an asynchronous function or a value that resolves asynchronously.',
     }),
   })
     .pipe(

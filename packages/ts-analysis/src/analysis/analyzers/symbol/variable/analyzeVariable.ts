@@ -21,7 +21,9 @@ import type { SymbolAnalysis, SymbolIdentity, TypeAnalysis } from '@gyomu/schema
  *
  * @returns Returns an object containing the analyzed symbol and a boolean indicating if it is a default export.
  */
-export const analyzeVariable = (args: TagAnalysisArg<VariableDeclaration>) => {
+export const analyzeVariable = (
+  args: TagAnalysisArg<VariableDeclaration>,
+): { symbol: SymbolAnalysis; isDefault: boolean } => {
   const statement = args.declaration.getVariableStatement()
   const variableName = args.declaration.getName()
   const {
@@ -57,6 +59,7 @@ export const analyzeVariable = (args: TagAnalysisArg<VariableDeclaration>) => {
   if (isFunctionLikeInitializer(initializer)) {
     return analyzeFunction(args, prepared, initializer)
   }
+
   const identity: SymbolIdentity = {
     symbolId: SymbolId(variableName),
     signatureId: prepared.signature.id,
@@ -86,6 +89,11 @@ export const analyzeVariable = (args: TagAnalysisArg<VariableDeclaration>) => {
   //   return analyzeObject(args, prepared, initializer)
   // }
 
+  const startOffset =
+    args.declaration.getFirstAncestorByKind(SyntaxKind.VariableStatement)?.getStart() ??
+    args.declaration.getFirstAncestorByKind(SyntaxKind.VariableDeclarationList)?.getStart() ??
+    args.declaration.getFirstAncestorByKindOrThrow(SyntaxKind.CatchClause).getStart()
+
   const symbol = {
     id: prepared.id,
     signature: prepared.signature,
@@ -97,9 +105,7 @@ export const analyzeVariable = (args: TagAnalysisArg<VariableDeclaration>) => {
     },
 
     identity,
-    startOffset: args.declaration
-      .getFirstAncestorByKindOrThrow(SyntaxKind.VariableStatement)
-      .getStart(),
+    startOffset,
 
     type: typeAnalysisResult?.member,
     jsDoc: prepared.jsDoc,
@@ -109,13 +115,17 @@ export const analyzeVariable = (args: TagAnalysisArg<VariableDeclaration>) => {
     declarationOrder: args.declarationOrder,
     dependencyCandidates: [
       ...(typeAnalysisResult?.dependencies ?? []),
+      // ...(genericsResult?.dependencies ?? []),
       ...(effectSchemaSupportType?.dependencies ?? []),
+      // ...(functionBody?.dependencies ?? []),
     ],
     docIndent: computeIndent(
       args.sourceFullText,
       args.declaration.getStart(),
       args.declaration.getStartLinePos(),
     ),
+    // functionBody: functionBody?.functionBody,
+    isAsync: false,
   } satisfies Builder<SymbolAnalysis>
   registerSymbolSymbolAnalysis(args.metadata, symbol, options, registerSymbol)
 

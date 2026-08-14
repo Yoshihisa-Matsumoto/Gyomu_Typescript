@@ -1,4 +1,4 @@
-export function tryCatchFinally() {
+export function tryCatchFinallyFunction() {
   try {
     foo()
   } catch (error) {

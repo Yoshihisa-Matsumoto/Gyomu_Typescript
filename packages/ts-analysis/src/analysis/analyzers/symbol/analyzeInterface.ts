@@ -140,6 +140,7 @@ export const analyzeInterface = (args: TagAnalysisArg<InterfaceDeclaration>) => 
       args.declaration.getStart(),
       args.declaration.getStartLinePos(),
     ),
+    isAsync: false,
   } satisfies SymbolAnalysis
   registerSymbolSymbolAnalysis(args.metadata, symbol, options, registerSymbol)
   return {

@@ -27,6 +27,30 @@ export const analyzeProperty = (
       reservedNames: valueResult.reservedNames,
     }
   }
+  if (Node.isShorthandPropertyAssignment(node)) {
+    const identifierResult = analyzeExpression({ ...args, node: node.getNameNode() })
+    return {
+      property: {
+        kind: 'property',
+        name: node.getName(),
+        value: identifierResult.element,
+      },
+      dependencies: identifierResult.dependencies,
+      reservedNames: identifierResult.reservedNames,
+    }
+  }
+
+  if (Node.isSpreadAssignment(node)) {
+    const identifierResult = analyzeExpression({ ...args, node: node.getExpression() })
+    return {
+      property: {
+        kind: 'spread',
+        expression: identifierResult.element,
+      },
+      dependencies: identifierResult.dependencies,
+      reservedNames: identifierResult.reservedNames,
+    }
+  }
 
   throw new Error(`Unsupported Node: ${node.getKindName()}`)
 }

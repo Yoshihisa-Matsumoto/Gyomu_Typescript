@@ -1,15 +1,20 @@
 import { Schema } from 'effect'
 import { FunctionBodyElement } from '../FunctionBodyElement.js'
+import { ExpressionAnalysis } from '../expression/ExpressionAnalysis.js'
 import { FunctionBodyElementBase } from './FunctionBodyElementBase.js'
 
 export interface FunctionBodyIf extends FunctionBodyElementBase {
   readonly kind: 'if'
-  readonly children: ReadonlyArray<FunctionBodyElement>
+  readonly expression: ExpressionAnalysis
+  readonly then: FunctionBodyElement
+  readonly else?: FunctionBodyElement | undefined
 }
 
 export const FunctionBodyIf: Schema.Schema<FunctionBodyIf> = Schema.Struct({
   kind: Schema.Literal('if'),
-  children: Schema.Array(Schema.suspend(() => FunctionBodyElement)),
+  expression: Schema.suspend(() => ExpressionAnalysis),
+  then: Schema.suspend(() => FunctionBodyElement),
+  else: Schema.optional(Schema.suspend(() => FunctionBodyElement)),
 }).pipe(
   Schema.fieldsAssign(FunctionBodyElementBase.fields),
   Schema.annotate({

@@ -10,6 +10,7 @@ import type {
   SymbolId,
 } from '@gyomu/schema/typescript'
 import type {
+  ArrowFunction,
   ConstructorDeclaration,
   EnumMember,
   FunctionTypeNode,
@@ -99,6 +100,7 @@ export const prepareMethodAnalysis = (args: {
     | MethodDeclaration
     | ConstructorDeclaration
     | GetAccessorDeclaration
+    | ArrowFunction
   jsDocableNode: JSDocableNode & Node
   options: AnalysisOptions | undefined
   registerSymbol: boolean
@@ -149,7 +151,8 @@ export const initializeMethodIdentity = (
     | FunctionTypeNode
     | MethodDeclaration
     | ConstructorDeclaration
-    | GetAccessorDeclaration,
+    | GetAccessorDeclaration
+    | ArrowFunction,
 ): { id: SymbolId; identity: SymbolIdentity } => {
   const newMemberPath = [...memberPath, methodName]
   return createMemberIdentityAndId(
@@ -213,7 +216,8 @@ const getFunctionSignatureId = (
     | FunctionTypeNode
     | MethodDeclaration
     | ConstructorDeclaration
-    | GetAccessorDeclaration,
+    | GetAccessorDeclaration
+    | ArrowFunction,
 ): SignatureId => {
   const typeParams = declaration
     .getTypeParameters()

@@ -144,6 +144,7 @@ export const analyzeClass = (args: TagAnalysisArg<ClassDeclaration>) => {
       args.declaration.getStart(),
       args.declaration.getStartLinePos(),
     ),
+    isAsync: false,
   } satisfies SymbolAnalysis
 
   registerSymbolSymbolAnalysis(args.metadata, symbol, options, registerSymbol)

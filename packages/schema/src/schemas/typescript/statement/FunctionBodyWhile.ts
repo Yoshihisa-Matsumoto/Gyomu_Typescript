@@ -1,15 +1,18 @@
 import { Schema } from 'effect'
 import { FunctionBodyElement } from '../FunctionBodyElement.js'
+import { ExpressionAnalysis } from '../expression/ExpressionAnalysis.js'
 import { FunctionBodyElementBase } from './FunctionBodyElementBase.js'
 
 export interface FunctionBodyWhile extends FunctionBodyElementBase {
   readonly kind: 'while'
-  readonly children: ReadonlyArray<FunctionBodyElement>
+  readonly expression: ExpressionAnalysis
+  readonly statement: FunctionBodyElement
 }
 
 export const FunctionBodyWhile: Schema.Schema<FunctionBodyWhile> = Schema.Struct({
   kind: Schema.Literal('while'),
-  children: Schema.Array(Schema.suspend(() => FunctionBodyElement)),
+  expression: Schema.suspend(() => ExpressionAnalysis),
+  statement: Schema.suspend(() => FunctionBodyElement),
 }).pipe(
   Schema.fieldsAssign(FunctionBodyElementBase.fields),
   Schema.annotate({

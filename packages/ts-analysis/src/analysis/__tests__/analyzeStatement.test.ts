@@ -274,7 +274,7 @@ describe('analyze Statement pattern', () => {
         const result = await statementAnalysisProgram(fileName, 'call')
 
         const target = getClassMethod(result, 'ChildClass', 'execute')
-        console.dir(target, { depth: null })
+        // console.dir(target, { depth: null })
         expect(target.elements.filter((e) => e.kind == 'call')).toEqual(
           expect.arrayContaining([
             {
@@ -361,7 +361,7 @@ describe('analyze Statement pattern', () => {
         const result = await statementAnalysisProgram(fileName, 'call')
 
         const target = getFunction(result, 'NestedCall')
-        console.dir(target, { depth: null })
+        // console.dir(target, { depth: null })
         expect(target.elements.filter((e) => e.kind == 'call')).toEqual(
           expect.arrayContaining([
             {
@@ -451,7 +451,7 @@ describe('analyze Statement pattern', () => {
         const result = await statementAnalysisProgram(fileName, 'call')
 
         const target = getFunction(result, 'FunctionHandler')
-        console.dir(target, { depth: null })
+        // console.dir(target, { depth: null })
         expect(target.elements.filter((e) => e.kind == 'call')).toEqual(
           expect.arrayContaining([
             {
@@ -536,16 +536,1284 @@ describe('analyze Statement pattern', () => {
       const result = await statementAnalysisProgram(fileName)
 
       const target = getFunction(result, 'AssignmentTest')
-      console.dir(target, { depth: null })
+      // console.dir(target, { depth: null })
+      expect(target.elements).toEqual(
+        expect.arrayContaining([
+          {
+            kind: 'assignment',
+            left: {
+              kind: 'property-access',
+              object: { kind: 'identifier', name: 'obj' },
+              optional: false,
+              property: 'value',
+            },
+            right: { kind: 'identifier', name: 'value' },
+            operator: '=',
+          },
+        ]),
+      )
+    },
+    timeout,
+  )
+  it(
+    '04-variable-declaration.ts',
+    async () => {
+      const fileName = expect.getState().currentTestName!.split(' > ').at(-1)!
+      console.log(`Filename: ${fileName}`)
+      const result = await statementAnalysisProgram(fileName)
+
+      const target = getFunction(result, 'variableDeclaration')
+      // console.dir(target, { depth: null })
+      const variables = target.elements.filter((e) => e.kind == 'variable-declaration')
+      expect(
+        variables.find((v) => v.symbol.identity.symbolId == 'result')?.initializer,
+      ).toMatchObject({
+        kind: 'call',
+        callee: { kind: 'identifier', name: 'foo' },
+        arguments: [{ kind: 'identifier', name: 'value' }],
+        optional: false,
+      })
+      expect(variables.find((v) => v.symbol.identity.symbolId == 'a')?.initializer).toMatchObject({
+        kind: 'call',
+        callee: { kind: 'identifier', name: 'foo' },
+        arguments: [{ kind: 'identifier', name: 'value' }],
+        optional: false,
+      })
+      expect(variables.find((v) => v.symbol.identity.symbolId == 'b')?.initializer).toMatchObject({
+        kind: 'call',
+        callee: { kind: 'identifier', name: 'bar' },
+        arguments: [],
+        optional: false,
+      })
+      expect(variables.find((v) => v.symbol.identity.symbolId == 'c')?.initializer).toBeUndefined()
+    },
+    timeout,
+  )
+  it(
+    '05-return.ts',
+    async () => {
+      const fileName = expect.getState().currentTestName!.split(' > ').at(-1)!
+      console.log(`Filename: ${fileName}`)
+      const result = await statementAnalysisProgram(fileName)
+
+      const target = getFunction(result, 'returnValue')
+      // console.dir(target, { depth: null })
       expect(target.elements).toEqual(
         expect.arrayContaining([
           {
             kind: 'return',
             expression: {
-              kind: 'new',
-              callee: { kind: 'identifier', name: 'Foo' },
-              arguments: [],
+              kind: 'call',
+              callee: { kind: 'identifier', name: 'foo' },
+              arguments: [{ kind: 'identifier', name: 'value' }],
+              optional: false,
             },
+          },
+        ]),
+      )
+    },
+    timeout,
+  )
+  it(
+    '06-throw.ts',
+    async () => {
+      const fileName = expect.getState().currentTestName!.split(' > ').at(-1)!
+      console.log(`Filename: ${fileName}`)
+      const result = await statementAnalysisProgram(fileName)
+
+      const target = getFunction(result, 'throwError')
+      // console.dir(target, { depth: null })
+      expect(target.elements).toEqual(
+        expect.arrayContaining([
+          {
+            kind: 'throw',
+            expression: {
+              kind: 'new',
+              callee: { kind: 'identifier', name: 'Error' },
+              arguments: [{ kind: 'string-literal', value: 'invalid' }],
+            },
+          },
+        ]),
+      )
+    },
+    timeout,
+  )
+  it(
+    '07-await-01.ts',
+    async () => {
+      const fileName = expect.getState().currentTestName!.split(' > ').at(-1)!
+      console.log(`Filename: ${fileName}`)
+      const result = await statementAnalysisProgram(fileName)
+      const target = getFunction(result, 'awaitValue')
+      // console.dir(target, { depth: null })
+      expect(
+        target.elements.find((e) => e.kind == 'variable-declaration')?.initializer,
+      ).toMatchObject({
+        kind: 'await',
+        expression: {
+          kind: 'call',
+          callee: { kind: 'identifier', name: 'foo' },
+          arguments: [],
+          optional: false,
+        },
+      })
+    },
+    timeout,
+  )
+  it(
+    '07-await-02.ts',
+    async () => {
+      const fileName = expect.getState().currentTestName!.split(' > ').at(-1)!
+      console.log(`Filename: ${fileName}`)
+      const result = await statementAnalysisProgram(fileName)
+      const target = getFunction(result, 'awaitValue')
+      // console.dir(target, { depth: null })
+      expect(target.elements).toEqual(
+        expect.arrayContaining([
+          {
+            kind: 'await',
+            expression: {
+              kind: 'call',
+              callee: { kind: 'identifier', name: 'foo' },
+              arguments: [],
+              optional: false,
+            },
+          },
+        ]),
+      )
+    },
+    timeout,
+  )
+  it(
+    '07-await-03.ts',
+    async () => {
+      const fileName = expect.getState().currentTestName!.split(' > ').at(-1)!
+      console.log(`Filename: ${fileName}`)
+      const result = await statementAnalysisProgram(fileName)
+      const target = getFunction(result, 'awaitValue')
+      // console.dir(target, { depth: null })
+      expect(target.elements).toEqual(
+        expect.arrayContaining([
+          {
+            kind: 'return',
+            expression: {
+              kind: 'await',
+              expression: {
+                kind: 'call',
+                callee: { kind: 'identifier', name: 'foo' },
+                arguments: [],
+                optional: false,
+              },
+            },
+          },
+        ]),
+      )
+    },
+    timeout,
+  )
+  it(
+    '08-if.ts',
+    async () => {
+      const fileName = expect.getState().currentTestName!.split(' > ').at(-1)!
+      // console.log(`Filename: ${fileName}`)
+      const result = await statementAnalysisProgram(fileName)
+      const target = getFunction(result, 'ifStatement')
+      // console.dir(target, { depth: null })
+      expect(target.elements).toEqual(
+        expect.arrayContaining([
+          {
+            kind: 'if',
+            expression: { kind: 'identifier', name: 'value' },
+            then: {
+              kind: 'block',
+              children: [
+                {
+                  kind: 'call',
+                  callee: { kind: 'identifier', name: 'foo' },
+                  arguments: [],
+                  optional: false,
+                },
+              ],
+            },
+            else: undefined,
+          },
+        ]),
+      )
+    },
+    timeout,
+  )
+  it(
+    '09-if-else.ts',
+    async () => {
+      const fileName = expect.getState().currentTestName!.split(' > ').at(-1)!
+      // console.log(`Filename: ${fileName}`)
+      const result = await statementAnalysisProgram(fileName)
+      const target = getFunction(result, 'ifElse')
+      // console.dir(target, { depth: null })
+      expect(target.elements).toEqual(
+        expect.arrayContaining([
+          {
+            kind: 'if',
+            expression: { kind: 'identifier', name: 'value' },
+            then: {
+              kind: 'block',
+              children: [
+                {
+                  kind: 'call',
+                  callee: { kind: 'identifier', name: 'foo' },
+                  arguments: [],
+                  optional: false,
+                },
+              ],
+            },
+            else: {
+              kind: 'block',
+              children: [
+                {
+                  kind: 'call',
+                  callee: { kind: 'identifier', name: 'bar' },
+                  arguments: [],
+                  optional: false,
+                },
+              ],
+            },
+          },
+        ]),
+      )
+    },
+    timeout,
+  )
+  it(
+    '10-nested-if.ts',
+    async () => {
+      const fileName = expect.getState().currentTestName!.split(' > ').at(-1)!
+      // console.log(`Filename: ${fileName}`)
+      const result = await statementAnalysisProgram(fileName)
+      const target = getFunction(result, 'nestedIf')
+      // console.dir(target, { depth: null })
+      expect(target.elements).toEqual(
+        expect.arrayContaining([
+          {
+            kind: 'if',
+            expression: { kind: 'identifier', name: 'value' },
+            then: {
+              kind: 'block',
+              children: [
+                {
+                  kind: 'if',
+                  expression: { kind: 'identifier', name: 'other' },
+                  then: {
+                    kind: 'block',
+                    children: [
+                      {
+                        kind: 'call',
+                        callee: { kind: 'identifier', name: 'foo' },
+                        arguments: [],
+                        optional: false,
+                      },
+                    ],
+                  },
+                  else: undefined,
+                },
+              ],
+            },
+            else: undefined,
+          },
+        ]),
+      )
+    },
+    timeout,
+  )
+  it(
+    '11-else-if.ts',
+    async () => {
+      const fileName = expect.getState().currentTestName!.split(' > ').at(-1)!
+      console.log(`Filename: ${fileName}`)
+      const result = await statementAnalysisProgram(fileName)
+      const target = getFunction(result, 'elseIf')
+      // console.dir(target, { depth: null })
+      expect(target.elements).toEqual(
+        expect.arrayContaining([
+          {
+            kind: 'if',
+            expression: {
+              kind: 'binary',
+              left: { kind: 'identifier', name: 'value' },
+              right: { kind: 'numeric-literal', value: 10 },
+              operator: '>',
+            },
+            then: {
+              kind: 'block',
+              children: [
+                {
+                  kind: 'call',
+                  callee: { kind: 'identifier', name: 'foo' },
+                  arguments: [],
+                  optional: false,
+                },
+              ],
+            },
+            else: {
+              kind: 'if',
+              expression: {
+                kind: 'binary',
+                left: { kind: 'identifier', name: 'value' },
+                right: { kind: 'numeric-literal', value: 0 },
+                operator: '>',
+              },
+              then: {
+                kind: 'block',
+                children: [
+                  {
+                    kind: 'call',
+                    callee: { kind: 'identifier', name: 'bar' },
+                    arguments: [],
+                    optional: false,
+                  },
+                ],
+              },
+              else: {
+                kind: 'block',
+                children: [
+                  {
+                    kind: 'call',
+                    callee: { kind: 'identifier', name: 'baz' },
+                    arguments: [],
+                    optional: false,
+                  },
+                ],
+              },
+            },
+          },
+        ]),
+      )
+    },
+    timeout,
+  )
+  it(
+    '12-switch.ts',
+    async () => {
+      const fileName = expect.getState().currentTestName!.split(' > ').at(-1)!
+      // console.log(`Filename: ${fileName}`)
+      const result = await statementAnalysisProgram(fileName)
+      const target = getFunction(result, 'switchStatement')
+      // console.dir(target, { depth: null })
+      expect(target.elements).toEqual(
+        expect.arrayContaining([
+          {
+            kind: 'switch',
+            expression: { kind: 'identifier', name: 'value' },
+            children: [
+              {
+                kind: 'switch-case',
+                expression: { kind: 'string-literal', value: 'a' },
+                children: [
+                  {
+                    kind: 'call',
+                    callee: { kind: 'identifier', name: 'foo' },
+                    arguments: [],
+                    optional: false,
+                  },
+                  { kind: 'break' },
+                ],
+              },
+              {
+                kind: 'switch-case',
+                expression: { kind: 'string-literal', value: 'b' },
+                children: [
+                  {
+                    kind: 'call',
+                    callee: { kind: 'identifier', name: 'bar' },
+                    arguments: [],
+                    optional: false,
+                  },
+                  { kind: 'break' },
+                ],
+              },
+              {
+                kind: 'switch-default',
+                children: [
+                  {
+                    kind: 'call',
+                    callee: { kind: 'identifier', name: 'baz' },
+                    arguments: [],
+                    optional: false,
+                  },
+                  { kind: 'break' },
+                ],
+              },
+            ],
+          },
+        ]),
+      )
+    },
+    timeout,
+  )
+  it(
+    '13-loop-forOf.ts',
+    async () => {
+      const fileName = expect.getState().currentTestName!.split(' > ').at(-1)!
+      // console.log(`Filename: ${fileName}`)
+      const result = await statementAnalysisProgram(fileName)
+      const target = getFunction(result, 'forOfStatement')
+      // console.dir(target, { depth: null })
+      expect(target.elements).toEqual(
+        expect.arrayContaining([
+          {
+            kind: 'for',
+            expression: { kind: 'identifier', name: 'values' },
+            initializer: [
+              {
+                kind: 'variable-declaration',
+                symbol: {
+                  id: 'src\\13-loop-forOf.ts::forOfStatement.value::variable',
+                  signature: {
+                    id: 'variable',
+                    parameters: [],
+                    dependencyCandidates: [],
+                  },
+                  snippet: 'value',
+                  kind: 'const',
+                  location: { startLine: 2, endLine: 2 },
+                  identity: { symbolId: 'value', signatureId: 'variable' },
+                  startOffset: 63,
+                  type: { text: 'value', source: 'typescript' },
+                  jsDoc: undefined,
+                  parsedJsDoc: undefined,
+                  members: [],
+                  declarationOrder: 0,
+                  dependencyCandidates: [],
+                  docIndent: '  ',
+                  isAsync: false,
+                },
+                initializer: undefined,
+              },
+            ],
+            statement: {
+              kind: 'block',
+              children: [
+                {
+                  kind: 'call',
+                  callee: { kind: 'identifier', name: 'foo' },
+                  arguments: [{ kind: 'identifier', name: 'value' }],
+                  optional: false,
+                },
+              ],
+            },
+            isAwait: false,
+          },
+        ]),
+      )
+    },
+    timeout,
+  )
+  it(
+    '13-loop-forIn.ts',
+    async () => {
+      const fileName = expect.getState().currentTestName!.split(' > ').at(-1)!
+      console.log(`Filename: ${fileName}`)
+      const result = await statementAnalysisProgram(fileName)
+      const target = getFunction(result, 'forInStatement')
+      // console.dir(target, { depth: null })
+      expect(target.elements.find((e) => e.kind == 'for')).toMatchObject({
+        kind: 'for',
+        expression: { kind: 'identifier', name: 'myObject' },
+        initializer: [
+          {
+            kind: 'variable-declaration',
+            symbol: {
+              id: 'src\\13-loop-forIn.ts::forInStatement.key::variable',
+              signature: {
+                id: 'variable',
+                parameters: [],
+                dependencyCandidates: [],
+              },
+              snippet: 'key',
+              kind: 'const',
+              location: { startLine: 3, endLine: 3 },
+              identity: { symbolId: 'key', signatureId: 'variable' },
+              startOffset: 109,
+              type: { text: 'key', source: 'typescript' },
+              jsDoc: undefined,
+              parsedJsDoc: undefined,
+              members: [],
+              declarationOrder: 0,
+              dependencyCandidates: [],
+              docIndent: '  ',
+              isAsync: false,
+            },
+            initializer: undefined,
+          },
+        ],
+        statement: {
+          kind: 'block',
+          children: [
+            {
+              kind: 'call',
+              callee: {
+                kind: 'property-access',
+                object: { kind: 'identifier', name: 'console' },
+                optional: false,
+                property: 'log',
+              },
+              arguments: [
+                { kind: 'identifier', name: 'key' },
+                {
+                  kind: 'computed-access',
+                  object: { kind: 'identifier', name: 'myObject' },
+                  optional: false,
+                  index: { kind: 'identifier', name: 'key' },
+                },
+              ],
+              optional: false,
+            },
+          ],
+        },
+      })
+    },
+    timeout,
+  )
+  it(
+    '13-loop-for.ts',
+    async () => {
+      const fileName = expect.getState().currentTestName!.split(' > ').at(-1)!
+      console.log(`Filename: ${fileName}`)
+      const result = await statementAnalysisProgram(fileName)
+      const target = getFunction(result, 'forStatement')
+      // console.dir(target, { depth: null })
+      expect(target.elements.find((e) => e.kind == 'for')).toMatchObject({
+        kind: 'for',
+        expression: {
+          kind: 'binary',
+          left: { kind: 'identifier', name: 'i' },
+          right: {
+            kind: 'property-access',
+            object: { kind: 'identifier', name: 'myArray' },
+            optional: false,
+            property: 'length',
+          },
+          operator: '<',
+        },
+        initializer: [
+          {
+            kind: 'variable-declaration',
+            symbol: {
+              id: 'src\\13-loop-for.ts::forStatement.i::variable',
+              signature: {
+                id: 'variable',
+                parameters: [],
+                dependencyCandidates: [],
+              },
+              snippet: 'i = 0',
+              kind: 'const',
+              location: { startLine: 3, endLine: 3 },
+              identity: { symbolId: 'i', signatureId: 'variable' },
+              startOffset: 74,
+              type: { text: 'i', source: 'typescript' },
+              jsDoc: undefined,
+              parsedJsDoc: undefined,
+              members: [],
+              declarationOrder: 0,
+              dependencyCandidates: [],
+              docIndent: '  ',
+              isAsync: false,
+            },
+            initializer: { kind: 'numeric-literal', value: 0 },
+          },
+        ],
+        incrementor: {
+          kind: 'unary',
+          prefix: false,
+          operand: { kind: 'identifier', name: 'i' },
+          operator: '++',
+        },
+        statement: {
+          kind: 'block',
+          children: [
+            {
+              kind: 'call',
+              callee: {
+                kind: 'property-access',
+                object: { kind: 'identifier', name: 'console' },
+                optional: false,
+                property: 'log',
+              },
+              arguments: [
+                {
+                  kind: 'computed-access',
+                  object: { kind: 'identifier', name: 'myArray' },
+                  optional: false,
+                  index: { kind: 'identifier', name: 'i' },
+                },
+              ],
+              optional: false,
+            },
+          ],
+        },
+        isAwait: false,
+      })
+    },
+    timeout,
+  )
+  it(
+    '13-loop-forAwaitOf.ts',
+    async () => {
+      const fileName = expect.getState().currentTestName!.split(' > ').at(-1)!
+      // console.log(`Filename: ${fileName}`)
+      const result = await statementAnalysisProgram(fileName)
+      const target = getFunction(result, 'forAwaitOfStatement')
+      // console.dir(target, { depth: null })
+      expect(target.elements.find((e) => e.kind == 'for')).toMatchObject({
+        kind: 'for',
+        expression: {
+          kind: 'call',
+          callee: { kind: 'identifier', name: 'foo' },
+          arguments: [],
+          optional: false,
+        },
+        initializer: [
+          {
+            kind: 'variable-declaration',
+            symbol: {
+              id: 'src\\13-loop-forAwaitOf.ts::forAwaitOfStatement.value::variable',
+              signature: {
+                id: 'variable',
+                parameters: [],
+                dependencyCandidates: [],
+              },
+              snippet: 'value',
+              kind: 'const',
+              location: { startLine: 2, endLine: 2 },
+              identity: { symbolId: 'value', signatureId: 'variable' },
+              startOffset: 59,
+              type: { text: 'value', source: 'typescript' },
+              jsDoc: undefined,
+              parsedJsDoc: undefined,
+              members: [],
+              declarationOrder: 0,
+              dependencyCandidates: [],
+              docIndent: '  ',
+              isAsync: false,
+            },
+            initializer: undefined,
+          },
+        ],
+        statement: {
+          kind: 'block',
+          children: [
+            {
+              kind: 'call',
+              callee: {
+                kind: 'property-access',
+                object: { kind: 'identifier', name: 'console' },
+                optional: false,
+                property: 'log',
+              },
+              arguments: [{ kind: 'identifier', name: 'value' }],
+              optional: false,
+            },
+          ],
+        },
+        isAwait: true,
+      })
+    },
+    timeout,
+  )
+  it(
+    '13-loop-while.ts',
+    async () => {
+      const fileName = expect.getState().currentTestName!.split(' > ').at(-1)!
+      // console.log(`Filename: ${fileName}`)
+      const result = await statementAnalysisProgram(fileName)
+      const target = getFunction(result, 'whileStatement')
+      // console.dir(target, { depth: null })
+      expect(target.elements).toEqual(
+        expect.arrayContaining([
+          {
+            kind: 'while',
+            expression: { kind: 'identifier', name: 'value' },
+            statement: {
+              kind: 'block',
+              children: [
+                {
+                  kind: 'call',
+                  callee: { kind: 'identifier', name: 'foo' },
+                  arguments: [],
+                  optional: false,
+                },
+              ],
+            },
+          },
+        ]),
+      )
+    },
+    timeout,
+  )
+  it(
+    '14-try-tryCatch.ts',
+    async () => {
+      const fileName = expect.getState().currentTestName!.split(' > ').at(-1)!
+      // console.log(`Filename: ${fileName}`)
+      const result = await statementAnalysisProgram(fileName)
+      const target = getFunction(result, 'tryCatchFunction')
+      // console.dir(target, { depth: null })
+      expect(target.elements).toEqual(
+        expect.arrayContaining([
+          {
+            kind: 'try',
+            statement: {
+              kind: 'block',
+              children: [
+                {
+                  kind: 'call',
+                  callee: { kind: 'identifier', name: 'foo' },
+                  arguments: [],
+                  optional: false,
+                },
+              ],
+            },
+            catch: {
+              kind: 'catch',
+              variable: {
+                kind: 'variable-declaration',
+                symbol: {
+                  id: 'src\\14-try-tryCatch.ts::tryCatchFunction.error::variable',
+                  signature: {
+                    id: 'variable',
+                    parameters: [],
+                    dependencyCandidates: [],
+                  },
+                  snippet: 'error',
+                  kind: 'const',
+                  location: { startLine: 4, endLine: 4 },
+                  identity: { symbolId: 'error', signatureId: 'variable' },
+                  startOffset: 59,
+                  type: { text: 'error', source: 'typescript' },
+                  jsDoc: undefined,
+                  parsedJsDoc: undefined,
+                  members: [],
+                  declarationOrder: 0,
+                  dependencyCandidates: [],
+                  docIndent: '  ',
+                  isAsync: false,
+                },
+              },
+              statement: {
+                kind: 'block',
+                children: [
+                  {
+                    kind: 'call',
+                    callee: { kind: 'identifier', name: 'bar' },
+                    arguments: [{ kind: 'identifier', name: 'error' }],
+                    optional: false,
+                  },
+                ],
+              },
+            },
+            finally: undefined,
+          },
+        ]),
+      )
+    },
+    timeout,
+  )
+  it(
+    '14-try-tryCatchFinally.ts',
+    async () => {
+      const fileName = expect.getState().currentTestName!.split(' > ').at(-1)!
+      // console.log(`Filename: ${fileName}`)
+      const result = await statementAnalysisProgram(fileName)
+      const target = getFunction(result, 'tryCatchFinallyFunction')
+      // console.dir(target, { depth: null })
+      expect(target.elements).toEqual(
+        expect.arrayContaining([
+          {
+            kind: 'try',
+            statement: {
+              kind: 'block',
+              children: [
+                {
+                  kind: 'call',
+                  callee: { kind: 'identifier', name: 'foo' },
+                  arguments: [],
+                  optional: false,
+                },
+              ],
+            },
+            catch: {
+              kind: 'catch',
+              variable: {
+                kind: 'variable-declaration',
+                symbol: {
+                  id: 'src\\14-try-tryCatchFinally.ts::tryCatchFinallyFunction.error::variable',
+                  signature: {
+                    id: 'variable',
+                    parameters: [],
+                    dependencyCandidates: [],
+                  },
+                  snippet: 'error',
+                  kind: 'const',
+                  location: { startLine: 4, endLine: 4 },
+                  identity: { symbolId: 'error', signatureId: 'variable' },
+                  startOffset: 66,
+                  type: { text: 'error', source: 'typescript' },
+                  jsDoc: undefined,
+                  parsedJsDoc: undefined,
+                  members: [],
+                  declarationOrder: 0,
+                  dependencyCandidates: [],
+                  docIndent: '  ',
+                  isAsync: false,
+                },
+              },
+              statement: {
+                kind: 'block',
+                children: [
+                  {
+                    kind: 'call',
+                    callee: { kind: 'identifier', name: 'bar' },
+                    arguments: [{ kind: 'identifier', name: 'error' }],
+                    optional: false,
+                  },
+                ],
+              },
+            },
+            finally: {
+              kind: 'block',
+              children: [
+                {
+                  kind: 'call',
+                  callee: { kind: 'identifier', name: 'baz' },
+                  arguments: [],
+                  optional: false,
+                },
+              ],
+            },
+          },
+        ]),
+      )
+    },
+    timeout,
+  )
+  it(
+    '15-expression-binary.ts',
+    async () => {
+      const fileName = expect.getState().currentTestName!.split(' > ').at(-1)!
+      // console.log(`Filename: ${fileName}`)
+      const result = await statementAnalysisProgram(fileName)
+      const target = getFunction(result, 'binaryOperators')
+      // console.dir(
+      //   target.elements
+      //     .filter((e) => e.kind == 'variable-declaration')
+      //     .map((e) => ({
+      //       symbolId: e.symbol.identity.symbolId,
+      //       initializer: e.initializer,
+      //     })),
+      //   { depth: null },
+      // )
+      expect(
+        target.elements
+          .filter((e) => e.kind == 'variable-declaration')
+          .map((e) => ({
+            symbolId: e.symbol.identity.symbolId,
+            initializer: e.initializer,
+          })),
+      ).toEqual(
+        expect.arrayContaining([
+          {
+            symbolId: 'eq',
+            initializer: {
+              kind: 'binary',
+              left: { kind: 'identifier', name: 'a' },
+              right: { kind: 'identifier', name: 'b' },
+              operator: '==',
+            },
+          },
+          {
+            symbolId: 'neq',
+            initializer: {
+              kind: 'binary',
+              left: { kind: 'identifier', name: 'a' },
+              right: { kind: 'identifier', name: 'b' },
+              operator: '!=',
+            },
+          },
+          {
+            symbolId: 'strictEq',
+            initializer: {
+              kind: 'binary',
+              left: { kind: 'identifier', name: 'a' },
+              right: { kind: 'identifier', name: 'b' },
+              operator: '===',
+            },
+          },
+          {
+            symbolId: 'strictNeq',
+            initializer: {
+              kind: 'binary',
+              left: { kind: 'identifier', name: 'a' },
+              right: { kind: 'identifier', name: 'b' },
+              operator: '!==',
+            },
+          },
+          {
+            symbolId: 'lt',
+            initializer: {
+              kind: 'binary',
+              left: { kind: 'identifier', name: 'a' },
+              right: { kind: 'identifier', name: 'b' },
+              operator: '<',
+            },
+          },
+          {
+            symbolId: 'lte',
+            initializer: {
+              kind: 'binary',
+              left: { kind: 'identifier', name: 'a' },
+              right: { kind: 'identifier', name: 'b' },
+              operator: '<=',
+            },
+          },
+          {
+            symbolId: 'gt',
+            initializer: {
+              kind: 'binary',
+              left: { kind: 'identifier', name: 'a' },
+              right: { kind: 'identifier', name: 'b' },
+              operator: '>',
+            },
+          },
+          {
+            symbolId: 'gte',
+            initializer: {
+              kind: 'binary',
+              left: { kind: 'identifier', name: 'a' },
+              right: { kind: 'identifier', name: 'b' },
+              operator: '>=',
+            },
+          },
+          {
+            symbolId: 'inOperator',
+            initializer: {
+              kind: 'binary',
+              left: { kind: 'identifier', name: 'a' },
+              right: { kind: 'identifier', name: 'obj' },
+              operator: 'in',
+            },
+          },
+          {
+            symbolId: 'instanceofOperator',
+            initializer: {
+              kind: 'binary',
+              left: { kind: 'identifier', name: 'a' },
+              right: { kind: 'identifier', name: 'b' },
+              operator: 'instanceof',
+            },
+          },
+          {
+            symbolId: 'add',
+            initializer: {
+              kind: 'binary',
+              left: { kind: 'identifier', name: 'a' },
+              right: { kind: 'identifier', name: 'b' },
+              operator: '+',
+            },
+          },
+          {
+            symbolId: 'subtract',
+            initializer: {
+              kind: 'binary',
+              left: { kind: 'identifier', name: 'a' },
+              right: { kind: 'identifier', name: 'b' },
+              operator: '-',
+            },
+          },
+          {
+            symbolId: 'multiply',
+            initializer: {
+              kind: 'binary',
+              left: { kind: 'identifier', name: 'a' },
+              right: { kind: 'identifier', name: 'b' },
+              operator: '*',
+            },
+          },
+          {
+            symbolId: 'divide',
+            initializer: {
+              kind: 'binary',
+              left: { kind: 'identifier', name: 'a' },
+              right: { kind: 'identifier', name: 'b' },
+              operator: '/',
+            },
+          },
+          {
+            symbolId: 'modulo',
+            initializer: {
+              kind: 'binary',
+              left: { kind: 'identifier', name: 'a' },
+              right: { kind: 'identifier', name: 'b' },
+              operator: '%',
+            },
+          },
+          {
+            symbolId: 'power',
+            initializer: {
+              kind: 'binary',
+              left: { kind: 'identifier', name: 'a' },
+              right: { kind: 'identifier', name: 'b' },
+              operator: '**',
+            },
+          },
+          {
+            symbolId: 'leftShift',
+            initializer: {
+              kind: 'binary',
+              left: { kind: 'identifier', name: 'a' },
+              right: { kind: 'identifier', name: 'b' },
+              operator: '<<',
+            },
+          },
+          {
+            symbolId: 'rightShift',
+            initializer: {
+              kind: 'binary',
+              left: { kind: 'identifier', name: 'a' },
+              right: { kind: 'identifier', name: 'b' },
+              operator: '>>',
+            },
+          },
+          {
+            symbolId: 'unsignedRightShift',
+            initializer: {
+              kind: 'binary',
+              left: { kind: 'identifier', name: 'a' },
+              right: { kind: 'identifier', name: 'b' },
+              operator: '>>>',
+            },
+          },
+          {
+            symbolId: 'bitAnd',
+            initializer: {
+              kind: 'binary',
+              left: { kind: 'identifier', name: 'a' },
+              right: { kind: 'identifier', name: 'b' },
+              operator: '&',
+            },
+          },
+          {
+            symbolId: 'bitXor',
+            initializer: {
+              kind: 'binary',
+              left: { kind: 'identifier', name: 'a' },
+              right: { kind: 'identifier', name: 'b' },
+              operator: '^',
+            },
+          },
+          {
+            symbolId: 'bitOr',
+            initializer: {
+              kind: 'binary',
+              left: { kind: 'identifier', name: 'a' },
+              right: { kind: 'identifier', name: 'b' },
+              operator: '|',
+            },
+          },
+          {
+            symbolId: 'logicalAnd',
+            initializer: {
+              kind: 'binary',
+              left: { kind: 'identifier', name: 'a' },
+              right: { kind: 'identifier', name: 'b' },
+              operator: '&&',
+            },
+          },
+          {
+            symbolId: 'logicalOr',
+            initializer: {
+              kind: 'binary',
+              left: { kind: 'identifier', name: 'a' },
+              right: { kind: 'identifier', name: 'b' },
+              operator: '||',
+            },
+          },
+          {
+            symbolId: 'nullish',
+            initializer: {
+              kind: 'binary',
+              left: { kind: 'identifier', name: 'a' },
+              right: { kind: 'identifier', name: 'b' },
+              operator: '??',
+            },
+          },
+        ]),
+      )
+    },
+    timeout,
+  )
+  it(
+    '16-expression-and.ts',
+    async () => {
+      const fileName = expect.getState().currentTestName!.split(' > ').at(-1)!
+      // console.log(`Filename: ${fileName}`)
+      const result = await statementAnalysisProgram(fileName)
+      const target = getFunction(result, 'getAnd')
+      // console.dir(target.elements.find((e) => e.kind == 'variable-declaration')?.initializer, {
+      //   depth: null,
+      // })
+      expect(
+        target.elements.find((e) => e.kind == 'variable-declaration')?.initializer,
+      ).toMatchObject({
+        kind: 'binary',
+        left: { kind: 'identifier', name: 'value' },
+        right: {
+          kind: 'call',
+          callee: { kind: 'identifier', name: 'foo' },
+          arguments: [],
+          optional: false,
+        },
+        operator: '&&',
+      })
+    },
+    timeout,
+  )
+  it(
+    '17-expression-or.ts',
+    async () => {
+      const fileName = expect.getState().currentTestName!.split(' > ').at(-1)!
+      // console.log(`Filename: ${fileName}`)
+      const result = await statementAnalysisProgram(fileName)
+      const target = getFunction(result, 'getBinary')
+      // console.dir(target.elements.find((e) => e.kind == 'variable-declaration')?.initializer, {
+      //   depth: null,
+      // })
+      expect(
+        target.elements.find((e) => e.kind == 'variable-declaration')?.initializer,
+      ).toMatchObject({
+        kind: 'binary',
+        left: { kind: 'identifier', name: 'value' },
+        right: {
+          kind: 'call',
+          callee: { kind: 'identifier', name: 'foo' },
+          arguments: [],
+          optional: false,
+        },
+        operator: '||',
+      })
+    },
+    timeout,
+  )
+  it(
+    '18-expression-conditional.ts',
+    async () => {
+      const fileName = expect.getState().currentTestName!.split(' > ').at(-1)!
+      // console.log(`Filename: ${fileName}`)
+      const result = await statementAnalysisProgram(fileName)
+      const target = getFunction(result, 'getBinary')
+      // console.dir(target.elements.find((e) => e.kind == 'variable-declaration')?.initializer, {
+      //   depth: null,
+      // })
+      expect(
+        target.elements.find((e) => e.kind == 'variable-declaration')?.initializer,
+      ).toMatchObject({
+        kind: 'call',
+        callee: {
+          kind: 'property-access',
+          object: { kind: 'identifier', name: 'value' },
+          optional: true,
+          property: 'foo',
+        },
+        arguments: [],
+        optional: false,
+      })
+    },
+    timeout,
+  )
+  it(
+    '19-function-declaration.ts',
+    async () => {
+      const fileName = expect.getState().currentTestName!.split(' > ').at(-1)!
+      // console.log(`Filename: ${fileName}`)
+      const result = await statementAnalysisProgram(fileName)
+      const target = getFunction(result, 'declarationFunc')
+      // console.dir(target, {
+      //   depth: null,
+      // })
+      expect(target.elements).toEqual(
+        expect.arrayContaining([
+          {
+            kind: 'call',
+            callee: { kind: 'identifier', name: 'foo' },
+            arguments: [],
+            optional: false,
+          },
+        ]),
+      )
+    },
+    timeout,
+  )
+  it(
+    '20-function-arrow.ts',
+    async () => {
+      const fileName = expect.getState().currentTestName!.split(' > ').at(-1)!
+      // console.log(`Filename: ${fileName}`)
+      const result = await statementAnalysisProgram(fileName)
+      const target = result.find((s) => s.identity.symbolId == 'arrowFunc')?.functionBody
+      // console.dir(result, {
+      //   depth: null,
+      // })
+      expect(target?.elements).toEqual(
+        expect.arrayContaining([
+          {
+            kind: 'call',
+            callee: { kind: 'identifier', name: 'foo' },
+            arguments: [],
+            optional: false,
+          },
+        ]),
+      )
+    },
+    timeout,
+  )
+  it(
+    '21-function-expression.ts',
+    async () => {
+      const fileName = expect.getState().currentTestName!.split(' > ').at(-1)!
+      // console.log(`Filename: ${fileName}`)
+      const result = await statementAnalysisProgram(fileName)
+      const target = result.find((s) => s.identity.symbolId == 'expression')?.functionBody
+      // console.dir(result, {
+      //   depth: null,
+      // })
+      expect(target?.elements).toEqual(
+        expect.arrayContaining([
+          {
+            kind: 'call',
+            callee: { kind: 'identifier', name: 'foo' },
+            arguments: [],
+            optional: false,
+          },
+        ]),
+      )
+    },
+    timeout,
+  )
+  it(
+    '22-function-arrowExpression.ts',
+    async () => {
+      const fileName = expect.getState().currentTestName!.split(' > ').at(-1)!
+      // console.log(`Filename: ${fileName}`)
+      const result = await statementAnalysisProgram(fileName)
+      const target = result.find((s) => s.identity.symbolId == 'arrowExpression')
+      // console.dir(result, {
+      //   depth: null,
+      // })q
+      expect(target?.functionBody?.elements).toEqual(
+        expect.arrayContaining([
+          {
+            kind: 'call',
+            callee: { kind: 'identifier', name: 'foo' },
+            arguments: [],
+            optional: false,
           },
         ]),
       )

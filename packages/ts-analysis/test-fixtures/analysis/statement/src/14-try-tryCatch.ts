@@ -1,4 +1,4 @@
-export function tryCatch() {
+export function tryCatchFunction() {
   try {
     foo()
   } catch (error) {

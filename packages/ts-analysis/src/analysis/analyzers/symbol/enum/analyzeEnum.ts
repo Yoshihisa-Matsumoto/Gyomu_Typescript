@@ -92,6 +92,7 @@ export const analyzeEnum = (args: TagAnalysisArg<EnumDeclaration>) => {
       args.declaration.getStart(),
       args.declaration.getStartLinePos(),
     ),
+    isAsync: false,
   } satisfies SymbolAnalysis
 
   registerSymbolSymbolAnalysis(args.metadata, symbol, options, registerSymbol)

@@ -126,7 +126,7 @@ describe('analyze Interface pattern', () => {
     async () => {
       const result = await interfaceAnalysisProgram('01-interface-members-everything.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       expect(result.members).toMatchObject([
         {
           kind: 'property',
@@ -199,7 +199,7 @@ describe('analyze Interface pattern', () => {
     async () => {
       const result = await interfaceAnalysisProgram('02-interface-property-types.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
     },
     timeout,
   )
@@ -208,7 +208,7 @@ describe('analyze Interface pattern', () => {
     async () => {
       const result = await interfaceAnalysisProgram('03-interface-method-overloads.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
     },
     timeout,
   )
@@ -217,7 +217,7 @@ describe('analyze Interface pattern', () => {
     async () => {
       const result = await interfaceAnalysisProgram('04-nested-object-interface.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
     },
     timeout,
   )
@@ -226,7 +226,7 @@ describe('analyze Interface pattern', () => {
     async () => {
       const result = await interfaceAnalysisProgram('05-interface-method-effect.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       expect(
         (result.members[0] as DocumentableMethodMemberAnalysis).returnType?.effect,
       ).toMatchObject({
@@ -272,7 +272,7 @@ describe('analyze Interface dependency pattern', () => {
       )
       const dependencies = result.find((s) => s.name === 'DependencyInterface')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       expect(dependencies).toBeDefined()
       expect(dependencies?.dependencies).toEqual(
         expect.arrayContaining([

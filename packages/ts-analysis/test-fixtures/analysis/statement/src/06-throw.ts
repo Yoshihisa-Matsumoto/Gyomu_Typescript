@@ -1,5 +1,3 @@
 export function throwError(value: string) {
-  if (!value) {
-    throw new Error('invalid')
-  }
+  throw new Error('invalid')
 }
