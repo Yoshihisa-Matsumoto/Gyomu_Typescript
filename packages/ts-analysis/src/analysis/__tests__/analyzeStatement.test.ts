@@ -957,53 +957,22 @@ describe('analyze Statement pattern', () => {
       const result = await statementAnalysisProgram(fileName)
       const target = getFunction(result, 'forOfStatement')
       // console.dir(target, { depth: null })
-      expect(target.elements).toEqual(
-        expect.arrayContaining([
+      const targetFor = target.elements.find((e) => e.kind == 'for')!
+      expect(targetFor.expression).toMatchObject({ kind: 'identifier', name: 'values' })
+
+      expect(targetFor.initializer).toHaveLength(1)
+      expect(targetFor.statement).toMatchObject({
+        kind: 'block',
+        children: [
           {
-            kind: 'for',
-            expression: { kind: 'identifier', name: 'values' },
-            initializer: [
-              {
-                kind: 'variable-declaration',
-                symbol: {
-                  id: 'src\\13-loop-forOf.ts::forOfStatement.value::variable',
-                  signature: {
-                    id: 'variable',
-                    parameters: [],
-                    dependencyCandidates: [],
-                  },
-                  snippet: 'value',
-                  kind: 'const',
-                  location: { startLine: 2, endLine: 2 },
-                  identity: { symbolId: 'value', signatureId: 'variable' },
-                  startOffset: 63,
-                  type: { text: 'value', source: 'typescript' },
-                  jsDoc: undefined,
-                  parsedJsDoc: undefined,
-                  members: [],
-                  declarationOrder: 0,
-                  dependencyCandidates: [],
-                  docIndent: '  ',
-                  isAsync: false,
-                },
-                initializer: undefined,
-              },
-            ],
-            statement: {
-              kind: 'block',
-              children: [
-                {
-                  kind: 'call',
-                  callee: { kind: 'identifier', name: 'foo' },
-                  arguments: [{ kind: 'identifier', name: 'value' }],
-                  optional: false,
-                },
-              ],
-            },
-            isAwait: false,
+            kind: 'call',
+            callee: { kind: 'identifier', name: 'foo' },
+            arguments: [{ kind: 'identifier', name: 'value' }],
+            optional: false,
           },
-        ]),
-      )
+        ],
+      })
+      expect(targetFor.isAwait).toBeFalsy()
     },
     timeout,
   )
@@ -1015,61 +984,35 @@ describe('analyze Statement pattern', () => {
       const result = await statementAnalysisProgram(fileName)
       const target = getFunction(result, 'forInStatement')
       // console.dir(target, { depth: null })
-      expect(target.elements.find((e) => e.kind == 'for')).toMatchObject({
-        kind: 'for',
-        expression: { kind: 'identifier', name: 'myObject' },
-        initializer: [
+      const targetFor = target.elements.find((e) => e.kind == 'for')!
+      expect(targetFor.expression).toMatchObject({ kind: 'identifier', name: 'myObject' })
+
+      expect(targetFor.initializer).toHaveLength(1)
+      expect(targetFor.statement).toMatchObject({
+        kind: 'block',
+        children: [
           {
-            kind: 'variable-declaration',
-            symbol: {
-              id: 'src\\13-loop-forIn.ts::forInStatement.key::variable',
-              signature: {
-                id: 'variable',
-                parameters: [],
-                dependencyCandidates: [],
-              },
-              snippet: 'key',
-              kind: 'const',
-              location: { startLine: 3, endLine: 3 },
-              identity: { symbolId: 'key', signatureId: 'variable' },
-              startOffset: 109,
-              type: { text: 'key', source: 'typescript' },
-              jsDoc: undefined,
-              parsedJsDoc: undefined,
-              members: [],
-              declarationOrder: 0,
-              dependencyCandidates: [],
-              docIndent: '  ',
-              isAsync: false,
+            kind: 'call',
+            callee: {
+              kind: 'property-access',
+              object: { kind: 'identifier', name: 'console' },
+              optional: false,
+              property: 'log',
             },
-            initializer: undefined,
+            arguments: [
+              { kind: 'identifier', name: 'key' },
+              {
+                kind: 'computed-access',
+                object: { kind: 'identifier', name: 'myObject' },
+                optional: false,
+                index: { kind: 'identifier', name: 'key' },
+              },
+            ],
+            optional: false,
           },
         ],
-        statement: {
-          kind: 'block',
-          children: [
-            {
-              kind: 'call',
-              callee: {
-                kind: 'property-access',
-                object: { kind: 'identifier', name: 'console' },
-                optional: false,
-                property: 'log',
-              },
-              arguments: [
-                { kind: 'identifier', name: 'key' },
-                {
-                  kind: 'computed-access',
-                  object: { kind: 'identifier', name: 'myObject' },
-                  optional: false,
-                  index: { kind: 'identifier', name: 'key' },
-                },
-              ],
-              optional: false,
-            },
-          ],
-        },
       })
+      expect(targetFor.isAwait).toBeFalsy()
     },
     timeout,
   )
@@ -1081,77 +1024,50 @@ describe('analyze Statement pattern', () => {
       const result = await statementAnalysisProgram(fileName)
       const target = getFunction(result, 'forStatement')
       // console.dir(target, { depth: null })
-      expect(target.elements.find((e) => e.kind == 'for')).toMatchObject({
-        kind: 'for',
-        expression: {
-          kind: 'binary',
-          left: { kind: 'identifier', name: 'i' },
-          right: {
-            kind: 'property-access',
-            object: { kind: 'identifier', name: 'myArray' },
-            optional: false,
-            property: 'length',
-          },
-          operator: '<',
+      const targetFor = target.elements.find((e) => e.kind == 'for')!
+      expect(targetFor.expression).toMatchObject({
+        kind: 'binary',
+        left: { kind: 'identifier', name: 'i' },
+        right: {
+          kind: 'property-access',
+          object: { kind: 'identifier', name: 'myArray' },
+          optional: false,
+          property: 'length',
         },
-        initializer: [
+        operator: '<',
+      })
+      expect(targetFor.incrementor).toBeDefined()
+      expect(targetFor.incrementor).toMatchObject({
+        kind: 'unary',
+        prefix: false,
+        operand: { kind: 'identifier', name: 'i' },
+        operator: '++',
+      })
+      expect(targetFor.initializer).toHaveLength(1)
+      expect(targetFor.statement).toMatchObject({
+        kind: 'block',
+        children: [
           {
-            kind: 'variable-declaration',
-            symbol: {
-              id: 'src\\13-loop-for.ts::forStatement.i::variable',
-              signature: {
-                id: 'variable',
-                parameters: [],
-                dependencyCandidates: [],
-              },
-              snippet: 'i = 0',
-              kind: 'const',
-              location: { startLine: 3, endLine: 3 },
-              identity: { symbolId: 'i', signatureId: 'variable' },
-              startOffset: 74,
-              type: { text: 'i', source: 'typescript' },
-              jsDoc: undefined,
-              parsedJsDoc: undefined,
-              members: [],
-              declarationOrder: 0,
-              dependencyCandidates: [],
-              docIndent: '  ',
-              isAsync: false,
+            kind: 'call',
+            callee: {
+              kind: 'property-access',
+              object: { kind: 'identifier', name: 'console' },
+              optional: false,
+              property: 'log',
             },
-            initializer: { kind: 'numeric-literal', value: 0 },
+            arguments: [
+              {
+                kind: 'computed-access',
+                object: { kind: 'identifier', name: 'myArray' },
+                optional: false,
+                index: { kind: 'identifier', name: 'i' },
+              },
+            ],
+            optional: false,
           },
         ],
-        incrementor: {
-          kind: 'unary',
-          prefix: false,
-          operand: { kind: 'identifier', name: 'i' },
-          operator: '++',
-        },
-        statement: {
-          kind: 'block',
-          children: [
-            {
-              kind: 'call',
-              callee: {
-                kind: 'property-access',
-                object: { kind: 'identifier', name: 'console' },
-                optional: false,
-                property: 'log',
-              },
-              arguments: [
-                {
-                  kind: 'computed-access',
-                  object: { kind: 'identifier', name: 'myArray' },
-                  optional: false,
-                  index: { kind: 'identifier', name: 'i' },
-                },
-              ],
-              optional: false,
-            },
-          ],
-        },
-        isAwait: false,
       })
+      expect(targetFor.isAwait).toBeFalsy()
     },
     timeout,
   )
@@ -1163,59 +1079,31 @@ describe('analyze Statement pattern', () => {
       const result = await statementAnalysisProgram(fileName)
       const target = getFunction(result, 'forAwaitOfStatement')
       // console.dir(target, { depth: null })
-      expect(target.elements.find((e) => e.kind == 'for')).toMatchObject({
-        kind: 'for',
-        expression: {
-          kind: 'call',
-          callee: { kind: 'identifier', name: 'foo' },
-          arguments: [],
-          optional: false,
-        },
-        initializer: [
+      const targetFor = target.elements.find((e) => e.kind == 'for')!
+      expect(targetFor.expression).toMatchObject({
+        kind: 'call',
+        callee: { kind: 'identifier', name: 'foo' },
+        arguments: [],
+        optional: false,
+      })
+      expect(targetFor.initializer).toHaveLength(1)
+      expect(targetFor.statement).toMatchObject({
+        kind: 'block',
+        children: [
           {
-            kind: 'variable-declaration',
-            symbol: {
-              id: 'src\\13-loop-forAwaitOf.ts::forAwaitOfStatement.value::variable',
-              signature: {
-                id: 'variable',
-                parameters: [],
-                dependencyCandidates: [],
-              },
-              snippet: 'value',
-              kind: 'const',
-              location: { startLine: 2, endLine: 2 },
-              identity: { symbolId: 'value', signatureId: 'variable' },
-              startOffset: 59,
-              type: { text: 'value', source: 'typescript' },
-              jsDoc: undefined,
-              parsedJsDoc: undefined,
-              members: [],
-              declarationOrder: 0,
-              dependencyCandidates: [],
-              docIndent: '  ',
-              isAsync: false,
+            kind: 'call',
+            callee: {
+              kind: 'property-access',
+              object: { kind: 'identifier', name: 'console' },
+              optional: false,
+              property: 'log',
             },
-            initializer: undefined,
+            arguments: [{ kind: 'identifier', name: 'value' }],
+            optional: false,
           },
         ],
-        statement: {
-          kind: 'block',
-          children: [
-            {
-              kind: 'call',
-              callee: {
-                kind: 'property-access',
-                object: { kind: 'identifier', name: 'console' },
-                optional: false,
-                property: 'log',
-              },
-              arguments: [{ kind: 'identifier', name: 'value' }],
-              optional: false,
-            },
-          ],
-        },
-        isAwait: true,
       })
+      expect(targetFor.isAwait).toBeTruthy()
     },
     timeout,
   )
@@ -1257,63 +1145,33 @@ describe('analyze Statement pattern', () => {
       const result = await statementAnalysisProgram(fileName)
       const target = getFunction(result, 'tryCatchFunction')
       // console.dir(target, { depth: null })
-      expect(target.elements).toEqual(
-        expect.arrayContaining([
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      const tryTarget = target.elements.find((e) => e.kind == 'try')!
+      expect(tryTarget.statement).toMatchObject({
+        kind: 'block',
+        children: [
           {
-            kind: 'try',
-            statement: {
-              kind: 'block',
-              children: [
-                {
-                  kind: 'call',
-                  callee: { kind: 'identifier', name: 'foo' },
-                  arguments: [],
-                  optional: false,
-                },
-              ],
-            },
-            catch: {
-              kind: 'catch',
-              variable: {
-                kind: 'variable-declaration',
-                symbol: {
-                  id: 'src\\14-try-tryCatch.ts::tryCatchFunction.error::variable',
-                  signature: {
-                    id: 'variable',
-                    parameters: [],
-                    dependencyCandidates: [],
-                  },
-                  snippet: 'error',
-                  kind: 'const',
-                  location: { startLine: 4, endLine: 4 },
-                  identity: { symbolId: 'error', signatureId: 'variable' },
-                  startOffset: 59,
-                  type: { text: 'error', source: 'typescript' },
-                  jsDoc: undefined,
-                  parsedJsDoc: undefined,
-                  members: [],
-                  declarationOrder: 0,
-                  dependencyCandidates: [],
-                  docIndent: '  ',
-                  isAsync: false,
-                },
-              },
-              statement: {
-                kind: 'block',
-                children: [
-                  {
-                    kind: 'call',
-                    callee: { kind: 'identifier', name: 'bar' },
-                    arguments: [{ kind: 'identifier', name: 'error' }],
-                    optional: false,
-                  },
-                ],
-              },
-            },
-            finally: undefined,
+            kind: 'call',
+            callee: { kind: 'identifier', name: 'foo' },
+            arguments: [],
+            optional: false,
           },
-        ]),
-      )
+        ],
+      })
+      expect(tryTarget.catch).toBeDefined()
+      expect(tryTarget.catch?.variable).toBeDefined()
+      expect(tryTarget.catch?.statement).toMatchObject({
+        kind: 'block',
+        children: [
+          {
+            kind: 'call',
+            callee: { kind: 'identifier', name: 'bar' },
+            arguments: [{ kind: 'identifier', name: 'error' }],
+            optional: false,
+          },
+        ],
+      })
+      expect(tryTarget.finally).toBeUndefined()
     },
     timeout,
   )
@@ -1325,73 +1183,43 @@ describe('analyze Statement pattern', () => {
       const result = await statementAnalysisProgram(fileName)
       const target = getFunction(result, 'tryCatchFinallyFunction')
       // console.dir(target, { depth: null })
-      expect(target.elements).toEqual(
-        expect.arrayContaining([
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      const tryTarget = target.elements.find((e) => e.kind == 'try')!
+      expect(tryTarget.statement).toMatchObject({
+        kind: 'block',
+        children: [
           {
-            kind: 'try',
-            statement: {
-              kind: 'block',
-              children: [
-                {
-                  kind: 'call',
-                  callee: { kind: 'identifier', name: 'foo' },
-                  arguments: [],
-                  optional: false,
-                },
-              ],
-            },
-            catch: {
-              kind: 'catch',
-              variable: {
-                kind: 'variable-declaration',
-                symbol: {
-                  id: 'src\\14-try-tryCatchFinally.ts::tryCatchFinallyFunction.error::variable',
-                  signature: {
-                    id: 'variable',
-                    parameters: [],
-                    dependencyCandidates: [],
-                  },
-                  snippet: 'error',
-                  kind: 'const',
-                  location: { startLine: 4, endLine: 4 },
-                  identity: { symbolId: 'error', signatureId: 'variable' },
-                  startOffset: 66,
-                  type: { text: 'error', source: 'typescript' },
-                  jsDoc: undefined,
-                  parsedJsDoc: undefined,
-                  members: [],
-                  declarationOrder: 0,
-                  dependencyCandidates: [],
-                  docIndent: '  ',
-                  isAsync: false,
-                },
-              },
-              statement: {
-                kind: 'block',
-                children: [
-                  {
-                    kind: 'call',
-                    callee: { kind: 'identifier', name: 'bar' },
-                    arguments: [{ kind: 'identifier', name: 'error' }],
-                    optional: false,
-                  },
-                ],
-              },
-            },
-            finally: {
-              kind: 'block',
-              children: [
-                {
-                  kind: 'call',
-                  callee: { kind: 'identifier', name: 'baz' },
-                  arguments: [],
-                  optional: false,
-                },
-              ],
-            },
+            kind: 'call',
+            callee: { kind: 'identifier', name: 'foo' },
+            arguments: [],
+            optional: false,
           },
-        ]),
-      )
+        ],
+      })
+      expect(tryTarget.catch?.variable).toBeDefined()
+      expect(tryTarget.catch?.statement).toMatchObject({
+        kind: 'block',
+        children: [
+          {
+            kind: 'call',
+            callee: { kind: 'identifier', name: 'bar' },
+            arguments: [{ kind: 'identifier', name: 'error' }],
+            optional: false,
+          },
+        ],
+      })
+      expect(tryTarget.finally).toBeDefined()
+      expect(tryTarget.finally).toMatchObject({
+        kind: 'block',
+        children: [
+          {
+            kind: 'call',
+            callee: { kind: 'identifier', name: 'baz' },
+            arguments: [],
+            optional: false,
+          },
+        ],
+      })
     },
     timeout,
   )

@@ -126,8 +126,9 @@ export const analyzeFunctionMember = (
     }
   }
 
-  const newTypeReservedName = ['$return']
+  const newTypeReservedName = []
   if (name && name.length > 0) newTypeReservedName.push(name)
+  newTypeReservedName.push('$return')
 
   const returnType =
     returnTypeNode || initializer
