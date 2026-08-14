@@ -34,6 +34,7 @@ export interface NonDocumentableMethodMemberAnalysis
    * Analysis results for the implementation of the function body, when the symbol represents a function.
    */
   functionBody?: FunctionBodyAnalysis | undefined
+
   /**
    * Whether the symbol represents an asynchronous function or a value that resolves asynchronously.
    */

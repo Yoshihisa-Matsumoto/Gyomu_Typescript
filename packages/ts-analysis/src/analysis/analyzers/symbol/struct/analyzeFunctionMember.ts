@@ -88,11 +88,14 @@ export const analyzeFunctionMember = (
   const visibility = args2.visibility ?? 'public'
   const returnTypeNode = node.getReturnTypeNode()
 
+  const newMemberPath = [...memberPath]
+  if (name && name.length > 0) newMemberPath.push(name)
+
   const genericsResult = analyzeGenericsParameters({
     node,
     sourceRelativePath,
     metadata,
-    memberPath: [...memberPath, name],
+    memberPath: newMemberPath,
     ownerSymbolId,
     ownerSymbolIdentity,
     sourceFullText,
@@ -123,6 +126,9 @@ export const analyzeFunctionMember = (
     }
   }
 
+  const newTypeReservedName = ['$return']
+  if (name && name.length > 0) newTypeReservedName.push(name)
+
   const returnType =
     returnTypeNode || initializer
       ? analyzeType(
@@ -140,7 +146,7 @@ export const analyzeFunctionMember = (
             reservedNames: newReservedNames,
             registerSymbol,
           },
-          [name, '$return'],
+          newTypeReservedName,
         )
       : getVoidTypeResult()
 
@@ -167,7 +173,13 @@ export const analyzeFunctionMember = (
  */
 export const analyzeFunctionMemberInternal = (
   args: ChildAnalysisArg<
-    MethodSignature | FunctionTypeNode | MethodDeclaration | ConstructorDeclaration | ArrowFunction
+    | MethodSignature
+    | FunctionTypeNode
+    | MethodDeclaration
+    | ConstructorDeclaration
+    | ArrowFunction
+    | GetAccessorDeclaration
+    | SetAccessorDeclaration
   >,
   args2: {
     name: string
@@ -195,7 +207,9 @@ export const analyzeFunctionMemberInternal = (
   } = args
   const { isStatic, visibility, returnType, jsDocableNode, name } = args2
 
-  const methodPath = [...memberPath, name]
+  const methodPath = [...memberPath]
+  if (name && name.length > 0) methodPath.push(name)
+
   const childMemberPath = [...methodPath, '$parameters']
 
   const genericsResult = analyzeGenericsParameters({

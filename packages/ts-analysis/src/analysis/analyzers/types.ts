@@ -23,9 +23,11 @@ import type {
   FunctionDeclaration,
   FunctionExpression,
   FunctionTypeNode,
+  GetAccessorDeclaration,
   MethodDeclaration,
   MethodSignature,
   Node,
+  SetAccessorDeclaration,
 } from 'ts-morph'
 import type { AnalysisOptions } from '@gyomu/schema'
 
@@ -141,6 +143,8 @@ export type FunctionLikeNodeType =
   | FunctionDeclaration
   | ArrowFunction
   | FunctionExpression
+  | GetAccessorDeclaration
+  | SetAccessorDeclaration
 
 /**
  * Represents the dependency analysis result for a class or object method.

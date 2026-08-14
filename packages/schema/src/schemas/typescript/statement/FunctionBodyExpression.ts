@@ -2,6 +2,9 @@ import { Schema } from 'effect'
 import { ExpressionAnalysis } from '../expression/ExpressionAnalysis.js'
 import { FunctionBodyElementBase } from './FunctionBodyElementBase.js'
 
+/**
+ * Defines an expression statement within a function body, containing an expression element.
+ */
 export const FunctionBodyExpression = Schema.Struct({
   kind: Schema.Literal('expression-statement'),
   expression: Schema.suspend(() => ExpressionAnalysis),

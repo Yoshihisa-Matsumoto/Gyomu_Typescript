@@ -62,7 +62,11 @@ export const BindingElementAnalysis: Schema.Schema<BindingElementAnalysis> = Sch
  * Describes how a value is destructured into local variables.
  */
 export interface BindingPatternAnalysis {
+  /**
+   * The literal discriminant for binding pattern analysis.
+   */
   kind: 'binding'
+
   /**
    * The kind of binding pattern used for destructuring.
    */

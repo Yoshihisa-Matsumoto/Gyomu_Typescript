@@ -1,8 +1,18 @@
 import { Schema } from 'effect'
 import { ExpressionAnalysis } from './ExpressionAnalysis.js'
 
+/**
+ * Represents the analysis of a yield expression within a function body.
+ */
 export interface YieldExpressionAnalysis {
+  /**
+   * The expression kind, always set to 'yield'.
+   */
   readonly kind: 'yield'
+
+  /**
+   * The optional expression yielded by the operation.
+   */
   readonly expression?: ExpressionAnalysis | undefined
 }
 

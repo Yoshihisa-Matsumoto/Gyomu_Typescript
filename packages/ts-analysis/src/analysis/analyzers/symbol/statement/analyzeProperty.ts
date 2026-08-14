@@ -1,4 +1,5 @@
 import { Node } from 'ts-morph'
+import { analyzeFunctionMemberInternal } from '../struct/analyzeFunctionMember.js'
 import { analyzeExpression } from './analyzeExpression.js'
 import type { ObjectLiteralElementLike } from 'ts-morph'
 import type { ChildAnalysisArg, PropertyAnalysisResult } from '../../types.js'
@@ -52,5 +53,30 @@ export const analyzeProperty = (
     }
   }
 
-  throw new Error(`Unsupported Node: ${node.getKindName()}`)
+  // if (
+  //   Node.isMethodDeclaration(node) ||
+  //   Node.isGetAccessorDeclaration(node) ||
+  //   Node.isSetAccessorDeclaration(node)
+  // ) {
+  const functionResult = analyzeFunctionMemberInternal(
+    { ...args, node: node },
+    {
+      name: '',
+      isStatic: false,
+      jsDocableNode: undefined,
+      returnType: undefined,
+      visibility: 'public',
+    },
+  )
+  return {
+    property: {
+      kind: 'method',
+      method: functionResult.member,
+    },
+    dependencies: functionResult.dependencies,
+    reservedNames: functionResult.reservedNames,
+  }
+  // }
+
+  // throw new Error(`Unsupported Node: ${node.getKindName()}`)
 }

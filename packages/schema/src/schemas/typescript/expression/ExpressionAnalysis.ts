@@ -24,6 +24,9 @@ import { FunctionExpressionAnalysis } from './Function.js'
 import { AsExpressionAnalysis } from './As.js'
 import { TypeOfExpressionAnalysis } from './TypeOf.js'
 
+/**
+ * Represents an analysis of an expression, describing its structural form and referenced expressions across various expression types.
+ */
 export type ExpressionAnalysis =
   | IdentifierExpressionAnalysis
   | StringLiteralExpressionAnalysis
@@ -47,6 +50,9 @@ export type ExpressionAnalysis =
   | NullKeyword
   | TypeOfExpressionAnalysis
 
+/**
+ * Schema for ExpressionAnalysis, representing an analysis of an expression describing its structural form and referenced expressions.
+ */
 export const ExpressionAnalysis: Schema.Schema<ExpressionAnalysis> = Schema.Union([
   IdentifierExpressionAnalysis,
   StringLiteralExpressionAnalysis,

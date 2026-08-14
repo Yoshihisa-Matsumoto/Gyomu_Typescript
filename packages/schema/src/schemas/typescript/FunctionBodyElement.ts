@@ -32,4 +32,7 @@ export const FunctionBodyElement = Schema.Union([
   description: 'An element representing a structural or behavioral aspect of a function body.',
 })
 
+/**
+ * Represents the TypeScript type for FunctionBodyElement derived from its schema definition.
+ */
 export type FunctionBodyElement = Schema.Schema.Type<typeof FunctionBodyElement>

@@ -216,7 +216,12 @@ export const JsDocUpdateEntrySchema = Schema.Struct({
   params: Schema.Array(ParamPlan),
   returns: ReturnPlan,
   tags: Schema.Array(TagPlan),
-  order: Schema.optional(Schema.Array(Schema.Literals(['summary', 'params', 'returns', 'tags']))),
+  order: Schema.optional(
+    Schema.Array(Schema.Literals(['summary', 'params', 'returns', 'tags'])),
+  ).annotate({
+    description:
+      'Only provide this field when the JSDoc element order should be explicitly changed. Omit it when the order should be preserved. Never return null.',
+  }),
   reasoning: Reasoning,
   risk: Risk,
 }).annotate({

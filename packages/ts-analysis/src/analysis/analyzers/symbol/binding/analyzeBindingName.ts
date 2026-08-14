@@ -7,6 +7,7 @@ import type {
   BindingPatternAnalysis,
   IdentifierExpressionAnalysis,
 } from '@gyomu/schema/schemas/typescript'
+
 /**
  * Analyzes a TypeScript binding name by dispatching to the appropriate analyzer for object or array binding patterns.
  *

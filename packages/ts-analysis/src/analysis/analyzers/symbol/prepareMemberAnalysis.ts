@@ -21,6 +21,7 @@ import type {
   Node,
   PropertyDeclaration,
   PropertySignature,
+  SetAccessorDeclaration,
 } from 'ts-morph'
 import type { JsDocAnalysis, ParsedJsDoc, SymbolIdentity } from '@gyomu/schema/schemas/typescript'
 
@@ -101,6 +102,7 @@ export const prepareMethodAnalysis = (args: {
     | ConstructorDeclaration
     | GetAccessorDeclaration
     | ArrowFunction
+    | SetAccessorDeclaration
   jsDocableNode: JSDocableNode & Node
   options: AnalysisOptions | undefined
   registerSymbol: boolean
@@ -152,7 +154,8 @@ export const initializeMethodIdentity = (
     | MethodDeclaration
     | ConstructorDeclaration
     | GetAccessorDeclaration
-    | ArrowFunction,
+    | ArrowFunction
+    | SetAccessorDeclaration,
 ): { id: SymbolId; identity: SymbolIdentity } => {
   const newMemberPath = [...memberPath, methodName]
   return createMemberIdentityAndId(
@@ -217,7 +220,8 @@ const getFunctionSignatureId = (
     | MethodDeclaration
     | ConstructorDeclaration
     | GetAccessorDeclaration
-    | ArrowFunction,
+    | ArrowFunction
+    | SetAccessorDeclaration,
 ): SignatureId => {
   const typeParams = declaration
     .getTypeParameters()

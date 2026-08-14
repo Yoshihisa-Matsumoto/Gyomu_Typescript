@@ -8,8 +8,10 @@ import type {
   FunctionDeclaration,
   FunctionExpression,
   FunctionTypeNode,
+  GetAccessorDeclaration,
   MethodDeclaration,
   MethodSignature,
+  SetAccessorDeclaration,
 } from 'ts-morph'
 import type {
   ChildAnalysisArg,
@@ -34,6 +36,8 @@ export const analyzeFunctionBody = (
     | FunctionDeclaration
     | ArrowFunction
     | FunctionExpression
+    | GetAccessorDeclaration
+    | SetAccessorDeclaration
   >,
 ): MethodAnalysisResult => {
   // console.log('analyzeFunctionBody', args2.name, args.node.getKindName())

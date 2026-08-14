@@ -16,7 +16,8 @@ export const CodeBlock = Schema.Struct({
   }),
 
   title: Schema.optional(Schema.String).annotate({
-    description: 'Optional code block title.',
+    description:
+      'Optional code block title. Omit this field entirely when no title is needed. Never use null.',
   }),
 }).annotate({
   description: 'A source code block.',
