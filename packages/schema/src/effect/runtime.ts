@@ -1,5 +1,4 @@
-import { Effect, Layer } from 'effect'
-import type { Result } from 'effect'
+import { Cause, Effect, Exit, Layer, Option, Result } from 'effect'
 
 /**
  * Creates a runner function that executes an Effect with a base layer, returning a Result of the execution.
@@ -20,15 +19,26 @@ export const makeRunnerAsReturn =
   ): Promise<Result.Result<A, E>> => {
     const layer = overrideLayer ? baseLayer.pipe(Layer.provideMerge(overrideLayer)) : baseLayer
 
-    return effect.pipe(
-      Effect.catchCause((cause) =>
-        Effect.logError('Execution failed', cause).pipe(Effect.andThen(Effect.failCause(cause))),
-      ),
-      Effect.result,
-      Effect.provide(layer),
-      Effect.scoped,
-      (e) => Effect.runPromise(e as Effect.Effect<Result.Result<A, E>, never, never>),
-    )
+    const runnable = effect.pipe(Effect.provide(layer), Effect.scoped)
+
+    return Effect.runPromiseExit(runnable as Effect.Effect<A, E, never>).then((exit) => {
+      if (Exit.isSuccess(exit)) {
+        return Result.succeed(exit.value)
+      }
+
+      const cause = exit.cause
+
+      const failure = Cause.findErrorOption(cause)
+
+      if (Option.isSome(failure)) {
+        return Result.fail(failure.value)
+      }
+
+      // Runtime / Die / Layer failure
+      Effect.runSync(Effect.logError('Execution failed', cause))
+
+      return Promise.reject(cause)
+    })
   }
 
 /**
@@ -50,12 +60,24 @@ export const makeRunner =
   ): Promise<A> => {
     const layer = overrideLayer ? baseLayer.pipe(Layer.provideMerge(overrideLayer)) : baseLayer
 
-    return effect.pipe(
-      Effect.catchCause((cause) =>
-        Effect.logError('Execution failed', cause).pipe(Effect.andThen(Effect.failCause(cause))),
-      ),
-      Effect.provide(layer),
-      Effect.scoped,
-      (e) => Effect.runPromise(e as Effect.Effect<A, E | BaseE, never>),
-    )
+    const runnable = effect.pipe(Effect.provide(layer), Effect.scoped)
+
+    return Effect.runPromiseExit(runnable as Effect.Effect<A, E, never>).then((exit) => {
+      if (Exit.isSuccess(exit)) {
+        return exit.value
+      }
+
+      const cause = exit.cause
+
+      const failure = Cause.findErrorOption(cause)
+
+      if (Option.isSome(failure)) {
+        return Promise.reject(failure.value)
+      }
+
+      // Runtime / Die / Layer failure
+      Effect.runSync(Effect.logError('Execution failed', cause))
+
+      return Promise.reject(cause)
+    })
   }

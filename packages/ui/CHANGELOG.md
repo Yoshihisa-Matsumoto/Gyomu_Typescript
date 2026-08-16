@@ -1,5 +1,23 @@
 # @gyomu/ui
 
+## 1.1.3
+
+### Patch Changes
+
+- change runtime runner to log detail of runtime error
+
+## 1.1.2
+
+### Patch Changes
+
+- change react to peerDependencies
+
+## 1.1.1
+
+### Patch Changes
+
+- change react-dom version to pnpm catalog management
+
 ## 1.1.0
 
 ### Minor Changes
