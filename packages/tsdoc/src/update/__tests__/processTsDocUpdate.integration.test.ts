@@ -42,7 +42,7 @@ beforeAll(async () => {
   await copyDir(path.join('./test-fixtures', 'update-e2e'), path.join(destRoot, 'update-e2e'))
   updateFixture = createFixtureProject(path.join('update-e2e'), destRoot)
   console.log(updateFixture)
-})
+}, 30_000)
 
 const layer = Layer.provideMerge(MainLayer, ConfigLayer).pipe(Layer.provideMerge(PlatformLayer))
 const mockAiModelService = Layer.succeed(AiModelRoute, {

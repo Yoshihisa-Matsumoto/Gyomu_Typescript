@@ -59,7 +59,7 @@ export const GyomuRepositoryLayer = Layer.effect(
         },
       }),
       statusType: makeRepositoryFromDb(db, {
-        table: 'gyomu_status_info',
+        table: 'gyomu_status_type_cdtbl',
         schemas: StatusTypeSchema,
         options: {
           findAll: true,
