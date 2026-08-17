@@ -123,15 +123,18 @@ export const VariableTranslatorServiceLayer = Layer.effect(
       )
 
       return context.pipe(
-        Effect.map((ctx) => {
+        Effect.flatMap((ctx) => {
           if (ctx.state.kind === 'DatePending') {
-            throw new ValueError({
-              message: `Format string is required for date variable`,
-              cause: undefined,
-              value: { context: ctx, keyword: keyword },
-            })
+            return Effect.fail(
+              new ValueError({
+                message: `Format string is required for date variable`,
+                cause: undefined,
+                value: { context: ctx, keyword },
+              }),
+            )
           }
-          return ctx.output.join('')
+
+          return Effect.succeed(ctx.output.join(''))
         }),
       )
     }
