@@ -60,6 +60,7 @@ export const analyzeType = (
     imported,
     options,
     sourceFullText,
+    registerSymbol,
   } = args
   tracePlaceIdentity(args, args.options, 'analyzeType')
   // if (node != undefined)
@@ -96,6 +97,7 @@ export const analyzeType = (
           imported,
           options,
           reservedNames: [],
+          registerSymbol,
         },
         undefined,
       )

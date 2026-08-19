@@ -16,6 +16,7 @@
     { "path": "packages/concept" },
     { "path": "packages/infra" },
     { "path": "packages/schema" },
+    { "path": "packages/test-analysis" },
     { "path": "packages/ts-analysis" },
     { "path": "packages/tsdoc" },
     { "path": "packages/ui" },

@@ -41,6 +41,7 @@ export const analyzeConstructor = (
     imported,
     options,
     reservedNames,
+    registerSymbol,
   } = args
   const method = analyzeFunctionMemberInternal(args, {
     name,
@@ -66,6 +67,7 @@ export const analyzeConstructor = (
         imported,
         options,
         reservedNames,
+        registerSymbol,
       }),
     )
   // BODY

@@ -90,6 +90,7 @@ export const analyzeExportStatement = (
             parsedJsDoc: targetSymbol.parsedJsDoc ? [...targetSymbol.parsedJsDoc] : undefined,
             type: targetSymbol.type,
             docIndent: targetSymbol.docIndent,
+            isAsync: targetSymbol.isAsync,
           }
           referencedSymbol.location = {
             startLine: statement.getStartLineNumber(),

@@ -2,72 +2,69 @@
 
 ## Repository Overview
 
-The `@gyomu/schema` package provides the foundational framework for the Gyomu project, defining shared domain entities, type definitions, and service contracts. It serves as the primary reference for structural validation and consistent communication throughout the system.
+The `@gyomu/schema` package serves as a foundational shared infrastructure for the Gyomu project, providing a domain-driven schema and validation framework built on top of Effect and Standard Schema. Its primary responsibility is to define common contracts, including shared schemas, type definitions, service definitions, error-handling structures, entity definitions, and CRUD schema generators. 
 
-This package maintains architectural integrity by providing universal utility definitions and standardized diagnostic patterns. It facilitates loose coupling between services, ensuring type safety and structural consistency, while enabling automated CRUD generation and complex data conversion across the project.
+By establishing these shared contracts, the package ensures type safety and consistency across the repository, enabling independent packages to maintain loose coupling while collaborating effectively. Additionally, it supplies utilities for source code and metadata analysis.
 
 ## Package Responsibilities
 
-- Define and maintain formal schemas for core business domain entities.
-- Centralize the application's error classification, context management, and operational policy logic.
-- Provide advanced tooling for TypeScript meta-programming, including symbol analysis, dependency tracking, and structural type modeling.
-- Establish standardized result patterns and JSON serialization protocols for predictable public API communication.
-- Enable automated CRUD schema suite generation for domain-driven development.
+- Define domain-specific entity schemas, field definitions, and UI annotations that automatically generate complete CRUD schema suites.
+- Establish a centralized, type-safe error handling strategy with consistent diagnostic context, operational policies, and recovery traits.
+- Provide advanced structural schema representations for TypeScript code analysis, symbol management, and dependency tracking.
+- Offer low-level infrastructure utilities including result wrappers, JSON schema representations, and robust date/time manipulation routines.
 
 ## Architecture
 
-The architecture is organized into four primary functional layers:
+The package is structurally organized into foundational infrastructure, core domain logic, and specialized schema layers:
 
-*   **Foundation (`src/core`)**: Provides the low-level infrastructure, including standardized result patterns, JSON schema definitions, and utilities for type safety and stack trace introspection. This layer underpins the behavior of all higher-level modules.
-*   **Domain Modeling (`src/entity` & `src/schemas/gyomu`)**: Manages domain entities and business-specific logic. `src/entity` provides the framework for schema-based data structure definition, validation, and conversion, while `src/schemas/gyomu` implements the concrete CRUD schemas for business entities such as task management and service configurations.
-*   **Analysis Layer (`src/schemas/typescript`)**: Contains structural schemas for static code analysis. It models TypeScript symbols, members, and module connectivity, serving as the interface for documentation and analysis tools to represent code metadata.
-*   **Error Handling (`src/error`)**: Operates as a cross-cutting concern providing a centralized strategy for error classification and diagnostic context. It defines base traits and operational policies that other modules use to report failures and enforce consistent exception handling.
-
-Dependencies flow from the foundation upwards, with domain and analysis schemas leveraging core utilities and standardized error patterns to maintain consistency across the system.
+- **`src/core`**: Provides low-level infrastructure, shared type definitions, JSON schema structures, and standardized result patterns used across the package.
+- **`src/error`**: Manages centralized domain-specific error handling, standardization, context, and operational policies utilized by various system layers.
+- **`src/entity`**: Manages core domain entity definitions, CRUD schema generation, date logic, data conversion, and AST-based validation error resolution. It depends on `src/core` structures and feeds into schema definitions.
+- **`src/schemas/typescript`**: Defines structural schemas for TypeScript code analysis, modeling symbols, members, imports, exports, and types for code metadata.
+- **`src/schemas/gyomu`**: Defines data validation and CRUD schemas for business-specific entities, enforcing consistent data shapes for task management, workflows, and system configurations.
 
 ## Design Principles
 
-- Centralize all shared data, persistent state, and runtime-validated data as Effect Schema to ensure unified cross-package contracts.
-- Enforce strict independence by forbidding dependencies on other @gyomu packages, external libraries beyond standard ones, and any I/O operations or business logic.
-- Decouple service definitions by providing only interfaces and Context Tags, excluding implementations to maintain minimal, unidirectional dependencies.
-- Prioritize immutability and declarative design in APIs to prevent state-related side effects and simplify integration.
-- Mandate descriptive Schema Annotations to support runtime validation as well as automated code and documentation generation.
-- Utilize shared branded types to enforce type safety and prevent identifier ambiguity across the ecosystem.
+- Define shared, persisted, and runtime-validated data exclusively as Effect Schemas to unify package contracts, and mandate schema annotations to support AI-driven generation and documentation.
+- Place brand types centrally within this package to prevent identifier mismatches and ensure consistent reuse across boundaries.
+- Separate service definitions from their implementations by providing only interfaces and Context Tags to minimize dependency coupling.
+- Design utilities strictly as pure functions and prohibit any dependencies on other internal packages to prevent circular references and maintain unidirectional dependency flow.
+- Enforce strict architectural boundaries by prohibiting business logic implementation, external input-output operations, and external dependencies beyond Effect, JavaScript standard libraries, and approved time libraries.
 
 ## Important Constraints
 
-- Do not depend on any external libraries other than Effect, JavaScript standard libraries, and date/time libraries (specifically `date-fns`).
+- Do not depend on external libraries other than Effect, standard JavaScript libraries, and date/time libraries.
 - Do not depend on other `@gyomu` packages.
+- Do not implement business logic.
 - Do not perform file system, network, or database I/O.
-- Do not implement business logic within this package.
-- Preserve the existing public export structure and ensure all 406 exported symbols remain stable.
-- Ensure all structural data contracts are defined via schemas to guarantee runtime validation and static type safety.
-- Maintain the decoupling of operational policies (e.g., retry, logging) from domain-specific implementation logic.
-- Do not modify the existing error categorization strategy or the interface-based design of core services like the logger.
-- Ensure all schema definitions and type manipulations remain strictly decoupled from I/O-bound operations.
+- Preserve the existing public export structure and exported symbols.
 
 ## Editing Rules
 
-- Use Effect Schema for all data structures that are persisted or exchanged with external systems.
-- Design structured models instead of using free-form strings wherever possible.
-- Keep analysis, concept generation, document generation, and rendering loosely coupled.
+- Use Effect Schema for persisted and externally exchanged data.
+- Design structured models rather than free-form strings.
+- Keep parsing, concept generation, documentation generation, and rendering loosely coupled.
 - Do not introduce circular dependencies between packages.
-- Represent all effectful operations using Effect.
-- Represent errors through the Effect Error Channel instead of throwing exceptions.
-- Validate all AI-generated data with Effect Schema before use.
-- Do not depend on AI provider-specific APIs outside of the Infrastructure layer.
+- Represent effectful operations with Effect.
+- Represent errors in the Effect error channel instead of throwing exceptions.
+- Validate AI-generated data with Effect Schema before use.
+- Depend only on public APIs of other packages and avoid internal implementations.
+- Do not depend on AI provider-specific APIs outside the Infrastructure layer.
 - Generate documentation from structured data such as concepts.
-- Maintain a single source of truth for knowledge and avoid duplicating information across documents.
-- Depend only on public APIs of other packages.
-- Centralize shared logic into existing common packages to avoid duplicate implementations.
-- Update or add tests whenever observable behavior changes.
-- Design tests to be deterministic and avoid dependencies on external services.
-- Treat human-managed knowledge and source-derived knowledge as independent data sources.
-- Generate documents via the Document model rather than constructing Markdown strings directly.
+- Avoid duplicating the same knowledge across multiple documents.
+- Consolidate shareable logic into existing shared packages to avoid duplicate implementations.
+- Update tests when observable behavior changes.
+- Keep tests deterministic and independent of external services.
+- Treat human-managed knowledge and code-derived knowledge as independent sources.
+- Generate documents via the Document model rather than assembling Markdown strings directly.
 
 ## Navigation
 
-This document provides a high-level overview of the package concept, responsibilities, and design decisions. For more detailed information, refer to the following documents:
+This document provides a high-level overview of the package concept, responsibilities, and design decisions.
+
+For more detailed information, refer to the following documents:
+
+
 
 - **Architecture Documentation**
   Describes the internal architecture, major components, dependencies, and design decisions of this package.

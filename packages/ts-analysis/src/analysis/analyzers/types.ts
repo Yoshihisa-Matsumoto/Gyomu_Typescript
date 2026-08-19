@@ -1,7 +1,13 @@
 import type {
   DependencyCandidate,
   ExportAnalysis,
+  ExpressionAnalysis,
+  FunctionBodyAnalysis,
+  FunctionBodyCatch,
+  FunctionBodyElement,
+  FunctionBodySwitchClause,
   ImportAnalysis,
+  ObjectLiteralPropertyAnalysis,
   SymbolAnalysis,
   SymbolIdentity,
 } from '@gyomu/schema/schemas/typescript'
@@ -11,7 +17,18 @@ import type {
   ProjectRelativePath,
   SymbolId,
 } from '@gyomu/schema/typescript'
-import type { Node } from 'ts-morph'
+import type {
+  ArrowFunction,
+  ConstructorDeclaration,
+  FunctionDeclaration,
+  FunctionExpression,
+  FunctionTypeNode,
+  GetAccessorDeclaration,
+  MethodDeclaration,
+  MethodSignature,
+  Node,
+  SetAccessorDeclaration,
+} from 'ts-morph'
 import type { AnalysisOptions } from '@gyomu/schema'
 
 /**
@@ -26,6 +43,7 @@ export type TagAnalysisArg<T extends Node> = {
   declarationOrder: number
   imported: Array<ImportAnalysis>
   options: AnalysisOptions | undefined
+  registerSymbol: boolean
 }
 
 /**
@@ -81,6 +99,7 @@ export type ChildAnalysisArg<T> = {
   imported: Array<ImportAnalysis>
   options: AnalysisOptions | undefined
   reservedNames: Array<string>
+  registerSymbol: boolean
 }
 
 /**
@@ -96,6 +115,7 @@ export type GetSignatureIdArg<T extends Node> = {
   imported: Array<ImportAnalysis>
   options: AnalysisOptions | undefined
   reservedNames: Array<string>
+  registerSymbol: boolean
 }
 
 /**
@@ -115,12 +135,56 @@ export type MemberAnalysisWithReservedResult<T> = {
   reservedNames: Array<string>
 }
 
+export type FunctionLikeNodeType =
+  | MethodSignature
+  | FunctionTypeNode
+  | MethodDeclaration
+  | ConstructorDeclaration
+  | FunctionDeclaration
+  | ArrowFunction
+  | FunctionExpression
+  | GetAccessorDeclaration
+  | SetAccessorDeclaration
+
 /**
  * Represents the dependency analysis result for a class or object method.
  */
 export type MethodAnalysisResult = {
   dependencies: Array<DependencyCandidate>
+  functionBody: FunctionBodyAnalysis
 }
+export type FunctionBodySwitchClauseAnalysisResult = {
+  element: FunctionBodySwitchClause
+  dependencies: Array<DependencyCandidate>
+  reservedNames: Array<string>
+}
+export type FunctionBodyCatchClauseAnalysisResult = {
+  element: FunctionBodyCatch
+  dependencies: Array<DependencyCandidate>
+  reservedNames: Array<string>
+}
+export type FunctionBodyStatementAnalysisResult = {
+  elements: Array<FunctionBodyElement>
+  dependencies: Array<DependencyCandidate>
+  reservedNames: Array<string>
+}
+
+export type ExpressionAnalysisResult = {
+  element: ExpressionAnalysis
+  dependencies: Array<DependencyCandidate>
+  reservedNames: Array<string>
+}
+
+export type PropertyAnalysisResult = {
+  property: ObjectLiteralPropertyAnalysis
+  dependencies: Array<DependencyCandidate>
+  reservedNames: Array<string>
+}
+
+// export type StatememntAnalysisResult = {
+//   dependencies: Array<DependencyCandidate>
+//   element: FunctionBodyElement
+// }
 
 /**
  * Contains the results of generic parameter analysis, including parameter names, dependencies, and optional definition name.

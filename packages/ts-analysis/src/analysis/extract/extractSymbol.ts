@@ -26,7 +26,11 @@ export const extractSymbols = (
   context: SourceFileContext,
   metadata: FileAnalysisMetadata,
   options?: AnalysisOptions,
-) => {
+): {
+  imported: Array<ImportAnalysis>
+  exported: Array<ExportAnalysis>
+  internals: Array<SymbolAnalysis>
+} => {
   const statements = context.sourceFile.getStatements()
   const imported: Array<ImportAnalysis> = []
   const exported: Array<ExportAnalysis> = []

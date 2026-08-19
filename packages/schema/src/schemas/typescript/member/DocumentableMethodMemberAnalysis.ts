@@ -1,5 +1,6 @@
 import { Schema } from 'effect'
 import { TypeAnalysis } from '../type/TypeAnalysis.js'
+import { FunctionBodyAnalysis } from '../FunctionBodyAnalysis.js'
 import { DocumentableMember } from './DocumentableMember.js'
 import { BaseMemberAnalysis } from './BaseMemberAnalysis.js'
 import { MemberAnalysis } from './MemberAnalysis.js'
@@ -27,6 +28,16 @@ export interface DocumentableMethodMemberAnalysis extends BaseMemberAnalysis, Do
    * The source code snippet representing this method member.
    */
   snippet: string
+
+  /**
+   * Analysis results for the implementation of the function body, when the symbol represents a function.
+   */
+  functionBody?: FunctionBodyAnalysis | undefined
+
+  /**
+   * Whether the symbol represents an asynchronous function or a value that resolves asynchronously.
+   */
+  isAsync?: boolean | undefined
 }
 
 /**
@@ -38,6 +49,14 @@ export const DocumentableMethodMemberAnalysis: Schema.Schema<DocumentableMethodM
     parameters: Schema.Array(Schema.suspend(() => MemberAnalysis)),
     returnType: Schema.Union([Schema.suspend(() => TypeAnalysis), Schema.Undefined]),
     snippet: Schema.String,
+    functionBody: Schema.optional(Schema.suspend(() => FunctionBodyAnalysis)).annotate({
+      description:
+        'Analysis results for the implementation of the function body, when the symbol represents a function.',
+    }),
+    isAsync: Schema.optional(Schema.Boolean).annotate({
+      description:
+        'Whether the symbol represents an asynchronous function or a value that resolves asynchronously.',
+    }),
   })
     .pipe(
       Schema.fieldsAssign(BaseMemberAnalysis.fields),

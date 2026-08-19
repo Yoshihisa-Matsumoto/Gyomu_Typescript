@@ -90,7 +90,6 @@ export interface IndexSignatureAnalysis {
    */
   readonly docIndent: string
 }
-type aa = Schema.Schema.Type<typeof IndexSignatureAnalysis>
 
 export const IndexSignatureAnalysis = Schema.Struct({
   /**

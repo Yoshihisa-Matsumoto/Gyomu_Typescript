@@ -104,7 +104,7 @@ describe('analyze Class pattern', () => {
     async () => {
       const result = await classAnalysisProgram('01-class-members-basic.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       expect(
         result.members.map((m) => {
           return {
@@ -124,7 +124,7 @@ describe('analyze Class pattern', () => {
     async () => {
       const result = await classAnalysisProgram('02-class-members-readonly.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       expect(result.members.find((m) => m.kind == 'property')?.readonly).toBeTruthy()
     },
     timeout,
@@ -134,7 +134,7 @@ describe('analyze Class pattern', () => {
     async () => {
       const result = await classAnalysisProgram('03-class-members-optional.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       expect(result.members.find((m) => m.kind == 'property')?.optional).toBeTruthy()
       expect(
         (
@@ -150,7 +150,7 @@ describe('analyze Class pattern', () => {
     async () => {
       const result = await classAnalysisProgram('04-class-members-parameters.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       const method = result.members.find((m) => m.kind == 'method')!
       const parameters = method.parameters
       expect(parameters.length).toBe(3)
@@ -163,7 +163,7 @@ describe('analyze Class pattern', () => {
     async () => {
       const result = await classAnalysisProgram('05-class-members-complex-types.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       expect(result.members.length).toBe(2)
       const property = result.members.find((m) => m.kind == 'property')
       expect(property?.type?.text).toBe('User | undefined')
@@ -178,7 +178,7 @@ describe('analyze Class pattern', () => {
     async () => {
       const result = await classAnalysisProgram('06-class-members-accessors.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
     },
     timeout,
   )
@@ -187,7 +187,7 @@ describe('analyze Class pattern', () => {
     async () => {
       const result = await classAnalysisProgram('07-class-members-static.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       expect(result.members.length).toBe(2)
       expect(result.members.filter((v) => v.static).length).toBe(2)
     },
@@ -198,7 +198,7 @@ describe('analyze Class pattern', () => {
     async () => {
       const result = await classAnalysisProgram('08-class-members-constructor.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       expect(result.members.length).toBe(3)
       expect(result.members.filter((v) => v.kind == 'method').length).toBe(2)
       const constructor: DocumentableMethodMemberAnalysis = result.members.find(
@@ -215,7 +215,7 @@ describe('analyze Class pattern', () => {
     async () => {
       const result = await classAnalysisProgram('09-class-members-generics.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       expect(result.members.length).toBe(1)
       // TODO Generics
     },
@@ -258,7 +258,7 @@ describe('analyze Class pattern', () => {
     async () => {
       const result = await classAnalysisProgram('11-class-members-everything.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       expect(result.members.length).toBe(7)
     },
     timeout,
@@ -271,7 +271,7 @@ describe('analyze Class dependency pattern', () => {
     async () => {
       const result = await classSymbolsDependencyProgram('01-heritage.ts', 'dependency')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       expect(result).toEqual(
         expect.arrayContaining([
           {
@@ -314,12 +314,13 @@ describe('analyze Class dependency pattern', () => {
     async () => {
       const result = await classSymbolsDependencyProgram('02-members.ts', 'dependency')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       const member = result.find((r) => r.name == 'MemberDependencyClass')
       const dependencies = member?.dependencies
       expect(dependencies).toBeDefined()
 
       if (dependencies) {
+        // console.dir(dependencies, { depth: null })
         expect(dependencies).toEqual(
           expect.arrayContaining([
             {
@@ -342,6 +343,10 @@ describe('analyze Class dependency pattern', () => {
                 scope: 'local-file',
                 localSymbolName: 'localFactory',
               },
+            },
+            {
+              source: { memberPath: ['$member', 'importedInitialized'] },
+              target: { scope: 'import', localSymbolName: 'importedFactory' },
             },
             {
               source: { memberPath: ['$constructor', '$parameters', 'local'] },
@@ -473,7 +478,7 @@ describe('analyze Class dependency pattern', () => {
     async () => {
       const result = await classSymbolsDependencyProgram('03-nested-types.ts', 'dependency')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       const member = result.find((r) => r.name == 'NestedTypes')
       const dependencies = member?.dependencies
       expect(dependencies).toBeDefined()
@@ -536,7 +541,7 @@ describe('analyze Class dependency pattern', () => {
     async () => {
       const result = await classSymbolsDependencyProgram('04-generics.ts', 'dependency')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       const member = result.find((r) => r.name == 'GenericClass')
       const dependencies = member?.dependencies
       expect(dependencies).toBeDefined()

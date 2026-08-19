@@ -102,7 +102,7 @@ describe('analyze Enum pattern', () => {
     async () => {
       const result = await enumAnalysisProgram('01-basic-enum.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       const direction = getEnum(result, 'Direction')
       expect(direction.members.length).toBe(4)
       const color = getEnum(result, 'Color')
@@ -122,7 +122,7 @@ describe('analyze Enum pattern', () => {
     async () => {
       const result = await enumAnalysisProgram('02-const-enum.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
 
       const tokenKind = getEnum(result, 'TokenKind')
       const NumberField = getEnumMeberAsTypeStructure(tokenKind, 'Number')
@@ -140,7 +140,7 @@ describe('analyze Enum pattern', () => {
     async () => {
       const result = await enumAnalysisProgram('03-computed-enum.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
     },
     timeout,
   )
@@ -149,7 +149,7 @@ describe('analyze Enum pattern', () => {
     async () => {
       const result = await enumAnalysisProgram('04-ambient-enum.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
     },
     timeout,
   )
@@ -158,7 +158,7 @@ describe('analyze Enum pattern', () => {
     async () => {
       const result = await enumAnalysisProgram('05-merge-enum.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
     },
     timeout,
   )
@@ -167,7 +167,7 @@ describe('analyze Enum pattern', () => {
     async () => {
       const result = await enumAnalysisProgram('06-enum-usage.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
     },
     timeout,
   )

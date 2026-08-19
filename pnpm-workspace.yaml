@@ -19,7 +19,8 @@ catalog:
   effect: 4.0.0-beta.92
   eslint-plugin-storybook: ^10.4.0
   jsdom: ^30.0.1
-  react: ^19.2.4
+  react: ^19.2.8
+  react-dom: ^19.2.8
   shadcn: ^4.16.0
   tailwind-merge: ^3.6.0
   tailwindcss: ^4.3.3

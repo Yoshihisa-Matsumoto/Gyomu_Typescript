@@ -37,6 +37,7 @@ export const analyzeTypeLiteralNode = (
     ownerSymbolIdentity,
     sourceFullText,
     reservedNames,
+    registerSymbol,
   } = args
 
   const newMemberPath = [...memberPath, '$member']
@@ -59,17 +60,18 @@ export const analyzeTypeLiteralNode = (
           name,
           member,
         )
-        const prepareResult = prepareMethodAnalysis(
-          args.sourceRelativePath,
-          args.metadata,
-          args.ownerSymbolId,
-          args.ownerSymbolIdentity,
-          newMemberPath,
-          name,
-          member,
-          member,
+        const prepareResult = prepareMethodAnalysis({
+          sourcePath: args.sourceRelativePath,
+          metadata: args.metadata,
+          ownerSymbolId: args.ownerSymbolId,
+          ownerSymbolIdentity: args.ownerSymbolIdentity,
+          memberPath: newMemberPath,
+          methodName: name,
+          node: member,
+          jsDocableNode: member,
           options,
-        )
+          registerSymbol,
+        })
         const property: DocumentableTypeProperty = {
           documentable: true,
           id: methodIdentity.id,
@@ -91,7 +93,7 @@ export const analyzeTypeLiteralNode = (
             member.getStartLinePos(),
           ), // TODO : Not sure about it
         }
-        registerSymbolSymbolAnalysis(metadata, property, options)
+        registerSymbolSymbolAnalysis(metadata, property, options, registerSymbol)
         return {
           member: property,
           dependencies: methodType.dependencies,
@@ -101,17 +103,18 @@ export const analyzeTypeLiteralNode = (
       if (Node.isFunctionTypeNode(member)) {
         const name = Node.isNameable(member) ? member.getName()! : member.getText()
         const methodType = analyzeType({ ...args, node: member, memberPath: newMemberPath }, [name])
-        const prepareResult = prepareMethodAnalysis(
-          args.sourceRelativePath,
-          args.metadata,
-          args.ownerSymbolId,
-          args.ownerSymbolIdentity,
-          newMemberPath,
-          name,
-          member,
-          member,
+        const prepareResult = prepareMethodAnalysis({
+          sourcePath: args.sourceRelativePath,
+          metadata: args.metadata,
+          ownerSymbolId: args.ownerSymbolId,
+          ownerSymbolIdentity: args.ownerSymbolIdentity,
+          memberPath: newMemberPath,
+          methodName: name,
+          node: member,
+          jsDocableNode: member,
           options,
-        )
+          registerSymbol,
+        })
 
         const methodIdentity = initializeMethodIdentity(
           args.ownerSymbolId,
@@ -142,7 +145,7 @@ export const analyzeTypeLiteralNode = (
             member.getStartLinePos(),
           ), // TODO : Not sure about it
         }
-        registerSymbolSymbolAnalysis(metadata, property, options)
+        registerSymbolSymbolAnalysis(metadata, property, options, registerSymbol)
 
         return {
           member: property,
@@ -184,17 +187,18 @@ export const analyzeTypeLiteralNode = (
             [name],
           )
           // console.dir(methodType.dependencies, { depth: null })
-          const prepareResult = prepareMethodAnalysis(
-            args.sourceRelativePath,
-            args.metadata,
-            args.ownerSymbolId,
-            args.ownerSymbolIdentity,
-            newMemberPath,
-            name,
-            memberTypeNode,
-            member,
+          const prepareResult = prepareMethodAnalysis({
+            sourcePath: args.sourceRelativePath,
+            metadata: args.metadata,
+            ownerSymbolId: args.ownerSymbolId,
+            ownerSymbolIdentity: args.ownerSymbolIdentity,
+            memberPath: newMemberPath,
+            methodName: name,
+            node: memberTypeNode,
+            jsDocableNode: member,
             options,
-          )
+            registerSymbol,
+          })
 
           const methodIdentity = initializeMethodIdentity(
             args.ownerSymbolId,
@@ -224,7 +228,7 @@ export const analyzeTypeLiteralNode = (
               memberTypeNode.getStartLinePos(),
             ), // TODO : Not sure about it
           }
-          registerSymbolSymbolAnalysis(metadata, property, options)
+          registerSymbolSymbolAnalysis(metadata, property, options, registerSymbol)
           return {
             member: property,
             dependencies: methodType.dependencies,
@@ -243,6 +247,7 @@ export const analyzeTypeLiteralNode = (
           imported,
           options,
           reservedNames,
+          registerSymbol,
         })
       }
       if (Node.isIndexSignatureDeclaration(member)) {

@@ -7,7 +7,7 @@ import { registerSymbolSymbolAnalysis } from '../../../file/registerSymbolSymbol
 import { computeIndent } from '../computeIndent.js'
 import { analyzeGenericsParameters } from '../analyzeGenericsParameters.js'
 
-import { analyzeFunctionBody } from '../struct/analyzeFunctionMember.js'
+import { analyzeFunctionBody } from '../struct/analyzeFunctionBody.js'
 import { tracePlaceIdentity } from '../../../trace/traceUtil.js'
 import type {
   ArrowFunction,
@@ -39,8 +39,11 @@ export const analyzeFunction = (
   args: TagAnalysisArg<VariableDeclaration>,
   prepared: SymbolPreparation,
   node: ArrowFunction | FunctionExpression,
-) => {
-  const { sourceRelativePath, metadata, imported, options, sourceFullText } = args
+): {
+  symbol: SymbolAnalysis
+  isDefault: boolean
+} => {
+  const { sourceRelativePath, metadata, imported, options, sourceFullText, registerSymbol } = args
   const name = args.declaration.getName()
   const identity: SymbolIdentity = {
     symbolId: SymbolId(name),
@@ -59,6 +62,7 @@ export const analyzeFunction = (
     imported,
     options,
     reservedNames: [],
+    registerSymbol: false,
   })
 
   const symbol = {
@@ -90,8 +94,10 @@ export const analyzeFunction = (
       args.declaration.getStart(),
       args.declaration.getStartLinePos(),
     ),
+    functionBody: methodBodyResult.functionBody,
+    isAsync: node.isAsync(),
   } satisfies SymbolAnalysis
-  registerSymbolSymbolAnalysis(args.metadata, symbol, args.options)
+  registerSymbolSymbolAnalysis(args.metadata, symbol, args.options, registerSymbol)
 
   return {
     symbol,
@@ -138,6 +144,7 @@ export const getFunctionSignature = (
     sourceFullText,
     imported,
     options,
+    registerSymbol,
   } = args
   const { id } = createSymbolIdentity(declaration, sourceRelativePath, 'function')
   const identity: SymbolIdentity = {
@@ -173,6 +180,7 @@ export const getFunctionSignature = (
     imported,
     options,
     reservedNames: [],
+    registerSymbol,
   })
   const parametersResult = node.getParameters().map((p, index) =>
     analyzeParameter({
@@ -187,6 +195,7 @@ export const getFunctionSignature = (
       imported,
       options,
       reservedNames: genericsResult.parameters,
+      registerSymbol,
     }),
   )
   const returnTypeResult =
@@ -204,6 +213,7 @@ export const getFunctionSignature = (
             imported,
             options,
             reservedNames: genericsResult.parameters,
+            registerSymbol,
           },
           [nodeName, '$return'],
         )

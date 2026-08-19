@@ -25,6 +25,7 @@ export const analyzeArrayBindingPattern = (
     .filter((e) => !!e)
   return {
     member: {
+      kind: 'binding',
       pattern: 'array',
       elements: elementsResult.map((e) => e.member),
     },

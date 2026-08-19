@@ -1,44 +1,41 @@
 {
-  "summary": "The @gyomu/schema package provides a robust foundational framework for modeling domain entities, enforcing structural validation, and managing operational errors. It serves as the primary source of truth for schema definitions, enabling consistent CRUD generation, complex data conversion, and standardized system-wide diagnostic patterns.",
+  "summary": "The @gyomu/schema package provides a comprehensive, domain-driven schema and validation framework built on top of Effect and Standard Schema. It defines foundational error handling structures, entity definitions, CRUD schema generators, and utilities for source code and metadata analysis.",
   "responsibilities": [
-    "Define and maintain formal schemas for core business domain entities.",
-    "Centralize the application's error classification, context management, and operational policy logic.",
-    "Provide advanced tooling for TypeScript meta-programming, including symbol analysis, dependency tracking, and structural type modeling.",
-    "Establish standardized result patterns and JSON serialization protocols for predictable public API communication.",
-    "Enable automated CRUD schema suite generation for domain-driven development."
+    "Define domain-specific entity schemas, field definitions, and UI annotations that automatically generate complete CRUD schema suites.",
+    "Establish a centralized, type-safe error handling strategy with consistent diagnostic context, operational policies, and recovery traits.",
+    "Provide advanced structural schema representations for TypeScript code analysis, symbol management, and dependency tracking.",
+    "Offer low-level infrastructure utilities including result wrappers, JSON schema representations, and robust date/time manipulation routines."
   ],
   "capabilities": [
     {
-      "name": "Domain Entity Modeling",
-      "description": "Comprehensive tools for defining complex business entities, supporting automated CRUD schema generation and structured UI annotations."
+      "name": "Entity Schema Generation",
+      "description": "Defines business entity structures and automatically generates corresponding insert, update, and select CRUD schemas."
     },
     {
-      "name": "Centralized Error Infrastructure",
-      "description": "Consistent error classification and diagnostic context management that powers automated logging and retry logic across the system."
+      "name": "Domain Error Handling",
+      "description": "Provides classified application errors equipped with operational logging policies, context metadata, and retryability traits."
     },
     {
-      "name": "TypeScript Code Analysis",
-      "description": "Framework for introspecting TypeScript structures, including symbol analysis, JSDoc parsing, and module-level dependency mapping."
+      "name": "TypeScript Code Analysis Schemas",
+      "description": "Supplies rich structural models for analyzing symbols, type properties, imports, exports, and JSDoc annotations."
     },
     {
-      "name": "Standardized Data Validation",
-      "description": "Foundational validation patterns that ensure data integrity and provide developer-friendly diagnostic messages for complex schema failures."
+      "name": "Result and Validation Flow",
+      "description": "Encapsulates operation outcomes using standardized success and failure result schemas with integrated field-level error mapping."
     },
     {
-      "name": "Public API Contract Management",
-      "description": "Utilities for wrapping internal logic into result-based schemas with predictable success and failure responses."
+      "name": "Date and Time Utilities",
+      "description": "Handles local dates, year-month periods, and business calendar transformations required by domain entities."
     }
   ],
   "designDecisions": [
-    "Utilizes Effect-based schemas to provide type-safe, composable, and runtime-validated data structures.",
-    "Employs a branded type strategy for critical identifiers to improve safety in domain-specific logic.",
-    "Adopts a trait-based error model, separating behavioral metadata (e.g., retryability) from the structural context of the error.",
-    "Centralizes schema definitions to act as a single source of truth for both static TypeScript types and runtime validation."
+    "Leverages the Effect ecosystem and Standard Schema specifications for robust, type-safe runtime validation and error tracking.",
+    "Uses schema-driven code generation to keep database access models, entity definitions, and UI annotations tightly synchronized.",
+    "Employs branded types and strict nominal identifiers for keys, paths, and user identifiers to prevent accidental primitive confusion."
   ],
   "usageGuidance": [
-    "Define all new domain entities within the entity registry to leverage automated CRUD schema generation.",
-    "Always extend the provided base error classes and context interfaces to ensure diagnostic metadata is preserved throughout the application.",
-    "Use the schema conversion utilities for boundary operations, such as handling external JSON input or persistence layer data, to guarantee runtime type safety.",
-    "Leverage the provided exhaustive type-checking utilities when handling unions to prevent unhandled state scenarios at compile time."
+    "Use the provided entity definition builders to declare domain models and automatically derive their corresponding CRUD schemas.",
+    "Wrap fallible operations using the package's standardized result schemas and domain error structures to ensure consistent error reporting.",
+    "Leverage Effect-based schema conversion utilities for safe data decoding and encoding across application boundaries."
   ]
 }

@@ -2,72 +2,84 @@
 
 ## Repository Overview
 
-The `@gyomu/ts-analysis` package serves as the foundational static analysis infrastructure for Gyomu. It performs comprehensive analysis on TypeScript projects, extracting source code structures, symbols, and dependency relationships into a structured analysis model. By orchestrating the exploration of workspace projects and processing source files into metadata, the package manages the persistence and reuse of analysis results. This model acts as a common foundation, enabling AI-driven tools and documentation generators to consume high-level, structured insights derived from the codebase.
+The `@gyomu/ts-analysis` package functions as the TypeScript source code analysis infrastructure for Gyomu. Its primary responsibility is to statically analyze projects and workspaces, extracting source code structures, symbols, and dependencies into a structured analytical model. 
+
+By managing filesystem caching, path resolution, and metadata processing, the package persists and supplies this analysis model in a reusable format. This establishes a common foundational layer that upper-layer systems, such as AI services and documentation generation tools, utilize for programmatic code intelligence.
 
 ## Package Responsibilities
 
-- Orchestrate the static analysis pipeline from project initialization to file-level processing.
-- Manage the discovery and structural definition of TypeScript projects within a workspace.
-- Provide a consistent interface for resolving and transforming file system paths relative to project and workspace roots.
-- Persist analysis metadata to the filesystem to support incremental processing and efficient lookups.
-- Bridge the gap between logical module specifiers and physical source code locations.
+- Orchestrate the static analysis pipeline for TypeScript source files and project configurations.
+- Manage project context, workspace discovery, and environment metadata.
+- Persist and load analysis results from storage to support caching and incremental workflows.
+- Provide path normalization, transformation, and mapping between source files and build outputs.
 
 ## Architecture
 
-The architecture is organized into two primary domains: infrastructure orchestration under `src/analysis` and foundational utilities under `src/shared`.
+The package is structured around a top-level root entry point (`src`) that exports the core static analysis pipeline and shared infrastructure utilities. 
 
-*   **`src/analysis`**: Manages the static analysis pipeline, including project-level context initialization and file-level processing. The `src/analysis/project` component acts as the central repository for project metadata and configuration state, anchoring the analysis within defined workspace boundaries. This layer relies on filesystem persistence logic to cache analysis results and link source files to metadata.
-*   **`src/shared`**: Provides essential cross-cutting concerns:
-    *   `src/shared/path`: Supplies path normalization and resolution utilities, mapping logical module specifiers and source files to their physical filesystem locations.
-    *   `src/shared/project`: Handles the discovery and structural identification of TypeScript projects within a workspace, extracting the metadata required to define build targets and scope.
+The architecture is divided into two primary areas:
+- **`src/analysis`**: Manages the static analysis pipeline. It contains `src/analysis/project`, which defines the project scope, configuration data, and context required for analysis. The analysis subsystem orchestrates file-level processing, persists and retrieves metadata, and maintains project-wide context.
+- **`src/shared`**: Houses foundational utilities. `src/shared/project` handles TypeScript project discovery and workspace configuration analysis, while `src/shared/path` provides centralized path normalization, resolution, and source-to-output mapping.
 
-These areas are interconnected, with `src/shared` utilities providing the environment required for `src/analysis` to identify project boundaries and resolve resources, while the root `src` directory orchestrates these components to expose unified interfaces for analysis and project management.
+The analysis subsystem relies on project configuration and workspace definitions provided by the shared infrastructure to establish its environment and boundaries.
 
 ## Design Principles
 
-- Deterministic derivation of analysis results ensures consistency and reliability by ensuring outputs are derived strictly from source code state without external interference or AI inference.
-- Strict separation of concerns between project-level and file-level analysis maintains modularity and facilitates independent processing and scaling.
-- Persistence of analysis results enables incremental updates and efficient reuse, reducing overhead in large-scale development environments.
-- Decoupling of module resolution from core analysis logic isolates implementation details, preventing tight coupling to specific compiler APIs or underlying diagnostic frameworks.
-- Encapsulation of TypeScript boundaries through a unified project context ensures consistent path resolution and promotes a read-only architectural pattern that prohibits source code mutation.
-- Abstraction of internal analysis mechanics ensures that higher-level consumers remain agnostic of underlying implementation tools, preserving architectural integrity through clear API boundaries.
+- Derive analysis results deterministically from source code without relying on AI inference or semantic reasoning to ensure consistency.
+- Isolate project-level and file-level analysis into independent responsibilities while centralizing TypeScript-specific processing to maintain strict boundary separation.
+- Persist analysis results immutably as read-only data, enabling incremental updates and reuse for large-scale projects without modifying the underlying source code.
+- Enforce consistent path resolution across the entire workspace and maintain loose coupling between module resolution and analysis execution.
+- Restrict upper layers to consuming analysis results exclusively, preventing direct dependencies on internal compiler APIs or external tools like ts-morph.
 
 ## Important Constraints
 
-- Do not modify source code. - Do not perform document generation. - Do not implement AI-based inference or semantic analysis. - Do not implement project-specific analysis logic. - Do not expose TypeScript Compiler API implementation details in the public API. - Do not introduce new runtime dependencies outside of `@gyomu/infra`, `@gyomu/schema`, `effect`, `ts-morph`, and `dotenv`. - Preserve the existing public export structure (limit to `./` and `./testing`). - Limit the public API to exactly 22 exported symbols. - Persist analysis metadata exclusively using standard JSON serialization. - Maintain the strict decoupling between project discovery mechanisms and analysis logic. - Ensure all file system operations remain environment-agnostic via the existing path resolution utilities.
+- Do not modify source code.
+- Do not perform documentation generation.
+- Do not implement AI-based inference or semantic analysis.
+- Do not implement project-specific analysis logic.
+- Do not expose TypeScript Compiler API implementation details as part of the public API.
+- Preserve the existing public export paths (`.` and `./testing`) and exported symbols.
 
 ## Editing Rules
 
-- Use Effect Schema for all data structures that require persistence or external exchange.
-- Design structured models instead of relying on free-form strings.
-- Decouple analysis, concept generation, document generation, and rendering processes.
+- Use Effect Schema for persisted and externally exchanged data.
+- Design structured models instead of free-form strings wherever possible.
+- Keep analysis, concept generation, documentation generation, and rendering loosely coupled.
 - Do not introduce circular dependencies between packages.
-- Represent side effects using Effect.
-- Express errors through the Effect Error Channel instead of throwing exceptions.
-- Validate all AI-generated data with Effect Schema before use.
-- Avoid dependencies on AI-provider-specific APIs outside the Infrastructure layer.
-- Generate documentation from structured data like Concepts.
-- Avoid duplicating knowledge across multiple documents.
+- Represent effectful operations with Effect.
+- Express errors through the Effect error channel rather than throwing exceptions.
+- Validate AI-generated data with Effect Schema before use.
+- Do not depend on AI provider-specific APIs outside the Infrastructure layer.
+- Generate documentation from structured data such as concepts.
+- Avoid duplicating the same knowledge across multiple documents.
 - Depend only on public APIs of other packages.
-- Consolidate reusable logic into existing shared packages to prevent duplication.
-- Update or add tests whenever observable behavior changes.
-- Ensure tests are deterministic and independent of external services.
-- Maintain human-managed knowledge and code-derived knowledge as independent sources.
-- Generate documents via the Document model instead of manually constructing Markdown strings.
+- Consolidate shareable logic into existing shared packages to avoid duplication.
+- Update or add tests when observable behavior changes.
+- Keep tests deterministic and avoid depending on external services.
+- Treat human-managed knowledge and code-derived knowledge as independent sources.
+- Generate documents through the Document model instead of assembling Markdown strings directly.
 
 ## Navigation
 
-This document provides a high-level overview of the package concept, responsibilities, and design decisions. For more detailed information, refer to the following documents:
+This document provides a high-level overview of the package concept, responsibilities, and design decisions.
+
+For more detailed information, refer to the following documents:
+
+
 
 - **Architecture Documentation**
   Describes the internal architecture, major components, dependencies, and design decisions of this package.
 - **API Reference**
   Describes public APIs, exported modules, and usage patterns.
+
 - **Technical Documentation**
   Describes technical details, configuration, dependencies, and implementation-specific information.
+
 - **Development Guide**
   Describes development workflows, coding conventions, testing strategies, and contribution guidelines.
+
 - **Project Knowledge**
   Contains additional knowledge maintained by developers, including constraints, rationale, terminology, and operational guidelines.
+
 
 When modifying this package, review the relevant documentation before making changes to preserve the intended responsibilities and architectural boundaries.

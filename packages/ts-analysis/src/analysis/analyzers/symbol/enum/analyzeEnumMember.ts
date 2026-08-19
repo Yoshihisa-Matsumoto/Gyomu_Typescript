@@ -36,22 +36,24 @@ export const analyzeEnumMember = (
     sourceRelativePath,
     options,
     reservedNames,
+    registerSymbol,
   } = args
 
   const name = node.getName()
   const initializer = node.getInitializer()
 
-  const { id, identity, jsDoc, location, startOffset, parsedJsDoc } = preparePropertyAnalysis(
-    sourceRelativePath,
+  const { id, identity, jsDoc, location, startOffset, parsedJsDoc } = preparePropertyAnalysis({
+    sourcePath: sourceRelativePath,
     metadata,
     ownerSymbolId,
     ownerSymbolIdentity,
     memberPath,
-    name,
+    propertyName: name,
     node,
-    node,
+    jsDocableNode: node,
     options,
-  )
+    registerSymbol,
+  })
 
   let typeResult: MemberAnalysisResult<TypeAnalysis> | undefined
   if (!initializer) {
@@ -89,6 +91,7 @@ export const analyzeEnumMember = (
         imported,
         options,
         reservedNames,
+        registerSymbol,
       },
       [name],
     )
@@ -118,7 +121,7 @@ export const analyzeEnumMember = (
     declarationOrder,
     docIndent: computeIndent(sourceFullText, node.getStart(), node.getStartLinePos()),
   } satisfies DocumentablePropertyMemberAnalysis
-  registerSymbolSymbolAnalysis(metadata, property, options)
+  registerSymbolSymbolAnalysis(metadata, property, options, registerSymbol)
   return {
     member: property,
     dependencies: [...typeResult.dependencies],

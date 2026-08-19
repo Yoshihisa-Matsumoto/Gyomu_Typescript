@@ -40,6 +40,7 @@ export const analyzeInterfaceStatement = (
     imported,
     declarationOrder,
     options,
+    registerSymbol: true,
   })
   if (interfaceResult.isExported) {
     result.exported.push({

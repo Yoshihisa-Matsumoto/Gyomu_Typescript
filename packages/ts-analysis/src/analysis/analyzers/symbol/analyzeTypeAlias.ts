@@ -27,8 +27,8 @@ export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => 
     sourceFullText,
     imported,
     options,
+    registerSymbol,
   } = args
-
   const typeName = args.declaration.getName()
   const typeOfType = args.declaration.getTypeNode()!
   const prepared = prepareSymbolAnalysis(
@@ -42,6 +42,7 @@ export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => 
       options,
       nodeName: typeName,
       reservedNames: [],
+      registerSymbol,
     },
     getSignatureId,
   )
@@ -61,6 +62,7 @@ export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => 
     imported,
     options,
     reservedNames: [],
+    registerSymbol,
   })
   const typeAnalysisArg: ChildAnalysisArg<TypeNode> = {
     ...args,
@@ -93,6 +95,7 @@ export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => 
       args.declaration.getStart(),
       args.declaration.getStartLinePos(),
     ),
+    isAsync: false,
   } satisfies SymbolAnalysis
   // if (Node.isTypeLiteral(typeOfType)) {
   //   const membersResult = analyzeObjectMembers({
@@ -198,7 +201,7 @@ export const analyzeTypeAlias = (args: TagAnalysisArg<TypeAliasDeclaration>) => 
   //     ),
   //   } satisfies SymbolAnalysis
   // }
-  registerSymbolSymbolAnalysis(args.metadata, symbol, options)
+  registerSymbolSymbolAnalysis(args.metadata, symbol, options, registerSymbol)
   return {
     symbol: symbol,
     isDefault: args.declaration.isDefaultExport(),

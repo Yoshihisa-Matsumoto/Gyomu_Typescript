@@ -1,25 +1,21 @@
 {
-  "summary": "This directory serves as the root entry point for a static analysis system, providing the necessary infrastructure to manage TypeScript projects and the high-level orchestration required to perform file-level analysis and data persistence.",
+  "summary": "This directory serves as the root public interface of the package, exporting the core static analysis pipeline and shared infrastructure utilities to provide a unified entry point for consumers.",
   "responsibilities": [
-    "Provide a unified entry point for analysis and project management utilities.",
-    "Expose core interfaces for static analysis operations.",
-    "Facilitate access to project identification and file system utilities."
+    "Export the core static analysis pipeline and project orchestration capabilities.",
+    "Export foundational shared utilities for project identification, path resolution, and module mapping."
   ],
   "concepts": [
-    "Analysis Pipeline",
-    "Project Infrastructure",
-    "Public API",
-    "System Orchestration"
+    "Public Interface",
+    "Static Analysis",
+    "Shared Infrastructure"
   ],
   "relationships": [
-    "The root exports connect the analysis pipeline to the underlying project infrastructure.",
-    "Shared utilities provide the foundational environment required by the analysis orchestration layer to operate consistently.",
-    "Project management tools define the workspace boundaries that the analysis pipeline processes."
+    "The root entry point aggregates both the analysis pipeline and shared utilities to expose a complete public interface.",
+    "Consumers access project analysis features and shared path resolution tools directly through this top-level export layer."
   ],
   "designDecisions": [
-    "Re-exporting modules to create a clean public API surface.",
-    "Decoupling analysis logic from project discovery mechanisms.",
-    "Centralizing access to internal modules for easier integration and maintenance."
+    "Re-exporting all public APIs from subdirectories through a single entry point to simplify consumer imports.",
+    "Strict separation between analysis orchestration and shared foundational utilities prior to public exposure."
   ],
   "importance": "Core"
 }

@@ -1,28 +1,23 @@
 {
-  "summary": "This directory serves as the root entry point for the package, aggregating foundational utilities, type definitions, and core domain schemas that facilitate standardized data modeling, type-safe configuration, and system-wide structural operations.",
+  "summary": "This root source directory acts as the main entry point and organizational hub for the application, exporting core modules, types, configuration utilities, and schema definitions that power system analysis and domain operations.",
   "responsibilities": [
-    "Export public APIs for core domain functionality",
-    "Provide recursive type manipulation utilities",
-    "Define standardized object normalization and configuration tools",
-    "Expose core schemas and type definitions for system-wide consumption"
+    "Export core modules, validation schemas, and type definitions through a centralized entry point",
+    "Provide utility functions for removing undefined properties from objects",
+    "Define foundational TypeScript types for configuration extraction, optional properties, and absolute file paths"
   ],
   "concepts": [
-    "Type Definitions",
-    "Configuration Normalization",
-    "Object Transformation",
-    "Public API",
-    "Schema Definitions"
+    "Package Entry Point",
+    "Configuration Extraction",
+    "Object Property Normalization",
+    "Absolute File Path"
   ],
   "relationships": [
-    "Public type utilities operate on core domain entities to provide flexible data handling.",
-    "Configuration helpers integrate with schema definitions to ensure type-safe project modeling.",
-    "The central export layer reconciles internal module structures into a cohesive interface for external consumers."
+    "The package entry point re-exports error handling, core logic, schemas, and option modules to provide a unified public interface.",
+    "Type definitions for optional properties and configuration extraction are consumed across various modules to ensure type safety."
   ],
   "designDecisions": [
-    "Use of barrel files for centralized API exposure",
-    "Implementation of recursive type transformations for object flexibility",
-    "Nominal branding for type safety in system path representations",
-    "Decoupling of structural utility logic from domain-specific implementations"
+    "Centralized export strategy via an index file to simplify external consumption",
+    "Use of nominal branding for path utilities to enforce type safety"
   ],
   "importance": "Core"
 }

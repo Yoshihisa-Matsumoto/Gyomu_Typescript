@@ -34,7 +34,7 @@
     "changeset:publish": "changeset publish",
     "changeset:publish:beta": "changeset publish",
     "release:beta": "pnpm build:clean && pnpm changeset:version && pnpm changeset:publish:beta",
-    "release:stable": "pnpm changeset:pre:exit && pnpm changeset:version && pnpm changeset:publish",
+    "release:stable": "pnpm build:clean  && pnpm changeset:version && pnpm changeset:publish",
     "generate:tsdocs": "tsx scripts/generate-tsdoc.ts config"
   },
   "engines": {

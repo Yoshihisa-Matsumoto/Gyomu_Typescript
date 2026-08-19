@@ -4,16 +4,14 @@ import { analyzeParameter } from '../analyzeParameter.js'
 import { initializeMethodIdentity, prepareMethodAnalysis } from '../prepareMemberAnalysis.js'
 import { registerSymbolSymbolAnalysis } from '../../../file/registerSymbolSymbolAnalysis.js'
 import { computeIndent } from '../computeIndent.js'
-import { analyzeDependency } from '../analyzeDependency.js'
 import { analyzeGenericsParameters } from '../analyzeGenericsParameters.js'
+import { analyzeFunctionBody } from './analyzeFunctionBody.js'
 import type {
   ArrowFunction,
   CallSignatureDeclaration,
   ConstructSignatureDeclaration,
   ConstructorDeclaration,
   Expression,
-  FunctionDeclaration,
-  FunctionExpression,
   FunctionTypeNode,
   GetAccessorDeclaration,
   IndexSignatureDeclaration,
@@ -23,17 +21,14 @@ import type {
   PropertySignature,
   ReturnStatement,
   SetAccessorDeclaration,
-  Statement,
 } from 'ts-morph'
 import type {
   ChildAnalysisArg,
   MemberAnalysisResult,
   MemberAnalysisWithReservedResult,
-  MethodAnalysisResult,
 } from '../../types.js'
 
 import type {
-  DependencyCandidate,
   DocumentableMethodMemberAnalysis,
   MemberAccessor,
   NonDocumentableMethodMemberAnalysis,
@@ -54,6 +49,7 @@ export const analyzeFunctionMember = (
     | MethodSignature
     | FunctionTypeNode
     | MethodDeclaration
+    | ArrowFunction
     | ((
         | PropertySignature
         | ConstructSignatureDeclaration
@@ -85,17 +81,21 @@ export const analyzeFunctionMember = (
     sourceFullText,
     declarationOrder,
     reservedNames,
+    registerSymbol,
   } = args
   const { name, jsDocableNode } = args2
   const isStatic = args2.isStatic ?? false
   const visibility = args2.visibility ?? 'public'
   const returnTypeNode = node.getReturnTypeNode()
 
+  const newMemberPath = [...memberPath]
+  if (name && name.length > 0) newMemberPath.push(name)
+
   const genericsResult = analyzeGenericsParameters({
     node,
     sourceRelativePath,
     metadata,
-    memberPath: [...memberPath, name],
+    memberPath: newMemberPath,
     ownerSymbolId,
     ownerSymbolIdentity,
     sourceFullText,
@@ -103,6 +103,7 @@ export const analyzeFunctionMember = (
     imported,
     options,
     reservedNames: [],
+    registerSymbol,
   })
 
   const newReservedNames = [...reservedNames, ...genericsResult.parameters]
@@ -125,6 +126,10 @@ export const analyzeFunctionMember = (
     }
   }
 
+  const newTypeReservedName = []
+  if (name && name.length > 0) newTypeReservedName.push(name)
+  newTypeReservedName.push('$return')
+
   const returnType =
     returnTypeNode || initializer
       ? analyzeType(
@@ -140,8 +145,9 @@ export const analyzeFunctionMember = (
             imported,
             options,
             reservedNames: newReservedNames,
+            registerSymbol,
           },
-          [name, '$return'],
+          newTypeReservedName,
         )
       : getVoidTypeResult()
 
@@ -168,7 +174,13 @@ export const analyzeFunctionMember = (
  */
 export const analyzeFunctionMemberInternal = (
   args: ChildAnalysisArg<
-    MethodSignature | FunctionTypeNode | MethodDeclaration | ConstructorDeclaration
+    | MethodSignature
+    | FunctionTypeNode
+    | MethodDeclaration
+    | ConstructorDeclaration
+    | ArrowFunction
+    | GetAccessorDeclaration
+    | SetAccessorDeclaration
   >,
   args2: {
     name: string
@@ -192,10 +204,13 @@ export const analyzeFunctionMemberInternal = (
     imported,
     options,
     reservedNames,
+    registerSymbol,
   } = args
   const { isStatic, visibility, returnType, jsDocableNode, name } = args2
 
-  const methodPath = [...memberPath, name]
+  const methodPath = [...memberPath]
+  if (name && name.length > 0) methodPath.push(name)
+
   const childMemberPath = [...methodPath, '$parameters']
 
   const genericsResult = analyzeGenericsParameters({
@@ -210,23 +225,48 @@ export const analyzeFunctionMemberInternal = (
     imported,
     options,
     reservedNames,
+    registerSymbol,
   })
 
   const newReservedNames = [...reservedNames, ...genericsResult.parameters]
-  const methodBodyResult = analyzeFunctionBody({ ...args, memberPath: methodPath })
+  const methodBodyResult = analyzeFunctionBody({
+    ...args,
+    memberPath: methodPath,
+    registerSymbol: false,
+  })
+
+  let isAsync: boolean | undefined = undefined
+  if (Node.isMethodDeclaration(node)) {
+    isAsync = node.isAsync()
+  } else if (Node.isConstructorDeclaration(node)) {
+    isAsync = false
+  } else {
+    if (!returnType) isAsync = false
+    else {
+      if (returnType.member.structure?.kind == 'function') {
+        const functionStructure = returnType.member.structure
+
+        if (functionStructure.returnType.structure?.kind == 'reference') {
+          if (functionStructure.returnType.structure.targetId.includes('Promise')) isAsync = true
+        }
+      }
+    }
+  }
+
   if (jsDocableNode) {
     const { id, identity, jsDoc, location, snippet, startOffset, parsedJsDoc } =
-      prepareMethodAnalysis(
-        sourceRelativePath,
+      prepareMethodAnalysis({
+        sourcePath: sourceRelativePath,
         metadata,
         ownerSymbolId,
         ownerSymbolIdentity,
         memberPath,
-        name,
+        methodName: name,
         node,
         jsDocableNode,
         options,
-      )
+        registerSymbol,
+      })
     const parametersResult = node.getParameters().map((p, index) =>
       analyzeParameter({
         node: p,
@@ -240,6 +280,7 @@ export const analyzeFunctionMemberInternal = (
         imported,
         options,
         reservedNames: newReservedNames,
+        registerSymbol,
       }),
     )
 
@@ -268,8 +309,10 @@ export const analyzeFunctionMemberInternal = (
         (args2.jsDocableNode ?? args.node).getStart(),
         (args2.jsDocableNode ?? args.node).getStartLinePos(),
       ),
+      functionBody: methodBodyResult.functionBody,
+      isAsync,
     } satisfies DocumentableMethodMemberAnalysis
-    registerSymbolSymbolAnalysis(metadata, method, options)
+    registerSymbolSymbolAnalysis(metadata, method, options, registerSymbol)
     return {
       member: method,
       dependencies: [
@@ -302,6 +345,7 @@ export const analyzeFunctionMemberInternal = (
         imported,
         options,
         reservedNames: newReservedNames,
+        registerSymbol,
       }),
     )
     return {
@@ -321,6 +365,8 @@ export const analyzeFunctionMemberInternal = (
 
         visibility,
         declarationOrder: args.declarationOrder,
+        functionBody: methodBodyResult.functionBody,
+        isAsync,
       } satisfies NonDocumentableMethodMemberAnalysis,
       dependencies: [
         ...parametersResult.map((p) => p.dependencies).flat(),
@@ -330,136 +376,5 @@ export const analyzeFunctionMemberInternal = (
       ],
       reservedNames: [...parametersResult.map((p) => p.reservedNames).flat()],
     }
-  }
-}
-
-/**
- * Analyzes the body statements of a function, method, or constructor declaration for dependency extraction.
- *
- * @param args The analysis context including the function node.
- *
- * @returns A result object containing the list of analyzed dependencies found within the function body.
- */
-export const analyzeFunctionBody = (
-  args: ChildAnalysisArg<
-    | MethodSignature
-    | FunctionTypeNode
-    | MethodDeclaration
-    | ConstructorDeclaration
-    | FunctionDeclaration
-    | ArrowFunction
-    | FunctionExpression
-  >,
-  // args2: {
-  //   name: string
-  //   isStatic: boolean
-  //   visibility: MemberAccessor
-  //   returnType: MemberAnalysisResult<TypeAnalysis> | undefined
-  //   jsDocableNode: (JSDocableNode & Node) | undefined
-  // },
-): MethodAnalysisResult => {
-  // console.log('analyzeFunctionBody', args2.name, args.node.getKindName())
-  if (
-    Node.isConstructorDeclaration(args.node) ||
-    Node.isMethodDeclaration(args.node) ||
-    Node.isFunctionDeclaration(args.node) ||
-    Node.isArrowFunction(args.node) ||
-    Node.isFunctionExpression(args.node)
-  ) {
-    // console.log('Constructor or Method')
-    const body = args.node.getBody()
-    if (Node.isBlock(body)) {
-      const statementsResult = body
-        .getStatements()
-        .map((statement) =>
-          analyzeStatement({ ...args, memberPath: [...args.memberPath, '$body'] }, statement),
-        )
-        .flat()
-      // console.dir(statementsResult, { depth: 5 })
-      return {
-        dependencies: statementsResult.map((s) => s.dependencies).flat(),
-      }
-    }
-  }
-  return {
-    dependencies: [],
-  }
-}
-
-const analyzeStatement = (
-  args: ChildAnalysisArg<
-    | MethodSignature
-    | FunctionTypeNode
-    | MethodDeclaration
-    | ConstructorDeclaration
-    | FunctionDeclaration
-    | ArrowFunction
-    | FunctionExpression
-  >,
-  bodyStatement: Statement,
-): MethodAnalysisResult => {
-  // console.log(bodyStatement.getKindName())
-  if (Node.isExpressionStatement(bodyStatement)) {
-    const expression = bodyStatement.getExpression()
-    // console.log('ExpressionStatement', expression.getKindName(), expression.getText())
-    if (Node.isCallExpression(expression)) {
-      const expressionText = expression.getExpression().getText()
-      const dependency = analyzeDependency(expressionText, args.imported, args.memberPath)
-      return {
-        dependencies: [dependency],
-      }
-    }
-    if (Node.isNewExpression(expression)) {
-      const expressionText = expression.getExpression().getText()
-      // console.log('NewExpression', expressionText)
-      const dependency = analyzeDependency(expressionText, args.imported, args.memberPath)
-      return {
-        dependencies: [dependency],
-      }
-    }
-    if (Node.isBinaryExpression(expression)) {
-      const left = expression.getLeft()
-      const right = expression.getRight()
-      const leftDependencies = new Array<DependencyCandidate>()
-      const rightDependencies = new Array<DependencyCandidate>()
-      if (Node.isIdentifier(right)) {
-        const rightText = right.getText()
-        const dependency = analyzeDependency(rightText, args.imported, args.memberPath)
-        rightDependencies.push(dependency)
-      }
-      if (Node.isPropertyAccessExpression(left)) {
-        const expressionText = left.getExpression().getText()
-        if (expressionText === 'this') {
-          const leftName = left.getName()
-          const dependency = analyzeDependency(leftName, args.imported, args.memberPath)
-          leftDependencies.push(dependency)
-        } else {
-          const dependency = analyzeDependency(expressionText, args.imported, args.memberPath)
-          leftDependencies.push(dependency)
-        }
-      }
-      return {
-        dependencies: [...leftDependencies, ...rightDependencies],
-      }
-    }
-  }
-  if (Node.isReturnStatement(bodyStatement)) {
-    const dependencies = new Array<DependencyCandidate>()
-    const funcExpression = bodyStatement.getExpression()
-    if (Node.isCallExpression(funcExpression)) {
-      funcExpression.getArguments().forEach((arg) => {
-        if (Node.isIdentifier(arg))
-          dependencies.push(analyzeDependency(arg.getText(), args.imported, args.memberPath))
-      })
-      const identifier = funcExpression.getExpression()
-      if (Node.isIdentifier(identifier))
-        dependencies.push(analyzeDependency(identifier.getText(), args.imported, args.memberPath))
-    }
-    return {
-      dependencies,
-    }
-  }
-  return {
-    dependencies: [],
   }
 }

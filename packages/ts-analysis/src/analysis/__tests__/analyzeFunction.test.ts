@@ -122,7 +122,7 @@ describe('analyze Function pattern', () => {
     async () => {
       const result = await functionAnalysisProgram('01-function-effect.ts')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
     },
     timeout,
   )
@@ -137,7 +137,7 @@ describe('analyze Function dependency pattern', () => {
       )
       const dependencies = result.find((s) => s.name === 'dependencyFunction')
 
-      console.dir(result, { depth: null })
+      // console.dir(result, { depth: null })
       expect(dependencies).toBeDefined()
       expect(dependencies?.dependencies).toEqual(
         expect.arrayContaining([

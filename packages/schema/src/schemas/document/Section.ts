@@ -20,7 +20,7 @@ export const Section = Schema.Struct({
    */
   title: Schema.optional(Schema.String).annotate({
     description:
-      'Section title. If omitted, the renderer may determine the title from the section id.',
+      'Optional section title. Omit this field entirely when no title is needed. Never use null. If omitted, the renderer may determine the title from the section id.',
   }),
 
   /**

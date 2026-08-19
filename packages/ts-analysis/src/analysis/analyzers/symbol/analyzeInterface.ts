@@ -34,6 +34,7 @@ export const analyzeInterface = (args: TagAnalysisArg<InterfaceDeclaration>) => 
     sourceFullText,
     imported,
     options,
+    registerSymbol,
   } = args
   const typeName = args.declaration.getName()
   const prepared = prepareSymbolAnalysis(
@@ -47,6 +48,7 @@ export const analyzeInterface = (args: TagAnalysisArg<InterfaceDeclaration>) => 
       imported,
       options,
       reservedNames: [],
+      registerSymbol,
     },
     getSignature,
   )
@@ -66,6 +68,7 @@ export const analyzeInterface = (args: TagAnalysisArg<InterfaceDeclaration>) => 
     imported,
     options,
     reservedNames: [],
+    registerSymbol,
   })
   let heritageIndex = 0
   const heritages: Array<DependencyCandidate> = declaration
@@ -105,6 +108,7 @@ export const analyzeInterface = (args: TagAnalysisArg<InterfaceDeclaration>) => 
     options,
     declarationOrder: 0,
     reservedNames: genericsResult.parameters,
+    registerSymbol,
   })
   const symbol = {
     id: prepared.id,
@@ -136,8 +140,9 @@ export const analyzeInterface = (args: TagAnalysisArg<InterfaceDeclaration>) => 
       args.declaration.getStart(),
       args.declaration.getStartLinePos(),
     ),
+    isAsync: false,
   } satisfies SymbolAnalysis
-  registerSymbolSymbolAnalysis(args.metadata, symbol, options)
+  registerSymbolSymbolAnalysis(args.metadata, symbol, options, registerSymbol)
   return {
     symbol,
     isDefault: args.declaration.isDefaultExport(),
@@ -163,6 +168,7 @@ const analyzeInterfaceMembers = (
     imported,
     options,
     reservedNames,
+    registerSymbol,
   } = args
   const newMemberPath = [...memberPath, '$member']
   const members = node
@@ -184,6 +190,7 @@ const analyzeInterfaceMembers = (
               imported,
               options,
               reservedNames,
+              registerSymbol,
             },
             {
               isStatic: undefined,
@@ -206,6 +213,7 @@ const analyzeInterfaceMembers = (
           imported,
           options,
           reservedNames,
+          registerSymbol,
         }) satisfies MemberAnalysisResult<MemberAnalysis>
       }
 
@@ -223,6 +231,7 @@ const analyzeInterfaceMembers = (
             imported,
             options,
             reservedNames,
+            registerSymbol,
           },
           {
             isStatic: undefined,

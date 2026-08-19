@@ -28,6 +28,7 @@ export const analyzeTypeProperty = (
     imported,
     options,
     reservedNames,
+    registerSymbol,
   } = args
   const typeNode = node.getTypeNode()
   const name = node.getName()
@@ -58,6 +59,7 @@ export const analyzeTypeProperty = (
             imported,
             options,
             reservedNames,
+            registerSymbol,
           },
           [name],
           undefined,
@@ -108,6 +110,7 @@ export const analyzeTypePropertyFromTypeNode = (
     imported,
     options,
     reservedNames,
+    registerSymbol,
   } = args
   const typeNode = node
   const name = Node.isNamed(node) ? node.getName() : ''
@@ -135,6 +138,7 @@ export const analyzeTypePropertyFromTypeNode = (
       imported,
       options,
       reservedNames,
+      registerSymbol,
     },
     [name],
     undefined,
