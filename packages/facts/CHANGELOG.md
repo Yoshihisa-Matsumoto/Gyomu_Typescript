@@ -1,5 +1,15 @@
 # @gyomu/facts
 
+## 1.1.4
+
+### Patch Changes
+
+- upgrade indirect reference of js-yaml
+- Updated dependencies
+  - @gyomu/infra@1.1.4
+  - @gyomu/schema@1.1.4
+  - @gyomu/ts-analysis@1.1.4
+
 ## 1.1.3
 
 ### Patch Changes

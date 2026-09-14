@@ -1,5 +1,11 @@
 # @gyomu/ui
 
+## 1.1.4
+
+### Patch Changes
+
+- upgrade indirect reference of js-yaml
+
 ## 1.1.3
 
 ### Patch Changes
