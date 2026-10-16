@@ -10,8 +10,8 @@ import { ConfigProviderTest, ConfigService } from '../config.js'
 
 describe('ConfigService', () => {
   const TestConfig = Config.all({
-    logLevel: Config.string('LOG_LEVEL'),
-    port: Config.number('PORT').pipe(Config.withDefault(3000)),
+    logLevel: Config.String('LOG_LEVEL'),
+    port: Config.Number('PORT').pipe(Config.withDefault(3000)),
   })
 
   const TestLayer = ConfigService.live.pipe(Layer.provide(ConfigProviderTest))
@@ -114,7 +114,7 @@ describe('ConfigService', () => {
 
   it('必須設定が不足している場合 ConfigError(decode) で失敗する', async () => {
     const MissingConfig = Config.all({
-      apiKey: Config.string('API_KEY'),
+      apiKey: Config.String('API_KEY'),
     })
 
     const program = Effect.gen(function* () {
