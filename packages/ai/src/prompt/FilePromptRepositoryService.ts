@@ -133,7 +133,7 @@ const PromptFileType2PromptDefinition = (
 }
 
 const FilePromptRepositoryConfig = Config.all({
-  promptRootDirectory: Config.withDefault(Config.string(`PROMPT_ROOT_DIR`), './prompt'),
+  promptRootDirectory: Config.withDefault(Config.String(`PROMPT_ROOT_DIR`), './prompt'),
 })
 const getPromptRepository = (): Effect.Effect<
   string,

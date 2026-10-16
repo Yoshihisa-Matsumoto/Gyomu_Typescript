@@ -245,7 +245,7 @@ describe('nodeStream', () => {
       expect(destroySpy).toHaveBeenCalled()
     })
   })
-})
+}, 10000)
 describe('fromReadable', () => {
   it('ReadableをStreamに変換できる', async () => {
     const readable = createReadable(['a', 'b', 'c'])

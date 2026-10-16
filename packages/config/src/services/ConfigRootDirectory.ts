@@ -31,7 +31,7 @@ export const ConfigRootDirectoryLive = Layer.effect(
     return {
       get: (envKey = DEFAULT_KEY) =>
         configService.load(
-          Config.withDefault(Config.string(envKey), join(process.cwd(), 'config')),
+          Config.withDefault(Config.String(envKey), join(process.cwd(), 'config')),
         ),
     }
   }),

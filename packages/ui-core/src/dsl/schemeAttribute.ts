@@ -37,25 +37,28 @@ function getMergedAnnotations(
       if (check.annotations) {
         logger?.debug(check.annotations, 'Check Annotation exists')
 
-        if (check.annotations.arbitrary?.constraint) {
-          console.dir(check.annotations.arbitrary, { depth: null })
-          console.dir(check.annotations.arbitrary.constraint, { depth: null })
-          const constraint = check.annotations.arbitrary.constraint
-          if (constraint) {
-            const parent = check.annotations.identifier
+        if (check.annotations.arbitraryConstraint) {
+          // console.dir(check.annotations.arbitrary, { depth: null })
+          console.dir(check.annotations.arbitraryConstraint, { depth: null })
+          const constraint = check.annotations.arbitraryConstraint
 
-            if (constraint.maxLength) result[`${parent}-maxLength`] = constraint.maxLength
-            if (constraint.minLength) result[`${parent}-minLength`] = constraint.minLength
+          const parent = check.annotations.identifier
 
-            if (constraint.valid != undefined) result[`${parent}-valid`] = constraint.valid
+          if (constraint.maxLength != undefined)
+            result[`${parent}-maxLength`] = constraint.maxLength
+          if (constraint.minLength != undefined)
+            result[`${parent}-minLength`] = constraint.minLength
+          if (constraint.maximum != undefined) result[`${parent}-maximum`] = constraint.maximum
+          if (constraint.exclusiveMaximum != undefined)
+            result[`${parent}-exclusiveMaximum`] = constraint.exclusiveMaximum
+          if (constraint.exclusiveMinimum != undefined)
+            result[`${parent}-exclusiveMinimum`] = constraint.exclusiveMinimum
+          if (constraint.maxSize != undefined) result[`${parent}-maxSize`] = constraint.maxSize
+          if (constraint.minimum != undefined) result[`${parent}-minimum`] = constraint.minimum
 
-            if (constraint.integer) result[`${parent}-isInteger`] = constraint.integer
-            if (constraint.noNaN) result[`${parent}-noNaN`] = constraint.noNaN
-            if (constraint.noInfinity) result[`${parent}-noInfinity`] = constraint.noInfinity
-            if (constraint.unique) result[`${parent}-unique`] = constraint.unique
-            if (constraint.patterns) result[`${parent}-patterns`] = constraint.patterns
-            if (constraint.ordered) result[`${parent}-ordered`] = constraint.ordered
-          }
+          if (constraint.number == 'integer') result[`${parent}-integer`] = true
+          if (constraint.number == 'finite') result[`${parent}-finite`] = true
+          if (constraint.patterns != undefined) result[`${parent}-patterns`] = constraint.patterns
         }
       }
 

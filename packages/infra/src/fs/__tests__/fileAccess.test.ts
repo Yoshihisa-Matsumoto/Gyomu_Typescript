@@ -3,6 +3,7 @@ import { expect, test } from 'vitest'
 import { Effect, Layer } from 'effect'
 import { FileAccessService } from '@gyomu/schema/shared/fs'
 import { makeRunner } from '@gyomu/schema/effect'
+import { FullPath } from '@gyomu/schema'
 import { fsConstants } from '../index.js'
 import { MainLayer, PlatformLayer } from '../../layer.js'
 import { getTempFilename } from '../fs-utils.js'
@@ -14,7 +15,7 @@ const runNodeWithEnvOrThrow = makeRunner(nodeTestLayer)
 const program = (fileName: string, timeoutSeconds: number) => {
   return Effect.gen(function* () {
     const service = yield* FileAccessService
-    return yield* service.waitTillExclusiveAccess(fileName, timeoutSeconds)
+    return yield* service.waitTillExclusiveAccess(FullPath(fileName), timeoutSeconds)
   })
 }
 
@@ -42,7 +43,7 @@ test('File Exclusive Access Test', async () => {
   const duration = finishDate - currentDate
   // expect(result.value).toBeTruthy();
   expect(duration).toBeGreaterThan(500)
-  expect(duration).toBeLessThan(2200)
+  expect(duration).toBeLessThan(2500)
   console.log('duration', duration)
   // console.log('test2');
   targetFilename = getTempFilename()

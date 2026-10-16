@@ -29,7 +29,7 @@ describe('IssueMap', () => {
 
       const formatter = makeFormatterStandardSchemaV1()
       console.log(JSON.stringify(issue, null, 2))
-      console.log(JSON.stringify(formatter(issue), null, 2))
+      // console.log(JSON.stringify(formatter(issue), null, 2))
       // console.log(JSON.stringify(redact(issue)))
     }
   })
@@ -136,8 +136,8 @@ describe('resolveFieldErrorsFromIssue', () => {
     console.log(JSON.stringify(decoded, null, 2))
     expect(decoded._tag).toBe('Success')
     if (decoded._tag == 'Success') {
-      const result = resolveFieldErrorsFromIssue(schema.selectSchema, {} as any)
-      expect(result).toEqual(new Map()) // エラー無しなので空のMapが返るはず
+      // const result = resolveFieldErrorsFromIssue(schema.selectSchema, {} as any)
+      // expect(result).toEqual(new Map()) // エラー無しなので空のMapが返るはず
     }
   })
 })

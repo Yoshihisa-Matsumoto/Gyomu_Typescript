@@ -13,10 +13,10 @@ const fixtureRoot = fileURLToPath(new URL('../../../test-fixtures/config', impor
 logger.debug(fixtureRoot)
 
 const rawConfig = Config.all({
-  appName: Config.option(Config.string('appName')),
-  logLevel: Config.option(Config.string('logLevel')),
-  host: Config.option(Config.string('host')),
-  port: Config.option(Config.number('port')),
+  appName: Config.option(Config.String('appName')),
+  logLevel: Config.option(Config.String('logLevel')),
+  host: Config.option(Config.String('host')),
+  port: Config.option(Config.Number('port')),
 })
 
 const ConfigRootDirectoryTestLayer = Layer.succeed(ConfigRootDirectory, {

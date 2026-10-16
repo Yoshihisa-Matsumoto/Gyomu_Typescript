@@ -64,7 +64,7 @@ describe('buildPackageConceptInput', () => {
           concept: {
             importance: 'Core',
             summary: 'Core summary',
-            relationships: ['A', 'B'],
+            responsibilities: ['A', 'B'],
           },
           facts: {
             publicApiSymbolCount: 10,

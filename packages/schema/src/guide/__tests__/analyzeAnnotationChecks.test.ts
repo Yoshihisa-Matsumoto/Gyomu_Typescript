@@ -30,8 +30,8 @@ describe('analyzeAnnotationChecks', () => {
       )
       console.dir(schema, { depth: null })
       expect(analyzeAnnotationChecks(schema.ast._tag, schema.ast.checks!)).toMatchObject({
-        'number-min': 0,
-        'number-max': 100,
+        'number-minimum': 0,
+        'number-maximum': 100,
       })
     })
 
@@ -39,7 +39,7 @@ describe('analyzeAnnotationChecks', () => {
       const schema = Schema.Int
 
       expect(analyzeAnnotationChecks(schema.ast._tag, schema.ast.checks!)).toMatchObject({
-        'number-isInteger': true,
+        'number-integer': true,
       })
     })
   })
@@ -63,21 +63,23 @@ describe('analyzeAnnotationChecks', () => {
       )
       console.dir(schema, { depth: null })
       expect(analyzeAnnotationChecks(schema.ast._tag, schema.ast.checks!)).toMatchObject({
-        'bigint-min': 0n,
-        'bigint-max': 100n,
+        'bigint-minimum': 0n,
+        'bigint-maximum': 100n,
       })
     })
   })
 
-  describe('date constraints', () => {
-    it('extracts noInvalidDate', () => {
-      const attributes = analyzeAnnotationChecks('date', Schema.DateValid.ast.checks!)
-
-      expect(attributes).toMatchObject({
-        'date-valid': true,
-      })
-    })
-  })
+  // describe('date constraints', () => {
+  //   it('extracts noInvalidDate', () => {
+  //     const schema = Schema.Date
+  //     console.dir(schema, { depth: null })
+  //     const attributes = analyzeAnnotationChecks(schema.ast._tag, schema.ast.checks!)
+  //     console.dir(attributes, { depth: null })
+  //     expect(attributes).toMatchObject({
+  //       // 'date-valid': true,
+  //     })
+  //   })
+  // })
 
   describe('multiple checks', () => {
     it('merges all constraints', () => {

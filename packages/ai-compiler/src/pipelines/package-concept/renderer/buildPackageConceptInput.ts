@@ -30,7 +30,7 @@ export const buildPackageConceptInput = (packageAnalysis: PackageAnalysis): Pack
       .map((directory) => ({
         importance: directory.concept.importance,
         path: directory.path,
-        responsibilities: directory.concept.relationships,
+        responsibilities: directory.concept.responsibilities,
         summary: directory.concept.summary,
       })),
   }

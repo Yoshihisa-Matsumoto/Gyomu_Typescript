@@ -1,10 +1,11 @@
 import path from 'node:path'
-import { Effect, FileSystem, Layer, Option } from 'effect'
+import { ByteSize, Effect, Layer, Option } from 'effect'
 import { AccessError, TimeoutError } from '@gyomu/schema'
 import { FileAccessService } from '@gyomu/schema/shared/fs'
 import { ensure, ensureEffect, fromPromise, polling } from '@gyomu/schema/effect'
 
 import { getFileStat, pathExists } from '../fs/fs-utils.js'
+import type { FileSystem } from 'effect'
 import type { FullPath, IOError } from '@gyomu/schema'
 
 const canAccessFunc = (
@@ -23,7 +24,7 @@ const canAccessFunc = (
     const stat = yield* getFileStat(fileName)
 
     yield* ensure(
-      !(specialExtension.includes(path.extname(fileName)) && stat.size === FileSystem.Size(0)),
+      !(specialExtension.includes(path.extname(fileName)) && stat.size === ByteSize.zero),
       AccessError,
       () => ({
         message: 'File size must not be zero + not an Excel/Zip',
