@@ -97,7 +97,7 @@ export const untar = <R = never>(
             }
             // Stream.acquireRelease の代わり: Stream.scoped + Effect.acquireRelease
             const content = Stream.unwrap(
-              Effect.acquireRelease(Effect.succeed(stream as Readable), () =>
+              Effect.acquireRelease(Effect.succeed(stream as unknown as Readable), () =>
                 Effect.sync(() => safeNext()),
               ).pipe(
                 Effect.map((s) =>

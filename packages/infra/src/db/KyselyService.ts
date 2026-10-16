@@ -28,11 +28,11 @@ export class KyselyService extends Context.Service<
       withConnection: (prefix) =>
         Effect.gen(function* () {
           const dbConfigRaw = Config.all({
-            server: Config.string(`${prefix.toUpperCase()}_SERVER`),
-            port: Config.number(`${prefix.toUpperCase()}_PORT`),
-            database: Config.string(`${prefix.toUpperCase()}_DATABASE`),
-            user: Config.string(`${prefix.toUpperCase()}_USER`),
-            password: Config.string(`${prefix.toUpperCase()}_PASSWORD`),
+            server: Config.String(`${prefix.toUpperCase()}_SERVER`),
+            port: Config.Number(`${prefix.toUpperCase()}_PORT`),
+            database: Config.String(`${prefix.toUpperCase()}_DATABASE`),
+            user: Config.String(`${prefix.toUpperCase()}_USER`),
+            password: Config.String(`${prefix.toUpperCase()}_PASSWORD`),
           })
           const dbConfig = yield* configService.load(dbConfigRaw)
           const mssql = yield* MssqlService

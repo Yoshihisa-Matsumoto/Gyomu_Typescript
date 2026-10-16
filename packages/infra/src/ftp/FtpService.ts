@@ -55,11 +55,11 @@ export class FtpService extends Context.Service<
       withConnection: (prefix, f) =>
         Effect.gen(function* () {
           const ftpConfigRaw = Config.all({
-            host: Config.string(`${prefix.toUpperCase()}_HOST`),
-            port: withDefault(Config.number(`${prefix.toUpperCase()}_PORT`), 21),
-            user: Config.string(`${prefix.toUpperCase()}_USER`),
-            password: Config.redacted(`${prefix.toUpperCase()}_PASS`),
-            secure: withDefault(Config.boolean(`${prefix.toUpperCase()}_SSL`), false),
+            host: Config.String(`${prefix.toUpperCase()}_HOST`),
+            port: withDefault(Config.Number(`${prefix.toUpperCase()}_PORT`), 21),
+            user: Config.String(`${prefix.toUpperCase()}_USER`),
+            password: Config.Redacted(`${prefix.toUpperCase()}_PASS`),
+            secure: withDefault(Config.Boolean(`${prefix.toUpperCase()}_SSL`), false),
           })
           const config = yield* configService.load(ftpConfigRaw)
 

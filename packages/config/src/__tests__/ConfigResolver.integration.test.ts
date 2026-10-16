@@ -39,15 +39,15 @@ type RawLoadedConfig = Partial<{
 }>
 
 const rawLoadedConfig = Config.all({
-  host: Config.option(Config.string('host')),
-  port: Config.option(Config.number('port')),
-  logLevel: Config.option(Config.string('logLevel')),
-  timeout: Config.option(Config.number('timeout')),
+  host: Config.option(Config.String('host')),
+  port: Config.option(Config.Number('port')),
+  logLevel: Config.option(Config.String('logLevel')),
+  timeout: Config.option(Config.Number('timeout')),
   features: Config.option(
     Config.nested(
       Config.all({
-        audit: Config.boolean('audit'),
-        beta: Config.boolean('beta'),
+        audit: Config.Boolean('audit'),
+        beta: Config.Boolean('beta'),
       }),
       'features',
     ),
@@ -55,8 +55,8 @@ const rawLoadedConfig = Config.all({
   database: Config.option(
     Config.nested(
       Config.all({
-        host: Config.string('host'),
-        port: Config.number('port'),
+        host: Config.String('host'),
+        port: Config.Number('port'),
       }),
       'database',
     ),

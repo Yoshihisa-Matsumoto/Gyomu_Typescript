@@ -62,12 +62,12 @@ export class SftpService extends Context.Service<
       withConnection: (prefix, f) =>
         Effect.gen(function* () {
           const sftpConfigRaw = Config.all({
-            host: Config.string(`${prefix.toUpperCase()}_HOST`),
-            port: withDefault(Config.number(`${prefix.toUpperCase()}_PORT`), 22),
-            user: Config.string(`${prefix.toUpperCase()}_USER`),
-            password: Config.option(Config.redacted(`${prefix.toUpperCase()}_PASS`)),
+            host: Config.String(`${prefix.toUpperCase()}_HOST`),
+            port: withDefault(Config.Number(`${prefix.toUpperCase()}_PORT`), 22),
+            user: Config.String(`${prefix.toUpperCase()}_USER`),
+            password: Config.option(Config.Redacted(`${prefix.toUpperCase()}_PASS`)),
             privateKeyFilename: Config.option(
-              Config.string(`${prefix.toUpperCase()}_PRIVATE_KEY_FILENAME`),
+              Config.String(`${prefix.toUpperCase()}_PRIVATE_KEY_FILENAME`),
             ),
           })
           const config = yield* configService.load(sftpConfigRaw)

@@ -85,10 +85,10 @@ let transport: ReturnType<typeof pino.transport> | undefined = undefined
 export let LogFileName: string | undefined = undefined
 
 const loggerConfigRaw = Config.all({
-  logLevel: Config.withDefault(Config.string(`LOGGER_LEVEL`), 'info'),
-  fixedLogFilename: Config.withDefault(Config.boolean(`FIXED_LOGFILENAME`), false),
-  logPath: Config.withDefault(Config.string(`LOGPATH`), tmpdir()),
-  logFilename: Config.option(Config.string('LOGFILENAME')),
+  logLevel: Config.withDefault(Config.String(`LOGGER_LEVEL`), 'info'),
+  fixedLogFilename: Config.withDefault(Config.Boolean(`FIXED_LOGFILENAME`), false),
+  logPath: Config.withDefault(Config.String(`LOGPATH`), tmpdir()),
+  logFilename: Config.option(Config.String('LOGFILENAME')),
 })
 type ExtractConfig<T> = T extends Config.Config<infer A> ? A : never
 // type UnwrapOption<T> = T extends Option.Option<infer A> ? A | undefined : T;
