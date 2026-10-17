@@ -19,7 +19,7 @@ test('parameter parse', async () => {
   await setValueTest(12345)
 })
 
-test('db error test', () => {
+test('db error test', async () => {
   const GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
     parameterMaster: {
       findByItemKey: () =>
@@ -39,9 +39,9 @@ test('db error test', () => {
     const parameter = yield* ParameterService
     return yield* parameter.setValue('abc', 'abc')
   })
-  expect(async () => await testRunner(program)).rejects.toThrow('DB connection error')
+  await expect(async () => await testRunner(program)).rejects.toThrow('DB connection error')
 })
-test('no parameter found', () => {
+test('no parameter found', async () => {
   const GyomuRepositoryMock = Layer.succeed(GyomuRepository, {
     parameterMaster: {
       findByItemKey: () => Effect.succeed([]),
@@ -54,7 +54,7 @@ test('no parameter found', () => {
     const parameter = yield* ParameterService
     return yield* parameter.getValue(itemKey)
   })
-  expect(async () => await testRunner(program)).rejects.toThrow(
+  await expect(async () => await testRunner(program)).rejects.toThrow(
     `Can not retrieve parameter value for key`,
   )
 })
