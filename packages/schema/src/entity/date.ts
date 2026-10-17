@@ -37,7 +37,7 @@ export const TargetDateSchema = Schema.TaggedUnion({
 /**
  * Represents a local date string branded as LocalDate.
  */
-export type LocalDate = string & Schema.Schema<typeof LocalDateSchema>
+export type LocalDate = Schema.Schema.Type<typeof LocalDateSchema>
 
 /**
  * Represents a year-month string branded as YearMonth.
@@ -94,7 +94,7 @@ type DbLocalDate = string & Brand.Brand<'LocalDate'>
  * @returns The database-formatted local date string.
  */
 export function toDbLocalDate(value: LocalDate): DbLocalDate {
-  return value as string as DbLocalDate
+  return value
 }
 
 /**
