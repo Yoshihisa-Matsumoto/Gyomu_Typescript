@@ -38,7 +38,10 @@ export const getHolidayTool = createTool({
     const program = Effect.gen(function* () {
       const marketService = yield* BusinessCalendarService
       const access = yield* marketService.get('JP')
-      return access.getHolidays(inputData.from as LocalDate, inputData.to as LocalDate)
+      return access.getHolidays(
+        inputData.from as unknown as LocalDate,
+        inputData.to as unknown as LocalDate,
+      )
     })
     return await runner(program)
   },
